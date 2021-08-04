@@ -1,2 +1,1 @@
-# airbyte-connectors
-Airbyte connectors
+# Airbyte Connectors
