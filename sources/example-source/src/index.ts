@@ -22,6 +22,8 @@ function specCommand(): commander.Command {
     .alias('s')
     .action(() => {
       const spec = require('../resources/spec.json');
+
+      // Expected output
       console.log(JSON.stringify(spec));
     });
 }
@@ -41,6 +43,8 @@ function checkCommand(): commander.Command {
           status,
         },
       };
+
+      // Expected output
       console.log(JSON.stringify(result));
     });
 }
@@ -53,6 +57,8 @@ function discoverCommand(): commander.Command {
     .requiredOption('--config <path to json>', 'config json')
     .action(() => {
       const catalog = require('../resources/catalog.json');
+
+      // Expected output
       console.log(
         JSON.stringify({
           type: 'CATALOG',
@@ -62,6 +68,7 @@ function discoverCommand(): commander.Command {
     });
 }
 
+// Write a logging message. Surfaced in Airbyte sync logs
 function log(message: string, level = 'INFO'): void {
   console.log(
     JSON.stringify({
@@ -74,6 +81,7 @@ function log(message: string, level = 'INFO'): void {
   );
 }
 
+// Write state to be automatically saved by Airbyte
 function writeState(state: Dictionary<any>): void {
   console.log(
     JSON.stringify({
@@ -146,9 +154,12 @@ function readCommand(): commander.Command {
       log('Syncing stream: jenkins_builds');
       const numBuilds = 5;
       for (let i = 0; i < numBuilds; i++) {
+        // Write record to be consumed by destination
         writeBuild(newBuild(i));
       }
       log(`Synced ${numBuilds} records from stream jenkins_builds`);
+
+      // Write state for next sync
       writeState({cutoff: Date.now()});
     });
 }
