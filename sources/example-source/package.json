@@ -1,7 +1,7 @@
 {
-  "name": "airbyte-source",
-  "version": "0.2.47",
-  "description": "Airbyte source",
+  "name": "example-source",
+  "version": "0.0.1",
+  "description": "Example Airbyte source",
   "keywords": [
     "faros"
   ],
