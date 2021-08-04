@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml)
 
-This repository contains Airbyte connectors implementations. See the READMEs inside `destinations/` and `sources/` subfolders for more information.
+This repository contains [Airbyte](https://airbyte.io/) connectors implementations. See the READMEs inside `destinations/` and `sources/` subfolders for more information.
 
 # Development
 
