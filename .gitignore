@@ -3,5 +3,6 @@ node_modules/
 .DS_Store
 *.code-workspace
 out/
+secrets/
 destinations/**/package-lock.json
 sources/**/package-lock.json
