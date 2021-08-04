@@ -49,5 +49,4 @@ jobs:
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
       - name: Test
-        working-directory: ./feeds
         run: lerna run test-cov
