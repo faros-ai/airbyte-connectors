@@ -8,9 +8,6 @@
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
-  "bin": {
-    "main": "bin/main"
-  },
   "files": [
     "lib/",
     "resources/"
@@ -30,7 +27,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "commander": "^6.1.0",
+    "commander": "^8.0.0",
     "pino": "^6.11.3",
     "verror": "^1.10.0"
   },

@@ -4,27 +4,24 @@
   "documentationUrl": "https://docs.faros.ai",
     "connectionSpecification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Jenkins Spec",
+      "title": "Faros Spec",
       "type": "object",
       "required": [
-        "server_url",
-        "user",
-        "token"
+        "api_url",
+        "api_key"
       ],
       "additionalProperties": false,
       "properties": {
-        "server_url": {
+        "api_url": {
           "type": "string",
-          "description": "Jenkins Server URL",
-          "examples": ["https://my-jenkins-server.example.com"]
+          "title": "API URL",
+          "description": "The Faros API URL.",
+          "examples": ["https://prod.api.faros.ai"]
         },
-        "user": {
+        "api_key": {
+          "title": "API Key",
           "type": "string",
-          "description": "Jenkins User"
-        },
-        "token": {
-          "type": "string",
-          "description": "Jenkins Token",
+          "description": "The Faros API key to use to hit the API.",
           "airbyte_secret": true
         }
       }

@@ -1,7 +1,6 @@
 {
-  "extends": "../.tsconfig.json",
+  "extends": "../../../.tsconfig.json",
   "compilerOptions": {
-    "noImplicitAny": false,
     "outDir": "../out/test"
   },
   "references": [
