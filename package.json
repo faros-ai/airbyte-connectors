@@ -26,8 +26,11 @@
     "ts-node": "^10.0.0",
     "typescript": "^4.1.5"
   },
-  "dependencies": {
-    "example-source": "file:sources/example-source",
-    "faros-destination": "file:destinations/faros-destination"
+  "workspaces": {
+    "packages": [
+      "cdk",
+      "destinations/**",
+      "sources/**"
+    ]
   }
 }

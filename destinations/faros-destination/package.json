@@ -27,7 +27,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^8.0.0",
+    "cdk": "^0.1.0",
     "pino": "^6.11.3",
     "verror": "^1.10.0"
   },

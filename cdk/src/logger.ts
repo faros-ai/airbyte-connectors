@@ -1,3 +1,11 @@
+import {
+  AirbyteCatalog,
+  AirbyteConnectionStatus,
+  AirbyteRecord,
+  AirbyteSourceState,
+  AirbyteSpec,
+} from './protocol';
+
 export enum Level {
   FATAL = 'FATAL',
   ERROR = 'ERROR',
@@ -14,11 +22,6 @@ export enum Type {
   SPEC = 'SPEC',
   CONNECTION_STATUS = 'CONNECTION_STATUS',
   CATALOG = 'CATALOG',
-}
-
-export interface AirbyteConnectionStatus {
-  status: 'SUCCEEDED' | 'FAILED';
-  message?: string;
 }
 
 export class AirbyteLogger {
@@ -51,11 +54,10 @@ export class AirbyteLogger {
   }
 
   private writeAirbyteObject(type: Type, obj: any): void {
-    console.log(JSON.stringify({ type, ...obj }));
+    console.log(JSON.stringify({type, ...obj}));
   }
 
-  // TODO: define types for spec and catalog
-  writeSpec(spec: any): void {
+  writeSpec(spec: AirbyteSpec): void {
     this.writeAirbyteObject(Type.SPEC, {spec});
   }
 
@@ -63,17 +65,17 @@ export class AirbyteLogger {
     this.writeAirbyteObject(Type.CONNECTION_STATUS, {connectionStatus});
   }
 
-  writeCatalog(catalog: any): void {
+  writeCatalog(catalog: AirbyteCatalog): void {
     this.writeAirbyteObject(Type.CATALOG, {catalog});
   }
 
-  writeRecord(stream: string, namespace: string, record: any): void {
+  writeRecord(stream: string, namespace: string, record: AirbyteRecord): void {
     this.writeAirbyteObject(Type.RECORD, {
       record: {stream, namespace, emitted_at: Date.now(), data: record},
     });
   }
 
-  writeState(data: any): void {
-    this.writeAirbyteObject(Type.STATE, {state: {data}});
+  writeState(state: AirbyteSourceState): void {
+    this.writeAirbyteObject(Type.STATE, {state: {data: state}});
   }
 }
