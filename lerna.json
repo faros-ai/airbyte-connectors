@@ -1,6 +1,5 @@
 {
   "version": "0.1.0",
-  "useWorkspaces": true,
   "packages": [
     "cdk",
     "destinations/**",

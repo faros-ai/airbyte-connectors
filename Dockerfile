@@ -18,8 +18,7 @@ COPY ./$CONNECTOR_PATH/src ./$CONNECTOR_PATH/src
 COPY ./$CONNECTOR_PATH/resources ./$CONNECTOR_PATH/resources
 COPY ./$CONNECTOR_PATH/bin ./$CONNECTOR_PATH/bin
 
-RUN lerna bootstrap --hoist --scope "{cdk,$(basename ${CONNECTOR_PATH})}"
-RUN lerna run build --scope "{cdk,$(basename ${CONNECTOR_PATH})}"
+RUN lerna bootstrap --hoist
 RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
 USER node
