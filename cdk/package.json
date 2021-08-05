@@ -1,7 +1,7 @@
 {
-  "name": "example-source",
+  "name": "cdk",
   "version": "0.1.0",
-  "description": "Example Airbyte source",
+  "description": "Airbyte CDK for JavaScript/TypeScript",
   "keywords": [
     "faros"
   ],
@@ -12,10 +12,10 @@
     "lib/",
     "resources/"
   ],
+  "main": "./lib",
   "engines": {
     "node": ">=14.5"
   },
-  "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
@@ -27,10 +27,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "cdk": "^0.1.0",
-    "commander": "^8.0.0",
-    "verror": "^1.10.0"
+    "commander": "^8.0.0"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

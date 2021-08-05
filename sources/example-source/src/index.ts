@@ -1,165 +1,77 @@
-import commander, {Command} from 'commander';
-import path from 'path';
-import {Dictionary} from 'ts-essentials';
-
-import {PACKAGE_VERSION} from './utils';
+import {
+  AirbyteCatalog,
+  AirbyteConfig,
+  AirbyteConnectionStatus,
+  AirbyteLogger,
+  AirbyteSource,
+  AirbyteSourceRunner,
+  AirbyteSourceState,
+  AirbyteSpec,
+} from 'cdk';
+import {Command} from 'commander';
 
 /** The main entry point. */
-export function mainCommand(): commander.Command {
-  return new Command()
-    .name('main')
-    .version('v' + PACKAGE_VERSION)
-    .addCommand(specCommand())
-    .addCommand(checkCommand())
-    .addCommand(discoverCommand())
-    .addCommand(readCommand());
+export function mainCommand(): Command {
+  const logger = new AirbyteLogger();
+  const source = new ExampleSource(logger);
+  return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-function specCommand(): commander.Command {
-  return new Command()
-    .command('spec')
-    .description('spec command')
-    .alias('s')
-    .action(() => {
-      const spec = require('../resources/spec.json');
+/** Example source implementation. */
+class ExampleSource extends AirbyteSource {
+  constructor(private readonly logger: AirbyteLogger) {
+    super();
+  }
+  async spec(): Promise<AirbyteSpec> {
+    return require('../resources/spec.json');
+  }
+  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
+    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
+    return {status};
+  }
+  async discover(): Promise<AirbyteCatalog> {
+    return require('../resources/catalog.json');
+  }
+  async read(
+    config: AirbyteConfig,
+    catalog: AirbyteCatalog,
+    state?: AirbyteSourceState
+  ): Promise<AirbyteSourceState | undefined> {
+    this.logger.info('Syncing stream: jenkins_builds');
+    const numBuilds = 5;
+    for (let i = 0; i < numBuilds; i++) {
+      // Write record to be consumed by destination
+      this.logger.writeRecord('jenkins_builds', 'faros', this.newBuild(i));
+    }
+    this.logger.info(`Synced ${numBuilds} records from stream jenkins_builds`);
 
-      // Expected output
-      console.log(JSON.stringify(spec));
-    });
-}
-
-function checkCommand(): commander.Command {
-  return new Command()
-    .command('check')
-    .description('check command')
-    .alias('c')
-    .requiredOption('--config <path to json>', 'config json')
-    .action((opts: {config: string}) => {
-      const config = require(path.resolve(opts.config));
-      const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
-      const result = {
-        type: 'CONNECTION_STATUS',
-        connectionStatus: {
-          status,
+    // Write state for next sync
+    return {cutoff: Date.now()};
+  }
+  private newBuild(idx: number): any {
+    return {
+      uid: 'uid' + idx,
+      source: 'Jenkins',
+      fields: {
+        command: 'command ' + idx,
+        number: Date.now(),
+      },
+      additional_fields: [
+        {
+          name: 'key' + idx,
+          value: Date.now(),
+          nested: {
+            value: 'nested' + idx,
+          },
         },
-      };
-
-      // Expected output
-      console.log(JSON.stringify(result));
-    });
-}
-
-function discoverCommand(): commander.Command {
-  return new Command()
-    .command('discover')
-    .description('discover command')
-    .alias('d')
-    .requiredOption('--config <path to json>', 'config json')
-    .action(() => {
-      const catalog = require('../resources/catalog.json');
-
-      // Expected output
-      console.log(
-        JSON.stringify({
-          type: 'CATALOG',
-          catalog,
-        })
-      );
-    });
-}
-
-// Write a logging message. Surfaced in Airbyte sync logs
-function log(message: string, level = 'INFO'): void {
-  console.log(
-    JSON.stringify({
-      type: 'LOG',
-      log: {
-        level,
-        message,
-      },
-    })
-  );
-}
-
-// Write state to be automatically saved by Airbyte
-function writeState(state: Dictionary<any>): void {
-  console.log(
-    JSON.stringify({
-      type: 'STATE',
-      state: {
-        data: state,
-      },
-    })
-  );
-}
-
-function newBuild(idx: number): any {
-  return {
-    uid: 'uid' + idx,
-    source: 'Jenkins',
-    fields: {
-      command: 'command ' + idx,
-      number: Date.now(),
-    },
-    additional_fields: [
-      {
-        name: 'key' + idx,
-        value: Date.now(),
-        nested: {
-          value: 'nested' + idx,
-        },
-      },
-      {
-        name: 'static',
-        value: 'static',
-        nested: {
+        {
+          name: 'static',
           value: 'static',
+          nested: {
+            value: 'static',
+          },
         },
-      },
-    ],
-  };
-}
-
-function writeBuild(build: any): void {
-  console.log(
-    JSON.stringify({
-      type: 'RECORD',
-      record: {
-        stream: 'jenkins_builds',
-        data: build,
-        emitted_at: Date.now(),
-        namespace: 'faros',
-      },
-    })
-  );
-}
-
-function readCommand(): commander.Command {
-  return new Command()
-    .command('read')
-    .description('read command')
-    .alias('r')
-    .requiredOption('--config <path to json>', 'config json')
-    .requiredOption('--catalog <path to json>', 'catalog json')
-    .option('--state <path to json>', 'state json')
-    .action((opts: {config: string; catalog: string; state?: string}) => {
-      const config = require(path.resolve(opts.config));
-      const catalog = require(path.resolve(opts.catalog));
-      log('config: ' + JSON.stringify(config));
-      log('catalog: ' + JSON.stringify(catalog));
-      if (opts.state) {
-        const state = require(path.resolve(opts.state));
-        log('prev state: ' + JSON.stringify(state));
-      }
-      log('Syncing stream: jenkins_builds');
-      const numBuilds = 5;
-      for (let i = 0; i < numBuilds; i++) {
-        // Write record to be consumed by destination
-        writeBuild(newBuild(i));
-      }
-      log(`Synced ${numBuilds} records from stream jenkins_builds`);
-
-      // Write state for next sync
-      writeState({cutoff: Date.now()});
-    });
+      ],
+    };
+  }
 }
