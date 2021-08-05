@@ -1,9 +1,10 @@
 import commander, {Command} from 'commander';
 import path from 'path';
-import {Dictionary} from 'ts-essentials';
 
+import {AirbyteLogger} from './logger';
 import {PACKAGE_VERSION} from './utils';
 
+const logger = new AirbyteLogger();
 /** The main entry point. */
 export function mainCommand(): commander.Command {
   return new Command()
@@ -24,7 +25,7 @@ function specCommand(): commander.Command {
       const spec = require('../resources/spec.json');
 
       // Expected output
-      console.log(JSON.stringify(spec));
+      logger.writeSpec(spec);
     });
 }
 
@@ -37,15 +38,9 @@ function checkCommand(): commander.Command {
     .action((opts: {config: string}) => {
       const config = require(path.resolve(opts.config));
       const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
-      const result = {
-        type: 'CONNECTION_STATUS',
-        connectionStatus: {
-          status,
-        },
-      };
 
       // Expected output
-      console.log(JSON.stringify(result));
+      logger.writeConnectionStatus({status});
     });
 }
 
@@ -59,38 +54,8 @@ function discoverCommand(): commander.Command {
       const catalog = require('../resources/catalog.json');
 
       // Expected output
-      console.log(
-        JSON.stringify({
-          type: 'CATALOG',
-          catalog,
-        })
-      );
+      logger.writeCatalog(catalog);
     });
-}
-
-// Write a logging message. Surfaced in Airbyte sync logs
-function log(message: string, level = 'INFO'): void {
-  console.log(
-    JSON.stringify({
-      type: 'LOG',
-      log: {
-        level,
-        message,
-      },
-    })
-  );
-}
-
-// Write state to be automatically saved by Airbyte
-function writeState(state: Dictionary<any>): void {
-  console.log(
-    JSON.stringify({
-      type: 'STATE',
-      state: {
-        data: state,
-      },
-    })
-  );
 }
 
 function newBuild(idx: number): any {
@@ -120,20 +85,6 @@ function newBuild(idx: number): any {
   };
 }
 
-function writeBuild(build: any): void {
-  console.log(
-    JSON.stringify({
-      type: 'RECORD',
-      record: {
-        stream: 'jenkins_builds',
-        data: build,
-        emitted_at: Date.now(),
-        namespace: 'faros',
-      },
-    })
-  );
-}
-
 function readCommand(): commander.Command {
   return new Command()
     .command('read')
@@ -145,21 +96,21 @@ function readCommand(): commander.Command {
     .action((opts: {config: string; catalog: string; state?: string}) => {
       const config = require(path.resolve(opts.config));
       const catalog = require(path.resolve(opts.catalog));
-      log('config: ' + JSON.stringify(config));
-      log('catalog: ' + JSON.stringify(catalog));
+      logger.info('config: ' + JSON.stringify(config));
+      logger.info('catalog: ' + JSON.stringify(catalog));
       if (opts.state) {
         const state = require(path.resolve(opts.state));
-        log('prev state: ' + JSON.stringify(state));
+        logger.info('prev state: ' + JSON.stringify(state));
       }
-      log('Syncing stream: jenkins_builds');
+      logger.info('Syncing stream: jenkins_builds');
       const numBuilds = 5;
       for (let i = 0; i < numBuilds; i++) {
         // Write record to be consumed by destination
-        writeBuild(newBuild(i));
+        logger.writeRecord('jenkins_builds', 'faros', newBuild(i));
       }
-      log(`Synced ${numBuilds} records from stream jenkins_builds`);
+      logger.info(`Synced ${numBuilds} records from stream jenkins_builds`);
 
       // Write state for next sync
-      writeState({cutoff: Date.now()});
+      logger.writeState({cutoff: Date.now()});
     });
 }
