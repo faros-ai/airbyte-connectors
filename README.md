@@ -22,10 +22,9 @@ This repository contains [Airbyte](https://airbyte.io/) connectors implementatio
 
 Read more about `lerna` here - https://github.com/lerna/lerna
 
-# Build Docker image
+# Build Docker images
 
-In order to build a Docker image for your connector run the `docker build` command and set `path` argument.
-For example for Faros Destination run:
+In order to build a Docker image for a connector run the `docker build` command and set `path` argument. For example for Faros Destination connector run:
 
 ```shell
 docker build . --build-arg path=destinations/faros-destination -t faros-destination
