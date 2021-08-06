@@ -1,8 +1,9 @@
 import {Dictionary} from 'ts-essentials';
 
 import {AirbyteLogger} from './logger';
-import {AirbyteStream, Optional, SyncMode} from './protocol';
+import {AirbyteStream, SyncMode} from './protocol';
 
+export type StreamKey = string | string[] | string[][];
 /**
  * Base abstract class for an Airbyte Stream. Makes no assumption of the
  * Stream's underlying transport protocol.
@@ -91,7 +92,7 @@ export abstract class Stream {
    * key, list of list of strings if composite primary key consisting of nested
    * fields.  If the stream has no primary keys, return None.
    */
-  abstract get primaryKey(): Optional<string | string[] | string[][]>;
+  abstract get primaryKey(): StreamKey | undefined;
 
   /**
    * Override to define the slices for this stream. See the stream slicing
@@ -101,7 +102,7 @@ export abstract class Stream {
     syncMode: SyncMode,
     cursorField?: string[],
     streamState?: Dictionary<any>
-  ): AsyncGenerator<Optional<Dictionary<any>>> {
+  ): AsyncGenerator<Dictionary<any> | undefined> {
     yield undefined;
   }
 
@@ -121,7 +122,7 @@ export abstract class Stream {
    * whatever the cursor is).  In those cases, state must only be saved once the
    * full stream has been read.
    */
-  get stateCheckpointInterval(): Optional<number> {
+  get stateCheckpointInterval(): number | undefined {
     return undefined;
   }
 
@@ -152,9 +153,7 @@ export abstract class Stream {
    * @returns wrap the primary_key property in a list of list of strings
    * required by the Airbyte Stream object.
    */
-  static wrappedPrimaryKey(
-    keys?: string | string[] | string[][]
-  ): Optional<string[][]> {
+  static wrappedPrimaryKey(keys?: StreamKey): string[][] | undefined {
     if (!keys) {
       return undefined;
     }

@@ -1,7 +1,5 @@
 import {Dictionary} from 'ts-essentials';
 
-export type Optional<T> = T | undefined;
-
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
   ERROR = 'ERROR',
