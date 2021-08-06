@@ -36,10 +36,6 @@ class FarosDestination extends AirbyteDestination {
     return new AirbyteConnectionStatus({status});
   }
 
-  async discover(): Promise<AirbyteCatalog> {
-    return new AirbyteCatalog(require('../resources/catalog.json'));
-  }
-
   async *write(
     config: AirbyteConfig,
     catalog: ConfiguredAirbyteCatalog,
