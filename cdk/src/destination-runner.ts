@@ -31,7 +31,7 @@ export class AirbyteDestinationRunner {
         const spec = await this.destination.spec();
 
         // Expected output
-        this.logger.writeSpec(spec);
+        this.logger.write(spec);
       });
   }
 
@@ -46,7 +46,7 @@ export class AirbyteDestinationRunner {
         const status = await this.destination.check(config);
 
         // Expected output
-        this.logger.writeConnectionStatus(status);
+        this.logger.write(status);
       });
   }
 
@@ -57,10 +57,10 @@ export class AirbyteDestinationRunner {
       .alias('d')
       .requiredOption('--config <path to json>', 'config json')
       .action(async () => {
-        const catalog = this.destination.discover();
+        const catalog = await this.destination.discover();
 
         // Expected output
-        this.logger.writeCatalog(catalog);
+        this.logger.write(catalog);
       });
   }
 
@@ -84,10 +84,10 @@ export class AirbyteDestinationRunner {
             terminal: process.stdin.isTTY,
           });
 
-          const newState = await this.destination.write(config, catalog, input);
-
-          // Write state for next sync
-          this.logger.writeState(newState);
+          const iter = this.destination.write(config, catalog, input);
+          for await (const message of iter) {
+            this.logger.write(message);
+          }
         }
       );
   }

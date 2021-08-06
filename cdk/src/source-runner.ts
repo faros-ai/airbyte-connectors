@@ -31,7 +31,7 @@ export class AirbyteSourceRunner {
         const spec = await this.source.spec();
 
         // Expected output
-        this.logger.writeSpec(spec);
+        this.logger.write(spec);
       });
   }
 
@@ -46,7 +46,7 @@ export class AirbyteSourceRunner {
         const status = await this.source.check(config);
 
         // Expected output
-        this.logger.writeConnectionStatus(status);
+        this.logger.write(status);
       });
   }
 
@@ -57,10 +57,10 @@ export class AirbyteSourceRunner {
       .alias('d')
       .requiredOption('--config <path to json>', 'config json')
       .action(async () => {
-        const catalog = this.source.discover();
+        const catalog = await this.source.discover();
 
         // Expected output
-        this.logger.writeCatalog(catalog);
+        this.logger.write(catalog);
       });
   }
 
@@ -84,10 +84,11 @@ export class AirbyteSourceRunner {
             state = require(path.resolve(opts.state));
             this.logger.info('state: ' + JSON.stringify(state));
           }
-          const newState = await this.source.read(config, catalog, state);
 
-          // Write state for next sync
-          this.logger.writeState(newState);
+          const iter = this.source.read(config, catalog, state);
+          for await (const message of iter) {
+            this.logger.write(message);
+          }
         }
       );
   }

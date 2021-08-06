@@ -2,6 +2,7 @@ import {
   AirbyteCatalog,
   AirbyteConfig,
   AirbyteConnectionStatus,
+  AirbyteMessage,
   AirbyteSpec,
   AirbyteState,
 } from './protocol';
@@ -17,5 +18,5 @@ export abstract class AirbyteSource {
     config: AirbyteConfig,
     catalog: AirbyteCatalog,
     state?: AirbyteState
-  ): Promise<AirbyteState | undefined>;
+  ): AsyncGenerator<AirbyteMessage>;
 }
