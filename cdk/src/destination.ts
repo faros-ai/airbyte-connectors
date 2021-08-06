@@ -10,6 +10,7 @@ import {
 } from './protocol';
 
 /**
+ * Airbyte Destination
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#destination
  */
 export abstract class AirbyteDestination {

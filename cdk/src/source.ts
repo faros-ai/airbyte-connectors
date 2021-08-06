@@ -9,6 +9,7 @@ import {
 } from './protocol';
 
 /**
+ * Airbyte Source
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
  */
 export abstract class AirbyteSource {
