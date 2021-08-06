@@ -18,7 +18,6 @@ export class AirbyteDestinationRunner {
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.checkCommand())
-      .addCommand(this.discoverCommand())
       .addCommand(this.writeCommand());
   }
 
@@ -47,20 +46,6 @@ export class AirbyteDestinationRunner {
 
         // Expected output
         this.logger.write(status);
-      });
-  }
-
-  discoverCommand(): Command {
-    return new Command()
-      .command('discover')
-      .description('discover command')
-      .alias('d')
-      .requiredOption('--config <path to json>', 'config json')
-      .action(async () => {
-        const catalog = await this.destination.discover();
-
-        // Expected output
-        this.logger.write(catalog);
       });
   }
 

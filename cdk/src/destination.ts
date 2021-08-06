@@ -1,10 +1,8 @@
 import readline from 'readline';
 
+import {Connector} from './connector';
 import {
-  AirbyteCatalog,
   AirbyteConfig,
-  AirbyteConnectionStatus,
-  AirbyteSpec,
   AirbyteState,
   ConfiguredAirbyteCatalog,
 } from './protocol';
@@ -13,13 +11,10 @@ import {
  * Airbyte Destination
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#destination
  */
-export abstract class AirbyteDestination {
-  abstract spec(): Promise<AirbyteSpec>;
-
-  abstract check(config: AirbyteConfig): Promise<AirbyteConnectionStatus>;
-
-  abstract discover(): Promise<AirbyteCatalog>;
-
+export abstract class AirbyteDestination extends Connector {
+  /**
+   * Implement to define how the connector writes data to the destination
+   */
   abstract write(
     config: AirbyteConfig,
     catalog: ConfiguredAirbyteCatalog,
