@@ -12,6 +12,7 @@ import {
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#destination
  */
 export abstract class AirbyteDestination extends Connector {
+
   /**
    * Implement to define how the connector writes data to the destination
    */

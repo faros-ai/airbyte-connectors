@@ -12,6 +12,7 @@ import {
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
  */
 export abstract class AirbyteSource extends Connector {
+
   /**
    * @returns An AirbyteCatalog representing the available streams and fields in
    * this integration. For example, given valid credentials to a Postgres
