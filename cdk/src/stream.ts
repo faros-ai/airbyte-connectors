@@ -8,7 +8,7 @@ export type StreamKey = string | string[] | string[][];
  * Base abstract class for an Airbyte Stream. Makes no assumption of the
  * Stream's underlying transport protocol.
  */
-export abstract class Stream {
+export abstract class AirbyteStreamBase {
   constructor(private readonly logger: AirbyteLogger) {}
 
   /**
@@ -49,7 +49,7 @@ export abstract class Stream {
       stream.default_cursor_field = this.wrappedCursorField();
     }
 
-    const keys = Stream.wrappedPrimaryKey(this.primaryKey);
+    const keys = AirbyteStreamBase.wrappedPrimaryKey(this.primaryKey);
     if (keys && keys.length > 0) {
       stream.source_defined_primary_key = keys;
     }
