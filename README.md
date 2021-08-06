@@ -24,10 +24,14 @@ Read more about `lerna` here - https://github.com/lerna/lerna
 
 # Build Docker images
 
-In order to build a Docker image for a connector run the `docker build` command and set `path` argument. For example for Faros Destination connector run:
+In order to build a Docker image for a connector run the `docker build` command and set `path` argument.
+For example for Faros Destination connector run:
 
 ```shell
-docker build . --build-arg path=destinations/faros-destination -t faros-destination
+docker build . \
+  --build-arg path=destinations/faros-destination -t faros-destination \
+  --label "io.airbyte.version=0.1.0" \
+  --label "io.airbyte.name=faros-ai/faros-destination"
 ```
 
 And then run it:
