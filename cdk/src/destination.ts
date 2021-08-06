@@ -4,8 +4,9 @@ import {
   AirbyteCatalog,
   AirbyteConfig,
   AirbyteConnectionStatus,
-  AirbyteMessage,
   AirbyteSpec,
+  AirbyteState,
+  ConfiguredAirbyteCatalog,
 } from './protocol';
 
 export abstract class AirbyteDestination {
@@ -17,7 +18,7 @@ export abstract class AirbyteDestination {
 
   abstract write(
     config: AirbyteConfig,
-    catalog: AirbyteCatalog,
+    catalog: ConfiguredAirbyteCatalog,
     input: readline.Interface
-  ): AsyncGenerator<AirbyteMessage>;
+  ): AsyncGenerator<AirbyteState>;
 }

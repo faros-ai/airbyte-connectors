@@ -4,11 +4,10 @@ import {
   AirbyteConnectionStatus,
   AirbyteDestination,
   AirbyteDestinationRunner,
-  AirbyteLog,
   AirbyteLogger,
-  AirbyteLogLevel,
-  AirbyteMessage,
   AirbyteSpec,
+  AirbyteState,
+  ConfiguredAirbyteCatalog,
 } from 'cdk';
 import {Command} from 'commander';
 import readline from 'readline';
@@ -41,13 +40,12 @@ class FarosDestination extends AirbyteDestination {
 
   async *write(
     config: AirbyteConfig,
-    catalog: AirbyteCatalog,
+    catalog: ConfiguredAirbyteCatalog,
     input: readline.Interface
-  ): AsyncGenerator<AirbyteMessage> {
-    //   input.on('line', (line: string) => {
-    //     // We just log the lines for now
-    //     // this.logger.info('writing: ' + line);
-    //     // yield new AirbyteLog({level: AirbyteLogLevel.INFO, message: line});
-    //   });
+  ): AsyncGenerator<AirbyteState> {
+    for await (const line of input) {
+      this.logger.info('writing: ' + line);
+    }
+    yield new AirbyteState({data: {cutoff: Date.now()}});
   }
 }
