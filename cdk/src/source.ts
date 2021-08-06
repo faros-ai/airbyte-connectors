@@ -2,9 +2,9 @@ import {AirbyteConnector} from './connector';
 import {
   AirbyteCatalog,
   AirbyteConfig,
+  AirbyteConfiguredCatalog,
   AirbyteMessage,
   AirbyteState,
-  ConfiguredAirbyteCatalog,
 } from './protocol';
 
 /**
@@ -12,7 +12,6 @@ import {
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
  */
 export abstract class AirbyteSource extends AirbyteConnector {
-
   /**
    * @returns An AirbyteCatalog representing the available streams and fields in
    * this integration. For example, given valid credentials to a Postgres
@@ -27,7 +26,7 @@ export abstract class AirbyteSource extends AirbyteConnector {
    */
   abstract read(
     config: AirbyteConfig,
-    catalog: ConfiguredAirbyteCatalog,
+    catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage>;
 }

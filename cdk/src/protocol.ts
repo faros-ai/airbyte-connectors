@@ -77,7 +77,7 @@ export class AirbyteCatalog implements AirbyteMessage {
   constructor(readonly catalog: AirbyteCatalog) {}
 }
 
-export interface ConfiguredAirbyteStream {
+export interface AirbyteConfiguredStream {
   stream: AirbyteStream;
   sync_mode: SyncMode;
   cursor_field?: string[];
@@ -85,8 +85,8 @@ export interface ConfiguredAirbyteStream {
   primary_key?: string[][];
 }
 
-export interface ConfiguredAirbyteCatalog {
-  streams: ConfiguredAirbyteStream[];
+export interface AirbyteConfiguredCatalog {
+  streams: AirbyteConfiguredStream[];
 }
 
 export class AirbyteConnectionStatus implements AirbyteMessage {
