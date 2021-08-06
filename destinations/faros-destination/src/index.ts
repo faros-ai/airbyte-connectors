@@ -10,8 +10,8 @@ import {
   ConfiguredAirbyteCatalog,
 } from 'cdk';
 import {Command} from 'commander';
-import readline from 'readline';
 import {once} from 'events';
+import readline from 'readline';
 
 /** The main entry point. */
 export function mainCommand(): Command {
