@@ -153,7 +153,7 @@ export class AirbyteState implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
     readonly state: {
-      data: any; // TODO: get rid of 'any' and formalize the type
+      data: any;
     }
   ) {}
 }
