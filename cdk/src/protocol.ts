@@ -1,4 +1,4 @@
-import { Dictionary } from 'ts-essentials';
+import {Dictionary} from 'ts-essentials';
 
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
@@ -26,7 +26,7 @@ export interface AirbyteMessage {
 
 export enum SyncMode {
   FULL_REFRESH = 'full_refresh',
-  INCREMENTAL = 'incremental'
+  INCREMENTAL = 'incremental',
 }
 
 export enum DestinationSyncMode {
