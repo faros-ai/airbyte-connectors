@@ -1,23 +1,24 @@
+import readline from 'readline';
+
 import {
   AirbyteCatalog,
   AirbyteConfig,
   AirbyteConnectionStatus,
-  AirbyteMessage,
   AirbyteSpec,
   AirbyteState,
   ConfiguredAirbyteCatalog,
 } from './protocol';
 
-export abstract class AirbyteSource {
+export abstract class AirbyteDestination {
   abstract spec(): Promise<AirbyteSpec>;
 
   abstract check(config: AirbyteConfig): Promise<AirbyteConnectionStatus>;
 
   abstract discover(): Promise<AirbyteCatalog>;
 
-  abstract read(
+  abstract write(
     config: AirbyteConfig,
     catalog: ConfiguredAirbyteCatalog,
-    state?: AirbyteState
-  ): AsyncGenerator<AirbyteMessage>;
+    input: readline.Interface
+  ): AsyncGenerator<AirbyteState>;
 }

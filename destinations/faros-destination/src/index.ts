@@ -1,112 +1,54 @@
-import commander, {Command} from 'commander';
-import path from 'path';
-import {Dictionary} from 'ts-essentials';
-
-import {PACKAGE_VERSION} from './utils';
+import {
+  AirbyteCatalog,
+  AirbyteConfig,
+  AirbyteConnectionStatus,
+  AirbyteDestination,
+  AirbyteDestinationRunner,
+  AirbyteLogger,
+  AirbyteSpec,
+  AirbyteState,
+  ConfiguredAirbyteCatalog,
+} from 'cdk';
+import {Command} from 'commander';
+import readline from 'readline';
+import {once} from 'events';
 
 /** The main entry point. */
-export function mainCommand(): commander.Command {
-  return new Command()
-    .name('main')
-    .version('v' + PACKAGE_VERSION)
-    .addCommand(specCommand())
-    .addCommand(checkCommand())
-    .addCommand(discoverCommand())
-    .addCommand(writeCommand());
+export function mainCommand(): Command {
+  const logger = new AirbyteLogger();
+  const destination = new FarosDestination(logger);
+  return new AirbyteDestinationRunner(logger, destination).mainCommand();
 }
 
-function specCommand(): commander.Command {
-  return new Command()
-    .command('spec')
-    .description('spec command')
-    .alias('s')
-    .action(() => {
-      const spec = require('../resources/spec.json');
+/** Faros destination implementation. */
+class FarosDestination extends AirbyteDestination {
+  constructor(private readonly logger: AirbyteLogger) {
+    super();
+  }
 
-      // Expected output
-      console.log(JSON.stringify(spec));
+  async spec(): Promise<AirbyteSpec> {
+    return new AirbyteSpec(require('../resources/spec.json'));
+  }
+
+  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
+    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
+    return new AirbyteConnectionStatus({status});
+  }
+
+  async discover(): Promise<AirbyteCatalog> {
+    return new AirbyteCatalog(require('../resources/catalog.json'));
+  }
+
+  async *write(
+    config: AirbyteConfig,
+    catalog: ConfiguredAirbyteCatalog,
+    input: readline.Interface
+  ): AsyncGenerator<AirbyteState> {
+    input.on('line', (line: string) => {
+      this.logger.info('writing: ' + line);
     });
-}
+    await once(input, 'close');
 
-function checkCommand(): commander.Command {
-  return new Command()
-    .command('check')
-    .description('check command')
-    .alias('c')
-    .requiredOption('--config <path to json>', 'config json')
-    .action((opts: {config: string}) => {
-      const config = require(path.resolve(opts.config));
-      const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
-      const result = {
-        type: 'CONNECTION_STATUS',
-        connectionStatus: {
-          status,
-        },
-      };
-
-      // Expected output
-      console.log(JSON.stringify(result));
-    });
-}
-
-function discoverCommand(): commander.Command {
-  return new Command()
-    .command('discover')
-    .description('discover command')
-    .alias('d')
-    .requiredOption('--config <path to json>', 'config json')
-    .action(() => {
-      const catalog = require('../resources/catalog.json');
-
-      // Expected output
-      console.log(
-        JSON.stringify({
-          type: 'CATALOG',
-          catalog,
-        })
-      );
-    });
-}
-
-// Write a logging message. Surfaced in Airbyte sync logs
-function log(message: string, level = 'INFO'): void {
-  console.log(
-    JSON.stringify({
-      type: 'LOG',
-      log: {
-        level,
-        message,
-      },
-    })
-  );
-}
-
-// Write state to be automatically saved by Airbyte
-function writeState(state: Dictionary<any>): void {
-  console.log(
-    JSON.stringify({
-      type: 'STATE',
-      state: {
-        data: state,
-      },
-    })
-  );
-}
-
-function writeCommand(): commander.Command {
-  return new Command()
-    .command('write')
-    .description('write command')
-    .alias('w')
-    .requiredOption('--config <path to json>', 'config json')
-    .requiredOption('--catalog <path to json>', 'catalog json')
-    .action((opts: {config: string; catalog: string}) => {
-      const config = require(path.resolve(opts.config));
-      const catalog = require(path.resolve(opts.catalog));
-      log('config: ' + JSON.stringify(config));
-      log('catalog: ' + JSON.stringify(catalog));
-
-      // Write state for next sync
-      writeState({cutoff: Date.now()});
-    });
+    yield new AirbyteState({data: {cutoff: Date.now()}});
+  }
 }

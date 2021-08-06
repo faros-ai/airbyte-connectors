@@ -3,10 +3,13 @@ import {
   AirbyteConfig,
   AirbyteConnectionStatus,
   AirbyteLogger,
+  AirbyteMessage,
+  AirbyteRecord,
   AirbyteSource,
   AirbyteSourceRunner,
-  AirbyteSourceState,
   AirbyteSpec,
+  AirbyteState,
+  ConfiguredAirbyteCatalog,
 } from 'cdk';
 import {Command} from 'commander';
 
@@ -23,30 +26,30 @@ class ExampleSource extends AirbyteSource {
     super();
   }
   async spec(): Promise<AirbyteSpec> {
-    return require('../resources/spec.json');
+    return new AirbyteSpec(require('../resources/spec.json'));
   }
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
     const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
-    return {status};
+    return new AirbyteConnectionStatus({status});
   }
   async discover(): Promise<AirbyteCatalog> {
-    return require('../resources/catalog.json');
+    return new AirbyteCatalog(require('../resources/catalog.json'));
   }
-  async read(
+  async *read(
     config: AirbyteConfig,
-    catalog: AirbyteCatalog,
-    state?: AirbyteSourceState
-  ): Promise<AirbyteSourceState | undefined> {
+    catalog: ConfiguredAirbyteCatalog,
+    state?: AirbyteState
+  ): AsyncGenerator<AirbyteMessage> {
     this.logger.info('Syncing stream: jenkins_builds');
+
     const numBuilds = 5;
     for (let i = 0; i < numBuilds; i++) {
-      // Write record to be consumed by destination
-      this.logger.writeRecord('jenkins_builds', 'faros', this.newBuild(i));
+      yield AirbyteRecord.make('jenkins_builds', 'faros', this.newBuild(i));
     }
     this.logger.info(`Synced ${numBuilds} records from stream jenkins_builds`);
 
     // Write state for next sync
-    return {cutoff: Date.now()};
+    yield new AirbyteState({data: {cutoff: Date.now()}});
   }
   private newBuild(idx: number): any {
     return {
