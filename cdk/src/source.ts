@@ -5,6 +5,7 @@ import {
   AirbyteMessage,
   AirbyteSpec,
   AirbyteState,
+  ConfiguredAirbyteCatalog,
 } from './protocol';
 
 export abstract class AirbyteSource {
@@ -16,7 +17,7 @@ export abstract class AirbyteSource {
 
   abstract read(
     config: AirbyteConfig,
-    catalog: AirbyteCatalog,
+    catalog: ConfiguredAirbyteCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage>;
 }
