@@ -11,6 +11,7 @@ import {
 } from 'cdk';
 import {Command} from 'commander';
 import readline from 'readline';
+import {once} from 'events';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -43,9 +44,11 @@ class FarosDestination extends AirbyteDestination {
     catalog: ConfiguredAirbyteCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteState> {
-    for await (const line of input) {
+    input.on('line', (line: string) => {
       this.logger.info('writing: ' + line);
-    }
+    });
+    await once(input, 'close');
+
     yield new AirbyteState({data: {cutoff: Date.now()}});
   }
 }
