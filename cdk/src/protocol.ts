@@ -1,4 +1,5 @@
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
@@ -19,6 +20,28 @@ export enum AirbyteMessageType {
 }
 
 export type AirbyteConfig = Dictionary<any>;
+
+export function parseAirbyteMessage(s: string): AirbyteMessage {
+  try {
+    const res: AirbyteMessage = JSON.parse(s);
+    if (!res.type) {
+      throw new VError(`Message type is not set`);
+    }
+    switch (res.type) {
+      case AirbyteMessageType.CATALOG:
+      case AirbyteMessageType.CONNECTION_STATUS:
+      case AirbyteMessageType.LOG:
+      case AirbyteMessageType.RECORD:
+      case AirbyteMessageType.SPEC:
+      case AirbyteMessageType.STATE:
+        return res;
+      default:
+        throw new VError(`Unsupported message type ${res.type}`);
+    }
+  } catch (e) {
+    throw new VError(e, `Invalid Airbyte message: ${s}`);
+  }
+}
 
 export interface AirbyteMessage {
   readonly type: AirbyteMessageType;
