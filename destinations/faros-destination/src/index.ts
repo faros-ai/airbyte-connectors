@@ -44,9 +44,10 @@ class FarosDestination extends AirbyteDestination {
     catalog: AirbyteCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteMessage> {
-    // input.on('line', (line: string) => {
-    //   // We just log the lines for now
-    //   yield new AirbyteLog({level: AirbyteLogLevel.INFO, message: line});
-    // });
+    //   input.on('line', (line: string) => {
+    //     // We just log the lines for now
+    //     // this.logger.info('writing: ' + line);
+    //     // yield new AirbyteLog({level: AirbyteLogLevel.INFO, message: line});
+    //   });
   }
 }
