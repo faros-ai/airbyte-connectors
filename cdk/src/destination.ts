@@ -1,6 +1,6 @@
 import readline from 'readline';
 
-import {Connector} from './connector';
+import {AirbyteConnector} from './connector';
 import {
   AirbyteConfig,
   AirbyteState,
@@ -11,7 +11,7 @@ import {
  * Airbyte Destination
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#destination
  */
-export abstract class AirbyteDestination extends Connector {
+export abstract class AirbyteDestination extends AirbyteConnector {
 
   /**
    * Implement to define how the connector writes data to the destination

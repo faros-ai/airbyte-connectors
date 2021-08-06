@@ -1,4 +1,4 @@
-import {Connector} from './connector';
+import {AirbyteConnector} from './connector';
 import {
   AirbyteCatalog,
   AirbyteConfig,
@@ -11,7 +11,7 @@ import {
  * Airbyte Source
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
  */
-export abstract class AirbyteSource extends Connector {
+export abstract class AirbyteSource extends AirbyteConnector {
 
   /**
    * @returns An AirbyteCatalog representing the available streams and fields in

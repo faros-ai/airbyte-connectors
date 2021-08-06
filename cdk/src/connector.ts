@@ -1,6 +1,6 @@
 import {AirbyteConfig, AirbyteConnectionStatus, AirbyteSpec} from './protocol';
 
-export abstract class Connector {
+export abstract class AirbyteConnector {
   /**
    * @returns the spec for this integration. The spec is a JSON-Schema object
    * describing the required configurations (e.g: username and password)
