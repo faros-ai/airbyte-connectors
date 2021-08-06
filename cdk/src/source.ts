@@ -8,6 +8,9 @@ import {
   ConfiguredAirbyteCatalog,
 } from './protocol';
 
+/**
+ * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
+ */
 export abstract class AirbyteSource {
   abstract spec(): Promise<AirbyteSpec>;
 
