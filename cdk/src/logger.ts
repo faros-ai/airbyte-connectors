@@ -2,8 +2,8 @@ import {
   AirbyteCatalog,
   AirbyteConnectionStatus,
   AirbyteRecord,
-  AirbyteSourceState,
   AirbyteSpec,
+  AirbyteState,
 } from './protocol';
 
 export enum Level {
@@ -75,7 +75,7 @@ export class AirbyteLogger {
     });
   }
 
-  writeState(state: AirbyteSourceState): void {
+  writeState(state: AirbyteState): void {
     this.writeAirbyteObject(Type.STATE, {state: {data: state}});
   }
 }

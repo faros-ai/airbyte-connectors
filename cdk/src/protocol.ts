@@ -8,7 +8,7 @@ export type AirbyteConfig = any;
 
 export type AirbyteCatalog = any;
 
-export type AirbyteSourceState = any;
+export type AirbyteState = any;
 
 export type AirbyteSpec = any;
 

@@ -1,3 +1,5 @@
+import readline from 'readline';
+
 import {
   AirbyteCatalog,
   AirbyteConfig,
@@ -6,16 +8,16 @@ import {
   AirbyteState,
 } from './protocol';
 
-export abstract class AirbyteSource {
+export abstract class AirbyteDestination {
   abstract spec(): Promise<AirbyteSpec>;
 
   abstract check(config: AirbyteConfig): Promise<AirbyteConnectionStatus>;
 
   abstract discover(): Promise<AirbyteCatalog>;
 
-  abstract read(
+  abstract write(
     config: AirbyteConfig,
     catalog: AirbyteCatalog,
-    state?: AirbyteState
+    input: readline.Interface
   ): Promise<AirbyteState | undefined>;
 }

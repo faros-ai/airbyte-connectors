@@ -5,8 +5,8 @@ import {
   AirbyteLogger,
   AirbyteSource,
   AirbyteSourceRunner,
-  AirbyteSourceState,
   AirbyteSpec,
+  AirbyteState,
 } from 'cdk';
 import {Command} from 'commander';
 
@@ -35,8 +35,8 @@ class ExampleSource extends AirbyteSource {
   async read(
     config: AirbyteConfig,
     catalog: AirbyteCatalog,
-    state?: AirbyteSourceState
-  ): Promise<AirbyteSourceState | undefined> {
+    state?: AirbyteState
+  ): Promise<AirbyteState | undefined> {
     this.logger.info('Syncing stream: jenkins_builds');
     const numBuilds = 5;
     for (let i = 0; i < numBuilds; i++) {

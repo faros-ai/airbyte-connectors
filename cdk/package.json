@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "Airbyte CDK for JavaScript/TypeScript",
   "keywords": [
+    "airbyte",
+    "cdk",
     "faros"
   ],
   "homepage": "https://www.faros.ai",

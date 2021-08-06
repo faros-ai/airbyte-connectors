@@ -1,3 +1,5 @@
+export * from './destination';
+export * from './destination-runner';
 export * from './logger';
 export * from './protocol';
 export * from './source';
