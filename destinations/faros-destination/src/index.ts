@@ -48,9 +48,9 @@ class FarosDestination extends AirbyteDestination {
     for await (const line of input) {
       try {
         const msg = parseAirbyteMessage(line);
-        if (msg.type == AirbyteMessageType.STATE) {
+        if (msg.type === AirbyteMessageType.STATE) {
           yield msg as AirbyteState;
-        } else if (msg.type == AirbyteMessageType.RECORD) {
+        } else if (msg.type === AirbyteMessageType.RECORD) {
           this.logger.info('writing: ' + JSON.stringify(msg));
         }
       } catch (e) {
