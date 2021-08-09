@@ -46,6 +46,6 @@ do
     fi
 done
 
-case $failed in
-  (true)    exit 1;;
-esac
+if [ $failed = "true" ]; then
+  exit 1
+fi
