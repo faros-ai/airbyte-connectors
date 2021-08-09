@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v2.3.4
-      
+
       - name: Cache Node modules
         uses: actions/cache@v2.1.6
         env:
@@ -39,7 +39,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      
+
       - name: Set up Node
         uses: actions/setup-node@v2.3.0
         with:
@@ -50,3 +50,6 @@ jobs:
 
       - name: Test
         run: lerna run test-cov
+
+      - name: Source Acceptance Test
+        run: ./scripts/source-acceptance-test.sh
