@@ -31,15 +31,15 @@ do
   echo Building source image $tag
   docker build . --build-arg path=$path -t $tag
   echo Running source acceptance tests against $tag
-  docker run --rm -it \
+  docker run --rm -t \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /tmp:/tmp \
     -v $(pwd)/$path:/test_input \
     airbyte/source-acceptance-test \
     --acceptance-test-config /test_input > $log
+    cat $log
     if grep -q FAILED "$log"; then
       echo $tag failed source acceptance tests
-      cat $log
       failed=true
     else
       echo $tag passed source acceptance tests
