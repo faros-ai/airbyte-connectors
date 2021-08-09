@@ -1,6 +1,7 @@
 import {
   AirbyteCatalog,
   AirbyteConfig,
+  AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
   AirbyteLogger,
   AirbyteMessage,
@@ -9,7 +10,6 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteState,
-  ConfiguredAirbyteCatalog,
 } from 'cdk';
 import {Command} from 'commander';
 
@@ -37,7 +37,7 @@ class ExampleSource extends AirbyteSource {
   }
   async *read(
     config: AirbyteConfig,
-    catalog: ConfiguredAirbyteCatalog,
+    catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info('Syncing stream: jenkins_builds');
