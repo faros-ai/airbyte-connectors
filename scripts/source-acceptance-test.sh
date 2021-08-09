@@ -17,6 +17,7 @@ function write_standard_creds() {
   echo "$creds" > "${secrets_dir}/${cred_filename}"
 }
 
+# TODO: unhardcode this
 write_standard_creds example-source "$EXAMPLE_SOURCE_TEST_CREDS"
 
 failed=false
