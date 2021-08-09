@@ -1,6 +1,6 @@
 import {
-  AirbyteCatalog,
   AirbyteConfig,
+  AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
   AirbyteDestination,
   AirbyteDestinationRunner,
@@ -8,7 +8,6 @@ import {
   AirbyteMessageType,
   AirbyteSpec,
   AirbyteState,
-  ConfiguredAirbyteCatalog,
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
@@ -38,7 +37,7 @@ class FarosDestination extends AirbyteDestination {
 
   async *write(
     config: AirbyteConfig,
-    catalog: ConfiguredAirbyteCatalog,
+    catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteState> {
     for await (const line of input) {
