@@ -7,18 +7,17 @@ error() {
 
 function write_standard_creds() {
   local connector_name=$1
-  local creds=$2
+  local creds_name=$2
   local cred_filename=${3:-config.json}
+  local creds=${!creds_name}
 
   [ -z "$connector_name" ] && error "Empty connector name"
+  [ -z "$creds" ] && error "Env var $creds_name not set for $connector_name"
 
   local secrets_dir="sources/${connector_name}/secrets"
   mkdir -p "$secrets_dir"
   echo "$creds" > "${secrets_dir}/${cred_filename}"
 }
-
-# TODO: unhardcode this
-write_standard_creds example-source "$EXAMPLE_SOURCE_TEST_CREDS"
 
 failed=false
 
@@ -29,6 +28,13 @@ do
   tag=$(echo $path | cut -f2 -d'/')
   echo $tag
   log=$tag-test.log
+
+  # Creds should be set with env var {NAME}_TEST_CREDS
+  # e.g. EXAMPLE_SOURCE_TEST_CREDS
+  creds_env_var=$(echo "${tag//-/_}" | \
+    awk '{ str=sprintf("%s_test_creds", $0); print toupper(str) }')
+  write_standard_creds $tag $creds_env_var
+
   echo Building source image $tag
   docker build . --build-arg path=$path -t $tag
   echo Running source acceptance tests against $tag
