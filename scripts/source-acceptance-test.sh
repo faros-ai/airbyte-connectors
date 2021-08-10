@@ -24,9 +24,8 @@ failed=false
 for i in $(ls -d sources/*/)
 do
   path=$(echo ${i%%/})
-  echo Found source at $path
   tag=$(echo $path | cut -f2 -d'/')
-  echo $tag
+  echo Found source $tag
   log=$tag-acceptance-test.log
 
   # Creds should be set with env var {NAME}_TEST_CREDS
