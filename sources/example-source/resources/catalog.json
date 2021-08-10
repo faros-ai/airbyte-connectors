@@ -12,6 +12,9 @@
           "source": {
             "type": "string"
           },
+          "updated_at": {
+            "type": "integer"
+          },
           "fields": {
             "type": "object",
             "properties": {

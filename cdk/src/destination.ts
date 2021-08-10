@@ -4,7 +4,7 @@ import {AirbyteConnector} from './connector';
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
-  AirbyteState,
+  AirbyteStateMessage,
 } from './protocol';
 
 /**
@@ -19,5 +19,5 @@ export abstract class AirbyteDestination extends AirbyteConnector {
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
-  ): AsyncGenerator<AirbyteState>;
+  ): AsyncGenerator<AirbyteStateMessage>;
 }

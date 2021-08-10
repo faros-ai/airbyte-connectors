@@ -27,7 +27,7 @@ do
   echo Found source at $path
   tag=$(echo $path | cut -f2 -d'/')
   echo $tag
-  log=$tag-test.log
+  log=$tag-acceptance-test.log
 
   # Creds should be set with env var {NAME}_TEST_CREDS
   # e.g. EXAMPLE_SOURCE_TEST_CREDS
@@ -45,7 +45,7 @@ do
     airbyte/source-acceptance-test \
     --acceptance-test-config /test_input > $log
     cat $log
-    if grep -q FAILED "$log"; then
+    if grep -q -e FAILED -e ERROR "$log"; then
       echo $tag failed source acceptance tests
       failed=true
     else

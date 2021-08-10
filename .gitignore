@@ -7,3 +7,4 @@ cdk/package-lock.json
 destinations/**/package-lock.json
 sources/**/package-lock.json
 secrets/
+*-acceptance-test.log

@@ -7,7 +7,7 @@ import {
   AirbyteLogger,
   AirbyteMessageType,
   AirbyteSpec,
-  AirbyteState,
+  AirbyteStateMessage,
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
@@ -39,12 +39,12 @@ class FarosDestination extends AirbyteDestination {
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
-  ): AsyncGenerator<AirbyteState> {
+  ): AsyncGenerator<AirbyteStateMessage> {
     for await (const line of input) {
       try {
         const msg = parseAirbyteMessage(line);
         if (msg.type === AirbyteMessageType.STATE) {
-          yield msg as AirbyteState;
+          yield msg as AirbyteStateMessage;
         } else if (msg.type === AirbyteMessageType.RECORD) {
           this.logger.info('writing: ' + JSON.stringify(msg));
         }
@@ -53,6 +53,6 @@ class FarosDestination extends AirbyteDestination {
       }
     }
 
-    yield new AirbyteState({data: {cutoff: Date.now()}});
+    yield new AirbyteStateMessage({data: {cutoff: Date.now()}});
   }
 }

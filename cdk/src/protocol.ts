@@ -149,11 +149,15 @@ export class AirbyteSpec implements AirbyteMessage {
   constructor(readonly spec: Spec) {}
 }
 
-export class AirbyteState implements AirbyteMessage {
+export interface AirbyteState {
+  [stream: string]: any;
+}
+
+export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
     readonly state: {
-      data: any;
+      data: AirbyteState;
     }
   ) {}
 }
