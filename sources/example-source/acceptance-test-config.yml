@@ -2,3 +2,8 @@ connector_image: example-source
 tests:
   spec:
     - spec_path: "test_files/spec.json"
+  connection:
+    - config_path: "secrets/config.json"
+      status: "succeed"
+    - config_path: "test_files/invalid_config.json"
+      status: "failed"
