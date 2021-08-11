@@ -52,7 +52,6 @@ jobs:
         run: lerna run test-cov
 
       - name: Source Acceptance Test
-        run: ./scripts/source-acceptance-test.sh
         run: |
           for i in $(ls -d sources/*/)
           do
