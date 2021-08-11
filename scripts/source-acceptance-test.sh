@@ -19,38 +19,39 @@ function write_standard_creds() {
   echo "$creds" > "${secrets_dir}/${cred_filename}"
 }
 
+if [ -z "$1" ]; then
+  error "Source not specified"
+fi
+source=$1
+
 failed=false
+path="sources/$source"
+tag=$(echo $path | cut -f2 -d'/')
+echo Found source $tag
+log=$tag-acceptance-test.log
 
-for i in $(ls -d sources/*/)
-do
-  path=$(echo ${i%%/})
-  tag=$(echo $path | cut -f2 -d'/')
-  echo Found source $tag
-  log=$tag-acceptance-test.log
+# Creds should be set with env var {NAME}_TEST_CREDS
+# e.g. EXAMPLE_SOURCE_TEST_CREDS
+creds_env_var=$(echo "${tag//-/_}" | \
+  awk '{ str=sprintf("%s_test_creds", $0); print toupper(str) }')
+write_standard_creds $tag $creds_env_var
 
-  # Creds should be set with env var {NAME}_TEST_CREDS
-  # e.g. EXAMPLE_SOURCE_TEST_CREDS
-  creds_env_var=$(echo "${tag//-/_}" | \
-    awk '{ str=sprintf("%s_test_creds", $0); print toupper(str) }')
-  write_standard_creds $tag $creds_env_var
-
-  echo Building source image $tag
-  docker build . --build-arg path=$path -t $tag
-  echo Running source acceptance tests against $tag
-  docker run --rm -t \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /tmp:/tmp \
-    -v $(pwd)/$path:/test_input \
-    airbyte/source-acceptance-test \
-    --acceptance-test-config /test_input > $log
-    cat $log
-    if grep -q -e FAILED -e ERROR "$log"; then
-      echo $tag failed source acceptance tests
-      failed=true
-    else
-      echo $tag passed source acceptance tests
-    fi
-done
+echo Building source image $tag
+docker build . --build-arg path=$path -t $tag
+echo Running source acceptance tests against $tag
+docker run --rm -t \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp:/tmp \
+  -v $(pwd)/$path:/test_input \
+  airbyte/source-acceptance-test \
+  --acceptance-test-config /test_input > $log
+  cat $log
+  if grep -q -e FAILED -e ERROR "$log"; then
+    echo $tag failed source acceptance tests
+    failed=true
+  else
+    echo $tag passed source acceptance tests
+  fi
 
 if [ $failed = "true" ]; then
   exit 1

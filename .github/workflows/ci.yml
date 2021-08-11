@@ -53,5 +53,10 @@ jobs:
 
       - name: Source Acceptance Test
         run: ./scripts/source-acceptance-test.sh
+        run: |
+          for i in $(ls -d sources/*/)
+          do
+            ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
+          done
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
