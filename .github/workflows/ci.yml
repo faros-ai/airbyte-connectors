@@ -53,3 +53,5 @@ jobs:
 
       - name: Source Acceptance Test
         run: ./scripts/source-acceptance-test.sh
+        env:
+          EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
