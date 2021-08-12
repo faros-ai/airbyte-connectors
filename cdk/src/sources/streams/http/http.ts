@@ -1,4 +1,4 @@
-import {AirbyteStreamBase} from './core';
+import {AirbyteStreamBase} from '../core';
 
 /**
  * Base abstract class for an Airbyte Stream using the HTTP protocol. Basic
