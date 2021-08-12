@@ -1,15 +1,15 @@
 import {Command} from 'commander';
 import path from 'path';
+import readline from 'readline';
 
-import {AirbyteLogger} from './logger';
-import {AirbyteState} from './protocol';
-import {AirbyteSource} from './source';
-import {PACKAGE_VERSION} from './utils';
+import {AirbyteDestination} from './destination';
+import {AirbyteLogger} from '../logger';
+import {PACKAGE_VERSION} from '../utils';
 
-export class AirbyteSourceRunner {
+export class AirbyteDestinationRunner {
   constructor(
     private readonly logger: AirbyteLogger,
-    private readonly source: AirbyteSource
+    private readonly destination: AirbyteDestination
   ) {}
 
   mainCommand(): Command {
@@ -18,8 +18,7 @@ export class AirbyteSourceRunner {
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.checkCommand())
-      .addCommand(this.discoverCommand())
-      .addCommand(this.readCommand());
+      .addCommand(this.writeCommand());
   }
 
   specCommand(): Command {
@@ -28,7 +27,7 @@ export class AirbyteSourceRunner {
       .description('spec command')
       .alias('s')
       .action(async () => {
-        const spec = await this.source.spec();
+        const spec = await this.destination.spec();
 
         // Expected output
         this.logger.write(spec);
@@ -43,36 +42,20 @@ export class AirbyteSourceRunner {
       .requiredOption('--config <path to json>', 'config json')
       .action(async (opts: {config: string}) => {
         const config = require(path.resolve(opts.config));
-        const status = await this.source.check(config);
+        const status = await this.destination.check(config);
 
         // Expected output
         this.logger.write(status);
       });
   }
 
-  discoverCommand(): Command {
+  writeCommand(): Command {
     return new Command()
-      .command('discover')
-      .description('discover command')
-      .alias('d')
-      .requiredOption('--config <path to json>', 'config json')
-      .action(async (opts: {config: string}) => {
-        const config = require(path.resolve(opts.config));
-        const catalog = await this.source.discover(config);
-
-        // Expected output
-        this.logger.write(catalog);
-      });
-  }
-
-  readCommand(): Command {
-    return new Command()
-      .command('read')
-      .description('read command')
-      .alias('r')
+      .command('write')
+      .description('write command')
+      .alias('w')
       .requiredOption('--config <path to json>', 'config json')
       .requiredOption('--catalog <path to json>', 'catalog json')
-      .option('--state <path to json>', 'state json')
       .action(
         async (opts: {config: string; catalog: string; state?: string}) => {
           const config = require(path.resolve(opts.config));
@@ -80,13 +63,13 @@ export class AirbyteSourceRunner {
           this.logger.info('config: ' + JSON.stringify(config));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
 
-          let state: AirbyteState | undefined = undefined;
-          if (opts.state) {
-            state = require(path.resolve(opts.state));
-            this.logger.info('state: ' + JSON.stringify(state));
-          }
+          process.stdin.setEncoding('utf-8');
+          const input = readline.createInterface({
+            input: process.stdin,
+            terminal: process.stdin.isTTY,
+          });
 
-          const iter = this.source.read(config, catalog, state);
+          const iter = this.destination.write(config, catalog, input);
           for await (const message of iter) {
             this.logger.write(message);
           }

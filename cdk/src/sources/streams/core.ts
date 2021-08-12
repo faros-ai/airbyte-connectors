@@ -1,7 +1,7 @@
 import {Dictionary} from 'ts-essentials';
 
-import {AirbyteLogger} from './logger';
-import {AirbyteStream, SyncMode} from './protocol';
+import {AirbyteLogger} from '../../logger';
+import {AirbyteStream, SyncMode} from '../../protocol';
 
 export type StreamKey = string | string[] | string[][];
 /**

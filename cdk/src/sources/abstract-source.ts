@@ -1,7 +1,7 @@
 import {cloneDeep, keyBy} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {AirbyteLogger} from './logger';
+import {AirbyteLogger} from '../logger';
 import {
   AirbyteCatalogMessage,
   AirbyteConfig,
@@ -14,9 +14,9 @@ import {
   AirbyteState,
   AirbyteStateMessage,
   SyncMode,
-} from './protocol';
+} from '../protocol';
 import { AirbyteSource } from './source';
-import { AirbyteStreamBase } from './stream';
+import { AirbyteStreamBase } from './streams/core';
 
 export abstract class AirbyteAbstractSource extends AirbyteSource {
   constructor(private readonly logger: AirbyteLogger) {
