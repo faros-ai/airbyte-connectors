@@ -72,7 +72,7 @@ export interface AirbyteCatalog {
   streams: AirbyteStream[];
 }
 
-export class AirbyteCatalog implements AirbyteMessage {
+export class AirbyteCatalogMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.CATALOG;
   constructor(readonly catalog: AirbyteCatalog) {}
 }
@@ -117,7 +117,7 @@ export class AirbyteRecord implements AirbyteMessage {
   constructor(
     readonly record: {
       stream: string;
-      namespace: string;
+      namespace?: string;
       emitted_at: number;
       data: any; // TODO: get rid of 'any' and formalize the type
     }

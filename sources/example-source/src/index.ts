@@ -1,5 +1,5 @@
 import {
-  AirbyteCatalog,
+  AirbyteCatalogMessage,
   AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
@@ -37,8 +37,8 @@ class ExampleSource extends AirbyteSource {
     const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
     return new AirbyteConnectionStatus({status});
   }
-  async discover(): Promise<AirbyteCatalog> {
-    return new AirbyteCatalog(require('../resources/catalog.json'));
+  async discover(config: AirbyteConfig): Promise<AirbyteCatalogMessage> {
+    return new AirbyteCatalogMessage(require('../resources/catalog.json'));
   }
   async *read(
     config: AirbyteConfig,

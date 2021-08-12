@@ -56,8 +56,9 @@ export class AirbyteSourceRunner {
       .description('discover command')
       .alias('d')
       .requiredOption('--config <path to json>', 'config json')
-      .action(async () => {
-        const catalog = await this.source.discover();
+      .action(async (opts: {config: string}) => {
+        const config = require(path.resolve(opts.config));
+        const catalog = await this.source.discover(config);
 
         // Expected output
         this.logger.write(catalog);

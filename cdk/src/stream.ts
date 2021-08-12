@@ -25,9 +25,9 @@ export abstract class AirbyteStreamBase {
    */
   abstract readRecords(
     syncMode: SyncMode,
-    cursorField: string[],
-    streamSlice: Dictionary<any>,
-    streamState: Dictionary<any>
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any>>;
 
   /**
