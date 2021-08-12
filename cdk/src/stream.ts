@@ -61,7 +61,7 @@ export abstract class AirbyteStreamBase {
    * @returns True if this stream supports incrementally reading data
    */
   get supportsIncremental(): boolean {
-    return true;
+    return this.wrappedCursorField().length > 0;
   }
 
   private wrappedCursorField(): string[] {
