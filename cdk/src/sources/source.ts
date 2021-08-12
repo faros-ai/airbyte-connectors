@@ -1,5 +1,11 @@
-import { AirbyteConnector } from "../connector";
-import { AirbyteCatalogMessage, AirbyteConfig, AirbyteConfiguredCatalog, AirbyteMessage, AirbyteState } from "../protocol";
+import {AirbyteConnector} from '../connector';
+import {
+  AirbyteCatalogMessage,
+  AirbyteConfig,
+  AirbyteConfiguredCatalog,
+  AirbyteMessage,
+  AirbyteState,
+} from '../protocol';
 
 /**
  * Airbyte Source

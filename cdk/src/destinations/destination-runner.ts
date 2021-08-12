@@ -2,9 +2,9 @@ import {Command} from 'commander';
 import path from 'path';
 import readline from 'readline';
 
-import {AirbyteDestination} from './destination';
 import {AirbyteLogger} from '../logger';
 import {PACKAGE_VERSION} from '../utils';
+import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner {
   constructor(

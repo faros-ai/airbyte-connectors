@@ -1,9 +1,9 @@
 import {Command} from 'commander';
 import path from 'path';
-import { AirbyteLogger } from '../logger';
-import { AirbyteState } from '../protocol';
-import { PACKAGE_VERSION } from '../utils';
 
+import {AirbyteLogger} from '../logger';
+import {AirbyteState} from '../protocol';
+import {PACKAGE_VERSION} from '../utils';
 import {AirbyteSource} from './source';
 
 export class AirbyteSourceRunner {
