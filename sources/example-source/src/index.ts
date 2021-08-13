@@ -56,6 +56,8 @@ class ExampleSource extends AirbyteSource {
       return;
     }
 
+    // Process each stream in the configured catalog
+    // In this example, there's only one stream so we assume it's enabled
     const numBuilds = 5;
     for (let i = 1; i <= numBuilds; i++) {
       yield AirbyteRecord.make(
