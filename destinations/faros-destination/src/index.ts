@@ -71,6 +71,7 @@ class FarosDestination extends AirbyteDestination {
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
+    this.checkStreams(streams);
 
     for await (const line of input) {
       try {
@@ -88,6 +89,16 @@ class FarosDestination extends AirbyteDestination {
     yield new AirbyteStateMessage({data: {cutoff: Date.now()}});
   }
 
+  private checkStreams(streams: Dictionary<AirbyteConfiguredStream>): void {
+    for (const stream in streams) {
+      if (!streams[stream].destination_sync_mode) {
+        throw new VError(
+          `Undefined destination sync mode for stream ${stream}`
+        );
+      }
+    }
+  }
+
   private writeRecord(
     recordMessage: AirbyteRecord,
     streams: Dictionary<AirbyteConfiguredStream>
@@ -97,7 +108,7 @@ class FarosDestination extends AirbyteDestination {
 
     if (!stream) {
       this.logger.debug(
-        `No such stream '${record.stream}'. Skipping record: ${JSON.stringify(
+        `Undefined stream ${record.stream}. Skipping record: ${JSON.stringify(
           record
         )}`
       );
