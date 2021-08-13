@@ -8,6 +8,7 @@ import {
   AirbyteConfiguredCatalog,
   AirbyteConfiguredStream,
   AirbyteConnectionStatus,
+  AirbyteConnectionStatusValue,
   AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
@@ -18,6 +19,9 @@ import {
 import {AirbyteSource} from './source';
 import {AirbyteStreamBase} from './streams/core';
 
+/**
+ * Aibyte Source base class providing
+ */
 export abstract class AirbyteAbstractSource extends AirbyteSource {
   constructor(protected readonly logger: AirbyteLogger) {
     super();
@@ -83,17 +87,19 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
       const [succeeded, error] = await this.checkConnection(config);
       if (!succeeded) {
         return new AirbyteConnectionStatus({
-          status: 'FAILED',
+          status: AirbyteConnectionStatusValue.FAILED,
           message: this.getErrorMessage(error),
         });
       }
     } catch (error) {
       return new AirbyteConnectionStatus({
-        status: 'FAILED',
+        status: AirbyteConnectionStatusValue.FAILED,
         message: this.getErrorMessage(error),
       });
     }
-    return new AirbyteConnectionStatus({status: 'SUCCEEDED'});
+    return new AirbyteConnectionStatus({
+      status: AirbyteConnectionStatusValue.SUCCEEDED,
+    });
   }
 
   /**
@@ -149,12 +155,15 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
     const useIncremental =
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
       streamInstance.supportsIncremental;
+
     const recordGenerator = useIncremental
       ? this.readIncremental(streamInstance, configuredStream, connectorState)
       : this.readFullRefresh(streamInstance, configuredStream);
+
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
     this.logger.info(`Syncing stream ${streamName}`);
+
     for await (const record of recordGenerator) {
       if (record.type === AirbyteMessageType.RECORD) {
         recordCounter++;
@@ -195,7 +204,7 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
       );
       for await (const recordData of records) {
         recordCounter++;
-        yield this.asAirbyteRecord(streamName, recordData);
+        yield AirbyteRecord.make(streamName, recordData);
         streamState = streamInstance.getUpdatedState(streamState, recordData);
         if (checkpointInterval && recordCounter % checkpointInterval === 0) {
           yield this.checkpointState(streamName, streamState, connectorState);
@@ -220,7 +229,7 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
         slice
       );
       for await (const record of records) {
-        yield this.asAirbyteRecord(configuredStream.stream.name, record);
+        yield AirbyteRecord.make(configuredStream.stream.name, record);
       }
     }
   }
@@ -235,16 +244,5 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
     );
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
-  }
-
-  private asAirbyteRecord(
-    streamName: string,
-    data: Dictionary<any>
-  ): AirbyteRecord {
-    return new AirbyteRecord({
-      stream: streamName,
-      data,
-      emitted_at: Date.now(),
-    });
   }
 }

@@ -2,6 +2,7 @@ import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
+  AirbyteConnectionStatusValue,
   AirbyteDestination,
   AirbyteDestinationRunner,
   AirbyteLogger,
@@ -31,7 +32,10 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
-    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
+    const status =
+      config.user === 'chris'
+        ? AirbyteConnectionStatusValue.SUCCEEDED
+        : AirbyteConnectionStatusValue.FAILED;
     return new AirbyteConnectionStatus({status});
   }
 

@@ -4,6 +4,7 @@ import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
+  AirbyteConnectionStatusValue,
   AirbyteLogger,
   AirbyteMessage,
   AirbyteRecord,
@@ -15,6 +16,7 @@ import {
   AirbyteStreamBase,
 } from 'cdk';
 import {Command} from 'commander';
+import {Dictionary} from 'ts-essentials';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -51,7 +53,10 @@ class ExampleSource extends AirbyteSource {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
-    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
+    const status =
+      config.user === 'chris'
+        ? AirbyteConnectionStatusValue.SUCCEEDED
+        : AirbyteConnectionStatusValue.FAILED;
     return new AirbyteConnectionStatus({status});
   }
   async discover(config: AirbyteConfig): Promise<AirbyteCatalogMessage> {
@@ -79,8 +84,8 @@ class ExampleSource extends AirbyteSource {
     for (let i = 1; i <= numBuilds; i++) {
       yield AirbyteRecord.make(
         'jenkins_builds',
-        'faros',
-        this.newBuild(i, lastCutoff)
+        this.newBuild(i, lastCutoff),
+        'faros'
       );
     }
     this.logger.info(`Synced ${numBuilds} records from stream jenkins_builds`);
@@ -91,7 +96,7 @@ class ExampleSource extends AirbyteSource {
     });
   }
 
-  private newBuild(uid: number, cutoff: number): any {
+  private newBuild(uid: number, cutoff: number): Dictionary<any> {
     return {
       uid: uid.toString(),
       source: 'Jenkins',
