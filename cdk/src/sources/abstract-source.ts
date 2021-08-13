@@ -19,7 +19,7 @@ import {AirbyteSource} from './source';
 import {AirbyteStreamBase} from './streams/core';
 
 export abstract class AirbyteAbstractSource extends AirbyteSource {
-  constructor(private readonly logger: AirbyteLogger) {
+  constructor(protected readonly logger: AirbyteLogger) {
     super();
   }
 
