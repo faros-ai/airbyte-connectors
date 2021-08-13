@@ -5,4 +5,5 @@ export * from './protocol';
 export * from './sources/abstract-source';
 export * from './sources/source';
 export * from './sources/source-runner';
+export * from './sources/streams/core';
 export * from './utils';

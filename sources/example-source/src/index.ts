@@ -1,4 +1,5 @@
 import {
+  AirbyteAbstractSource,
   AirbyteCatalogMessage,
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -11,6 +12,7 @@ import {
   AirbyteSpec,
   AirbyteState,
   AirbyteStateMessage,
+  AirbyteStreamBase,
 } from 'cdk';
 import {Command} from 'commander';
 
@@ -23,6 +25,21 @@ export function mainCommand(): Command {
 
 interface StreamState {
   cutoff: number;
+}
+
+class ExampleSource2 extends AirbyteAbstractSource {
+  async spec(): Promise<AirbyteSpec> {
+    return new AirbyteSpec(require('../resources/spec.json'));
+  }
+  async checkConnection(config: AirbyteConfig): Promise<[boolean, any]> {
+    if (config.user === 'chris') {
+      return [true, undefined];
+    }
+    return [false, 'User is not chris'];
+  }
+  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+    throw new Error('Method not implemented.');
+  }
 }
 
 /** Example source implementation. */

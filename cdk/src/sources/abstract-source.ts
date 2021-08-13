@@ -34,7 +34,7 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
    * should describe what went wrong. The error object will be cast to string to
    * display the problem to the user.
    */
-  abstract checkConnection(config: AirbyteConfig): [boolean, any];
+  abstract checkConnection(config: AirbyteConfig): Promise<[boolean, any]>;
 
   /**
    * @param config The user-provided configuration as specified by the source's
@@ -80,7 +80,7 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
    */
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
     try {
-      const [succeeded, error] = this.checkConnection(config);
+      const [succeeded, error] = await this.checkConnection(config);
       if (!succeeded) {
         return new AirbyteConnectionStatus({
           status: 'FAILED',
