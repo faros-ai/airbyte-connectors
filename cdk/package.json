@@ -29,9 +29,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.1",
     "commander": "^8.0.0",
-    "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
     "verror": "^1.10.0"
   },
