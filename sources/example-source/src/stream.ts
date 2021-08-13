@@ -1,19 +1,22 @@
-import {Dictionary} from 'ts-essentials';
 import {AirbyteStreamBase, StreamKey, SyncMode} from 'cdk';
+import {Dictionary} from 'ts-essentials';
 
-class JenkinsBuilds extends AirbyteStreamBase {
+export class JenkinsBuilds extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    throw new Error('Method not implemented.');
+    yield {};
   }
   getJsonSchema(): Dictionary<any, string> {
-    throw new Error('Method not implemented.');
+    return require('../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
-    throw new Error('Method not implemented.');
+    return ['uid', 'source'];
+  }
+  get cursorField(): string {
+    return 'updated_at';
   }
 }

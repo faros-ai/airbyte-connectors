@@ -17,11 +17,14 @@ import {
 } from 'cdk';
 import {Command} from 'commander';
 import {Dictionary} from 'ts-essentials';
+import VError from 'verror';
+
+import {JenkinsBuilds} from './stream';
 
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new ExampleSource(logger);
+  const source = new ExampleSource2(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
@@ -33,14 +36,14 @@ class ExampleSource2 extends AirbyteAbstractSource {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, any]> {
+  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     if (config.user === 'chris') {
       return [true, undefined];
     }
-    return [false, 'User is not chris'];
+    return [false, new VError('User is not chris')];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    throw new Error('Method not implemented.');
+    return [new JenkinsBuilds(this.logger)];
   }
 }
 

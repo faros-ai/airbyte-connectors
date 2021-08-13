@@ -1,5 +1,5 @@
 import {cloneDeep, keyBy} from 'lodash';
-import {Dictionary} from 'ts-essentials';
+import VError from 'verror';
 
 import {AirbyteLogger} from '../logger';
 import {
@@ -31,14 +31,13 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
    * @param config The user-provided configuration as specified by the source's
    * spec. This usually contains information required to check connection e.g.
    * tokens, secrets and keys etc.
-   * @return A tuple of (boolean, error). If boolean is true, then the
+   * @return A tuple of (boolean, VError). If boolean is true, then the
    * connection check is successful and we can connect to the underlying data
    * source using the provided configuration. Otherwise, the input config cannot
-   * be used to connect to the underlying data source, and the "error" object
-   * should describe what went wrong. The error object will be cast to string to
-   * display the problem to the user.
+   * be used to connect to the underlying data source, and the VError should
+   * describe what went wrong. The VError message will be displayed to the user.
    */
-  abstract checkConnection(config: AirbyteConfig): Promise<[boolean, any]>;
+  abstract checkConnection(config: AirbyteConfig): Promise<[boolean, VError]>;
 
   /**
    * @param config The user-provided configuration as specified by the source's
@@ -65,19 +64,6 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
     return new AirbyteCatalogMessage({streams});
   }
 
-  private getErrorMessage(error: any): string {
-    if (typeof error === 'string') {
-      return error;
-    }
-    if (typeof error === 'number') {
-      return error.toString();
-    }
-    if (typeof error === 'boolean') {
-      return `${error}`;
-    }
-    return JSON.stringify(error);
-  }
-
   /**
    * Implements the Check Connection operation from the Airbyte Specification.
    * See https://docs.airbyte.io/architecture/airbyte-specification.
@@ -88,13 +74,14 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
       if (!succeeded) {
         return new AirbyteConnectionStatus({
           status: AirbyteConnectionStatusValue.FAILED,
-          message: this.getErrorMessage(error),
+          message: error.message,
         });
       }
     } catch (error) {
       return new AirbyteConnectionStatus({
         status: AirbyteConnectionStatusValue.FAILED,
-        message: this.getErrorMessage(error),
+        message:
+          (error as Error).message ?? `Unknown error: ${JSON.stringify(error)}`,
       });
     }
     return new AirbyteConnectionStatus({
