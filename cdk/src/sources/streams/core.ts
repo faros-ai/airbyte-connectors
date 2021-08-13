@@ -1,3 +1,4 @@
+import {snakeCase} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {AirbyteLogger} from '../../logger';
@@ -9,14 +10,14 @@ export type StreamKey = string | string[] | string[][];
  * Stream's underlying transport protocol.
  */
 export abstract class AirbyteStreamBase {
-  constructor(private readonly logger: AirbyteLogger) {}
+  constructor(protected readonly logger: AirbyteLogger) {}
 
   /**
    * @returns Stream name. By default this is the implementing class name, but
    * it can be overridden as needed.
    */
   get name(): string {
-    return this.constructor.name;
+    return snakeCase(this.constructor.name);
   }
 
   /**
@@ -145,7 +146,7 @@ export abstract class AirbyteStreamBase {
   getUpdatedState(
     currentStreamState: Dictionary<any>,
     latestRecord: Dictionary<any>
-  ): any {
+  ): Dictionary<any> {
     return {};
   }
 
