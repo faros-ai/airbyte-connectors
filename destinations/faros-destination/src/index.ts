@@ -1,17 +1,25 @@
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
+  AirbyteConfiguredStream,
   AirbyteConnectionStatus,
+  AirbyteConnectionStatusValue,
   AirbyteDestination,
   AirbyteDestinationRunner,
   AirbyteLogger,
   AirbyteMessageType,
+  AirbyteRecord,
   AirbyteSpec,
   AirbyteStateMessage,
+  DestinationSyncMode,
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
+import {FarosClient} from 'faros-feeds-sdk';
+import {keyBy} from 'lodash';
 import readline from 'readline';
+import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -22,8 +30,16 @@ export function mainCommand(): Command {
 
 /** Faros destination implementation. */
 class FarosDestination extends AirbyteDestination {
-  constructor(private readonly logger: AirbyteLogger) {
+  constructor(
+    private readonly logger: AirbyteLogger,
+    private farosClient: FarosClient = undefined
+  ) {
     super();
+  }
+
+  getFarosClient(): FarosClient {
+    if (this.farosClient) return this.farosClient;
+    throw new VError('Faros client is not initialized');
   }
 
   async spec(): Promise<AirbyteSpec> {
@@ -31,8 +47,22 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
-    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
-    return new AirbyteConnectionStatus({status});
+    try {
+      this.farosClient = new FarosClient({
+        url: config.api_url,
+        apiKey: config.api_key,
+      });
+      await this.farosClient.tenant();
+    } catch (err) {
+      return new AirbyteConnectionStatus({
+        status: AirbyteConnectionStatusValue.FAILED,
+        message: `Ivalid Faros API url or key. Error: ${err.message}`,
+      });
+    }
+
+    return new AirbyteConnectionStatus({
+      status: AirbyteConnectionStatusValue.SUCCEEDED,
+    });
   }
 
   async *write(
@@ -40,13 +70,15 @@ class FarosDestination extends AirbyteDestination {
     catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
+    const streams = keyBy(catalog.streams, (s) => s.stream.name);
+
     for await (const line of input) {
       try {
         const msg = parseAirbyteMessage(line);
         if (msg.type === AirbyteMessageType.STATE) {
           yield msg as AirbyteStateMessage;
         } else if (msg.type === AirbyteMessageType.RECORD) {
-          this.logger.info('writing: ' + JSON.stringify(msg));
+          await this.writeRecord(msg as AirbyteRecord, streams);
         }
       } catch (e) {
         this.logger.error(e);
@@ -54,5 +86,32 @@ class FarosDestination extends AirbyteDestination {
     }
 
     yield new AirbyteStateMessage({data: {cutoff: Date.now()}});
+  }
+
+  private writeRecord(
+    recordMessage: AirbyteRecord,
+    streams: Dictionary<AirbyteConfiguredStream>
+  ): Promise<void> {
+    const record = recordMessage.record;
+    const stream = streams[record.stream];
+
+    if (!stream) {
+      this.logger.debug(
+        `No such stream '${record.stream}'. Skipping record: ${JSON.stringify(
+          record
+        )}`
+      );
+      return;
+    }
+
+    this.logger.info(`Writing record: ${JSON.stringify(record)}`);
+
+    if (stream.destination_sync_mode === DestinationSyncMode.OVERWRITE) {
+      // TODO: full sync
+    } else {
+      // TODO: incremental sync
+    }
+
+    return;
   }
 }

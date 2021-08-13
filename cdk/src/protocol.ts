@@ -19,6 +19,11 @@ export enum AirbyteMessageType {
   STATE = 'STATE',
 }
 
+export enum AirbyteConnectionStatusValue {
+  SUCCEEDED = 'SUCCEEDED',
+  FAILED = 'FAILED',
+}
+
 export type AirbyteConfig = Dictionary<any>;
 
 export function parseAirbyteMessage(s: string): AirbyteMessage {
@@ -93,7 +98,7 @@ export class AirbyteConnectionStatus implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.CONNECTION_STATUS;
   constructor(
     readonly connectionStatus: {
-      status: 'SUCCEEDED' | 'FAILED';
+      status: AirbyteConnectionStatusValue;
       message?: string;
     }
   ) {}

@@ -3,6 +3,7 @@ import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteConnectionStatus,
+  AirbyteConnectionStatusValue,
   AirbyteLogger,
   AirbyteMessage,
   AirbyteRecord,
@@ -34,7 +35,11 @@ class ExampleSource extends AirbyteSource {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
-    const status = config.user === 'chris' ? 'SUCCEEDED' : 'FAILED';
+    const status =
+      config.user === 'chris'
+        ? AirbyteConnectionStatusValue.SUCCEEDED
+        : AirbyteConnectionStatusValue.FAILED;
+
     return new AirbyteConnectionStatus({status});
   }
   async discover(): Promise<AirbyteCatalog> {

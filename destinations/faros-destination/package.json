@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "cdk": "^0.1.0",
+    "faros-feeds-sdk": "^0.8.28",
     "verror": "^1.10.0"
   },
   "husky": {

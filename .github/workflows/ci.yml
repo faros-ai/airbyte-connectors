@@ -58,4 +58,5 @@ jobs:
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
           done
         env:
+          # Expose credentials for each source here
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
