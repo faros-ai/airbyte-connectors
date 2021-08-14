@@ -8,7 +8,7 @@ export class JenkinsBuilds extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return ['uid', 'source'];
   }
-  get cursorField(): string {
+  get cursorField(): string | string[] {
     return 'updated_at';
   }
 
