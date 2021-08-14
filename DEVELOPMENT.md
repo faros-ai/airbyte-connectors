@@ -50,6 +50,32 @@ the configuration. If the boolean is true, the error should be undefined.
 
 ### 4: Implement Streams
 
+A souce contains one or more streams, which correspond to entity types of the
+system your source is fetching data from. For example, a GitHub source would
+have streams for users, commits, pull requests, etc. Each stream also has its
+own arbitrary state for supporting incremental mode syncs. The `example-source`
+contains a single stream `JenkinsBuilds`, defined in `src/stream.ts` and
+specified in the `streams()` method of the source class.
+
+Each stream has a JSON-Schema object defining the schema of the records that
+this stream will fetch. This is done in the streams' `getJsonSchema()` method.
+The source combines the results of calling this method on every stream to
+create the Airbyte Catalog for the source's `Discover` command.
+
+The `primaryKey` property defines one or more fields of the record schema that
+make up the unique key of each record.
+
+The `cursorField` property defines one or more fields of the record schema that
+Airbyte will check to determine whether a record is new or updated. This is
+required to support syncing in incremental mode, and all our sources should
+support incremental mode.
+
+The `readRecords()` method defines the logic for fetching data from your
+souce's technical system.
+
+The `getUpdatedState()` method defines how to update the stream's arbitrary
+state, given the current stream state and the most recent record generated from
+`readRecords()`. The source calls this method after each record is generated.
 
 ## Testing
 
