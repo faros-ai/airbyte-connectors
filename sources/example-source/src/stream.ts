@@ -2,6 +2,16 @@ import {AirbyteStreamBase, StreamKey, SyncMode} from 'cdk';
 import {Dictionary} from 'ts-essentials';
 
 export class JenkinsBuilds extends AirbyteStreamBase {
+  getJsonSchema(): Dictionary<any, string> {
+    return require('../resources/schemas/builds.json');
+  }
+  get primaryKey(): StreamKey {
+    return ['uid', 'source'];
+  }
+  get cursorField(): string {
+    return 'updated_at';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
@@ -20,15 +30,7 @@ export class JenkinsBuilds extends AirbyteStreamBase {
       yield this.newBuild(i, lastCutoff);
     }
   }
-  getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/builds.json');
-  }
-  get primaryKey(): StreamKey {
-    return ['uid', 'source'];
-  }
-  get cursorField(): string {
-    return 'updated_at';
-  }
+
   getUpdatedState(
     currentStreamState: Dictionary<any>,
     latestRecord: Dictionary<any>
