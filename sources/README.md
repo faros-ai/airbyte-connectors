@@ -10,7 +10,11 @@
 
 The [Airbyte Specification
 doc](https://docs.airbyte.io/understanding-airbyte/airbyte-specification)
-describes each step of an Airbyte Source in detail.
+describes each step of an Airbyte Source in detail. Also read [Airbyte's
+development
+guide](https://docs.airbyte.io/connector-development#adding-a-new-connector).
+This repository will automatically release the sources as Docker images via
+Github Actions.
 
 ## Development
 
@@ -53,14 +57,14 @@ the configuration. If the boolean is true, the error should be undefined.
 A souce contains one or more streams, which correspond to entity types of the
 system your source is fetching data from. For example, a GitHub source would
 have streams for users, commits, pull requests, etc. Each stream also has its
-own arbitrary state for supporting incremental mode syncs. The `example-source`
-contains a single stream `JenkinsBuilds`, defined in `src/stream.ts` and
-specified in the `streams()` method of the source class.
+own arbitrary state for supporting incremental mode syncs. Implement your
+streams, an example of which is in the `JenkinsBuilds` class in `src/stream.ts`,
+and include them in your source via the `streams()` method of your source class.
 
 Each stream has a JSON-Schema object defining the schema of the records that
 this stream will fetch. This is done in the streams' `getJsonSchema()` method.
 The source combines the results of calling this method on every stream to
-create the Airbyte Catalog for the source's `Discover` command.
+create the Airbyte Catalog for the source's `discover` command.
 
 The `primaryKey` property defines one or more fields of the record schema that
 make up the unique key of each record.
@@ -89,9 +93,9 @@ checkpoint interval should be sufficient.
 
 ## Testing
 
-Airbyte provides a docker image that runs a series of tests to validate all the
-commands of a source.  Pull this image by running `docker pull
-airbyte/source-acceptance-test`.
+Each source must be tested against an Airbyte-provided docker image that runs a
+series of tests to validate all the commands of a source.  Pull this image by
+running `docker pull airbyte/source-acceptance-test`.
 
 This test suite requires several json files defining a valid source
 configuration and various input and expected outputs. The source-acceptance-test
@@ -112,9 +116,10 @@ create a new folder `secrets` and write your configuration to
 
 Since this configuration would likely contains sensitive values, it cannot be
 committed to the repo. To enable the Github Action Workflow to run the source
-acceptance test, add the configuration JSON as a Github Secret with the
-environment variable name `<SOURCE_NAME>_TEST_CREDS`. So for `new-source`, the
-name would be `NEW_SOURCE_TEST_CREDS`.
+acceptance test, ask one of the Faros team members to add the configuration JSON
+as a Github Repository Secret with the environment variable name
+`<SOURCE_NAME>_TEST_CREDS`. So for `new-source`, the name would be
+`NEW_SOURCE_TEST_CREDS`.
 
 The `acceptance-test-config.yml` points to several other json files that enable
 the tests for each of the source commands. See the [Source Acceptance Tests
