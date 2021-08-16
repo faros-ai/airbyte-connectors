@@ -19,7 +19,7 @@ export enum AirbyteMessageType {
   STATE = 'STATE',
 }
 
-export enum AirbyteConnectionStatusValue {
+export enum AirbyteConnectionStatus {
   SUCCEEDED = 'SUCCEEDED',
   FAILED = 'FAILED',
 }
@@ -94,11 +94,11 @@ export interface AirbyteConfiguredCatalog {
   streams: AirbyteConfiguredStream[];
 }
 
-export class AirbyteConnectionStatus implements AirbyteMessage {
+export class AirbyteConnectionStatusMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.CONNECTION_STATUS;
   constructor(
     readonly connectionStatus: {
-      status: AirbyteConnectionStatusValue;
+      status: AirbyteConnectionStatus;
       message?: string;
     }
   ) {}

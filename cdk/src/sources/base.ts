@@ -8,7 +8,7 @@ import {
   AirbyteConfiguredCatalog,
   AirbyteConfiguredStream,
   AirbyteConnectionStatus,
-  AirbyteConnectionStatusValue,
+  AirbyteConnectionStatusMessage,
   AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
@@ -20,14 +20,19 @@ import {AirbyteSource} from './source';
 import {AirbyteStreamBase} from './streams/core';
 
 /**
- * Aibyte Source base class providing
+ * Airbyte Source base class providing additional boilerplate around the Check
+ * and Discover commands, and the logic for processing the Source's streams. The
+ * user needs to implement the spec() and checkConnection() methods and the
+ * streams.
  */
-export abstract class AirbyteAbstractSource extends AirbyteSource {
+export abstract class AirbyteSourceBase extends AirbyteSource {
   constructor(protected readonly logger: AirbyteLogger) {
     super();
   }
 
   /**
+   * Validates the provided configuration by testing the configuration values
+   * against the source's technical system.
    * @param config The user-provided configuration as specified by the source's
    * spec. This usually contains information required to check connection e.g.
    * tokens, secrets and keys etc.
@@ -37,9 +42,13 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
    * be used to connect to the underlying data source, and the VError should
    * describe what went wrong. The VError message will be displayed to the user.
    */
-  abstract checkConnection(config: AirbyteConfig): Promise<[boolean, VError]>;
+  abstract checkConnection(
+    config: AirbyteConfig
+  ): Promise<[boolean, VError | undefined]>;
 
   /**
+   * Implements the streams of this source, for creating the source catalog
+   * and processing records from the source's technical system.
    * @param config The user-provided configuration as specified by the source's
    * spec. Any stream construction related operation should happen here.
    * @return A list of the streams in this source connector.
@@ -68,24 +77,24 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
    * Implements the Check Connection operation from the Airbyte Specification.
    * See https://docs.airbyte.io/architecture/airbyte-specification.
    */
-  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatus> {
+  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
     try {
       const [succeeded, error] = await this.checkConnection(config);
       if (!succeeded) {
-        return new AirbyteConnectionStatus({
-          status: AirbyteConnectionStatusValue.FAILED,
+        return new AirbyteConnectionStatusMessage({
+          status: AirbyteConnectionStatus.FAILED,
           message: error.message,
         });
       }
     } catch (error) {
-      return new AirbyteConnectionStatus({
-        status: AirbyteConnectionStatusValue.FAILED,
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
         message:
           (error as Error).message ?? `Unknown error: ${JSON.stringify(error)}`,
       });
     }
-    return new AirbyteConnectionStatus({
-      status: AirbyteConnectionStatusValue.SUCCEEDED,
+    return new AirbyteConnectionStatusMessage({
+      status: AirbyteConnectionStatus.SUCCEEDED,
     });
   }
 
@@ -149,7 +158,8 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
 
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
-    this.logger.info(`Syncing stream ${streamName}`);
+    const mode = useIncremental ? 'incremental' : 'full';
+    this.logger.info(`Syncing stream ${streamName} in ${mode} mode`);
 
     for await (const record of recordGenerator) {
       if (record.type === AirbyteMessageType.RECORD) {
@@ -176,6 +186,11 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
     }
 
     const checkpointInterval = streamInstance.stateCheckpointInterval;
+    if (checkpointInterval < 0) {
+      throw new VError(
+        `Checkpoint interval ${checkpointInterval}of ${streamName} stream must be a positive integer`
+      );
+    }
     const slices = streamInstance.streamSlices(
       SyncMode.INCREMENTAL,
       configuredStream.cursor_field,
@@ -194,10 +209,20 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
         yield AirbyteRecord.make(streamName, recordData);
         streamState = streamInstance.getUpdatedState(streamState, recordData);
         if (checkpointInterval && recordCounter % checkpointInterval === 0) {
-          yield this.checkpointState(streamName, streamState, connectorState);
+          yield this.checkpointState(
+            streamName,
+            streamState,
+            connectorState,
+            recordCounter
+          );
         }
       }
-      yield this.checkpointState(streamName, streamState, connectorState);
+      yield this.checkpointState(
+        streamName,
+        streamState,
+        connectorState,
+        recordCounter
+      );
     }
   }
 
@@ -224,11 +249,13 @@ export abstract class AirbyteAbstractSource extends AirbyteSource {
   private checkpointState(
     streamName: string,
     streamState: any,
-    connectorState: AirbyteState
+    connectorState: AirbyteState,
+    recordCounter: number
   ): AirbyteStateMessage {
     this.logger.info(
       `Setting state of ${streamName} stream to ${JSON.stringify(streamState)}`
     );
+    this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
   }

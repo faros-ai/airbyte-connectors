@@ -1,7 +1,7 @@
 import {
-  AirbyteAbstractSource,
   AirbyteConfig,
   AirbyteLogger,
+  AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -19,7 +19,7 @@ export function mainCommand(): Command {
 }
 
 /** Example source implementation. */
-class ExampleSource extends AirbyteAbstractSource {
+class ExampleSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
