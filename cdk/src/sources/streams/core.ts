@@ -6,6 +6,7 @@ import {AirbyteLogger} from '../../logger';
 import {AirbyteStream, SyncMode} from '../../protocol';
 
 export type StreamKey = string | string[] | string[][];
+
 /**
  * Base abstract class for an Airbyte Stream. Makes no assumption of the
  * Stream's underlying transport protocol.
