@@ -77,6 +77,16 @@ The `getUpdatedState()` method defines how to update the stream's arbitrary
 state, given the current stream state and the most recent record generated from
 `readRecords()`. The source calls this method after each record is generated.
 
+The `stateCheckpointInterval` property determines how often a state message is
+outputted and persisted. For example, if the interval is 100, the stream's state
+will be persisted after reading every 100 records. It is undefined by default,
+meaning the state is only persisted after all streams in the source have
+finished reading records. Alternatively, you can implement [Stream
+Slicing](https://docs.airbyte.io/connector-development/cdk-python/stream-slices)
+by overriding the `streamSlices()` method, but for most cases, setting a
+checkpoint interval should be sufficient.
+
+
 ## Testing
 
 Airbyte provides a docker image that runs a series of tests to validate all the
