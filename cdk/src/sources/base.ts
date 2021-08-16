@@ -116,7 +116,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
     for (const configuredStream of catalog.streams) {
       const streamInstance = streamInstances[configuredStream.stream.name];
       if (!streamInstance) {
-        throw new Error(
+        throw new VError(
           `The requested stream ${
             configuredStream.stream.name
           } was not found in the source. Available streams: ${Object.keys(

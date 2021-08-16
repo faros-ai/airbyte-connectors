@@ -1,5 +1,6 @@
 import {snakeCase} from 'lodash';
 import {Dictionary} from 'ts-essentials';
+import VError from 'verror';
 
 import {AirbyteLogger} from '../../logger';
 import {AirbyteStream, SyncMode} from '../../protocol';
@@ -62,6 +63,11 @@ export abstract class AirbyteStreamBase {
    * @returns True if this stream supports incrementally reading data
    */
   get supportsIncremental(): boolean {
+    if (!this.cursorField) {
+      throw new VError(
+        'Cursor field cannot be null, undefined, or empty string'
+      );
+    }
     return this.wrappedCursorField().length > 0;
   }
 
