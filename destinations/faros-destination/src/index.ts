@@ -1,7 +1,6 @@
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
-  AirbyteConfiguredStream,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteDestination,
@@ -15,11 +14,14 @@ import {
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
-import {FarosClient} from 'faros-feeds-sdk';
+import {entryUploader, EntryUploaderConfig, FarosClient} from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
+import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
+
+import {Converter, ConverterRegistry} from './converters/converter';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -47,16 +49,30 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
+    if (!config.origin) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: 'Faros origin is not set',
+      });
+    }
     try {
       this.farosClient = new FarosClient({
         url: config.api_url,
         apiKey: config.api_key,
       });
-      await this.farosClient.tenant();
-    } catch (err) {
+      await this.getFarosClient().tenant();
+    } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
-        message: `Ivalid Faros API url or key. Error: ${err.message}`,
+        message: `Ivalid Faros API url or API key. Error: ${e}`,
+      });
+    }
+    try {
+      await this.getFarosClient().graphExists(config.graph);
+    } catch (e) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: `Ivalid Faros graph ${config.graph}. Error: ${e}`,
       });
     }
 
@@ -71,58 +87,93 @@ class FarosDestination extends AirbyteDestination {
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
-    this.checkStreams(streams);
+    const converters: Dictionary<{
+      converter: Converter;
+      destinationModel: string;
+    }> = {};
 
-    for await (const line of input) {
-      try {
-        const msg = parseAirbyteMessage(line);
-        if (msg.type === AirbyteMessageType.STATE) {
-          yield msg as AirbyteStateMessage;
-        } else if (msg.type === AirbyteMessageType.RECORD) {
-          await this.writeRecord(msg as AirbyteRecord, streams);
-        }
-      } catch (e) {
-        this.logger.error(e);
-      }
-    }
-
-    yield new AirbyteStateMessage({data: {cutoff: Date.now()}});
-  }
-
-  private checkStreams(streams: Dictionary<AirbyteConfiguredStream>): void {
+    // Check streams & initialize converters
+    const deleteModelEntries = [];
     for (const stream in streams) {
-      if (!streams[stream].destination_sync_mode) {
+      const destinationSyncMode = streams[stream].destination_sync_mode;
+      if (!destinationSyncMode) {
         throw new VError(
           `Undefined destination sync mode for stream ${stream}`
         );
       }
+      const {converter, destinationModel} =
+        ConverterRegistry.getConverter(stream);
+      converters[stream] = {converter: new converter(), destinationModel};
+
+      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
+        deleteModelEntries.push(destinationModel);
+      }
     }
+
+    // Prepare entry writer
+    const entryUploaderConfig: EntryUploaderConfig = {
+      name: config.origin,
+      url: config.api_url,
+      authHeader: config.api_key,
+      expiration: config.expiration ?? '5 seconds',
+      graphName: config.graph,
+      deleteModelEntries,
+    };
+    const writer = await entryUploader(entryUploaderConfig);
+
+    let records = 0;
+    // Process input & write records
+    for await (const line of input) {
+      try {
+        const msg = parseAirbyteMessage(line);
+
+        if (msg.type === AirbyteMessageType.STATE) {
+          yield msg as AirbyteStateMessage;
+        } else if (msg.type === AirbyteMessageType.RECORD) {
+          const recordMessage = msg as AirbyteRecord;
+          if (!recordMessage.record) {
+            throw new VError('Empty record');
+          }
+          const record = recordMessage.record;
+          const stream = streams[record.stream];
+          if (!stream) {
+            throw new VError(`Undefined stream ${record.stream}`);
+          }
+          const {converter, destinationModel} = converters[record.stream];
+          if (!converter) {
+            throw new VError(`Undefined converter for stream ${record.stream}`);
+          }
+          await this.writeRecord(
+            writer,
+            converter,
+            destinationModel,
+            recordMessage
+          );
+          records++;
+        }
+      } catch (e) {
+        this.logger.error(`Error processing input ${line}: ${e}`);
+      }
+    }
+    this.logger.info(`Processed ${records} records`);
+    writer.end();
   }
 
   private writeRecord(
-    recordMessage: AirbyteRecord,
-    streams: Dictionary<AirbyteConfiguredStream>
+    writer: Writable,
+    converter: Converter,
+    destinationModel: string,
+    recordMessage: AirbyteRecord
   ): Promise<void> {
     const record = recordMessage.record;
-    const stream = streams[record.stream];
-
-    if (!stream) {
-      this.logger.debug(
-        `Undefined stream ${record.stream}. Skipping record: ${JSON.stringify(
-          record
-        )}`
-      );
-      return;
-    }
-
     this.logger.info(`Writing record: ${JSON.stringify(record)}`);
 
-    if (stream.destination_sync_mode === DestinationSyncMode.OVERWRITE) {
-      // TODO: full sync
-    } else {
-      // TODO: incremental sync
-    }
+    const converted = converter.convert(recordMessage);
+    const obj: any = {};
+    obj[destinationModel] = converted;
+    writer.write(obj);
 
+    this.logger.info(`Wrote: ${JSON.stringify(obj)}`);
     return;
   }
 }

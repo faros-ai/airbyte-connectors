@@ -7,8 +7,8 @@
       "title": "Faros Spec",
       "type": "object",
       "required": [
-        "api_url",
-        "api_key"
+        "api_key",
+        "origin"
       ],
       "additionalProperties": false,
       "properties": {
@@ -16,6 +16,7 @@
           "type": "string",
           "title": "API URL",
           "description": "The Faros API URL.",
+          "default": "https://prod.api.faros.ai",
           "examples": ["https://prod.api.faros.ai"]
         },
         "api_key": {
@@ -23,6 +24,25 @@
           "type": "string",
           "description": "The Faros API key to use to hit the API.",
           "airbyte_secret": true
+        },
+        "graph": {
+          "type": "string",
+          "title": "Graph name",
+          "description": "The Faros graph name.",
+          "default": "default"
+        },
+        "origin": {
+          "type": "string",
+          "title": "Origin name",
+          "description": "The Faros origin name used for uploaded entries.",
+          "examples": ["faros-destination-feed"]
+        },
+        "expiration": {
+          "type": "string",
+          "title": "Revision expiration",
+          "description": "The Faros revision expiration time.",
+          "default": "5 seconds",
+          "examples": ["5 seconds"]
         }
       }
     }
