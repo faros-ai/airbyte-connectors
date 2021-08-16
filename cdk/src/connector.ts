@@ -1,4 +1,8 @@
-import {AirbyteConfig, AirbyteConnectionStatus, AirbyteSpec} from './protocol';
+import {
+  AirbyteConfig,
+  AirbyteConnectionStatusMessage,
+  AirbyteSpec,
+} from './protocol';
 
 export abstract class AirbyteConnector {
   /**
@@ -15,5 +19,7 @@ export abstract class AirbyteConnector {
    *
    * @returns Whether the check succeeds or fails with an error message.
    */
-  abstract check(config: AirbyteConfig): Promise<AirbyteConnectionStatus>;
+  abstract check(
+    config: AirbyteConfig
+  ): Promise<AirbyteConnectionStatusMessage>;
 }

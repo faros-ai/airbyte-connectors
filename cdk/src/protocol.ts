@@ -19,6 +19,11 @@ export enum AirbyteMessageType {
   STATE = 'STATE',
 }
 
+export enum AirbyteConnectionStatus {
+  SUCCEEDED = 'SUCCEEDED',
+  FAILED = 'FAILED',
+}
+
 export type AirbyteConfig = Dictionary<any>;
 
 export function parseAirbyteMessage(s: string): AirbyteMessage {
@@ -72,7 +77,7 @@ export interface AirbyteCatalog {
   streams: AirbyteStream[];
 }
 
-export class AirbyteCatalog implements AirbyteMessage {
+export class AirbyteCatalogMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.CATALOG;
   constructor(readonly catalog: AirbyteCatalog) {}
 }
@@ -89,11 +94,11 @@ export interface AirbyteConfiguredCatalog {
   streams: AirbyteConfiguredStream[];
 }
 
-export class AirbyteConnectionStatus implements AirbyteMessage {
+export class AirbyteConnectionStatusMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.CONNECTION_STATUS;
   constructor(
     readonly connectionStatus: {
-      status: 'SUCCEEDED' | 'FAILED';
+      status: AirbyteConnectionStatus;
       message?: string;
     }
   ) {}
@@ -117,14 +122,17 @@ export class AirbyteRecord implements AirbyteMessage {
   constructor(
     readonly record: {
       stream: string;
-      namespace: string;
+      namespace?: string;
       emitted_at: number;
-      data: any; // TODO: get rid of 'any' and formalize the type
+      data: Dictionary<any>;
     }
   ) {}
 
-  // TODO: get rid of 'any' and formalize the type
-  static make(stream: string, namespace: string, data: any): AirbyteRecord {
+  static make(
+    stream: string,
+    data: Dictionary<any>,
+    namespace?: string
+  ): AirbyteRecord {
     return new AirbyteRecord({
       stream,
       namespace,

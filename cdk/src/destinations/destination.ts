@@ -1,11 +1,11 @@
 import readline from 'readline';
 
-import {AirbyteConnector} from './connector';
+import {AirbyteConnector} from '../connector';
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteStateMessage,
-} from './protocol';
+} from '../protocol';
 
 /**
  * Airbyte Destination

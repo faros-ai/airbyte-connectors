@@ -12,11 +12,17 @@ function write_standard_creds() {
   local creds=${!creds_name}
 
   [ -z "$connector_name" ] && error "Empty connector name"
-  [ -z "$creds" ] && error "Env var $creds_name not set for $connector_name"
 
   local secrets_dir="sources/${connector_name}/secrets"
+  local creds_file="${secrets_dir}/${cred_filename}"
+  if [ -f "$creds_file" ]; then
+    return
+  fi
+
+  [ -z "$creds" ] && error "Env var $creds_name not set for $connector_name"
+
   mkdir -p "$secrets_dir"
-  echo "$creds" > "${secrets_dir}/${cred_filename}"
+  echo "$creds" > "$creds_file"
 }
 
 if [ -z "$1" ]; then

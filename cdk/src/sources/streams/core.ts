@@ -1,7 +1,9 @@
+import {snakeCase} from 'lodash';
 import {Dictionary} from 'ts-essentials';
+import VError from 'verror';
 
-import {AirbyteLogger} from './logger';
-import {AirbyteStream, SyncMode} from './protocol';
+import {AirbyteLogger} from '../../logger';
+import {AirbyteStream, SyncMode} from '../../protocol';
 
 export type StreamKey = string | string[] | string[][];
 /**
@@ -9,14 +11,14 @@ export type StreamKey = string | string[] | string[][];
  * Stream's underlying transport protocol.
  */
 export abstract class AirbyteStreamBase {
-  constructor(private readonly logger: AirbyteLogger) {}
+  constructor(protected readonly logger: AirbyteLogger) {}
 
   /**
    * @returns Stream name. By default this is the implementing class name, but
    * it can be overridden as needed.
    */
   get name(): string {
-    return this.constructor.name;
+    return snakeCase(this.constructor.name);
   }
 
   /**
@@ -25,9 +27,9 @@ export abstract class AirbyteStreamBase {
    */
   abstract readRecords(
     syncMode: SyncMode,
-    cursorField: string[],
-    streamSlice: Dictionary<any>,
-    streamState: Dictionary<any>
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any>>;
 
   /**
@@ -61,10 +63,15 @@ export abstract class AirbyteStreamBase {
    * @returns True if this stream supports incrementally reading data
    */
   get supportsIncremental(): boolean {
-    return true;
+    return this.wrappedCursorField().length > 0;
   }
 
   private wrappedCursorField(): string[] {
+    if (!this.cursorField) {
+      throw new VError(
+        'Cursor field cannot be null, undefined, or empty string'
+      );
+    }
     return typeof this.cursorField === 'string'
       ? [this.cursorField]
       : this.cursorField;
@@ -145,7 +152,7 @@ export abstract class AirbyteStreamBase {
   getUpdatedState(
     currentStreamState: Dictionary<any>,
     latestRecord: Dictionary<any>
-  ): any {
+  ): Dictionary<any> {
     return {};
   }
 
