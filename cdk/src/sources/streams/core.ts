@@ -63,15 +63,15 @@ export abstract class AirbyteStreamBase {
    * @returns True if this stream supports incrementally reading data
    */
   get supportsIncremental(): boolean {
+    return this.wrappedCursorField().length > 0;
+  }
+
+  private wrappedCursorField(): string[] {
     if (!this.cursorField) {
       throw new VError(
         'Cursor field cannot be null, undefined, or empty string'
       );
     }
-    return this.wrappedCursorField().length > 0;
-  }
-
-  private wrappedCursorField(): string[] {
     return typeof this.cursorField === 'string'
       ? [this.cursorField]
       : this.cursorField;
