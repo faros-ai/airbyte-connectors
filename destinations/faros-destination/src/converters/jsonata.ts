@@ -6,7 +6,7 @@ import {Converter} from './converter';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter implements Converter {
-  constructor(private jsonataExpr: jsonata.Expression) {}
+  constructor(private readonly jsonataExpr: jsonata.Expression) {}
 
   convert(record: AirbyteRecord): any {
     this.jsonataExpr.evaluate(record.record);

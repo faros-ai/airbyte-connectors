@@ -1,4 +1,3 @@
-import {AirbyteRecord} from 'cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -11,6 +10,11 @@ export interface Converter {
 type Constructor<T> = {
   new (...args: any[]): T;
   readonly prototype: T;
+};
+
+type ConverterFactory = {
+  converter: Constructor<Converter>;
+  destinationModel: string;
 };
 
 /**
@@ -34,16 +38,10 @@ export function Converts(streamName: string, destinationModel: string) {
 /** Record converters registry */
 export class ConverterRegistry {
   /** All record converters by input stream name registered with Converter decorator */
-  private static convertersByStream: Dictionary<{
-    converter: Constructor<Converter>;
-    destinationModel: string;
-  }> = {};
+  private static convertersByStream: Dictionary<ConverterFactory> = {};
 
   /** Get a record converter by stream name or error if not registered */
-  static getConverter(streamName: string): {
-    converter: Constructor<Converter>;
-    destinationModel: string;
-  } {
+  static getConverter(streamName: string): ConverterFactory {
     const converter = ConverterRegistry.convertersByStream[streamName];
     if (!converter) {
       throw new VError(`No converter registered for stream ${streamName}`);
@@ -54,10 +52,7 @@ export class ConverterRegistry {
   /** Register a record converter by stream name */
   static registerConverter(
     streamName: string,
-    converter: {
-      converter: Constructor<Converter>;
-      destinationModel: string;
-    }
+    converter: ConverterFactory
   ): void {
     ConverterRegistry.convertersByStream[streamName] = converter;
   }

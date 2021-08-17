@@ -145,7 +145,7 @@ class FarosDestination extends AirbyteDestination {
       name: config.origin,
       url: config.api_url,
       authHeader: config.api_key,
-      expiration: config.expiration ?? '5 seconds',
+      expiration: config.expiration,
       graphName: config.graph,
       deleteModelEntries,
     };
@@ -156,7 +156,6 @@ class FarosDestination extends AirbyteDestination {
     for await (const line of input) {
       try {
         const msg = parseAirbyteMessage(line);
-
         if (msg.type === AirbyteMessageType.STATE) {
           yield msg as AirbyteStateMessage;
         } else if (msg.type === AirbyteMessageType.RECORD) {
@@ -189,8 +188,6 @@ class FarosDestination extends AirbyteDestination {
     recordMessage: AirbyteRecord
   ): Promise<void> {
     const stream = recordMessage.record.stream;
-    this.logger.info(`Writing record: ${JSON.stringify(recordMessage.record)}`);
-
     const record = recordMessage.record.data;
     const conv = converters[stream];
     const jsonataConv = this.jsonataConverter;
@@ -232,7 +229,6 @@ class FarosDestination extends AirbyteDestination {
       const obj: Dictionary<any> = {};
       obj[conv.destinationModel] = result;
       writer.write(obj);
-      this.logger.info(`Wrote: ${JSON.stringify(obj)}`);
     }
 
     return;
