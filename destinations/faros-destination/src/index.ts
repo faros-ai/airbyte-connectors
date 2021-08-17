@@ -29,10 +29,28 @@ import {
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 /** The main entry point. */
-export function mainCommand(): Command {
+export function mainCommand(options?: {
+  exitOverride?: boolean;
+  suppressOutput?: boolean;
+}): Command {
   const logger = new AirbyteLogger();
   const destination = new FarosDestination(logger);
-  return new AirbyteDestinationRunner(logger, destination).mainCommand();
+  const destinationRunner = new AirbyteDestinationRunner(logger, destination);
+  const program = destinationRunner.mainCommand();
+
+  if (options?.exitOverride) {
+    program.exitOverride();
+  }
+  if (options?.suppressOutput) {
+    program.configureOutput({
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      writeOut: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      writeErr: () => {},
+    });
+  }
+
+  return program;
 }
 
 /** Faros destination implementation. */
@@ -60,29 +78,6 @@ class FarosDestination extends AirbyteDestination {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: 'Faros origin is not set',
-      });
-    }
-    try {
-      this.farosClient = new FarosClient({
-        url: config.api_url,
-        apiKey: config.api_key,
-      });
-      await this.getFarosClient().tenant();
-    } catch (e) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message: `Invalid Faros API url or API key. Error: ${e}`,
-      });
-    }
-    try {
-      const exists = await this.getFarosClient().graphExists(config.graph);
-      if (!exists) {
-        throw new VError(`Faros graph ${config.graph} does not exist`);
-      }
-    } catch (e) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
       });
     }
     if (
@@ -120,6 +115,29 @@ class FarosDestination extends AirbyteDestination {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: `Failed to initialize JSONata converter. Error: ${e}`,
+      });
+    }
+    try {
+      this.farosClient = new FarosClient({
+        url: config.api_url,
+        apiKey: config.api_key,
+      });
+      await this.getFarosClient().tenant();
+    } catch (e) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: `Invalid Faros API url or API key. Error: ${e}`,
+      });
+    }
+    try {
+      const exists = await this.getFarosClient().graphExists(config.graph);
+      if (!exists) {
+        throw new VError(`Faros graph ${config.graph} does not exist`);
+      }
+    } catch (e) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
       });
     }
 

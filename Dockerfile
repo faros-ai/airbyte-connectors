@@ -4,7 +4,7 @@ WORKDIR /home/node/airbyte
 RUN npm install -g npm@7 lerna tsc
 
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
-RUN sed -i "/eslint\|husky\|jest\|lint-staged\|prettier/d" package.json
+RUN sed -i "/eslint\|husky\|jest\|lint-staged\|nock\|prettier/d" package.json
 COPY ./cdk ./cdk
 COPY ./sources ./sources
 COPY ./destinations ./destinations
