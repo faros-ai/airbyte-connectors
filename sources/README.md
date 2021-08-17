@@ -32,7 +32,7 @@ install the dependencies for all the sources, including our `new-source`.
 ### 2: Implement Spec command
 
 The first step of a source is returning specification of the configuration
-parameters required to connect to the targetted system (e.g. API credentials,
+parameters required to connect to the targeted system (e.g. API credentials,
 URLs, etc). The provided Source class does this by returning the JSON-Schema
 object in `resources/spec.json`. Update this file with your source's
 configuration parameters, making sure to protect any sensitive parameters by
@@ -54,7 +54,7 @@ the configuration. If the boolean is true, the error should be undefined.
 
 ### 4: Implement Streams
 
-A souce contains one or more streams, which correspond to entity types of the
+A source contains one or more streams, which correspond to entity types of the
 system your source is fetching data from. For example, a GitHub source would
 have streams for users, commits, pull requests, etc. Each stream also has its
 own arbitrary state for supporting incremental mode syncs. Implement your
@@ -75,7 +75,7 @@ required to support syncing in incremental mode, and all our sources should
 support incremental mode.
 
 The `readRecords()` method defines the logic for fetching data from your
-souce's technical system.
+source's technical system.
 
 The `getUpdatedState()` method defines how to update the stream's arbitrary
 state, given the current stream state and the most recent record generated from
@@ -128,7 +128,7 @@ for how those files are used. These files should be committed to the repo. If
 your test file of expected records for the "basic_read" test contains sensitive
 values because they are supposed to be written by the source, remove them from
 the test file and set the `expect_records.extra_fields` option to true in the
-yaml file. See the aformentioned test documentation for details on that option.
+yaml file. See the aforementioned test documentation for details on that option.
 
 Run the tests with the provided script from the
 root repo folder `./scripts/source-acceptance-test.sh <source>`, where

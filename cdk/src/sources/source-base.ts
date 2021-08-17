@@ -17,7 +17,7 @@ import {
   SyncMode,
 } from '../protocol';
 import {AirbyteSource} from './source';
-import {AirbyteStreamBase} from './streams/core';
+import {AirbyteStreamBase} from './streams/stream-base';
 
 /**
  * Airbyte Source base class providing additional boilerplate around the Check

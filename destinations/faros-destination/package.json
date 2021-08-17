@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "cdk": "^0.1.0",
+    "faros-feeds-sdk": "^0.8.28",
+    "jsonata": "^1.8.4",
     "verror": "^1.10.0"
   },
   "husky": {
