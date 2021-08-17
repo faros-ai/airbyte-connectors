@@ -42,7 +42,7 @@
         "default": "5 seconds",
         "examples": ["5 seconds"]
       },
-      "jsonata_expr": {
+      "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",
         "description": "JSONata expression for converting records."

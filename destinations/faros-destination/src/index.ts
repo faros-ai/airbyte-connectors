@@ -95,7 +95,7 @@ class FarosDestination extends AirbyteDestination {
       this.jsonataMode = config.jsonata_mode;
     }
     if (
-      config.jsonata_expr &&
+      config.jsonata_expression &&
       !config.jsonata_destination_model &&
       (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
         config.jsonata_mode === JSONataApplyMode.OVERRIDE)
@@ -108,8 +108,8 @@ class FarosDestination extends AirbyteDestination {
       });
     }
     try {
-      this.jsonataConverter = config.jsonata_expr
-        ? JSONataConverter.make(config.jsonata_expr)
+      this.jsonataConverter = config.jsonata_expression
+        ? JSONataConverter.make(config.jsonata_expression)
         : undefined;
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
