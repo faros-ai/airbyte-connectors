@@ -193,6 +193,7 @@ class FarosDestination extends AirbyteDestination {
     const jsonataConv = this.jsonataConverter;
     let results: ReadonlyArray<Dictionary<any>> = [];
 
+    // Apply conversion on the input record
     if (!jsonataConv) {
       if (!conv) {
         throw new VError(`Undefined converter for stream ${stream}`);
@@ -225,6 +226,7 @@ class FarosDestination extends AirbyteDestination {
       }
     }
 
+    // Write out the results to the output stream
     for (const result of results) {
       const obj: Dictionary<any> = {};
       obj[conv.destinationModel] = result;
