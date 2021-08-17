@@ -21,7 +21,11 @@ import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {Converter, ConverterRegistry} from './converters/converter';
+import {
+  Converter,
+  ConverterInstance,
+  ConverterRegistry,
+} from './converters/converter';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 /** The main entry point. */
@@ -117,10 +121,7 @@ class FarosDestination extends AirbyteDestination {
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
-    const converters: Dictionary<{
-      converter: Converter;
-      destinationModel: string;
-    }> = {};
+    const converters: Dictionary<ConverterInstance> = {};
 
     // Check streams & initialize converters
     const deleteModelEntries = [];
@@ -131,12 +132,11 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const {converter, destinationModel} =
-        ConverterRegistry.getConverter(stream);
-      converters[stream] = {converter: new converter(), destinationModel};
+      const converter = ConverterRegistry.getConverterInstance(stream);
+      converters[stream] = converter;
 
       if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(destinationModel);
+        deleteModelEntries.push(converter.destinationModel);
       }
     }
 
@@ -181,10 +181,7 @@ class FarosDestination extends AirbyteDestination {
 
   private writeRecord(
     writer: Writable,
-    converters: Dictionary<{
-      converter: Converter;
-      destinationModel: string;
-    }>,
+    converters: Dictionary<ConverterInstance>,
     recordMessage: AirbyteRecord
   ): Promise<void> {
     const stream = recordMessage.record.stream;

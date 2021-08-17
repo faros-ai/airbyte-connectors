@@ -7,13 +7,21 @@ export interface Converter {
   convert(record: Dictionary<any>): ReadonlyArray<Dictionary<any>>;
 }
 
-type Constructor<T> = {
+/** Contructor type shortcut  */
+export type Constructor<T> = {
   new (...args: any[]): T;
   readonly prototype: T;
 };
 
-type ConverterFactory = {
+/** Record converter factory to instantiate converter instances */
+export type ConverterFactory = {
   converter: Constructor<Converter>;
+  destinationModel: string;
+};
+
+/** Record converter instance */
+export type ConverterInstance = {
+  converter: Converter;
   destinationModel: string;
 };
 
@@ -40,13 +48,20 @@ export class ConverterRegistry {
   /** All record converters by input stream name registered with Converter decorator */
   private static convertersByStream: Dictionary<ConverterFactory> = {};
 
-  /** Get a record converter by stream name or error if not registered */
+  /** Get a record converter factory by stream name or error if not registered */
   static getConverter(streamName: string): ConverterFactory {
     const converter = ConverterRegistry.convertersByStream[streamName];
     if (!converter) {
       throw new VError(`No converter registered for stream ${streamName}`);
     }
     return converter;
+  }
+
+  /** Get a record converter instance by stream name or error if not registered */
+  static getConverterInstance(streamName: string): ConverterInstance {
+    const {converter, destinationModel} =
+      ConverterRegistry.getConverter(streamName);
+    return {converter: new converter(), destinationModel};
   }
 
   /** Register a record converter by stream name */
