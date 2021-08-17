@@ -99,6 +99,19 @@ class FarosDestination extends AirbyteDestination {
     if (config.jsonata_mode) {
       this.jsonataMode = config.jsonata_mode;
     }
+    if (
+      config.jsonata_expr &&
+      !config.jsonata_destination_model &&
+      (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
+        config.jsonata_mode === JSONataApplyMode.OVERRIDE)
+    ) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message:
+          `JSONata destination model must be set when JSONata mode is ` +
+          `${JSONataApplyMode.FALLBACK} or ${JSONataApplyMode.OVERRIDE}`,
+      });
+    }
     try {
       this.jsonataConverter = config.jsonata_expr
         ? JSONataConverter.make(config.jsonata_expr)
@@ -168,7 +181,12 @@ class FarosDestination extends AirbyteDestination {
           if (!stream) {
             throw new VError(`Undefined stream ${record.stream}`);
           }
-          await this.writeRecord(writer, converters, recordMessage);
+          await this.writeRecord(
+            writer,
+            converters,
+            recordMessage,
+            config.jsonata_destination_model
+          );
           records++;
         }
       } catch (e) {
@@ -182,13 +200,17 @@ class FarosDestination extends AirbyteDestination {
   private writeRecord(
     writer: Writable,
     converters: Dictionary<ConverterInstance>,
-    recordMessage: AirbyteRecord
+    recordMessage: AirbyteRecord,
+    jsonataDestinationModel: string
   ): Promise<void> {
     const stream = recordMessage.record.stream;
     const record = recordMessage.record.data;
     const conv = converters[stream];
     const jsonataConv = this.jsonataConverter;
     let results: ReadonlyArray<Dictionary<any>> = [];
+    let destinationModel: string | undefined = conv
+      ? conv.destinationModel
+      : undefined;
 
     // Apply conversion on the input record
     if (!jsonataConv) {
@@ -213,12 +235,14 @@ class FarosDestination extends AirbyteDestination {
         case JSONataApplyMode.FALLBACK:
           if (!conv) {
             results = jsonataConv.convert(record);
+            destinationModel = jsonataDestinationModel;
           } else {
             results = conv.converter.convert(record);
           }
           break;
         case JSONataApplyMode.OVERRIDE:
           results = jsonataConv.convert(record);
+          destinationModel = jsonataDestinationModel;
           break;
       }
     }
@@ -226,7 +250,7 @@ class FarosDestination extends AirbyteDestination {
     // Write out the results to the output stream
     for (const result of results) {
       const obj: Dictionary<any> = {};
-      obj[conv.destinationModel] = result;
+      obj[destinationModel] = result;
       writer.write(obj);
     }
 
