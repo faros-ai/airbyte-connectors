@@ -50,7 +50,7 @@ describe('index', () => {
     ]);
 
     mock.done();
-
+    expect(console.log).toBeCalledTimes(1);
     expect(console.log).toHaveBeenLastCalledWith(
       JSON.stringify(
         new AirbyteConnectionStatusMessage({
