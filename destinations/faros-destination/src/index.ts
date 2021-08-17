@@ -102,7 +102,7 @@ class FarosDestination extends AirbyteDestination {
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
-        message: `Invalid JSONata expression. Error: ${e}`,
+        message: `Failed to initialize JSONata converter. Error: ${e}`,
       });
     }
 
@@ -186,51 +186,54 @@ class FarosDestination extends AirbyteDestination {
       converter: Converter;
       destinationModel: string;
     }>,
-    record: AirbyteRecord
+    recordMessage: AirbyteRecord
   ): Promise<void> {
-    const stream = record.record.stream;
-    this.logger.info(`Writing record: ${JSON.stringify(record.record)}`);
+    const stream = recordMessage.record.stream;
+    this.logger.info(`Writing record: ${JSON.stringify(recordMessage.record)}`);
 
+    const record = recordMessage.record.data;
     const conv = converters[stream];
     const jsonataConv = this.jsonataConverter;
-    let result: any;
+    let results: ReadonlyArray<Dictionary<any>> = [];
 
     if (!jsonataConv) {
       if (!conv) {
         throw new VError(`Undefined converter for stream ${stream}`);
       }
-      result = conv.converter.convert(record);
+      results = conv.converter.convert(record);
     } else {
       switch (this.jsonataMode) {
         case JSONataApplyMode.BEFORE:
           if (!conv) {
             throw new VError(`Undefined converter for stream ${stream}`);
           }
-          result = conv.converter.convert(jsonataConv.convert(record));
+          results = jsonataConv.convert(record).flatMap(conv.converter.convert);
           break;
         case JSONataApplyMode.AFTER:
           if (!conv) {
             throw new VError(`Undefined converter for stream ${stream}`);
           }
-          result = jsonataConv.convert(conv.converter.convert(record));
+          results = conv.converter.convert(record).flatMap(jsonataConv.convert);
           break;
         case JSONataApplyMode.FALLBACK:
           if (!conv) {
-            result = jsonataConv.convert(record);
+            results = jsonataConv.convert(record);
           } else {
-            result = conv.converter.convert(record);
+            results = conv.converter.convert(record);
           }
           break;
         case JSONataApplyMode.OVERRIDE:
-          result = jsonataConv.convert(record);
+          results = jsonataConv.convert(record);
           break;
       }
     }
 
-    const obj: any = {};
-    obj[conv.destinationModel] = result;
-    writer.write(obj);
-    this.logger.info(`Wrote: ${JSON.stringify(obj)}`);
+    for (const result of results) {
+      const obj: Dictionary<any> = {};
+      obj[conv.destinationModel] = result;
+      writer.write(obj);
+      this.logger.info(`Wrote: ${JSON.stringify(obj)}`);
+    }
 
     return;
   }

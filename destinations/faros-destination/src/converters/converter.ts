@@ -4,8 +4,8 @@ import {VError} from 'verror';
 
 /** Record converter base class */
 export interface Converter {
-  /** Function to convert an input record to destination record */
-  convert(record: AirbyteRecord): any;
+  /** Function converts an input record to record(s) in destination canonical model schema */
+  convert(record: Dictionary<any>): ReadonlyArray<Dictionary<any>>;
 }
 
 type Constructor<T> = {
