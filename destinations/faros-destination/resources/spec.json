@@ -43,6 +43,18 @@
           "description": "The Faros revision expiration time.",
           "default": "5 seconds",
           "examples": ["5 seconds"]
+        },
+        "jsonata_expr": {
+          "type": "string",
+          "title": "JSONata expression",
+          "description": "JSONata expression for converting records."
+        },
+        "jsonata_mode": {
+          "type": "string",
+          "title": "JSONata apply mode",
+          "description": "JSONata apply mode when converting records.",
+          "default": "FALLBACK",
+          "enum": ["FALLBACK", "OVERRIDE", "BEFORE", "AFTER"]
         }
       }
     }

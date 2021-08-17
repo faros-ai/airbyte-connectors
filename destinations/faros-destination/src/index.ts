@@ -22,6 +22,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {Converter, ConverterRegistry} from './converters/converter';
+import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -34,7 +35,9 @@ export function mainCommand(): Command {
 class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
-    private farosClient: FarosClient = undefined
+    private farosClient: FarosClient = undefined,
+    private jsonataConverter: Converter | undefined = undefined,
+    private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK
   ) {
     super();
   }
@@ -64,15 +67,42 @@ class FarosDestination extends AirbyteDestination {
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
-        message: `Ivalid Faros API url or API key. Error: ${e}`,
+        message: `Invalid Faros API url or API key. Error: ${e}`,
       });
     }
     try {
-      await this.getFarosClient().graphExists(config.graph);
+      const exists = await this.getFarosClient().graphExists(config.graph);
+      if (!exists) {
+        throw new VError(`Faros graph ${config.graph} does not exist`);
+      }
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
-        message: `Ivalid Faros graph ${config.graph}. Error: ${e}`,
+        message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
+      });
+    }
+    if (
+      config.jsonata_mode &&
+      !Object.values(JSONataApplyMode).includes(config.jsonata_mode)
+    ) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message:
+          `Invalid JSONata mode ${config.jsonata_mode}. ` +
+          `Possible values are ${Object.values(JSONataApplyMode).join(',')}`,
+      });
+    }
+    if (config.jsonata_mode) {
+      this.jsonataMode = config.jsonata_mode;
+    }
+    try {
+      this.jsonataConverter = config.jsonata_expr
+        ? JSONataConverter.make(config.jsonata_expr)
+        : undefined;
+    } catch (e) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: `Invalid JSONata expression. Error: ${e}`,
       });
     }
 
@@ -139,16 +169,7 @@ class FarosDestination extends AirbyteDestination {
           if (!stream) {
             throw new VError(`Undefined stream ${record.stream}`);
           }
-          const {converter, destinationModel} = converters[record.stream];
-          if (!converter) {
-            throw new VError(`Undefined converter for stream ${record.stream}`);
-          }
-          await this.writeRecord(
-            writer,
-            converter,
-            destinationModel,
-            recordMessage
-          );
+          await this.writeRecord(writer, converters, recordMessage);
           records++;
         }
       } catch (e) {
@@ -161,19 +182,56 @@ class FarosDestination extends AirbyteDestination {
 
   private writeRecord(
     writer: Writable,
-    converter: Converter,
-    destinationModel: string,
-    recordMessage: AirbyteRecord
+    converters: Dictionary<{
+      converter: Converter;
+      destinationModel: string;
+    }>,
+    record: AirbyteRecord
   ): Promise<void> {
-    const record = recordMessage.record;
-    this.logger.info(`Writing record: ${JSON.stringify(record)}`);
+    const stream = record.record.stream;
+    this.logger.info(`Writing record: ${JSON.stringify(record.record)}`);
 
-    const converted = converter.convert(recordMessage);
+    const conv = converters[stream];
+    const jsonataConv = this.jsonataConverter;
+    let result: any;
+
+    if (!jsonataConv) {
+      if (!conv) {
+        throw new VError(`Undefined converter for stream ${stream}`);
+      }
+      result = conv.converter.convert(record);
+    } else {
+      switch (this.jsonataMode) {
+        case JSONataApplyMode.BEFORE:
+          if (!conv) {
+            throw new VError(`Undefined converter for stream ${stream}`);
+          }
+          result = conv.converter.convert(jsonataConv.convert(record));
+          break;
+        case JSONataApplyMode.AFTER:
+          if (!conv) {
+            throw new VError(`Undefined converter for stream ${stream}`);
+          }
+          result = jsonataConv.convert(conv.converter.convert(record));
+          break;
+        case JSONataApplyMode.FALLBACK:
+          if (!conv) {
+            result = jsonataConv.convert(record);
+          } else {
+            result = conv.converter.convert(record);
+          }
+          break;
+        case JSONataApplyMode.OVERRIDE:
+          result = jsonataConv.convert(record);
+          break;
+      }
+    }
+
     const obj: any = {};
-    obj[destinationModel] = converted;
+    obj[conv.destinationModel] = result;
     writer.write(obj);
-
     this.logger.info(`Wrote: ${JSON.stringify(obj)}`);
+
     return;
   }
 }
