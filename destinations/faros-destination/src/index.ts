@@ -257,7 +257,9 @@ class FarosDestination extends AirbyteDestination {
     const results = conv.converter.convert(recordMessage);
     // Write out the results to the output stream
     for (const result of results) {
-      writer.write(result);
+      const obj: Dictionary<any> = {};
+      obj[result.model] = result.record;
+      writer.write(obj);
     }
     return results.length;
   }

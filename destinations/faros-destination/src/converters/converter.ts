@@ -3,23 +3,27 @@ import {Dictionary} from 'ts-essentials';
 
 /** Record converter base class */
 export interface Converter {
-  /** Function converts an input record to record(s) in destination canonical model schema */
+  /** Function converts an input Airbyte record to destination canonical record */
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord>;
 }
 
 /**
- * Canonical record keyed by destination model, e.g
- *
+ * Canonical record with the destination model, e.g
  * {
- *   identity_Identity: {
- *     uid:          "123",
- *     fullName:     "John Doe",
- *     primaryEmail: "john@example.com"
+ *   model: 'identity_Identity',
+ *   record: {
+ *     uid:          '123',
+ *     fullName:     'John Doe',
+ *     primaryEmail: 'john@example.com'
  *   }
  * }
- *
  */
-export type DestinationRecord = Dictionary<Dictionary<any>, DestinationModel>;
+export type DestinationRecord = {
+  model: DestinationModel;
+  record: Dictionary<any>;
+};
+
+/** Destination model name, e.g identity_Identity or vcs_Commit */
 export type DestinationModel = string;
 
 /** Contructor type shortcut  */
@@ -31,13 +35,13 @@ export type Constructor<T> = {
 /** Record converter factory to instantiate converter instances */
 export type ConverterFactory = {
   converter: Constructor<Converter>;
-  destinationModels: ReadonlyArray<string>;
+  destinationModels: ReadonlyArray<DestinationModel>;
 };
 
 /** Record converter instance */
 export type ConverterInstance = {
   converter: Converter;
-  destinationModels: ReadonlyArray<string>;
+  destinationModels: ReadonlyArray<DestinationModel>;
 };
 
 /**
