@@ -184,9 +184,9 @@ class FarosDestination extends AirbyteDestination {
         this.logger.error(`Error processing input ${line}: ${e}`);
       }
     }
+    writer.end();
     this.logger.info(`Processed ${processedRecords} records`);
     this.logger.info(`Wrote ${wroteRecords} records`);
-    writer.end();
   }
 
   private initStreamsAndConverters(
@@ -209,6 +209,8 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
+
+      // Get converter instance from the registry or use JSONata converter
       let converter = ConverterRegistry.getConverterInstance(stream);
       if (!converter && !this.jsonataConverter) {
         throw new VError(`Undefined converter for stream ${stream}`);
@@ -223,6 +225,7 @@ class FarosDestination extends AirbyteDestination {
       }
       converters[stream] = converter;
 
+      // Prepare destination models to delete if any
       if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
         deleteModelEntries.push(...converter.destinationModels);
       }
