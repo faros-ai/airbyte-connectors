@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'cdk';
 import jsonata from 'jsonata';
+import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {Converter} from './converter';
@@ -8,8 +9,12 @@ import {Converter} from './converter';
 export class JSONataConverter implements Converter {
   constructor(private readonly jsonataExpr: jsonata.Expression) {}
 
-  convert(record: AirbyteRecord): any {
-    this.jsonataExpr.evaluate(record.record);
+  convert(record: AirbyteRecord): ReadonlyArray<Dictionary<any>> {
+    let res = this.jsonataExpr.evaluate(record.record);
+    if (res && !Array.isArray(res)) {
+      res = [res];
+    }
+    return res;
   }
 
   static make(expression: string): JSONataConverter {
@@ -32,6 +37,4 @@ export class JSONataConverter implements Converter {
 export enum JSONataApplyMode {
   FALLBACK = 'FALLBACK',
   OVERRIDE = 'OVERRIDE',
-  BEFORE = 'BEFORE',
-  AFTER = 'AFTER',
 }

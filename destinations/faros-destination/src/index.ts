@@ -96,15 +96,13 @@ class FarosDestination extends AirbyteDestination {
     }
     if (
       config.jsonata_expression &&
-      !config.jsonata_destination_model &&
-      (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
-        config.jsonata_mode === JSONataApplyMode.OVERRIDE)
+      (!Array.isArray(config.jsonata_destination_models) ||
+        !config.jsonata_destination_models.length)
     ) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message:
-          `JSONata destination model must be set when JSONata mode is ` +
-          `${JSONataApplyMode.FALLBACK} or ${JSONataApplyMode.OVERRIDE}`,
+          'JSONata destination models must be set when using JSONata expression',
       });
     }
     try {
@@ -163,11 +161,22 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const converter = ConverterRegistry.getConverterInstance(stream);
+      let converter = ConverterRegistry.getConverterInstance(stream);
+      if (!converter && !this.jsonataConverter) {
+        throw new VError(`Undefined converter for stream ${stream}`);
+      } else if (
+        this.jsonataMode === JSONataApplyMode.OVERRIDE ||
+        (this.jsonataMode === JSONataApplyMode.FALLBACK && !converter)
+      ) {
+        converter = {
+          converter: this.jsonataConverter,
+          destinationModels: config.jsonata_destination_models,
+        };
+      }
       converters[stream] = converter;
 
       if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(converter.destinationModel);
+        deleteModelEntries.push(...converter.destinationModels);
       }
     }
 
@@ -199,12 +208,7 @@ class FarosDestination extends AirbyteDestination {
           if (!stream) {
             throw new VError(`Undefined stream ${record.stream}`);
           }
-          await this.writeRecord(
-            writer,
-            converters,
-            recordMessage,
-            config.jsonata_destination_model
-          );
+          await this.writeRecord(writer, converters, recordMessage);
           records++;
         }
       } catch (e) {
@@ -218,60 +222,21 @@ class FarosDestination extends AirbyteDestination {
   private writeRecord(
     writer: Writable,
     converters: Dictionary<ConverterInstance>,
-    recordMessage: AirbyteRecord,
-    jsonataDestinationModel: string
+    recordMessage: AirbyteRecord
   ): Promise<void> {
     const stream = recordMessage.record.stream;
-    const record = recordMessage.record.data;
     const conv = converters[stream];
-    const jsonataConv = this.jsonataConverter;
-    let results: ReadonlyArray<Dictionary<any>> = [];
-    let destinationModel: string | undefined = conv
-      ? conv.destinationModel
-      : undefined;
 
     // Apply conversion on the input record
-    if (!jsonataConv) {
-      if (!conv) {
-        throw new VError(`Undefined converter for stream ${stream}`);
-      }
-      results = conv.converter.convert(record);
-    } else {
-      switch (this.jsonataMode) {
-        case JSONataApplyMode.BEFORE:
-          if (!conv) {
-            throw new VError(`Undefined converter for stream ${stream}`);
-          }
-          results = jsonataConv.convert(record).flatMap(conv.converter.convert);
-          break;
-        case JSONataApplyMode.AFTER:
-          if (!conv) {
-            throw new VError(`Undefined converter for stream ${stream}`);
-          }
-          results = conv.converter.convert(record).flatMap(jsonataConv.convert);
-          break;
-        case JSONataApplyMode.FALLBACK:
-          if (!conv) {
-            results = jsonataConv.convert(record);
-            destinationModel = jsonataDestinationModel;
-          } else {
-            results = conv.converter.convert(record);
-          }
-          break;
-        case JSONataApplyMode.OVERRIDE:
-          results = jsonataConv.convert(record);
-          destinationModel = jsonataDestinationModel;
-          break;
-      }
+    if (!conv) {
+      throw new VError(`Undefined converter for stream ${stream}`);
     }
+    const results = conv.converter.convert(recordMessage);
 
     // Write out the results to the output stream
     for (const result of results) {
-      const obj: Dictionary<any> = {};
-      obj[destinationModel] = result;
-      writer.write(obj);
+      writer.write(result);
     }
-
     return;
   }
 }

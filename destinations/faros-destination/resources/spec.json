@@ -54,11 +54,14 @@
         "default": "FALLBACK",
         "enum": ["FALLBACK", "OVERRIDE", "BEFORE", "AFTER"]
       },
-      "jsonata_destination_model": {
-        "type": "string",
-        "title": "Destination model type",
-        "description": "Destination model type when using JSONata expression in FALLBACK or OVERRIDE modes.",
-        "examples": ["ims_Incident", "vcs_Commit"]
+      "jsonata_destination_models": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Destination models",
+        "description": "Destination models when using JSONata expression.",
+        "examples": ["[\"ims_Incident\", \"vcs_Commit\"]"]
       }
     }
   }
