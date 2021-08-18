@@ -1,67 +1,64 @@
 {
-  "type": "SPEC",
-  "spec": {
   "documentationUrl": "https://docs.faros.ai",
-    "connectionSpecification": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Faros Spec",
-      "type": "object",
-      "required": [
-        "api_key",
-        "origin"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "api_url": {
-          "type": "string",
-          "title": "API URL",
-          "description": "The Faros API URL.",
-          "default": "https://prod.api.faros.ai",
-          "examples": ["https://prod.api.faros.ai"]
-        },
-        "api_key": {
-          "title": "API Key",
-          "type": "string",
-          "description": "The Faros API key to use to hit the API.",
-          "airbyte_secret": true
-        },
-        "graph": {
-          "type": "string",
-          "title": "Graph name",
-          "description": "The Faros graph name.",
-          "default": "default"
-        },
-        "origin": {
-          "type": "string",
-          "title": "Origin name",
-          "description": "The Faros origin name used for uploaded entries.",
-          "examples": ["faros-destination-feed"]
-        },
-        "expiration": {
-          "type": "string",
-          "title": "Revision expiration",
-          "description": "The Faros revision expiration time.",
-          "default": "5 seconds",
-          "examples": ["5 seconds"]
-        },
-        "jsonata_expr": {
-          "type": "string",
-          "title": "JSONata expression",
-          "description": "JSONata expression for converting records."
-        },
-        "jsonata_mode": {
-          "type": "string",
-          "title": "JSONata apply mode",
-          "description": "JSONata apply mode when converting records.",
-          "default": "FALLBACK",
-          "enum": ["FALLBACK", "OVERRIDE", "BEFORE", "AFTER"]
-        },
-        "jsonata_destination_model": {
-          "type": "string",
-          "title": "Destination model type",
-          "description": "Destination model type when using JSONata expression in FALLBACK or OVERRIDE modes.",
-          "examples": ["ims_Incident", "vcs_Commit"]
-        }
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Faros Destination Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "origin"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "api_url": {
+        "type": "string",
+        "title": "API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai",
+        "examples": ["https://prod.api.faros.ai"]
+      },
+      "api_key": {
+        "title": "API Key",
+        "type": "string",
+        "description": "The Faros API key to use to hit the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "type": "string",
+        "title": "Graph name",
+        "description": "The Faros graph name.",
+        "default": "default"
+      },
+      "origin": {
+        "type": "string",
+        "title": "Origin name",
+        "description": "The Faros origin name used for uploaded entries.",
+        "examples": ["faros-destination-feed"]
+      },
+      "expiration": {
+        "type": "string",
+        "title": "Revision expiration",
+        "description": "The Faros revision expiration time.",
+        "default": "5 seconds",
+        "examples": ["5 seconds"]
+      },
+      "jsonata_expression": {
+        "type": "string",
+        "title": "JSONata expression",
+        "description": "JSONata expression for converting records."
+      },
+      "jsonata_mode": {
+        "type": "string",
+        "title": "JSONata apply mode",
+        "description": "JSONata apply mode when converting records.",
+        "default": "FALLBACK",
+        "enum": ["FALLBACK", "OVERRIDE", "BEFORE", "AFTER"]
+      },
+      "jsonata_destination_model": {
+        "type": "string",
+        "title": "Destination model type",
+        "description": "Destination model type when using JSONata expression in FALLBACK or OVERRIDE modes.",
+        "examples": ["ims_Incident", "vcs_Commit"]
       }
     }
   }

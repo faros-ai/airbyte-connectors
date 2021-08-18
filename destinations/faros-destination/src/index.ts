@@ -29,10 +29,28 @@ import {
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 /** The main entry point. */
-export function mainCommand(): Command {
+export function mainCommand(options?: {
+  exitOverride?: boolean;
+  suppressOutput?: boolean;
+}): Command {
   const logger = new AirbyteLogger();
   const destination = new FarosDestination(logger);
-  return new AirbyteDestinationRunner(logger, destination).mainCommand();
+  const destinationRunner = new AirbyteDestinationRunner(logger, destination);
+  const program = destinationRunner.mainCommand();
+
+  if (options?.exitOverride) {
+    program.exitOverride();
+  }
+  if (options?.suppressOutput) {
+    program.configureOutput({
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      writeOut: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      writeErr: () => {},
+    });
+  }
+
+  return program;
 }
 
 /** Faros destination implementation. */
@@ -62,6 +80,43 @@ class FarosDestination extends AirbyteDestination {
         message: 'Faros origin is not set',
       });
     }
+    if (
+      config.jsonata_mode &&
+      !Object.values(JSONataApplyMode).includes(config.jsonata_mode)
+    ) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message:
+          `Invalid JSONata mode ${config.jsonata_mode}. ` +
+          `Possible values are ${Object.values(JSONataApplyMode).join(',')}`,
+      });
+    }
+    if (config.jsonata_mode) {
+      this.jsonataMode = config.jsonata_mode;
+    }
+    if (
+      config.jsonata_expression &&
+      !config.jsonata_destination_model &&
+      (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
+        config.jsonata_mode === JSONataApplyMode.OVERRIDE)
+    ) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message:
+          `JSONata destination model must be set when JSONata mode is ` +
+          `${JSONataApplyMode.FALLBACK} or ${JSONataApplyMode.OVERRIDE}`,
+      });
+    }
+    try {
+      this.jsonataConverter = config.jsonata_expression
+        ? JSONataConverter.make(config.jsonata_expression)
+        : undefined;
+    } catch (e) {
+      return new AirbyteConnectionStatusMessage({
+        status: AirbyteConnectionStatus.FAILED,
+        message: `Failed to initialize JSONata converter. Error: ${e}`,
+      });
+    }
     try {
       this.farosClient = new FarosClient({
         url: config.api_url,
@@ -83,43 +138,6 @@ class FarosDestination extends AirbyteDestination {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
-      });
-    }
-    if (
-      config.jsonata_mode &&
-      !Object.values(JSONataApplyMode).includes(config.jsonata_mode)
-    ) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message:
-          `Invalid JSONata mode ${config.jsonata_mode}. ` +
-          `Possible values are ${Object.values(JSONataApplyMode).join(',')}`,
-      });
-    }
-    if (config.jsonata_mode) {
-      this.jsonataMode = config.jsonata_mode;
-    }
-    if (
-      config.jsonata_expr &&
-      !config.jsonata_destination_model &&
-      (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
-        config.jsonata_mode === JSONataApplyMode.OVERRIDE)
-    ) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message:
-          `JSONata destination model must be set when JSONata mode is ` +
-          `${JSONataApplyMode.FALLBACK} or ${JSONataApplyMode.OVERRIDE}`,
-      });
-    }
-    try {
-      this.jsonataConverter = config.jsonata_expr
-        ? JSONataConverter.make(config.jsonata_expr)
-        : undefined;
-    } catch (e) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message: `Failed to initialize JSONata converter. Error: ${e}`,
       });
     }
 
