@@ -10,10 +10,9 @@ export class JSONataConverter implements Converter {
   constructor(private readonly jsonataExpr: jsonata.Expression) {}
 
   convert(record: AirbyteRecord): ReadonlyArray<Dictionary<any>> {
-    let res = this.jsonataExpr.evaluate(record.record);
-    if (res && !Array.isArray(res)) {
-      res = [res];
-    }
+    const res = this.jsonataExpr.evaluate(record.record);
+    if (!res) return [];
+    if (!Array.isArray(res)) return [res];
     return res;
   }
 
