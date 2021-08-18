@@ -72,7 +72,8 @@ make up the unique key of each record.
 The `cursorField` property defines one or more fields of the record schema that
 Airbyte will check to determine whether a record is new or updated. This is
 required to support syncing in incremental mode, and all our sources should
-support incremental mode.
+support incremental mode unless the data from source's technical system doesn't
+have any timestamp-like fields that describe the freshness of each record.
 
 The `readRecords()` method defines the logic for fetching data from your
 souce's technical system.
