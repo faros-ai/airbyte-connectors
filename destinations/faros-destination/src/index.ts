@@ -255,12 +255,14 @@ class FarosDestination extends AirbyteDestination {
   ): number {
     // Apply conversion on the input record
     const results = conv.converter.convert(recordMessage);
+
     // Write out the results to the output stream
     for (const result of results) {
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
       writer.write(obj);
     }
+
     return results.length;
   }
 }
