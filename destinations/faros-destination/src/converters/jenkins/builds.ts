@@ -1,11 +1,10 @@
 import {AirbyteRecord} from 'cdk';
-import {Dictionary} from 'ts-essentials';
 
-import {Converter, Converts} from '../converter';
+import {Converter, Converts, DestinationRecord} from '../converter';
 
 @Converts('jenkins_builds', ['cicd_Build'])
 export class GithubCommits implements Converter {
-  convert(record: AirbyteRecord): ReadonlyArray<Dictionary<any>> {
+  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     return [];
   }
 }

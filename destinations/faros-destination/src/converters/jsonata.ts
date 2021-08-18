@@ -1,15 +1,14 @@
 import {AirbyteRecord} from 'cdk';
 import jsonata from 'jsonata';
-import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {Converter} from './converter';
+import {Converter, DestinationRecord} from './converter';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter implements Converter {
   constructor(private readonly jsonataExpr: jsonata.Expression) {}
 
-  convert(record: AirbyteRecord): ReadonlyArray<Dictionary<any>> {
+  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const res = this.jsonataExpr.evaluate(record.record);
     if (!res) return [];
     if (!Array.isArray(res)) return [res];

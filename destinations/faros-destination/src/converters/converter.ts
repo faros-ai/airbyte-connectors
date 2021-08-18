@@ -4,8 +4,23 @@ import {Dictionary} from 'ts-essentials';
 /** Record converter base class */
 export interface Converter {
   /** Function converts an input record to record(s) in destination canonical model schema */
-  convert(record: AirbyteRecord): ReadonlyArray<Dictionary<any>>;
+  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord>;
 }
+
+/**
+ * Canonical record keyed by destination model, e.g
+ *
+ * {
+ *   identity_Identity: {
+ *     uid:          "123",
+ *     fullName:     "John Doe",
+ *     primaryEmail: "john@example.com"
+ *   }
+ * }
+ *
+ */
+export type DestinationRecord = Dictionary<Dictionary<any>, DestinationModel>;
+export type DestinationModel = string;
 
 /** Contructor type shortcut  */
 export type Constructor<T> = {
