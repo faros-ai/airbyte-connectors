@@ -52,7 +52,7 @@
         "title": "JSONata apply mode",
         "description": "JSONata apply mode when converting records.",
         "default": "FALLBACK",
-        "enum": ["FALLBACK", "OVERRIDE", "BEFORE", "AFTER"]
+        "enum": ["FALLBACK", "OVERRIDE"]
       },
       "jsonata_destination_models": {
         "type": "array",
