@@ -1,6 +1,7 @@
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
+  AirbyteConfiguredStream,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteDestination,
@@ -149,6 +150,53 @@ class FarosDestination extends AirbyteDestination {
     catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
+    const {streams, converters, deleteModelEntries} =
+      this.initStreamsAndConverters(config, catalog);
+
+    const writer = await this.createEntryUploader(config, deleteModelEntries);
+
+    let processedRecords = 0;
+    let wroteRecords = 0;
+    // Process input & write records
+    for await (const line of input) {
+      try {
+        const msg = parseAirbyteMessage(line);
+        if (msg.type === AirbyteMessageType.STATE) {
+          yield msg as AirbyteStateMessage;
+        } else if (msg.type === AirbyteMessageType.RECORD) {
+          const recordMessage = msg as AirbyteRecord;
+          if (!recordMessage.record) {
+            throw new VError('Empty record');
+          }
+          const record = recordMessage.record;
+          const stream = streams[record.stream];
+          if (!stream) {
+            throw new VError(`Undefined stream ${record.stream}`);
+          }
+          const converter = converters[record.stream];
+          if (!stream) {
+            throw new VError(`Undefined converter for stream ${stream}`);
+          }
+          wroteRecords += this.writeRecord(writer, converter, recordMessage);
+          processedRecords++;
+        }
+      } catch (e) {
+        this.logger.error(`Error processing input ${line}: ${e}`);
+      }
+    }
+    this.logger.info(`Processed ${processedRecords} records`);
+    this.logger.info(`Wrote ${wroteRecords} records`);
+    writer.end();
+  }
+
+  private initStreamsAndConverters(
+    config: AirbyteConfig,
+    catalog: AirbyteConfiguredCatalog
+  ): {
+    streams: Dictionary<AirbyteConfiguredStream>;
+    converters: Dictionary<ConverterInstance>;
+    deleteModelEntries: ReadonlyArray<string>;
+  } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const converters: Dictionary<ConverterInstance> = {};
 
@@ -179,8 +227,13 @@ class FarosDestination extends AirbyteDestination {
         deleteModelEntries.push(...converter.destinationModels);
       }
     }
+    return {streams, converters, deleteModelEntries};
+  }
 
-    // Prepare entry writer
+  private async createEntryUploader(
+    config: AirbyteConfig,
+    deleteModelEntries: ReadonlyArray<string>
+  ): Promise<Writable> {
     const entryUploaderConfig: EntryUploaderConfig = {
       name: config.origin,
       url: config.api_url,
@@ -189,54 +242,20 @@ class FarosDestination extends AirbyteDestination {
       graphName: config.graph,
       deleteModelEntries,
     };
-    const writer = await entryUploader(entryUploaderConfig);
-
-    let records = 0;
-    // Process input & write records
-    for await (const line of input) {
-      try {
-        const msg = parseAirbyteMessage(line);
-        if (msg.type === AirbyteMessageType.STATE) {
-          yield msg as AirbyteStateMessage;
-        } else if (msg.type === AirbyteMessageType.RECORD) {
-          const recordMessage = msg as AirbyteRecord;
-          if (!recordMessage.record) {
-            throw new VError('Empty record');
-          }
-          const record = recordMessage.record;
-          const stream = streams[record.stream];
-          if (!stream) {
-            throw new VError(`Undefined stream ${record.stream}`);
-          }
-          await this.writeRecord(writer, converters, recordMessage);
-          records++;
-        }
-      } catch (e) {
-        this.logger.error(`Error processing input ${line}: ${e}`);
-      }
-    }
-    this.logger.info(`Processed ${records} records`);
-    writer.end();
+    return await entryUploader(entryUploaderConfig);
   }
 
   private writeRecord(
     writer: Writable,
-    converters: Dictionary<ConverterInstance>,
+    conv: ConverterInstance,
     recordMessage: AirbyteRecord
-  ): Promise<void> {
-    const stream = recordMessage.record.stream;
-    const conv = converters[stream];
-
+  ): number {
     // Apply conversion on the input record
-    if (!conv) {
-      throw new VError(`Undefined converter for stream ${stream}`);
-    }
     const results = conv.converter.convert(recordMessage);
-
     // Write out the results to the output stream
     for (const result of results) {
       writer.write(result);
     }
-    return;
+    return results.length;
   }
 }
