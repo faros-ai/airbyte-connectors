@@ -1,6 +1,7 @@
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
+  AirbyteConfiguredStream,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteDestination,
@@ -96,15 +97,13 @@ class FarosDestination extends AirbyteDestination {
     }
     if (
       config.jsonata_expression &&
-      !config.jsonata_destination_model &&
-      (config.jsonata_mode === JSONataApplyMode.FALLBACK ||
-        config.jsonata_mode === JSONataApplyMode.OVERRIDE)
+      (!Array.isArray(config.jsonata_destination_models) ||
+        !config.jsonata_destination_models.length)
     ) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message:
-          `JSONata destination model must be set when JSONata mode is ` +
-          `${JSONataApplyMode.FALLBACK} or ${JSONataApplyMode.OVERRIDE}`,
+          'JSONata destination models must be set when using JSONata expression',
       });
     }
     try {
@@ -151,38 +150,13 @@ class FarosDestination extends AirbyteDestination {
     catalog: AirbyteConfiguredCatalog,
     input: readline.Interface
   ): AsyncGenerator<AirbyteStateMessage> {
-    const streams = keyBy(catalog.streams, (s) => s.stream.name);
-    const converters: Dictionary<ConverterInstance> = {};
+    const {streams, converters, deleteModelEntries} =
+      this.initStreamsAndConverters(config, catalog);
 
-    // Check streams & initialize converters
-    const deleteModelEntries = [];
-    for (const stream in streams) {
-      const destinationSyncMode = streams[stream].destination_sync_mode;
-      if (!destinationSyncMode) {
-        throw new VError(
-          `Undefined destination sync mode for stream ${stream}`
-        );
-      }
-      const converter = ConverterRegistry.getConverterInstance(stream);
-      converters[stream] = converter;
+    const writer = await this.createEntryUploader(config, deleteModelEntries);
 
-      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(converter.destinationModel);
-      }
-    }
-
-    // Prepare entry writer
-    const entryUploaderConfig: EntryUploaderConfig = {
-      name: config.origin,
-      url: config.api_url,
-      authHeader: config.api_key,
-      expiration: config.expiration,
-      graphName: config.graph,
-      deleteModelEntries,
-    };
-    const writer = await entryUploader(entryUploaderConfig);
-
-    let records = 0;
+    let processedRecords = 0;
+    let wroteRecords = 0;
     // Process input & write records
     for await (const line of input) {
       try {
@@ -199,79 +173,96 @@ class FarosDestination extends AirbyteDestination {
           if (!stream) {
             throw new VError(`Undefined stream ${record.stream}`);
           }
-          await this.writeRecord(
-            writer,
-            converters,
-            recordMessage,
-            config.jsonata_destination_model
-          );
-          records++;
+          const converter = converters[record.stream];
+          if (!stream) {
+            throw new VError(`Undefined converter for stream ${stream}`);
+          }
+          wroteRecords += this.writeRecord(writer, converter, recordMessage);
+          processedRecords++;
         }
       } catch (e) {
         this.logger.error(`Error processing input ${line}: ${e}`);
       }
     }
-    this.logger.info(`Processed ${records} records`);
     writer.end();
+    this.logger.info(`Processed ${processedRecords} records`);
+    this.logger.info(`Wrote ${wroteRecords} records`);
+  }
+
+  private initStreamsAndConverters(
+    config: AirbyteConfig,
+    catalog: AirbyteConfiguredCatalog
+  ): {
+    streams: Dictionary<AirbyteConfiguredStream>;
+    converters: Dictionary<ConverterInstance>;
+    deleteModelEntries: ReadonlyArray<string>;
+  } {
+    const streams = keyBy(catalog.streams, (s) => s.stream.name);
+    const converters: Dictionary<ConverterInstance> = {};
+
+    // Check streams & initialize converters
+    const deleteModelEntries = [];
+    for (const stream in streams) {
+      const destinationSyncMode = streams[stream].destination_sync_mode;
+      if (!destinationSyncMode) {
+        throw new VError(
+          `Undefined destination sync mode for stream ${stream}`
+        );
+      }
+
+      // Get converter instance from the registry or use JSONata converter
+      let converter = ConverterRegistry.getConverterInstance(stream);
+      if (!converter && !this.jsonataConverter) {
+        throw new VError(`Undefined converter for stream ${stream}`);
+      } else if (
+        this.jsonataMode === JSONataApplyMode.OVERRIDE ||
+        (this.jsonataMode === JSONataApplyMode.FALLBACK && !converter)
+      ) {
+        converter = {
+          converter: this.jsonataConverter,
+          destinationModels: config.jsonata_destination_models,
+        };
+      }
+      converters[stream] = converter;
+
+      // Prepare destination models to delete if any
+      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
+        deleteModelEntries.push(...converter.destinationModels);
+      }
+    }
+    return {streams, converters, deleteModelEntries};
+  }
+
+  private async createEntryUploader(
+    config: AirbyteConfig,
+    deleteModelEntries: ReadonlyArray<string>
+  ): Promise<Writable> {
+    const entryUploaderConfig: EntryUploaderConfig = {
+      name: config.origin,
+      url: config.api_url,
+      authHeader: config.api_key,
+      expiration: config.expiration,
+      graphName: config.graph,
+      deleteModelEntries,
+    };
+    return await entryUploader(entryUploaderConfig);
   }
 
   private writeRecord(
     writer: Writable,
-    converters: Dictionary<ConverterInstance>,
-    recordMessage: AirbyteRecord,
-    jsonataDestinationModel: string
-  ): Promise<void> {
-    const stream = recordMessage.record.stream;
-    const record = recordMessage.record.data;
-    const conv = converters[stream];
-    const jsonataConv = this.jsonataConverter;
-    let results: ReadonlyArray<Dictionary<any>> = [];
-    let destinationModel: string | undefined = conv
-      ? conv.destinationModel
-      : undefined;
-
+    conv: ConverterInstance,
+    recordMessage: AirbyteRecord
+  ): number {
     // Apply conversion on the input record
-    if (!jsonataConv) {
-      if (!conv) {
-        throw new VError(`Undefined converter for stream ${stream}`);
-      }
-      results = conv.converter.convert(record);
-    } else {
-      switch (this.jsonataMode) {
-        case JSONataApplyMode.BEFORE:
-          if (!conv) {
-            throw new VError(`Undefined converter for stream ${stream}`);
-          }
-          results = jsonataConv.convert(record).flatMap(conv.converter.convert);
-          break;
-        case JSONataApplyMode.AFTER:
-          if (!conv) {
-            throw new VError(`Undefined converter for stream ${stream}`);
-          }
-          results = conv.converter.convert(record).flatMap(jsonataConv.convert);
-          break;
-        case JSONataApplyMode.FALLBACK:
-          if (!conv) {
-            results = jsonataConv.convert(record);
-            destinationModel = jsonataDestinationModel;
-          } else {
-            results = conv.converter.convert(record);
-          }
-          break;
-        case JSONataApplyMode.OVERRIDE:
-          results = jsonataConv.convert(record);
-          destinationModel = jsonataDestinationModel;
-          break;
-      }
-    }
+    const results = conv.converter.convert(recordMessage);
 
     // Write out the results to the output stream
     for (const result of results) {
       const obj: Dictionary<any> = {};
-      obj[destinationModel] = result;
+      obj[result.model] = result.record;
       writer.write(obj);
     }
 
-    return;
+    return results.length;
   }
 }
