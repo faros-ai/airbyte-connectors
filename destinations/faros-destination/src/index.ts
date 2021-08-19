@@ -238,7 +238,7 @@ class FarosDestination extends AirbyteDestination {
       converters[stream] = converter;
 
       this.logger.info(
-        `Prepared ${converter.constructor.name} converter for ${stream} stream`
+        `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
 
       // Prepare destination models to delete if any
