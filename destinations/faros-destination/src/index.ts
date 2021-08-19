@@ -18,11 +18,11 @@ import {Command} from 'commander';
 import {entryUploader, EntryUploaderConfig, FarosClient} from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
-import {Stream, Writable} from 'stream';
+import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {Converter, StreamName} from './converters/converter';
+import {Converter} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
@@ -73,19 +73,14 @@ class FarosDestination extends AirbyteDestination {
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
     try {
-      this.configCheck(config);
+      this.init(config);
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: e.message,
       });
     }
-
     try {
-      this.farosClient = new FarosClient({
-        url: config.api_url,
-        apiKey: config.api_key,
-      });
       await this.getFarosClient().tenant();
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
@@ -104,13 +99,12 @@ class FarosDestination extends AirbyteDestination {
         message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
       });
     }
-
     return new AirbyteConnectionStatusMessage({
       status: AirbyteConnectionStatus.SUCCEEDED,
     });
   }
 
-  private configCheck(config: AirbyteConfig): void {
+  private init(config: AirbyteConfig): void {
     if (!config.origin) {
       throw new VError('Faros origin is not set');
     }
@@ -145,6 +139,14 @@ class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize JSONata converter. Error: ${e}`);
     }
+    try {
+      this.farosClient = new FarosClient({
+        url: config.api_url,
+        apiKey: config.api_key,
+      });
+    } catch (e) {
+      throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
+    }
   }
 
   async *write(
@@ -153,7 +155,7 @@ class FarosDestination extends AirbyteDestination {
     input: readline.Interface,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
-    this.configCheck(config);
+    this.init(config);
 
     const {streams, converters, deleteModelEntries} =
       this.initStreamsAndConverters(catalog);
