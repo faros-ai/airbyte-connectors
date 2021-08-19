@@ -200,7 +200,11 @@ class FarosDestination extends AirbyteDestination {
       }
     }
     this.logger.info(`Processed ${processedRecords} records`);
-    this.logger.info(`Wrote ${wroteRecords} records`);
+    if (dryRun) {
+      this.logger.info(
+        `Would write ${wroteRecords} records, but dry run is enabled`
+      );
+    } else this.logger.info(`Wrote ${wroteRecords} records`);
   }
 
   private initStreamsAndConverters(catalog: AirbyteConfiguredCatalog): {
@@ -271,9 +275,8 @@ class FarosDestination extends AirbyteDestination {
 
     // Write out the results to the output stream
     for (const result of results) {
-      // Add stream name as source if source is missing
       if (!result.record['source']) {
-        result.record['source'] = recordMessage.record.stream;
+        result.record['source'] = converter.streamName.prefix;
       }
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;

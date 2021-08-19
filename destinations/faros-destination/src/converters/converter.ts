@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'cdk';
 import {Dictionary} from 'ts-essentials';
-import {VError} from 'verror';
 
 /** Record converter */
 export interface Converter {

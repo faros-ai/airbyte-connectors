@@ -40,7 +40,9 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     // TODO: assert results
-    // expect(await read(cli.stdout)).toBe('');
+    const res = await read(cli.stdout);
+    // expect(res).toBe('');
+    console.log(res);
 
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
