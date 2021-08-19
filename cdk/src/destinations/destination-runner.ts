@@ -56,12 +56,18 @@ export class AirbyteDestinationRunner {
       .alias('w')
       .requiredOption('--config <path to json>', 'config json')
       .requiredOption('--catalog <path to json>', 'catalog json')
+      .option(
+        '--dry-run',
+        'dry run to skip writing records to destination',
+        false
+      )
       .action(
-        async (opts: {config: string; catalog: string; state?: string}) => {
+        async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
           this.logger.info('config: ' + JSON.stringify(config));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
+          this.logger.info('dryRun: ' + opts.dryRun);
 
           process.stdin.setEncoding('utf-8');
           const input = readline.createInterface({
@@ -69,9 +75,21 @@ export class AirbyteDestinationRunner {
             terminal: process.stdin.isTTY,
           });
 
-          const iter = this.destination.write(config, catalog, input);
-          for await (const message of iter) {
-            this.logger.write(message);
+          try {
+            const iter = this.destination.write(
+              config,
+              catalog,
+              input,
+              opts.dryRun
+            );
+            for await (const message of iter) {
+              this.logger.write(message);
+            }
+          } catch (e) {
+            this.logger.error(e);
+            throw e;
+          } finally {
+            input.close();
           }
         }
       );

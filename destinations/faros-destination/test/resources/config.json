@@ -1,6 +1,0 @@
-{
-  "origin": "faros-destination-test",
-  "api_url": "https://localhost:9191/api",
-  "api_key": "test-api-key",
-  "graph": "test-graph"
-}

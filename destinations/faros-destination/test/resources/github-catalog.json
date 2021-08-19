@@ -1,0 +1,34 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "github__assignees"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "github__collaborators"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "github__commits"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "github__pull_requests"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "github__something_else"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

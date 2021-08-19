@@ -2,11 +2,23 @@ import {AirbyteRecord} from 'cdk';
 import jsonata from 'jsonata';
 import {VError} from 'verror';
 
-import {Converter, DestinationRecord} from './converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamName,
+} from './converter';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter implements Converter {
-  constructor(private readonly jsonataExpr: jsonata.Expression) {}
+  constructor(
+    private readonly jsonataExpr: jsonata.Expression,
+    readonly destinationModels: ReadonlyArray<DestinationModel>
+  ) {}
+
+  get streamName(): StreamName {
+    return {prefix: '', name: ''}; // not necessary
+  }
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const res = this.jsonataExpr.evaluate(record.record);
@@ -15,10 +27,16 @@ export class JSONataConverter implements Converter {
     return res;
   }
 
-  static make(expression: string): JSONataConverter {
+  static make(
+    expression: string,
+    destinationModels: ReadonlyArray<DestinationModel>
+  ): JSONataConverter {
+    if (!Array.isArray(destinationModels) || !destinationModels.length) {
+      throw new VError('Destination models cannot be empty');
+    }
     try {
       const jsonataExpr = jsonata(expression);
-      return new JSONataConverter(jsonataExpr);
+      return new JSONataConverter(jsonataExpr, destinationModels);
     } catch (error) {
       throw new VError(
         error,

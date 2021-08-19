@@ -3,60 +3,62 @@ import {
   AirbyteConnectionStatusMessage,
   AirbyteSpec,
 } from 'cdk/lib';
-import nock from 'nock';
+import fs from 'fs';
+import {getLocal} from 'mockttp';
+import os from 'os';
 
-import * as sut from '../src/index';
+import {CLI, read} from './cli';
+import {tempConfig} from './temp';
 
 describe('index', () => {
-  const apiUrl = 'https://localhost:9191/api';
-  const program = sut.mainCommand({exitOverride: true, suppressOutput: true});
-  const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+  const mockttp = getLocal();
+  let configPath: string;
 
-  afterEach(() => {
-    consoleSpy.mockClear();
+  beforeEach(async () => {
+    await mockttp.start({startPort: 30000, endPort: 50000});
+    configPath = await tempConfig(mockttp.url);
   });
 
-  afterAll(() => {
-    consoleSpy.mockRestore();
+  afterEach(async () => {
+    await mockttp.stop();
+    fs.unlinkSync(configPath);
   });
 
   test('help', async () => {
-    expect(() => program.parse(['node', 'test', '--help'])).toThrow(
-      '(outputHelp)'
-    );
+    const cli = await CLI.runWith(['--help']);
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toMatch(/^Usage: main*/);
+    expect(await cli.wait()).toBe(0);
   });
 
   test('spec', async () => {
-    await program.parseAsync(['node', 'main', 'spec']);
-    expect(console.log).toBeCalledTimes(1);
-    expect(console.log).toHaveBeenLastCalledWith(
-      JSON.stringify(new AirbyteSpec(require('../resources/spec.json')))
+    const cli = await CLI.runWith(['spec']);
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toBe(
+      JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
+        os.EOL
     );
+    expect(await cli.wait()).toBe(0);
   });
 
   test('check', async () => {
-    const mock = nock(apiUrl)
+    await mockttp
       .get('/users/me')
-      .reply(200, {tenantId: '1'})
+      .thenReply(200, JSON.stringify({tenantId: '1'}));
+    await mockttp
       .get('/graphs/test-graph/statistics')
-      .reply(200, {});
+      .thenReply(200, JSON.stringify({}));
 
-    await program.parseAsync([
-      'node',
-      'main',
-      'check',
-      '--config',
-      'test/resources/config.json',
-    ]);
+    const cli = await CLI.runWith(['check', '--config', configPath]);
 
-    mock.done();
-    expect(console.log).toBeCalledTimes(1);
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toBe(
       JSON.stringify(
         new AirbyteConnectionStatusMessage({
           status: AirbyteConnectionStatus.SUCCEEDED,
         })
-      )
+      ) + os.EOL
     );
+    expect(await cli.wait()).toBe(0);
   });
 });

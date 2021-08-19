@@ -18,6 +18,7 @@ export abstract class AirbyteDestination extends AirbyteConnector {
   abstract write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    input: readline.Interface
+    input: readline.Interface,
+    dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage>;
 }
