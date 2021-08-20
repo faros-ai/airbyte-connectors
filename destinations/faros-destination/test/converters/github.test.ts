@@ -6,7 +6,7 @@ import {CLI, read} from './../cli';
 import {githubLog, readTestResourceFile} from './data';
 
 describe('github', () => {
-  const mockttp = getLocal({debug: false, recordTraffic: true});
+  const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/github-catalog.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
@@ -40,11 +40,16 @@ describe('github', () => {
         })
       );
 
-    const revisionEntries = await mockttp
+    let entriesSize = 0;
+    await mockttp
       .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
-      .thenReply(204);
+      .thenCallback(async (r) => {
+        entriesSize = r.body.buffer.length;
+        return {statusCode: 204};
+      });
+    // .thenReply(204);
 
-    const closeRevision = await mockttp
+    await mockttp
       .patch(`/graphs/test-graph/revisions/${revisionId}`)
       .withBody(JSON.stringify({status: 'active'}))
       .once()
@@ -60,21 +65,10 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    console.log(stdout);
-    expect(stdout).toMatch('Processed 82 records');
+    expect(stdout).toMatch('Processed 98 records');
     expect(stdout).toMatch('Wrote 13 records');
-
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
-
-    const entries = await revisionEntries.getSeenRequests();
-    entries.forEach(async (r) =>
-      console.log((await r.body.getDecodedBuffer()).length)
-    );
-
-    const closeRevisionEntries = await closeRevision.getSeenRequests();
-    closeRevisionEntries.forEach(async (r) =>
-      console.log(await r.body.getJson())
-    );
+    expect(entriesSize).toBeGreaterThan(0);
   });
 });

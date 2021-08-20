@@ -70,16 +70,12 @@ export class AirbyteDestinationRunner {
           this.logger.info('dryRun: ' + opts.dryRun);
 
           process.stdin.setEncoding('utf-8');
-          const input = readline.createInterface({
-            input: process.stdin,
-            terminal: process.stdin.isTTY,
-          });
 
           try {
             const iter = this.destination.write(
               config,
               catalog,
-              input,
+              process.stdin,
               opts.dryRun
             );
             for await (const message of iter) {
@@ -89,7 +85,7 @@ export class AirbyteDestinationRunner {
             this.logger.error(e);
             throw e;
           } finally {
-            input.close();
+            process.stdin.destroy();
           }
         }
       );

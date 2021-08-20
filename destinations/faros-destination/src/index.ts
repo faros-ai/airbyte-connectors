@@ -7,6 +7,7 @@ import {
   AirbyteDestination,
   AirbyteDestinationRunner,
   AirbyteLogger,
+  AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
   AirbyteSpec,
@@ -157,7 +158,7 @@ class FarosDestination extends AirbyteDestination {
   async *write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    input: readline.Interface,
+    stdin: NodeJS.ReadStream,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
@@ -181,37 +182,45 @@ class FarosDestination extends AirbyteDestination {
     await withEntryUploader(entryUploaderConfig, async (writer) => {
       let processedRecords = 0;
       let wroteRecords = 0;
-      // Process input & write records
-      for await (const line of input) {
-        try {
-          const msg = parseAirbyteMessage(line);
-          if (msg.type === AirbyteMessageType.STATE) {
-            stateMessages.push(msg as AirbyteStateMessage);
-          } else if (msg.type === AirbyteMessageType.RECORD) {
-            const recordMessage = msg as AirbyteRecord;
-            if (!recordMessage.record) {
-              throw new VError('Empty record');
+      const input = readline.createInterface({
+        input: process.stdin,
+        terminal: process.stdin.isTTY,
+      });
+      try {
+        // Process input & write records
+        for await (const line of input) {
+          try {
+            const msg = parseAirbyteMessage(line);
+            if (msg.type === AirbyteMessageType.STATE) {
+              stateMessages.push(msg as AirbyteStateMessage);
+            } else if (msg.type === AirbyteMessageType.RECORD) {
+              const recordMessage = msg as AirbyteRecord;
+              if (!recordMessage.record) {
+                throw new VError('Empty record');
+              }
+              const record = recordMessage.record;
+              const stream = streams[record.stream];
+              if (!stream) {
+                throw new VError(`Undefined stream ${record.stream}`);
+              }
+              const converter = this.getConverter(record.stream);
+              wroteRecords += this.writeRecord(
+                writer,
+                converter,
+                recordMessage,
+                dryRun
+              );
+              processedRecords++;
             }
-            const record = recordMessage.record;
-            const stream = streams[record.stream];
-            if (!stream) {
-              throw new VError(`Undefined stream ${record.stream}`);
-            }
-            const converter = this.getConverter(record.stream);
-            wroteRecords += this.writeRecord(
-              writer,
-              converter,
-              recordMessage,
-              dryRun
-            );
-            processedRecords++;
+          } catch (e) {
+            this.logger.error(`Error processing input: ${e}`);
+            throw e;
           }
-        } catch (e) {
-          this.logger.error(`Error processing input: ${e}`);
-          throw e;
         }
+      } finally {
+        input.close();
+        writer.end();
       }
-      writer.end();
 
       this.logger.info(`Processed ${processedRecords} records`);
       if (dryRun) {
