@@ -2,7 +2,7 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteSpec,
-} from 'cdk/lib';
+} from 'cdk';
 import fs from 'fs';
 import {getLocal} from 'mockttp';
 import os from 'os';

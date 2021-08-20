@@ -28,20 +28,15 @@ describe('github', () => {
       .withQuery({schema: 'canonical'})
       .thenReply(200, JSON.stringify({}));
 
-    await mockttp.post('/graphs/test-graph/revisions').thenReply(
-      200,
-      JSON.stringify({
-        entrySchema: graphSchema,
-        revision: {
-          uid: revisionId,
-          lock: {
-            state: {
-              checkpoint: 123,
-            },
-          },
-        },
-      })
-    );
+    await mockttp
+      .post('/graphs/test-graph/revisions')
+      .thenReply(
+        200,
+        JSON.stringify({
+          entrySchema: graphSchema,
+          revision: {uid: revisionId, lock: {state: {}}},
+        })
+      );
 
     await mockttp
       .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
