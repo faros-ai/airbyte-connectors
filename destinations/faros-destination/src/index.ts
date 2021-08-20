@@ -182,6 +182,10 @@ class FarosDestination extends AirbyteDestination {
     await withEntryUploader(entryUploaderConfig, async (writer) => {
       let processedRecords = 0;
       let wroteRecords = 0;
+
+      // readline.createInterface() will start to consume the input stream once invoked.
+      // Having asynchronous operations between interface creation and asynchronous iteration may
+      // result in missed lines.
       const input = readline.createInterface({
         input: process.stdin,
         terminal: process.stdin.isTTY,
