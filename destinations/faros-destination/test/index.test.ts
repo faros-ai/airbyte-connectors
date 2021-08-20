@@ -11,7 +11,7 @@ import {CLI, read} from './cli';
 import {tempConfig} from './temp';
 
 describe('index', () => {
-  const mockttp = getLocal({debug: false});
+  const mockttp = getLocal({debug: true});
   let configPath: string;
 
   beforeEach(async () => {

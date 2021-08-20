@@ -16,14 +16,13 @@ import {
 } from 'cdk';
 import {Command} from 'commander';
 import {
-  entryUploader,
   EntryUploaderConfig,
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
-import {Stream, Writable} from 'stream';
+import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
