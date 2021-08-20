@@ -6,7 +6,7 @@ import {CLI, read} from './../cli';
 import {githubLog, readTestResourceFile} from './data';
 
 describe('github', () => {
-  const mockttp = getLocal({debug: false});
+  const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/github-catalog.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
@@ -26,23 +26,28 @@ describe('github', () => {
     await mockttp
       .post('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
+      .once()
       .thenReply(200, JSON.stringify({}));
 
-    await mockttp.post('/graphs/test-graph/revisions').thenReply(
-      200,
-      JSON.stringify({
-        entrySchema: graphSchema,
-        revision: {uid: revisionId, lock: {state: {}}},
-      })
-    );
-
     await mockttp
+      .post('/graphs/test-graph/revisions')
+      .once()
+      .thenReply(
+        200,
+        JSON.stringify({
+          entrySchema: graphSchema,
+          revision: {uid: revisionId, lock: {state: {}}},
+        })
+      );
+
+    const revisionEntries = await mockttp
       .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
       .thenReply(204);
 
-    await mockttp
+    const closeRevision = await mockttp
       .patch(`/graphs/test-graph/revisions/${revisionId}`)
       .withBody(JSON.stringify({status: 'active'}))
+      .once()
       .thenReply(204);
 
     const cli = await CLI.runWith([
@@ -54,12 +59,22 @@ describe('github', () => {
     ]);
     cli.stdin.end(githubLog, 'utf8');
 
-    // TODO: assert results
-    const res = await read(cli.stdout);
-    // expect(res).toBe('');
-    // console.log(res);
+    const stdout = await read(cli.stdout);
+    console.log(stdout);
+    expect(stdout).toMatch('Processed 82 records');
+    expect(stdout).toMatch('Wrote 13 records');
 
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
+
+    const entries = await revisionEntries.getSeenRequests();
+    entries.forEach(async (r) =>
+      console.log((await r.body.getDecodedBuffer()).length)
+    );
+
+    const closeRevisionEntries = await closeRevision.getSeenRequests();
+    closeRevisionEntries.forEach(async (r) =>
+      console.log(await r.body.getJson())
+    );
   });
 });

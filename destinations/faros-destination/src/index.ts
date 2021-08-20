@@ -21,6 +21,7 @@ import {
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
+import pino from 'pino';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -164,6 +165,8 @@ class FarosDestination extends AirbyteDestination {
     const {streams, deleteModelEntries} =
       this.initStreamsCheckConverters(catalog);
 
+    // TODO: we should make Airbyte Logger compatible with Pino Logger
+    const logger = pino({name: 'faros-destination', level: 'debug'});
     const entryUploaderConfig: EntryUploaderConfig = {
       name: config.origin,
       url: config.api_url,
@@ -171,6 +174,7 @@ class FarosDestination extends AirbyteDestination {
       expiration: config.expiration,
       graphName: config.graph,
       deleteModelEntries,
+      logger,
     };
     const stateMessages: AirbyteStateMessage[] = [];
 
@@ -205,10 +209,10 @@ class FarosDestination extends AirbyteDestination {
         } catch (e) {
           this.logger.error(`Error processing input: ${e}`);
           throw e;
-        } finally {
-          writer.end();
         }
       }
+      writer.end();
+
       this.logger.info(`Processed ${processedRecords} records`);
       if (dryRun) {
         this.logger.info(
