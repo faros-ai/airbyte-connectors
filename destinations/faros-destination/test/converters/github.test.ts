@@ -64,7 +64,6 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    console.log(stdout);
     expect(stdout).toMatch('Processed 98 records');
     expect(stdout).toMatch('Wrote 13 records');
     expect(await read(cli.stderr)).toBe('');
