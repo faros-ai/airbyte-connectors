@@ -17,15 +17,15 @@ export interface Converter {
 /**
  * Stream name with source prefix, e.g
  * {
- *   prefix: 'github',
+ *   source: 'github',
  *   name:   'commits'
  * }
  */
 export class StreamName {
-  constructor(readonly prefix: string, readonly name: string) {}
+  constructor(readonly source: string, readonly name: string) {}
 
   stringify(): string {
-    return `${this.prefix}__${this.name}`;
+    return `${this.source}__${this.name}`;
   }
 
   static fromString(s: string): StreamName {
@@ -34,7 +34,9 @@ export class StreamName {
     }
     const res = s.split('__');
     if (res.length < 2) {
-      throw new VError(`Invalid stream name ${s}: missing prefix`);
+      throw new VError(
+        `Invalid stream name ${s}: missing source prefix (e.g 'github__')`
+      );
     }
     return new StreamName(res[res.length - 2], res[res.length - 1]);
   }

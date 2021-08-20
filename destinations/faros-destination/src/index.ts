@@ -277,7 +277,7 @@ class FarosDestination extends AirbyteDestination {
     // Write out the results to the output stream
     for (const result of results) {
       if (!result.record['source']) {
-        result.record['source'] = converter.streamName.prefix;
+        result.record['source'] = converter.streamName.source;
       }
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;

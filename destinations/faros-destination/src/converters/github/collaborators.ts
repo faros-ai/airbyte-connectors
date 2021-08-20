@@ -45,7 +45,7 @@ export class GithubCollaborators implements Converter {
           name: user.name ?? null,
           htmlUrl: user.html_url ?? null,
           type,
-          source: this.streamName.prefix,
+          source: this.streamName.source,
         },
       },
     ];
