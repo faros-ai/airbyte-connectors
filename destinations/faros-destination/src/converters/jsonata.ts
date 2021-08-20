@@ -17,7 +17,7 @@ export class JSONataConverter implements Converter {
   ) {}
 
   get streamName(): StreamName {
-    return {prefix: '', name: ''}; // not necessary
+    return new StreamName('', ''); // not necessary
   }
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {

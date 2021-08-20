@@ -23,11 +23,11 @@ import {
 } from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
-import {Writable} from 'stream';
+import {Stream, Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {Converter} from './converters/converter';
+import {Converter, StreamName} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
@@ -162,8 +162,8 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
 
-    const {streams, converters, deleteModelEntries} =
-      this.initStreamsAndConverters(catalog);
+    const {streams, deleteModelEntries} =
+      this.initStreamsCheckConverters(catalog);
 
     const entryUploaderConfig: EntryUploaderConfig = {
       name: config.origin,
@@ -194,12 +194,7 @@ class FarosDestination extends AirbyteDestination {
             if (!stream) {
               throw new VError(`Undefined stream ${record.stream}`);
             }
-            const converter = converters[record.stream];
-            if (!converter) {
-              throw new VError(
-                `Undefined converter for stream ${record.stream}`
-              );
-            }
+            const converter = this.getConverter(record.stream);
             wroteRecords += this.writeRecord(
               writer,
               converter,
@@ -229,13 +224,11 @@ class FarosDestination extends AirbyteDestination {
     for (const state of stateMessages) yield state;
   }
 
-  private initStreamsAndConverters(catalog: AirbyteConfiguredCatalog): {
+  private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
-    converters: Dictionary<Converter>;
     deleteModelEntries: ReadonlyArray<string>;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
-    const converters: Dictionary<Converter> = {};
 
     // Check streams & initialize converters
     const deleteModelEntries = [];
@@ -247,18 +240,7 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      // Get converter instance from the registry or use JSONata converter
-      let converter = ConverterRegistry.getConverter(stream);
-      if (!converter && !this.jsonataConverter) {
-        throw new VError(`Undefined converter for stream ${stream}`);
-      } else if (
-        this.jsonataMode === JSONataApplyMode.OVERRIDE ||
-        (this.jsonataMode === JSONataApplyMode.FALLBACK && !converter)
-      ) {
-        converter = this.jsonataConverter;
-      }
-      converters[stream] = converter;
-
+      const converter = this.getConverter(stream);
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
@@ -268,7 +250,19 @@ class FarosDestination extends AirbyteDestination {
         deleteModelEntries.push(...converter.destinationModels);
       }
     }
-    return {streams, converters, deleteModelEntries};
+    return {streams, deleteModelEntries};
+  }
+
+  private getConverter(stream: string): Converter {
+    const converter = ConverterRegistry.getConverter(
+      StreamName.fromString(stream)
+    );
+    if (!converter && !this.jsonataConverter) {
+      throw new VError(`Undefined converter for stream ${stream}`);
+    }
+    return this.jsonataMode === JSONataApplyMode.OVERRIDE
+      ? this.jsonataConverter ?? converter
+      : converter ?? this.jsonataConverter;
   }
 
   private writeRecord(

@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'cdk';
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 /** Record converter */
 export interface Converter {
@@ -20,10 +21,24 @@ export interface Converter {
  *   name:   'commits'
  * }
  */
-export type StreamName = {
-  readonly prefix: string;
-  readonly name: string;
-};
+export class StreamName {
+  constructor(readonly prefix: string, readonly name: string) {}
+
+  stringify(): string {
+    return `${this.prefix}__${this.name}`;
+  }
+
+  static fromString(s: string): StreamName {
+    if (!s) {
+      throw new VError(`Empty stream name ${s}`);
+    }
+    const res = s.split('__');
+    if (res.length < 2) {
+      throw new VError(`Invalid stream name ${s}: missing prefix`);
+    }
+    return new StreamName(res[res.length - 2], res[res.length - 1]);
+  }
+}
 
 /**
  * Canonical record with the destination model, e.g

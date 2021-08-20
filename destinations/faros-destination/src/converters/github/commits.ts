@@ -1,9 +1,14 @@
 import {AirbyteRecord} from 'cdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamName,
+} from '../converter';
 
 export class GithubCommits implements Converter {
-  readonly streamName = {prefix: 'github', name: 'commits'};
+  readonly streamName = new StreamName('github', 'commits');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Commit',
     'vcs_BranchCommitAssociation',

@@ -1,9 +1,14 @@
 import {AirbyteRecord} from 'cdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamName,
+} from '../converter';
 
 export class GithubPullRequests implements Converter {
-  readonly streamName = {prefix: 'github', name: 'pull_requests'};
+  readonly streamName = new StreamName('github', 'pull_requests');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'tms_TaskAssignment',

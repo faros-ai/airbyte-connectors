@@ -1,9 +1,14 @@
 import {AirbyteRecord} from 'cdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamName,
+} from '../converter';
 
 export class GithubCollaborators implements Converter {
-  readonly streamName = {prefix: 'github', name: 'collaborators'};
+  readonly streamName = new StreamName('github', 'collaborators');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_User',
     'vcs_Membership',

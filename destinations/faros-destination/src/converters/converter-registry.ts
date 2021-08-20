@@ -17,10 +17,10 @@ export class ConverterRegistry {
    * @param streamName stream name
    * @returns converter if any
    */
-  static getConverter(streamName: string): Converter | undefined {
+  static getConverter(streamName: StreamName): Converter | undefined {
     if (!ConverterRegistry.initialized) {
       for (const converter of converters) {
-        const name = ConverterRegistry.streamNameToString(converter.streamName);
+        const name = converter.streamName.stringify();
         const existing = ConverterRegistry.convertersByStream[name];
         if (existing) {
           throw new VError(
@@ -32,10 +32,6 @@ export class ConverterRegistry {
       }
       ConverterRegistry.initialized = true;
     }
-    return ConverterRegistry.convertersByStream[streamName];
-  }
-
-  private static streamNameToString(name: StreamName): string {
-    return `${name.prefix}__${name.name}`;
+    return ConverterRegistry.convertersByStream[streamName.stringify()];
   }
 }
