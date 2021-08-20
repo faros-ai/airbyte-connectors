@@ -1,6 +1,14 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "bump": "lerna version --no-git-tag-version --preid rc",
+    "build": "lerna run build",
+    "clean": "lerna run clean && rm -rf node_modules out",
+    "cover": "lerna run test -- -- --coverage --color",
+    "lint": "lerna run lint",
+    "prepare": "lerna bootstrap --hoist"
+  },
   "devDependencies": {
     "@types/eslint": "^7.2.13",
     "@types/jest": "^26.0.23",
