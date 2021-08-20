@@ -1,8 +1,8 @@
 import fs from 'fs';
 import {AffixOptions, open, track} from 'temp';
 
-// TODO: this does not seem to work (ask Chris)
 // Automatically track and cleanup temp files at exit
+// TODO: this does not seem to work - figure out what's wrong
 track();
 
 /**

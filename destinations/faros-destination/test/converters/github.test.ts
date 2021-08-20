@@ -47,7 +47,6 @@ describe('github', () => {
         entriesSize = r.body.buffer.length;
         return {statusCode: 204};
       });
-    // .thenReply(204);
 
     await mockttp
       .patch(`/graphs/test-graph/revisions/${revisionId}`)
