@@ -6,7 +6,7 @@ import {CLI, read} from './../cli';
 import {githubLog, readTestResourceFile} from './data';
 
 describe('github', () => {
-  const mockttp = getLocal({debug: false});
+  const mockttp = getLocal({debug: true});
   const catalogPath = 'test/resources/github-catalog.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
