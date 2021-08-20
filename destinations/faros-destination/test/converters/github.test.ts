@@ -3,12 +3,14 @@ import {getLocal} from 'mockttp';
 
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {githubLog} from './data';
+import {githubLog, readTestResourceFile} from './data';
 
 describe('github', () => {
-  const mockttp = getLocal();
+  const mockttp = getLocal({debug: false});
   const catalogPath = 'test/resources/github-catalog.json';
   let configPath: string;
+  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
+  const revisionId = 'test-revision-id';
 
   beforeEach(async () => {
     await mockttp.start({startPort: 30000, endPort: 50000});
@@ -26,9 +28,29 @@ describe('github', () => {
       .withQuery({schema: 'canonical'})
       .thenReply(200, JSON.stringify({}));
 
+    await mockttp.post('/graphs/test-graph/revisions').thenReply(
+      200,
+      JSON.stringify({
+        entrySchema: graphSchema,
+        revision: {
+          uid: revisionId,
+          lock: {
+            state: {
+              checkpoint: 123,
+            },
+          },
+        },
+      })
+    );
+
     await mockttp
-      .post('/graphs/test-graph/revisions')
-      .thenReply(200, JSON.stringify({revision: {lock: {}}}));
+      .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
+      .thenReply(204);
+
+    await mockttp
+      .patch(`/graphs/test-graph/revisions/${revisionId}`)
+      .withBody(JSON.stringify({status: 'active'}))
+      .thenReply(204);
 
     const cli = await CLI.runWith([
       'write',

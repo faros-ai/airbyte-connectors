@@ -15,7 +15,12 @@ import {
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
-import {entryUploader, EntryUploaderConfig, FarosClient} from 'faros-feeds-sdk';
+import {
+  entryUploader,
+  EntryUploaderConfig,
+  FarosClient,
+  withEntryUploader,
+} from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -160,51 +165,68 @@ class FarosDestination extends AirbyteDestination {
     const {streams, converters, deleteModelEntries} =
       this.initStreamsAndConverters(catalog);
 
-    const writer = await this.createEntryUploader(config, deleteModelEntries);
+    const entryUploaderConfig: EntryUploaderConfig = {
+      name: config.origin,
+      url: config.api_url,
+      authHeader: config.api_key,
+      expiration: config.expiration,
+      graphName: config.graph,
+      deleteModelEntries,
+    };
+    const stateMessages: AirbyteStateMessage[] = [];
 
-    let processedRecords = 0;
-    let wroteRecords = 0;
-    // Process input & write records
-    for await (const line of input) {
-      try {
-        const msg = parseAirbyteMessage(line);
-        if (msg.type === AirbyteMessageType.STATE) {
-          yield msg as AirbyteStateMessage;
-        } else if (msg.type === AirbyteMessageType.RECORD) {
-          const recordMessage = msg as AirbyteRecord;
-          if (!recordMessage.record) {
-            throw new VError('Empty record');
+    await withEntryUploader(entryUploaderConfig, async (writer) => {
+      let processedRecords = 0;
+      let wroteRecords = 0;
+      // Process input & write records
+      for await (const line of input) {
+        try {
+          const msg = parseAirbyteMessage(line);
+          if (msg.type === AirbyteMessageType.STATE) {
+            stateMessages.push(msg as AirbyteStateMessage);
+          } else if (msg.type === AirbyteMessageType.RECORD) {
+            const recordMessage = msg as AirbyteRecord;
+            if (!recordMessage.record) {
+              throw new VError('Empty record');
+            }
+            const record = recordMessage.record;
+            const stream = streams[record.stream];
+            if (!stream) {
+              throw new VError(`Undefined stream ${record.stream}`);
+            }
+            const converter = converters[record.stream];
+            if (!converter) {
+              throw new VError(
+                `Undefined converter for stream ${record.stream}`
+              );
+            }
+            wroteRecords += this.writeRecord(
+              writer,
+              converter,
+              recordMessage,
+              dryRun
+            );
+            processedRecords++;
           }
-          const record = recordMessage.record;
-          const stream = streams[record.stream];
-          if (!stream) {
-            throw new VError(`Undefined stream ${record.stream}`);
-          }
-          const converter = converters[record.stream];
-          if (!converter) {
-            throw new VError(`Undefined converter for stream ${record.stream}`);
-          }
-          wroteRecords += this.writeRecord(
-            writer,
-            converter,
-            recordMessage,
-            dryRun
-          );
-          processedRecords++;
+        } catch (e) {
+          this.logger.error(`Error processing input: ${e}`);
+          throw e;
+        } finally {
+          writer.end();
         }
-      } catch (e) {
-        this.logger.error(`Error processing input: ${e}`);
-        throw e;
-      } finally {
-        writer.end();
       }
-    }
-    this.logger.info(`Processed ${processedRecords} records`);
-    if (dryRun) {
-      this.logger.info(
-        `Would write ${wroteRecords} records, but dry run is enabled`
-      );
-    } else this.logger.info(`Wrote ${wroteRecords} records`);
+      this.logger.info(`Processed ${processedRecords} records`);
+      if (dryRun) {
+        this.logger.info(
+          `Would write ${wroteRecords} records, but dry run is enabled`
+        );
+      } else this.logger.info(`Wrote ${wroteRecords} records`);
+    });
+
+    // Since we are writing all records in a single revision,
+    // we should be ok to return all the state messages at the end,
+    // once the revision has been closed.
+    for (const state of stateMessages) yield state;
   }
 
   private initStreamsAndConverters(catalog: AirbyteConfiguredCatalog): {
@@ -247,21 +269,6 @@ class FarosDestination extends AirbyteDestination {
       }
     }
     return {streams, converters, deleteModelEntries};
-  }
-
-  private async createEntryUploader(
-    config: AirbyteConfig,
-    deleteModelEntries: ReadonlyArray<string>
-  ): Promise<Writable> {
-    const entryUploaderConfig: EntryUploaderConfig = {
-      name: config.origin,
-      url: config.api_url,
-      authHeader: config.api_key,
-      expiration: config.expiration,
-      graphName: config.graph,
-      deleteModelEntries,
-    };
-    return await entryUploader(entryUploaderConfig);
   }
 
   private writeRecord(
