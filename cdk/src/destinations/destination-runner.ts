@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import path from 'path';
-import readline from 'readline';
 
 import {AirbyteLogger} from '../logger';
 import {PACKAGE_VERSION} from '../utils';

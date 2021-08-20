@@ -7,7 +7,6 @@ import {
   AirbyteDestination,
   AirbyteDestinationRunner,
   AirbyteLogger,
-  AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
   AirbyteSpec,
