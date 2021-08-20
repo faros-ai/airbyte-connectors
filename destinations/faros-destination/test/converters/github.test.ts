@@ -28,15 +28,13 @@ describe('github', () => {
       .withQuery({schema: 'canonical'})
       .thenReply(200, JSON.stringify({}));
 
-    await mockttp
-      .post('/graphs/test-graph/revisions')
-      .thenReply(
-        200,
-        JSON.stringify({
-          entrySchema: graphSchema,
-          revision: {uid: revisionId, lock: {state: {}}},
-        })
-      );
+    await mockttp.post('/graphs/test-graph/revisions').thenReply(
+      200,
+      JSON.stringify({
+        entrySchema: graphSchema,
+        revision: {uid: revisionId, lock: {state: {}}},
+      })
+    );
 
     await mockttp
       .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
@@ -59,7 +57,7 @@ describe('github', () => {
     // TODO: assert results
     const res = await read(cli.stdout);
     // expect(res).toBe('');
-    console.log(res);
+    // console.log(res);
 
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
