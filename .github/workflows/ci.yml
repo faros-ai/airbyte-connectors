@@ -109,3 +109,41 @@ jobs:
           github_repo: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.CDK_VERSION }}
+
+  publish-connectors:
+    name: Publish connector images to Docker Hub
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test
+    if: github.ref == 'refs/heads/main' # Skip PRs
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v2.3.0
+        with:
+          node-version: 14
+
+      - name: Docker login
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build connector packages
+        run: lerna bootstrap --hoist
+
+      - name: Publish connector images
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          for path in $(ls -d sources/*/ destinations/*/)
+          do
+            image="farosai/airbyte-$(echo $path | cut -f2 -d'/')"
+            latest_tag="$image:latest"
+            sha_tag="$image:$COMMIT_SHA"
+            docker build . --build-arg path=$path -t $latest_tag -t $sha_tag
+            docker push $latest_tag
+            docker push $sha_tag
+          done
