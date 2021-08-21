@@ -183,8 +183,8 @@ class FarosDestination extends AirbyteDestination {
       // Having asynchronous operations between interface creation and asynchronous iteration may
       // result in missed lines.
       const input = readline.createInterface({
-        input: process.stdin,
-        terminal: process.stdin.isTTY,
+        input: stdin,
+        terminal: stdin.isTTY,
       });
       try {
         // Process input & write records
