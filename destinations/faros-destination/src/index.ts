@@ -207,8 +207,7 @@ class FarosDestination extends AirbyteDestination {
     stateMessages: AirbyteStateMessage[],
     writer?: Writable
   ): Promise<{recordsProcessed: number; recordsWritten: number}> {
-    let recordsProcessed = 0;
-    let recordsWritten = 0;
+    const res = {recordsProcessed: 0, recordsWritten: 0};
 
     // readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -217,6 +216,7 @@ class FarosDestination extends AirbyteDestination {
       input: stdin,
       terminal: stdin.isTTY,
     });
+
     try {
       // Process input & write records
       for await (const line of input) {
@@ -235,12 +235,12 @@ class FarosDestination extends AirbyteDestination {
               throw new VError(`Undefined stream ${record.stream}`);
             }
             const converter = this.getConverter(record.stream);
-            recordsWritten += this.writeRecord(
+            res.recordsWritten += this.writeRecord(
               converter,
               recordMessage,
               writer
             );
-            recordsProcessed++;
+            res.recordsProcessed++;
           }
         } catch (e) {
           this.logger.error(`Error processing input: ${e}`);
@@ -252,7 +252,7 @@ class FarosDestination extends AirbyteDestination {
       writer?.end();
     }
 
-    return {recordsProcessed, recordsWritten};
+    return res;
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
