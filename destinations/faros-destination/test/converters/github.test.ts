@@ -22,7 +22,7 @@ describe('github', () => {
     fs.unlinkSync(configPath);
   });
 
-  test('write', async () => {
+  test('process and write records', async () => {
     await mockttp
       .post('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
@@ -69,5 +69,25 @@ describe('github', () => {
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
+  });
+
+  test('process records but skip writes, when dry run is enabled', async () => {
+    await mockttp.anyRequest().times(0);
+
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(githubLog, 'utf8');
+
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 98 records');
+    expect(stdout).toMatch('Would write 13 records');
+    expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
   });
 });
