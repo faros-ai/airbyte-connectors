@@ -63,7 +63,7 @@ jobs:
   publish-cdk:
     name: Publish CDK
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     needs: test
     if: github.ref == 'refs/heads/main' # Skip PRs
     steps:
@@ -130,9 +130,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build connector packages
-        run: lerna bootstrap --hoist
 
       - name: Publish connector images
         env:
