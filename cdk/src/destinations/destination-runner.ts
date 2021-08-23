@@ -68,9 +68,9 @@ export class AirbyteDestinationRunner {
           this.logger.info('catalog: ' + JSON.stringify(catalog));
           this.logger.info('dryRun: ' + opts.dryRun);
 
-          process.stdin.setEncoding('utf-8');
-
           try {
+            process.stdin.setEncoding('utf-8');
+
             const iter = this.destination.write(
               config,
               catalog,

@@ -39,29 +39,25 @@ export class AirbyteLogger {
    * @returns Pino Logger
    */
   asPino(level: Level = 'info'): Logger {
+    const defaultLevel = AirbyteLogLevel[level.toUpperCase()];
+
     const destination: DestinationStream = new stream.Writable({
       write: function (chunk, encoding, next): void {
         const msg = JSON.parse(chunk);
-        const lvl = AirbyteLogger.fromPinoLevel(msg.level);
+        const lvl = msg.level
+          ? AirbyteLogLevel[pino.levels.labels[msg.level].toUpperCase()]
+          : defaultLevel;
         AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg));
         next();
       },
     });
+
     const logger = pino({level}, destination);
+
     return logger;
   }
 
   private static writeMessage(msg: AirbyteMessage): void {
     console.log(JSON.stringify(msg));
-  }
-
-  private static fromPinoLevel(
-    level: any,
-    defaultLevel: AirbyteLogLevel = AirbyteLogLevel.INFO
-  ): AirbyteLogLevel {
-    if (!level) {
-      return defaultLevel;
-    }
-    return AirbyteLogLevel[pino.levels.labels[level].toUpperCase()];
   }
 }

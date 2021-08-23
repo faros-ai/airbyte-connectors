@@ -173,67 +173,86 @@ class FarosDestination extends AirbyteDestination {
       deleteModelEntries,
       logger: this.logger.asPino('debug'),
     };
+
     const stateMessages: AirbyteStateMessage[] = [];
 
-    await withEntryUploader(entryUploaderConfig, async (writer) => {
-      let processedRecords = 0;
-      let wroteRecords = 0;
-
-      // readline.createInterface() will start to consume the input stream once invoked.
-      // Having asynchronous operations between interface creation and asynchronous iteration may
-      // result in missed lines.
-      const input = readline.createInterface({
-        input: process.stdin,
-        terminal: process.stdin.isTTY,
-      });
-      try {
-        // Process input & write records
-        for await (const line of input) {
-          try {
-            const msg = parseAirbyteMessage(line);
-            if (msg.type === AirbyteMessageType.STATE) {
-              stateMessages.push(msg as AirbyteStateMessage);
-            } else if (msg.type === AirbyteMessageType.RECORD) {
-              const recordMessage = msg as AirbyteRecord;
-              if (!recordMessage.record) {
-                throw new VError('Empty record');
-              }
-              const record = recordMessage.record;
-              const stream = streams[record.stream];
-              if (!stream) {
-                throw new VError(`Undefined stream ${record.stream}`);
-              }
-              const converter = this.getConverter(record.stream);
-              wroteRecords += this.writeRecord(
-                writer,
-                converter,
-                recordMessage,
-                dryRun
-              );
-              processedRecords++;
-            }
-          } catch (e) {
-            this.logger.error(`Error processing input: ${e}`);
-            throw e;
-          }
-        }
-      } finally {
-        input.close();
-        writer.end();
-      }
-
-      this.logger.info(`Processed ${processedRecords} records`);
-      if (dryRun) {
-        this.logger.info(
-          `Would write ${wroteRecords} records, but dry run is enabled`
+    if (config.dry_run === true || dryRun) {
+      const res = await this.writeEntries(stdin, streams, stateMessages);
+      this.logger.info(`Processed ${res.recordsProcessed} records`);
+      this.logger.info(
+        `Would write ${res.recordsWritten} records, but dry run is enabled`
+      );
+    } else {
+      await withEntryUploader(entryUploaderConfig, async (writer) => {
+        const res = await this.writeEntries(
+          stdin,
+          streams,
+          stateMessages,
+          writer
         );
-      } else this.logger.info(`Wrote ${wroteRecords} records`);
-    });
+        this.logger.info(`Processed ${res.recordsProcessed} records`);
+        this.logger.info(`Wrote ${res.recordsWritten} records`);
+      });
+    }
 
     // Since we are writing all records in a single revision,
     // we should be ok to return all the state messages at the end,
     // once the revision has been closed.
     for (const state of stateMessages) yield state;
+  }
+
+  private async writeEntries(
+    stdin: NodeJS.ReadStream,
+    streams: Dictionary<AirbyteConfiguredStream>,
+    stateMessages: AirbyteStateMessage[],
+    writer?: Writable
+  ): Promise<{recordsProcessed: number; recordsWritten: number}> {
+    const res = {recordsProcessed: 0, recordsWritten: 0};
+
+    // readline.createInterface() will start to consume the input stream once invoked.
+    // Having asynchronous operations between interface creation and asynchronous iteration may
+    // result in missed lines.
+    const input = readline.createInterface({
+      input: stdin,
+      terminal: stdin.isTTY,
+    });
+
+    try {
+      // Process input & write records
+      for await (const line of input) {
+        try {
+          const msg = parseAirbyteMessage(line);
+          if (msg.type === AirbyteMessageType.STATE) {
+            stateMessages.push(msg as AirbyteStateMessage);
+          } else if (msg.type === AirbyteMessageType.RECORD) {
+            const recordMessage = msg as AirbyteRecord;
+            if (!recordMessage.record) {
+              throw new VError('Empty record');
+            }
+            const record = recordMessage.record;
+            const stream = streams[record.stream];
+            if (!stream) {
+              throw new VError(`Undefined stream ${record.stream}`);
+            }
+            const converter = this.getConverter(record.stream);
+            res.recordsWritten += this.writeRecord(
+              converter,
+              recordMessage,
+              writer
+            );
+            res.recordsProcessed++;
+          }
+        } catch (e) {
+          this.logger.error(`Error processing input: ${e}`);
+          throw e;
+        }
+      }
+    } finally {
+      input.close();
+      writer?.end();
+    }
+
+    return res;
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
@@ -278,10 +297,9 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private writeRecord(
-    writer: Writable,
     converter: Converter,
     recordMessage: AirbyteRecord,
-    dryRun: boolean
+    writer?: Writable
   ): number {
     // Apply conversion on the input record
     const results = converter.convert(recordMessage);
@@ -293,9 +311,7 @@ class FarosDestination extends AirbyteDestination {
       }
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
-      if (!dryRun) {
-        writer.write(obj);
-      }
+      writer?.write(obj);
     }
 
     return results.length;

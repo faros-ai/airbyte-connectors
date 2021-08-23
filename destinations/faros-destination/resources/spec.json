@@ -42,6 +42,12 @@
         "default": "5 seconds",
         "examples": ["5 seconds"]
       },
+      "dry_run": {
+        "type": "boolean",
+        "title": "Dry run",
+        "description": "Process all input records but avoid writing into Faros API",
+        "default": false
+      },
       "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",
