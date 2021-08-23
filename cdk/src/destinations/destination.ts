@@ -1,5 +1,3 @@
-import readline from 'readline';
-
 import {AirbyteConnector} from '../connector';
 import {
   AirbyteConfig,
@@ -18,6 +16,7 @@ export abstract class AirbyteDestination extends AirbyteConnector {
   abstract write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    input: readline.Interface
+    stdin: NodeJS.ReadStream,
+    dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage>;
 }

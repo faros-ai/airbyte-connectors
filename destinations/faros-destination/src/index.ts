@@ -15,18 +15,19 @@ import {
   parseAirbyteMessage,
 } from 'cdk';
 import {Command} from 'commander';
-import {entryUploader, EntryUploaderConfig, FarosClient} from 'faros-feeds-sdk';
+import {
+  EntryUploaderConfig,
+  FarosClient,
+  withEntryUploader,
+} from 'faros-feeds-sdk';
 import {keyBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {
-  Converter,
-  ConverterInstance,
-  ConverterRegistry,
-} from './converters/converter';
+import {Converter, StreamName} from './converters/converter';
+import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 /** The main entry point. */
@@ -75,52 +76,15 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
-    if (!config.origin) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message: 'Faros origin is not set',
-      });
-    }
-    if (
-      config.jsonata_mode &&
-      !Object.values(JSONataApplyMode).includes(config.jsonata_mode)
-    ) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message:
-          `Invalid JSONata mode ${config.jsonata_mode}. ` +
-          `Possible values are ${Object.values(JSONataApplyMode).join(',')}`,
-      });
-    }
-    if (config.jsonata_mode) {
-      this.jsonataMode = config.jsonata_mode;
-    }
-    if (
-      config.jsonata_expression &&
-      (!Array.isArray(config.jsonata_destination_models) ||
-        !config.jsonata_destination_models.length)
-    ) {
-      return new AirbyteConnectionStatusMessage({
-        status: AirbyteConnectionStatus.FAILED,
-        message:
-          'JSONata destination models must be set when using JSONata expression',
-      });
-    }
     try {
-      this.jsonataConverter = config.jsonata_expression
-        ? JSONataConverter.make(config.jsonata_expression)
-        : undefined;
+      this.init(config);
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
-        message: `Failed to initialize JSONata converter. Error: ${e}`,
+        message: e.message,
       });
     }
     try {
-      this.farosClient = new FarosClient({
-        url: config.api_url,
-        apiKey: config.api_key,
-      });
       await this.getFarosClient().tenant();
     } catch (e) {
       return new AirbyteConnectionStatusMessage({
@@ -139,66 +103,144 @@ class FarosDestination extends AirbyteDestination {
         message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
       });
     }
-
     return new AirbyteConnectionStatusMessage({
       status: AirbyteConnectionStatus.SUCCEEDED,
     });
   }
 
+  private init(config: AirbyteConfig): void {
+    if (!config.origin) {
+      throw new VError('Faros origin is not set');
+    }
+    if (
+      config.jsonata_mode &&
+      !Object.values(JSONataApplyMode).includes(config.jsonata_mode)
+    ) {
+      throw new VError(
+        `Invalid JSONata mode ${config.jsonata_mode}. ` +
+          `Possible values are ${Object.values(JSONataApplyMode).join(',')}`
+      );
+    }
+    if (config.jsonata_mode) {
+      this.jsonataMode = config.jsonata_mode;
+    }
+    if (
+      config.jsonata_expression &&
+      (!Array.isArray(config.jsonata_destination_models) ||
+        !config.jsonata_destination_models.length)
+    ) {
+      throw new VError(
+        'JSONata destination models must be set when using JSONata expression'
+      );
+    }
+    try {
+      this.jsonataConverter = config.jsonata_expression
+        ? JSONataConverter.make(
+            config.jsonata_expression,
+            config.jsonata_destination_models
+          )
+        : undefined;
+    } catch (e) {
+      throw new VError(`Failed to initialize JSONata converter. Error: ${e}`);
+    }
+    try {
+      this.farosClient = new FarosClient({
+        url: config.api_url,
+        apiKey: config.api_key,
+      });
+    } catch (e) {
+      throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
+    }
+  }
+
   async *write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    input: readline.Interface
+    stdin: NodeJS.ReadStream,
+    dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
-    const {streams, converters, deleteModelEntries} =
-      this.initStreamsAndConverters(config, catalog);
+    this.init(config);
 
-    const writer = await this.createEntryUploader(config, deleteModelEntries);
+    const {streams, deleteModelEntries} =
+      this.initStreamsCheckConverters(catalog);
 
-    let processedRecords = 0;
-    let wroteRecords = 0;
-    // Process input & write records
-    for await (const line of input) {
+    const entryUploaderConfig: EntryUploaderConfig = {
+      name: config.origin,
+      url: config.api_url,
+      authHeader: config.api_key,
+      expiration: config.expiration,
+      graphName: config.graph,
+      deleteModelEntries,
+      logger: this.logger.asPino('debug'),
+    };
+    const stateMessages: AirbyteStateMessage[] = [];
+
+    await withEntryUploader(entryUploaderConfig, async (writer) => {
+      let processedRecords = 0;
+      let wroteRecords = 0;
+
+      // readline.createInterface() will start to consume the input stream once invoked.
+      // Having asynchronous operations between interface creation and asynchronous iteration may
+      // result in missed lines.
+      const input = readline.createInterface({
+        input: process.stdin,
+        terminal: process.stdin.isTTY,
+      });
       try {
-        const msg = parseAirbyteMessage(line);
-        if (msg.type === AirbyteMessageType.STATE) {
-          yield msg as AirbyteStateMessage;
-        } else if (msg.type === AirbyteMessageType.RECORD) {
-          const recordMessage = msg as AirbyteRecord;
-          if (!recordMessage.record) {
-            throw new VError('Empty record');
+        // Process input & write records
+        for await (const line of input) {
+          try {
+            const msg = parseAirbyteMessage(line);
+            if (msg.type === AirbyteMessageType.STATE) {
+              stateMessages.push(msg as AirbyteStateMessage);
+            } else if (msg.type === AirbyteMessageType.RECORD) {
+              const recordMessage = msg as AirbyteRecord;
+              if (!recordMessage.record) {
+                throw new VError('Empty record');
+              }
+              const record = recordMessage.record;
+              const stream = streams[record.stream];
+              if (!stream) {
+                throw new VError(`Undefined stream ${record.stream}`);
+              }
+              const converter = this.getConverter(record.stream);
+              wroteRecords += this.writeRecord(
+                writer,
+                converter,
+                recordMessage,
+                dryRun
+              );
+              processedRecords++;
+            }
+          } catch (e) {
+            this.logger.error(`Error processing input: ${e}`);
+            throw e;
           }
-          const record = recordMessage.record;
-          const stream = streams[record.stream];
-          if (!stream) {
-            throw new VError(`Undefined stream ${record.stream}`);
-          }
-          const converter = converters[record.stream];
-          if (!stream) {
-            throw new VError(`Undefined converter for stream ${stream}`);
-          }
-          wroteRecords += this.writeRecord(writer, converter, recordMessage);
-          processedRecords++;
         }
-      } catch (e) {
-        this.logger.error(`Error processing input ${line}: ${e}`);
+      } finally {
+        input.close();
+        writer.end();
       }
-    }
-    writer.end();
-    this.logger.info(`Processed ${processedRecords} records`);
-    this.logger.info(`Wrote ${wroteRecords} records`);
+
+      this.logger.info(`Processed ${processedRecords} records`);
+      if (dryRun) {
+        this.logger.info(
+          `Would write ${wroteRecords} records, but dry run is enabled`
+        );
+      } else this.logger.info(`Wrote ${wroteRecords} records`);
+    });
+
+    // Since we are writing all records in a single revision,
+    // we should be ok to return all the state messages at the end,
+    // once the revision has been closed.
+    for (const state of stateMessages) yield state;
   }
 
-  private initStreamsAndConverters(
-    config: AirbyteConfig,
-    catalog: AirbyteConfiguredCatalog
-  ): {
+  private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
-    converters: Dictionary<ConverterInstance>;
     deleteModelEntries: ReadonlyArray<string>;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
-    const converters: Dictionary<ConverterInstance> = {};
 
     // Check streams & initialize converters
     const deleteModelEntries = [];
@@ -210,57 +252,50 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      // Get converter instance from the registry or use JSONata converter
-      let converter = ConverterRegistry.getConverterInstance(stream);
-      if (!converter && !this.jsonataConverter) {
-        throw new VError(`Undefined converter for stream ${stream}`);
-      } else if (
-        this.jsonataMode === JSONataApplyMode.OVERRIDE ||
-        (this.jsonataMode === JSONataApplyMode.FALLBACK && !converter)
-      ) {
-        converter = {
-          converter: this.jsonataConverter,
-          destinationModels: config.jsonata_destination_models,
-        };
-      }
-      converters[stream] = converter;
+      const converter = this.getConverter(stream);
+      this.logger.info(
+        `Using ${converter.constructor.name} converter to convert ${stream} stream records`
+      );
 
       // Prepare destination models to delete if any
       if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
         deleteModelEntries.push(...converter.destinationModels);
       }
     }
-    return {streams, converters, deleteModelEntries};
+    return {streams, deleteModelEntries};
   }
 
-  private async createEntryUploader(
-    config: AirbyteConfig,
-    deleteModelEntries: ReadonlyArray<string>
-  ): Promise<Writable> {
-    const entryUploaderConfig: EntryUploaderConfig = {
-      name: config.origin,
-      url: config.api_url,
-      authHeader: config.api_key,
-      expiration: config.expiration,
-      graphName: config.graph,
-      deleteModelEntries,
-    };
-    return await entryUploader(entryUploaderConfig);
+  private getConverter(stream: string): Converter {
+    const converter = ConverterRegistry.getConverter(
+      StreamName.fromString(stream)
+    );
+    if (!converter && !this.jsonataConverter) {
+      throw new VError(`Undefined converter for stream ${stream}`);
+    }
+    return this.jsonataMode === JSONataApplyMode.OVERRIDE
+      ? this.jsonataConverter ?? converter
+      : converter ?? this.jsonataConverter;
   }
 
   private writeRecord(
     writer: Writable,
-    conv: ConverterInstance,
-    recordMessage: AirbyteRecord
+    converter: Converter,
+    recordMessage: AirbyteRecord,
+    dryRun: boolean
   ): number {
     // Apply conversion on the input record
-    const results = conv.converter.convert(recordMessage);
+    const results = converter.convert(recordMessage);
 
     // Write out the results to the output stream
     for (const result of results) {
+      if (!result.record['source']) {
+        result.record['source'] = converter.streamName.source;
+      }
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
-      writer.write(obj);
+      if (!dryRun) {
+        writer.write(obj);
+      }
     }
 
     return results.length;
