@@ -33,10 +33,11 @@ export function parseAirbyteMessage(s: string): AirbyteMessage {
       throw new VError(`Message type is not set`);
     }
     switch (res.type) {
+      case AirbyteMessageType.RECORD:
+        return new AirbyteRecord((res as AirbyteRecord).record);
       case AirbyteMessageType.CATALOG:
       case AirbyteMessageType.CONNECTION_STATUS:
       case AirbyteMessageType.LOG:
-      case AirbyteMessageType.RECORD:
       case AirbyteMessageType.SPEC:
       case AirbyteMessageType.STATE:
         return res;
@@ -127,6 +128,18 @@ export class AirbyteRecord implements AirbyteMessage {
       data: Dictionary<any>;
     }
   ) {}
+
+  unpackRaw(): AirbyteRecord {
+    const stream = this.record.stream;
+    if (!stream || !stream.startsWith('_airbyte_raw_')) {
+      return this;
+    }
+    return new AirbyteRecord({
+      stream: stream.slice('_airbyte_raw_'.length),
+      emitted_at: new Date(this.record.data._airbyte_emitted_at).getTime(),
+      data: JSON.parse(this.record.data._airbyte_data),
+    });
+  }
 
   static make(
     stream: string,

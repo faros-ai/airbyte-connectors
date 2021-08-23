@@ -225,7 +225,7 @@ class FarosDestination extends AirbyteDestination {
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
           } else if (msg.type === AirbyteMessageType.RECORD) {
-            const recordMessage = msg as AirbyteRecord;
+            const recordMessage = (msg as AirbyteRecord).unpackRaw();
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }

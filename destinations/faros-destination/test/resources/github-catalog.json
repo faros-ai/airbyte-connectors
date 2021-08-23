@@ -2,31 +2,31 @@
   "streams": [
     {
       "stream": {
-        "name": "github__assignees"
+        "name": "mytestsource__github__assignees"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "github__collaborators"
+        "name": "mytestsource__github__collaborators"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "github__commits"
+        "name": "mytestsource__github__commits"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "github__pull_requests"
+        "name": "mytestsource__github__pull_requests"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "github__something_else"
+        "name": "mytestsource__github__something_else"
       },
       "destination_sync_mode": "append"
     }
