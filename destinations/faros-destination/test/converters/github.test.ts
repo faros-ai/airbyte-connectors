@@ -64,8 +64,8 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 98 records');
-    expect(stdout).toMatch('Wrote 13 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Wrote 12 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
@@ -83,8 +83,8 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 98 records');
-    expect(stdout).toMatch('Would write 13 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Would write 12 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
