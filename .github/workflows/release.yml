@@ -79,11 +79,11 @@ jobs:
 
       - name: Publish connector images
         run: |
-          for path in $(ls -d sources/*/ destinations/*/)
+          for connector_path in $(ls -d sources/*/ destinations/*/)
           do
-            image="farosai/airbyte-$(echo $path | cut -f2 -d'/')"
+            image="farosai/airbyte-$(echo $connector_path | cut -f2 -d'/')"
             latest_tag="$image:latest"
-            connector_version=$(node -p "require('./${path}package.json').version")
+            connector_version=$(jq -r '.version' < ${connector_path}package.json)
             version_tag="$image:$connector_version"
             docker manifest inspect $image:$version_tag > /dev/null
             if [ "$?" == 1 ]
