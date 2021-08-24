@@ -38,3 +38,16 @@ And then run it:
 ```shell
 docker run faros-destination --help
 ```
+
+# Publish CDK to NPM
+
+To publish the CDK package to NPM, run `npm run bump` from the root of the
+repository. You will be prompted with a list of version increments to choose
+from (patch, minor, major, etc). Choose the desired increment, then commit and
+push the changed files. GitHub will automatically create a corresponding tag and
+publish the CDK to NPM once the changed files are merged to the main branch.
+
+# Publish Connector Docker images
+
+Connector Docker images are automatically published to Docker Hub upon each
+commit to the main branch. They are tagged by the commit SHA.
