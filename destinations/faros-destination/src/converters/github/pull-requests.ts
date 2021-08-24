@@ -8,6 +8,7 @@ import {
   DestinationRecord,
   StreamName,
 } from '../converter';
+import {GithubCommon} from './common';
 
 // Github PR states
 const prStates = ['closed', 'merged', 'open'];
@@ -17,6 +18,7 @@ export class GithubPullRequests implements Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskAssignment',
     'vcs_PullRequest',
+    'vcs_User',
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
@@ -34,14 +36,7 @@ export class GithubPullRequests implements Converter {
       : null;
 
     if (pr.author) {
-      res.push({
-        model: 'tms_User',
-        record: {
-          uid: pr.author.login,
-          name: pr.author.name,
-          source,
-        },
-      });
+      res.push(GithubCommon.vcs_User(pr.author, source));
     }
 
     const state = prStates.includes(pr.state.toLowerCase())

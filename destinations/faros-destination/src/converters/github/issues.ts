@@ -7,6 +7,7 @@ import {
   DestinationRecord,
   StreamName,
 } from '../converter';
+import {GithubCommon} from './common';
 
 // Max length for free-form description text fields such as issue body
 const MAX_DESCRIPTION_LENGTH = 1000;
@@ -36,26 +37,12 @@ export class GithubIssues implements Converter {
     }
 
     if (issue.user) {
-      res.push({
-        model: 'tms_User',
-        record: {
-          uid: issue.user.login,
-          name: issue.user.name,
-          source,
-        },
-      });
+      res.push(GithubCommon.tms_User(issue.user, source));
     }
 
     issue.assignees?.forEach((a) => {
       if (a) {
-        res.push({
-          model: 'tms_User',
-          record: {
-            uid: a.login,
-            name: a.name,
-            source,
-          },
-        });
+        res.push(GithubCommon.tms_User(a, source));
         res.push({
           model: 'tms_TaskAssignment',
           record: {
