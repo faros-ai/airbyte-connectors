@@ -9,6 +9,13 @@
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faros-ai/airbyte-connectors.git"
+  },
+  "bugs": {
+    "url": "https://github.com/faros-ai/airbyte-connectors/issues"
+  },
   "license": "Apache-2.0",
   "files": [
     "lib/",
