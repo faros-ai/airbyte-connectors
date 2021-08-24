@@ -8,8 +8,8 @@ on:
       - '**.md'
 
 jobs:
-  publish-cdk:
-    name: Publish CDK
+  publish-cdk-connectors:
+    name: Publish CDK and Connectors
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -37,15 +37,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish packages
-        if: steps.check-tag.outputs.exists == 'false'
-        run: |
-          lerna bootstrap --hoist
-          cd cdk
-          npm publish --access public --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create tag
         if: steps.check-tag.outputs.exists == 'false'
         uses: pkgdeps/git-tag-action@v2.0.1
@@ -56,18 +47,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.CDK_VERSION }}
 
-  publish-connectors:
-    name: Publish connector images to Docker Hub
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Check out
-        uses: actions/checkout@v2.3.4
-
-      - name: Setup Node
-        uses: actions/setup-node@v2.3.0
-        with:
-          node-version: 14
+      - name: Publish packages
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          lerna bootstrap --hoist
+          cd cdk
+          npm publish --access public --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Docker login
         uses: docker/login-action@v1.10.0
@@ -76,15 +63,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Publish connector images
-        env:
-          COMMIT_SHA: ${{ github.sha }}
         run: |
           for path in $(ls -d sources/*/ destinations/*/)
           do
             image="farosai/airbyte-$(echo $path | cut -f2 -d'/')"
             latest_tag="$image:latest"
-            sha_tag="$image:$COMMIT_SHA"
-            docker build . --build-arg path=$path -t $latest_tag -t $sha_tag
-            docker push $latest_tag
-            docker push $sha_tag
+            connector_version=$(node -p "require('./${path}package.json').version")
+            version_tag="$image:$connector_version"
+            docker manifest inspect $image:$version_tag > /dev/null
+            if [ "$?" == 1 ]
+            then
+              docker build . --build-arg path=$path -t $latest_tag -t $version_tag
+              docker push $latest_tag
+              docker push $version_tag
+            fi
           done
