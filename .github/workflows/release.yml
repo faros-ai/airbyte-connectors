@@ -82,15 +82,5 @@ jobs:
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
           do
-            image="farosai/airbyte-$(echo $connector_path | cut -f2 -d'/')"
-            latest_tag="$image:latest"
-            connector_version=$(jq -r '.version' < ${connector_path}package.json)
-            version_tag="$image:$connector_version"
-            docker manifest inspect $image:$version_tag
-            if [ "$?" == 1 ]
-            then
-              docker build . --build-arg path=$connector_path -t $latest_tag -t $version_tag
-              docker push $latest_tag
-              docker push $version_tag
-            fi
+            ./scripts/publish-connector.sh $connector_path
           done
