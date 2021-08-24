@@ -243,7 +243,9 @@ class FarosDestination extends AirbyteDestination {
             res.recordsProcessed++;
           }
         } catch (e) {
-          this.logger.error(`Error processing input: ${e}`);
+          this.logger.error(
+            `Error processing input: ${e.message ? e.message : e}`
+          );
           throw e;
         }
       }

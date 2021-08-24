@@ -81,7 +81,11 @@ export class AirbyteDestinationRunner {
               this.logger.write(message);
             }
           } catch (e) {
-            this.logger.error(e);
+            this.logger.error(
+              `Encountered an error while writing to destination: ${
+                e.message ? e.message : e
+              }`
+            );
             throw e;
           } finally {
             process.stdin.destroy();
