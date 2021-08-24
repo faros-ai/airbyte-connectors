@@ -10,11 +10,12 @@ import {
 export class GithubCollaborators implements Converter {
   readonly streamName = new StreamName('github', 'collaborators');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_User',
     'vcs_Membership',
+    'vcs_User',
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+    const source = this.streamName.source;
     const user = record.record.data;
 
     const type = ((): {category: string; detail: string} => {
@@ -45,7 +46,7 @@ export class GithubCollaborators implements Converter {
           name: user.name ?? null,
           htmlUrl: user.html_url ?? null,
           type,
-          source: this.streamName.source,
+          source,
         },
       },
     ];

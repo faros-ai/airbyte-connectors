@@ -1,0 +1,110 @@
+import {AirbyteRecord} from 'cdk';
+import {Utils} from 'faros-feeds-sdk/lib';
+
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamName,
+} from '../converter';
+
+// Max length for free-form description text fields such as issue body
+const MAX_DESCRIPTION_LENGTH = 1000;
+
+export class GithubIssues implements Converter {
+  readonly streamName = new StreamName('github', 'issues');
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Label',
+    'tms_Task',
+    'tms_TaskAssignment',
+    'tms_TaskBoardRelationship',
+    'tms_TaskTag',
+    'tms_User',
+  ];
+
+  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+    const source = this.streamName.source;
+    const issue = record.record.data;
+    const res: DestinationRecord[] = [];
+    const uid = '' + issue.id;
+
+    // GitHub's REST API v3 considers every pull request an issue,
+    // but not every issue is a pull request. Will skip pull requests
+    // since we pull them separately
+    if (issue.pull_request) {
+      return res;
+    }
+
+    if (issue.user) {
+      res.push({
+        model: 'tms_User',
+        record: {
+          uid: issue.user.login,
+          name: issue.user.name,
+          source,
+        },
+      });
+    }
+
+    issue.assignees?.forEach((a) => {
+      if (a) {
+        res.push({
+          model: 'tms_User',
+          record: {
+            uid: a.login,
+            name: a.name,
+            source,
+          },
+        });
+        res.push({
+          model: 'tms_TaskAssignment',
+          record: {
+            task: {uid, source},
+            assignee: {uid: a.login, source},
+          },
+        });
+      }
+    });
+
+    issue.labels.forEach((l) => {
+      res.push({
+        model: 'tms_Label',
+        record: {name: l.name},
+      });
+      res.push({
+        model: 'tms_TaskTag',
+        record: {
+          task: {uid, source},
+          label: {name: l.name},
+        },
+      });
+    });
+
+    // Github issues only have state either open or closed
+    const category = issue.state === 'open' ? 'Todo' : 'Done';
+    res.push({
+      model: 'tms_Task',
+      record: {
+        uid,
+        name: issue.title,
+        description: issue.body?.substring(0, MAX_DESCRIPTION_LENGTH),
+        status: {category, detail: issue.state},
+        createdAt: Utils.toDate(issue.created_at),
+        updatedAt: Utils.toDate(issue.updated_at),
+        creator: issue.user ? {uid: issue.user.login, source} : undefined,
+        source,
+      },
+    });
+
+    // TODO: If tasks get transferred between repos or projects, delete previous relationship
+    res.push({
+      model: 'tms_TaskBoardRelationship',
+      record: {
+        task: {uid: uid, source},
+        board: {uid: issue.repository, source},
+      },
+    });
+
+    return res;
+  }
+}
