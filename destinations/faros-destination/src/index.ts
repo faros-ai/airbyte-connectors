@@ -229,12 +229,12 @@ class FarosDestination extends AirbyteDestination {
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }
-            const record = recordMessage.record;
-            const stream = streams[record.stream];
+            const streamName = recordMessage.record.stream;
+            const stream = streams[streamName];
             if (!stream) {
-              throw new VError(`Undefined stream ${record.stream}`);
+              throw new VError(`Undefined stream ${streamName}`);
             }
-            const converter = this.getConverter(record.stream);
+            const converter = this.getConverter(streamName);
             res.recordsWritten += this.writeRecord(
               converter,
               recordMessage,
