@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-node@v2.3.0
         with:
           node-version: 14
+          registry-url: https://registry.npmjs.org
 
       - name: Extract version
         id: extract-version
