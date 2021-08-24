@@ -1,6 +1,6 @@
 {
   "name": "faros-airbyte-cdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Airbyte CDK for JavaScript/TypeScript",
   "keywords": [
     "airbyte",
