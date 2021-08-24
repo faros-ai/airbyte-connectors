@@ -8,10 +8,10 @@ on:
       - '**.md'
 
 jobs:
-  publish-cdk-connectors:
-    name: Publish CDK and Connectors
+  publish-cdk:
+    name: Publish CDK
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Check out
         uses: actions/checkout@v2.3.4
@@ -37,6 +37,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish packages
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          lerna bootstrap --hoist
+          cd cdk
+          npm publish --access public --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Create tag
         if: steps.check-tag.outputs.exists == 'false'
         uses: pkgdeps/git-tag-action@v2.0.1
@@ -47,14 +56,19 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.CDK_VERSION }}
 
-      - name: Publish packages
-        if: steps.check-tag.outputs.exists == 'false'
-        run: |
-          lerna bootstrap --hoist
-          cd cdk
-          npm publish --access public --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-connectors:
+    name: Publish Connectors
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v2.3.0
+        with:
+          node-version: 14
 
       - name: Docker login
         uses: docker/login-action@v1.10.0
