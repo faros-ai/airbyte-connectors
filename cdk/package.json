@@ -1,7 +1,7 @@
 {
   "name": "faros-airbyte-cdk",
   "version": "0.1.1",
-  "description": "Airbyte CDK for JavaScript/TypeScript",
+  "description": "Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript",
   "keywords": [
     "airbyte",
     "cdk",
@@ -9,6 +9,7 @@
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/faros-ai/airbyte-connectors.git"
@@ -16,7 +17,10 @@
   "bugs": {
     "url": "https://github.com/faros-ai/airbyte-connectors/issues"
   },
-  "license": "Apache-2.0",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "files": [
     "lib/",
     "resources/"
@@ -41,6 +45,7 @@
     "pino": "^6.13.0",
     "verror": "^1.10.0"
   },
+  "devDependencies": {},
   "jest": {
     "coverageDirectory": "out/coverage",
     "preset": "ts-jest",
