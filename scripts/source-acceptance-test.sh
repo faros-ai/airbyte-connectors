@@ -52,7 +52,7 @@ docker run --rm -t \
   airbyte/source-acceptance-test \
   --acceptance-test-config /test_input > $log
   cat $log
-  if grep -q -e FAILED -e ERROR "$log"; then
+  if grep -q -e FAILED -e ERROR -e pytest.outcomes.Exit "$log"; then
     echo $tag failed source acceptance tests
     failed=true
   else
