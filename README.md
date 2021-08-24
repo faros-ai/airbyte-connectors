@@ -49,5 +49,7 @@ publish the CDK to NPM once the changed files are merged to the main branch.
 
 # Publish Connector Docker images
 
-Connector Docker images are automatically published to Docker Hub upon each
-commit to the main branch. They are tagged by the commit SHA.
+Connector Docker images are automatically published to Docker Hub after updates
+to the main branch. They are tagged by the version listed in the connector's
+package.json. If the connector is updated without incrementing the version,
+GitHub will NOT overwrite the existing image in Docker Hub.
