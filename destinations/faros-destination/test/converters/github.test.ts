@@ -101,7 +101,7 @@ describe('github', () => {
     cli.stdin.end(githubPGRawLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 112 records');
+    expect(stdout).toMatch('Processed 111 records');
     expect(stdout).toMatch('Would write 47 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
