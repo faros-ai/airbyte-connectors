@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import jsonata from 'jsonata';
 import {VError} from 'verror';
 
