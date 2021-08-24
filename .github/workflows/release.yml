@@ -88,7 +88,7 @@ jobs:
             docker manifest inspect $image:$version_tag > /dev/null
             if [ "$?" == 1 ]
             then
-              docker build . --build-arg path=$path -t $latest_tag -t $version_tag
+              docker build . --build-arg path=$connector_path -t $latest_tag -t $version_tag
               docker push $latest_tag
               docker push $version_tag
             fi
