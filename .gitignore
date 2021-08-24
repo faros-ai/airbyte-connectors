@@ -3,7 +3,7 @@ node_modules/
 .DS_Store
 *.code-workspace
 out/
-cdk/package-lock.json
+faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json
 sources/**/package-lock.json
 secrets/
