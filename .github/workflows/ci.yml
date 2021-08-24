@@ -45,9 +45,6 @@ jobs:
         with:
           node-version: 14
 
-      - name: Print docker info
-        run: docker version
-
       - name: Install dependencies
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 

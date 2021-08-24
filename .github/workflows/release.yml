@@ -78,9 +78,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Print docker info
-        run: docker version
-
       - name: Publish connector images
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
@@ -89,7 +86,7 @@ jobs:
             latest_tag="$image:latest"
             connector_version=$(jq -r '.version' < ${connector_path}package.json)
             version_tag="$image:$connector_version"
-            docker manifest inspect $image:$version_tag > /dev/null
+            docker manifest inspect $image:$version_tag
             if [ "$?" == 1 ]
             then
               docker build . --build-arg path=$connector_path -t $latest_tag -t $version_tag
