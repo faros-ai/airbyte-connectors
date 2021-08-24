@@ -43,8 +43,10 @@ export class GithubPullRequests implements Converter {
       ? {category: upperFirst(camelCase(pr.state)), detail: pr.state}
       : {category: 'Custom', detail: pr.state};
 
-    // TODO: figure out how to get count of pr and review comment count
+    // TODO: figure out how to get review comment count
     // const reviewCommentCount = 0;
+
+    // TODO: figure out how to get pr comments count
     // const commentCount = pr.comments.totalCount + reviewCommentCount;
     const commentCount = 0;
 
