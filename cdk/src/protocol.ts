@@ -118,6 +118,11 @@ export class AirbyteLog implements AirbyteMessage {
   }
 }
 
+export const AirbyteRawStreamPrefix = '_airbyte_raw_';
+export const AirbyteRawABId = '_airbyte_ab_id';
+export const AirbyteRawEmittedAt = '_airbyte_emitted_at';
+export const AirbyteRawData = '_airbyte_data';
+
 export class AirbyteRecord implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.RECORD;
   constructor(
@@ -131,13 +136,13 @@ export class AirbyteRecord implements AirbyteMessage {
 
   unpackRaw(): AirbyteRecord {
     const stream = this.record.stream;
-    if (!stream || !stream.startsWith('_airbyte_raw_')) {
+    if (!stream || !stream.startsWith(AirbyteRawStreamPrefix)) {
       return this;
     }
     return new AirbyteRecord({
-      stream: stream.slice('_airbyte_raw_'.length),
-      emitted_at: new Date(this.record.data._airbyte_emitted_at).getTime(),
-      data: JSON.parse(this.record.data._airbyte_data),
+      stream: stream.slice(AirbyteRawStreamPrefix.length),
+      emitted_at: new Date(this.record.data[AirbyteRawEmittedAt]).getTime(),
+      data: JSON.parse(this.record.data[AirbyteRawData]),
     });
   }
 

@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
+import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
 import {
