@@ -40,8 +40,9 @@ jobs:
       - name: Publish packages
         if: steps.check-tag.outputs.exists == 'false'
         run: |
-          lerna bootstrap --hoist
-          cd cdk
+          lerna bootstrap --hoist && \
+          cd cdk && \
+          npm i && \
           npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
