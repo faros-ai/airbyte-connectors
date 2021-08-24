@@ -78,6 +78,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Print docker info
+        run: docker version
+
       - name: Publish connector images
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
