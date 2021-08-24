@@ -1,8 +1,13 @@
 # Airbyte Connectors
 
-[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml)
+This repository contains [Airbyte](https://airbyte.io/) CDK and connectors implementations.
+See the READMEs inside `destinations/` and `sources/` subfolders for more information on each connector.
 
-This repository contains [Airbyte](https://airbyte.io/) connectors implementations. See the READMEs inside `destinations/` and `sources/` subfolders for more information.
+|   |  Status |
+|:-:|:-:|
+|  Build |  [![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml)  |
+| Release  | [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml)  |
+| CDK  | [![npm version](https://badge.fury.io/js/faros-airbyte-cdk.svg)](https://badge.fury.io/js/faros-airbyte-cdk)  |
 
 # Development
 
@@ -39,17 +44,19 @@ And then run it:
 docker run faros-destination --help
 ```
 
-# Publish CDK to NPM
+# Releasing
 
-To publish the CDK package to NPM, run `npm run bump` from the root of the
+## Publish CDK to NPM
+
+To publish the CDK package to [NPM](https://www.npmjs.com), run `npm run bump` from the root of the
 repository. You will be prompted with a list of version increments to choose
 from (patch, minor, major, etc). Choose the desired increment, then commit and
 push the changed files. GitHub will automatically create a corresponding tag and
 publish the CDK to NPM once the changed files are merged to the main branch.
 
-# Publish Connector Docker images
+## Publish Connector Docker images
 
 Connector Docker images are automatically published to Docker Hub after updates
 to the main branch. They are tagged by the version listed in the connector's
-package.json. If the connector is updated without incrementing the version,
-GitHub will NOT overwrite the existing image in Docker Hub.
+`package.json`. If the connector is updated without incrementing the version,
+GitHub will **NOT** overwrite the existing image in Docker Hub.
