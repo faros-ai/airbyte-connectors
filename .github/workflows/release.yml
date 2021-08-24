@@ -42,7 +42,7 @@ jobs:
         if: steps.check-tag.outputs.exists == 'false'
         run: |
           lerna bootstrap --hoist && \
-          cd cdk && \
+          cd faros-airbyte-cdk && \
           npm i && \
           npm publish --access public --tag latest
         env:
