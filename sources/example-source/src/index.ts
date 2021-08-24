@@ -5,7 +5,7 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-} from 'cdk';
+} from 'faros-airbyte-cdk';
 import {Command} from 'commander';
 import VError from 'verror';
 

@@ -13,7 +13,7 @@ import {
   AirbyteStateMessage,
   DestinationSyncMode,
   parseAirbyteMessage,
-} from 'cdk';
+} from 'faros-airbyte-cdk';
 import {Command} from 'commander';
 import {
   EntryUploaderConfig,

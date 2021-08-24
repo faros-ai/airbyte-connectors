@@ -1,5 +1,5 @@
-import {AirbyteRecord} from 'cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {
   Converter,
