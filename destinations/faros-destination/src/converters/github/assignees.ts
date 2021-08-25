@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {
   Converter,
@@ -12,6 +12,18 @@ export class GithubAssignees implements Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
-    return [];
+    const source = this.streamName.source;
+    const user = record.record.data;
+
+    return [
+      {
+        model: 'tms_User',
+        record: {
+          uid: user.login,
+          name: user.name,
+          source,
+        },
+      },
+    ];
   }
 }

@@ -3,7 +3,7 @@ import {getLocal} from 'mockttp';
 
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {githubLog, readTestResourceFile} from './data';
+import {githubLog, githubPGRawLog, readTestResourceFile} from './data';
 
 describe('github', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -64,16 +64,14 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 98 records');
-    expect(stdout).toMatch('Wrote 13 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Wrote 41 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
   });
 
   test('process records but skip writes, when dry run is enabled', async () => {
-    await mockttp.anyRequest().times(0);
-
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -85,8 +83,26 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 98 records');
-    expect(stdout).toMatch('Would write 13 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Would write 41 records');
+    expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
+  });
+
+  test('process raw records', async () => {
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(githubPGRawLog, 'utf8');
+
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 111 records');
+    expect(stdout).toMatch('Would write 47 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });

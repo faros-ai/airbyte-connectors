@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 

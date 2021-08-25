@@ -33,10 +33,11 @@ export function parseAirbyteMessage(s: string): AirbyteMessage {
       throw new VError(`Message type is not set`);
     }
     switch (res.type) {
+      case AirbyteMessageType.RECORD:
+        return new AirbyteRecord((res as AirbyteRecord).record);
       case AirbyteMessageType.CATALOG:
       case AirbyteMessageType.CONNECTION_STATUS:
       case AirbyteMessageType.LOG:
-      case AirbyteMessageType.RECORD:
       case AirbyteMessageType.SPEC:
       case AirbyteMessageType.STATE:
         return res;
@@ -117,6 +118,11 @@ export class AirbyteLog implements AirbyteMessage {
   }
 }
 
+export const AirbyteRawStreamPrefix = '_airbyte_raw_';
+export const AirbyteRawABId = '_airbyte_ab_id';
+export const AirbyteRawEmittedAt = '_airbyte_emitted_at';
+export const AirbyteRawData = '_airbyte_data';
+
 export class AirbyteRecord implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.RECORD;
   constructor(
@@ -127,6 +133,18 @@ export class AirbyteRecord implements AirbyteMessage {
       data: Dictionary<any>;
     }
   ) {}
+
+  unpackRaw(): AirbyteRecord {
+    const stream = this.record.stream;
+    if (!stream || !stream.startsWith(AirbyteRawStreamPrefix)) {
+      return this;
+    }
+    return new AirbyteRecord({
+      stream: stream.slice(AirbyteRawStreamPrefix.length),
+      emitted_at: new Date(this.record.data[AirbyteRawEmittedAt]).getTime(),
+      data: JSON.parse(this.record.data[AirbyteRawData]),
+    });
+  }
 
   static make(
     stream: string,
