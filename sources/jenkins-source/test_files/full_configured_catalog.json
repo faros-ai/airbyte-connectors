@@ -20,8 +20,7 @@
         "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
-          ["id"],
-          ["jobFullName"]
+          ["fullDisplayName"]
         ]
       },
       "sync_mode": "full_refresh",

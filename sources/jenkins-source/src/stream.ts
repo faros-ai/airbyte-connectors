@@ -11,7 +11,7 @@ import {URL} from 'url';
 import util from 'util';
 
 const DEFAULT_PAGE_SIZE = 10;
-const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls]],jobs[*]`;
+const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
 const FEED_JOBS_COUNT_PATTERN = 'jobs[name]';
 const FEED_MAX_DEPTH_CALC_PATTERN = 'fullName,jobs[*]';
 const FOLDER_JOB_TYPE = 'com.cloudbees.hudson.plugins.folder.Folder';
@@ -48,10 +48,7 @@ interface Build {
   result: string;
   timestamp: number;
   url: string;
-}
-
-interface BuildJob extends Build {
-  jobFullName: string;
+  fullDisplayName: string;
 }
 
 interface JenkinsState {
@@ -112,7 +109,7 @@ export class Jenkins {
   async *syncBuilds(
     jenkinsCfg: JenkinsConfig,
     existingState: JenkinsState | null
-  ): AsyncGenerator<BuildJob> {
+  ): AsyncGenerator<Build> {
     const iter = this.syncJobs(jenkinsCfg, null);
     for await (const job of iter) {
       const builds = this.constructBuilds(job, existingState);
@@ -178,24 +175,19 @@ export class Jenkins {
   private constructBuilds(
     job: Job,
     existingState: JenkinsState | null
-  ): BuildJob[] {
+  ): Build[] {
     const lastBuildNumber =
-      existingState?.newJobsLastCompletedBuilds?.[job.fullName];
-
+      existingState?.newJobsLastCompletedBuilds?.[job.fullName];    
     const builds = job.allBuilds ?? job.builds ?? [];
     if (!builds.length) {
       this.logger.info(parse("Job '%s' has no builds", job.fullName));
-      return [];
+      return builds;
     }
-    const newCompletedBuilds = lastBuildNumber
+    return lastBuildNumber
       ? builds.filter(
           (build: any) => build.number > lastBuildNumber && !build.building
         )
       : builds;
-    return newCompletedBuilds.map((b: any) => ({
-      ...b,
-      jobFullName: job.fullName,
-    }));
   }
 
   private async countRootJobs(): Promise<number> {
@@ -278,18 +270,18 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     return require('../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
-    return ['id', 'jobFullName'];
+    return ['fullDisplayName'];
   }
   get cursorField(): string | string[] {
-    return ['number', 'jobFullName'];
+    return ['number', 'fullDisplayName'];
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: BuildJob,
+    streamSlice?: Build,
     streamState?: JenkinsState
-  ): AsyncGenerator<BuildJob, any, any> {
+  ): AsyncGenerator<Build, any, any> {
     const [client, errorMessage] = await Jenkins.validateClient(this.config);
     if (!client) {
       this.logger.error(errorMessage || '');
@@ -297,7 +289,7 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     }
     const jenkins = new Jenkins(client, this.logger);
 
-    let iter: AsyncGenerator<BuildJob, any, unknown>;
+    let iter: AsyncGenerator<Build, any, unknown>;
     if (syncMode === SyncMode.FULL_REFRESH) {
       iter = jenkins.syncBuilds(this.config, null);
     } else {
@@ -308,12 +300,12 @@ export class JenkinsBuilds extends AirbyteStreamBase {
 
   getUpdatedState(
     currentStreamState: JenkinsState,
-    latestRecord: BuildJob
+    latestRecord: Build
   ): JenkinsState {
-    currentStreamState.newJobsLastCompletedBuilds[latestRecord.jobFullName] =
+    currentStreamState.newJobsLastCompletedBuilds[latestRecord.fullDisplayName] =
       Math.max(
         currentStreamState?.newJobsLastCompletedBuilds[
-          latestRecord.jobFullName
+          latestRecord.fullDisplayName
         ] ?? 0,
         latestRecord?.number ?? 0
       );

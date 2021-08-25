@@ -17,6 +17,9 @@
         "number": 1,
         "url": "http://localhost:8080/job/first"
       }
-    ]
+    ],
+    "lastCompletedBuild": {
+      "number": 3
+    }
   }
 ]

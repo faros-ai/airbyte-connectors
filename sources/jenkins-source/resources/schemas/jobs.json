@@ -17,63 +17,60 @@
     "items": {
       "type": "object",
       "properties": {
-        "type": "object",
-        "properties": {
-          "_class": {
-            "type": "string"
-          },
-          "actions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "_class": {
-                  "type": "string"
-                },
-                "lastBuiltRevision": {
-                  "type": "object",
-                  "properties": {
-                    "SHA1": {
+        "_class": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_class": {
+                "type": "string"
+              },
+              "lastBuiltRevision": {
+                "type": "object",
+                "properties": {
+                  "SHA1": {
+                    "type": "string"
+                  },
+                  "remoteUrls": {
+                    "type": "array",
+                    "items": {
                       "type": "string"
-                    },
-                    "remoteUrls": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
                     }
                   }
                 }
               }
             }
-          },
-          "building": {
-            "type": "boolean"
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "duration": {
-            "type": "number"
-          },
-          "id": {
-            "type": "string"
-          },
-          "number": {
-            "type": "number"
-          },
-          "result": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "number"
-          },
-          "url": {
-            "type": "string"
-          },
-          "jobFullName": {
-            "type": "string"
           }
+        },
+        "building": {
+          "type": "boolean"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "number"
+        },
+        "result": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "number"
+        },
+        "url": {
+          "type": "string"
+        },
+        "jobFullName": {
+          "type": "string"
         }
       }
     }
@@ -81,72 +78,6 @@
   "builds": {
     "type": "array",
     "items": {
-      "type": "object",
-      "properties": {
-        "type": "object",
-        "properties": {
-          "_class": {
-            "type": "string"
-          },
-          "actions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "_class": {
-                  "type": "string"
-                },
-                "lastBuiltRevision": {
-                  "type": "object",
-                  "properties": {
-                    "SHA1": {
-                      "type": "string"
-                    },
-                    "remoteUrls": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "building": {
-            "type": "boolean"
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "duration": {
-            "type": "number"
-          },
-          "id": {
-            "type": "string"
-          },
-          "number": {
-            "type": "number"
-          },
-          "result": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "number"
-          },
-          "url": {
-            "type": "string"
-          },
-          "jobFullName": {
-            "type": "string"
-          }
-        }
-      }
-    }
-  },
-  "lastCompletedBuild": {
-    "type": "object",
-    "properties": {
       "type": "object",
       "properties": {
         "_class": {
@@ -204,6 +135,14 @@
         "jobFullName": {
           "type": "string"
         }
+      }
+    }
+  },
+  "lastCompletedBuild": {
+    "type": "object",
+    "properties": {
+      "number": {
+        "type": "number"
       }
     }
   }
