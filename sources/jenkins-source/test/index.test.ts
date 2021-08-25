@@ -34,14 +34,14 @@ describe('index', () => {
       source.checkConnection({
         user: '123',
         token: 'token',
-        server_url: 'http://google.com',
+        server_url: 'http://example.com',
       })
     ).resolves.toStrictEqual([true, undefined]);
     expect(
       source.checkConnection({
         user: '123',
         token: 'token',
-        server_url: 'http://google.com',
+        server_url: 'http://example.com',
       })
     ).resolves.toStrictEqual([
       false,

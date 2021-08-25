@@ -23,4 +23,4 @@ tests:
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
         jenkins_builds: [ "newJobsLastCompletedBuilds" ]
-        jenkins_jobs: [ "cutoff" ]
+        jenkins_jobs: [ "url" ]
