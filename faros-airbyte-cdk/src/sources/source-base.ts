@@ -133,11 +133,13 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
         for await (const message of generator) {
           yield message;
         }
-      } catch (error) {
+      } catch (e) {
         this.logger.error(
-          `Encountered an exception while reading stream ${this.name}`
+          `Encountered an error while reading stream ${this.name}: ${
+            e.message ? e.message : e
+          }`
         );
-        throw error;
+        throw e;
       }
     }
     this.logger.info(`Finished syncing ${this.name}`);

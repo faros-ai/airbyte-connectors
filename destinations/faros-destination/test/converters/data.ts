@@ -5,3 +5,4 @@ export function readTestResourceFile(fileName: string): string {
 }
 
 export const githubLog = readTestResourceFile('github.log');
+export const githubPGRawLog = readTestResourceFile('github-pg-raw.log');
