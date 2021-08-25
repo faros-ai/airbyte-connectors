@@ -48,6 +48,13 @@
         "description": "Process all input records but avoid writing into Faros API",
         "default": false
       },
+      "invalid_record_strategy": {
+        "type": "string",
+        "title": "Invalid record strategy",
+        "description": "Strategy to follow on invalid record.",
+        "default": "SKIP",
+        "enum": ["FAIL", "SKIP"]
+      },
       "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",

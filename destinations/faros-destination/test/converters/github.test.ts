@@ -66,6 +66,7 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Wrote 41 records');
+    expect(stdout).toMatch('Errored 1 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
@@ -85,6 +86,7 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Would write 41 records');
+    expect(stdout).toMatch('Errored 1 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
@@ -103,6 +105,7 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     expect(stdout).toMatch('Processed 111 records');
     expect(stdout).toMatch('Would write 47 records');
+    expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
