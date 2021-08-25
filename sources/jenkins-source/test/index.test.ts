@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteSpec, SyncMode} from 'cdk';
+import {AirbyteLogger, AirbyteSpec, SyncMode} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import jenkinsClient from 'jenkins';
 import {mocked} from 'ts-jest/utils';

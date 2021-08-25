@@ -4,7 +4,7 @@ import {
   AirbyteStreamBase,
   StreamKey,
   SyncMode,
-} from 'cdk';
+} from 'faros-airbyte-cdk';
 import jenkinsClient, {JenkinsPromisifiedAPI} from 'jenkins';
 import {Dictionary} from 'ts-essentials';
 import {URL} from 'url';

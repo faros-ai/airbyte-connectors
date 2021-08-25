@@ -1,11 +1,11 @@
+import {Command} from 'commander';
 import {
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-} from 'cdk';
-import {Command} from 'commander';
+} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Jenkins, JenkinsBuilds, JenkinsConfig, JenkinsJobs} from './stream';

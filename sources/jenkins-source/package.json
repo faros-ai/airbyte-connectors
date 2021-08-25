@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "cdk": "^0.1.0",
+    "faros-airbyte-cdk": "^0.1.0",
     "commander": "^8.0.0",
     "jenkins": "^0.28.1",
     "verror": "^1.10.0"
