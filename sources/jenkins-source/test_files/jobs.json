@@ -1,0 +1,22 @@
+[
+  {
+    "_class": "hudson.model.FreeStyleProject",
+    "fullName": "first",
+    "name": "first",
+    "url": "http://localhost:8080/job/first",
+    "allBuilds": [
+      {
+        "building": false,
+        "id": "3",
+        "number": 3,
+        "url": "http://localhost:8080/job/first"
+      },
+      {
+        "building": false,
+        "id": "1",
+        "number": 1,
+        "url": "http://localhost:8080/job/first"
+      }
+    ]
+  }
+]

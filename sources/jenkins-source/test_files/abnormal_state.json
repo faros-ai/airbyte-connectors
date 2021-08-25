@@ -1,0 +1,8 @@
+{
+  "jenkins_builds": {
+    "newJobsLastCompletedBuilds": {"first": 3}
+  },
+  "jenkins_jobs": {
+    "url": "http://localhost:8080/job/first"
+  }
+}
