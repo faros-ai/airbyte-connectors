@@ -205,23 +205,11 @@ class FarosDestination extends AirbyteDestination {
     const stateMessages: AirbyteStateMessage[] = [];
 
     if (config.dry_run === true || dryRun) {
-      const res = await this.writeEntries(stdin, streams, stateMessages);
-      this.logger.info(`Processed ${res.recordsProcessed} records`);
-      this.logger.info(
-        `Would write ${res.recordsWritten} records, but dry run is enabled`
-      );
-      this.logger.info(`Errored ${res.recordsErrored} records`);
+      this.logger.info("Dry run is ENABLED. Won't write any records");
+      await this.writeEntries(stdin, streams, stateMessages);
     } else {
       await withEntryUploader(entryUploaderConfig, async (writer) => {
-        const res = await this.writeEntries(
-          stdin,
-          streams,
-          stateMessages,
-          writer
-        );
-        this.logger.info(`Processed ${res.recordsProcessed} records`);
-        this.logger.info(`Wrote ${res.recordsWritten} records`);
-        this.logger.info(`Errored ${res.recordsErrored} records`);
+        await this.writeEntries(stdin, streams, stateMessages, writer);
       });
     }
 
@@ -283,6 +271,12 @@ class FarosDestination extends AirbyteDestination {
         }
       }
     } finally {
+      this.logger.info(`Processed ${res.recordsProcessed} records`);
+      this.logger.info(
+        `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
+      );
+      this.logger.info(`Errored ${res.recordsErrored} records`);
+
       input.close();
       writer?.end();
     }
