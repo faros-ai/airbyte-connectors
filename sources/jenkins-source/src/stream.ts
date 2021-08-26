@@ -177,7 +177,7 @@ export class Jenkins {
     existingState: JenkinsState | null
   ): Build[] {
     const lastBuildNumber =
-      existingState?.newJobsLastCompletedBuilds?.[job.fullName];    
+      existingState?.newJobsLastCompletedBuilds?.[job.fullName];
     const builds = job.allBuilds ?? job.builds ?? [];
     if (!builds.length) {
       this.logger.info(parse("Job '%s' has no builds", job.fullName));
@@ -247,7 +247,6 @@ export class Jenkins {
       }
       if (job._class === FOLDER_JOB_TYPE) {
         if (job.jobs) {
-          
           for (const nestedJob of job.jobs) {
             nestedJob.name = `${job.name}/${nestedJob.name}`;
           }
@@ -273,7 +272,14 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     return ['fullDisplayName'];
   }
   get cursorField(): string | string[] {
-    return ['number', 'fullDisplayName'];
+    return 'timestamp';
+  }
+  async *streamSlices(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Build
+  ): AsyncGenerator<Build | undefined> {
+    yield undefined;
   }
 
   async *readRecords(
@@ -302,13 +308,14 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     currentStreamState: JenkinsState,
     latestRecord: Build
   ): JenkinsState {
-    currentStreamState.newJobsLastCompletedBuilds[latestRecord.fullDisplayName] =
-      Math.max(
-        currentStreamState?.newJobsLastCompletedBuilds[
-          latestRecord.fullDisplayName
-        ] ?? 0,
-        latestRecord?.number ?? 0
-      );
+    currentStreamState.newJobsLastCompletedBuilds[
+      latestRecord.fullDisplayName
+    ] = Math.max(
+      currentStreamState?.newJobsLastCompletedBuilds[
+        latestRecord.fullDisplayName
+      ] ?? 0,
+      latestRecord?.number ?? 0
+    );
     return currentStreamState;
   }
 }
@@ -323,9 +330,6 @@ export class JenkinsJobs extends AirbyteStreamBase {
   }
   get primaryKey(): StreamKey {
     return 'fullName';
-  }
-  get cursorField(): string | string[] {
-    return ['url'];
   }
 
   async *readRecords(
@@ -342,12 +346,8 @@ export class JenkinsJobs extends AirbyteStreamBase {
 
     const jenkins = new Jenkins(client, this.logger);
 
-    let iter: AsyncGenerator<Job, any, unknown>;
     if (syncMode === SyncMode.FULL_REFRESH) {
-      iter = jenkins.syncJobs(this.config, null);
-    } else {
-      iter = jenkins.syncJobs(this.config, streamSlice ?? null);
+      yield* jenkins.syncJobs(this.config, null);
     }
-    yield* iter;
   }
 }
