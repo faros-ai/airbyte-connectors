@@ -1,3 +1,4 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
 import fs from 'fs';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -112,7 +113,7 @@ describe('github', () => {
     expect(await cli.wait()).toBe(0);
   });
 
-  test('fail to process records when strategy is fail', async () => {
+  test('fail to process bad records when strategy is fail', async () => {
     fs.unlinkSync(configPath);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
     const cli = await CLI.runWith([
@@ -124,8 +125,9 @@ describe('github', () => {
       '--dry-run',
     ]);
     cli.stdin.end(
-      `{"type": "RECORD", "record": {"stream": "mytestsource__github__bad", "data": {"bad":"dummy"}, "emitted_at": 1629216182000}}` +
-        os.EOL,
+      JSON.stringify(
+        AirbyteRecord.make('mytestsource__github__bad', {bad: 'dummy'})
+      ) + os.EOL,
       'utf8'
     );
     const stdout = await read(cli.stdout);
