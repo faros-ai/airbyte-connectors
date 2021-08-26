@@ -1,6 +1,8 @@
 import fs from 'fs';
 import {getLocal} from 'mockttp';
+import os from 'os';
 
+import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {githubLog, githubPGRawLog, readTestResourceFile} from './data';
@@ -64,14 +66,15 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Wrote 41 records');
+    expect(stdout).toMatch('Processed 97 records');
+    expect(stdout).toMatch('Wrote 42 records');
+    expect(stdout).toMatch('Errored 1 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
   });
 
-  test('process records but skip writes, when dry run is enabled', async () => {
+  test('process records but skip writes when dry run is enabled', async () => {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -83,8 +86,9 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Would write 41 records');
+    expect(stdout).toMatch('Processed 97 records');
+    expect(stdout).toMatch('Would write 42 records');
+    expect(stdout).toMatch('Errored 1 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
@@ -103,7 +107,33 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     expect(stdout).toMatch('Processed 111 records');
     expect(stdout).toMatch('Would write 47 records');
+    expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
+  });
+
+  test('fail to process records when strategy is fail', async () => {
+    fs.unlinkSync(configPath);
+    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(
+      `{"type": "RECORD", "record": {"stream": "mytestsource__github__bad", "data": {"bad":"dummy"}, "emitted_at": 1629216182000}}` +
+        os.EOL,
+      'utf8'
+    );
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 0 records');
+    expect(stdout).toMatch('Would write 0 records');
+    expect(stdout).toMatch('Errored 1 records');
+    const stderr = await read(cli.stderr);
+    expect(stderr).toMatch('Undefined stream mytestsource__github__bad');
+    expect(await cli.wait()).toBeGreaterThan(0);
   });
 });

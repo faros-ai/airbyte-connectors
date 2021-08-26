@@ -6,6 +6,7 @@ import {
   DestinationRecord,
   StreamName,
 } from '../converter';
+import {GithubCommon} from './common';
 
 export class GithubAssignees implements Converter {
   readonly streamName = new StreamName('github', 'assignees');
@@ -15,15 +16,6 @@ export class GithubAssignees implements Converter {
     const source = this.streamName.source;
     const user = record.record.data;
 
-    return [
-      {
-        model: 'tms_User',
-        record: {
-          uid: user.login,
-          name: user.name,
-          source,
-        },
-      },
-    ];
+    return [GithubCommon.tms_User(user, source)];
   }
 }

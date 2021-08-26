@@ -1,6 +1,8 @@
 import fs from 'fs';
 import {AffixOptions, open, track} from 'temp';
 
+import {InvalidRecordStrategy} from '../src';
+
 // Automatically track and cleanup temp files at exit
 // TODO: this does not seem to work - figure out what's wrong
 track();
@@ -22,14 +24,24 @@ export async function tempFile(
  * Creates a temporary file with testing configuration
  * @return path to the temporary config file
  */
-export async function tempConfig(api_url: string): Promise<string> {
+export async function tempConfig(
+  api_url: string,
+  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP
+): Promise<string> {
   const conf = {
     api_url,
+    invalid_record_strategy,
     api_key: 'test-api-key',
     graph: 'test-graph',
     origin: 'test-origin',
-    jsonata_expression: '[]',
-    jsonata_destination_models: ['test_Test'],
+    jsonata_destination_models: ['vcs_User'],
+    jsonata_expression: `
+    data.{
+      "model": "vcs_User",
+      "record": {
+        "uid": foo
+      }
+   }`,
   };
   return tempFile(JSON.stringify(conf), {suffix: '.json'});
 }
