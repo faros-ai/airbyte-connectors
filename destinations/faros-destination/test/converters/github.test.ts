@@ -1,5 +1,10 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
+import {
+  AirbyteLog,
+  AirbyteLogLevel,
+  AirbyteRecord,
+} from 'faros-airbyte-cdk/lib';
 import fs from 'fs';
+import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
@@ -19,6 +24,7 @@ describe('github', () => {
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
+  const streamNamePrefix = 'mytestsource__github__';
 
   beforeEach(async () => {
     await mockttp.start({startPort: 30000, endPort: 50000});
@@ -186,9 +192,49 @@ describe('github', () => {
     cli.stdin.end(githubAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    const recordsByStream = {
+      assignees: 12,
+      branches: 4,
+      collaborators: 12,
+      comments: 17,
+      commit_comments: 1,
+      commits: 77,
+      events: 300,
+      issue_events: 210,
+      issue_labels: 35,
+      issue_milestones: 1,
+      issues: 39,
+      organizations: 1,
+      projects: 1,
+      pull_request_stats: 38,
+      pull_requests: 38,
+      releases: 1,
+      repositories: 49,
+      review_comments: 87,
+      reviews: 121,
+      stargazers: 2,
+      tags: 2,
+      teams: 1,
+      users: 24,
+    };
+    const sorted = _(recordsByStream)
+      .toPairs()
+      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+
     expect(stdout).toMatch('Processed 1073 records');
     expect(stdout).toMatch('Would write 824 records');
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch(
+      JSON.stringify(
+        AirbyteLog.make(
+          AirbyteLogLevel.INFO,
+          `Processed records by stream: ${JSON.stringify(sorted)}`
+        )
+      )
+    );
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });

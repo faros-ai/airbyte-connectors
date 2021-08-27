@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import {keyBy, sortBy} from 'lodash';
+import _, {keyBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -290,13 +290,12 @@ class FarosDestination extends AirbyteDestination {
 
   private logWriteStats(res: WriteStats, writer?: Writable): void {
     this.logger.info(`Processed ${res.recordsProcessed} records`);
-    const sorted = sortBy(Object.keys(res.recordsByStream), (k) => {
-      return -res.recordsByStream[k];
-    });
-    const counts = sorted
-      .map((k) => `"${k}":${res.recordsByStream[k]}`)
-      .join(',');
-    this.logger.info(`Processed records by stream: {${counts}}`);
+    const sorted = _(res.recordsByStream)
+      .toPairs()
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+    this.logger.info(`Processed records by stream: ${JSON.stringify(sorted)}`);
     this.logger.info(
       `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
     );
