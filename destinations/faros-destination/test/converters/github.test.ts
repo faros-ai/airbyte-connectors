@@ -6,7 +6,12 @@ import os from 'os';
 import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {githubLog, githubPGRawLog, readTestResourceFile} from './data';
+import {
+  githubAllStreamsLog,
+  githubLog,
+  githubPGRawLog,
+  readTestResourceFile,
+} from './data';
 
 describe('github', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -67,9 +72,9 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 97 records');
-    expect(stdout).toMatch('Wrote 42 records');
-    expect(stdout).toMatch('Errored 1 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Wrote 41 records');
+    expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
@@ -87,9 +92,28 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 97 records');
-    expect(stdout).toMatch('Would write 42 records');
-    expect(stdout).toMatch('Errored 1 records');
+    expect(stdout).toMatch('Processed 96 records');
+    expect(stdout).toMatch('Would write 41 records');
+    expect(stdout).toMatch('Errored 0 records');
+    expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
+  });
+
+  test('process records from all streams', async () => {
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(githubAllStreamsLog, 'utf8');
+
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 1073 records');
+    expect(stdout).toMatch('Would write 824 records');
+    expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
@@ -110,6 +134,36 @@ describe('github', () => {
     expect(stdout).toMatch('Would write 47 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
+  });
+
+  test('skip to process bad records when strategy is skip', async () => {
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(
+      JSON.stringify(
+        AirbyteRecord.make('mytestsource__github__bad', {bad: 'dummy'})
+      ) +
+        os.EOL +
+        JSON.stringify(
+          AirbyteRecord.make('mytestsource__github__something_else', {
+            foo: 'bar',
+          })
+        ) +
+        os.EOL,
+      'utf8'
+    );
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 1 records');
+    expect(stdout).toMatch('Would write 1 records');
+    expect(stdout).toMatch('Errored 1 records');
+    expect(await read(cli.stderr)).toMatch('');
     expect(await cli.wait()).toBe(0);
   });
 
