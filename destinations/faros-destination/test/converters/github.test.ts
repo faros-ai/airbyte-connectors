@@ -224,7 +224,9 @@ describe('github', () => {
       .fromPairs()
       .value();
 
-    expect(stdout).toMatch('Processed 1073 records');
+    const total = _(recordsByStream).values().sum(); // total = 1073
+
+    expect(stdout).toMatch(`Processed ${total} records`);
     expect(stdout).toMatch('Would write 824 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch(
