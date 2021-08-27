@@ -99,25 +99,6 @@ describe('github', () => {
     expect(await cli.wait()).toBe(0);
   });
 
-  test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(githubAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    expect(stdout).toMatch('Processed 1073 records');
-    expect(stdout).toMatch('Would write 824 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-  });
-
   test('process raw records', async () => {
     const cli = await CLI.runWith([
       'write',
@@ -191,5 +172,24 @@ describe('github', () => {
     const stderr = await read(cli.stderr);
     expect(stderr).toMatch('Undefined stream mytestsource__github__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
+  });
+
+  test('process records from all streams', async () => {
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(githubAllStreamsLog, 'utf8');
+
+    const stdout = await read(cli.stdout);
+    expect(stdout).toMatch('Processed 1073 records');
+    expect(stdout).toMatch('Would write 824 records');
+    expect(stdout).toMatch('Errored 0 records');
+    expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
   });
 });
