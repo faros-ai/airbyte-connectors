@@ -9,4 +9,5 @@ sources/**/package-lock.json
 secrets/
 *-acceptance-test.log
 jenkins/data/plugins
+jenkins/data/logs
 jenkins/data/war
