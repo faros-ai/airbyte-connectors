@@ -41,6 +41,15 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2.3.4
 
+      - name: Log jenkins data
+        run: |
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/1/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/2/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/3/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/config.xml
+          ls - l
+          pwd
+
       - name: Cache Node modules
         uses: actions/cache@v2.1.6
         env:
