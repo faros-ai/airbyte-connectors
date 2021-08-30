@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - ./data:/var/jenkins_home
+      - ./data/docker/docker.sock:/var/run/docker.sock
+      - ./data/docker/docker:/usr/bin/docker

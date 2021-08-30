@@ -23,6 +23,18 @@ jobs:
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
 
+    services:
+      jenkins:
+        image: jenkins/jenkins:lts-jdk11
+        restart: unless-stopped
+        ports:
+          - 8080:8080
+          - 50000:50000
+        volumes:
+          - ../../jenkins/data:/var/jenkins_home
+          - ../../jenkins/data/docker/docker.sock:/var/run/docker.sock
+          - ../../jenkins/data/docker/docker:/usr/bin/docker
+
     steps:
       - name: Check out
         uses: actions/checkout@v2.3.4

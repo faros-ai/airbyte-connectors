@@ -1,0 +1,9 @@
+Started by user [8mha:////4EJtw43EKTJ3ZOUHs2ZD+NuBa88LfK2VrJHVpi7ADnbIAAAAlx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzWEgZu/dLi1CL9xJTczDwAj6GcLcAAAAA=[0mAdmin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/Faros-test-job
+[Faros-test-job] $ /bin/sh -xe /tmp/jenkins5710701052423047886.sh
++ echo - OK?
+- OK?
++ echo - OK!
+- OK!
+Finished: SUCCESS
