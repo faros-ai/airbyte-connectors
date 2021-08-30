@@ -30,9 +30,9 @@ jobs:
           - 8080:8080
           - 50000:50000
         volumes:
-          - ../../jenkins/data:/var/jenkins_home
-          - ../../jenkins/data/docker/docker.sock:/var/run/docker.sock
-          - ../../jenkins/data/docker/docker:/usr/bin/docker
+          - ./jenkins/data:/var/jenkins_home
+          - ./jenkins/data/docker/docker.sock:/var/run/docker.sock
+          - ./jenkins/data/docker/docker:/usr/bin/docker
 
     steps:
       - name: Check out
