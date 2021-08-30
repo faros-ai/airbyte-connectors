@@ -35,6 +35,9 @@ jobs:
           - ${{ github.workspace }}/jenkins/data/docker/docker:/usr/bin/docker
 
     steps:
+      - name: Add user permission
+        run: sudo chown -R $USER:$USER ${{ github.workspace }}
+
       - name: Check out
         uses: actions/checkout@v2.3.4
 
