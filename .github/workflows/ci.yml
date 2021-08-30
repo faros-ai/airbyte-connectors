@@ -43,9 +43,9 @@ jobs:
 
       - name: Log jenkins data
         run: |
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/1/build.xml
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/2/build.xml
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/build/3/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/1/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/2/build.xml
+          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/3/build.xml
           cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/config.xml
           ls - l
           pwd
