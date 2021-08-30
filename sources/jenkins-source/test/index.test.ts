@@ -63,9 +63,9 @@ describe('index', () => {
     mocked(jenkinsClient).mockReturnValue({
       info: jest.fn().mockResolvedValue({}),
       job: {
-        list: jest.fn().mockImplementation(async () =>
-          readTestResourceFile('jobs.json')
-        ),
+        list: jest
+          .fn()
+          .mockImplementation(async () => readTestResourceFile('jobs.json')),
       },
     } as any);
     const source = new JenkinsSource(logger);
@@ -75,7 +75,7 @@ describe('index', () => {
       token: 'pass',
     });
     const jobsIter = jobStream.readRecords(SyncMode.INCREMENTAL, undefined, {
-      url: 'http://localhost:8080/job/first',
+      url: 'http://localhost:8080/job/Faros-test-job',
     });
     const jobs = [];
     for await (const job of jobsIter) {
@@ -110,23 +110,35 @@ describe('index', () => {
     expect(jobs).toStrictEqual([
       {
         _class: 'hudson.model.FreeStyleProject',
-        fullName: 'first',
-        name: 'first',
-        url: 'http://localhost:8080/job/first',
+        fullName: 'Faros-test-job',
+        name: 'Faros-test-job',
+        url: 'http://localhost:8080/job/Faros-test-job',
         allBuilds: [
           {
             building: false,
             id: '3',
+            fullDisplayName: 'Faros-test-job #3',
             number: 3,
-            url: 'http://localhost:8080/job/first',
+            url: 'http://localhost:8080/job/Faros-test-job/3',
+          },
+          {
+            building: false,
+            id: '2',
+            fullDisplayName: 'Faros-test-job #2',
+            number: 2,
+            url: 'http://localhost:8080/job/Faros-test-job/2',
           },
           {
             building: false,
             id: '1',
+            fullDisplayName: 'Faros-test-job #1',
             number: 1,
-            url: 'http://localhost:8080/job/first',
+            url: 'http://localhost:8080/job/Faros-test-job/1',
           },
         ],
+        lastCompletedBuild: {
+          number: 3,
+        },
       },
     ]);
   });
@@ -159,7 +171,7 @@ describe('index', () => {
       token: 'pass',
     });
     const buildState = {
-      newJobsLastCompletedBuilds: {first: 2},
+      newJobsLastCompletedBuilds: {'Faros-test-job': 2},
     };
     const buildsIter = buildStream.readRecords(
       SyncMode.INCREMENTAL,
@@ -169,9 +181,9 @@ describe('index', () => {
     );
     const builds = [];
     expect(
-      buildStream.getUpdatedState(buildState, {jobFullName: 'first', number: 1})
+      buildStream.getUpdatedState(buildState, {fullDisplayName: 'Faros-test-job #1', number: 1})
     ).toStrictEqual({
-      newJobsLastCompletedBuilds: {first: 2},
+      newJobsLastCompletedBuilds: {'Faros-test-job': 2},
     });
     for await (const build of buildsIter) {
       builds.push(build);
@@ -180,15 +192,15 @@ describe('index', () => {
       {
         building: false,
         id: '3',
-        jobFullName: 'first',
+        fullDisplayName: 'Faros-test-job #3',
         number: 3,
-        url: 'http://localhost:8080/job/first',
+        url: 'http://localhost:8080/job/Faros-test-job/3',
       },
     ]);
     expect(
-      buildStream.getUpdatedState(buildState, {jobFullName: 'first', number: 3})
+      buildStream.getUpdatedState(buildState, {fullDisplayName: 'Faros-test-job #3', number: 3})
     ).toStrictEqual({
-      newJobsLastCompletedBuilds: {first: 3},
+      newJobsLastCompletedBuilds: {'Faros-test-job': 3},
     });
   });
 
@@ -216,16 +228,23 @@ describe('index', () => {
       {
         building: false,
         id: '3',
-        jobFullName: 'first',
+        fullDisplayName: 'Faros-test-job #3',
         number: 3,
-        url: 'http://localhost:8080/job/first',
+        url: 'http://localhost:8080/job/Faros-test-job/3',
+      },
+      {
+        building: false,
+        id: '2',
+        fullDisplayName: 'Faros-test-job #2',
+        number: 2,
+        url: 'http://localhost:8080/job/Faros-test-job/2',
       },
       {
         building: false,
         id: '1',
-        jobFullName: 'first',
+        fullDisplayName: 'Faros-test-job #1',
         number: 1,
-        url: 'http://localhost:8080/job/first',
+        url: 'http://localhost:8080/job/Faros-test-job/1',
       },
     ]);
   });

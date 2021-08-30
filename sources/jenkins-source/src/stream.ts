@@ -52,12 +52,16 @@ interface Build {
 }
 
 interface JenkinsState {
-  readonly newJobsLastCompletedBuilds: Record<string, number>; // job to build number
+  newJobsLastCompletedBuilds: Record<string, number>; // job to build number
 }
 
 function parse(str: string, ...args: any[]): string {
   let i = 0;
   return str.replace(/%s/g, () => args[i++]);
+}
+
+function buildNameToJob(str: string): string {
+  return str.substring(0, str.indexOf(' '));
 }
 
 export class Jenkins {
@@ -269,10 +273,10 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     return require('../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
-    return ['fullDisplayName'];
+    return 'fullDisplayName';
   }
   get cursorField(): string | string[] {
-    return 'timestamp';
+    return 'number';
   }
   async *streamSlices(
     syncMode: SyncMode,
@@ -308,12 +312,12 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     currentStreamState: JenkinsState,
     latestRecord: Build
   ): JenkinsState {
-    currentStreamState.newJobsLastCompletedBuilds[
-      latestRecord.fullDisplayName
-    ] = Math.max(
-      currentStreamState?.newJobsLastCompletedBuilds[
-        latestRecord.fullDisplayName
-      ] ?? 0,
+    const jobName = buildNameToJob(latestRecord.fullDisplayName);
+    if (!currentStreamState.newJobsLastCompletedBuilds) {
+      currentStreamState.newJobsLastCompletedBuilds = {};
+    }
+    currentStreamState.newJobsLastCompletedBuilds[jobName] = Math.max(
+      currentStreamState?.newJobsLastCompletedBuilds[jobName] ?? 0,
       latestRecord?.number ?? 0
     );
     return currentStreamState;
@@ -330,6 +334,9 @@ export class JenkinsJobs extends AirbyteStreamBase {
   }
   get primaryKey(): StreamKey {
     return 'fullName';
+  }
+  get cursorField(): string | string[] {
+    return [];
   }
 
   async *readRecords(

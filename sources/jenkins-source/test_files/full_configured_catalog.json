@@ -3,9 +3,162 @@
     {
       "stream": {
         "name": "jenkins_jobs",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
-        "source_defined_cursor": true,
+        "json_schema": {
+          "_class": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "allBuilds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "_class": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_class": {
+                          "type": "string"
+                        },
+                        "lastBuiltRevision": {
+                          "type": "object",
+                          "properties": {
+                            "SHA1": {
+                              "type": "string"
+                            },
+                            "remoteUrls": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "building": {
+                    "type": "boolean"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "duration": {
+                    "type": "number"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "number"
+                  },
+                  "result": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "number"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "fullDisplayName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "builds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "_class": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_class": {
+                          "type": "string"
+                        },
+                        "lastBuiltRevision": {
+                          "type": "object",
+                          "properties": {
+                            "SHA1": {
+                              "type": "string"
+                            },
+                            "remoteUrls": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "building": {
+                    "type": "boolean"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "duration": {
+                    "type": "number"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "number"
+                  },
+                  "result": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "number"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "fullDisplayName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "lastCompletedBuild": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "number"
+            }
+          }
+        },
+        "supported_sync_modes": ["full_refresh"],
+        "source_defined_cursor": false,
         "source_defined_primary_key": [
           ["fullName"]
         ]
@@ -16,7 +169,63 @@
     {
       "stream": {
         "name": "jenkins_builds",
-        "json_schema": {},
+        "json_schema": {
+          "_class": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_class": {
+                  "type": "string"
+                },
+                "lastBuiltRevision": {
+                  "type": "object",
+                  "properties": {
+                    "SHA1": {
+                      "type": "string"
+                    },
+                    "remoteUrls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "building": {
+            "type": "boolean"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "number"
+          },
+          "result": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          },
+          "fullDisplayName": {
+            "type": "string"
+          }
+        },
         "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
