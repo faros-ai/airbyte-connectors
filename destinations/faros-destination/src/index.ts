@@ -1,3 +1,4 @@
+import {Command} from 'commander';
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -14,7 +15,6 @@ import {
   DestinationSyncMode,
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
-import {Command} from 'commander';
 import {
   EntryUploaderConfig,
   FarosClient,
@@ -55,13 +55,25 @@ export function mainCommand(options?: {
   return program;
 }
 
+export enum InvalidRecordStrategy {
+  FAIL = 'FAIL',
+  SKIP = 'SKIP',
+}
+
+interface WriteStats {
+  readonly recordsProcessed: number;
+  readonly recordsWritten: number;
+  readonly recordsErrored: number;
+}
+
 /** Faros destination implementation. */
 class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
     private farosClient: FarosClient = undefined,
     private jsonataConverter: Converter | undefined = undefined,
-    private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK
+    private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
+    private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP
   ) {
     super();
   }
@@ -111,6 +123,22 @@ class FarosDestination extends AirbyteDestination {
   private init(config: AirbyteConfig): void {
     if (!config.origin) {
       throw new VError('Faros origin is not set');
+    }
+    if (
+      config.invalid_record_strategy &&
+      !Object.values(InvalidRecordStrategy).includes(
+        config.invalid_record_strategy
+      )
+    ) {
+      throw new VError(
+        `Invalid strategy ${config.invalid_record_strategy}. ` +
+          `Possible values are ${Object.values(InvalidRecordStrategy).join(
+            ','
+          )}`
+      );
+    }
+    if (config.invalid_record_strategy) {
+      this.invalidRecordStrategy = config.invalid_record_strategy;
     }
     if (
       config.jsonata_mode &&
@@ -177,21 +205,11 @@ class FarosDestination extends AirbyteDestination {
     const stateMessages: AirbyteStateMessage[] = [];
 
     if (config.dry_run === true || dryRun) {
-      const res = await this.writeEntries(stdin, streams, stateMessages);
-      this.logger.info(`Processed ${res.recordsProcessed} records`);
-      this.logger.info(
-        `Would write ${res.recordsWritten} records, but dry run is enabled`
-      );
+      this.logger.info("Dry run is ENABLED. Won't write any records");
+      await this.writeEntries(stdin, streams, stateMessages);
     } else {
       await withEntryUploader(entryUploaderConfig, async (writer) => {
-        const res = await this.writeEntries(
-          stdin,
-          streams,
-          stateMessages,
-          writer
-        );
-        this.logger.info(`Processed ${res.recordsProcessed} records`);
-        this.logger.info(`Wrote ${res.recordsWritten} records`);
+        await this.writeEntries(stdin, streams, stateMessages, writer);
       });
     }
 
@@ -206,8 +224,8 @@ class FarosDestination extends AirbyteDestination {
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
     writer?: Writable
-  ): Promise<{recordsProcessed: number; recordsWritten: number}> {
-    const res = {recordsProcessed: 0, recordsWritten: 0};
+  ): Promise<WriteStats> {
+    const res = {recordsProcessed: 0, recordsWritten: 0, recordsErrored: 0};
 
     // readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -243,13 +261,22 @@ class FarosDestination extends AirbyteDestination {
             res.recordsProcessed++;
           }
         } catch (e) {
+          res.recordsErrored++;
           this.logger.error(
             `Error processing input: ${e.message ? e.message : e}`
           );
-          throw e;
+          if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
+            throw e;
+          }
         }
       }
     } finally {
+      this.logger.info(`Processed ${res.recordsProcessed} records`);
+      this.logger.info(
+        `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
+      );
+      this.logger.info(`Errored ${res.recordsErrored} records`);
+
       input.close();
       writer?.end();
     }
