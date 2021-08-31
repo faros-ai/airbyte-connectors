@@ -47,7 +47,9 @@ jobs:
           cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/2/build.xml
           cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/3/build.xml
           cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/config.xml
-          ls - l
+          ls -l
+          ls -l ${{ github.workspace }}/jenkins/data
+          ls -l ${{ github.workspace }}/jenkins/data/jobs
           pwd
 
       - name: Cache Node modules
