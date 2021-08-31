@@ -2,7 +2,7 @@ import {
   AirbyteLog,
   AirbyteLogLevel,
   AirbyteRecord,
-} from 'faros-airbyte-cdk/lib';
+} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
