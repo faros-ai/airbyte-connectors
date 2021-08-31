@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import {keyBy} from 'lodash';
+import _, {keyBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -64,6 +64,7 @@ interface WriteStats {
   readonly recordsProcessed: number;
   readonly recordsWritten: number;
   readonly recordsErrored: number;
+  readonly recordsByStream: Dictionary<number>;
 }
 
 /** Faros destination implementation. */
@@ -225,7 +226,12 @@ class FarosDestination extends AirbyteDestination {
     stateMessages: AirbyteStateMessage[],
     writer?: Writable
   ): Promise<WriteStats> {
-    const res = {recordsProcessed: 0, recordsWritten: 0, recordsErrored: 0};
+    const res = {
+      recordsProcessed: 0,
+      recordsWritten: 0,
+      recordsErrored: 0,
+      recordsByStream: {},
+    };
 
     // readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -252,6 +258,9 @@ class FarosDestination extends AirbyteDestination {
             if (!stream) {
               throw new VError(`Undefined stream ${streamName}`);
             }
+            const count = res.recordsByStream[streamName];
+            res.recordsByStream[streamName] = count ? count + 1 : 1;
+
             const converter = this.getConverter(streamName);
             res.recordsWritten += this.writeRecord(
               converter,
@@ -271,17 +280,26 @@ class FarosDestination extends AirbyteDestination {
         }
       }
     } finally {
-      this.logger.info(`Processed ${res.recordsProcessed} records`);
-      this.logger.info(
-        `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
-      );
-      this.logger.info(`Errored ${res.recordsErrored} records`);
-
+      this.logWriteStats(res, writer);
       input.close();
       writer?.end();
     }
 
     return res;
+  }
+
+  private logWriteStats(res: WriteStats, writer?: Writable): void {
+    this.logger.info(`Processed ${res.recordsProcessed} records`);
+    const sorted = _(res.recordsByStream)
+      .toPairs()
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+    this.logger.info(`Processed records by stream: ${JSON.stringify(sorted)}`);
+    this.logger.info(
+      `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
+    );
+    this.logger.info(`Errored ${res.recordsErrored} records`);
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
