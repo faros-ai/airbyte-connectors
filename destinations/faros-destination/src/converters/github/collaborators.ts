@@ -18,6 +18,6 @@ export class GithubCollaborators implements Converter {
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const user = record.record.data;
-    return GithubCommon.vcs_User_and_Membership(user, source);
+    return GithubCommon.vcs_User_with_Membership(user, source);
   }
 }

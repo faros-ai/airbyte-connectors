@@ -5,7 +5,7 @@ import {DestinationRecord} from '../converter';
 
 /** Common functions shares across GitHub converters */
 export class GithubCommon {
-  static vcs_User_and_Membership(
+  static vcs_User_with_Membership(
     user: Dictionary<any>,
     source: string
   ): ReadonlyArray<DestinationRecord> {
@@ -22,27 +22,31 @@ export class GithubCommon {
     return [vcsUser, vcsMembership];
   }
 
-  static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
-    const type = ((): {category: string; detail: string} => {
-      if (!user.type) {
-        return {category: 'Custom', detail: 'unknown'};
-      }
-      const userTypeLower = user.type.toLowerCase();
-      switch (userTypeLower) {
-        case 'enterpriseuseraccount':
-        case 'user':
-          return {category: 'User', detail: userTypeLower};
-        case 'bot':
-          return {category: 'Bot', detail: userTypeLower};
-        case 'organization':
-          return {category: 'Organization', detail: userTypeLower};
-        case 'mannequin':
-          return {category: 'Mannequin', detail: userTypeLower};
-        default:
-          return {category: 'Custom', detail: userTypeLower};
-      }
-    })();
+  static vcs_UserType(user: Dictionary<any>): {
+    category: string;
+    detail: string;
+  } {
+    if (!user.type) {
+      return {category: 'Custom', detail: 'unknown'};
+    }
+    const userTypeLower = user.type.toLowerCase();
+    switch (userTypeLower) {
+      case 'enterpriseuseraccount':
+      case 'user':
+        return {category: 'User', detail: userTypeLower};
+      case 'bot':
+        return {category: 'Bot', detail: userTypeLower};
+      case 'organization':
+        return {category: 'Organization', detail: userTypeLower};
+      case 'mannequin':
+        return {category: 'Mannequin', detail: userTypeLower};
+      default:
+        return {category: 'Custom', detail: userTypeLower};
+    }
+  }
 
+  static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
+    const type = GithubCommon.vcs_UserType(user);
     return {
       model: 'vcs_User',
       record: {
@@ -68,6 +72,7 @@ export class GithubCommon {
       },
     };
   }
+
   static tms_User(user: Dictionary<any>, source: string): DestinationRecord {
     return {
       model: 'tms_User',

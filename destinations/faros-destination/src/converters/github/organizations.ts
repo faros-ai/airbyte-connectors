@@ -1,4 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
+import {camelCase, toLower, upperFirst} from 'lodash';
 
 import {
   Converter,
@@ -7,6 +9,9 @@ import {
   StreamName,
 } from '../converter';
 
+// Github org types
+const orgTypes = ['organization', 'workspace', 'group'];
+
 export class GithubOrganizations implements Converter {
   readonly streamName = new StreamName('github', 'organizations');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -14,7 +19,25 @@ export class GithubOrganizations implements Converter {
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
-    // TODO: convert records
-    return [];
+    const source = this.streamName.source;
+    const org = record.record.data;
+
+    const type = orgTypes.includes(org.type.toLowerCase())
+      ? {category: upperFirst(camelCase(org.type)), detail: org.type}
+      : {category: 'Custom', detail: org.type};
+
+    return [
+      {
+        model: 'vcs_Organization',
+        record: {
+          uid: toLower(org.login),
+          name: org.name,
+          htmlUrl: org.html_url,
+          type,
+          createdAt: Utils.toDate(org.created_at),
+          source,
+        },
+      },
+    ];
   }
 }
