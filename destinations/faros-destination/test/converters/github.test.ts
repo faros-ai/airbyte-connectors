@@ -1,8 +1,4 @@
-import {
-  AirbyteLog,
-  AirbyteLogLevel,
-  AirbyteRecord,
-} from 'faros-airbyte-cdk';
+import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
@@ -226,8 +222,10 @@ describe('github', () => {
 
     const total = _(recordsByStream).values().sum(); // total = 1073
 
+    // console.log(stdout);
+
     expect(stdout).toMatch(`Processed ${total} records`);
-    expect(stdout).toMatch('Would write 824 records');
+    expect(stdout).toMatch('Would write 93 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
