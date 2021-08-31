@@ -35,8 +35,9 @@ export class GithubPullRequests implements Converter {
       ? {repository, sha: pr.mergeCommit.oid}
       : null;
 
-    if (pr.author) {
-      res.push(GithubCommon.vcs_User(pr.author, source));
+    const author = pr.author ?? pr.user;
+    if (author) {
+      res.push(GithubCommon.vcs_User(author, source));
     }
 
     const state = prStates.includes(pr.state.toLowerCase())
@@ -75,7 +76,7 @@ export class GithubPullRequests implements Converter {
         commitCount,
         commentCount,
         diffStats,
-        author: pr.author ? {uid: pr.author.login, source} : null,
+        author: author ? {uid: author.login, source} : null,
         mergeCommit,
         repository,
       },

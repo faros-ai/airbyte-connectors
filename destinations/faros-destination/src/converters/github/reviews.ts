@@ -15,7 +15,7 @@ export class GithubReviews implements Converter {
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
-    // TODO
+    // TODO: convert records
     return [];
   }
 }

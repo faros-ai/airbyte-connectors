@@ -15,7 +15,8 @@ export class GithubCommits implements Converter {
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
-    // TODO
+    // TODO: convert records
+    // TODO: vcs_BranchCommitAssociation
     return [];
   }
 }

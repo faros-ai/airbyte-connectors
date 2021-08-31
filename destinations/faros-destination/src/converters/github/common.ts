@@ -1,9 +1,27 @@
+import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {DestinationRecord} from '../converter';
 
 /** Common functions shares across GitHub converters */
 export class GithubCommon {
+  static vcs_User_and_Membership(
+    user: Dictionary<any>,
+    source: string
+  ): ReadonlyArray<DestinationRecord> {
+    const vcsUser = GithubCommon.vcs_User(user, source);
+    const repository = GithubCommon.parseRepositoryKey(user.repository, source);
+
+    if (!repository) return [vcsUser];
+
+    const vcsMembership = GithubCommon.vcs_Membership(
+      vcsUser.record.uid,
+      repository.organization.uid,
+      repository.organization.source
+    );
+    return [vcsUser, vcsMembership];
+  }
+
   static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
     const type = ((): {category: string; detail: string} => {
       if (!user.type) {
@@ -36,6 +54,20 @@ export class GithubCommon {
       },
     };
   }
+
+  static vcs_Membership(
+    userUid: string,
+    org: string,
+    source: string
+  ): DestinationRecord {
+    return {
+      model: 'vcs_Membership',
+      record: {
+        user: {uid: userUid, source},
+        organization: {uid: toLower(org), source},
+      },
+    };
+  }
   static tms_User(user: Dictionary<any>, source: string): DestinationRecord {
     return {
       model: 'tms_User',
@@ -46,4 +78,25 @@ export class GithubCommon {
       },
     };
   }
+
+  static parseRepositoryKey(
+    repository: string,
+    source: string
+  ): undefined | RepositoryKey {
+    if (!repository) return undefined;
+
+    const orgRepo: ReadonlyArray<string> = repository.split('/');
+    if (orgRepo.length != 2) return undefined;
+
+    const [organization, repositoryName] = orgRepo;
+    return {
+      name: toLower(repositoryName),
+      organization: {uid: toLower(organization), source},
+    };
+  }
+}
+
+export interface RepositoryKey {
+  name: string;
+  organization: {uid: string; source: string};
 }

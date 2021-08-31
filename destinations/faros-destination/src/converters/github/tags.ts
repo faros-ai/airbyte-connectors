@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {toLower} from 'lodash';
 
 import {
   Converter,
@@ -7,6 +6,7 @@ import {
   DestinationRecord,
   StreamName,
 } from '../converter';
+import {GithubCommon} from './common';
 
 export class GithubTags implements Converter {
   readonly streamName = new StreamName('github', 'tags');
@@ -15,15 +15,7 @@ export class GithubTags implements Converter {
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const tag = record.record.data;
-
-    const orgRepo: ReadonlyArray<string> = tag.repository.split('/');
-    if (orgRepo.length != 2) return [];
-
-    const [organization, repositoryName] = orgRepo;
-    const repository = {
-      name: toLower(repositoryName),
-      organization: {uid: toLower(organization), source},
-    };
+    const repository = GithubCommon.parseRepositoryKey(tag.repository, source);
 
     return [
       {
