@@ -7,12 +7,9 @@ import {
   StreamName,
 } from '../converter';
 
-export class GithubReviews implements Converter {
-  readonly streamName = new StreamName('github', 'reviews');
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_PullRequestReview',
-    'vcs_User',
-  ];
+export class GithubIssueEvents implements Converter {
+  readonly streamName = new StreamName('github', 'issue_events');
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Task'];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     // TODO: convert records

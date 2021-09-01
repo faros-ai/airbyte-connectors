@@ -8,8 +8,8 @@ import {
 } from '../converter';
 import {GithubCommon} from './common';
 
-export class GithubCollaborators implements Converter {
-  readonly streamName = new StreamName('github', 'collaborators');
+export class GithubUsers implements Converter {
+  readonly streamName = new StreamName('github', 'users');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',

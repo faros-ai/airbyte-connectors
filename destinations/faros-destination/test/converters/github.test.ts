@@ -1,12 +1,9 @@
-import {
-  AirbyteLog,
-  AirbyteLogLevel,
-  AirbyteRecord,
-} from 'faros-airbyte-cdk';
+import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
+import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
@@ -19,6 +16,11 @@ import {
 } from './data';
 
 describe('github', () => {
+  const logger = pino({
+    name: 'test',
+    level: process.env.LOG_LEVEL ?? 'info',
+    prettyPrint: {levelFirst: true},
+  });
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/github-catalog.json';
   let configPath: string;
@@ -78,8 +80,9 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Wrote 41 records');
+    expect(stdout).toMatch('Wrote 58 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -98,8 +101,9 @@ describe('github', () => {
     cli.stdin.end(githubLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Would write 41 records');
+    expect(stdout).toMatch('Would write 58 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -117,8 +121,9 @@ describe('github', () => {
     cli.stdin.end(githubPGRawLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     expect(stdout).toMatch('Processed 111 records');
-    expect(stdout).toMatch('Would write 47 records');
+    expect(stdout).toMatch('Would write 82 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -147,6 +152,7 @@ describe('github', () => {
       'utf8'
     );
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     expect(stdout).toMatch('Processed 1 records');
     expect(stdout).toMatch('Would write 1 records');
     expect(stdout).toMatch('Errored 1 records');
@@ -172,6 +178,7 @@ describe('github', () => {
       'utf8'
     );
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     expect(stdout).toMatch('Processed 0 records');
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch('Errored 1 records');
@@ -192,6 +199,7 @@ describe('github', () => {
     cli.stdin.end(githubAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
     const recordsByStream = {
       assignees: 12,
       branches: 4,
@@ -225,9 +233,8 @@ describe('github', () => {
       .value();
 
     const total = _(recordsByStream).values().sum(); // total = 1073
-
     expect(stdout).toMatch(`Processed ${total} records`);
-    expect(stdout).toMatch('Would write 824 records');
+    expect(stdout).toMatch('Would write 347 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch(
       JSON.stringify(

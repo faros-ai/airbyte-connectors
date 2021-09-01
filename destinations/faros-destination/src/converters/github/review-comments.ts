@@ -7,11 +7,10 @@ import {
   StreamName,
 } from '../converter';
 
-export class GithubReviews implements Converter {
-  readonly streamName = new StreamName('github', 'reviews');
+export class GithubReviewComments implements Converter {
+  readonly streamName = new StreamName('github', 'review_comments');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_PullRequestReview',
-    'vcs_User',
+    'vcs_PullRequest',
   ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {

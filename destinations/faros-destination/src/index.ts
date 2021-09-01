@@ -351,8 +351,17 @@ class FarosDestination extends AirbyteDestination {
     // Apply conversion on the input record
     const results = converter.convert(recordMessage);
 
+    if (!Array.isArray(results))
+      throw new VError('Invalid results: not an array');
+
     // Write out the results to the output stream
     for (const result of results) {
+      if (!result.model) throw new VError('Invalid result: undefined model');
+      if (!result.record) throw new VError('Invalid result: undefined record');
+      if (typeof result.record !== 'object')
+        throw new VError('Invalid result: record is not an object');
+
+      // Set the source if missing
       if (!result.record['source']) {
         result.record['source'] = converter.streamName.source;
       }
