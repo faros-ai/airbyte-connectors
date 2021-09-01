@@ -31,7 +31,7 @@
     "pino-pretty": "^5.1.2",
     "temp": "^0.9.4",
     "test-jest": "^1.0.1",
-    "ts-essentials": "^7.0.1",
+    "ts-essentials": "^8.1.0",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.1.5"
