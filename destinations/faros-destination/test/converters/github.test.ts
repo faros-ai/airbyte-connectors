@@ -234,7 +234,7 @@ describe('github', () => {
 
     const total = _(recordsByStream).values().sum(); // total = 1073
     expect(stdout).toMatch(`Processed ${total} records`);
-    expect(stdout).toMatch('Would write 148 records');
+    expect(stdout).toMatch('Would write 151 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch(
       JSON.stringify(

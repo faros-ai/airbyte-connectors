@@ -9,9 +9,6 @@ import {
 } from '../converter';
 import {GithubCommon} from './common';
 
-// Max length for free-form description text fields such as issue body
-const MAX_DESCRIPTION_LENGTH = 1000;
-
 export class GithubIssues implements Converter {
   readonly streamName = new StreamName('github', 'issues');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -74,7 +71,10 @@ export class GithubIssues implements Converter {
       record: {
         uid,
         name: issue.title,
-        description: issue.body?.substring(0, MAX_DESCRIPTION_LENGTH),
+        description: issue.body?.substring(
+          0,
+          GithubCommon.MAX_DESCRIPTION_LENGTH
+        ),
         status: {category, detail: issue.state},
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
