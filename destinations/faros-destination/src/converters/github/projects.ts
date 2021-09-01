@@ -15,9 +15,9 @@ export class GithubProjects implements Converter {
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const project = record.record.data;
-    const projectKey = {uid: '' + project.id, source};
+
     const res = GithubCommon.tms_ProjectBoard_with_TaskBoard(
-      projectKey,
+      {uid: '' + project.id, source},
       project.name,
       project.body,
       project.created_at,

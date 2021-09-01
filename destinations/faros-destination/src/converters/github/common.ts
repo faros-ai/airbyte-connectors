@@ -12,7 +12,7 @@ export class GithubCommon {
   static vcs_User_with_Membership(
     user: Dictionary<any>,
     source: string
-  ): ReadonlyArray<DestinationRecord> {
+  ): DestinationRecord[] {
     const vcsUser = GithubCommon.vcs_User(user, source);
     const repository = GithubCommon.parseRepositoryKey(user.repository, source);
 
@@ -94,7 +94,7 @@ export class GithubCommon {
     description: string | null,
     createdAt: string | null | undefined,
     updatedAt: string | null | undefined
-  ): ReadonlyArray<DestinationRecord> {
+  ): DestinationRecord[] {
     return [
       {
         model: 'tms_Project',

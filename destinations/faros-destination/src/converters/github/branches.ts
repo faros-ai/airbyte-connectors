@@ -20,6 +20,8 @@ export class GithubBranches implements Converter {
       source
     );
 
+    if (!repository) return [];
+
     return [
       {
         model: 'vcs_Branch',
