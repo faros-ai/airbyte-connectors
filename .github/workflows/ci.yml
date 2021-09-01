@@ -37,6 +37,11 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2.3.4
 
+      - name: Logging
+        run: |
+          ls -l ${{ github.workspace }}/sources/jenkins-source
+          ls -l ${{ github.workspace }}/sources/jenkins-source/secrets
+
       - name: Cache Node modules
         uses: actions/cache@v2.1.6
         env:
@@ -73,6 +78,6 @@ jobs:
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
           JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
-      
+
       - name: Stop Jenkins server
         run: docker stop jenkins
