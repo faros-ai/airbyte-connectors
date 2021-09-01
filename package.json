@@ -28,7 +28,7 @@
     "lint-staged": "^11.1.0",
     "mockttp": "^2.2.2",
     "prettier": "^2.2.1",
-    "pino-pretty": "^5.1.2",
+    "pino-pretty": "^6.0.0",
     "temp": "^0.9.4",
     "test-jest": "^1.0.1",
     "ts-essentials": "^7.0.1",
