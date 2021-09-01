@@ -1,0 +1,70 @@
+{
+  "name": "faros-destination",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Faros Destination for Airbyte",
+  "keywords": [
+    "airbyte",
+    "destination",
+    "faros"
+  ],
+  "homepage": "https://www.faros.ai",
+  "repository": "https://github.com/faros-ai/airbyte-connectors",
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/"
+  ],
+  "engines": {
+    "node": ">=14.5"
+  },
+  "main": "./lib",
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "prepare": "npm run build",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "faros-airbyte-cdk": "^0.1.1",
+    "faros-feeds-sdk": "^0.8.28",
+    "jsonata": "^1.8.4",
+    "verror": "^1.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      ".d.ts",
+      ".js"
+    ],
+    "testTimeout": 30000,
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "test/tsconfig.json"
+      }
+    }
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "parser": "typescript",
+    "trailingComma": "es5",
+    "singleQuote": true
+  }
+}

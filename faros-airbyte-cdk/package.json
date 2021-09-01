@@ -1,0 +1,73 @@
+{
+  "name": "faros-airbyte-cdk",
+  "version": "0.1.1",
+  "description": "Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript",
+  "keywords": [
+    "airbyte",
+    "cdk",
+    "faros"
+  ],
+  "homepage": "https://www.faros.ai",
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/faros-ai/airbyte-connectors",
+  "bugs": {
+    "url": "https://github.com/faros-ai/airbyte-connectors/issues"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "files": [
+    "lib/",
+    "resources/"
+  ],
+  "main": "./lib",
+  "engines": {
+    "node": ">=14.5"
+  },
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "prepare": "npm run build",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "commander": "^8.0.0",
+    "lodash": "^4.17.21",
+    "pino": "^6.13.0",
+    "verror": "^1.10.0"
+  },
+  "devDependencies": {},
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      ".d.ts",
+      ".js"
+    ],
+    "testTimeout": 10000,
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "test/tsconfig.json"
+      }
+    }
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "parser": "typescript",
+    "trailingComma": "es5",
+    "singleQuote": true
+  }
+}

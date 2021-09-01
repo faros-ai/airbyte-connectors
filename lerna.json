@@ -1,0 +1,8 @@
+{
+  "version": "0.1.1",
+  "packages": [
+    "faros-airbyte-cdk",
+    "destinations/**",
+    "sources/**"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Faros Destination Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "origin"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "api_url": {
+        "type": "string",
+        "title": "API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai",
+        "examples": ["https://prod.api.faros.ai"]
+      },
+      "api_key": {
+        "title": "API Key",
+        "type": "string",
+        "description": "The Faros API key to use to hit the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "type": "string",
+        "title": "Graph name",
+        "description": "The Faros graph name.",
+        "default": "default"
+      },
+      "origin": {
+        "type": "string",
+        "title": "Origin name",
+        "description": "The Faros origin name used for uploaded entries.",
+        "examples": ["faros-destination-feed"]
+      },
+      "expiration": {
+        "type": "string",
+        "title": "Revision expiration",
+        "description": "The Faros revision expiration time.",
+        "default": "5 seconds",
+        "examples": ["5 seconds"]
+      },
+      "dry_run": {
+        "type": "boolean",
+        "title": "Dry run",
+        "description": "Process all input records but avoid writing into Faros API",
+        "default": false
+      },
+      "invalid_record_strategy": {
+        "type": "string",
+        "title": "Invalid record strategy",
+        "description": "Strategy to follow on invalid record.",
+        "default": "SKIP",
+        "enum": ["FAIL", "SKIP"]
+      },
+      "jsonata_expression": {
+        "type": "string",
+        "title": "JSONata expression",
+        "description": "JSONata expression for converting records."
+      },
+      "jsonata_mode": {
+        "type": "string",
+        "title": "JSONata apply mode",
+        "description": "JSONata apply mode when converting records.",
+        "default": "FALLBACK",
+        "enum": ["FALLBACK", "OVERRIDE"]
+      },
+      "jsonata_destination_models": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Destination models",
+        "description": "Destination models when using JSONata expression.",
+        "examples": ["[\"ims_Incident\", \"vcs_Commit\"]"]
+      }
+    }
+  }
+}
