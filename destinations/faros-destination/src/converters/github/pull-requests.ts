@@ -16,7 +16,6 @@ const prStates = ['closed', 'merged', 'open'];
 export class GithubPullRequests implements Converter {
   readonly streamName = new StreamName('github', 'pull_requests');
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_TaskAssignment',
     'vcs_PullRequest',
     'vcs_User',
   ];
