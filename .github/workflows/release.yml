@@ -50,7 +50,7 @@ jobs:
 
       - name: Create tag
         if: steps.check-tag.outputs.exists == 'false'
-        uses: pkgdeps/git-tag-action@v2.0.1
+        uses: pkgdeps/git-tag-action@v2.0.2
         with:
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: v
