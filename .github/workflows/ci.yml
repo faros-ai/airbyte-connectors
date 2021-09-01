@@ -22,7 +22,6 @@ jobs:
       HUSKY_SKIP_INSTALL: 1
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
-
     services:
       jenkins:
         image: jenkins/jenkins:lts-jdk11
@@ -31,26 +30,12 @@ jobs:
           - 50000:50000
         volumes:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-          - ${{ github.workspace }}/jenkins/data/docker/docker.sock:/var/run/docker.sock
-          - ${{ github.workspace }}/jenkins/data/docker/docker:/usr/bin/docker
-
     steps:
       - name: Add user permission
         run: sudo chown -R $USER:$USER ${{ github.workspace }}
 
       - name: Check out
         uses: actions/checkout@v2.3.4
-
-      - name: Log jenkins data
-        run: |
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/1/build.xml
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/2/build.xml
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/builds/3/build.xml
-          cat ${{ github.workspace }}/jenkins/data/jobs/Faros-test-job/config.xml
-          ls -l
-          ls -l ${{ github.workspace }}/jenkins/data
-          ls -l ${{ github.workspace }}/jenkins/data/jobs
-          pwd
 
       - name: Cache Node modules
         uses: actions/cache@v2.1.6
@@ -75,6 +60,9 @@ jobs:
 
       - name: Test
         run: lerna run test-cov
+
+      - name: Run Jenkins server
+        run: docker run -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
         run: |
