@@ -52,6 +52,7 @@ jobs:
         run: lerna run test-cov
 
       - name: Source Acceptance Test
+        if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           for i in $(ls -d sources/*/)
           do
