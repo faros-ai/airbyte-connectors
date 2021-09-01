@@ -22,14 +22,6 @@ jobs:
       HUSKY_SKIP_INSTALL: 1
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
-    # services:
-    #   jenkins:
-    #     image: jenkins/jenkins:lts-jdk11
-    #     ports:
-    #       - 8080:8080
-    #       - 50000:50000
-    #     volumes:
-    #       - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
     steps:
       - name: Add user permission
         run: sudo chown -R $USER:$USER ${{ github.workspace }}
@@ -67,15 +59,15 @@ jobs:
       - name: Source Acceptance Test
         run: |
           echo "Waiting until Jenkins is up"
-          let waiting=0
+          waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           until curl -s -I -X GET $url; do
-              let waiting+=3
-              sleep 3
-              if [ $waiting -eq 60 ]; then
-                  echo "Jenkins server did not respond within 60 seconds"
-                  exit 42
-              fi
+            let waiting+=3
+            sleep 3
+            if [ $waiting -eq 60 ]; then
+              echo "Jenkins server did not respond within 60 seconds"
+              exit 42
+            fi
           done
 
           for i in $(ls -d sources/*/)
