@@ -22,14 +22,14 @@ jobs:
       HUSKY_SKIP_INSTALL: 1
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
-    services:
-      jenkins:
-        image: jenkins/jenkins:lts-jdk11
-        ports:
-          - 8080:8080
-          - 50000:50000
-        volumes:
-          - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
+    # services:
+    #   jenkins:
+    #     image: jenkins/jenkins:lts-jdk11
+    #     ports:
+    #       - 8080:8080
+    #       - 50000:50000
+    #     volumes:
+    #       - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
     steps:
       - name: Add user permission
         run: sudo chown -R $USER:$USER ${{ github.workspace }}
@@ -62,7 +62,7 @@ jobs:
         run: lerna run test-cov
 
       - name: Run Jenkins server
-        run: docker run -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+        run: docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
         run: |
@@ -73,3 +73,6 @@ jobs:
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
           JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
+      
+      - name: Stop Jenkins server
+        run: docker stop jenkins
