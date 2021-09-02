@@ -67,11 +67,6 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2.3.4
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.3.0
-        with:
-          node-version: 14
-
       - name: Docker login
         uses: docker/login-action@v1.10.0
         with:
