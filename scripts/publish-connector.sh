@@ -17,10 +17,10 @@ if [ "$?" == 1 ]
 then
   docker build . \
     --build-arg path=$connector_path \
-    --label "io.airbyte.version=$connector_version" \
-    --label "io.airbyte.name=$image" \
     -t $latest_tag \
     -t $version_tag \
+    --label "io.airbyte.version=$connector_version" \
+    --label "io.airbyte.name=$image"
   docker push $latest_tag
   docker push $version_tag
 fi
