@@ -200,7 +200,8 @@ describe('github', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    const recordsByStream = {
+
+    const processedByStream = {
       assignees: 12,
       branches: 4,
       collaborators: 12,
@@ -225,22 +226,55 @@ describe('github', () => {
       teams: 1,
       users: 24,
     };
-    const sorted = _(recordsByStream)
+    const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
 
-    const total = _(recordsByStream).values().sum(); // total = 1073
-    expect(stdout).toMatch(`Processed ${total} records`);
-    expect(stdout).toMatch('Would write 817 records');
+    const writtenByModel = {
+      cicd_Release: 1,
+      cicd_ReleaseTagAssociation: 1,
+      tms_Label: 24,
+      tms_Project: 50,
+      tms_Task: 1,
+      tms_TaskAssignment: 1,
+      tms_TaskBoard: 50,
+      tms_TaskBoardProjectRelationship: 50,
+      tms_TaskBoardRelationship: 1,
+      tms_User: 14,
+      vcs_Branch: 4,
+      vcs_Commit: 77,
+      vcs_Membership: 12,
+      vcs_Organization: 1,
+      vcs_PullRequest: 38,
+      vcs_PullRequestComment: 87,
+      vcs_PullRequestReview: 121,
+      vcs_PullRequest__Update: 38,
+      vcs_Repository: 49,
+      vcs_Tag: 2,
+      vcs_User: 195,
+    };
+
+    const processedTotal = _(processedByStream).values().sum(); // total = 1073
+    const writtenTotal = _(writtenByModel).values().sum(); // total = 817
+    expect(stdout).toMatch(`Processed ${processedTotal} records`);
+    expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(
           AirbyteLogLevel.INFO,
-          `Processed records by stream: ${JSON.stringify(sorted)}`
+          `Processed records by stream: ${JSON.stringify(processed)}`
+        )
+      )
+    );
+    expect(stdout).toMatch(
+      JSON.stringify(
+        AirbyteLog.make(
+          AirbyteLogLevel.INFO,
+          `Would write records by model: ${JSON.stringify(writtenByModel)}`
         )
       )
     );
