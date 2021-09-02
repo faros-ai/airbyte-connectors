@@ -38,10 +38,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install dependencies
+        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+
       - name: Publish packages
         if: steps.check-tag.outputs.exists == 'false'
         run: |
-          lerna bootstrap --hoist && \
           cd faros-airbyte-cdk && \
           npm i && \
           npm publish --access public --tag latest
