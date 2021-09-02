@@ -13,7 +13,6 @@ version_tag="$image:$connector_version"
 echo version tag: $version_tag
 
 docker manifest inspect $version_tag > /dev/null
-
 if [ "$?" == 1 ]
 then
   docker build . \
