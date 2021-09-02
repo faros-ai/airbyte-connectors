@@ -27,7 +27,7 @@ jobs:
       - name: Extract version
         id: extract-version
         run: |
-          CDK_VERSION="$(node -p 'require("./lerna.json").version')"
+          CDK_VERSION="$(jq -r '.version' < lerna.json)"
           echo "CDK_VERSION=$CDK_VERSION" >> $GITHUB_ENV
 
       - name: Check tag exists
