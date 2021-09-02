@@ -39,6 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
+        if: steps.check-tag.outputs.exists == 'false'
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
       - name: Publish packages
