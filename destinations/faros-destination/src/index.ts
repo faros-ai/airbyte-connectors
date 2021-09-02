@@ -64,7 +64,8 @@ interface WriteStats {
   readonly recordsProcessed: number;
   readonly recordsWritten: number;
   readonly recordsErrored: number;
-  readonly recordsByStream: Dictionary<number>;
+  readonly processedByStream: Dictionary<number>;
+  readonly writtenByModel: Dictionary<number>;
 }
 
 /** Faros destination implementation. */
@@ -230,7 +231,8 @@ class FarosDestination extends AirbyteDestination {
       recordsProcessed: 0,
       recordsWritten: 0,
       recordsErrored: 0,
-      recordsByStream: {},
+      processedByStream: {},
+      writtenByModel: {},
     };
 
     // readline.createInterface() will start to consume the input stream once invoked.
@@ -258,13 +260,14 @@ class FarosDestination extends AirbyteDestination {
             if (!stream) {
               throw new VError(`Undefined stream ${streamName}`);
             }
-            const count = res.recordsByStream[streamName];
-            res.recordsByStream[streamName] = count ? count + 1 : 1;
+            const count = res.processedByStream[streamName];
+            res.processedByStream[streamName] = count ? count + 1 : 1;
 
             const converter = this.getConverter(streamName);
             res.recordsWritten += this.writeRecord(
               converter,
               recordMessage,
+              res.writtenByModel,
               writer
             );
             res.recordsProcessed++;
@@ -290,14 +293,23 @@ class FarosDestination extends AirbyteDestination {
 
   private logWriteStats(res: WriteStats, writer?: Writable): void {
     this.logger.info(`Processed ${res.recordsProcessed} records`);
-    const sorted = _(res.recordsByStream)
+    const processed = _(res.processedByStream)
       .toPairs()
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-    this.logger.info(`Processed records by stream: ${JSON.stringify(sorted)}`);
     this.logger.info(
-      `${writer ? 'Wrote' : 'Would write'} ${res.recordsWritten} records`
+      `Processed records by stream: ${JSON.stringify(processed)}`
+    );
+    const writeMsg = writer ? 'Wrote' : 'Would write';
+    this.logger.info(`${writeMsg} ${res.recordsWritten} records`);
+    const written = _(res.writtenByModel)
+      .toPairs()
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+    this.logger.info(
+      `${writeMsg} records by model: ${JSON.stringify(written)}`
     );
     this.logger.info(`Errored ${res.recordsErrored} records`);
   }
@@ -346,6 +358,7 @@ class FarosDestination extends AirbyteDestination {
   private writeRecord(
     converter: Converter,
     recordMessage: AirbyteRecord,
+    writtenByModel: Dictionary<number>,
     writer?: Writable
   ): number {
     // Apply conversion on the input record
@@ -368,6 +381,9 @@ class FarosDestination extends AirbyteDestination {
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
       writer?.write(obj);
+
+      const count = writtenByModel[result.model];
+      writtenByModel[result.model] = count ? count + 1 : 1;
     }
 
     return results.length;
