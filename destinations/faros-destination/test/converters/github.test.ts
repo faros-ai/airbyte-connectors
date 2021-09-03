@@ -81,6 +81,7 @@ describe('github', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
+    expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Wrote 58 records');
     expect(stdout).toMatch('Errored 0 records');

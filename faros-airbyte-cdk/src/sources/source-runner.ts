@@ -3,7 +3,7 @@ import path from 'path';
 
 import {AirbyteLogger} from '../logger';
 import {AirbyteState} from '../protocol';
-import {PACKAGE_VERSION} from '../utils';
+import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
 
 export class AirbyteSourceRunner {
@@ -77,7 +77,8 @@ export class AirbyteSourceRunner {
         async (opts: {config: string; catalog: string; state?: string}) => {
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
-          this.logger.info('config: ' + JSON.stringify(config));
+          const spec = await this.source.spec();
+          this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
 
           let state: AirbyteState | undefined = undefined;
