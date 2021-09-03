@@ -55,20 +55,37 @@ jobs:
         run: lerna run test-cov
 
       - name: Run Jenkins server
-        run: docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
-
-      - name: Source Acceptance Test
-        # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
-          ps -aux
-          cat /etc/hosts
-          sudo apt install net-tools
-          sudo netstat -tunlp
-          echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+          docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           until curl -s -I -X GET $url; do
+            cat /etc/hosts
+            sudo apt install net-tools
+            sudo netstat -tunlp
+            echo response localhost: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+            echo response 127.0.0.53: "$(curl -s -I -X GET http://127.0.0.53:8080)"
+            echo response 0.0.0.0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
+            let waiting+=9
+            sleep 9
+            if [ $waiting -eq 480 ]; then
+              echo "Jenkins server did not respond within 120 seconds"
+              exit 42
+            fi
+          done
+
+      - name: Source Acceptance Test
+        # if: github.ref == 'refs/heads/main' # Skip PRs
+        run: |
+          echo "Waiting until Jenkins is up"
+          waiting=0
+          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
+          until curl -s -I -X GET $url; do
+            cat /etc/hosts
+            sudo apt install net-tools
+            echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+            sudo netstat -tunlp
             let waiting+=3
             sleep 3
             if [ $waiting -eq 120 ]; then
