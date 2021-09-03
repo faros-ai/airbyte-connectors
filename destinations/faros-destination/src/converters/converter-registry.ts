@@ -20,9 +20,13 @@ export class ConverterRegistry {
    * and create a class GithubPullRequestStats.
    *
    * @param streamName stream name
+   * @param onLoadError handler on converter loading error
    * @returns converter if any
    */
-  static getConverter(streamName: StreamName): Converter | undefined {
+  static getConverter(
+    streamName: StreamName,
+    onLoadError?: (err: Error) => void
+  ): Converter | undefined {
     const name = streamName.stringify();
 
     const res = ConverterRegistry.convertersByStream[name];
@@ -44,8 +48,13 @@ export class ConverterRegistry {
     } catch (e) {
       // Tried loading the converter but failed - no need to retry
       ConverterRegistry.convertersByStream[name] = true;
-      const err = e?.message ? `: ${e?.message}` : '';
-      throw new VError(`Failed loading converter for stream ${name}${err}`);
+      const err = e?.message ? `: ${e.message}` : '';
+      if (onLoadError) {
+        onLoadError(
+          new VError(`Failed loading converter for stream ${name}${err}`)
+        );
+      }
+      return undefined;
     }
   }
 }

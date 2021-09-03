@@ -335,7 +335,9 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      const converter = this.getConverter(stream);
+      const converter = this.getConverter(stream, (err: Error) =>
+        this.logger.error(err.message)
+      );
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
@@ -348,13 +350,14 @@ class FarosDestination extends AirbyteDestination {
     return {streams, deleteModelEntries};
   }
 
-  private getConverter(stream: string): Converter {
-    let converter: Converter | undefined;
-    try {
-      converter = ConverterRegistry.getConverter(StreamName.fromString(stream));
-    } catch (e) {
-      this.logger.error(e.message);
-    }
+  private getConverter(
+    stream: string,
+    onLoadError?: (err: Error) => void
+  ): Converter {
+    const converter = ConverterRegistry.getConverter(
+      StreamName.fromString(stream),
+      onLoadError
+    );
     if (!converter && !this.jsonataConverter) {
       throw new VError(`Undefined converter for stream ${stream}`);
     }
