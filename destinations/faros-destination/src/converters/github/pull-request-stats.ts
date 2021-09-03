@@ -28,15 +28,20 @@ export class GithubPullRequestStats implements Converter {
       {
         model: 'vcs_PullRequest__Update',
         record: {
-          number: prStats.number,
-          commitCount: prStats.commits,
-          commentCount: prStats.comments + prStats.review_comments,
-          diffStats: {
-            linesAdded: prStats.additions,
-            linesDeleted: prStats.deletions,
-            filesChanged: prStats.changed_files,
+          where: {
+            number: prStats.number,
+            repository,
           },
-          repository,
+          mask: ['commitCount', 'commentCount', 'diffStats'],
+          patch: {
+            commitCount: prStats.commits,
+            commentCount: prStats.comments + prStats.review_comments,
+            diffStats: {
+              linesAdded: prStats.additions,
+              linesDeleted: prStats.deletions,
+              filesChanged: prStats.changed_files,
+            },
+          },
         },
       },
     ];
