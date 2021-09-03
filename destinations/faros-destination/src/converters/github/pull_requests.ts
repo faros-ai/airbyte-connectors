@@ -2,19 +2,13 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
 // Github PR states
 const prStates = ['closed', 'merged', 'open'];
 
-export class GithubPullRequests implements Converter {
-  readonly streamName = new StreamName('github', 'pull_requests');
+export class GithubPullRequests extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_User',

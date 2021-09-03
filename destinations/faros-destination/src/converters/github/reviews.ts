@@ -2,12 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, upperFirst} from 'lodash';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
 // GitHub Review States
@@ -18,8 +13,7 @@ const ReviewStates = [
   'dismissed',
 ];
 
-export class GithubReviews implements Converter {
-  readonly streamName = new StreamName('github', 'reviews');
+export class GithubReviews extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestReview',
     'vcs_User',

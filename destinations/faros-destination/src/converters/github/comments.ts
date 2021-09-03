@@ -7,8 +7,7 @@ import {
   StreamName,
 } from '../converter';
 
-export class GithubComments implements Converter {
-  readonly streamName = new StreamName('github', 'comments');
+export class GithubComments extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {

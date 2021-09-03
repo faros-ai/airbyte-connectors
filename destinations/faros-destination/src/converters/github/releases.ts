@@ -1,16 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
-export class GithubReleases implements Converter {
-  readonly streamName = new StreamName('github', 'releases');
+export class GithubReleases extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
     'cicd_ReleaseTagAssociation',

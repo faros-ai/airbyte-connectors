@@ -1,14 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 
-export class GithubTeams implements Converter {
-  readonly streamName = new StreamName('github', 'teams');
+export class GithubTeams extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
