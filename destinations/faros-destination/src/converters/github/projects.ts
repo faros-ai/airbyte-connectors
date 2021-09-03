@@ -1,15 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
-export class GithubProjects implements Converter {
-  readonly streamName = new StreamName('github', 'projects');
+export class GithubProjects extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
@@ -17,7 +11,7 @@ export class GithubProjects implements Converter {
     const project = record.record.data;
 
     const res = GithubCommon.tms_ProjectBoard_with_TaskBoard(
-      {uid: '' + project.id, source},
+      {uid: `${project.id}`, source},
       project.name,
       project.body,
       project.created_at,

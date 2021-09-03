@@ -38,7 +38,7 @@ docker build . --build-arg path=destinations/faros-destination -t faros-destinat
 
 And then run it:
 ```shell
-docker run faros-destination --help
+docker run faros-destination
 ```
 
 # Releasing

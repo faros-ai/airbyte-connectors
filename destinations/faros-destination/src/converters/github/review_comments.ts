@@ -1,16 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
-export class GithubReviewComments implements Converter {
-  readonly streamName = new StreamName('github', 'review_comments');
+export class GithubReviewComments extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestComment',
   ];
