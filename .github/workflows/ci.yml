@@ -60,6 +60,11 @@ jobs:
       - name: Source Acceptance Test
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
+          ps -aux
+          cat /etc/services
+          cat /etc/hosts
+          apt install net-tools
+          netstat -tunlp
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
