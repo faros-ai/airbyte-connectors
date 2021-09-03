@@ -19,9 +19,10 @@ export class GithubPullRequests extends Converter {
     const pr = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository = GithubCommon.parseRepositoryKey(pr.repository, source);
-
-    if (!repository) return [];
+    const repository: RepositoryKey = {
+      name: toLower(pr.base.repo.name),
+      organization: {uid: toLower(pr.base.repo.owner.login), source},
+    };
 
     const mergeCommit = pr.merge_commit_sha
       ? {repository, sha: pr.merge_commit_sha}
@@ -50,7 +51,7 @@ export class GithubPullRequests extends Converter {
         author: author ? {uid: author.record.uid, source} : null,
         mergeCommit,
         repository,
-        // PR stats are set in pull_request_stats stream
+        // PR stats are set from pull_request_stats stream
       },
     });
 
