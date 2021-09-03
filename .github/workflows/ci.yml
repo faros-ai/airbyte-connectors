@@ -23,6 +23,15 @@ jobs:
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
 
+    services:
+      jenkins:
+        image: jenkins/jenkins:lts-jdk11
+        ports:
+          - 8080:8080
+          - 50000:50000
+        volumes:
+          - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
+
     steps:
       - name: Add user permission
         run: sudo chown -R $USER:$USER ${{ github.workspace }}
@@ -56,7 +65,7 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          # docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
