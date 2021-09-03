@@ -11,7 +11,7 @@ export class GithubProjects extends Converter {
     const project = record.record.data;
 
     const res = GithubCommon.tms_ProjectBoard_with_TaskBoard(
-      {uid: '' + project.id, source},
+      {uid: `${project.id}`, source},
       project.name,
       project.body,
       project.created_at,

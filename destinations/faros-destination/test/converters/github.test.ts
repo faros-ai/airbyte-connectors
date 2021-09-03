@@ -84,7 +84,7 @@ describe('github', () => {
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
     expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Wrote 58 records');
+    expect(stdout).toMatch('Wrote 24 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -105,7 +105,7 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Would write 58 records');
+    expect(stdout).toMatch('Would write 24 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -238,6 +238,7 @@ describe('github', () => {
     const writtenByModel = {
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
+      tms_Epic: 1,
       tms_Label: 24,
       tms_Project: 50,
       tms_Task: 1,
@@ -245,7 +246,7 @@ describe('github', () => {
       tms_TaskBoard: 50,
       tms_TaskBoardProjectRelationship: 50,
       tms_TaskBoardRelationship: 1,
-      tms_User: 14,
+      tms_User: 13,
       vcs_Branch: 4,
       vcs_Commit: 77,
       vcs_Membership: 12,
@@ -259,8 +260,8 @@ describe('github', () => {
       vcs_User: 195,
     };
 
-    const processedTotal = _(processedByStream).values().sum(); // total = 1073
-    const writtenTotal = _(writtenByModel).values().sum(); // total = 817
+    const processedTotal = _(processedByStream).values().sum();
+    const writtenTotal = _(writtenByModel).values().sum();
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');

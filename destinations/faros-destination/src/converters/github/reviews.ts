@@ -50,7 +50,7 @@ export class GithubReviews extends Converter {
     res.push({
       model: 'vcs_PullRequestReview',
       record: {
-        number: `${review.id}`,
+        number: review.id,
         htmlUrl: review.html_url,
         pullRequest,
         reviewer: author ? {uid: author.record.uid, source} : null,

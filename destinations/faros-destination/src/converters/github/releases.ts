@@ -14,7 +14,7 @@ export class GithubReleases extends Converter {
     const source = this.streamName.source;
     const release = record.record.data;
     const res: DestinationRecord[] = [];
-    const uid = '' + release.id;
+    const uid = `${release.id}`;
     const repository = GithubCommon.parseRepositoryKey(
       release.repository,
       source

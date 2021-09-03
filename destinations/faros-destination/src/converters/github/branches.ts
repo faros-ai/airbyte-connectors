@@ -9,6 +9,7 @@ export class GithubBranches extends Converter {
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const branch = record.record.data;
+
     const repository = GithubCommon.parseRepositoryKey(
       branch.repository,
       source

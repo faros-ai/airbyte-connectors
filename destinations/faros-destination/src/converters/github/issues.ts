@@ -18,7 +18,7 @@ export class GithubIssues extends Converter {
     const source = this.streamName.source;
     const issue = record.record.data;
     const res: DestinationRecord[] = [];
-    const uid = '' + issue.id;
+    const uid = `${issue.id}`;
 
     // GitHub's REST API v3 considers every pull request an issue,
     // but not every issue is a pull request. Will skip pull requests
@@ -32,7 +32,16 @@ export class GithubIssues extends Converter {
     }
 
     issue.assignees?.forEach((a) => {
-      if (a) {
+      if (typeof a == 'number') {
+        res.push({
+          model: 'tms_TaskAssignment',
+          record: {
+            task: {uid, source},
+            // TODO: change user uid to login once it's available
+            assignee: {uid: `${a}`, source},
+          },
+        });
+      } else if (a?.id || a?.login) {
         res.push(GithubCommon.tms_User(a, source));
         res.push({
           model: 'tms_TaskAssignment',
@@ -79,13 +88,18 @@ export class GithubIssues extends Converter {
       },
     });
 
+    const repository = GithubCommon.parseRepositoryKey(
+      issue.repository,
+      source
+    );
+
     // TODO: If tasks get transferred between repos or projects, delete previous relationship
     // (this should probably be done in here and in issue-events)
     res.push({
       model: 'tms_TaskBoardRelationship',
       record: {
         task: {uid, source},
-        board: {uid: issue.repository, source},
+        board: repository ? {uid: repository.name, source} : null,
       },
     });
 

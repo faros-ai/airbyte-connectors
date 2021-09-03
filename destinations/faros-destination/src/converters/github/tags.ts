@@ -11,12 +11,14 @@ export class GithubTags extends Converter {
     const tag = record.record.data;
     const repository = GithubCommon.parseRepositoryKey(tag.repository, source);
 
+    if (!repository) return [];
+
     return [
       {
         model: 'vcs_Tag',
         record: {
           name: tag.name,
-          commit: {repository, sha: tag.commit.sha},
+          commit: tag?.commit?.sha ? {repository, sha: tag.commit.sha} : null,
           repository,
         },
       },
