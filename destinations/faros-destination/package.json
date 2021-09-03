@@ -1,6 +1,6 @@
 {
   "name": "faros-destination",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "description": "Faros Destination for Airbyte",
   "keywords": [
@@ -30,7 +30,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "faros-airbyte-cdk": "^0.1.6",
+    "faros-airbyte-cdk": "^0.1.7",
     "faros-feeds-sdk": "^0.8.28",
     "jsonata": "^1.8.4",
     "verror": "^1.10.0"
