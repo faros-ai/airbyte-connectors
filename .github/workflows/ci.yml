@@ -24,6 +24,9 @@ jobs:
       HUSKY: 0
 
     steps:
+      - name: Add user permission
+        run: sudo chown -R $USER:$USER ${{ github.workspace }}
+
       - name: Check out
         uses: actions/checkout@v2.3.4
 
@@ -51,12 +54,33 @@ jobs:
       - name: Test
         run: lerna run test-cov
 
+      - name: Run Jenkins server
+        run: docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+
       - name: Source Acceptance Test
-        if: github.ref == 'refs/heads/main' # Skip PRs
+        # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
+          echo "Waiting until Jenkins is up"
+          waiting=0
+          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
+          until curl -s -I -X GET $url; do
+            let waiting+=3
+            sleep 3
+            if [ $waiting -eq 120 ]; then
+              echo "Jenkins server did not respond within 120 seconds"
+              exit 42
+            fi
+          done
+
           for i in $(ls -d sources/*/)
           do
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
           done
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
+          JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
+      
+      - name: Stop Jenkins server
+        run: |
+          docker stop jenkins
+          docker rm jenkins
