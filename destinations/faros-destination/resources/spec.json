@@ -58,7 +58,7 @@
       "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",
-        "description": "JSONata expression for converting input records. If provided, will apply the expression based on specified JSONata apply mode."
+        "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode."
       },
       "jsonata_mode": {
         "type": "string",
