@@ -20,7 +20,7 @@ export class ConverterRegistry {
    * and create a class GithubPullRequestStats.
    *
    * @param streamName stream name
-   * @param onLoadError handler on converter loading error
+   * @param onLoadError handler to call on converter loading error
    * @returns converter if any
    */
   static getConverter(
@@ -48,8 +48,8 @@ export class ConverterRegistry {
     } catch (e) {
       // Tried loading the converter but failed - no need to retry
       ConverterRegistry.convertersByStream[name] = true;
-      const err = e?.message ? `: ${e.message}` : '';
       if (onLoadError) {
+        const err = e?.message ? `: ${e.message}` : '';
         onLoadError(
           new VError(`Failed loading converter for stream ${name}${err}`)
         );
