@@ -16,6 +16,5 @@ ENV CONNECTOR_PATH $path
 
 RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
-USER node
 ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/main"
 ENTRYPOINT ["/home/node/airbyte/main"]

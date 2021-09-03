@@ -2,7 +2,7 @@ import {Command} from 'commander';
 import path from 'path';
 
 import {AirbyteLogger} from '../logger';
-import {PACKAGE_VERSION} from '../utils';
+import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner {
@@ -64,7 +64,8 @@ export class AirbyteDestinationRunner {
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
-          this.logger.info('config: ' + JSON.stringify(config));
+          const spec = await this.destination.spec();
+          this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
           this.logger.info('dryRun: ' + opts.dryRun);
 

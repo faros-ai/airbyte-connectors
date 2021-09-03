@@ -23,6 +23,7 @@ describe('github', () => {
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/github-catalog.json';
+  const catalogRawPath = 'test/resources/github-catalog-raw.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
@@ -81,6 +82,7 @@ describe('github', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
+    expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Wrote 58 records');
     expect(stdout).toMatch('Errored 0 records');
@@ -115,7 +117,7 @@ describe('github', () => {
       '--config',
       configPath,
       '--catalog',
-      catalogPath,
+      catalogRawPath,
       '--dry-run',
     ]);
     cli.stdin.end(githubPGRawLog, 'utf8');
