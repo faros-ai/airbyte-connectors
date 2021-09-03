@@ -1,5 +1,6 @@
 import {camelCase, upperFirst} from 'lodash';
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 import {Converter, StreamName} from './converter';
 
@@ -7,7 +8,7 @@ import {Converter, StreamName} from './converter';
  * A handy converter registry to get registered converters by stream name
  */
 export class ConverterRegistry {
-  private static convertersByStream: Dictionary<Converter> = {};
+  private static convertersByStream: Dictionary<Converter | boolean> = {};
 
   /**
    * Get converter by stream name.
@@ -21,17 +22,17 @@ export class ConverterRegistry {
    * @param streamName stream name
    * @returns converter if any
    */
-  static async getConverter(
-    streamName: StreamName
-  ): Promise<Converter | undefined> {
+  static getConverter(streamName: StreamName): Converter | undefined {
     const name = streamName.stringify();
 
     const res = ConverterRegistry.convertersByStream[name];
-    if (res) return res;
+    if (res && typeof res !== 'boolean') return res;
+    if (res) return undefined;
 
     try {
       // Load the necessary module dynamically
-      const mod = await import(`./${streamName.source}/${streamName.name}`);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = require(`./${streamName.source}/${streamName.name}`);
 
       // Create converter instance by name
       const className = upperFirst(camelCase(name));
@@ -39,10 +40,12 @@ export class ConverterRegistry {
 
       // Keep the converter instance in the registry
       ConverterRegistry.convertersByStream[name] = converter;
-
       return converter;
     } catch (e) {
-      return undefined;
+      // Tried loading the converter but failed - no need to retry
+      ConverterRegistry.convertersByStream[name] = true;
+      const err = e?.message ? `: ${e?.message}` : '';
+      throw new VError(`Failed loading converter for stream ${name}${err}`);
     }
   }
 }

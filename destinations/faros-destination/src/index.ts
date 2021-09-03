@@ -191,9 +191,8 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
 
-    const {streams, deleteModelEntries} = await this.initStreamsCheckConverters(
-      catalog
-    );
+    const {streams, deleteModelEntries} =
+      this.initStreamsCheckConverters(catalog);
 
     const entryUploaderConfig: EntryUploaderConfig = {
       name: config.origin,
@@ -268,7 +267,7 @@ class FarosDestination extends AirbyteDestination {
             const stream = unpacked.record.stream;
             const count = res.processedByStream[stream];
             res.processedByStream[stream] = count ? count + 1 : 1;
-            const converter = await this.getConverter(stream);
+            const converter = this.getConverter(stream);
 
             res.recordsWritten += this.writeRecord(
               converter,
@@ -320,12 +319,10 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(`Errored ${res.recordsErrored} records`);
   }
 
-  private async initStreamsCheckConverters(
-    catalog: AirbyteConfiguredCatalog
-  ): Promise<{
+  private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
-  }> {
+  } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
 
     // Check streams & initialize converters
@@ -338,7 +335,7 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      const converter = await this.getConverter(stream);
+      const converter = this.getConverter(stream);
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
@@ -351,10 +348,13 @@ class FarosDestination extends AirbyteDestination {
     return {streams, deleteModelEntries};
   }
 
-  private async getConverter(stream: string): Promise<Converter> {
-    const converter = await ConverterRegistry.getConverter(
-      StreamName.fromString(stream)
-    );
+  private getConverter(stream: string): Converter {
+    let converter: Converter | undefined;
+    try {
+      converter = ConverterRegistry.getConverter(StreamName.fromString(stream));
+    } catch (e) {
+      this.logger.error(e.message);
+    }
     if (!converter && !this.jsonataConverter) {
       throw new VError(`Undefined converter for stream ${stream}`);
     }
