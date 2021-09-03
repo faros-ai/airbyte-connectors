@@ -20,20 +20,20 @@
       "api_key": {
         "title": "API Key",
         "type": "string",
-        "description": "The Faros API key to use to hit the API.",
+        "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
+      },
+      "origin": {
+        "type": "string",
+        "title": "Origin name",
+        "description": "The Faros origin name used for uploaded entries. Must be unique.",
+        "examples": ["my-faros-destination"]
       },
       "graph": {
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
-      },
-      "origin": {
-        "type": "string",
-        "title": "Origin name",
-        "description": "The Faros origin name used for uploaded entries.",
-        "examples": ["faros-destination-feed"]
       },
       "expiration": {
         "type": "string",
@@ -51,19 +51,19 @@
       "invalid_record_strategy": {
         "type": "string",
         "title": "Invalid record strategy",
-        "description": "Strategy to follow on invalid record.",
+        "description": "Strategy to follow to handle an invalid input record.",
         "default": "SKIP",
         "enum": ["FAIL", "SKIP"]
       },
       "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",
-        "description": "JSONata expression for converting records."
+        "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode."
       },
       "jsonata_mode": {
         "type": "string",
         "title": "JSONata apply mode",
-        "description": "JSONata apply mode when converting records.",
+        "description": "JSONata apply mode when converting input records.",
         "default": "FALLBACK",
         "enum": ["FALLBACK", "OVERRIDE"]
       },
