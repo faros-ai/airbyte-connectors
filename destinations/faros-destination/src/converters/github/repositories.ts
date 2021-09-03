@@ -1,16 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
-export class GithubRepositories implements Converter {
-  readonly streamName = new StreamName('github', 'repositories');
+export class GithubRepositories extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Repository',
   ];
