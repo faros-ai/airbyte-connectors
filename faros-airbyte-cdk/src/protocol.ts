@@ -134,16 +134,20 @@ export class AirbyteRecord implements AirbyteMessage {
     }
   ) {}
 
-  unpackRaw(): AirbyteRecord {
+  isRaw(): boolean {
     const stream = this.record.stream;
-    if (!stream || !stream.startsWith(AirbyteRawStreamPrefix)) {
-      return this;
+    return stream && stream.startsWith(AirbyteRawStreamPrefix);
+  }
+
+  unpackRaw(): AirbyteRecord {
+    if (this.isRaw()) {
+      return new AirbyteRecord({
+        stream: this.record.stream.slice(AirbyteRawStreamPrefix.length),
+        emitted_at: new Date(this.record.data[AirbyteRawEmittedAt]).getTime(),
+        data: JSON.parse(this.record.data[AirbyteRawData]),
+      });
     }
-    return new AirbyteRecord({
-      stream: stream.slice(AirbyteRawStreamPrefix.length),
-      emitted_at: new Date(this.record.data[AirbyteRawEmittedAt]).getTime(),
-      data: JSON.parse(this.record.data[AirbyteRawData]),
-    });
+    return this;
   }
 
   static make(
