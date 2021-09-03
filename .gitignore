@@ -11,3 +11,4 @@ secrets/
 jenkins/data/logs
 jenkins/data/war
 acceptance_tests_logs
+.vscode

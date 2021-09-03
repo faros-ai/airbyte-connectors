@@ -267,8 +267,8 @@ class FarosDestination extends AirbyteDestination {
             const stream = unpacked.record.stream;
             const count = res.processedByStream[stream];
             res.processedByStream[stream] = count ? count + 1 : 1;
-            const converter = this.getConverter(stream);
 
+            const converter = this.getConverter(stream);
             res.recordsWritten += this.writeRecord(
               converter,
               unpacked,
@@ -334,12 +334,12 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-
-      const converter = this.getConverter(stream);
+      const converter = this.getConverter(stream, (err: Error) =>
+        this.logger.error(err.message)
+      );
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
-
       // Prepare destination models to delete if any
       if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
         deleteModelEntries.push(...converter.destinationModels);
@@ -348,9 +348,13 @@ class FarosDestination extends AirbyteDestination {
     return {streams, deleteModelEntries};
   }
 
-  private getConverter(stream: string): Converter {
+  private getConverter(
+    stream: string,
+    onLoadError?: (err: Error) => void
+  ): Converter {
     const converter = ConverterRegistry.getConverter(
-      StreamName.fromString(stream)
+      StreamName.fromString(stream),
+      onLoadError
     );
     if (!converter && !this.jsonataConverter) {
       throw new VError(`Undefined converter for stream ${stream}`);

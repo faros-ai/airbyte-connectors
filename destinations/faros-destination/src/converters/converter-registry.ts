@@ -1,37 +1,60 @@
+import {camelCase, upperFirst} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {converters} from '.';
 import {Converter, StreamName} from './converter';
 
 /**
  * A handy converter registry to get registered converters by stream name
  */
 export class ConverterRegistry {
-  private static initialized = false;
-  private static convertersByStream: Dictionary<Converter> = {};
+  private static convertersByStream: Dictionary<Converter | boolean> = {};
 
   /**
-   * Get registered converter by stream name
+   * Get converter by stream name.
+   *
+   * Dynamically loads and creates converter by stream.
+   *
+   * Example: for stream { source: 'github', name: 'pull_request_stats' }
+   * we dynamically import module './github/pull_request_stats'
+   * and create a class GithubPullRequestStats.
    *
    * @param streamName stream name
+   * @param onLoadError handler to call on converter loading error
    * @returns converter if any
    */
-  static getConverter(streamName: StreamName): Converter | undefined {
-    if (!ConverterRegistry.initialized) {
-      for (const converter of converters) {
-        const name = converter.streamName.stringify();
-        const existing = ConverterRegistry.convertersByStream[name];
-        if (existing) {
-          throw new VError(
-            `Duplicate converters registered for stream ${name}: ` +
-              `${existing.constructor.name} and ${converter.constructor.name}`
-          );
-        }
-        ConverterRegistry.convertersByStream[name] = converter;
+  static getConverter(
+    streamName: StreamName,
+    onLoadError?: (err: Error) => void
+  ): Converter | undefined {
+    const name = streamName.stringify();
+
+    const res = ConverterRegistry.convertersByStream[name];
+    if (res && typeof res !== 'boolean') return res;
+    if (res) return undefined;
+
+    try {
+      // Load the necessary module dynamically
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = require(`./${streamName.source}/${streamName.name}`);
+
+      // Create converter instance by name
+      const className = upperFirst(camelCase(name));
+      const converter = new mod[className]();
+
+      // Keep the converter instance in the registry
+      ConverterRegistry.convertersByStream[name] = converter;
+      return converter;
+    } catch (e) {
+      // Tried loading the converter but failed - no need to retry
+      ConverterRegistry.convertersByStream[name] = true;
+      if (onLoadError) {
+        const err = e?.message ? `: ${e.message}` : '';
+        onLoadError(
+          new VError(`Failed loading converter for stream ${name}${err}`)
+        );
       }
-      ConverterRegistry.initialized = true;
+      return undefined;
     }
-    return ConverterRegistry.convertersByStream[streamName.stringify()];
   }
 }
