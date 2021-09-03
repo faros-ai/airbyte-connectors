@@ -61,10 +61,10 @@ jobs:
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           ps -aux
-          cat /etc/services
           cat /etc/hosts
-          apt install net-tools
-          netstat -tunlp
+          sudo apt install net-tools
+          sudo netstat -tunlp
+          echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
