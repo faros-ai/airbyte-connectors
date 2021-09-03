@@ -32,7 +32,7 @@ export class GithubIssues extends Converter {
     }
 
     issue.assignees?.forEach((a) => {
-      if (typeof a == 'number') {
+      if (typeof a === 'number') {
         res.push({
           model: 'tms_TaskAssignment',
           record: {
