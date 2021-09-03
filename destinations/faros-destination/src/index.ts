@@ -251,22 +251,27 @@ class FarosDestination extends AirbyteDestination {
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
           } else if (msg.type === AirbyteMessageType.RECORD) {
-            const recordMessage = (msg as AirbyteRecord).unpackRaw();
+            const recordMessage = msg as AirbyteRecord;
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }
-            const streamName = recordMessage.record.stream;
-            const stream = streams[streamName];
-            if (!stream) {
-              throw new VError(`Undefined stream ${streamName}`);
+            if (!streams[recordMessage.record.stream]) {
+              throw new VError(
+                `Undefined stream ${recordMessage.record.stream}`
+              );
             }
-            const count = res.processedByStream[streamName];
-            res.processedByStream[streamName] = count ? count + 1 : 1;
+            const unpacked = recordMessage.unpackRaw();
+            if (!unpacked.record) {
+              throw new VError('Empty unpacked record');
+            }
+            const stream = unpacked.record.stream;
+            const count = res.processedByStream[stream];
+            res.processedByStream[stream] = count ? count + 1 : 1;
+            const converter = this.getConverter(stream);
 
-            const converter = this.getConverter(streamName);
             res.recordsWritten += this.writeRecord(
               converter,
-              recordMessage,
+              unpacked,
               res.writtenByModel,
               writer
             );
