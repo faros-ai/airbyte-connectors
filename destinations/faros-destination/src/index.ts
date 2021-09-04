@@ -206,10 +206,12 @@ class FarosDestination extends AirbyteDestination {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(stdin, streams, stateMessages);
     } else {
-      const modelsToDelete = sortBy(deleteModelEntries).join(',');
-      this.logger.info(
-        `Deleting records in destination graph ${config.graph} for models: ${modelsToDelete}`
-      );
+      if (deleteModelEntries.length > 0) {
+        const modelsToDelete = sortBy(deleteModelEntries).join(',');
+        this.logger.info(
+          `Deleting records in destination graph ${config.graph} for models: ${modelsToDelete}`
+        );
+      }
       const entryUploaderConfig: EntryUploaderConfig = {
         name: config.origin,
         url: config.api_url,
