@@ -226,7 +226,6 @@ class FarosDestination extends AirbyteDestination {
             this.logger.info(
               `Destination graph ${config.graph} was ${lastSynced}`
             );
-
             if (deleteAll) {
               this.logger.info(
                 `Reset request received. Deleting all records in the graph ${config.graph} for origin ${config.origin}`
