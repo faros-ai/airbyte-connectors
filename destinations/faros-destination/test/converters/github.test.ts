@@ -67,7 +67,7 @@ describe('github', () => {
 
     await mockttp
       .patch(`/graphs/test-graph/revisions/${revisionId}`)
-      .withBody(JSON.stringify({status: 'active'}))
+      .withJsonBodyIncluding({status: 'active'})
       .once()
       .thenReply(204);
 

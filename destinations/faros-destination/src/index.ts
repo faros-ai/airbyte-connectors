@@ -219,21 +219,25 @@ class FarosDestination extends AirbyteDestination {
       await withEntryUploader<FarosDestinationState>(
         entryUploaderConfig,
         async (writer, state) => {
-          const lastSynced = state?.lastSynced
-            ? `last synced at ${state.lastSynced}`
-            : 'not synced yet';
-          this.logger.info(
-            `Destination graph ${config.graph} was ${lastSynced}`
-          );
-
-          if (deleteAll) {
+          try {
+            const lastSynced = state?.lastSynced
+              ? `last synced at ${state.lastSynced}`
+              : 'not synced yet';
             this.logger.info(
-              `Reset request received. Deleting all records in the graph ${config.graph} for origin ${config.origin}`
+              `Destination graph ${config.graph} was ${lastSynced}`
             );
-            return null;
+
+            if (deleteAll) {
+              this.logger.info(
+                `Reset request received. Deleting all records in the graph ${config.graph} for origin ${config.origin}`
+              );
+              return null;
+            }
+            await this.writeEntries(stdin, streams, stateMessages, writer);
+            return {lastSynced: new Date().toISOString()};
+          } finally {
+            writer.end();
           }
-          await this.writeEntries(stdin, streams, stateMessages, writer);
-          return {lastSynced: new Date().toISOString()};
         }
       );
     }
@@ -317,7 +321,6 @@ class FarosDestination extends AirbyteDestination {
     } finally {
       this.logWriteStats(res, writer);
       input.close();
-      writer?.end();
     }
   }
 
