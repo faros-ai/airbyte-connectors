@@ -65,14 +65,15 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          # docker run --name jenkins -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          docker run --name jenkins-test -d -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
+          sudo apt install net-tools
           until curl -s -I -X GET $url; do
             cat /etc/hosts
-            sudo apt install net-tools
             sudo netstat -tunlp
+            docker ps -a
             echo response localhost: "$(curl -s -I -X GET http://127.0.0.1:8080)"
             echo response 127.0.0.53: "$(curl -s -I -X GET http://127.0.0.53:8080)"
             echo response 0.0.0.0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
