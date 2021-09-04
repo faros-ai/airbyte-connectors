@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {every, keyBy} from 'lodash';
+import _, {keyBy, sortBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -197,18 +197,8 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
 
-    const {streams, deleteModelEntries, deleteAll} =
+    const {streams, deleteModelEntries} =
       this.initStreamsCheckConverters(catalog);
-
-    const entryUploaderConfig: EntryUploaderConfig = {
-      name: config.origin,
-      url: config.api_url,
-      authHeader: config.api_key,
-      expiration: config.expiration,
-      graphName: config.graph,
-      deleteModelEntries,
-      logger: this.logger.asPino('debug'),
-    };
 
     const stateMessages: AirbyteStateMessage[] = [];
 
@@ -216,6 +206,19 @@ class FarosDestination extends AirbyteDestination {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(stdin, streams, stateMessages);
     } else {
+      const modelsToDelete = sortBy(deleteModelEntries).join(',');
+      this.logger.info(
+        `Deleting records in destination graph ${config.graph} for models: ${modelsToDelete}`
+      );
+      const entryUploaderConfig: EntryUploaderConfig = {
+        name: config.origin,
+        url: config.api_url,
+        authHeader: config.api_key,
+        expiration: config.expiration,
+        graphName: config.graph,
+        deleteModelEntries,
+        logger: this.logger.asPino('debug'),
+      };
       await withEntryUploader<FarosDestinationState>(
         entryUploaderConfig,
         async (writer, state) => {
@@ -226,12 +229,6 @@ class FarosDestination extends AirbyteDestination {
             this.logger.info(
               `Destination graph ${config.graph} was ${lastSynced}`
             );
-            if (deleteAll) {
-              this.logger.info(
-                `Reset request received. Deleting all records in the graph ${config.graph} for origin ${config.origin}`
-              );
-              return null;
-            }
             await this.writeEntries(stdin, streams, stateMessages, writer);
             return {lastSynced: new Date().toISOString()};
           } finally {
@@ -240,7 +237,6 @@ class FarosDestination extends AirbyteDestination {
         }
       );
     }
-
     // Since we are writing all records in a single revision,
     // we should be ok to return all the state messages at the end,
     // once the revision has been closed.
@@ -351,7 +347,6 @@ class FarosDestination extends AirbyteDestination {
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
-    deleteAll: boolean;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const streamKeys = Object.keys(streams);
@@ -378,17 +373,7 @@ class FarosDestination extends AirbyteDestination {
       }
     }
 
-    // Airbyte is reseting destination command by sending 'destination_sync_mode = overwrite'
-    // to all streams. We should handle it accordingly by deleting all entries from the graph.
-    const deleteAll =
-      streamKeys.length > 0 &&
-      every(
-        streamKeys,
-        (s) =>
-          streams[s].destination_sync_mode === DestinationSyncMode.OVERWRITE
-      );
-
-    return {streams, deleteModelEntries, deleteAll};
+    return {streams, deleteModelEntries};
   }
 
   private getConverter(
