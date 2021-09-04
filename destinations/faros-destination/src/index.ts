@@ -202,16 +202,19 @@ class FarosDestination extends AirbyteDestination {
 
     const stateMessages: AirbyteStateMessage[] = [];
 
+    // Avoid creating a new revision and writer when dry run is enabled
     if (config.dry_run === true || dryRun) {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(stdin, streams, stateMessages);
     } else {
+      // Log all models to be deleted (if any)
       if (deleteModelEntries.length > 0) {
         const modelsToDelete = sortBy(deleteModelEntries).join(',');
         this.logger.info(
           `Deleting records in destination graph ${config.graph} for models: ${modelsToDelete}`
         );
       }
+      // Create an entry uploader for the destination graph
       const entryUploaderConfig: EntryUploaderConfig = {
         name: config.origin,
         url: config.api_url,
@@ -225,15 +228,20 @@ class FarosDestination extends AirbyteDestination {
         entryUploaderConfig,
         async (writer, state) => {
           try {
+            // Log last synced time
             const lastSynced = state?.lastSynced
               ? `last synced at ${state.lastSynced}`
               : 'not synced yet';
             this.logger.info(
               `Destination graph ${config.graph} was ${lastSynced}`
             );
+            // Process input and write entries
             await this.writeEntries(stdin, streams, stateMessages, writer);
+
+            // Return the current time
             return {lastSynced: new Date().toISOString()};
           } finally {
+            // Don't forget to close the writer
             writer.end();
           }
         }
@@ -251,7 +259,7 @@ class FarosDestination extends AirbyteDestination {
     stateMessages: AirbyteStateMessage[],
     writer?: Writable
   ): Promise<void> {
-    const res = {
+    const stats = {
       messagesRead: 0,
       recordsRead: 0,
       recordsProcessed: 0,
@@ -261,24 +269,23 @@ class FarosDestination extends AirbyteDestination {
       writtenByModel: {},
     };
 
-    // readline.createInterface() will start to consume the input stream once invoked.
+    // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
     // result in missed lines.
     const input = readline.createInterface({
       input: stdin,
       terminal: stdin.isTTY,
     });
-
     try {
       // Process input & write records
       for await (const line of input) {
         try {
           const msg = parseAirbyteMessage(line);
-          res.messagesRead++;
+          stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
           } else if (msg.type === AirbyteMessageType.RECORD) {
-            res.recordsRead++;
+            stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
             if (!recordMessage.record) {
               throw new VError('Empty record');
@@ -293,20 +300,20 @@ class FarosDestination extends AirbyteDestination {
               throw new VError('Empty unpacked record');
             }
             const stream = unpacked.record.stream;
-            const count = res.processedByStream[stream];
-            res.processedByStream[stream] = count ? count + 1 : 1;
+            const count = stats.processedByStream[stream];
+            stats.processedByStream[stream] = count ? count + 1 : 1;
 
             const converter = this.getConverter(stream);
-            res.recordsWritten += this.writeRecord(
+            stats.recordsWritten += this.writeRecord(
               converter,
               unpacked,
-              res.writtenByModel,
+              stats.writtenByModel,
               writer
             );
-            res.recordsProcessed++;
+            stats.recordsProcessed++;
           }
         } catch (e) {
-          res.recordsErrored++;
+          stats.recordsErrored++;
           this.logger.error(
             `Error processing input: ${e.message ? e.message : e}`
           );
@@ -316,16 +323,16 @@ class FarosDestination extends AirbyteDestination {
         }
       }
     } finally {
-      this.logWriteStats(res, writer);
+      this.logWriteStats(stats, writer);
       input.close();
     }
   }
 
-  private logWriteStats(res: WriteStats, writer?: Writable): void {
-    this.logger.info(`Read ${res.messagesRead} messages`);
-    this.logger.info(`Read ${res.recordsRead} records`);
-    this.logger.info(`Processed ${res.recordsProcessed} records`);
-    const processed = _(res.processedByStream)
+  private logWriteStats(stats: WriteStats, writer?: Writable): void {
+    this.logger.info(`Read ${stats.messagesRead} messages`);
+    this.logger.info(`Read ${stats.recordsRead} records`);
+    this.logger.info(`Processed ${stats.recordsProcessed} records`);
+    const processed = _(stats.processedByStream)
       .toPairs()
       .orderBy(0, 'asc')
       .fromPairs()
@@ -334,8 +341,8 @@ class FarosDestination extends AirbyteDestination {
       `Processed records by stream: ${JSON.stringify(processed)}`
     );
     const writeMsg = writer ? 'Wrote' : 'Would write';
-    this.logger.info(`${writeMsg} ${res.recordsWritten} records`);
-    const written = _(res.writtenByModel)
+    this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
+    const written = _(stats.writtenByModel)
       .toPairs()
       .orderBy(0, 'asc')
       .fromPairs()
@@ -343,7 +350,7 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(
       `${writeMsg} records by model: ${JSON.stringify(written)}`
     );
-    this.logger.info(`Errored ${res.recordsErrored} records`);
+    this.logger.info(`Errored ${stats.recordsErrored} records`);
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
@@ -352,10 +359,9 @@ class FarosDestination extends AirbyteDestination {
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const streamKeys = Object.keys(streams);
-
-    // Check streams & initialize converters
     const deleteModelEntries = [];
 
+    // Check input streams & initialize record converters
     for (const stream of streamKeys) {
       const destinationSyncMode = streams[stream].destination_sync_mode;
       if (!destinationSyncMode) {
