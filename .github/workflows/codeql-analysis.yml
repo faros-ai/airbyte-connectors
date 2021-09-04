@@ -14,9 +14,15 @@ name: "CodeQL"
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.js'
+      - '**.ts'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
+    paths:
+      - '**.js'
+      - '**.ts'
   schedule:
     - cron: '00 16 * * 6'
 
@@ -32,7 +38,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        # Note: when adding new languages to analysis, also modify the 'paths' https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-including-paths
+        language: [ 'javascript' ] 
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
         # Learn more:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
