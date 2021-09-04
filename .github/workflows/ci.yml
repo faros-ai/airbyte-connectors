@@ -32,7 +32,7 @@ jobs:
         volumes:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
         options: >-
-          --entrypoint tail -f /dev/null
+          --entrypoint "tail -f /dev/null"
           --attach
 
     steps:
