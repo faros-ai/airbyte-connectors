@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {keyBy} from 'lodash';
+import _, {every, keyBy} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -61,6 +61,7 @@ export enum InvalidRecordStrategy {
 }
 
 interface WriteStats {
+  readonly messagesRead: number;
   readonly recordsRead: number;
   readonly recordsProcessed: number;
   readonly recordsWritten: number;
@@ -196,7 +197,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
 
-    const {streams, deleteModelEntries} =
+    const {streams, deleteModelEntries, deleteAll} =
       this.initStreamsCheckConverters(catalog);
 
     const entryUploaderConfig: EntryUploaderConfig = {
@@ -220,25 +221,18 @@ class FarosDestination extends AirbyteDestination {
         async (writer, state) => {
           const lastSynced = state?.lastSynced
             ? `last synced at ${state.lastSynced}`
-            : 'not synced before';
-
+            : 'not synced yet';
           this.logger.info(
             `Destination graph ${config.graph} was ${lastSynced}`
           );
-          const res = await this.writeEntries(
-            stdin,
-            streams,
-            stateMessages,
-            writer
-          );
-          // Airbyte is reseting the destination by sending no records into the input stream.
-          // In this case we clear the graph by returning 'null' state
-          if (res.recordsRead === 0) {
+
+          if (deleteAll) {
             this.logger.info(
-              `No records were received. Clearing all records in the graph ${config.graph} by origin ${config.origin}`
+              `Reset request received. Deleting all records in the graph ${config.graph} for origin ${config.origin}`
             );
             return null;
           }
+          await this.writeEntries(stdin, streams, stateMessages, writer);
           return {lastSynced: new Date().toISOString()};
         }
       );
@@ -255,8 +249,9 @@ class FarosDestination extends AirbyteDestination {
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
     writer?: Writable
-  ): Promise<WriteStats> {
+  ): Promise<void> {
     const res = {
+      messagesRead: 0,
       recordsRead: 0,
       recordsProcessed: 0,
       recordsWritten: 0,
@@ -276,12 +271,13 @@ class FarosDestination extends AirbyteDestination {
     try {
       // Process input & write records
       for await (const line of input) {
-        res.recordsRead++;
         try {
           const msg = parseAirbyteMessage(line);
+          res.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
           } else if (msg.type === AirbyteMessageType.RECORD) {
+            res.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
             if (!recordMessage.record) {
               throw new VError('Empty record');
@@ -323,11 +319,10 @@ class FarosDestination extends AirbyteDestination {
       input.close();
       writer?.end();
     }
-
-    return res;
   }
 
   private logWriteStats(res: WriteStats, writer?: Writable): void {
+    this.logger.info(`Read ${res.messagesRead} messages`);
     this.logger.info(`Read ${res.recordsRead} records`);
     this.logger.info(`Processed ${res.recordsProcessed} records`);
     const processed = _(res.processedByStream)
@@ -354,12 +349,15 @@ class FarosDestination extends AirbyteDestination {
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
+    deleteAll: boolean;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
+    const streamKeys = Object.keys(streams);
 
     // Check streams & initialize converters
     const deleteModelEntries = [];
-    for (const stream in streams) {
+
+    for (const stream of streamKeys) {
       const destinationSyncMode = streams[stream].destination_sync_mode;
       if (!destinationSyncMode) {
         throw new VError(
@@ -377,7 +375,18 @@ class FarosDestination extends AirbyteDestination {
         deleteModelEntries.push(...converter.destinationModels);
       }
     }
-    return {streams, deleteModelEntries};
+
+    // Airbyte is reseting destination command by sending 'destination_sync_mode = overwrite'
+    // to all streams. We should handle it accordingly by deleting all entries from the graph.
+    const deleteAll =
+      streamKeys.length > 0 &&
+      every(
+        streamKeys,
+        (s) =>
+          streams[s].destination_sync_mode === DestinationSyncMode.OVERWRITE
+      );
+
+    return {streams, deleteModelEntries, deleteAll};
   }
 
   private getConverter(
