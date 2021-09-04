@@ -61,11 +61,16 @@ export enum InvalidRecordStrategy {
 }
 
 interface WriteStats {
+  readonly recordsRead: number;
   readonly recordsProcessed: number;
   readonly recordsWritten: number;
   readonly recordsErrored: number;
   readonly processedByStream: Dictionary<number>;
   readonly writtenByModel: Dictionary<number>;
+}
+
+interface FarosDestinationState {
+  readonly lastSynced: string;
 }
 
 /** Faros destination implementation. */
@@ -210,9 +215,33 @@ class FarosDestination extends AirbyteDestination {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(stdin, streams, stateMessages);
     } else {
-      await withEntryUploader(entryUploaderConfig, async (writer) => {
-        await this.writeEntries(stdin, streams, stateMessages, writer);
-      });
+      await withEntryUploader<FarosDestinationState>(
+        entryUploaderConfig,
+        async (writer, state) => {
+          const lastSynced = state?.lastSynced
+            ? `last synced at ${state.lastSynced}`
+            : 'not synced before';
+
+          this.logger.info(
+            `Destination graph ${config.graph} was ${lastSynced}`
+          );
+          const res = await this.writeEntries(
+            stdin,
+            streams,
+            stateMessages,
+            writer
+          );
+          // Airbyte is reseting the destination by sending no records into the input stream.
+          // In this case we clear the graph by returning 'null' state
+          if (res.recordsRead === 0) {
+            this.logger.info(
+              `No records were received. Clearing all records in the graph ${config.graph} by origin ${config.origin}`
+            );
+            return null;
+          }
+          return {lastSynced: new Date().toISOString()};
+        }
+      );
     }
 
     // Since we are writing all records in a single revision,
@@ -228,6 +257,7 @@ class FarosDestination extends AirbyteDestination {
     writer?: Writable
   ): Promise<WriteStats> {
     const res = {
+      recordsRead: 0,
       recordsProcessed: 0,
       recordsWritten: 0,
       recordsErrored: 0,
@@ -246,6 +276,7 @@ class FarosDestination extends AirbyteDestination {
     try {
       // Process input & write records
       for await (const line of input) {
+        res.recordsRead++;
         try {
           const msg = parseAirbyteMessage(line);
           if (msg.type === AirbyteMessageType.STATE) {
@@ -297,6 +328,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private logWriteStats(res: WriteStats, writer?: Writable): void {
+    this.logger.info(`Read ${res.recordsRead} records`);
     this.logger.info(`Processed ${res.recordsProcessed} records`);
     const processed = _(res.processedByStream)
       .toPairs()
