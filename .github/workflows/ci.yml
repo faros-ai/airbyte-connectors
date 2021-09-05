@@ -32,7 +32,9 @@ jobs:
         volumes:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
         options: >-
-          --entrypoint "tail -f /dev/null"
+          --detach
+          -it
+          --entrypoint "tail -F anything"
 
     steps:
       - name: Add user permission
