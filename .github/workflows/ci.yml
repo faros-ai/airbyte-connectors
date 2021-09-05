@@ -33,7 +33,6 @@ jobs:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
         options: >-
           --entrypoint "tail -f /dev/null"
-          --attach
 
     steps:
       - name: Add user permission
