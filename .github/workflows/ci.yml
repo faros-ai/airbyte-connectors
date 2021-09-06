@@ -83,20 +83,20 @@ jobs:
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           echo "Waiting until Jenkins is up"
-          waiting=0
-          docker ps -a
-          docker start $(docker ps -aqf "name=jenkins")
-          docker ps -a
-          echo response 127: "$(curl -s -I -X GET http://127.0.0.1:8080)"
-          echo response 0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
+          # waiting=0
+          # docker ps -a
+          # docker start $(docker ps -aqf "name=jenkins")
+          # docker ps -a
+          # echo response 127: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+          # echo response 0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
 
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           sudo apt install net-tools
           until curl -s -I -X GET $url; do
-            cat /etc/hosts
-            echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+            # cat /etc/hosts
+            # echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
             sudo netstat -tunlp
-            docker ps -a
+            # docker ps -a
             let waiting+=3
             sleep 3
             if [ $waiting -eq 60 ]; then
@@ -112,7 +112,7 @@ jobs:
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
           JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
-      
+
       - name: Stop Jenkins server
         run: |
           docker stop jenkins
