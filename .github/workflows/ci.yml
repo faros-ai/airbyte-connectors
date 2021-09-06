@@ -31,9 +31,9 @@ jobs:
           - 50000:50000
         volumes:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-        # options: >-
-        #   --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
-        #   --restart
+        options: >-
+          --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
+          --restart always
           # --detach
           # -it
           # --entrypoint "tail -F anything"
@@ -71,12 +71,6 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          pwd
-          ls -l
-          ls -l /home/runner/work/airbyte-connectors
-          ls -l jenkins/data
-          ls -l /home/runner/work/airbyte-connectors/airbyte-connectors/jenkins/data
-
           docker run -it --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
