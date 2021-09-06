@@ -31,8 +31,8 @@ jobs:
           - 50000:50000
         volumes:
           - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-        options: >-
-          --restart always
+        # options: >-
+        #   --restart always
     # --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
     # --detach
     # -it
@@ -72,22 +72,6 @@ jobs:
       - name: Run Jenkins server
         run: |
           # docker run -it --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
-          echo "Waiting until Jenkins is up"
-          waiting=0
-          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
-          sudo apt install net-tools
-          until curl -s -I -X GET $url; do
-            cat /etc/hosts
-            sudo netstat -tunlp
-            docker ps -a
-            echo response localhost: "$(curl -s -I -X GET http://127.0.0.1:8080)"
-            let waiting+=9
-            sleep 9
-            if [ $waiting -eq 60 ]; then
-              echo "Jenkins server did not respond within 60 seconds"
-              exit 42
-            fi
-          done
 
       - name: Source Acceptance Test
         # if: github.ref == 'refs/heads/main' # Skip PRs
@@ -97,9 +81,10 @@ jobs:
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           until curl -s -I -X GET $url; do
             cat /etc/hosts
-            sudo apt install net-tools
+            # sudo apt install net-tools
             echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
-            sudo netstat -tunlp
+            # sudo netstat -tunlp
+            docker ps -a
             let waiting+=3
             sleep 3
             if [ $waiting -eq 60 ]; then
