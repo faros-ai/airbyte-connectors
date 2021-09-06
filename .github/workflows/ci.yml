@@ -81,6 +81,8 @@ jobs:
           echo "Waiting until Jenkins is up"
           waiting=0
           docker ps -a
+          docker start $(docker ps -aqf "name=jenkins")
+          docker ps -a
           echo response 127: "$(curl -s -I -X GET http://127.0.0.1:8080)"
           echo response 0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
 
