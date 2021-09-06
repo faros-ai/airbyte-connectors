@@ -34,9 +34,9 @@ jobs:
         options: >-
           --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
           --restart always
-          # --detach
-          # -it
-          # --entrypoint "tail -F anything"
+    # --detach
+    # -it
+    # --entrypoint "tail -F anything"
 
     steps:
       - name: Add user permission
