@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - /home/grant/Documents/DevCube/Faros/airbyte-connectors-main/jenkins/data:/var/jenkins_home
+    # options: >-
+    #   --detach
+    #   -it
+    #   --entrypoint "tail -F anything"

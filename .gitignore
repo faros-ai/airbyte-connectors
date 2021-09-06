@@ -10,5 +10,6 @@ secrets/
 *-acceptance-test.log
 jenkins/data/logs
 jenkins/data/war
+jenkins/data/.cache
 acceptance_tests_logs
 .vscode

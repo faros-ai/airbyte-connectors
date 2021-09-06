@@ -2,9 +2,9 @@
 <jenkins.security.apitoken.ApiTokenStats>
   <tokenStats>
     <jenkins.security.apitoken.ApiTokenStats_-SingleTokenStats>
-      <tokenUuid>69652b71-044d-43fa-9b56-89dc1f5f4584</tokenUuid>
-      <lastUseDate>2021-09-03 15:18:16.271 UTC</lastUseDate>
-      <useCounter>48</useCounter>
+      <tokenUuid>8814633a-e564-4534-a0d1-4a9b96fd6e6d</tokenUuid>
+      <lastUseDate>2021-09-06 16:43:55.79 UTC</lastUseDate>
+      <useCounter>90</useCounter>
     </jenkins.security.apitoken.ApiTokenStats_-SingleTokenStats>
   </tokenStats>
 </jenkins.security.apitoken.ApiTokenStats>
