@@ -75,7 +75,7 @@ jobs:
         run: |
           ls -l ${{ github.workspace }}/jenkins/data
           docker ps -a
-          docker run -it --name jenkins-test -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          docker run -i --name jenkins-test -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo response 0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
           docker ps -a
     # -p 8080:8080 -p 50000:50000 
