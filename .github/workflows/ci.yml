@@ -31,9 +31,9 @@ jobs:
     #   - 50000:50000
     # volumes:
     #   - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-        options: >-
-          --log-driver
-          --log-opt
+        # options: >-
+        #   --log-driver
+        #   --log-opt
     #   --restart always
     # --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
     # --detach
@@ -71,15 +71,20 @@ jobs:
       # - name: Test
       #   run: lerna run test-cov
 
-      # - name: Run Jenkins server
-      #   run: |
-      #     # docker run -it --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+      - name: Run Jenkins server
+        run: |
+          docker create --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           echo "Waiting until Jenkins is up"
           waiting=0
+          docker ps -a
+          docker start jenkins-test
+          docker ps -a
+          echo response: "$(curl -s -I -X GET http://127.0.0.1:8080)"
+
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           until curl -s -I -X GET $url; do
             cat /etc/hosts
