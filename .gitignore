@@ -11,5 +11,6 @@ secrets/
 jenkins/data/logs
 jenkins/data/war
 jenkins/data/.cache
+jenkins/data/.java
 acceptance_tests_logs
 .vscode
