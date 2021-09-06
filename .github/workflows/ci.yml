@@ -23,18 +23,18 @@ jobs:
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
 
-    services:
-      jenkins:
-        image: jenkins/jenkins:lts-jdk11
-        ports:
-          - 8080:8080
-          - 50000:50000
-        volumes:
-          - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-        options: >-
-          --detach
-          -it
-          --entrypoint "tail -F anything"
+    # services:
+      # jenkins:
+      #   image: jenkins/jenkins:lts-jdk11
+      #   ports:
+      #     - 8080:8080
+      #     - 50000:50000
+      #   volumes:
+      #     - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
+      #   options: >-
+      #     --detach
+      #     -it
+      #     --entrypoint "tail -F anything"
 
     steps:
       - name: Add user permission
