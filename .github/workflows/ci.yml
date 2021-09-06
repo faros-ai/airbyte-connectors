@@ -23,18 +23,20 @@ jobs:
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
 
-    # services:
-      # jenkins:
-      #   image: jenkins/jenkins:lts-jdk11
-      #   ports:
-      #     - 8080:8080
-      #     - 50000:50000
-      #   volumes:
-      #     - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
-      #   options: >-
-      #     --detach
-      #     -it
-      #     --entrypoint "tail -F anything"
+    services:
+      jenkins:
+        image: jenkins/jenkins:lts-jdk11
+        ports:
+          - 8080:8080
+          - 50000:50000
+        volumes:
+          - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
+        # options: >-
+        #   --health-cmd "curl -s -I -X GET http://127.0.0.1:8080"
+        #   --restart
+          # --detach
+          # -it
+          # --entrypoint "tail -F anything"
 
     steps:
       - name: Add user permission
@@ -69,7 +71,13 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          docker run -it -d --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          pwd
+          ls -l
+          ls -l /home/runner/work/airbyte-connectors
+          ls -l jenkins/data
+          ls -l /home/runner/work/airbyte-connectors/airbyte-connectors/jenkins/data
+
+          docker run -it --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
@@ -81,8 +89,8 @@ jobs:
             echo response localhost: "$(curl -s -I -X GET http://127.0.0.1:8080)"
             let waiting+=9
             sleep 9
-            if [ $waiting -eq 120 ]; then
-              echo "Jenkins server did not respond within 120 seconds"
+            if [ $waiting -eq 60 ]; then
+              echo "Jenkins server did not respond within 60 seconds"
               exit 42
             fi
           done
@@ -100,8 +108,8 @@ jobs:
             sudo netstat -tunlp
             let waiting+=3
             sleep 3
-            if [ $waiting -eq 120 ]; then
-              echo "Jenkins server did not respond within 120 seconds"
+            if [ $waiting -eq 60 ]; then
+              echo "Jenkins server did not respond within 60 seconds"
               exit 42
             fi
           done
