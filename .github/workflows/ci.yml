@@ -23,11 +23,11 @@ jobs:
       HUSKY_SKIP_HOOKS: 1
       HUSKY: 0
 
-    services:
-      jenkins:
-        image: jenkins/jenkins:lts-jdk11
-        volumes:
-          - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
+    # services:
+    #   jenkins:
+    #     image: jenkins/jenkins:lts-jdk11
+    #     volumes:
+    #       - ${{ github.workspace }}/jenkins/data:/var/jenkins_home
     # ports:
     #   - 8080:8080
     #   - 50000:50000
@@ -71,10 +71,14 @@ jobs:
       # - name: Test
       #   run: lerna run test-cov
 
-      # - name: Run Jenkins server
-      #   run: |
-      #     docker create --name jenkins-test -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
-
+      - name: Run Jenkins server
+        run: |
+          ls -l ${{ github.workspace }}/jenkins/data
+          docker ps -a
+          docker run -it --name jenkins-test -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          echo response 0: "$(curl -s -I -X GET http://0.0.0.0:8080)"
+          docker ps -a
+    # -p 8080:8080 -p 50000:50000 
       - name: Source Acceptance Test
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
