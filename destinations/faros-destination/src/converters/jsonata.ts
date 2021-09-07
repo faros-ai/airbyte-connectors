@@ -2,22 +2,15 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import jsonata from 'jsonata';
 import {VError} from 'verror';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from './converter';
+import {Converter, DestinationModel, DestinationRecord} from './converter';
 
 /** Record converter to convert records using provided JSONata expression */
-export class JSONataConverter implements Converter {
+export class JSONataConverter extends Converter {
   constructor(
     private readonly jsonataExpr: jsonata.Expression,
     readonly destinationModels: ReadonlyArray<DestinationModel>
-  ) {}
-
-  get streamName(): StreamName {
-    return new StreamName('', ''); // not used in this converter
+  ) {
+    super();
   }
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {

@@ -1,18 +1,29 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {snakeCase} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-/** Record converter */
-export interface Converter {
+/** Airbyte -> Faros record converter */
+export abstract class Converter {
+  private stream: StreamName;
+
   /** Input stream supported by converter */
-  get streamName(): StreamName;
+  get streamName(): StreamName {
+    if (this.stream) return this.stream;
+    this.stream = StreamName.fromString(
+      snakeCase(this.constructor.name).replace('_', StreamNameSeparator)
+    );
+    return this.stream;
+  }
 
   /** All the record models produced by converter */
-  get destinationModels(): ReadonlyArray<DestinationModel>;
+  abstract get destinationModels(): ReadonlyArray<DestinationModel>;
 
-  /** Function converts an input Airbyte record to destination canonical record */
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord>;
+  /** Function converts an input Airbyte record to Faros destination canonical record */
+  abstract convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord>;
 }
+
+const StreamNameSeparator = '__';
 
 /**
  * Stream name with source prefix, e.g
@@ -25,17 +36,17 @@ export class StreamName {
   constructor(readonly source: string, readonly name: string) {}
 
   stringify(): string {
-    return `${this.source}__${this.name}`;
+    return `${this.source}${StreamNameSeparator}${this.name}`;
   }
 
   static fromString(s: string): StreamName {
     if (!s) {
       throw new VError(`Empty stream name ${s}`);
     }
-    const res = s.split('__');
+    const res = s.split(StreamNameSeparator);
     if (res.length < 2) {
       throw new VError(
-        `Invalid stream name ${s}: missing source prefix (e.g 'github__')`
+        `Invalid stream name ${s}: missing source prefix (e.g 'github${StreamNameSeparator}')`
       );
     }
     return new StreamName(res[res.length - 2], res[res.length - 1]);
@@ -43,7 +54,7 @@ export class StreamName {
 }
 
 /**
- * Canonical record with the destination model, e.g
+ * Faros record with the destination canonical model, e.g
  * {
  *   model: 'identity_Identity',
  *   record: {
@@ -58,5 +69,5 @@ export type DestinationRecord = {
   readonly record: Dictionary<any>;
 };
 
-/** Destination model name, e.g identity_Identity or vcs_Commit */
+/** Faros destination model name, e.g identity_Identity, vcs_Commit */
 export type DestinationModel = string;

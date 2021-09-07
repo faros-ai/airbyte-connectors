@@ -10,6 +10,8 @@ const packageInfo = JSON.parse(
   fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8')
 );
 
+export const PACKAGE_VERSION = packageInfo.version;
+
 /** Redact config of all secret values based on the provided specification */
 export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   const props = spec.spec.connectionSpecification?.properties ?? {};
@@ -22,5 +24,3 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   const redact = fastRedact({paths, censor: 'REDACTED'});
   return `${redact(config)}`;
 }
-
-export const PACKAGE_VERSION = packageInfo.version;

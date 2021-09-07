@@ -1,14 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamName,
-} from '../converter';
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
 
-export class GithubCommitComments implements Converter {
-  readonly streamName = new StreamName('github', 'commit_comments');
+export class GithubCommitComments extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
