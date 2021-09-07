@@ -1,0 +1,42 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Bitbucket Spec",
+    "type": "object",
+    "required": [
+      "server_url",
+      "workspace"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "server_url": {
+        "type": "string",
+        "description": "Bitbucket Server URL",
+        "examples": ["https://api.bitbucket.org/2.0"]
+      },
+      "username": {
+        "type": "string",
+        "description": "Bitbucket Username"
+      },
+      "password": {
+        "type": "string",
+        "description": "Bitbucket Password",
+        "airbyte_secret": true
+      },
+      "token": {
+        "type": "string",
+        "description": "Bitbucket Token",
+        "airbyte_secret": true
+      },
+      "workspaces": {
+        "type": "string",
+        "description": "Comma-separated List of Bitbucket Workspaces"
+      },
+      "repo_list": {
+        "type": "string",
+        "description": "Comma-separated List of Bitbucket Repositories"
+      }
+    }
+  }
+}
