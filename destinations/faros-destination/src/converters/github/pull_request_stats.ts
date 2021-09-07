@@ -22,6 +22,7 @@ export class GithubPullRequestStats extends Converter {
       {
         model: 'vcs_PullRequest__Update',
         record: {
+          at: record.record.emitted_at,
           where: {
             number: prStats.number,
             repository,
