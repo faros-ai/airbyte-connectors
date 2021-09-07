@@ -39,19 +39,24 @@ export class GithubPullRequests extends Converter {
       : {category: 'Custom', detail: pr.state};
 
     res.push({
-      model: 'vcs_PullRequest',
+      // We are explicitly passing __Upsert command here with at := 0,
+      // to allow updating PR stats from pull_request_stats stream
+      // in the same revision
+      model: 'vcs_PullRequest__Upsert',
       record: {
-        number: pr.number,
-        title: pr.title,
-        state,
-        htmlUrl: pr.url,
-        createdAt: Utils.toDate(pr.created_at),
-        updatedAt: Utils.toDate(pr.updated_at),
-        mergedAt: Utils.toDate(pr.merged_at),
-        author: author ? {uid: author.record.uid, source} : null,
-        mergeCommit,
-        repository,
-        // PR stats are set from pull_request_stats stream
+        at: 0,
+        data: {
+          number: pr.number,
+          title: pr.title,
+          state,
+          htmlUrl: pr.url,
+          createdAt: Utils.toDate(pr.created_at),
+          updatedAt: Utils.toDate(pr.updated_at),
+          mergedAt: Utils.toDate(pr.merged_at),
+          author: author ? {uid: author.record.uid, source} : null,
+          mergeCommit,
+          repository,
+        },
       },
     });
 

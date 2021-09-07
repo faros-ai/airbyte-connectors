@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {keyBy, sortBy} from 'lodash';
+import _, {keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -359,7 +359,7 @@ class FarosDestination extends AirbyteDestination {
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const streamKeys = Object.keys(streams);
-    const deleteModelEntries = [];
+    const deleteModelEntries: string[] = [];
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -381,7 +381,7 @@ class FarosDestination extends AirbyteDestination {
       }
     }
 
-    return {streams, deleteModelEntries};
+    return {streams, deleteModelEntries: uniq(deleteModelEntries)};
   }
 
   private getConverter(
