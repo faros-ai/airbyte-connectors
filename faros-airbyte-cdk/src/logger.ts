@@ -1,9 +1,29 @@
 import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
 
-import {AirbyteLog, AirbyteLogLevel, AirbyteMessage} from './protocol';
+import {
+  AirbyteLog,
+  AirbyteLogLevel,
+  AirbyteLogLevelOrder,
+  AirbyteMessage,
+  AirbyteMessageType,
+} from './protocol';
 
 export class AirbyteLogger {
+  static readonly defaultLevel = AirbyteLogLevel.INFO;
+  private level = AirbyteLogger.defaultLevel;
+
+  constructor(level?: AirbyteLogLevel) {
+    if (level) {
+      this.level = level;
+    } else if (
+      process.env.LOG_LEVEL &&
+      AirbyteLogLevel[process.env.LOG_LEVEL.toUpperCase()]
+    ) {
+      this.level = AirbyteLogLevel[process.env.LOG_LEVEL.toUpperCase()];
+    }
+  }
+
   error(message: string): void {
     this.log(AirbyteLogLevel.ERROR, message);
   }
@@ -29,7 +49,7 @@ export class AirbyteLogger {
   }
 
   write(msg: AirbyteMessage): void {
-    AirbyteLogger.writeMessage(msg);
+    AirbyteLogger.writeMessage(msg, this.level);
   }
 
   /**
@@ -39,25 +59,32 @@ export class AirbyteLogger {
    * @returns Pino Logger
    */
   asPino(level: Level = 'info'): Logger {
-    const defaultLevel = AirbyteLogLevel[level.toUpperCase()];
+    const pinoLevel = AirbyteLogLevel[level.toUpperCase()];
 
     const destination: DestinationStream = new stream.Writable({
       write: function (chunk, encoding, next): void {
         const msg = JSON.parse(chunk);
-        const lvl = msg.level
+        const lvl: AirbyteLogLevel = msg.level
           ? AirbyteLogLevel[pino.levels.labels[msg.level].toUpperCase()]
-          : defaultLevel;
-        AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg));
+          : AirbyteLogger.defaultLevel;
+        AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg), pinoLevel);
         next();
       },
     });
 
     const logger = pino({level}, destination);
-
     return logger;
   }
 
-  private static writeMessage(msg: AirbyteMessage): void {
+  private static writeMessage(
+    msg: AirbyteMessage,
+    level: AirbyteLogLevel
+  ): void {
+    if (msg.type === AirbyteMessageType.LOG) {
+      const levelOrder = AirbyteLogLevelOrder(level);
+      const msgLevelOrder = AirbyteLogLevelOrder((msg as AirbyteLog).log.level);
+      if (levelOrder > msgLevelOrder) return;
+    }
     console.log(JSON.stringify(msg));
   }
 }
