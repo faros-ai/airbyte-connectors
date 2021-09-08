@@ -10,8 +10,7 @@ import {
 } from './protocol';
 
 export class AirbyteLogger {
-  static readonly defaultLevel = AirbyteLogLevel.INFO;
-  private level = AirbyteLogger.defaultLevel;
+  private level = AirbyteLogLevel.INFO;
 
   constructor(level?: AirbyteLogLevel) {
     if (level) {
@@ -59,15 +58,15 @@ export class AirbyteLogger {
    * @returns Pino Logger
    */
   asPino(level: Level = 'info'): Logger {
-    const pinoLevel = AirbyteLogLevel[level.toUpperCase()];
+    const defaultLevel = AirbyteLogLevel[level.toUpperCase()];
 
     const destination: DestinationStream = new stream.Writable({
       write: function (chunk, encoding, next): void {
         const msg = JSON.parse(chunk);
         const lvl: AirbyteLogLevel = msg.level
           ? AirbyteLogLevel[pino.levels.labels[msg.level].toUpperCase()]
-          : AirbyteLogger.defaultLevel;
-        AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg), pinoLevel);
+          : defaultLevel;
+        AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg), defaultLevel);
         next();
       },
     });
