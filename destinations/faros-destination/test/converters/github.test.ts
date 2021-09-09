@@ -67,7 +67,7 @@ describe('github', () => {
 
     await mockttp
       .patch(`/graphs/test-graph/revisions/${revisionId}`)
-      .withBody(JSON.stringify({status: 'active'}))
+      .withJsonBodyIncluding({status: 'active'})
       .once()
       .thenReply(204);
 
@@ -83,6 +83,8 @@ describe('github', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
+    expect(stdout).toMatch('Read 110 messages');
+    expect(stdout).toMatch('Read 96 records');
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Wrote 58 records');
     expect(stdout).toMatch('Errored 0 records');
@@ -104,6 +106,8 @@ describe('github', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
+    expect(stdout).toMatch('Read 110 messages');
+    expect(stdout).toMatch('Read 96 records');
     expect(stdout).toMatch('Processed 96 records');
     expect(stdout).toMatch('Would write 58 records');
     expect(stdout).toMatch('Errored 0 records');
@@ -251,10 +255,10 @@ describe('github', () => {
       vcs_Commit: 77,
       vcs_Membership: 12,
       vcs_Organization: 1,
-      vcs_PullRequest: 38,
       vcs_PullRequestComment: 87,
       vcs_PullRequestReview: 121,
       vcs_PullRequest__Update: 38,
+      vcs_PullRequest__Upsert: 38,
       vcs_Repository: 49,
       vcs_Tag: 2,
       vcs_User: 195,
