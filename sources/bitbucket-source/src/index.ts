@@ -25,8 +25,8 @@ class BitbucketSource extends AirbyteSourceBase {
   }
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    const [client, errorMessage] = createClient(config);
-    if (!client) {
+    const [client, errorMessage] = await createClient(config);
+    if (client) {
       return [true, undefined];
     }
 

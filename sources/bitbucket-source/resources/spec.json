@@ -29,9 +29,9 @@
         "description": "Bitbucket Token",
         "airbyte_secret": true
       },
-      "workspaces": {
+      "workspace": {
         "type": "string",
-        "description": "Comma-separated List of Bitbucket Workspaces"
+        "description": "Bitbucket Workspace"
       },
       "repo_list": {
         "type": "string",

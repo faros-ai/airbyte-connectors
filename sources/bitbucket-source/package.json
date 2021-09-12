@@ -31,6 +31,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "bitbucket": "^2.6.3",
+    "bottleneck": "^2.19.5",
     "commander": "^8.0.0",
     "faros-airbyte-cdk": "^0.1.7",
     "verror": "^1.10.0"

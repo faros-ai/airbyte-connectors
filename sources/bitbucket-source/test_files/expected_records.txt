@@ -1,0 +1,1 @@
+{"stream": "bitbucket_workspace", "data": {"uuid": "{800230eb-75a8-4137-a6b4-22a1fbcb645e}", "name": "faros-ai", "slug": "faros-ai-test", "type": "workspace", "createdOn": "2021-05-29T19:01:26.432330+00:00", "htmlUrl": "https://bitbucket.org/faros-ai-test/"}, "emitted_at": 0}

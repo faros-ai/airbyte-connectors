@@ -2,13 +2,12 @@
   "streams": [
     {
       "stream": {
-        "name": "bitbucket_builds",
+        "name": "bitbucket_workspace",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": ["full_refresh"],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
-          ["uid"],
-          ["source"]
+          ["uuid"]
         ]
       },
       "sync_mode": "full_refresh",
