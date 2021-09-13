@@ -64,6 +64,16 @@ function buildNameToJob(str: string): string {
   return str.substring(0, str.indexOf(' '));
 }
 
+function validateInteger(value: number): [true | undefined, string | undefined] {
+  if (value) {
+    if (value || typeof value === 'number' || value > 0) {
+      return [true, undefined];
+    }
+    return [undefined, `${value} must be a valid number bigger zero`];
+  }
+  return [true, undefined];
+}
+
 export class Jenkins {
   constructor(
     private readonly client: any,
@@ -81,6 +91,14 @@ export class Jenkins {
     }
     if (typeof config.token !== 'string') {
       return [undefined, 'Token: must be a string'];
+    }
+    const depthCheck = validateInteger(config.depth);
+    if (!depthCheck[0]) {
+      return [undefined, depthCheck[1]];
+    }
+    const pageSizeCheck = validateInteger(config.pageSize);
+    if (!pageSizeCheck[0]) {
+      return [undefined, pageSizeCheck[1]];
     }
 
     let jenkinsUrl;
@@ -231,6 +249,10 @@ export class Jenkins {
     }
   }
 
+  /** Jenkins JSON API does not support deep scan, it is required to
+   * generate a suitable tree for the corresponding depth. Job in some cases have
+   * many sub jobs, depth needs to quantify how many sub jobs are showed
+  */
   private generateTree(depth: number, fieldsPattern: string): string {
     let tree = 'jobs[' + fieldsPattern + ']';
     for (let i = 0; i < depth; i++) {
