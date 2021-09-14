@@ -30,7 +30,11 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+<<<<<<< HEAD
     "faros-airbyte-cdk": "^0.1.14",
+=======
+    "faros-airbyte-cdk": "^0.1.13",
+>>>>>>> db777c4a8178bd4716398352bfb8ccfe76e60c53
     "faros-feeds-sdk": "^0.8.28",
     "jsonata": "^1.8.4",
     "verror": "^1.10.0"

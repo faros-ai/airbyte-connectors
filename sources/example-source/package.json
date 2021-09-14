@@ -29,7 +29,11 @@
   "dependencies": {
     "axios": "^0.21.1",
     "commander": "^8.0.0",
+<<<<<<< HEAD
     "faros-airbyte-cdk": "^0.1.14",
+=======
+    "faros-airbyte-cdk": "^0.1.13",
+>>>>>>> db777c4a8178bd4716398352bfb8ccfe76e60c53
     "verror": "^1.10.0"
   },
   "jest": {
