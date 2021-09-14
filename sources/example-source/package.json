@@ -1,6 +1,6 @@
 {
   "name": "example-source",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Example Airbyte source",
   "keywords": [
     "faros"
@@ -29,7 +29,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "commander": "^8.0.0",
-    "faros-airbyte-cdk": "^0.1.11",
+    "faros-airbyte-cdk": "^0.1.12",
     "verror": "^1.10.0"
   },
   "jest": {
