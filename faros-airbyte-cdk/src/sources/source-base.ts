@@ -133,7 +133,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
         for await (const message of generator) {
           yield message;
         }
-      } catch (e) {
+      } catch (e: any) {
         this.logger.error(
           `Encountered an error while reading stream ${this.name}: ${
             e.message ? e.message : e

@@ -81,7 +81,7 @@ export class AirbyteDestinationRunner {
             for await (const message of iter) {
               this.logger.write(message);
             }
-          } catch (e) {
+          } catch (e: any) {
             this.logger.error(
               `Encountered an error while writing to destination: ${
                 e.message ? e.message : e
