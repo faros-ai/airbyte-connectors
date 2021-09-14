@@ -58,7 +58,6 @@
       "jsonata_expression": {
         "type": "string",
         "title": "JSONata expression",
-        "default": "[]",
         "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode."
       },
       "jsonata_mode": {
@@ -75,7 +74,6 @@
         },
         "title": "JSONata destination models",
         "description": "Destination models when using JSONata expression.",
-        "default": [],
         "examples": ["ims_Incident", "vcs_Commit"]
       }
     }
