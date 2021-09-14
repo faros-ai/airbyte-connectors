@@ -72,7 +72,7 @@
         "items": {
           "type": "string"
         },
-        "title": "Destination models",
+        "title": "JSONata destination models",
         "description": "Destination models when using JSONata expression.",
         "examples": ["[\"ims_Incident\", \"vcs_Commit\"]"]
       }
