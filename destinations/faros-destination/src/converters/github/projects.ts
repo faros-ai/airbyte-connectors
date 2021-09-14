@@ -4,7 +4,11 @@ import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
 export class GithubProjects extends Converter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
+  ];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;

@@ -6,6 +6,9 @@ import {GithubCommon} from './common';
 
 export class GithubRepositories extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
   ];
 

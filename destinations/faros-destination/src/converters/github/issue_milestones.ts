@@ -4,7 +4,7 @@ import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GithubCommon} from './common';
 
 export class GithubIssueMilestones extends Converter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
