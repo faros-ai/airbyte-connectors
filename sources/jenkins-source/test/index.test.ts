@@ -69,7 +69,7 @@ describe('index', () => {
       },
     } as any);
     const source = new JenkinsSource(logger);
-    const [jobStream] = source.streams({
+    const [, jobStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
       token: 'pass',
@@ -96,12 +96,12 @@ describe('index', () => {
       },
     } as any);
     const source = new JenkinsSource(logger);
-    const streams = source.streams({
+    const [, jobStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
       token: 'pass',
     });
-    const jobsIter = streams[0].readRecords(SyncMode.FULL_REFRESH);
+    const jobsIter = jobStream.readRecords(SyncMode.FULL_REFRESH);
     const jobs = [];
     for await (const job of jobsIter) {
       jobs.push(job);
@@ -165,7 +165,7 @@ describe('index', () => {
       },
     } as any);
     const source = new JenkinsSource(logger);
-    const [, buildStream] = source.streams({
+    const [buildStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
       token: 'pass',
@@ -214,7 +214,7 @@ describe('index', () => {
       },
     } as any);
     const source = new JenkinsSource(logger);
-    const [, buildStream] = source.streams({
+    const [buildStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
       token: 'pass',
