@@ -69,8 +69,8 @@ jobs:
             docker ps -a
             let waiting+=3
             sleep 3
-            if [ $waiting -eq 60 ]; then
-              echo "Jenkins server did not respond within 60 seconds"
+            if [ $waiting -eq 120 ]; then
+              echo "Jenkins server did not respond within 120 seconds"
               exit 42
             fi
           done
