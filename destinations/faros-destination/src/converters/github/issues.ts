@@ -1,7 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {GithubCommon} from './common';
 
 export class GithubIssues extends Converter {
@@ -14,7 +20,16 @@ export class GithubIssues extends Converter {
     'tms_User',
   ];
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  private readonly issueLabelsStream = new StreamName('github', 'issue_labels');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.issueLabelsStream];
+  }
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const issue = record.record.data;
     const res: DestinationRecord[] = [];
@@ -54,19 +69,16 @@ export class GithubIssues extends Converter {
       }
     });
 
-    issue.labels.forEach((l) => {
-      res.push({
-        model: 'tms_Label',
-        record: {name: l.name},
-      });
+    const issueLabelsStream = this.issueLabelsStream.stringify();
+    for (const id of issue.labels) {
+      const label = ctx.get(issueLabelsStream, String(id));
+      const name = label?.record?.data?.name;
+      if (!name) continue;
       res.push({
         model: 'tms_TaskTag',
-        record: {
-          task: {uid, source},
-          label: {name: l.name},
-        },
+        record: {task: {uid, source}, label: {name}},
       });
-    });
+    }
 
     // Github issues only have state either open or closed
     const category = issue.state === 'open' ? 'Todo' : 'Done';

@@ -1,7 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+} from '../converter';
 import {GithubCommon} from './common';
 
 export class GithubCommits extends Converter {
@@ -10,7 +15,10 @@ export class GithubCommits extends Converter {
     'vcs_Commit',
   ];
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const commit = record.record.data;
     const res: DestinationRecord[] = [];

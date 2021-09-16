@@ -16,11 +16,50 @@ export abstract class Converter {
     return this.stream;
   }
 
+  /* Dependencies on other streams (if any) */
+  get dependencies(): ReadonlyArray<StreamName> {
+    return [];
+  }
+
   /** All the record models produced by converter */
   abstract get destinationModels(): ReadonlyArray<DestinationModel>;
 
   /** Function converts an input Airbyte record to Faros destination canonical record */
-  abstract convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord>;
+  abstract convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord>;
+}
+
+/** Stream context to store records by stream */
+export class StreamContext {
+  private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
+    {};
+
+  get(streamName: string, id: string): AirbyteRecord | undefined {
+    const recs = this.recordsByStreamName[streamName];
+    if (recs) {
+      const rec = recs[id];
+      if (rec) return rec;
+    }
+    return undefined;
+  }
+  set(streamName: string, id: string, record: AirbyteRecord): void {
+    const recs = this.recordsByStreamName[streamName];
+    if (!recs) this.recordsByStreamName[streamName] = {};
+    this.recordsByStreamName[streamName][id] = record;
+  }
+  stats(): string {
+    const res = {};
+    for (const s of Object.keys(this.recordsByStreamName)) {
+      const ids = Object.keys(this.recordsByStreamName[s]);
+      res[s] = {
+        count: ids.length,
+        ids,
+      };
+    }
+    return JSON.stringify(res);
+  }
 }
 
 const StreamNameSeparator = '__';
