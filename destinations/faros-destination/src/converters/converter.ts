@@ -16,7 +16,9 @@ export abstract class Converter {
     return this.stream;
   }
 
-  /* Dependencies on other streams (if any) */
+  // Dependencies on other streams (if any). 
+  // Use with caution!!! Will result in increased memory usage
+  // due to accumulation of dependant records in StreamContext (ctx)
   get dependencies(): ReadonlyArray<StreamName> {
     return [];
   }
