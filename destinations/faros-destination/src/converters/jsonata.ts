@@ -18,6 +18,10 @@ export class JSONataConverter extends Converter {
     super();
   }
 
+  id(record: AirbyteRecord): any {
+    return undefined;
+  }
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -38,7 +42,7 @@ export class JSONataConverter extends Converter {
     try {
       const jsonataExpr = jsonata(expression);
       return new JSONataConverter(jsonataExpr, destinationModels);
-    } catch (error) {
+    } catch (error: any) {
       throw new VError(
         error,
         'Failed to parse JSONata expression: %s (code: %s, position: %s, token: %s)',

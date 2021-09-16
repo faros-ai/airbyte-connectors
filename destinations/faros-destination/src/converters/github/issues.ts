@@ -2,15 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {
-  Converter,
   DestinationModel,
   DestinationRecord,
   StreamContext,
   StreamName,
 } from '../converter';
-import {GithubCommon} from './common';
+import {GithubCommon, GithubConverter} from './common';
 
-export class GithubIssues extends Converter {
+export class GithubIssues extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
     'tms_Task',

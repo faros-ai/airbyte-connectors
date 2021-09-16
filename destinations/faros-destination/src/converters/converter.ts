@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {snakeCase} from 'lodash';
+import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -16,12 +17,15 @@ export abstract class Converter {
     return this.stream;
   }
 
-  // Dependencies on other streams (if any). 
-  // Use with caution!!! Will result in increased memory usage
-  // due to accumulation of dependant records in StreamContext (ctx)
+  // Dependencies on other streams (if any).
+  // !!! Use with caution !!! Will result in increased memory usage
+  // due to accumulation of records in StreamContext (ctx)
   get dependencies(): ReadonlyArray<StreamName> {
     return [];
   }
+
+  /** Function to extract record id */
+  abstract id(record: AirbyteRecord): any;
 
   /** All the record models produced by converter */
   abstract get destinationModels(): ReadonlyArray<DestinationModel>;
@@ -51,14 +55,17 @@ export class StreamContext {
     if (!recs) this.recordsByStreamName[streamName] = {};
     this.recordsByStreamName[streamName][id] = record;
   }
-  stats(): string {
-    const res = {};
+  stats(includeIds = false): string {
+    const sizeInBytes = sizeof(this.recordsByStreamName);
+    const res = {sizeInBytes};
     for (const s of Object.keys(this.recordsByStreamName)) {
       const ids = Object.keys(this.recordsByStreamName[s]);
-      res[s] = {
-        count: ids.length,
-        ids,
-      };
+      if (includeIds) {
+        res[s] = {
+          count: ids.length,
+          ids,
+        };
+      } else res[s] = {count: ids.length};
     }
     return JSON.stringify(res);
   }

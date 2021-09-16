@@ -1,14 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
-import {GithubCommon} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {GithubCommon, GithubConverter} from './common';
 
-export class GithubIssueMilestones extends Converter {
+export class GithubIssueMilestones extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   convert(

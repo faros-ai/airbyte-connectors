@@ -98,7 +98,7 @@ class FarosDestination extends AirbyteDestination {
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
     try {
       this.init(config);
-    } catch (e) {
+    } catch (e: any) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: e.message,
@@ -197,7 +197,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     this.init(config);
 
-    const {streams, deleteModelEntries, dependencies} =
+    const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
@@ -205,7 +205,12 @@ class FarosDestination extends AirbyteDestination {
     // Avoid creating a new revision and writer when dry run is enabled
     if (config.dry_run === true || dryRun) {
       this.logger.info("Dry run is ENABLED. Won't write any records");
-      await this.writeEntries(stdin, streams, stateMessages, dependencies);
+      await this.writeEntries(
+        stdin,
+        streams,
+        stateMessages,
+        converterDependencies
+      );
     } else {
       // Log all models to be deleted (if any)
       if (deleteModelEntries.length > 0) {
@@ -240,7 +245,7 @@ class FarosDestination extends AirbyteDestination {
               stdin,
               streams,
               stateMessages,
-              dependencies,
+              converterDependencies,
               writer
             );
             // Return the current time
@@ -262,7 +267,7 @@ class FarosDestination extends AirbyteDestination {
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
-    dependencies: Dictionary<Set<string>>,
+    converterDependencies: Set<string>,
     writer?: Writable
   ): Promise<void> {
     const stats = {
@@ -275,13 +280,8 @@ class FarosDestination extends AirbyteDestination {
       writtenByModel: {},
     };
 
-    const dependants = new Set<string>();
-    Object.keys(dependencies).forEach((k) =>
-      dependencies[k].forEach((v) => dependants.add(v))
-    );
-
     const ctx = new StreamContext();
-    const toBeProcessedLast: ((ctx: StreamContext) => void)[] = [];
+    const recordsToBeProcessedLast: ((ctx: StreamContext) => void)[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -293,7 +293,7 @@ class FarosDestination extends AirbyteDestination {
     try {
       // Process input & write records
       for await (const line of input) {
-        this.handleProcessingError(stats, () => {
+        this.handleRecordProcessingError(stats, () => {
           const msg = parseAirbyteMessage(line);
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
@@ -318,7 +318,6 @@ class FarosDestination extends AirbyteDestination {
             stats.processedByStream[stream] = count ? count + 1 : 1;
 
             const converter = this.getConverter(stream);
-
             const writeRecord = (context: StreamContext): void => {
               stats.recordsWritten += this.writeRecord(
                 converter,
@@ -329,31 +328,36 @@ class FarosDestination extends AirbyteDestination {
               );
               stats.recordsProcessed++;
             };
+
             // Check if any converters depend on this record stream.
             // If yes, keep the record in the stream context for other converters to get.
             const streamName = StreamName.fromString(stream).stringify();
-            if (dependants.has(streamName) && unpacked.record?.data?.id) {
-              // TODO: allow defining what is the id field per stream, for now using 'id'
-              ctx.set(streamName, String(unpacked.record.data.id), unpacked);
+            const recordId = converter.id(unpacked);
+            if (converterDependencies.has(streamName) && recordId) {
+              ctx.set(streamName, String(recordId), unpacked);
+              // Print stream context stats every so often
+              if (stats.recordsProcessed % 1000 == 0) {
+                this.logger.debug(`Stream context stats: ${ctx.stats(false)}`);
+              }
             }
-            // Process the record immidiately if converter has no dependencies to fullfil,
+            // Process the record immidiately if converter has no dependencies,
             // otherwise process it later once all streams are processed.
             if (converter.dependencies.length === 0) {
               writeRecord(ctx);
             } else {
-              toBeProcessedLast.push(writeRecord);
+              recordsToBeProcessedLast.push(writeRecord);
             }
           }
         });
       }
-      // Process any remaining records
-      if (toBeProcessedLast.length > 0) {
-        this.logger.info(
-          `Stdin processing completed, but still have ${toBeProcessedLast.length} records to process`
+      // Process all the remaining records
+      if (recordsToBeProcessedLast.length > 0) {
+        this.logger.debug(
+          `Stdin processing completed, but still have ${recordsToBeProcessedLast.length} records to process`
         );
-        this.logger.info(`Stream context stats: ${ctx.stats()}`);
-        toBeProcessedLast.forEach((process) => {
-          this.handleProcessingError(stats, () => process(ctx));
+        this.logger.debug(`Stream context stats: ${ctx.stats(true)}`);
+        recordsToBeProcessedLast.forEach((process) => {
+          this.handleRecordProcessingError(stats, () => process(ctx));
         });
       }
     } finally {
@@ -387,12 +391,15 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(`Errored ${stats.recordsErrored} records`);
   }
 
-  private handleProcessingError(stats: WriteStats, process: () => void): void {
+  private handleRecordProcessingError(
+    stats: WriteStats,
+    processRecord: () => void
+  ): void {
     try {
-      process();
+      processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
-      this.logger.error(`Error processing input: ${e.message ? e.message : e}`);
+      this.logger.error(`Error processing input: ${e.message ?? e}`);
       if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
         throw e;
       }
@@ -402,12 +409,12 @@ class FarosDestination extends AirbyteDestination {
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
-    dependencies: Dictionary<Set<string>>;
+    converterDependencies: Set<string>;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const streamKeys = Object.keys(streams);
     const deleteModelEntries: string[] = [];
-    const dependencies: Dictionary<Set<string>> = {};
+    const dependenciesByStream: Dictionary<Set<string>> = {};
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -427,10 +434,10 @@ class FarosDestination extends AirbyteDestination {
       // Collect all converter dependencies
       if (converter.dependencies.length > 0) {
         const streamName = converter.streamName.stringify();
-        if (!dependencies[streamName]) {
-          dependencies[streamName] = new Set<string>();
+        if (!dependenciesByStream[streamName]) {
+          dependenciesByStream[streamName] = new Set<string>();
         }
-        const deps = dependencies[streamName];
+        const deps = dependenciesByStream[streamName];
         converter.dependencies.forEach((d) => deps.add(d.stringify()));
       }
 
@@ -439,13 +446,13 @@ class FarosDestination extends AirbyteDestination {
         deleteModelEntries.push(...converter.destinationModels);
       }
     }
-
     // Check for circular dependencies and error early if any
-    const deps = Object.keys(dependencies);
+    const deps = Object.keys(dependenciesByStream);
     for (const d of deps) {
-      const dd = [...dependencies[d].values()];
+      const dd = [...dependenciesByStream[d].values()];
       this.logger.debug(
-        `Converter of stream ${d} has dependencies on streams: ${dd.join(',')}`
+        `Records of stream ${d} will be accumulated and processed last, ` +
+          `since their converter has dependencies on streams: ${dd.join(',')}`
       );
       const res = intersection(deps, dd);
       if (res.length > 0) {
@@ -454,10 +461,16 @@ class FarosDestination extends AirbyteDestination {
         );
       }
     }
+    // Collect all converter dependencies
+    const converterDependencies = new Set<string>();
+    Object.keys(dependenciesByStream).forEach((k) =>
+      dependenciesByStream[k].forEach((v) => converterDependencies.add(v))
+    );
+
     return {
       streams,
       deleteModelEntries: uniq(deleteModelEntries),
-      dependencies,
+      converterDependencies,
     };
   }
 

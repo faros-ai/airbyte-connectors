@@ -84,7 +84,7 @@ export class AirbyteDestinationRunner {
           } catch (e: any) {
             this.logger.error(
               `Encountered an error while writing to destination: ${
-                e.message ? e.message : e
+                e.message ?? e
               }`
             );
             throw e;

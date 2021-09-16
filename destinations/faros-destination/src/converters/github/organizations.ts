@@ -2,17 +2,13 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {GithubConverter} from './common';
 
 // Github org types
 const orgTypes = ['organization', 'workspace', 'group'];
 
-export class GithubOrganizations extends Converter {
+export class GithubOrganizations extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
   ];
