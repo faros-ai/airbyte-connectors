@@ -337,7 +337,7 @@ class FarosDestination extends AirbyteDestination {
               ctx.set(streamName, String(recordId), unpacked);
               // Print stream context stats every so often
               if (stats.recordsProcessed % 1000 == 0) {
-                this.logger.debug(`Stream context stats: ${ctx.stats(false)}`);
+                this.logger.info(`Stream context stats: ${ctx.stats(false)}`);
               }
             }
             // Process the record immidiately if converter has no dependencies,
@@ -352,10 +352,10 @@ class FarosDestination extends AirbyteDestination {
       }
       // Process all the remaining records
       if (recordsToBeProcessedLast.length > 0) {
-        this.logger.debug(
+        this.logger.info(
           `Stdin processing completed, but still have ${recordsToBeProcessedLast.length} records to process`
         );
-        this.logger.debug(`Stream context stats: ${ctx.stats(true)}`);
+        this.logger.info(`Stream context stats: ${ctx.stats(true)}`);
         recordsToBeProcessedLast.forEach((process) => {
           this.handleRecordProcessingError(stats, () => process(ctx));
         });
@@ -427,7 +427,7 @@ class FarosDestination extends AirbyteDestination {
       const converter = this.getConverter(stream, (err: Error) =>
         this.logger.error(err.message)
       );
-      this.logger.debug(
+      this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
 
@@ -450,7 +450,7 @@ class FarosDestination extends AirbyteDestination {
     const deps = Object.keys(dependenciesByStream);
     for (const d of deps) {
       const dd = [...dependenciesByStream[d].values()];
-      this.logger.debug(
+      this.logger.info(
         `Records of stream ${d} will be accumulated and processed last, ` +
           `since their converter has dependencies on streams: ${dd.join(',')}`
       );
