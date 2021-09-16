@@ -1,8 +1,9 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
 import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {DestinationRecord} from '../converter';
+import {Converter, DestinationRecord} from '../converter';
 
 /** Common functions shares across GitHub converters */
 export class GithubCommon {
@@ -146,6 +147,14 @@ export class GithubCommon {
     return Utils.parseInteger(
       pull_request_url.substring(pull_request_url.lastIndexOf('/') + 1)
     );
+  }
+}
+
+/** Github converter base */
+export abstract class GithubConverter extends Converter {
+  /** All Github records should have id property */
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.id;
   }
 }
 
