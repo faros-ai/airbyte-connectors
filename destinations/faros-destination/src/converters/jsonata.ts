@@ -2,7 +2,12 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import jsonata from 'jsonata';
 import {VError} from 'verror';
 
-import {Converter, DestinationModel, DestinationRecord} from './converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+} from './converter';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter extends Converter {
@@ -13,7 +18,14 @@ export class JSONataConverter extends Converter {
     super();
   }
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  id(record: AirbyteRecord): any {
+    return undefined;
+  }
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const res = this.jsonataExpr.evaluate(record.record);
     if (!res) return [];
     if (!Array.isArray(res)) return [res];
@@ -30,7 +42,7 @@ export class JSONataConverter extends Converter {
     try {
       const jsonataExpr = jsonata(expression);
       return new JSONataConverter(jsonataExpr, destinationModels);
-    } catch (error) {
+    } catch (error: any) {
       throw new VError(
         error,
         'Failed to parse JSONata expression: %s (code: %s, position: %s, token: %s)',
