@@ -59,31 +59,6 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - jobs, use incremental sync mode', async () => {
-    mocked(jenkinsClient).mockReturnValue({
-      info: jest.fn().mockResolvedValue({}),
-      job: {
-        list: jest
-          .fn()
-          .mockImplementation(async () => readTestResourceFile('jobs.json')),
-      },
-    } as any);
-    const source = new JenkinsSource(logger);
-    const [, jobStream] = source.streams({
-      server_url: 'http://localhost:8080',
-      user: 'bot',
-      token: 'pass',
-    });
-    const jobsIter = jobStream.readRecords(SyncMode.INCREMENTAL, undefined, {
-      url: 'http://localhost:8080/job/Faros-test-job',
-    });
-    const jobs = [];
-    for await (const job of jobsIter) {
-      jobs.push(job);
-    }
-    expect(jobs).toStrictEqual([]);
-  });
-
   test('streams - jobs, use full_refresh sync mode', async () => {
     const fnJobList = jest.fn();
 

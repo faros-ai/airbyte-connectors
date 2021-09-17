@@ -7,6 +7,7 @@ import {
 } from 'faros-airbyte-cdk';
 import jenkinsClient, {JenkinsPromisifiedAPI} from 'jenkins';
 import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
 import {URL} from 'url';
 import util from 'util';
 
@@ -64,9 +65,11 @@ function buildNameToJob(str: string): string {
   return str.substring(0, str.indexOf(' '));
 }
 
-function validateInteger(value: number): [true | undefined, string | undefined] {
+function validateInteger(
+  value: number
+): [true | undefined, string | undefined] {
   if (value) {
-    if (value || typeof value === 'number' || value > 0) {
+    if (typeof value === 'number' && value > 0) {
       return [true, undefined];
     }
     return [undefined, `${value} must be a valid number bigger zero`];
@@ -132,8 +135,8 @@ export class Jenkins {
     jenkinsCfg: JenkinsConfig,
     existingState: JenkinsState | null
   ): AsyncGenerator<Build> {
-    const iter = this.syncJobs(jenkinsCfg, null);
-    for await (const job of iter) {
+    const jobs = await this.syncJobs(jenkinsCfg, null);
+    for (const job of jobs) {
       const builds = this.constructBuilds(job, existingState);
       for (const build of builds) {
         yield build;
@@ -141,10 +144,11 @@ export class Jenkins {
     }
   }
 
-  async *syncJobs(
+  @Memoize()
+  async syncJobs(
     jenkinsCfg: JenkinsConfig,
     streamSlice: Job | null
-  ): AsyncGenerator<Job> {
+  ): Promise<Job[]> {
     const pageSize = jenkinsCfg.pageSize || DEFAULT_PAGE_SIZE;
     const last100Builds = jenkinsCfg.last100Builds ?? false;
     const depth = jenkinsCfg.depth ?? (await this.calculateMaxJobsDepth());
@@ -159,6 +163,7 @@ export class Jenkins {
         numPages
       )
     );
+    const result = [];
     for (let i = 0, from, to; i < numRootJobs; i += pageSize) {
       from = i;
       to = Math.min(numRootJobs, i + pageSize);
@@ -167,9 +172,10 @@ export class Jenkins {
         if (streamSlice && streamSlice.url === job.url) {
           return undefined;
         }
-        yield job;
+        result.push(job);
       }
     }
+    return result;
   }
 
   /*
@@ -252,7 +258,7 @@ export class Jenkins {
   /** Jenkins JSON API does not support deep scan, it is required to
    * generate a suitable tree for the corresponding depth. Job in some cases have
    * many sub jobs, depth needs to quantify how many sub jobs are showed
-  */
+   */
   private generateTree(depth: number, fieldsPattern: string): string {
     let tree = 'jobs[' + fieldsPattern + ']';
     for (let i = 0; i < depth; i++) {
@@ -322,10 +328,10 @@ export class JenkinsBuilds extends AirbyteStreamBase {
     const jenkins = new Jenkins(client, this.logger);
 
     let iter: AsyncGenerator<Build, any, unknown>;
-    if (syncMode === SyncMode.FULL_REFRESH) {
-      iter = jenkins.syncBuilds(this.config, null);
-    } else {
+    if (syncMode === SyncMode.INCREMENTAL) {
       iter = jenkins.syncBuilds(this.config, streamState ?? null);
+    } else {
+      iter = jenkins.syncBuilds(this.config, null);
     }
     yield* iter;
   }
@@ -374,9 +380,12 @@ export class JenkinsJobs extends AirbyteStreamBase {
     }
 
     const jenkins = new Jenkins(client, this.logger);
-
+    let jobs: Job[];
     if (syncMode === SyncMode.FULL_REFRESH) {
-      yield* jenkins.syncJobs(this.config, null);
+      jobs = await jenkins.syncJobs(this.config, null);
+    }
+    for (const job of jobs) {
+      yield job;
     }
   }
 }
