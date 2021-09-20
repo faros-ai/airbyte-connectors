@@ -144,7 +144,9 @@ export class Jenkins {
     }
   }
 
-  @Memoize()
+  @Memoize((jenkinsCfg: JenkinsConfig, streamSlice: Job | null) => {
+    return `${JSON.stringify(jenkinsCfg)}${JSON.stringify(streamSlice || {})}`;
+  })
   async syncJobs(
     jenkinsCfg: JenkinsConfig,
     streamSlice: Job | null

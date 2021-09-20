@@ -25,7 +25,9 @@ jobs:
 
     steps:
       - name: Add user permission
-        run: sudo chown -R $USER:$USER ${{ github.workspace }}
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data
 
       - name: Check out
         uses: actions/checkout@v2.3.4

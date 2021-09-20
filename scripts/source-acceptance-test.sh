@@ -43,7 +43,7 @@ creds_env_var=$(echo "${tag//-/_}" | \
 write_standard_creds $tag $creds_env_var
 
 echo Building source image $tag
-sudo docker build . --build-arg path=$path -t $tag
+docker build . --build-arg path=$path -t $tag
 echo Running source acceptance tests against $tag
 docker run --rm -t \
   -v /var/run/docker.sock:/var/run/docker.sock \
