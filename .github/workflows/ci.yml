@@ -79,6 +79,7 @@ jobs:
             fi
           done
 
+          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data/
           sudo chown -R $USER:$USER $(find ${{ github.workspace }}/jenkins/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
