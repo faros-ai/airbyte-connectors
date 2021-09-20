@@ -24,11 +24,6 @@ jobs:
       HUSKY: 0
 
     steps:
-      - name: Add user permission
-        run: |
-          sudo chown -R $USER:$USER ${{ github.workspace }}
-          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data
-
       - name: Check out
         uses: actions/checkout@v2.3.4
 
@@ -52,6 +47,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+
+      - name: Add user permission
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data
 
       - name: Test
         run: lerna run test-cov
