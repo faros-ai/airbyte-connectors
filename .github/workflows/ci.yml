@@ -50,8 +50,9 @@ jobs:
 
       - name: Add user permission
         run: |
-          sudo chown -R $USER:$USER ${{ github.workspace }}
-          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data
+          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/jenkins/data/.java/fonts -type f)
+          # sudo chown -R $USER:$USER ${{ github.workspace }}
+          # sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data
 
       - name: Test
         run: lerna run test-cov
