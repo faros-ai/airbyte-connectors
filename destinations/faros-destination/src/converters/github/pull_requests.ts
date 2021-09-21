@@ -2,19 +2,23 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, RepositoryKey} from './common';
+import {GithubConverter} from './common';
 
 // Github PR states
 const prStates = ['closed', 'merged', 'open'];
 
-export class GithubPullRequests extends Converter {
+export class GithubPullRequests extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_User',
   ];
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const pr = record.record.data;
     const res: DestinationRecord[] = [];
@@ -39,19 +43,24 @@ export class GithubPullRequests extends Converter {
       : {category: 'Custom', detail: pr.state};
 
     res.push({
-      model: 'vcs_PullRequest',
+      // We are explicitly passing __Upsert command here with at := 0,
+      // to allow updating PR stats from pull_request_stats stream
+      // in the same revision
+      model: 'vcs_PullRequest__Upsert',
       record: {
-        number: pr.number,
-        title: pr.title,
-        state,
-        htmlUrl: pr.url,
-        createdAt: Utils.toDate(pr.created_at),
-        updatedAt: Utils.toDate(pr.updated_at),
-        mergedAt: Utils.toDate(pr.merged_at),
-        author: author ? {uid: author.record.uid, source} : null,
-        mergeCommit,
-        repository,
-        // PR stats are set from pull_request_stats stream
+        at: 0,
+        data: {
+          number: pr.number,
+          title: pr.title,
+          state,
+          htmlUrl: pr.url,
+          createdAt: Utils.toDate(pr.created_at),
+          updatedAt: Utils.toDate(pr.updated_at),
+          mergedAt: Utils.toDate(pr.merged_at),
+          author: author ? {uid: author.record.uid, source} : null,
+          mergeCommit,
+          repository,
+        },
       },
     });
 

@@ -1,11 +1,15 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {GithubConverter} from './common';
 
-export class GithubIssueLabels extends Converter {
+export class GithubIssueLabels extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const label = record.record.data;
     return [
       {

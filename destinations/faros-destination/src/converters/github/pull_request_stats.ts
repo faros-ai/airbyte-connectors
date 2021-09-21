@@ -1,14 +1,17 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
-import {GithubCommon} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {GithubCommon, GithubConverter} from './common';
 
-export class GithubPullRequestStats extends Converter {
+export class GithubPullRequestStats extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
   ];
 
-  convert(record: AirbyteRecord): ReadonlyArray<DestinationRecord> {
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const prStats = record.record.data;
     const repository = GithubCommon.parseRepositoryKey(
@@ -22,6 +25,7 @@ export class GithubPullRequestStats extends Converter {
       {
         model: 'vcs_PullRequest__Update',
         record: {
+          at: record.record.emitted_at,
           where: {
             number: prStats.number,
             repository,

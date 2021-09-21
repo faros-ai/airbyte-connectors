@@ -10,6 +10,23 @@ export enum AirbyteLogLevel {
   TRACE = 'TRACE',
 }
 
+export function AirbyteLogLevelOrder(level: AirbyteLogLevel): number {
+  switch (level) {
+    case AirbyteLogLevel.FATAL:
+      return 60;
+    case AirbyteLogLevel.ERROR:
+      return 50;
+    case AirbyteLogLevel.WARN:
+      return 40;
+    case AirbyteLogLevel.INFO:
+      return 30;
+    case AirbyteLogLevel.DEBUG:
+      return 20;
+    case AirbyteLogLevel.TRACE:
+      return 10;
+  }
+}
+
 export enum AirbyteMessageType {
   CATALOG = 'CATALOG',
   CONNECTION_STATUS = 'CONNECTION_STATUS',
