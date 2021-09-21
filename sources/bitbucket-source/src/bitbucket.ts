@@ -2,83 +2,13 @@ import {Bitbucket} from 'bitbucket';
 import {APIClient} from 'bitbucket/src/client/types';
 import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
-import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-export interface BitbucketConfig extends AirbyteConfig {
-  readonly workspace?: ReadonlyArray<string>;
-  readonly repoList?: ReadonlyArray<string>;
-  readonly username: string;
-  readonly password: string;
-  readonly token: string;
-  readonly pageSize: number;
-}
-
-export interface Repository {
-  readonly scm: string;
-  readonly website: string;
-  readonly hasWiki: boolean;
-  readonly uuid: string;
-  readonly links: {
-    readonly branchesUrl: string;
-    readonly htmlUrl: string;
-  };
-  readonly forkPolicy: string;
-  readonly fullName: string;
-  readonly name: string;
-  readonly project: {
-    readonly type: string;
-    readonly name: string;
-    readonly key: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
-  readonly language: string;
-  readonly createdOn: string;
-  readonly mainBranch: {
-    readonly type: string;
-    readonly name: string;
-  };
-  readonly workspace: {
-    readonly slug: string;
-    readonly type: string;
-    readonly name: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
-  readonly hasIssues: boolean;
-  readonly owner: {
-    readonly username: string;
-    readonly displayName: string;
-    readonly type: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
-  readonly updatedOn: string;
-  readonly size: number;
-  readonly type: string;
-  readonly slug: string;
-  readonly isPrivate: boolean;
-  readonly description: string;
-}
-
-export interface Workspace {
-  readonly uuid: string;
-  readonly createdOn: string;
-  readonly type: string;
-  readonly slug: string;
-  readonly isPrivate: boolean;
-  readonly name: string;
-  readonly links: {
-    readonly ownersUrl: string;
-    readonly repositoriesUrl: string;
-    readonly htmlUrl: string;
-  };
-}
+import {BitbucketConfig, Repository, Workspace} from './types';
 
 export async function createClient(
-  config: AirbyteConfig
+  config: BitbucketConfig
 ): Promise<[BitbucketClient, string]> {
   const [passed, errorMessage] = isValidateConfig(config);
   if (!passed) {
@@ -98,7 +28,7 @@ export async function createClient(
   }
 }
 
-function isValidateConfig(config: AirbyteConfig): [boolean, string] {
+function isValidateConfig(config: BitbucketConfig): [boolean, string] {
   if (
     (config.token && config.username && config.password) ||
     (config.token && (config.username || config.password)) ||
@@ -165,16 +95,34 @@ export class BitbucketClient {
   }
 
   async *getRepositories(
-    workspace: string
+    workspace: string,
+    repoList?: ReadonlyArray<string>
   ): AsyncGenerator<Repository | undefined> {
     try {
       let {data} = await this.limiter.schedule(() =>
         this.client.repositories.list({workspace})
       );
 
+      let repoCount = 0;
+
       do {
         for (const item of data.values) {
+          // only process the repos in the repo list (if specified)
+          if (
+            repoList &&
+            repoList.length > 0 &&
+            !repoList.includes(item.slug)
+          ) {
+            continue;
+          }
+
           yield this.buildRepository(item);
+          repoCount += 1;
+        }
+
+        // exit early when we have fetched all the repos in the repo list
+        if (repoList && repoList.length > 0 && repoCount == repoList.length) {
+          break;
         }
 
         data = await this.nextPage(data);

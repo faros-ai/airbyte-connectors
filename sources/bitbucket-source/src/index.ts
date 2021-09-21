@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -11,6 +10,7 @@ import VError from 'verror';
 
 import {createClient} from './bitbucket';
 import {BitbucketRepositories, BitbucketWorkspaces} from './stream';
+import {BitbucketConfig} from './types';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -24,7 +24,7 @@ class BitbucketSource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: BitbucketConfig): Promise<[boolean, VError]> {
     const [client, errorMessage] = await createClient(config);
     if (client) {
       return [true, undefined];
@@ -33,7 +33,7 @@ class BitbucketSource extends AirbyteSourceBase {
     return [false, new VError(errorMessage)];
   }
 
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: BitbucketConfig): AirbyteStreamBase[] {
     return [
       new BitbucketWorkspaces(config, this.logger),
       new BitbucketRepositories(config, this.logger),

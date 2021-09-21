@@ -33,7 +33,7 @@
         "type": "string",
         "description": "Bitbucket Workspace"
       },
-      "repo_list": {
+      "repoList": {
         "type": "string",
         "description": "Comma-separated List of Bitbucket Repositories"
       }

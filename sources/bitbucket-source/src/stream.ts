@@ -1,5 +1,4 @@
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteStreamBase,
   StreamKey,
@@ -7,10 +6,11 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {createClient, Repository, Workspace} from './bitbucket';
+import {createClient} from './bitbucket';
+import {BitbucketConfig, Repository, Workspace} from './types';
 
 export class BitbucketWorkspaces extends AirbyteStreamBase {
-  constructor(readonly config: AirbyteConfig, logger: AirbyteLogger) {
+  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
     super(logger);
   }
 
@@ -40,7 +40,7 @@ export class BitbucketWorkspaces extends AirbyteStreamBase {
 }
 
 export class BitbucketRepositories extends AirbyteStreamBase {
-  constructor(readonly config: AirbyteConfig, logger: AirbyteLogger) {
+  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
     super(logger);
   }
 
@@ -64,7 +64,11 @@ export class BitbucketRepositories extends AirbyteStreamBase {
       return undefined;
     }
 
-    const iter = client.getRepositories(this.config.workspace);
+    const iter = client.getRepositories(
+      this.config.workspace,
+      this.config.repoList
+    );
+
     yield* iter;
   }
 }
