@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {createClient} from './bitbucket';
-import {BitbucketWorkspace} from './stream';
+import {BitbucketRepositories, BitbucketWorkspaces} from './stream';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -34,6 +34,9 @@ class BitbucketSource extends AirbyteSourceBase {
   }
 
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new BitbucketWorkspace(config, this.logger)];
+    return [
+      new BitbucketWorkspaces(config, this.logger),
+      new BitbucketRepositories(config, this.logger),
+    ];
   }
 }
