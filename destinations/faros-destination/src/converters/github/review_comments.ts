@@ -27,8 +27,7 @@ export class GithubReviewComments extends GithubConverter {
     const prNum = GithubCommon.parsePRnumber(comment.pull_request_url);
     const pullRequest = {repository, number: prNum};
 
-    // TODO: change user uid to login once it's available
-    const author = comment.user ? {uid: `${comment.user.id}`, source} : null;
+    const author = comment.user ? {uid: comment.user.login, source} : null;
 
     return [
       {

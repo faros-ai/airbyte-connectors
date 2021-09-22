@@ -34,8 +34,8 @@ export class GithubReviews extends GithubConverter {
     if (!repository) return [];
 
     let author: DestinationRecord | undefined = undefined;
-    if (review.author ?? review.user) {
-      author = GithubCommon.vcs_User(review.author ?? review.user, source);
+    if (review.user) {
+      author = GithubCommon.vcs_User(review.user, source);
       res.push(author);
     }
 

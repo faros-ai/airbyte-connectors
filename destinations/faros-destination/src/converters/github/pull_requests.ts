@@ -33,8 +33,8 @@ export class GithubPullRequests extends GithubConverter {
       : null;
 
     let author: DestinationRecord | undefined = undefined;
-    if (pr.author ?? pr.user) {
-      author = GithubCommon.vcs_User(pr.author ?? pr.user, source);
+    if (pr.user) {
+      author = GithubCommon.vcs_User(pr.user, source);
       res.push(author);
     }
 

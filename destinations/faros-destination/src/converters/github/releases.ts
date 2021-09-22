@@ -25,10 +25,7 @@ export class GithubReleases extends GithubConverter {
 
     if (!repository) return res;
 
-    // TODO: change user uid to login once it's available
-    const author = release.author_id
-      ? {uid: `${release.author_id}`, source}
-      : null;
+    const author = release.author ? {uid: release.author.login, source} : null;
 
     res.push({
       model: 'cicd_Release',
