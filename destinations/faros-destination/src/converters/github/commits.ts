@@ -25,10 +25,7 @@ export class GithubCommits extends GithubConverter {
 
     if (!repository) return res;
 
-    // TODO: change user uid to login once it's available
-    const author = commit.author_id
-      ? {uid: `${commit.author_id}`, source}
-      : null;
+    const author = commit.author ? {uid: commit.author.login, source} : null;
 
     res.push({
       model: 'vcs_Commit',

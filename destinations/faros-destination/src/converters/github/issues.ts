@@ -41,31 +41,22 @@ export class GithubIssues extends GithubConverter {
       return res;
     }
 
+    let user: DestinationRecord | undefined;
     if (issue.user) {
-      res.push(GithubCommon.tms_User(issue.user, source));
+      user = GithubCommon.tms_User(issue.user, source);
+      res.push(user);
     }
 
     issue.assignees?.forEach((a) => {
-      if (typeof a === 'number') {
-        res.push({
-          model: 'tms_TaskAssignment',
-          record: {
-            task: {uid, source},
-            // TODO: change user uid to login once it's available
-            assignee: {uid: `${a}`, source},
-          },
-        });
-      } else if (a?.id || a?.login) {
-        res.push(GithubCommon.tms_User(a, source));
-        res.push({
-          model: 'tms_TaskAssignment',
-          record: {
-            task: {uid, source},
-            // TODO: change user uid to login once it's available
-            assignee: {uid: `${a.id}`, source},
-          },
-        });
-      }
+      const assignee = GithubCommon.tms_User(a, source);
+      res.push(assignee);
+      res.push({
+        model: 'tms_TaskAssignment',
+        record: {
+          task: {uid, source},
+          assignee: {uid: assignee.record.uid, source},
+        },
+      });
     });
 
     const issueLabelsStream = this.issueLabelsStream.stringify();
@@ -93,8 +84,7 @@ export class GithubIssues extends GithubConverter {
         status: {category, detail: issue.state},
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
-        // TODO: change user uid to login once it's available
-        creator: issue.user ? {uid: `${issue.user.id}`, source} : undefined,
+        creator: user ? {uid: user.record.uid, source} : undefined,
         source,
       },
     });

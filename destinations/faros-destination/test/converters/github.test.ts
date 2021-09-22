@@ -251,7 +251,7 @@ describe('github', () => {
       tms_TaskBoardProjectRelationship: 50,
       tms_TaskBoardRelationship: 1,
       tms_TaskTag: 2,
-      tms_User: 13,
+      tms_User: 14,
       vcs_Branch: 4,
       vcs_Commit: 77,
       vcs_Membership: 12,
