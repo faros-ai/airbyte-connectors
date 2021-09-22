@@ -5,7 +5,7 @@ import Bottleneck from 'bottleneck';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {BitbucketConfig, Repository, Workspace} from './types';
+import {BitbucketConfig, Branch, Repository, Workspace} from './types';
 
 export async function createClient(
   config: BitbucketConfig
@@ -66,30 +66,32 @@ export class BitbucketClient {
 
   constructor(public readonly client: APIClient) {}
 
-  async getWorkspace(workspace: string): Promise<Workspace | undefined> {
+  async *getBranches(
+    workspace: string,
+    repo: string
+  ): AsyncGenerator<Branch | undefined> {
     try {
-      const {data} = await this.limiter.schedule(() =>
-        this.client.workspaces.getWorkspace({workspace})
+      let {data} = await this.limiter.schedule(() =>
+        this.client.repositories.listBranches({
+          workspace,
+          repo_slug: repo,
+          pagelen: 100, // TODO: use var
+        })
       );
 
-      return {
-        uuid: data.uuid,
-        createdOn: data.created_on,
-        type: data.type,
-        slug: data.slug,
-        isPrivate: data.is_private,
-        name: data.name,
-        links: {
-          ownersUrl: data.links?.owners?.href,
-          repositoriesUrl: data.links?.repositories?.href,
-          htmlUrl: data.links?.html?.href,
-        },
-      };
+      do {
+        for (const item of data.values) {
+          yield this.buildBranch(item);
+        }
+
+        data = await this.nextPage(data);
+      } while (data);
     } catch (err) {
       throw new VError(
         buildInnerError(err),
-        'Error fetching workspace %s',
-        workspace
+        'Error fetching branch(es) for repository "%s/%s"',
+        workspace,
+        repo
       );
     }
   }
@@ -130,10 +132,82 @@ export class BitbucketClient {
     } catch (err) {
       throw new VError(
         buildInnerError(err),
+        'Error fetching repositories for workspace "%s"',
+        workspace
+      );
+    }
+  }
+
+  async getWorkspace(workspace: string): Promise<Workspace | undefined> {
+    try {
+      const {data} = await this.limiter.schedule(() =>
+        this.client.workspaces.getWorkspace({workspace})
+      );
+
+      return {
+        uuid: data.uuid,
+        createdOn: data.created_on,
+        type: data.type,
+        slug: data.slug,
+        isPrivate: data.is_private,
+        name: data.name,
+        links: {
+          ownersUrl: data.links?.owners?.href,
+          repositoriesUrl: data.links?.repositories?.href,
+          htmlUrl: data.links?.html?.href,
+        },
+      };
+    } catch (err) {
+      throw new VError(
+        buildInnerError(err),
         'Error fetching workspace %s',
         workspace
       );
     }
+  }
+
+  private buildBranch(data: Dictionary<any>): Branch {
+    const {
+      target,
+      target: {repository, links, author, parents},
+    } = data;
+    return {
+      name: data.name,
+      links: {htmlUrl: data.links?.html?.href},
+      defaultMergeStrategy: data.default_merge_strategy,
+      mergeStrategies: data.merge_strategies,
+      type: data.type,
+      target: {
+        hash: target.hash,
+        repository: {
+          links: {htmlUrl: repository.links?.html?.href},
+          type: repository.type,
+          name: repository.name,
+          fullName: repository.fullName,
+          uuid: repository.uuid,
+        },
+        links: {htmlUrl: links?.html?.href},
+        author: {
+          raw: author.raw,
+          type: author.type,
+          user: {
+            displayName: author.user.display_name,
+            uuid: author.user.uuid,
+            links: {htmlUrl: author.user.links?.html?.href},
+            type: author.user.type,
+            nickname: author.user.nickname,
+            accountId: author.user.accountId,
+          },
+        },
+        parent: parents.map((p) => ({
+          hash: p.hash,
+          links: {htmlUrl: p.links?.html?.href},
+        })),
+        date: data.date,
+        message: data.message,
+        type: data.type,
+      },
+    };
   }
 
   private buildRepository(data: Dictionary<any>): Repository {

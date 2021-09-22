@@ -12,6 +12,8 @@ tests:
   basic_read:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"
+      empty_streams:
+        - bitbucket_branches
       expect_records:
         path: "test_files/expected_records.txt"
   full_refresh:
