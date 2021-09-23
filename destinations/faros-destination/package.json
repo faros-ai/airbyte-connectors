@@ -1,6 +1,6 @@
 {
   "name": "faros-destination",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "private": true,
   "description": "Faros Destination for Airbyte",
   "keywords": [
@@ -30,19 +30,18 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "faros-airbyte-cdk": "^0.1.18",
-    "faros-feeds-sdk": "^0.8.28",
-    "jsonata": "^1.8.4",
+    "faros-airbyte-cdk": "^0.1.19",
+    "faros-feeds-sdk": "^0.8.30",
+    "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
     "verror": "^1.10.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "jest": {
     "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
@@ -55,17 +54,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  },
-  "prettier": {
-    "bracketSpacing": false,
-    "parser": "typescript",
-    "trailingComma": "es5",
-    "singleQuote": true
   }
 }

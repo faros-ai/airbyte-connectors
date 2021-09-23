@@ -11,10 +11,10 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 2. Install Node.js `nvm install 14 && nvm use 14`
 3. Update `npm` to version 7.x by running `npm install -g npm@7`
 4. Install `lerna` by running `npm install -g lerna`
-5. Run `lerna bootstrap --hoist` to install dependencies for all projects
-6. Run `lerna run build` to build all projects (for a single project add scope, e.g `--scope faros-destination`)
-7. Run `lerna run test` to test all projects (for a single project add scope, e.g `--scope faros-destination`)
-8. Run `lerna run lint` to apply linter on all projects (for a single project add scope, e.g `--scope faros-destination`)
+5. Run `npm run prepare` to install dependencies for all projects (`npm run clean` to clean all)
+6. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope faros-destination`)
+7. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope faros-destination`)
+8. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope faros-destination`)
 
 ## Other useful commands
 
