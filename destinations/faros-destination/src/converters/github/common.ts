@@ -55,8 +55,8 @@ export class GithubCommon {
     return {
       model: 'vcs_User',
       record: {
-        uid: `${user.id}`, // TODO: change user uid to login once it's available
-        name: user.login ?? user.name ?? null,
+        uid: user.login,
+        name: user.name ?? user.login ?? null,
         htmlUrl: user.html_url ?? null,
         type,
         source,
@@ -82,8 +82,8 @@ export class GithubCommon {
     return {
       model: 'tms_User',
       record: {
-        uid: `${user.id}`, // TODO: change user uid to login once it's available
-        name: user.login ?? user.name ?? null,
+        uid: user.login,
+        name: user.name ?? user.login ?? null,
         source,
       },
     };
