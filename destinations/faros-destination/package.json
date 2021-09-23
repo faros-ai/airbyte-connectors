@@ -36,11 +36,6 @@
     "object-sizeof": "^1.6.1",
     "verror": "^1.10.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "jest": {
     "coverageDirectory": "out/coverage",
     "coveragePathIgnorePatterns": [
@@ -60,10 +55,4 @@
       }
     }
   },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  }
 }

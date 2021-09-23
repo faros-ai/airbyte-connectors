@@ -50,11 +50,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
   }
 }
