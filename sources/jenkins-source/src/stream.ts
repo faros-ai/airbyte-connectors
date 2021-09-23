@@ -366,9 +366,16 @@ export class JenkinsJobs extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Job
   ): AsyncGenerator<Job | undefined> {
-    const haveCursorFields = cursorField.map((f) => f in streamSlice);
-    const invalidStreamSlice = haveCursorFields.findIndex((b) => !b);
-    if (syncMode === SyncMode.INCREMENTAL && invalidStreamSlice <= -1) {
+    let cursorValid = false;
+    if (cursorField && streamSlice) {
+      /** Check if streamSlice has all cursorFields. 
+       * First - create list of boolean values to define if fields exist
+       * Second - List is checking to contain 'true' values
+      */
+      const fieldsExistingList = cursorField.map((f) => f in streamSlice);
+      cursorValid = fieldsExistingList.findIndex((b) => !b) <= -1;
+    }
+    if (syncMode === SyncMode.INCREMENTAL && cursorValid) {
       yield streamSlice;
     } else {
       yield undefined;
