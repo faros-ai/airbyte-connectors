@@ -72,7 +72,7 @@ function validateInteger(
     if (typeof value === 'number' && value > 0) {
       return [true, undefined];
     }
-    return [undefined, `${value} must be a valid number bigger zero`];
+    return [undefined, `${value} must be a valid positive number`];
   }
   return [true, undefined];
 }
@@ -215,7 +215,7 @@ export class Jenkins {
     }
     return lastBuildNumber
       ? builds.filter(
-          (build: any) => build.number > lastBuildNumber && !build.building
+          (build: Build) => build.number > lastBuildNumber && !build.building
         )
       : builds;
   }
@@ -308,13 +308,6 @@ export class JenkinsBuilds extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'number';
   }
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Build
-  ): AsyncGenerator<Build | undefined> {
-    yield undefined;
-  }
 
   async *readRecords(
     syncMode: SyncMode,
@@ -366,7 +359,20 @@ export class JenkinsJobs extends AirbyteStreamBase {
     return 'fullName';
   }
   get cursorField(): string | string[] {
-    return [];
+    return ['url'];
+  }
+  async *streamSlices(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Job
+  ): AsyncGenerator<Job | undefined> {
+    const haveCursorFields = cursorField.map((f) => f in streamSlice);
+    const invalidStreamSlice = haveCursorFields.findIndex((b) => !b);
+    if (syncMode === SyncMode.INCREMENTAL && invalidStreamSlice <= -1) {
+      yield streamSlice;
+    } else {
+      yield undefined;
+    }
   }
 
   async *readRecords(
@@ -383,7 +389,9 @@ export class JenkinsJobs extends AirbyteStreamBase {
 
     const jenkins = new Jenkins(client, this.logger);
     let jobs: Job[];
-    if (syncMode === SyncMode.FULL_REFRESH) {
+    if (syncMode === SyncMode.INCREMENTAL) {
+      jobs = await jenkins.syncJobs(this.config, streamSlice || null);
+    } else {
       jobs = await jenkins.syncJobs(this.config, null);
     }
     for (const job of jobs) {

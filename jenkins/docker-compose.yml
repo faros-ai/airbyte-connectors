@@ -7,8 +7,4 @@ services:
       - 8080:8080
       - 50000:50000
     volumes:
-      - /home/grant/Documents/DevCube/Faros/airbyte-connectors-main/jenkins/data:/var/jenkins_home
-    # options: >-
-    #   --detach
-    #   -it
-    #   --entrypoint "tail -F anything"
+      - ./data:/var/jenkins_home

@@ -30,13 +30,15 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@thi.ng/iterators": "^5.1.74",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "commander": "^8.0.0",
-    "faros-airbyte-cdk": "^0.1.7",
+    "faros-airbyte-cdk": "^0.1.18",
     "jenkins": "^0.28.1",
     "typescript-memoize": "^1.0.1",
     "verror": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/jenkins": "^0.23.2"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -52,20 +54,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  },
-  "prettier": {
-    "bracketSpacing": false,
-    "parser": "typescript",
-    "trailingComma": "es5",
-    "singleQuote": true
-  },
-  "devDependencies": {
-    "@types/jenkins": "^0.23.2"
   }
 }

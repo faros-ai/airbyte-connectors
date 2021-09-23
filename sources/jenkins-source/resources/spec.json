@@ -29,7 +29,7 @@
       },
       "depth": {
         "type": "number",
-        "description": "Jenkins JSON API does not support deep scan, it is required to generate a suitable tree for the corresponding depth. Job in some cases have many sub jobs, depth needs to quantify how many sub jobs are showed"
+        "description": "Jenkins JSON API does not support deep scan, it is required to generate a suitable tree for the corresponding depth. Job in some cases have many sub jobs, depth needs to quantify how many sub jobs are showed. If depth is not provided we will try to compute it automatically"
       },
       "pageSize": {
         "type": "number",
