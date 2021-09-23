@@ -5,10 +5,10 @@
     "bump": "lerna version --force-publish --no-git-tag-version --preid rc",
     "build": "lerna run build",
     "clean": "lerna run clean && rm -rf node_modules out",
-    "test": "lerna run test -- -- --color",
-    "test-cov": "lerna run test -- -- --coverage --color",
     "lint": "lerna run lint",
-    "prepare": "lerna bootstrap --hoist"
+    "prepare": "lerna bootstrap --hoist && husky install",
+    "test": "lerna run test -- -- --color",
+    "test-cov": "lerna run test -- -- --coverage --color"
   },
   "devDependencies": {
     "@types/eslint": "^7.28.0",
