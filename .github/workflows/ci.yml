@@ -53,6 +53,7 @@ jobs:
 
       - name: Run Jenkins server
         run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data/secrets/
           sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data/
           docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
