@@ -40,7 +40,15 @@ export class GithubCommits extends GithubConverter {
       },
     });
 
-    // TODO: add vcs_BranchCommitAssociation once the branch is present in commit
+    if (commit.branch) {
+      res.push({
+        model: 'vcs_BranchCommitAssociation',
+        record: {
+          commit: {sha: commit.sha, repository},
+          branch: {name: commit.branch, repository},
+        },
+      });
+    }
 
     return res;
   }

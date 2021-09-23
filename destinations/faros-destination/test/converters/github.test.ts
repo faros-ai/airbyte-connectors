@@ -253,6 +253,7 @@ describe('github', () => {
       tms_TaskTag: 2,
       tms_User: 14,
       vcs_Branch: 4,
+      vcs_BranchCommitAssociation: 1,
       vcs_Commit: 77,
       vcs_Membership: 12,
       vcs_Organization: 1,
