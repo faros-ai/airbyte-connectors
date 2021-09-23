@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "faros-airbyte-cdk": "^0.1.18",
-    "faros-feeds-sdk": "^0.8.28",
-    "jsonata": "^1.8.4",
+    "faros-feeds-sdk": "^0.8.30",
+    "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
     "verror": "^1.10.0"
   },
@@ -61,11 +61,5 @@
       "prettier --write",
       "eslint --fix"
     ]
-  },
-  "prettier": {
-    "bracketSpacing": false,
-    "parser": "typescript",
-    "trailingComma": "es5",
-    "singleQuote": true
   }
 }
