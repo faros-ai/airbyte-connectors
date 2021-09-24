@@ -245,7 +245,7 @@ export class Jenkins {
       });
 
       return this.retrieveAllJobs(rootJobs);
-    } catch (err) {
+    } catch (err: any) {
       this.logger.warn(
         parse(
           'Failed to fetch jobs in page %s: %s. Skipping page.',
