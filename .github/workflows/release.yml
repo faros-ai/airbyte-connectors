@@ -12,6 +12,11 @@ jobs:
     name: Publish CDK
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      FORCE_COLOR: true
+      HUSKY_SKIP_INSTALL: 1
+      HUSKY_SKIP_HOOKS: 1
+      HUSKY: 0
     steps:
       - name: Check out
         uses: actions/checkout@v2.3.4

@@ -11,3 +11,10 @@ destinations/**/package-lock.json
 sources/**/package-lock.json
 *-acceptance-test.log
 *.code-workspace
+
+jenkins/data/logs
+jenkins/data/war
+jenkins/data/.cache
+jenkins/data/.java
+jenkins/data/.lastStarted
+jenkins/data/*.log

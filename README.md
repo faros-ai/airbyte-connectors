@@ -1,9 +1,16 @@
 # Airbyte Connectors
 
+
+[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) 
+
 This repository contains [Airbyte](https://airbyte.io/) CDK and connectors implementations.
 See the READMEs inside `destinations/` and `sources/` subfolders for more information on each connector.
 
-[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) [![npm version](https://badge.fury.io/js/faros-airbyte-cdk.svg)](https://badge.fury.io/js/faros-airbyte-cdk)
+Component | Code | Installation | Version
+----------|-----------|------|--------
+Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` |[![npm package](https://img.shields.io/npm/v/faros-airbyte-cdk?color=blue&label=npm%20package)](https://www.npmjs.com/package/faros-airbyte-cdk)
+Faros Destination | [destinations/faros-destination](destinations/faros-destination) | `docker pull farosai/airbyte-faros-destination` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)
+Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull farosai/airbyte-jenkins-source` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)
 
 # Development
 
@@ -11,10 +18,10 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 2. Install Node.js `nvm install 14 && nvm use 14`
 3. Update `npm` to version 7.x by running `npm install -g npm@7`
 4. Install `lerna` by running `npm install -g lerna`
-5. Run `lerna bootstrap --hoist` to install dependencies for all projects
-6. Run `lerna run build` to build all projects (for a single project add scope, e.g `--scope faros-destination`)
-7. Run `lerna run test` to test all projects (for a single project add scope, e.g `--scope faros-destination`)
-8. Run `lerna run lint` to apply linter on all projects (for a single project add scope, e.g `--scope faros-destination`)
+5. Run `npm run prepare` to install dependencies for all projects (`npm run clean` to clean all)
+6. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope faros-destination`)
+7. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope faros-destination`)
+8. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope faros-destination`)
 
 ## Other useful commands
 

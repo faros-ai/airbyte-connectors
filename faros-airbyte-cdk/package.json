@@ -1,6 +1,6 @@
 {
   "name": "faros-airbyte-cdk",
-  "version": "0.1.16",
+  "version": "0.1.19",
   "description": "Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript",
   "keywords": [
     "airbyte",
@@ -37,7 +37,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^8.0.0",
+    "commander": "^8.2.0",
     "fast-redact": "^3.0.2",
     "lodash": "^4.17.21",
     "pino": "^6.13.0",
@@ -45,6 +45,10 @@
   },
   "jest": {
     "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
@@ -57,17 +61,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  },
-  "prettier": {
-    "bracketSpacing": false,
-    "parser": "typescript",
-    "trailingComma": "es5",
-    "singleQuote": true
   }
 }

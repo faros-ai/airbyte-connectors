@@ -25,10 +25,7 @@ export class GithubCommits extends GithubConverter {
 
     if (!repository) return res;
 
-    // TODO: change user uid to login once it's available
-    const author = commit.author_id
-      ? {uid: `${commit.author_id}`, source}
-      : null;
+    const author = commit.author ? {uid: commit.author.login, source} : null;
 
     res.push({
       model: 'vcs_Commit',
@@ -43,7 +40,15 @@ export class GithubCommits extends GithubConverter {
       },
     });
 
-    // TODO: add vcs_BranchCommitAssociation once the branch is present in commit
+    if (commit.branch) {
+      res.push({
+        model: 'vcs_BranchCommitAssociation',
+        record: {
+          commit: {sha: commit.sha, repository},
+          branch: {name: commit.branch, repository},
+        },
+      });
+    }
 
     return res;
   }
