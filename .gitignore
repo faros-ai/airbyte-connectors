@@ -8,4 +8,11 @@ destinations/**/package-lock.json
 sources/**/package-lock.json
 secrets/
 *-acceptance-test.log
+jenkins/data/logs
+jenkins/data/war
+jenkins/data/.cache
+jenkins/data/.java
+jenkins/data/.lastStarted
+jenkins/data/*.log
+acceptance_tests_logs
 .vscode

@@ -51,12 +51,38 @@ jobs:
       - name: Test
         run: lerna run test-cov
 
+      - name: Run Jenkins server
+        run: |
+          mkdir -p ${{ github.workspace }}/jenkins/data/secrets/
+          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data/
+          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+
       - name: Source Acceptance Test
         if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
+          echo "Waiting until Jenkins is up"
+          waiting=0
+          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
+          until curl -s -I -X GET $url; do
+            docker ps -a
+            let waiting+=3
+            sleep 3
+            if [ $waiting -eq 120 ]; then
+              echo "Jenkins server did not respond within 120 seconds"
+              exit 42
+            fi
+          done
+
+          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/jenkins/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
           done
         env:
           EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
+          JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
+
+      - name: Stop Jenkins server
+        run: |
+          docker stop jenkins
+          docker rm jenkins
