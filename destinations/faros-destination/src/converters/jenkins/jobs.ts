@@ -3,19 +3,15 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JenkinsCommon} from './common';
 
-/** JenkinsC converter base */
-export abstract class JenkinsConverter extends Converter {
-  /** All Jenkins jobs records should have fullName property */
-  id(record: AirbyteRecord): any {
-    return record?.record?.data?.fullName;
-  }
-}
-
-export class JenkinsJobs extends JenkinsConverter {
+export class JenkinsJobs extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'cicd_Pipeline',
   ];
+  
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.fullName;
+  }
 
   convert(
     record: AirbyteRecord,

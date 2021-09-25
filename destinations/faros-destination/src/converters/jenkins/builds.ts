@@ -1,23 +1,23 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+} from '../converter';
 import {JenkinsCommon} from './common';
 
-/** JenkinsC converter base */
-export abstract class JenkinsConverter extends Converter {
-  /** All Jenkins builds records should have id property */
-  id(record: AirbyteRecord): any {
-    return record?.record?.data?.id;
-  }
-}
-
-export class JenkinsBuilds extends JenkinsConverter {
+export class JenkinsBuilds extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'cicd_Pipeline',
-    'cicd_Build'
+    'cicd_Build',
   ];
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.id;
+  }
 
   convert(
     record: AirbyteRecord,
@@ -34,8 +34,8 @@ export class JenkinsBuilds extends JenkinsConverter {
     const job = {
       fullName: jobFullName,
       name: jobFullName,
-      url: build.url.replace(/[^/]*\/$/, '')
-    }
+      url: build.url.replace(/[^/]*\/$/, ''),
+    };
     const pipeline = JenkinsCommon.cicd_Pipeline(job, orgKey);
     const buildRecord = {
       model: 'cicd_Build',
@@ -52,11 +52,11 @@ export class JenkinsBuilds extends JenkinsConverter {
           organization: orgKey,
         },
       },
-    }
+    };
 
     return [organization, pipeline, buildRecord];
   }
-  
+
   private convertBuildStatus(status: string | undefined): {
     category: string;
     detail: string;
@@ -65,7 +65,7 @@ export class JenkinsBuilds extends JenkinsConverter {
       return {category: 'Unknown', detail: null};
     }
     const detail = status.toLowerCase();
-  
+
     // Read more on Jenkins build results:
     // 1. https://wiki.jenkins.io/display/jenkins/terminology
     // 2. https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/hudson/model/Result.java
