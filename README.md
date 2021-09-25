@@ -1,9 +1,16 @@
 # Airbyte Connectors
 
+
+[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) 
+
 This repository contains [Airbyte](https://airbyte.io/) CDK and connectors implementations.
 See the READMEs inside `destinations/` and `sources/` subfolders for more information on each connector.
 
-[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) [![npm version](https://badge.fury.io/js/faros-airbyte-cdk.svg)](https://badge.fury.io/js/faros-airbyte-cdk)
+Component | Code | Installation | Version
+----------|-----------|------|--------
+Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` | [![npm version](https://badge.fury.io/js/faros-airbyte-cdk.svg)](https://badge.fury.io/js/faros-airbyte-cdk)
+Faros Destination | [destinations/faros-destination](destinations/faros-destination) | `docker pull farosai/airbyte-faros-destination` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=docker%20container)
+Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull farosai/airbyte-jenkins-source` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=docker%20container)
 
 # Development
 
