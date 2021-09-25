@@ -8,7 +8,7 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 
 Component | Code | Installation | Version
 ----------|-----------|------|--------
-Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` | [![npm version](https://badge.fury.io/js/faros-airbyte-cdk.svg)](https://badge.fury.io/js/faros-airbyte-cdk)
+Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` |[![npm package](https://img.shields.io/npm/v/faros-airbyte-cdk?color=blue&label=npm%20package)](https://www.npmjs.com/package/faros-airbyte-cdk)
 Faros Destination | [destinations/faros-destination](destinations/faros-destination) | `docker pull farosai/airbyte-faros-destination` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=docker%20container)
 Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull farosai/airbyte-jenkins-source` | ![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=docker%20container)
 
