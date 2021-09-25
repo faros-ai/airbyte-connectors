@@ -1,8 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {JenkinsCommon, JenkinsConverter} from './common';
+import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {JenkinsCommon} from './common';
+
+/** JenkinsC converter base */
+export abstract class JenkinsConverter extends Converter {
+  /** All Jenkins builds records should have id property */
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.id;
+  }
+}
 
 export class JenkinsBuilds extends JenkinsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -54,7 +62,7 @@ export class JenkinsBuilds extends JenkinsConverter {
     detail: string;
   } {
     if (!status) {
-      return {category: 'Unknown', detail: 'undefined'};
+      return {category: 'Unknown', detail: null};
     }
     const detail = status.toLowerCase();
   

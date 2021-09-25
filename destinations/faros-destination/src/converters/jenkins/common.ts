@@ -1,9 +1,8 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {URL} from 'url';
 
-import {Converter, DestinationRecord} from '../converter';
+import {DestinationRecord} from '../converter';
 
 /** Common functions shares across JenkinsC converters */
 export class JenkinsCommon {
@@ -47,14 +46,6 @@ export class JenkinsCommon {
     } catch (error) {
       return undefined;
     }
-  }
-}
-
-/** JenkinsC converter base */
-export abstract class JenkinsConverter extends Converter {
-  /** All Jenkins records should have id property */
-  id(record: AirbyteRecord): any {
-    return record?.record?.data?.id;
   }
 }
 
