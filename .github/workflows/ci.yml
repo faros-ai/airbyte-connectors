@@ -73,7 +73,7 @@ jobs:
             fi
           done
 
-          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/test-data/jenkins/data/.java/fonts -type f)
+          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/sources/jenkins-source/test_files/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
