@@ -7,7 +7,7 @@ faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json
 sources/**/package-lock.json
 secrets/
-*-acceptance-test.log
+acceptance-test-*.log
 jenkins/data/logs
 jenkins/data/war
 jenkins/data/.cache
