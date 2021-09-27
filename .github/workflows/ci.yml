@@ -58,7 +58,7 @@ jobs:
           docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
-        if: github.ref == 'refs/heads/main' # Skip PRs
+        # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           echo "Waiting until Jenkins is up"
           waiting=0
