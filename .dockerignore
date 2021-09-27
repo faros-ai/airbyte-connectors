@@ -3,3 +3,5 @@
 **/secrets
 **/*.log
 **/*.out
+**/.pytest_cache
+**/acceptance_tests_logs
