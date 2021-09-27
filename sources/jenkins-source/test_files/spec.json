@@ -13,7 +13,7 @@
     "properties": {
       "server_url": {
         "type": "string",
-        "description": "Jenkins Server URL",
+        "title": "Jenkins Server URL",
         "examples": [
           "https://my-jenkins-server.example.com"
         ]
@@ -24,21 +24,24 @@
       },
       "token": {
         "type": "string",
-        "description": "Jenkins Token",
+        "title": "Jenkins Token",
         "airbyte_secret": true
       },
       "depth": {
         "type": "number",
+        "title": "Depth",
         "description": "Jenkins JSON API does not support deep scan, it is required to generate a suitable tree for the corresponding depth. Job in some cases have many sub jobs, depth needs to quantify how many sub jobs are showed. If depth is not provided we will try to compute it automatically"
       },
       "pageSize": {
         "type": "number",
         "default": 10,
+        "title": "Page Size",
         "description": "Quantity of jobs on a single page fetched from Jenkins"
       },
       "last100Builds": {
         "type": "boolean",
         "default": false,
+        "title": "Last 100 Builds Only",
         "description": "Fetch only 100 last builds from Jenkins server"
       }
     }

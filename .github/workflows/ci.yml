@@ -53,9 +53,9 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          mkdir -p ${{ github.workspace }}/jenkins/data/secrets/
-          sudo chown -R $USER:$USER ${{ github.workspace }}/jenkins/data/
-          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/data/secrets/
+          sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/data
+          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
         if: github.ref == 'refs/heads/main' # Skip PRs
@@ -73,7 +73,7 @@ jobs:
             fi
           done
 
-          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/jenkins/data/.java/fonts -type f)
+          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/sources/jenkins-source/test_files/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
