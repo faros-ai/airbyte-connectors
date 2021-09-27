@@ -5,3 +5,5 @@
 **/*.out
 **/.pytest_cache
 **/acceptance_tests_logs
+**/test_files
+**/test
