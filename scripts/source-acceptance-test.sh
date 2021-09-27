@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Example usage:
+# export EXAMPLE_SOURCE_TEST_CREDS='{"server_url":"http://localhost","token":"abc","user":"chris"}'
+# ./scripts/source-acceptance-test.sh example-source
+
 error() {
   echo -e "$@"
   exit 1
@@ -16,11 +20,13 @@ function write_standard_creds() {
   local secrets_dir="sources/${connector_name}/secrets"
   local creds_file="${secrets_dir}/${cred_filename}"
   if [ -f "$creds_file" ]; then
+    echo "Skipped writing ${creds_file} since it already exists"
     return
   fi
 
   [ -z "$creds" ] && error "Env var $creds_name not set for $connector_name"
 
+  echo "Writing ${creds_file}"
   mkdir -p "$secrets_dir"
   echo "$creds" > "$creds_file"
 }
