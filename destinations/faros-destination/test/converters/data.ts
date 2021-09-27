@@ -9,3 +9,8 @@ export const githubPGRawLog = readTestResourceFile('github-pg-raw.log');
 export const githubAllStreamsLog = readTestResourceFile(
   'github-all-streams.log'
 );
+
+export const jenkinsLog = readTestResourceFile('jenkins.log');
+export const jenkinsAllStreamsLog = readTestResourceFile(
+  'jenkins-all-streams.log'
+);
