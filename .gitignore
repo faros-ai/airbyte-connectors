@@ -16,4 +16,3 @@ acceptance_tests_logs
 **/jenkins/data/.java
 **/jenkins/data/.lastStarted
 **/jenkins/data/*.log
-
