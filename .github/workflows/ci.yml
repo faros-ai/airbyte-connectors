@@ -61,6 +61,7 @@ jobs:
         # if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           echo "Waiting until Jenkins is up"
+          printenv
           waiting=0
           url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
           until curl -s -I -X GET $url; do
