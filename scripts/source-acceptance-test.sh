@@ -15,8 +15,6 @@ function write_test_config() {
   local cred_filename=${3:-config.json}
   local test_config=${!test_config_name}
 
-  echo "$test_config"
-
   [ -z "$connector_name" ] && error "Empty connector name"
 
   local secrets_dir="sources/${connector_name}/secrets"
