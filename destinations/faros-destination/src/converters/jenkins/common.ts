@@ -4,7 +4,7 @@ import {URL} from 'url';
 
 import {DestinationRecord} from '../converter';
 
-/** Common functions shares across JenkinsC converters */
+/** Common functions shares across Jenkins converters */
 export class JenkinsCommon {
   static cicd_Organization(
     jenkinsUrl: JenkinsUrl,
