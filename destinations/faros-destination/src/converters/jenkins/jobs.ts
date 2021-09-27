@@ -19,6 +19,7 @@ export class JenkinsJobs extends Converter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const job = record.record.data;
+    
     const jenkinsUrl = JenkinsCommon.parseJenkinsUrl(job.url);
     if (!jenkinsUrl) return [];
     const organization = JenkinsCommon.cicd_Organization(jenkinsUrl, source);

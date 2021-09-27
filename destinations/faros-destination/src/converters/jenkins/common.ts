@@ -35,9 +35,9 @@ export class JenkinsCommon {
     };
   }
 
-  static parseJenkinsUrl(jenkinsJobUrl: string): undefined | JenkinsUrl {
+  static parseJenkinsUrl(initUrl: string): undefined | JenkinsUrl {
     try {
-      const jenkinsUrl = new URL(jenkinsJobUrl);
+      const jenkinsUrl = new URL(initUrl);
       jenkinsUrl.pathname = '';
       return {
         hostname: jenkinsUrl.hostname,

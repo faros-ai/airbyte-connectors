@@ -25,6 +25,7 @@ export class JenkinsBuilds extends Converter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const build = record.record.data;
+
     const jenkinsUrl = JenkinsCommon.parseJenkinsUrl(build.url);
     if (!jenkinsUrl) return [];
     const organization = JenkinsCommon.cicd_Organization(jenkinsUrl, source);
@@ -34,7 +35,7 @@ export class JenkinsBuilds extends Converter {
     const job = {
       fullName: jobFullName,
       name: jobFullName,
-      url: build.url.replace(/[^/]*\/$/, ''),
+      url: jenkinsUrl.url.replace(/[^/]*(\/)?$/, ''),
     };
     const pipeline = JenkinsCommon.cicd_Pipeline(job, orgKey);
     const buildRecord = {
