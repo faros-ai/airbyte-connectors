@@ -24,10 +24,10 @@ class PhabricatorSource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    if (config.user === 'chris') {
+    if (config.token === 'ok') {
       return [true, undefined];
     }
-    return [false, new VError('User is not chris')];
+    return [false, new VError('Token is not ok')];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [new JenkinsBuilds(this.logger)];

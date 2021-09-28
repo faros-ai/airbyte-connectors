@@ -1,28 +1,37 @@
 #!/usr/bin/env bash
 
+# Example usage:
+# export EXAMPLE_SOURCE_TEST_CONFIG='{"server_url":"http://localhost","token":"abc","user":"chris"}'
+# ./scripts/source-acceptance-test.sh example-source
+
 error() {
   echo -e "$@"
   exit 1
 }
 
-function write_standard_creds() {
+function write_test_config() {
   local connector_name=$1
-  local creds_name=$2
+  local test_config_name=$2
   local cred_filename=${3:-config.json}
-  local creds=${!creds_name}
+  local test_config=${!test_config_name}
 
   [ -z "$connector_name" ] && error "Empty connector name"
 
   local secrets_dir="sources/${connector_name}/secrets"
-  local creds_file="${secrets_dir}/${cred_filename}"
-  if [ -f "$creds_file" ]; then
+  local test_config_file="${secrets_dir}/${cred_filename}"
+  if [ -f "$test_config_file" ]; then
+    echo "Skipped writing ${test_config_file} since it already exists"
     return
   fi
 
-  [ -z "$creds" ] && error "Env var $creds_name not set for $connector_name"
+  if [ -z "$test_config" ]; then
+    echo "$test_config_name env var is not set"
+    return
+  fi
 
+  echo "Writing ${test_config_file}"
   mkdir -p "$secrets_dir"
-  echo "$creds" > "$creds_file"
+  echo "$test_config" > "$test_config_file"
 }
 
 if [ -z "$1" ]; then
@@ -34,13 +43,13 @@ failed=false
 path="sources/$source"
 tag=$(echo $path | cut -f2 -d'/')
 echo Found source $tag
-log=$tag-acceptance-test.log
+log=acceptance-test-$tag.log
 
-# Creds should be set with env var {NAME}_TEST_CREDS
-# e.g. EXAMPLE_SOURCE_TEST_CREDS
-creds_env_var=$(echo "${tag//-/_}" | \
-  awk '{ str=sprintf("%s_test_creds", $0); print toupper(str) }')
-write_standard_creds $tag $creds_env_var
+# Test config should be set with env var {NAME}_TEST_CONFIG
+# e.g. EXAMPLE_SOURCE_TEST_CONFIG
+test_config_env_var=$(echo "${tag//-/_}" | \
+  awk '{ str=sprintf("%s_TEST_CONFIG", $0); print toupper(str) }')
+write_test_config $tag $test_config_env_var
 
 echo Building source image $tag
 docker build . --build-arg path=$path -t $tag
