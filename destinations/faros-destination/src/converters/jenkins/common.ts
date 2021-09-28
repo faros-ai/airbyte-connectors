@@ -4,6 +4,16 @@ import {URL} from 'url';
 
 import {DestinationRecord} from '../converter';
 
+interface JenkinsUrl {
+  hostname: string;
+  url: string;
+}
+
+interface OrganizationKey {
+  uid: string;
+  source: string;
+}
+
 /** Common functions shares across Jenkins converters */
 export class JenkinsCommon {
   static cicd_Organization(
@@ -47,14 +57,4 @@ export class JenkinsCommon {
       return undefined;
     }
   }
-}
-
-interface JenkinsUrl {
-  hostname: string;
-  url: string;
-}
-
-interface OrganizationKey {
-  uid: string;
-  source: string;
 }
