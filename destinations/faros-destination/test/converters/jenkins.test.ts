@@ -77,13 +77,10 @@ describe('jenkins', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    // expect(stdout).toMatch('\\"token\\":\\"REDACTED\\"');
-    // expect(stdout).toMatch('Read 1 records from jenkins_jobs stream');
-    // expect(stdout).toMatch('Read 3 records from jenkins_builds stream');
     expect(stdout).toMatch('Read 12 messages');
     expect(stdout).toMatch('Read 4 records');
     expect(stdout).toMatch('Processed 4 records');
-    expect(stdout).toMatch('Wrote 4 records');
+    expect(stdout).toMatch('Wrote 11 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -106,7 +103,7 @@ describe('jenkins', () => {
     expect(stdout).toMatch('Read 12 messages');
     expect(stdout).toMatch('Read 4 records');
     expect(stdout).toMatch('Processed 4 records');
-    expect(stdout).toMatch('Wrote 4 records');
+    expect(stdout).toMatch('Would write 11 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -187,7 +184,7 @@ describe('jenkins', () => {
 
     const processedByStream = {
       jobs: 1,
-      builds: 4,
+      builds: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -197,9 +194,9 @@ describe('jenkins', () => {
       .value();
 
     const writtenByModel = {
+      cicd_Build: 3,
       cicd_Organization: 4,
       cicd_Pipeline: 4,
-      cicd_Build: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();
