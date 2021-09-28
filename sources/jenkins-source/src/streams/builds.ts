@@ -14,7 +14,7 @@ export class JenkinsBuilds extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/builds.json');
+    return require('../../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
     return 'fullDisplayName';

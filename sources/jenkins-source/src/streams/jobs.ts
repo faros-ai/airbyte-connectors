@@ -14,7 +14,7 @@ export class JenkinsJobs extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/jobs.json');
+    return require('../../resources/schemas/jobs.json');
   }
   get primaryKey(): StreamKey {
     return 'fullName';
