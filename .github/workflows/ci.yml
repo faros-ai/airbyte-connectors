@@ -62,8 +62,7 @@ jobs:
         run: |
           echo "Waiting until Jenkins is up"
           waiting=0
-          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
-          until curl -s -I -X GET $url; do
+          until curl -s -I -X GET $JENKINS_URL; do
             docker ps -a
             let waiting+=3
             sleep 3
@@ -79,9 +78,7 @@ jobs:
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
           done
         env:
-          EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
-          JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
-          PHABRICATOR_SOURCE_TEST_CREDS: ${{ secrets.PHABRICATOR_SOURCE_TEST_CREDS }}
+          JENKINS_URL: http://127.0.0.1:8080
 
       - name: Stop Jenkins server
         run: |
