@@ -53,17 +53,16 @@ jobs:
 
       - name: Run Jenkins server
         run: |
-          mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/data/secrets/
-          sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/data
-          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
+          sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
+          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
       - name: Source Acceptance Test
         if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           echo "Waiting until Jenkins is up"
           waiting=0
-          url=$(echo "${{ secrets.JENKINS_SOURCE_TEST_CREDS }}" | cut -d',' -f 1 | cut -d':' -f 2,3,4)
-          until curl -s -I -X GET $url; do
+          until curl -s -I -X GET $JENKINS_URL; do
             docker ps -a
             let waiting+=3
             sleep 3
@@ -73,14 +72,13 @@ jobs:
             fi
           done
 
-          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/sources/jenkins-source/test_files/data/.java/fonts -type f)
+          sudo chown -R $USER:$USER $(find ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
             ./scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
           done
         env:
-          EXAMPLE_SOURCE_TEST_CREDS: ${{ secrets.EXAMPLE_SOURCE_TEST_CREDS }}
-          JENKINS_SOURCE_TEST_CREDS: ${{ secrets.JENKINS_SOURCE_TEST_CREDS }}
+          JENKINS_URL: http://127.0.0.1:8080
 
       - name: Stop Jenkins server
         run: |
