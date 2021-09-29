@@ -59,7 +59,7 @@ jobs:
           docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
           echo "Waiting until Jenkins is up"
           waiting=0
-          until curl -s -I -X GET $JENKINS_URL; do
+          until curl -s -I -X GET http://127.0.0.1:8080; do
             docker ps -a
             let waiting+=3
             sleep 3
@@ -80,8 +80,6 @@ jobs:
               /scripts/source-acceptance-test.sh $source
             fi
           done
-        env:
-          JENKINS_URL: http://127.0.0.1:8080
 
       - name: Stop Jenkins server
         # if: github.ref == 'refs/heads/main' # Skip PRs
