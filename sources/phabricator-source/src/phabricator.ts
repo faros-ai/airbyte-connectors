@@ -1,5 +1,5 @@
 import {Condoit} from 'condoit';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import moment, {Moment} from 'moment';
 import {VError} from 'verror';
