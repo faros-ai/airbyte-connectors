@@ -1,6 +1,6 @@
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
-import {phid} from 'condoit/dist/interfaces/iGlobal';
+import {ErrorCodes, phid} from 'condoit/dist/interfaces/iGlobal';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import moment, {Moment} from 'moment';
@@ -14,6 +14,19 @@ export interface PhabricatorConfig {
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
+
+interface PagedResult<T> extends ErrorCodes {
+  result: {
+    data: Array<T>;
+    cursor: {
+      limit: number;
+      after: string;
+      before: any;
+      order: any;
+    };
+  };
+}
+
 export interface Commit {
   fields: {
     identifier: string;
@@ -110,46 +123,66 @@ export class Phabricator {
       .filter((v) => v.length > 0);
   }
 
-  async *getRepositories(
-    createdAt?: number,
-    limit = 100
-  ): AsyncGenerator<Repository, any, any> {
+  private async *paginate<T, R>(
+    limit: number,
+    fetch: (after?: string) => Promise<PagedResult<T>>,
+    process: (item: T) => R | undefined,
+    earlyTermination = true
+  ): AsyncGenerator<R, any, any> {
     let after: string = null;
-    let res: RepositorySearchResult | undefined;
-    const created = Math.max(createdAt ?? 0, this.startDate.unix());
-    this.logger.debug(`Fetching repositories created since ${created}`);
+    let res: PagedResult<T> | undefined;
     do {
-      res = await this.client.diffusion.repositorySearch({
-        queryKey: 'all',
-        order: 'newest',
-        constraints: {
-          shortNames: this.repositories,
-        },
-        attachments: {
-          projects: false,
-          uris: true,
-          metrics: true,
-        },
-        limit,
-        after,
-      });
+      res = await fetch(after);
       after = res.result.cursor.after;
       if (res.error_code || res.error_info) {
         throw new VError(`${res.error_code}: ${res.error_info}`);
       }
+      res.result.data;
       let count = 0;
-      for (const repo of res.result.data) {
-        if (repo.fields.dateCreated >= created) {
+      for (const data of res.result.data) {
+        const item = process(data);
+        if (item) {
           count++;
-          yield repo;
+          yield item;
         }
       }
-      if (count < limit) return;
+      if (earlyTermination && count < limit) return;
     } while (after);
   }
 
+  async *getRepositories(
+    createdAt?: number,
+    limit = 100
+  ): AsyncGenerator<Repository, any, any> {
+    const created = Math.max(createdAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching repositories created since ${created}`);
+
+    yield* this.paginate(
+      limit,
+      (after) =>
+        this.client.diffusion.repositorySearch({
+          queryKey: 'all',
+          order: 'newest',
+          constraints: {
+            shortNames: this.repositories,
+          },
+          attachments: {
+            projects: false,
+            uris: true,
+            metrics: true,
+          },
+          limit,
+          after,
+        }),
+      (item) => {
+        if (item.fields.dateCreated >= created) return item;
+        return undefined;
+      }
+    );
+  }
+
   async *getCommits(
-    commitedAt?: number,
+    committedAt?: number,
     limit = 100
   ): AsyncGenerator<Commit, any, any> {
     const repositoryIds = [];
@@ -158,39 +191,32 @@ export class Phabricator {
         repositoryIds.push(repo.phid);
       }
     }
-    let after: string = null;
-    let res: CommitSearchResult | undefined;
-    const commited = Math.max(commitedAt ?? 0, this.startDate.unix());
-    this.logger.debug(`Fetching commits since ${commited}`);
-    do {
-      res = await this.client.diffusion.commitSearch({
-        queryKey: 'all',
-        order: 'newest',
-        constraints: {
-          repositories: repositoryIds,
-          unreachable: false,
-        },
-        attachments: {
-          projects: false,
-          subscribers: false,
-        },
-        limit,
-        after,
-      });
-      this.logger.debug(JSON.stringify(res.result.data));
-      after = res.result.cursor.after;
-      if (res.error_code || res.error_info) {
-        throw new VError(`${res.error_code}: ${res.error_info}`);
+    const committed = Math.max(committedAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching commits committed since ${committedAt}`);
+
+    yield* this.paginate(
+      limit,
+      (after) =>
+        this.client.diffusion.commitSearch({
+          queryKey: 'all',
+          order: 'newest',
+          constraints: {
+            repositories: repositoryIds,
+            unreachable: false,
+          },
+          attachments: {
+            projects: false,
+            subscribers: false,
+          },
+          limit,
+          after,
+        }),
+
+      (item) => {
+        const commit = item as any as Commit;
+        if (commit.fields.committer.epoch >= committed) return commit;
+        return undefined;
       }
-      let count = 0;
-      for (const data of res.result.data) {
-        const commit = data as any as Commit;
-        if (commit.fields.committer.epoch >= commited) {
-          count++;
-          yield commit;
-        }
-      }
-      if (count < limit) return;
-    } while (after);
+    );
   }
 }

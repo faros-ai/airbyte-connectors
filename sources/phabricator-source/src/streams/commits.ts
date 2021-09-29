@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {Commit, Phabricator, PhabricatorConfig} from '../phabricator';
 
 export interface CommitsState {
-  latestCommitedAt: number;
+  latestCommittedAt: number;
 }
 
 export class Commits extends AirbyteStreamBase {
@@ -32,11 +32,11 @@ export class Commits extends AirbyteStreamBase {
     currentStreamState: CommitsState,
     latestRecord: Commit
   ): CommitsState {
-    const latestCommited = currentStreamState?.latestCommitedAt ?? 0;
-    const recordCommited = latestRecord?.fields?.committer?.epoch ?? 0;
-    currentStreamState.latestCommitedAt = Math.max(
-      latestCommited,
-      recordCommited
+    const latestCommitted = currentStreamState?.latestCommittedAt ?? 0;
+    const recordCommitted = latestRecord?.fields?.committer?.epoch ?? 0;
+    currentStreamState.latestCommittedAt = Math.max(
+      latestCommitted,
+      recordCommitted
     );
     return currentStreamState;
   }
@@ -48,7 +48,7 @@ export class Commits extends AirbyteStreamBase {
   ): AsyncGenerator<Commit, any, any> {
     const phabricator = await Phabricator.make(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
-    const commitedAt = state?.latestCommitedAt ?? 0;
-    yield* phabricator.getCommits(commitedAt);
+    const committedAt = state?.latestCommittedAt ?? 0;
+    yield* phabricator.getCommits(committedAt);
   }
 }
