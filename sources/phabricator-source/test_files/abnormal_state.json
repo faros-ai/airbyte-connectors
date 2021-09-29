@@ -1,5 +1,5 @@
 {
-  "jenkins_builds": {
-    "cutoff": 1735718400000
+  "repositories": {
+    "latestCreatedAt": 1735718400000
   }
 }
