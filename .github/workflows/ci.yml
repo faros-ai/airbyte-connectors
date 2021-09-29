@@ -75,7 +75,7 @@ jobs:
           sudo chown -R $USER:$USER $(find ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/.java/fonts -type f)
           for i in $(ls -d sources/*/)
           do
-            source = $(echo $i | cut -f2 -d'/')
+            source=$(echo $i | cut -f2 -d'/')
             if [[ $source != "phabricator-source" ]]; then
               /scripts/source-acceptance-test.sh $source
             fi
