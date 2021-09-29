@@ -1,4 +1,3 @@
-import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -7,9 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Phabricator, PhabricatorConfig} from '../phabricator';
-
-type Repository = iDiffusion.retDiffusionRepositorySearchData;
+import {Phabricator, PhabricatorConfig, Repository} from '../phabricator';
 
 export interface RepositoriesState {
   latestCreatedAt: number;
@@ -47,8 +44,6 @@ export class Repositories extends AirbyteStreamBase {
     streamState?: RepositoriesState
   ): AsyncGenerator<Repository, any, any> {
     const phabricator = await Phabricator.make(this.config, this.logger);
-    if (!phabricator) return;
-
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const createdAt = state?.latestCreatedAt ?? 0;
     yield* phabricator.getRepositories(createdAt);

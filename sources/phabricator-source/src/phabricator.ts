@@ -1,5 +1,6 @@
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
+import {phid} from 'condoit/dist/interfaces/iGlobal';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import moment, {Moment} from 'moment';
@@ -13,7 +14,56 @@ export interface PhabricatorConfig {
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
+export interface Commit {
+  fields: {
+    identifier: string;
+    repositoryPHID: phid;
+    author: {
+      name: string;
+      email: string;
+      raw: string;
+      epoch: number;
+      identityPHID: phid;
+      userPHID: phid;
+    };
+    // 'committer' is mispelled as 'commiter' in the original library
+    //  so I had to copy the type here until fixed -
+    // https://github.com/securisec/condoit/issues/8
+    committer: {
+      name: string;
+      email: string;
+      raw: string;
+      epoch: number;
+      identityPHID: phid;
+      userPHID: phid;
+    };
+    isImported: boolean;
+    isUnreachable: boolean;
+    auditStatus: {
+      value: string;
+      name: string;
+      closed: boolean;
+      'color.ansi': string;
+    };
+    message: string;
+    policy: {
+      view: string;
+      edit: string;
+    };
+  };
+  attachments: {
+    subscribers: {
+      subscriberPHIDs: Array<phid>;
+      subscriberCount: number;
+      viewerIsSubscribed: boolean;
+    };
+    projects: {
+      projectPHIDs: Array<phid>;
+    };
+  };
+}
 type RepositorySearchResult = iDiffusion.RetDiffusionRepositorySearch;
+type CommitSearchResult = iDiffusion.RetDiffusionCommitSearch;
 
 export class Phabricator {
   constructor(
@@ -76,7 +126,7 @@ export class Phabricator {
           shortNames: this.repositories,
         },
         attachments: {
-          projects: true,
+          projects: false,
           uris: true,
           metrics: true,
         },
@@ -92,6 +142,52 @@ export class Phabricator {
         if (repo.fields.dateCreated >= created) {
           count++;
           yield repo;
+        }
+      }
+      if (count < limit) return;
+    } while (after);
+  }
+
+  async *getCommits(
+    commitedAt?: number,
+    limit = 100
+  ): AsyncGenerator<Commit, any, any> {
+    const repositoryIds = [];
+    if (this.repositories.length > 0) {
+      for await (const repo of this.getRepositories()) {
+        repositoryIds.push(repo.phid);
+      }
+    }
+    let after: string = null;
+    let res: CommitSearchResult | undefined;
+    const commited = Math.max(commitedAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching commits since ${commited}`);
+    do {
+      res = await this.client.diffusion.commitSearch({
+        queryKey: 'all',
+        order: 'newest',
+        constraints: {
+          repositories: repositoryIds,
+          unreachable: false,
+        },
+        attachments: {
+          projects: false,
+          subscribers: false,
+        },
+        limit,
+        after,
+      });
+      this.logger.debug(JSON.stringify(res.result.data));
+      after = res.result.cursor.after;
+      if (res.error_code || res.error_info) {
+        throw new VError(`${res.error_code}: ${res.error_info}`);
+      }
+      let count = 0;
+      for (const data of res.result.data) {
+        const commit = data as any as Commit;
+        if (commit.fields.committer.epoch >= commited) {
+          count++;
+          yield commit;
         }
       }
       if (count < limit) return;

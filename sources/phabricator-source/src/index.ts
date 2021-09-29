@@ -11,6 +11,7 @@ import VError from 'verror';
 
 import {Phabricator, PhabricatorConfig} from './phabricator';
 import {Repositories} from './streams';
+import {Commits} from './streams/commits';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,6 +34,9 @@ class PhabricatorSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new Repositories(config as PhabricatorConfig, this.logger)];
+    return [
+      new Repositories(config as PhabricatorConfig, this.logger),
+      new Commits(config as PhabricatorConfig, this.logger),
+    ];
   }
 }
