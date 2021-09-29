@@ -2,13 +2,20 @@
   "streams": [
     {
       "stream": {
-        "name": "jenkins_builds",
+        "name": "builds",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
-          ["uid"],
-          ["source"]
+          [
+            "uid"
+          ],
+          [
+            "source"
+          ]
         ]
       },
       "sync_mode": "full_refresh",

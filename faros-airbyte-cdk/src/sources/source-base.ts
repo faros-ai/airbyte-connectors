@@ -107,19 +107,18 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
     catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
+    this.logger.info(`Syncing ${this.name}`);
     const connectorState = cloneDeep(state ?? {});
-    this.logger.info(`Starting syncing ${this.name}`);
     // TODO: assert all streams exist in the connector
     // get the streams once in case the connector needs to make any queries to
     // generate them
     const streamInstances = keyBy(this.streams(config), (s) => s.name);
     for (const configuredStream of catalog.streams) {
-      const streamInstance = streamInstances[configuredStream.stream.name];
+      const streamName = configuredStream.stream.name;
+      const streamInstance = streamInstances[streamName];
       if (!streamInstance) {
         throw new VError(
-          `The requested stream ${
-            configuredStream.stream.name
-          } was not found in the source. Available streams: ${Object.keys(
+          `The requested stream ${streamName} was not found in the source. Available streams: ${Object.keys(
             streamInstances
           )}`
         );

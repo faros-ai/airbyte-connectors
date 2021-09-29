@@ -26,26 +26,31 @@
       "start_date": {
         "type": "string",
         "title": "Start Date",
-        "description": "The date from which you'd like to replicate data for Phabricator in the format YYYY-MM-DDT00:00:00Z. All data generated after this date will be replicated.",
+        "description": "The date from which you'd like to replicate data for Phabricator in the ISO 8601 format, i.e YYYY-MM-DDTmm:HH:ssZ. All data generated after this date will be replicated.",
         "examples": [
-          "2021-03-01T00:00:00Z"
+          "2010-03-27T14:03:51-0800"
         ],
         "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
       },
       "repositories": {
-        "type": "string",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Repositories",
         "examples": [
           "repo-1",
           "repo-2"
         ],
-        "description": "Space-delimited list of Phabricator repositories, e.g. `repo-1 repo-2`. If none provided would sync all repositories"
+        "description": "List of Phabricator repositories, e.g. `repo-1,repo-2`. If none provided would sync all repositories."
       },
-      "rejectUnauthorized": {
-        "type": "boolean",
-        "default": true,
-        "title": "Require Phabricator server certificate validation",
-        "description": "Keep this option enabled if your Phabricator server has a certificate verified by a trusted authority. For self-signed certificates, disable this option."
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 100,
+        "title": "Limit",
+        "description": "Limit of results on a single page fetched from Phabricator"
       }
     }
   }
