@@ -33,7 +33,10 @@
         "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
       },
       "repositories": {
-        "type": "string",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Repositories",
         "examples": [
           "repo-1",

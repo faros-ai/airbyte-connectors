@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Phabricator, PhabricatorConfig} from './phabricator';
-import {JenkinsBuilds} from './streams';
+import {Repositories} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,6 +33,6 @@ class PhabricatorSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new JenkinsBuilds(this.logger)];
+    return [new Repositories(config as PhabricatorConfig, this.logger)];
   }
 }

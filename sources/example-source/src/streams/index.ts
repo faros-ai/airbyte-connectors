@@ -1,3 +1,3 @@
-import {JenkinsBuilds} from './builds';
+import {Builds} from './builds';
 
-export {JenkinsBuilds};
+export {Builds};
