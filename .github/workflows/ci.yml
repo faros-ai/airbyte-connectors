@@ -74,7 +74,10 @@ jobs:
         run: |
           for i in $(ls -d sources/*/)
           do
-            /scripts/source-acceptance-test.sh $(echo $i | cut -f2 -d'/')
+            source=$(echo $i | cut -f2 -d'/')
+            if [[ $source != "phabricator-source" ]]; then
+              ./scripts/source-acceptance-test.sh $source
+            fi
           done
 
       - name: Stop Jenkins server
