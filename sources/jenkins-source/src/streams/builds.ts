@@ -6,7 +6,13 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Build, Jenkins, JenkinsConfig, JenkinsState} from '../jenkins';
+import {
+  Build,
+  DEFAULT_PAGE_SIZE,
+  Jenkins,
+  JenkinsConfig,
+  JenkinsState,
+} from '../jenkins';
 
 export class Builds extends AirbyteStreamBase {
   constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
@@ -21,6 +27,9 @@ export class Builds extends AirbyteStreamBase {
   }
   get cursorField(): string | string[] {
     return 'number';
+  }
+  get stateCheckpointInterval(): number {
+    return 10 * (this.config.pageSize ?? DEFAULT_PAGE_SIZE);
   }
 
   async *readRecords(

@@ -6,11 +6,14 @@ import _ from 'lodash';
 import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
+export const PHABRICATOR_DEFAULT_LIMIT = 100;
+
 export interface PhabricatorConfig {
   readonly server_url: string;
   readonly token: string;
   readonly start_date: string;
   readonly repositories: string;
+  readonly limit: number;
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
@@ -75,14 +78,12 @@ export interface Commit {
     };
   };
 }
-type RepositorySearchResult = iDiffusion.RetDiffusionRepositorySearch;
-type CommitSearchResult = iDiffusion.RetDiffusionCommitSearch;
-
 export class Phabricator {
   constructor(
     readonly client: Condoit,
     readonly startDate: Moment,
     readonly repositories: string[],
+    readonly limit: number,
     readonly logger: AirbyteLogger
   ) {}
 
@@ -101,6 +102,7 @@ export class Phabricator {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const repositories = Phabricator.toStringArray(config.repositories);
+    const limit = config.limit ?? PHABRICATOR_DEFAULT_LIMIT;
     const client = new Condoit(config.server_url, config.token);
     try {
       await client.user.whoami();
@@ -111,7 +113,7 @@ export class Phabricator {
       throw new VError(err.message ?? JSON.stringify(err));
     }
 
-    return new Phabricator(client, startDate, repositories, logger);
+    return new Phabricator(client, startDate, repositories, limit, logger);
   }
 
   private static toStringArray(s: any, sep = ','): string[] {
@@ -152,7 +154,7 @@ export class Phabricator {
 
   async *getRepositories(
     createdAt?: number,
-    limit = 100
+    limit = this.limit
   ): AsyncGenerator<Repository, any, any> {
     const created = Math.max(createdAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching repositories created since ${created}`);
@@ -183,7 +185,7 @@ export class Phabricator {
 
   async *getCommits(
     committedAt?: number,
-    limit = 100
+    limit = this.limit
   ): AsyncGenerator<Commit, any, any> {
     const repositoryIds = [];
     if (this.repositories.length > 0) {

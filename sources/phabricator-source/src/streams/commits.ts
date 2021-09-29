@@ -28,6 +28,9 @@ export class Commits extends AirbyteStreamBase {
   get cursorField(): string[] {
     return ['fields', 'committer', 'epoch'];
   }
+  get stateCheckpointInterval(): number {
+    return 5 * this.config.limit;
+  }
   getUpdatedState(
     currentStreamState: CommitsState,
     latestRecord: Commit

@@ -43,6 +43,14 @@
           "repo-2"
         ],
         "description": "List of Phabricator repositories, e.g. `repo-1,repo-2`. If none provided would sync all repositories."
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 100,
+        "title": "Limit",
+        "description": "Limit of results on a single page fetched from Phabricator"
       }
     }
   }
