@@ -70,7 +70,7 @@ export class Phabricator {
     this.logger.debug(`Fetching repositories created since ${created}`);
     do {
       res = await this.client.diffusion.repositorySearch({
-        queryKey: 'active',
+        queryKey: 'all',
         order: 'newest',
         constraints: {
           shortNames: this.repositories,
