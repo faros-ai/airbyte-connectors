@@ -1,4 +1,4 @@
-import {JenkinsBuilds} from './builds';
-import {JenkinsJobs} from './jobs';
+import {Builds} from './builds';
+import {Jobs} from './jobs';
 
-export {JenkinsBuilds, JenkinsJobs};
+export {Builds, Jobs};

@@ -9,7 +9,9 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {JenkinsBuilds} from './streams';
+import {Phabricator, PhabricatorConfig} from './phabricator';
+import {Repositories} from './streams';
+import {Commits} from './streams/commits';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -24,12 +26,17 @@ class PhabricatorSource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    if (config.token === 'ok') {
-      return [true, undefined];
+    try {
+      await Phabricator.make(config as PhabricatorConfig, this.logger);
+    } catch (err: any) {
+      return [false, err];
     }
-    return [false, new VError('Token is not ok')];
+    return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new JenkinsBuilds(this.logger)];
+    return [
+      new Repositories(config as PhabricatorConfig, this.logger),
+      new Commits(config as PhabricatorConfig, this.logger),
+    ];
   }
 }

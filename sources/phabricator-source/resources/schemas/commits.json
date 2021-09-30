@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string"
+    },
+    "phid": {
+      "type": "string"
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "repositoryPHID": {
+          "type": "string"
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "raw": {
+              "type": "string"
+            },
+            "epoch": {
+              "type": "integer"
+            },
+            "identityPHID": {
+              "type": "string"
+            },
+            "userPHID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "email",
+            "raw",
+            "epoch",
+            "identityPHID",
+            "userPHID"
+          ]
+        },
+        "committer": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "raw": {
+              "type": "string"
+            },
+            "epoch": {
+              "type": "integer"
+            },
+            "identityPHID": {
+              "type": "string"
+            },
+            "userPHID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "email",
+            "raw",
+            "epoch",
+            "identityPHID",
+            "userPHID"
+          ]
+        },
+        "isUnreachable": {
+          "type": "boolean"
+        },
+        "isImported": {
+          "type": "boolean"
+        },
+        "auditStatus": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "closed": {
+              "type": "boolean"
+            },
+            "color.ansi": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "value",
+            "name",
+            "closed",
+            "color.ansi"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "string"
+            },
+            "edit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "view",
+            "edit"
+          ]
+        }
+      },
+      "required": [
+        "identifier",
+        "repositoryPHID",
+        "author",
+        "committer",
+        "isUnreachable",
+        "isImported",
+        "auditStatus",
+        "message",
+        "policy"
+      ]
+    },
+    "attachments": {
+      "type": "object",
+      "properties": {
+        "projects": {
+          "type": "object",
+          "properties": {
+            "projectPHIDs": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "projectPHIDs"
+          ]
+        },
+        "subscribers": {
+          "type": "object",
+          "properties": {
+            "subscriberPHIDs": {
+              "type": "array",
+              "items": {}
+            },
+            "subscriberCount": {
+              "type": "integer"
+            },
+            "viewerIsSubscribed": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "subscriberPHIDs",
+            "subscriberCount",
+            "viewerIsSubscribed"
+          ]
+        }
+      },
+      "required": [
+        "projects",
+        "subscribers"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "phid",
+    "fields",
+    "attachments"
+  ]
+}

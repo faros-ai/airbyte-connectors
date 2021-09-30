@@ -1,5 +1,7 @@
 {
-  "jenkins_builds": {
-    "newJobsLastCompletedBuilds": {"Faros-test-job": 3}
+  "builds": {
+    "newJobsLastCompletedBuilds": {
+      "Faros-test-job": 3
+    }
   }
 }
