@@ -1,3 +1,4 @@
+import {Commits} from './commits';
 import {Repositories} from './repositories';
 
-export {Repositories};
+export {Commits, Repositories};
