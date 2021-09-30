@@ -142,13 +142,13 @@ export class Phabricator {
       this.logger.debug(
         `Retrieved ${cachedRepos.length} repos from cache (${missing.length} missed)`
       );
-
-      if (missing.length == 0) {
-        for (const repo of cachedRepos) {
-          yield repo;
-        }
-        return;
+      // Return all the cached repositories
+      for (const repo of cachedRepos) {
+        yield repo;
       }
+      // We got all the repos from the cache - nothing left to do
+      if (missing.length == 0) return;
+      // Fetch missing repos from from the API
       constraints = filter.repoIds ? {phids: missing} : {shortNames: missing};
     }
 
