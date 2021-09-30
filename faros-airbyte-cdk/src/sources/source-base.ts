@@ -160,7 +160,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
     const mode = useIncremental ? 'incremental' : 'full';
-    this.logger.info(`Syncing stream ${streamName} in ${mode} mode`);
+    this.logger.info(`Syncing ${streamName} stream in ${mode} mode`);
 
     for await (const record of recordGenerator) {
       if (record.type === AirbyteMessageType.RECORD) {
@@ -168,7 +168,9 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
       }
       yield record;
     }
-    this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
+    this.logger.info(
+      `Finished syncing ${streamName} stream. Read ${recordCounter} records`
+    );
   }
 
   private async *readIncremental(

@@ -49,6 +49,10 @@ export class Repositories extends AirbyteStreamBase {
     const phabricator = await Phabricator.make(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const createdAt = state?.latestCreatedAt ?? 0;
-    yield* phabricator.getRepositories(createdAt);
+
+    yield* phabricator.getRepositories(
+      {repoNames: phabricator.repositories},
+      createdAt
+    );
   }
 }
