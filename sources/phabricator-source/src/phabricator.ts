@@ -31,54 +31,9 @@ interface PagedResult<T> extends ErrorCodes {
   };
 }
 
-export interface Commit {
-  fields: {
-    identifier: string;
-    repositoryPHID: phid;
-    repository?: Repository; // Added full repository information as well
-    author: {
-      name: string;
-      email: string;
-      raw: string;
-      epoch: number;
-      identityPHID: phid;
-      userPHID: phid;
-    };
-    // 'committer' is mispelled as 'commiter' in the original library
-    //  so I had to copy the type here until fixed -
-    // https://github.com/securisec/condoit/issues/8
-    committer: {
-      name: string;
-      email: string;
-      raw: string;
-      epoch: number;
-      identityPHID: phid;
-      userPHID: phid;
-    };
-    isImported: boolean;
-    isUnreachable: boolean;
-    auditStatus: {
-      value: string;
-      name: string;
-      closed: boolean;
-      'color.ansi': string;
-    };
-    message: string;
-    policy: {
-      view: string;
-      edit: string;
-    };
-  };
-  attachments: {
-    subscribers: {
-      subscriberPHIDs: Array<phid>;
-      subscriberCount: number;
-      viewerIsSubscribed: boolean;
-    };
-    projects: {
-      projectPHIDs: Array<phid>;
-    };
-  };
+export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
+  // Added full repository information as well
+  repository?: Repository;
 }
 export class Phabricator {
   private static repoCacheById: Dictionary<Repository, phid> = {};
@@ -258,7 +213,7 @@ export class Phabricator {
         }),
       async (commits) => {
         const newCommits = commits
-          .map((commit) => commit as any as Commit)
+          .map((commit) => commit as Commit)
           .filter((commit) => commit.fields.committer.epoch > committed);
 
         // Extend commits with full repository information if present
@@ -271,8 +226,7 @@ export class Phabricator {
           newCommitRepos[repo.phid] = repo;
         }
         return newCommits.map((commit) => {
-          commit.fields.repository =
-            newCommitRepos[commit.fields.repositoryPHID];
+          commit.repository = newCommitRepos[commit.fields.repositoryPHID];
           return commit;
         });
       }
