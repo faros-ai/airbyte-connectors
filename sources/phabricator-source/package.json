@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
-    "condoit": "^2.0.8",
+    "condoit": "^2.0.11",
     "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.21",
     "moment": "^2.29.1",
