@@ -4,7 +4,7 @@ import {Memoize} from 'typescript-memoize';
 import {URL} from 'url';
 import util from 'util';
 
-export const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
 const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
 const FEED_JOBS_COUNT_PATTERN = 'jobs[name]';
 const FEED_MAX_DEPTH_CALC_PATTERN = 'fullName,jobs[*]';
