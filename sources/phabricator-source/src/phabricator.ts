@@ -5,6 +5,7 @@ import {
   phid,
   RetSearchConstants,
 } from 'condoit/dist/interfaces/iGlobal';
+import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {trim, uniq} from 'lodash';
@@ -28,6 +29,7 @@ export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: Repository;
 }
 export type User = iUser.retUsersSearchData;
+export type Project = iProject.retProjectSearchData;
 export interface Revision extends RetSearchConstants {
   // Added full repository information as well
   repository?: Repository;
@@ -88,6 +90,7 @@ interface PagedResult<T> extends ErrorCodes {
 }
 
 export class Phabricator {
+  private static phabricator: Phabricator = null;
   private static repoCacheById: Dictionary<Repository, phid> = {};
   private static repoCacheByName: Dictionary<Repository, string> = {};
 
@@ -103,6 +106,8 @@ export class Phabricator {
     config: PhabricatorConfig,
     logger: AirbyteLogger
   ): Phabricator {
+    if (Phabricator.phabricator) return Phabricator.phabricator;
+
     if (!config.server_url) {
       throw new VError('server_url is null or empty');
     }
@@ -123,7 +128,16 @@ export class Phabricator {
 
     const client = new Condoit(config.server_url, config.token);
 
-    return new Phabricator(client, startDate, repositories, limit, logger);
+    Phabricator.phabricator = new Phabricator(
+      client,
+      startDate,
+      repositories,
+      limit,
+      logger
+    );
+    logger.debug('Created Phrabricator instance');
+
+    return Phabricator.phabricator;
   }
 
   private static toStringArray(s: any, sep = ','): string[] {
@@ -183,7 +197,7 @@ export class Phabricator {
     const created = Math.max(createdAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching repositories created since ${created}`);
 
-    const attachments = {projects: false, uris: true, metrics: true};
+    const attachments = {projects: true, uris: true, metrics: true};
     let constraints = {};
 
     if (filter.repoIds?.length > 0 || filter.repoNames?.length > 0) {
@@ -312,7 +326,7 @@ export class Phabricator {
     }
 
     const constraints = {repositoryPHIDs, modifiedStart: modified};
-    const attachments = {projects: false, subscribers: true, reviewers: true};
+    const attachments = {projects: true, subscribers: true, reviewers: true};
 
     yield* this.paginate(
       limit,
@@ -373,6 +387,40 @@ export class Phabricator {
           (user) => user.fields.dateCreated > created
         );
         return newUsers;
+      }
+    );
+  }
+
+  async *getProjects(
+    filter: {
+      projectIds?: phid[];
+    },
+    createdAt?: number,
+    limit = this.limit
+  ): AsyncGenerator<Project, any, any> {
+    const created = Math.max(createdAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching projects created since ${created}`);
+
+    const constraints = {phids: filter.projectIds ?? []};
+    const attachments = {members: true, ancestors: true, watchers: true};
+
+    yield* this.paginate(
+      limit,
+      (after) => {
+        return this.client.project.search({
+          queryKey: 'all',
+          order: 'newest' as any,
+          constraints,
+          attachments,
+          limit,
+          after,
+        });
+      },
+      async (projects) => {
+        const newProjects = projects.filter(
+          (project) => project.fields.dateCreated > created
+        );
+        return newProjects;
       }
     );
   }
