@@ -28,16 +28,11 @@ export class Builds extends AirbyteStreamBase {
     streamSlice?: Build,
     streamState?: JenkinsState
   ): AsyncGenerator<Build, any, any> {
-    const jenkins = await Jenkins.make(this.config, this.logger);
-    if (!jenkins) return;
+    const jenkins = Jenkins.instance(this.config, this.logger);
+    const state =
+      syncMode === SyncMode.INCREMENTAL ? streamState ?? null : null;
 
-    let iter: AsyncGenerator<Build, any, unknown>;
-    if (syncMode === SyncMode.INCREMENTAL) {
-      iter = jenkins.syncBuilds(this.config, streamState ?? null);
-    } else {
-      iter = jenkins.syncBuilds(this.config, null);
-    }
-    yield* iter;
+    yield* jenkins.syncBuilds(this.config, state);
   }
 
   getUpdatedState(

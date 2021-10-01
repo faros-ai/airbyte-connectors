@@ -43,7 +43,7 @@ export class Users extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: UsersState
   ): AsyncGenerator<User, any, any> {
-    const phabricator = await Phabricator.instance(this.config, this.logger);
+    const phabricator = Phabricator.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const createdAt = state?.latestCreatedAt ?? 0;
 

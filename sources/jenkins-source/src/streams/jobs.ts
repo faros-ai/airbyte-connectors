@@ -49,15 +49,11 @@ export class Jobs extends AirbyteStreamBase {
     streamSlice?: Job,
     streamState?: any
   ): AsyncGenerator<Job, any, any> {
-    const jenkins = await Jenkins.make(this.config, this.logger);
-    if (!jenkins) return;
+    const jenkins = Jenkins.instance(this.config, this.logger);
+    const state =
+      syncMode === SyncMode.INCREMENTAL ? streamSlice || null : null;
 
-    let jobs: Job[];
-    if (syncMode === SyncMode.INCREMENTAL) {
-      jobs = await jenkins.syncJobs(this.config, streamSlice || null);
-    } else {
-      jobs = await jenkins.syncJobs(this.config, null);
-    }
+    const jobs: Job[] = await jenkins.syncJobs(this.config, state);
     for (const job of jobs) {
       yield job;
     }

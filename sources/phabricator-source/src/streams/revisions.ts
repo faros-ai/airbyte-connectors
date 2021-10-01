@@ -46,7 +46,7 @@ export class Revisions extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: RevisionsState
   ): AsyncGenerator<Revision, any, any> {
-    const phabricator = await Phabricator.instance(this.config, this.logger);
+    const phabricator = Phabricator.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const modifiedAt = state?.latestModifiedAt ?? 0;
 

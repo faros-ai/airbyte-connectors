@@ -1,8 +1,9 @@
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import jenkinsClient, {JenkinsPromisifiedAPI} from 'jenkins';
+import jenkinsClient from 'jenkins';
 import {Memoize} from 'typescript-memoize';
 import {URL} from 'url';
 import util from 'util';
+import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
 const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
@@ -51,16 +52,16 @@ export interface JenkinsState {
 
 export class Jenkins {
   constructor(
-    private readonly client: any,
+    private readonly client: any, // It should be 'JenkinsPromisifiedAPI' instead of any, but we could not make it work
     private readonly logger: AirbyteLogger
   ) {}
 
-  static parse(str: string, ...args: any[]): string {
+  private static parse(str: string, ...args: any[]): string {
     let i = 0;
     return str.replace(/%s/g, () => args[i++]);
   }
 
-  static validateInteger(
+  private static validateInteger(
     value: number
   ): [true | undefined, string | undefined] {
     if (value) {
@@ -72,44 +73,30 @@ export class Jenkins {
     return [true, undefined];
   }
 
-  static async make(
-    config: JenkinsConfig,
-    logger: AirbyteLogger
-  ): Promise<Jenkins | undefined> {
-    const [client, errorMessage] = await Jenkins.validateClient(config);
-    if (!client) {
-      logger.error(errorMessage || '');
-      return undefined;
-    }
-    return new Jenkins(client, logger);
-  }
-
-  static async validateClient(
-    config: JenkinsConfig
-  ): Promise<[JenkinsPromisifiedAPI | undefined, string | undefined]> {
+  static instance(config: JenkinsConfig, logger: AirbyteLogger): Jenkins {
     if (typeof config.server_url !== 'string') {
-      return [undefined, 'server_url: must be a string'];
+      throw new VError('server_url: must be a string');
     }
     if (typeof config.user !== 'string') {
-      return [undefined, 'User: must be a string'];
+      throw new VError('user: must be a string');
     }
     if (typeof config.token !== 'string') {
-      return [undefined, 'Token: must be a string'];
+      throw new VError('token: must be a string');
     }
     const depthCheck = Jenkins.validateInteger(config.depth);
     if (!depthCheck[0]) {
-      return [undefined, depthCheck[1]];
+      throw new VError(depthCheck[1]);
     }
     const pageSizeCheck = Jenkins.validateInteger(config.pageSize);
     if (!pageSizeCheck[0]) {
-      return [undefined, pageSizeCheck[1]];
+      throw new VError(pageSizeCheck[1]);
     }
 
-    let jenkinsUrl;
+    let jenkinsUrl: URL;
     try {
       jenkinsUrl = new URL(config.server_url);
     } catch (error) {
-      return [undefined, 'server_url: must be a valid url'];
+      throw new VError('server_url: must be a valid url');
     }
 
     jenkinsUrl.username = config.user;
@@ -121,15 +108,18 @@ export class Jenkins {
       promisify: true,
     });
 
+    return new Jenkins(client, logger);
+  }
+
+  async checkConnection(): Promise<void> {
     try {
-      await client.info();
-    } catch (error) {
-      return [
-        undefined,
-        'Please verify your server_url and user/token are correct',
-      ];
+      await this.client.info();
+    } catch (error: any) {
+      const err = error?.message ?? JSON.stringify(error);
+      throw new VError(
+        `Please verify your server_url and user/token are correct. Error: ${err}`
+      );
     }
-    return [client, undefined];
   }
 
   async *syncBuilds(
