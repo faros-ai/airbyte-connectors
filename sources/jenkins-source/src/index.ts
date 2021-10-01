@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Jenkins, JenkinsConfig} from './jenkins';
-import {JenkinsBuilds, JenkinsJobs} from './streams';
+import {Builds, Jobs} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,9 +33,6 @@ export class JenkinsSource extends AirbyteSourceBase {
     return [false, new VError(errorMessage)];
   }
   streams(config: JenkinsConfig): AirbyteStreamBase[] {
-    return [
-      new JenkinsBuilds(config, this.logger),
-      new JenkinsJobs(config, this.logger),
-    ];
+    return [new Builds(config, this.logger), new Jobs(config, this.logger)];
   }
 }

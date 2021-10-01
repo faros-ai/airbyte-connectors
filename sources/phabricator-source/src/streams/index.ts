@@ -1,3 +1,4 @@
-import {JenkinsBuilds} from './builds';
+import {Commits} from './commits';
+import {Repositories} from './repositories';
 
-export {JenkinsBuilds};
+export {Commits, Repositories};
