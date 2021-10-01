@@ -53,6 +53,6 @@ export class Commits extends AirbyteStreamBase {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const committedAt = state?.latestCommittedAt ?? 0;
 
-    yield* phabricator.getCommits(committedAt);
+    yield* phabricator.getCommits(phabricator.repositories, committedAt);
   }
 }
