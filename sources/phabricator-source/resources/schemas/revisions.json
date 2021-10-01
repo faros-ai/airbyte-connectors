@@ -110,7 +110,9 @@
           "properties": {
             "projectPHIDs": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
@@ -122,14 +124,9 @@
           "properties": {
             "subscriberPHIDs": {
               "type": "array",
-              "items": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "string"
-                }
-              ]
+              "items": {
+                "type": "string"
+              }
             },
             "subscriberCount": {
               "type": "integer"

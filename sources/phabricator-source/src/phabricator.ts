@@ -5,6 +5,7 @@ import {
   phid,
   RetSearchConstants,
 } from 'condoit/dist/interfaces/iGlobal';
+import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {trim, uniq} from 'lodash';
 import moment, {Moment} from 'moment';
@@ -26,6 +27,7 @@ export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   // Added full repository information as well
   repository?: Repository;
 }
+export type User = iUser.retUsersSearchData;
 export interface Revision extends RetSearchConstants {
   // Added full repository information as well
   repository?: Repository;
@@ -176,7 +178,7 @@ export class Phabricator {
     let constraints = {};
 
     if (filter.repoIds?.length > 0 || filter.repoNames?.length > 0) {
-      const missing = [];
+      const missing: string[] = [];
       const cachedRepos = filter.repoIds
         ? filter.repoIds.flatMap((id) => {
             const res = Phabricator.repoCacheById[id];
@@ -197,7 +199,7 @@ export class Phabricator {
         yield repo;
       }
       // We got all the repos from the cache - nothing left to do
-      if (missing.length == 0) return;
+      if (missing.length === 0) return;
       // Fetch missing repos from from the API
       constraints = filter.repoIds ? {phids: missing} : {shortNames: missing};
     }
@@ -241,7 +243,7 @@ export class Phabricator {
 
     // Only repository IDs work as constraint filter for commits,
     // therefore we do an extra lookup here
-    const repositories = [];
+    const repositories: phid[] = [];
     if (repoNames.length > 0) {
       const repos = this.getRepositories({repoNames});
       for await (const repo of repos) {
@@ -330,6 +332,38 @@ export class Phabricator {
           revision.repository = reposById[revision.fields.repositoryPHID];
           return revision;
         });
+      }
+    );
+  }
+
+  async *getUsers(
+    filter: {
+      userIds?: phid[];
+    },
+    createdAt?: number,
+    limit = this.limit
+  ): AsyncGenerator<User, any, any> {
+    const created = Math.max(createdAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching users created since ${created}`);
+
+    const constraints = {phids: filter.userIds ?? [], createdStart: created};
+
+    yield* this.paginate(
+      limit,
+      (after) => {
+        return this.client.user.search({
+          queryKey: 'all',
+          order: 'newest',
+          constraints,
+          limit,
+          after,
+        });
+      },
+      async (users) => {
+        const newUsers = users.filter(
+          (user) => user.fields.dateCreated > created
+        );
+        return newUsers;
       }
     );
   }
