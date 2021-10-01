@@ -135,7 +135,7 @@ export class Phabricator {
       limit,
       logger
     );
-    logger.debug('Created Phrabricator instance');
+    logger.debug('Created Phabricator instance');
 
     return Phabricator.phabricator;
   }
