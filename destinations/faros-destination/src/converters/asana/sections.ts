@@ -1,0 +1,38 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {AsanaConverter} from './common';
+
+export class AsanaSections extends AsanaConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
+  ];
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
+    const res: DestinationRecord[] = [];
+    const source = this.streamName.source;
+    const section = record.record.data;
+
+    res.push({
+      model: 'tms_TaskBoard',
+      record: {
+        uid: section.gid,
+        name: section.name,
+        source,
+      },
+    });
+    res.push({
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: {uid: section.gid, source},
+        project: section.project ? {uid: section.project.gid, source} : null,
+      },
+    });
+
+    return res;
+  }
+}
