@@ -2,8 +2,9 @@ import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {ErrorCodes, phid} from 'condoit/dist/interfaces/iGlobal';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import _ from 'lodash';
+import {trim, uniq} from 'lodash';
 import moment, {Moment} from 'moment';
+import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 export const PHABRICATOR_DEFAULT_LIMIT = 100;
@@ -30,55 +31,14 @@ interface PagedResult<T> extends ErrorCodes {
   };
 }
 
-export interface Commit {
-  fields: {
-    identifier: string;
-    repositoryPHID: phid;
-    author: {
-      name: string;
-      email: string;
-      raw: string;
-      epoch: number;
-      identityPHID: phid;
-      userPHID: phid;
-    };
-    // 'committer' is mispelled as 'commiter' in the original library
-    //  so I had to copy the type here until fixed -
-    // https://github.com/securisec/condoit/issues/8
-    committer: {
-      name: string;
-      email: string;
-      raw: string;
-      epoch: number;
-      identityPHID: phid;
-      userPHID: phid;
-    };
-    isImported: boolean;
-    isUnreachable: boolean;
-    auditStatus: {
-      value: string;
-      name: string;
-      closed: boolean;
-      'color.ansi': string;
-    };
-    message: string;
-    policy: {
-      view: string;
-      edit: string;
-    };
-  };
-  attachments: {
-    subscribers: {
-      subscriberPHIDs: Array<phid>;
-      subscriberCount: number;
-      viewerIsSubscribed: boolean;
-    };
-    projects: {
-      projectPHIDs: Array<phid>;
-    };
-  };
+export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
+  // Added full repository information as well
+  repository?: Repository;
 }
 export class Phabricator {
+  private static repoCacheById: Dictionary<Repository, phid> = {};
+  private static repoCacheByName: Dictionary<Repository, string> = {};
+
   constructor(
     readonly client: Condoit,
     readonly startDate: Moment,
@@ -121,64 +81,102 @@ export class Phabricator {
     if (Array.isArray(s)) return s;
     return s
       .split(sep)
-      .map(_.trim)
+      .map((v) => trim(v))
       .filter((v) => v.length > 0);
   }
 
   private async *paginate<T, R>(
     limit: number,
     fetch: (after?: string) => Promise<PagedResult<T>>,
-    process: (item: T) => R | undefined,
+    process: (data: T[]) => Promise<R[]>,
     earlyTermination = true
   ): AsyncGenerator<R, any, any> {
     let after: string = null;
     let res: PagedResult<T> | undefined;
     do {
       res = await fetch(after);
-      after = res.result.cursor.after;
-      if (res.error_code || res.error_info) {
-        throw new VError(`${res.error_code}: ${res.error_info}`);
+      if (res?.error_code || res?.error_info) {
+        throw new VError(`${res?.error_code}: ${res?.error_info}`);
       }
-      res.result.data;
       let count = 0;
-      for (const data of res.result.data) {
-        const item = process(data);
+      const processed = await process(res?.result?.data ?? []);
+      for (const item of processed) {
         if (item) {
           count++;
           yield item;
         }
       }
       if (earlyTermination && count < limit) return;
+      after = res?.result?.cursor?.after;
     } while (after);
   }
 
   async *getRepositories(
+    filter: {
+      repoIds?: phid[];
+      repoNames?: string[];
+    },
     createdAt?: number,
     limit = this.limit
   ): AsyncGenerator<Repository, any, any> {
     const created = Math.max(createdAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching repositories created since ${created}`);
 
+    const attachments = {projects: false, uris: true, metrics: true};
+    let constraints = {};
+
+    if (filter.repoIds?.length > 0 || filter.repoNames?.length > 0) {
+      const missing = [];
+      const cachedRepos = filter.repoIds
+        ? filter.repoIds.flatMap((id) => {
+            const res = Phabricator.repoCacheById[id];
+            if (!res) missing.push(id);
+            return res ? [res] : [];
+          })
+        : filter.repoNames.flatMap((name) => {
+            const res = Phabricator.repoCacheByName[name];
+            if (!res) missing.push(name);
+            return res ? [res] : [];
+          });
+
+      this.logger.debug(
+        `Retrieved ${cachedRepos.length} repos from cache (${missing.length} missed)`
+      );
+      // Return all the cached repositories
+      for (const repo of cachedRepos) {
+        yield repo;
+      }
+      // We got all the repos from the cache - nothing left to do
+      if (missing.length == 0) return;
+      // Fetch missing repos from from the API
+      constraints = filter.repoIds ? {phids: missing} : {shortNames: missing};
+    }
+
     yield* this.paginate(
       limit,
-      (after) =>
-        this.client.diffusion.repositorySearch({
+      (after) => {
+        return this.client.diffusion.repositorySearch({
           queryKey: 'all',
           order: 'newest',
-          constraints: {
-            shortNames: this.repositories,
-          },
-          attachments: {
-            projects: false,
-            uris: true,
-            metrics: true,
-          },
+          constraints,
+          attachments,
           limit,
           after,
-        }),
-      (item) => {
-        if (item.fields.dateCreated >= created) return item;
-        return undefined;
+        });
+      },
+      async (repos) => {
+        const newRepos = repos.filter(
+          (repo) => repo.fields.dateCreated > created
+        );
+        // Cache repositories for other queries
+        for (const repo of newRepos) {
+          this.logger.debug(
+            `Cached repo ${repo.fields.shortName} (${repo.phid})`
+          );
+          Phabricator.repoCacheById[repo.phid] = repo;
+          Phabricator.repoCacheByName[repo.fields.shortName] = repo;
+        }
+        return newRepos;
       }
     );
   }
@@ -187,14 +185,20 @@ export class Phabricator {
     committedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Commit, any, any> {
-    const repositoryIds = [];
-    if (this.repositories.length > 0) {
-      for await (const repo of this.getRepositories()) {
-        repositoryIds.push(repo.phid);
-      }
-    }
     const committed = Math.max(committedAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching commits committed since ${committedAt}`);
+
+    // Only repository IDs work as constraint filter for commits,
+    // therefore we do an extra lookup here
+    const repositories = [];
+    if (this.repositories.length > 0) {
+      const repos = this.getRepositories({repoNames: this.repositories});
+      for await (const repo of repos) {
+        repositories.push(repo.phid);
+      }
+    }
+    const constraints = {repositories, unreachable: false};
+    const attachments = {projects: false, subscribers: false};
 
     yield* this.paginate(
       limit,
@@ -202,22 +206,29 @@ export class Phabricator {
         this.client.diffusion.commitSearch({
           queryKey: 'all',
           order: 'newest',
-          constraints: {
-            repositories: repositoryIds,
-            unreachable: false,
-          },
-          attachments: {
-            projects: false,
-            subscribers: false,
-          },
+          constraints,
+          attachments,
           limit,
           after,
         }),
+      async (commits) => {
+        const newCommits = commits
+          .map((commit) => commit as Commit)
+          .filter((commit) => commit.fields.committer.epoch > committed);
 
-      (item) => {
-        const commit = item as any as Commit;
-        if (commit.fields.committer.epoch >= committed) return commit;
-        return undefined;
+        // Extend commits with full repository information if present
+        const newCommitRepoIds = uniq(
+          newCommits.map((c) => c.fields.repositoryPHID)
+        );
+        const newCommitRepos: Dictionary<Repository> = {};
+        const repos = this.getRepositories({repoIds: newCommitRepoIds});
+        for await (const repo of repos) {
+          newCommitRepos[repo.phid] = repo;
+        }
+        return newCommits.map((commit) => {
+          commit.repository = newCommitRepos[commit.fields.repositoryPHID];
+          return commit;
+        });
       }
     );
   }

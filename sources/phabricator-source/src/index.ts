@@ -10,8 +10,7 @@ import {
 import VError from 'verror';
 
 import {Phabricator, PhabricatorConfig} from './phabricator';
-import {Repositories} from './streams';
-import {Commits} from './streams/commits';
+import {Commits, Repositories} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
