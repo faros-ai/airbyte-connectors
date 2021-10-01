@@ -26,7 +26,11 @@ class PhabricatorSource extends AirbyteSourceBase {
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      await Phabricator.instance(config as PhabricatorConfig, this.logger);
+      const phabricator = Phabricator.instance(
+        config as PhabricatorConfig,
+        this.logger
+      );
+      await phabricator.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

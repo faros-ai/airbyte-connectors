@@ -1,4 +1,3 @@
-import AsyncLock from 'async-lock';
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {
@@ -89,8 +88,6 @@ interface PagedResult<T> extends ErrorCodes {
 }
 
 export class Phabricator {
-  private static lock = new AsyncLock();
-  private static phabricator: Phabricator;
   private static repoCacheById: Dictionary<Repository, phid> = {};
   private static repoCacheByName: Dictionary<Repository, string> = {};
 
@@ -102,52 +99,25 @@ export class Phabricator {
     readonly logger: AirbyteLogger
   ) {}
 
-  /**
-   * Get or create a Phabricator instance
-   */
-  static async instance(
+  static instance(
     config: PhabricatorConfig,
     logger: AirbyteLogger
-  ): Promise<Phabricator> {
-    // Return cached Phabricator instance
-    if (Phabricator.phabricator) return Phabricator.phabricator;
+  ): Phabricator {
+    if (!config.server_url) {
+      throw new VError('server_url is null or empty');
+    }
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
+    const repositories = Phabricator.toStringArray(config.repositories);
+    const limit = config.limit ?? PHABRICATOR_DEFAULT_LIMIT;
+    const client = new Condoit(config.server_url, config.token);
 
-    return Phabricator.lock.acquire('Phabricator', async () => {
-      // Return cached Phabricator instance
-      if (Phabricator.phabricator) return Phabricator.phabricator;
-
-      if (!config.server_url) {
-        throw new VError('server_url is null or empty');
-      }
-      if (!config.start_date) {
-        throw new VError('start_date is null or empty');
-      }
-      const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-      if (`${startDate.toDate()}` === 'Invalid Date') {
-        throw new VError('start_date is invalid: %s', config.start_date);
-      }
-      const repositories = Phabricator.toStringArray(config.repositories);
-      const limit = config.limit ?? PHABRICATOR_DEFAULT_LIMIT;
-      const client = new Condoit(config.server_url, config.token);
-      try {
-        await client.user.whoami();
-      } catch (err: any) {
-        if (err.error_code || err.error_info) {
-          throw new VError(`${err.error_code}: ${err.error_info}`);
-        }
-        throw new VError(err.message ?? JSON.stringify(err));
-      }
-
-      Phabricator.phabricator = new Phabricator(
-        client,
-        startDate,
-        repositories,
-        limit,
-        logger
-      );
-
-      return Phabricator.phabricator;
-    });
+    return new Phabricator(client, startDate, repositories, limit, logger);
   }
 
   private static toStringArray(s: any, sep = ','): string[] {
@@ -183,6 +153,17 @@ export class Phabricator {
       if (earlyTermination && count < limit) return;
       after = res?.result?.cursor?.after;
     } while (after);
+  }
+
+  async checkConnection(): Promise<void> {
+    try {
+      await this.client.user.whoami();
+    } catch (err: any) {
+      if (err.error_code || err.error_info) {
+        throw new VError(`${err.error_code}: ${err.error_info}`);
+      }
+      throw new VError(err.message ?? JSON.stringify(err));
+    }
   }
 
   async *getRepositories(
