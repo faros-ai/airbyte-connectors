@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Phabricator, PhabricatorConfig} from './phabricator';
-import {Commits, Repositories} from './streams';
+import {Commits, Repositories, Revisions, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -26,7 +26,11 @@ class PhabricatorSource extends AirbyteSourceBase {
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      await Phabricator.make(config as PhabricatorConfig, this.logger);
+      const phabricator = Phabricator.instance(
+        config as PhabricatorConfig,
+        this.logger
+      );
+      await phabricator.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -36,6 +40,8 @@ class PhabricatorSource extends AirbyteSourceBase {
     return [
       new Repositories(config as PhabricatorConfig, this.logger),
       new Commits(config as PhabricatorConfig, this.logger),
+      new Revisions(config as PhabricatorConfig, this.logger),
+      new Users(config as PhabricatorConfig, this.logger),
     ];
   }
 }

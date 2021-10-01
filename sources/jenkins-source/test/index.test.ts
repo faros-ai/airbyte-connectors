@@ -27,7 +27,7 @@ describe('index', () => {
 
   test('spec', async () => {
     const source = new sut.JenkinsSource(logger);
-    expect(source.spec()).resolves.toStrictEqual(
+    await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
   });
@@ -40,14 +40,14 @@ describe('index', () => {
       info: jest.fn().mockRejectedValue({}),
     } as any);
     const source = new sut.JenkinsSource(logger);
-    expect(
+    await expect(
       source.checkConnection({
         user: '123',
         token: 'token',
         server_url: 'http://example.com',
       })
     ).resolves.toStrictEqual([true, undefined]);
-    expect(
+    await expect(
       source.checkConnection({
         user: '123',
         token: 'token',
@@ -55,13 +55,15 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('Please verify your server_url and user/token are correct'),
+      new VError(
+        'Please verify your server_url and user/token are correct. Error: {}'
+      ),
     ]);
-    expect(source.checkConnection({} as any)).resolves.toStrictEqual([
+    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
       new VError('server_url: must be a string'),
     ]);
-    expect(
+    await expect(
       source.checkConnection({server_url: '111', user: '', token: ''})
     ).resolves.toStrictEqual([
       false,
@@ -128,7 +130,7 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - return undefined if config not correct', async () => {
+  test('streams - error out if config not correct', async () => {
     mocked(jenkinsClient).mockReturnValue({
       info: jest.fn().mockResolvedValue({}),
     } as any);
@@ -136,8 +138,12 @@ describe('index', () => {
     const [jobStream, buildStream] = source.streams({} as any);
     const jobIter = jobStream.readRecords(SyncMode.FULL_REFRESH);
     const buildIter = buildStream.readRecords(SyncMode.FULL_REFRESH);
-    expect((await jobIter.next()).value).toBeUndefined();
-    expect((await buildIter.next()).value).toBeUndefined();
+    await expect(jobIter.next()).rejects.toStrictEqual(
+      new VError('server_url: must be a string')
+    );
+    await expect(buildIter.next()).rejects.toStrictEqual(
+      new VError('server_url: must be a string')
+    );
   });
 
   test('streams - builds, use incremental sync mode', async () => {

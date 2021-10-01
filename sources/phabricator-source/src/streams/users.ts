@@ -6,13 +6,13 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Phabricator, PhabricatorConfig, Repository} from '../phabricator';
+import {Phabricator, PhabricatorConfig, User} from '../phabricator';
 
-export interface RepositoriesState {
+export interface UsersState {
   latestCreatedAt: number;
 }
 
-export class Repositories extends AirbyteStreamBase {
+export class Users extends AirbyteStreamBase {
   constructor(
     private readonly config: PhabricatorConfig,
     protected readonly logger: AirbyteLogger
@@ -20,7 +20,7 @@ export class Repositories extends AirbyteStreamBase {
     super(logger);
   }
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/repositories.json');
+    return require('../../resources/schemas/users.json');
   }
   get primaryKey(): StreamKey {
     throw 'phid';
@@ -29,9 +29,9 @@ export class Repositories extends AirbyteStreamBase {
     return ['fields', 'dateCreated'];
   }
   getUpdatedState(
-    currentStreamState: RepositoriesState,
-    latestRecord: Repository
-  ): RepositoriesState {
+    currentStreamState: UsersState,
+    latestRecord: User
+  ): UsersState {
     const latestCreated = currentStreamState?.latestCreatedAt ?? 0;
     const recordCreated = latestRecord.fields?.dateCreated ?? 0;
     currentStreamState.latestCreatedAt = Math.max(latestCreated, recordCreated);
@@ -41,20 +41,12 @@ export class Repositories extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: RepositoriesState
-  ): AsyncGenerator<Repository, any, any> {
+    streamState?: UsersState
+  ): AsyncGenerator<User, any, any> {
     const phabricator = Phabricator.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const createdAt = state?.latestCreatedAt ?? 0;
 
-    if (phabricator.repositories.length > 0) {
-      this.logger.info(
-        `Fetching repositories: ${phabricator.repositories.join(',')}`
-      );
-    }
-    yield* phabricator.getRepositories(
-      {repoNames: phabricator.repositories},
-      createdAt
-    );
+    yield* phabricator.getUsers({}, createdAt);
   }
 }
