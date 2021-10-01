@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {JenkinsCommon} from './common';
+import {JenkinsCommon, Job} from './common';
 
 export class JenkinsJobs extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -18,7 +18,7 @@ export class JenkinsJobs extends Converter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-    const job = record.record.data;
+    const job = record.record.data as Job;
     
     const jenkinsUrl = JenkinsCommon.parseJenkinsUrl(job.url);
     if (!jenkinsUrl) return [];

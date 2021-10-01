@@ -154,7 +154,7 @@ describe('jenkins', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__github__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__jenkins__bad', {bad: 'dummy'})
       ) + os.EOL,
       'utf8'
     );
@@ -164,7 +164,7 @@ describe('jenkins', () => {
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch('Errored 1 records');
     const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__github__bad');
+    expect(stderr).toMatch('Undefined stream mytestsource__jenkins__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 

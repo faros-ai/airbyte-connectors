@@ -1,5 +1,4 @@
 import {toLower} from 'lodash';
-import {Dictionary} from 'ts-essentials';
 import {URL} from 'url';
 
 import {DestinationRecord} from '../converter';
@@ -7,6 +6,12 @@ import {DestinationRecord} from '../converter';
 interface JenkinsUrl {
   hostname: string;
   url: string;
+}
+
+export interface Job {
+  readonly fullName: string;
+  readonly name: string;
+  readonly url: string;
 }
 
 interface OrganizationKey {
@@ -31,7 +36,7 @@ export class JenkinsCommon {
     };
   }
   static cicd_Pipeline(
-    job: Dictionary<any>,
+    job: Job,
     organization: OrganizationKey
   ): DestinationRecord {
     return {
