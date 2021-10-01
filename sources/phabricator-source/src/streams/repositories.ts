@@ -28,9 +28,6 @@ export class Repositories extends AirbyteStreamBase {
   get cursorField(): string[] {
     return ['fields', 'dateCreated'];
   }
-  get stateCheckpointInterval(): number {
-    return 5 * this.config.limit;
-  }
   getUpdatedState(
     currentStreamState: RepositoriesState,
     latestRecord: Repository

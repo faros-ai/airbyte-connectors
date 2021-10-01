@@ -114,7 +114,13 @@ export class Phabricator {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const repositories = Phabricator.toStringArray(config.repositories);
-    const limit = config.limit ?? PHABRICATOR_DEFAULT_LIMIT;
+    const limit =
+      config.limit &&
+      config.limit > 0 &&
+      config.limit <= PHABRICATOR_DEFAULT_LIMIT
+        ? config.limit
+        : PHABRICATOR_DEFAULT_LIMIT;
+
     const client = new Condoit(config.server_url, config.token);
 
     return new Phabricator(client, startDate, repositories, limit, logger);

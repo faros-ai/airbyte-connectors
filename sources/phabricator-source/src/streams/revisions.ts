@@ -28,9 +28,6 @@ export class Revisions extends AirbyteStreamBase {
   get cursorField(): string[] {
     return ['fields', 'dateModified'];
   }
-  get stateCheckpointInterval(): number {
-    return 5 * this.config.limit;
-  }
   getUpdatedState(
     currentStreamState: RevisionsState,
     latestRecord: Revision
