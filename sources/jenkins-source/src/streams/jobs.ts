@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_PAGE_SIZE, Jenkins, JenkinsConfig, Job} from '../jenkins';
+import {Jenkins, JenkinsConfig, Job} from '../jenkins';
 
 export class Jobs extends AirbyteStreamBase {
   constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
@@ -21,9 +21,6 @@ export class Jobs extends AirbyteStreamBase {
   }
   get cursorField(): string | string[] {
     return ['url'];
-  }
-  get stateCheckpointInterval(): number {
-    return 10 * (this.config.pageSize ?? DEFAULT_PAGE_SIZE);
   }
   async *streamSlices(
     syncMode: SyncMode,
@@ -52,15 +49,11 @@ export class Jobs extends AirbyteStreamBase {
     streamSlice?: Job,
     streamState?: any
   ): AsyncGenerator<Job, any, any> {
-    const jenkins = await Jenkins.make(this.config, this.logger);
-    if (!jenkins) return;
+    const jenkins = Jenkins.instance(this.config, this.logger);
+    const state =
+      syncMode === SyncMode.INCREMENTAL ? streamSlice || null : null;
 
-    let jobs: Job[];
-    if (syncMode === SyncMode.INCREMENTAL) {
-      jobs = await jenkins.syncJobs(this.config, streamSlice || null);
-    } else {
-      jobs = await jenkins.syncJobs(this.config, null);
-    }
+    const jobs: Job[] = await jenkins.syncJobs(this.config, state);
     for (const job of jobs) {
       yield job;
     }

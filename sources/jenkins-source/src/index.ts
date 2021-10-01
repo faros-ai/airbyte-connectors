@@ -26,11 +26,13 @@ export class JenkinsSource extends AirbyteSourceBase {
   async checkConnection(
     config: JenkinsConfig
   ): Promise<[boolean, VError | undefined]> {
-    const [client, errorMessage] = await Jenkins.validateClient(config);
-    if (client) {
-      return [true, undefined];
+    try {
+      const jenkins = Jenkins.instance(config as JenkinsConfig, this.logger);
+      await jenkins.checkConnection();
+    } catch (err: any) {
+      return [false, err];
     }
-    return [false, new VError(errorMessage)];
+    return [true, undefined];
   }
   streams(config: JenkinsConfig): AirbyteStreamBase[] {
     return [new Builds(config, this.logger), new Jobs(config, this.logger)];

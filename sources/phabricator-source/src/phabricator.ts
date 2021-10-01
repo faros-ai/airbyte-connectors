@@ -1,6 +1,11 @@
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
-import {ErrorCodes, phid} from 'condoit/dist/interfaces/iGlobal';
+import {
+  ErrorCodes,
+  phid,
+  RetSearchConstants,
+} from 'condoit/dist/interfaces/iGlobal';
+import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {trim, uniq} from 'lodash';
 import moment, {Moment} from 'moment';
@@ -18,6 +23,57 @@ export interface PhabricatorConfig {
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
+export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
+  // Added full repository information as well
+  repository?: Repository;
+}
+export type User = iUser.retUsersSearchData;
+export interface Revision extends RetSearchConstants {
+  // Added full repository information as well
+  repository?: Repository;
+  fields: {
+    title: string;
+    uri: string;
+    authorPHID: string;
+    status: {
+      value: string;
+      name: string;
+      closed: boolean;
+      'color.ansi': string;
+    };
+    repositoryPHID: string;
+    diffPHID: string;
+    summary: string;
+    testPlan: string;
+    isDraft: boolean;
+    holdAsDraft: boolean;
+    dateCreated: number;
+    dateModified: number;
+    policy: {
+      view: string;
+      edit: string;
+    };
+  };
+  attachments: {
+    projects: {
+      projectPHIDs: string[];
+    };
+    subscribers: {
+      subscriberPHIDs: string[];
+      subscriberCount: number;
+      viewerIsSubscribed: boolean;
+    };
+    reviewers: {
+      reviewers: Reviewer[];
+    };
+  };
+}
+export interface Reviewer {
+  reviewerPHID: string;
+  status: string;
+  isBlocking: boolean;
+  actorPHID: string;
+}
 
 interface PagedResult<T> extends ErrorCodes {
   result: {
@@ -31,10 +87,6 @@ interface PagedResult<T> extends ErrorCodes {
   };
 }
 
-export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
-  // Added full repository information as well
-  repository?: Repository;
-}
 export class Phabricator {
   private static repoCacheById: Dictionary<Repository, phid> = {};
   private static repoCacheByName: Dictionary<Repository, string> = {};
@@ -47,10 +99,10 @@ export class Phabricator {
     readonly logger: AirbyteLogger
   ) {}
 
-  static async make(
+  static instance(
     config: PhabricatorConfig,
     logger: AirbyteLogger
-  ): Promise<Phabricator> {
+  ): Phabricator {
     if (!config.server_url) {
       throw new VError('server_url is null or empty');
     }
@@ -62,16 +114,14 @@ export class Phabricator {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const repositories = Phabricator.toStringArray(config.repositories);
-    const limit = config.limit ?? PHABRICATOR_DEFAULT_LIMIT;
+    const limit =
+      config.limit &&
+      config.limit > 0 &&
+      config.limit <= PHABRICATOR_DEFAULT_LIMIT
+        ? config.limit
+        : PHABRICATOR_DEFAULT_LIMIT;
+
     const client = new Condoit(config.server_url, config.token);
-    try {
-      await client.user.whoami();
-    } catch (err: any) {
-      if (err.error_code || err.error_info) {
-        throw new VError(`${err.error_code}: ${err.error_info}`);
-      }
-      throw new VError(err.message ?? JSON.stringify(err));
-    }
 
     return new Phabricator(client, startDate, repositories, limit, logger);
   }
@@ -111,6 +161,17 @@ export class Phabricator {
     } while (after);
   }
 
+  async checkConnection(): Promise<void> {
+    try {
+      await this.client.user.whoami();
+    } catch (err: any) {
+      if (err.error_code || err.error_info) {
+        throw new VError(`${err.error_code}: ${err.error_info}`);
+      }
+      throw new VError(err.message ?? JSON.stringify(err));
+    }
+  }
+
   async *getRepositories(
     filter: {
       repoIds?: phid[];
@@ -126,7 +187,7 @@ export class Phabricator {
     let constraints = {};
 
     if (filter.repoIds?.length > 0 || filter.repoNames?.length > 0) {
-      const missing = [];
+      const missing: string[] = [];
       const cachedRepos = filter.repoIds
         ? filter.repoIds.flatMap((id) => {
             const res = Phabricator.repoCacheById[id];
@@ -147,7 +208,7 @@ export class Phabricator {
         yield repo;
       }
       // We got all the repos from the cache - nothing left to do
-      if (missing.length == 0) return;
+      if (missing.length === 0) return;
       // Fetch missing repos from from the API
       constraints = filter.repoIds ? {phids: missing} : {shortNames: missing};
     }
@@ -182,6 +243,7 @@ export class Phabricator {
   }
 
   async *getCommits(
+    repoNames: string[],
     committedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Commit, any, any> {
@@ -190,9 +252,9 @@ export class Phabricator {
 
     // Only repository IDs work as constraint filter for commits,
     // therefore we do an extra lookup here
-    const repositories = [];
-    if (this.repositories.length > 0) {
-      const repos = this.getRepositories({repoNames: this.repositories});
+    const repositories: phid[] = [];
+    if (repoNames.length > 0) {
+      const repos = this.getRepositories({repoNames});
       for await (const repo of repos) {
         repositories.push(repo.phid);
       }
@@ -217,18 +279,100 @@ export class Phabricator {
           .filter((commit) => commit.fields.committer.epoch > committed);
 
         // Extend commits with full repository information if present
-        const newCommitRepoIds = uniq(
-          newCommits.map((c) => c.fields.repositoryPHID)
-        );
-        const newCommitRepos: Dictionary<Repository> = {};
-        const repos = this.getRepositories({repoIds: newCommitRepoIds});
+        const repoIds = uniq(newCommits.map((c) => c.fields.repositoryPHID));
+        const reposById: Dictionary<Repository> = {};
+        const repos = this.getRepositories({repoIds});
         for await (const repo of repos) {
-          newCommitRepos[repo.phid] = repo;
+          reposById[repo.phid] = repo;
         }
         return newCommits.map((commit) => {
-          commit.repository = newCommitRepos[commit.fields.repositoryPHID];
+          commit.repository = reposById[commit.fields.repositoryPHID];
           return commit;
         });
+      }
+    );
+  }
+
+  async *getRevisions(
+    repoNames: string[],
+    modifiedAt?: number,
+    limit = this.limit
+  ): AsyncGenerator<Revision, any, any> {
+    const modified = Math.max(modifiedAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching revisions modified since ${modified}`);
+
+    // Only repository IDs work as constraint filter for revisions,
+    // therefore we do an extra lookup here
+    const repositoryPHIDs = [];
+    if (repoNames.length > 0) {
+      const repos = this.getRepositories({repoNames});
+      for await (const repo of repos) {
+        repositoryPHIDs.push(repo.phid);
+      }
+    }
+
+    const constraints = {repositoryPHIDs, modifiedStart: modified};
+    const attachments = {projects: false, subscribers: true, reviewers: true};
+
+    yield* this.paginate(
+      limit,
+      (after) =>
+        this.client.differential.revisionSearch({
+          queryKey: 'all',
+          order: 'updated',
+          constraints,
+          attachments,
+          limit,
+          after,
+        }),
+      async (revisions) => {
+        const newRevisions = revisions
+          .map((revision) => revision as any as Revision)
+          .filter((revision) => revision.fields.dateModified > modified);
+
+        // Extend revisions with full repository information if present
+        const repoIds = uniq(newRevisions.map((c) => c.fields.repositoryPHID));
+        const reposById: Dictionary<Repository> = {};
+        const repos = this.getRepositories({repoIds});
+        for await (const repo of repos) {
+          reposById[repo.phid] = repo;
+        }
+        return newRevisions.map((revision) => {
+          revision.repository = reposById[revision.fields.repositoryPHID];
+          return revision;
+        });
+      }
+    );
+  }
+
+  async *getUsers(
+    filter: {
+      userIds?: phid[];
+    },
+    createdAt?: number,
+    limit = this.limit
+  ): AsyncGenerator<User, any, any> {
+    const created = Math.max(createdAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching users created since ${created}`);
+
+    const constraints = {phids: filter.userIds ?? [], createdStart: created};
+
+    yield* this.paginate(
+      limit,
+      (after) => {
+        return this.client.user.search({
+          queryKey: 'all',
+          order: 'newest',
+          constraints,
+          limit,
+          after,
+        });
+      },
+      async (users) => {
+        const newUsers = users.filter(
+          (user) => user.fields.dateCreated > created
+        );
+        return newUsers;
       }
     );
   }

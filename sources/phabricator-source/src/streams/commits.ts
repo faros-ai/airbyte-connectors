@@ -28,9 +28,6 @@ export class Commits extends AirbyteStreamBase {
   get cursorField(): string[] {
     return ['fields', 'committer', 'epoch'];
   }
-  get stateCheckpointInterval(): number {
-    return 5 * this.config.limit;
-  }
   getUpdatedState(
     currentStreamState: CommitsState,
     latestRecord: Commit
@@ -49,10 +46,10 @@ export class Commits extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: CommitsState
   ): AsyncGenerator<Commit, any, any> {
-    const phabricator = await Phabricator.make(this.config, this.logger);
+    const phabricator = Phabricator.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const committedAt = state?.latestCommittedAt ?? 0;
 
-    yield* phabricator.getCommits(committedAt);
+    yield* phabricator.getCommits(phabricator.repositories, committedAt);
   }
 }
