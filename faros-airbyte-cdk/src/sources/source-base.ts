@@ -135,7 +135,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
       } catch (e: any) {
         this.logger.error(
           `Encountered an error while reading stream ${this.name}: ${
-            e.message ?? e
+            e.message ?? JSON.stringify(e)
           }`
         );
         throw e;

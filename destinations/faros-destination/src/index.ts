@@ -399,7 +399,9 @@ class FarosDestination extends AirbyteDestination {
       processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
-      this.logger.error(`Error processing input: ${e.message ?? e}`);
+      this.logger.error(
+        `Error processing input: ${e.message ?? JSON.stringify(e)}`
+      );
       if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
         throw e;
       }

@@ -44,6 +44,18 @@
         ],
         "description": "List of Phabricator repositories, e.g. `repo-1,repo-2`. If none provided would sync all repositories."
       },
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Projects",
+        "examples": [
+          "my_project_1",
+          "my_project_2"
+        ],
+        "description": "List of Phabricator projects slugs, e.g. `my_project_1,my_project_2`. Slugs are the same as project hashtags. If none provided would sync all projects."
+      },
       "limit": {
         "type": "integer",
         "minimum": 1,
