@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {
@@ -108,8 +109,16 @@ export class Phabricator {
   ): Phabricator {
     if (Phabricator.phabricator) return Phabricator.phabricator;
 
+    let baseURL: string;
     if (!config.server_url) {
       throw new VError('server_url is null or empty');
+    }
+    try {
+      baseURL = new URL('/api', config.server_url).toString();
+    } catch (e: any) {
+      throw new VError(
+        `server_url is invalid - ${e.message ?? JSON.stringify(e)}`
+      );
     }
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
@@ -126,7 +135,8 @@ export class Phabricator {
         ? config.limit
         : PHABRICATOR_DEFAULT_LIMIT;
 
-    const client = new Condoit(config.server_url, config.token);
+    const axios = Axios.create({baseURL, timeout: 30000});
+    const client = new Condoit(config.server_url, config.token, {}, axios);
 
     Phabricator.phabricator = new Phabricator(
       client,
