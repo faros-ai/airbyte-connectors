@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import {Condoit} from 'condoit';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {
@@ -5,6 +6,7 @@ import {
   phid,
   RetSearchConstants,
 } from 'condoit/dist/interfaces/iGlobal';
+import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {trim, uniq} from 'lodash';
@@ -18,7 +20,8 @@ export interface PhabricatorConfig {
   readonly server_url: string;
   readonly token: string;
   readonly start_date: string;
-  readonly repositories: string;
+  readonly repositories: string | string[];
+  readonly projects: string | string[];
   readonly limit: number;
 }
 
@@ -28,6 +31,7 @@ export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: Repository;
 }
 export type User = iUser.retUsersSearchData;
+export type Project = iProject.retProjectSearchData;
 export interface Revision extends RetSearchConstants {
   // Added full repository information as well
   repository?: Repository;
@@ -88,6 +92,7 @@ interface PagedResult<T> extends ErrorCodes {
 }
 
 export class Phabricator {
+  private static phabricator: Phabricator = null;
   private static repoCacheById: Dictionary<Repository, phid> = {};
   private static repoCacheByName: Dictionary<Repository, string> = {};
 
@@ -95,6 +100,7 @@ export class Phabricator {
     readonly client: Condoit,
     readonly startDate: Moment,
     readonly repositories: string[],
+    readonly projects: string[],
     readonly limit: number,
     readonly logger: AirbyteLogger
   ) {}
@@ -103,8 +109,18 @@ export class Phabricator {
     config: PhabricatorConfig,
     logger: AirbyteLogger
   ): Phabricator {
+    if (Phabricator.phabricator) return Phabricator.phabricator;
+
+    let baseURL: string;
     if (!config.server_url) {
       throw new VError('server_url is null or empty');
+    }
+    try {
+      baseURL = new URL('/api', config.server_url).toString();
+    } catch (e: any) {
+      throw new VError(
+        `server_url is invalid - ${e.message ?? JSON.stringify(e)}`
+      );
     }
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
@@ -114,6 +130,7 @@ export class Phabricator {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const repositories = Phabricator.toStringArray(config.repositories);
+    const projects = Phabricator.toStringArray(config.projects);
     const limit =
       config.limit &&
       config.limit > 0 &&
@@ -121,9 +138,20 @@ export class Phabricator {
         ? config.limit
         : PHABRICATOR_DEFAULT_LIMIT;
 
-    const client = new Condoit(config.server_url, config.token);
+    const axios = Axios.create({baseURL, timeout: 30000});
+    const client = new Condoit(config.server_url, config.token, {}, axios);
 
-    return new Phabricator(client, startDate, repositories, limit, logger);
+    Phabricator.phabricator = new Phabricator(
+      client,
+      startDate,
+      repositories,
+      projects,
+      limit,
+      logger
+    );
+    logger.debug('Created Phabricator instance');
+
+    return Phabricator.phabricator;
   }
 
   private static toStringArray(s: any, sep = ','): string[] {
@@ -183,7 +211,7 @@ export class Phabricator {
     const created = Math.max(createdAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching repositories created since ${created}`);
 
-    const attachments = {projects: false, uris: true, metrics: true};
+    const attachments = {projects: true, uris: true, metrics: true};
     let constraints = {};
 
     if (filter.repoIds?.length > 0 || filter.repoNames?.length > 0) {
@@ -312,7 +340,7 @@ export class Phabricator {
     }
 
     const constraints = {repositoryPHIDs, modifiedStart: modified};
-    const attachments = {projects: false, subscribers: true, reviewers: true};
+    const attachments = {projects: true, subscribers: true, reviewers: true};
 
     yield* this.paginate(
       limit,
@@ -373,6 +401,40 @@ export class Phabricator {
           (user) => user.fields.dateCreated > created
         );
         return newUsers;
+      }
+    );
+  }
+
+  async *getProjects(
+    filter: {
+      slugs?: string[];
+    },
+    createdAt?: number,
+    limit = this.limit
+  ): AsyncGenerator<Project, any, any> {
+    const created = Math.max(createdAt ?? 0, this.startDate.unix());
+    this.logger.debug(`Fetching projects created since ${created}`);
+
+    const constraints = {slugs: filter.slugs ?? []};
+    const attachments = {members: true, ancestors: true, watchers: true};
+
+    yield* this.paginate(
+      limit,
+      (after) => {
+        return this.client.project.search({
+          queryKey: 'all',
+          order: 'newest' as any,
+          constraints,
+          attachments,
+          limit,
+          after,
+        });
+      },
+      async (projects) => {
+        const newProjects = projects.filter(
+          (project) => project.fields.dateCreated > created
+        );
+        return newProjects;
       }
     );
   }
