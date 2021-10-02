@@ -20,7 +20,8 @@ export interface PhabricatorConfig {
   readonly server_url: string;
   readonly token: string;
   readonly start_date: string;
-  readonly repositories: string;
+  readonly repositories: string | string[];
+  readonly projects: string | string[];
   readonly limit: number;
 }
 
@@ -99,6 +100,7 @@ export class Phabricator {
     readonly client: Condoit,
     readonly startDate: Moment,
     readonly repositories: string[],
+    readonly projects: string[],
     readonly limit: number,
     readonly logger: AirbyteLogger
   ) {}
@@ -128,6 +130,7 @@ export class Phabricator {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const repositories = Phabricator.toStringArray(config.repositories);
+    const projects = Phabricator.toStringArray(config.projects);
     const limit =
       config.limit &&
       config.limit > 0 &&
@@ -142,6 +145,7 @@ export class Phabricator {
       client,
       startDate,
       repositories,
+      projects,
       limit,
       logger
     );
@@ -403,7 +407,7 @@ export class Phabricator {
 
   async *getProjects(
     filter: {
-      projectIds?: phid[];
+      slugs?: string[];
     },
     createdAt?: number,
     limit = this.limit
@@ -411,7 +415,7 @@ export class Phabricator {
     const created = Math.max(createdAt ?? 0, this.startDate.unix());
     this.logger.debug(`Fetching projects created since ${created}`);
 
-    const constraints = {phids: filter.projectIds ?? []};
+    const constraints = {slugs: filter.slugs ?? []};
     const attachments = {members: true, ancestors: true, watchers: true};
 
     yield* this.paginate(

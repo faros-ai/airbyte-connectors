@@ -47,6 +47,6 @@ export class Projects extends AirbyteStreamBase {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const createdAt = state?.latestCreatedAt ?? 0;
 
-    yield* phabricator.getProjects({}, createdAt);
+    yield* phabricator.getProjects({slugs: phabricator.projects}, createdAt);
   }
 }
