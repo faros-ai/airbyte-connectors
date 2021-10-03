@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk'
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
@@ -22,8 +23,8 @@ export class AsanaProjects extends AsanaConverter {
           0,
           AsanaCommon.MAX_DESCRIPTION_LENGTH
         ),
-        createdAt: project.created_at,
-        updatedAt: project.modified_at,
+        createdAt: Utils.toDate(project.created_at),
+        updatedAt: Utils.toDate(project.modified_at),
         source,
       }
     }

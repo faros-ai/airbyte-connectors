@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
@@ -74,9 +75,9 @@ export class AsanaTasks extends AsanaConverter {
           typeof status === 'string' ? this.toTmsTaskStatus(status) : null,
         points: typeof points === 'number' ? points : null,
         additionalFields: task.custom_fields.map((f) => this.toTaskField(f)),
-        createdAt: task.created_at,
-        updatedAt: task.modified_at,
-        statusChangedAt: task.modified_at,
+        createdAt: Utils.toDate(task.created_at),
+        updatedAt: Utils.toDate(task.modified_at),
+        statusChangedAt: Utils.toDate(task.modified_at),
         parent,
         creator: tmsUser ? {uid: tmsUser.record.uid, source} : null,
       },
