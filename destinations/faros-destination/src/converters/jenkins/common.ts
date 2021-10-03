@@ -1,4 +1,3 @@
-import {toLower} from 'lodash';
 import {URL} from 'url';
 
 import {DestinationRecord} from '../converter';
@@ -6,12 +5,13 @@ import {DestinationRecord} from '../converter';
 interface JenkinsUrl {
   hostname: string;
   url: string;
+  baseUrl: string;
 }
 
 export interface Job {
-  readonly fullName: string;
-  readonly name: string;
-  readonly url: string;
+  fullName: string;
+  name: string;
+  url: string;
 }
 
 interface OrganizationKey {
@@ -28,9 +28,9 @@ export class JenkinsCommon {
     return {
       model: 'cicd_Organization',
       record: {
-        uid: toLower(jenkinsUrl.hostname),
+        uid: jenkinsUrl.hostname.toLowerCase(),
         name: jenkinsUrl.hostname,
-        url: jenkinsUrl.url,
+        url: jenkinsUrl.baseUrl,
         source,
       },
     };
@@ -42,7 +42,7 @@ export class JenkinsCommon {
     return {
       model: 'cicd_Pipeline',
       record: {
-        uid: toLower(job.fullName),
+        uid: job.fullName.toLowerCase(),
         name: job.name,
         url: job.url,
         organization,
@@ -52,12 +52,15 @@ export class JenkinsCommon {
 
   static parseJenkinsUrl(initUrl: string): undefined | JenkinsUrl {
     try {
-      const jenkinsUrl = new URL(initUrl);
-      jenkinsUrl.pathname = '';
-      return {
-        hostname: jenkinsUrl.hostname,
-        url: jenkinsUrl.toString(),
-      };
+      const urlParsed = new URL(initUrl);
+      const hostname = urlParsed.hostname;
+      const url = urlParsed.toString();
+      urlParsed.pathname = '';
+      const baseUrl = urlParsed.toString();
+      if (!hostname) {
+        return undefined;
+      }
+      return {hostname, url, baseUrl};
     } catch (error) {
       return undefined;
     }
