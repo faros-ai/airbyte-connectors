@@ -29,7 +29,6 @@ export class JenkinsJobs extends Converter {
     if (!jenkinsUrl) return [];
     const organization = JenkinsCommon.cicd_Organization(jenkinsUrl, source);
     const orgKey = {uid: organization.record.uid, source};
-    job.url = jenkinsUrl.url;
     const pipeline = JenkinsCommon.cicd_Pipeline(job, orgKey);
 
     return [organization, pipeline];

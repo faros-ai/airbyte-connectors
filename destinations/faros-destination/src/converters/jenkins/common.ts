@@ -9,9 +9,9 @@ interface JenkinsUrl {
 }
 
 export interface Job {
-  fullName: string;
-  name: string;
-  url: string;
+  readonly fullName: string;
+  readonly name: string;
+  readonly url: string;
 }
 
 interface OrganizationKey {
