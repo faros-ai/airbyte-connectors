@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AsanaConverter} from './common';
+import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
 
 export class AsanaSections extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -15,16 +15,9 @@ export class AsanaSections extends AsanaConverter {
   ): ReadonlyArray<DestinationRecord> {
     const res: DestinationRecord[] = [];
     const source = this.streamName.source;
-    const section = record.record.data;
+    const section = record.record.data as AsanaSection;
 
-    res.push({
-      model: 'tms_TaskBoard',
-      record: {
-        uid: section.gid,
-        name: section.name,
-        source,
-      },
-    });
+    res.push(AsanaCommon.tms_TaskBoard(section, source));
     res.push({
       model: 'tms_TaskBoardProjectRelationship',
       record: {

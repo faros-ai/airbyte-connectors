@@ -86,7 +86,7 @@ describe('asana', () => {
     expect(stdout).toMatch('Read 11 messages');
     expect(stdout).toMatch('Read 11 records');
     expect(stdout).toMatch('Processed 11 records');
-    expect(stdout).toMatch('Wrote 17 records');
+    expect(stdout).toMatch('Wrote 14 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -109,7 +109,7 @@ describe('asana', () => {
     expect(stdout).toMatch('Read 11 messages');
     expect(stdout).toMatch('Read 11 records');
     expect(stdout).toMatch('Processed 11 records');
-    expect(stdout).toMatch('Would write 17 records');
+    expect(stdout).toMatch('Would write 14 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -129,7 +129,7 @@ describe('asana', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('Processed 11 records');
-    expect(stdout).toMatch('Would write 17 records');
+    expect(stdout).toMatch('Would write 14 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -226,7 +226,7 @@ describe('asana', () => {
       tms_Task: 6,
       tms_TaskBoard: 3,
       tms_TaskBoardProjectRelationship: 3,
-      tms_User: 4,
+      tms_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

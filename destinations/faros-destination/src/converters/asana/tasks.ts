@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AsanaCommon, AsanaConverter, TmsSection} from './common';
+import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
 
 interface CustomField {
   gid: string;
@@ -78,7 +78,7 @@ export class AsanaTasks extends AsanaConverter {
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
-        creator: task.assignee ? {uid: task.assignee, source} : undefined,
+        creator: task.assignee ? {uid: task.assignee, source} : null,
       },
     });
 
@@ -163,7 +163,7 @@ export class AsanaTasks extends AsanaConverter {
 
   private tms_TaskBoardRelationship(
     taskId: string,
-    section: TmsSection,
+    section: AsanaSection,
     source: string
   ): DestinationRecord[] {
     const res = [];

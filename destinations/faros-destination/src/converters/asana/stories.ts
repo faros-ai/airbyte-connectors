@@ -21,7 +21,7 @@ export class AsanaStories extends AsanaConverter {
       model: 'tms_Task',
       record: {
         uid: story.gid,
-        name: story.source || undefined,
+        name: story.source || null,
         description: story.text?.substring(
           0,
           AsanaCommon.MAX_DESCRIPTION_LENGTH

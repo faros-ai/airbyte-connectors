@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AsanaCommon, AsanaConverter, TmsUser} from './common';
+import {AsanaCommon, AsanaConverter, AsanaUser} from './common';
 
 export class AsanaUsers extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
@@ -11,7 +11,7 @@ export class AsanaUsers extends AsanaConverter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-    const user = record.record.data as TmsUser;
+    const user = record.record.data as AsanaUser;
 
     return [AsanaCommon.tms_User(user, source)];
   }
