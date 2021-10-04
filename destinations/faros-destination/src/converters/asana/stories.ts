@@ -32,7 +32,7 @@ export class AsanaStories extends AsanaConverter {
         type: AsanaCommon.toTmsTaskType(story.resource_type),
         createdAt: Utils.toDate(story.created_at),
         updatedAt: Utils.toDate(story.created_at),
-        creator,
+        creator: {uid: creator.record.uid, source},
         source,
       },
     });

@@ -2,13 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AsanaCommon, AsanaConverter} from './common';
+import {AsanaCommon, AsanaConverter, TmsSection} from './common';
 
 interface CustomField {
   gid: string;
   name: string;
   text_value?: string;
   number_value?: number;
+  display_value?: string;
   enum_value: CustomFieldEnumValue;
   multi_enum_values: CustomFieldEnumValue;
 }
@@ -32,7 +33,9 @@ enum Tms_TaskStatusCategory {
 export class AsanaTasks extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
+    'tms_Project',
     'tms_TaskProjectRelationship',
+    'tms_TaskBoard',
     'tms_TaskBoardRelationship',
     'tms_User',
     'tms_TaskDependency',
@@ -56,8 +59,8 @@ export class AsanaTasks extends AsanaConverter {
     const priority = this.findFieldByName(task.custom_fields, 'priority');
     const points = this.findFieldByName(task.custom_fields, 'points');
     const tmsUser = task.assignee
-      ? AsanaCommon.tms_User(task.assignee, source)
-      : null;
+      ? AsanaCommon.tms_User({gid: task.assignee}, source)
+      : undefined;
 
     res.push({
       model: 'tms_Task',
@@ -79,12 +82,20 @@ export class AsanaTasks extends AsanaConverter {
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
-        creator: tmsUser ? {uid: tmsUser.record.uid, source} : null,
+        creator: tmsUser ? {uid: tmsUser.record.uid, source} : undefined,
       },
     });
 
     for (const membership of task.memberships) {
       if (membership.project) {
+        res.push({
+          model: 'tms_Project',
+          record: {
+            uid: membership.project.gid,
+            name: membership.project.name,
+            source,
+          },
+        });
         res.push({
           model: 'tms_TaskProjectRelationship',
           record: {
@@ -96,9 +107,9 @@ export class AsanaTasks extends AsanaConverter {
 
       if (membership.section) {
         res.push(
-          this.tms_TaskBoardRelationship(
+          ...this.tms_TaskBoardRelationship(
             taskKey.uid,
-            membership.section.gid,
+            membership.section,
             source
           )
         );
@@ -127,9 +138,9 @@ export class AsanaTasks extends AsanaConverter {
     }
     if (task.assignee_section) {
       res.push(
-        this.tms_TaskBoardRelationship(
+        ...this.tms_TaskBoardRelationship(
           taskKey.uid,
-          task.assignee_section.gid,
+          task.assignee_section,
           source
         )
       );
@@ -157,16 +168,19 @@ export class AsanaTasks extends AsanaConverter {
 
   private tms_TaskBoardRelationship(
     taskId: string,
-    boardId: string,
+    section: TmsSection,
     source: string
-  ): DestinationRecord {
-    return {
+  ): DestinationRecord[] {
+    const res = [];
+    res.push(AsanaCommon.tms_TaskBoard(section, source));
+    res.push({
       model: 'tms_TaskBoardRelationship',
       record: {
         task: {uid: taskId, source},
-        board: {uid: boardId, source},
+        board: {uid: section.gid, source},
       },
-    };
+    });
+    return res;
   }
 
   private findFieldByName(
@@ -191,7 +205,8 @@ export class AsanaTasks extends AsanaConverter {
         customField.text_value ??
         customField.number_value ??
         customField.enum_value?.name ??
-        customField.multi_enum_values?.name,
+        customField.multi_enum_values?.name ??
+        customField.display_value,
     };
   }
 

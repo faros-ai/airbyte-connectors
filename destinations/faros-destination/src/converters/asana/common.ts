@@ -2,6 +2,11 @@ import {AirbyteRecord} from 'faros-airbyte-cdk/src/protocol';
 
 import {Converter, DestinationRecord} from '../converter';
 
+export interface TmsSection {
+  gid: string;
+  name: string;
+}
+
 export interface TmsUser {
   gid: string;
   name?: string;
@@ -46,6 +51,17 @@ export class AsanaCommon {
         uid: user.gid,
         name: user.name ?? null,
         emailAddress: user.email ?? undefined,
+        source,
+      },
+    };
+  }
+
+  static tms_TaskBoard(section: TmsSection, source: string): DestinationRecord {
+    return {
+      model: 'tms_TaskBoard',
+      record: {
+        uid: section.gid,
+        name: section.name,
         source,
       },
     };

@@ -1,0 +1,40 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__asana__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__asana__projects"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__asana__sections"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__asana__tasks"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__asana__stories"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__asana__something_else"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
