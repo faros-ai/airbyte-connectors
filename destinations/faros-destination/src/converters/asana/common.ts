@@ -49,8 +49,8 @@ export class AsanaCommon {
       model: 'tms_User',
       record: {
         uid: user.gid,
-        name: user.name ?? null,
-        emailAddress: user.email ?? undefined,
+        name: user.name || undefined,
+        emailAddress: user.email || undefined,
         source,
       },
     };

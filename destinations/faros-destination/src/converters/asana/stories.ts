@@ -7,7 +7,6 @@ import {AsanaCommon, AsanaConverter} from './common';
 export class AsanaStories extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
-    'tms_User',
   ];
 
   convert(
@@ -17,8 +16,6 @@ export class AsanaStories extends AsanaConverter {
     const res: DestinationRecord[] = [];
     const source = this.streamName.source;
     const story = record.record.data;
-
-    const creator = AsanaCommon.tms_User(story.created_by, source);
 
     res.push({
       model: 'tms_Task',
@@ -32,11 +29,10 @@ export class AsanaStories extends AsanaConverter {
         type: AsanaCommon.toTmsTaskType(story.resource_type),
         createdAt: Utils.toDate(story.created_at),
         updatedAt: Utils.toDate(story.created_at),
-        creator: {uid: creator.record.uid, source},
+        creator: {uid: story.created_by.gid, source},
         source,
       },
     });
-    res.push(creator);
 
     return res;
   }

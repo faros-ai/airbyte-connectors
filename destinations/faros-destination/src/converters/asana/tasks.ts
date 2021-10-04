@@ -37,7 +37,6 @@ export class AsanaTasks extends AsanaConverter {
     'tms_TaskProjectRelationship',
     'tms_TaskBoard',
     'tms_TaskBoardRelationship',
-    'tms_User',
     'tms_TaskDependency',
     'tms_TaskAssignment',
     'tms_Label',
@@ -58,9 +57,6 @@ export class AsanaTasks extends AsanaConverter {
     const parent = task.parent ? {uid: task.parent.gid, source} : null;
     const priority = this.findFieldByName(task.custom_fields, 'priority');
     const points = this.findFieldByName(task.custom_fields, 'points');
-    const tmsUser = task.assignee
-      ? AsanaCommon.tms_User({gid: task.assignee}, source)
-      : undefined;
 
     res.push({
       model: 'tms_Task',
@@ -82,7 +78,7 @@ export class AsanaTasks extends AsanaConverter {
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
-        creator: tmsUser ? {uid: tmsUser.record.uid, source} : undefined,
+        creator: task.assignee ? {uid: task.assignee, source} : undefined,
       },
     });
 
@@ -116,13 +112,12 @@ export class AsanaTasks extends AsanaConverter {
       }
     }
 
-    if (tmsUser) {
-      res.push(tmsUser);
+    if (task.assignee) {
       res.push({
         model: 'tms_TaskAssignment',
         record: {
           task: taskKey,
-          assignee: {uid: tmsUser.record.uid, source: tmsUser.record.source},
+          assignee: {uid: task.assignee, source},
         },
       });
     }
