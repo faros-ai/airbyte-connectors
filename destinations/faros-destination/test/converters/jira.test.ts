@@ -78,9 +78,9 @@ describe('jira', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 690 messages');
-    expect(stdout).toMatch('Read 586 records');
-    expect(stdout).toMatch('Processed 586 records');
+    expect(stdout).toMatch('Read 687 messages');
+    expect(stdout).toMatch('Read 585 records');
+    expect(stdout).toMatch('Processed 585 records');
     expect(stdout).toMatch('Wrote 11 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -101,9 +101,9 @@ describe('jira', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 690 messages');
-    expect(stdout).toMatch('Read 586 records');
-    expect(stdout).toMatch('Processed 586 records');
+    expect(stdout).toMatch('Read 687 messages');
+    expect(stdout).toMatch('Read 585 records');
+    expect(stdout).toMatch('Processed 585 records');
     expect(stdout).toMatch('Would write 11 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -209,7 +209,6 @@ describe('jira', () => {
       board_issues: 4,
       dashboards: 2,
       epics: 1,
-      epic_issues: 1,
       filters: 4,
       filter_sharing: 4,
       groups: 11,
