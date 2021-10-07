@@ -2,14 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk/src/protocol';
 
 import {Converter, DestinationRecord} from '../converter';
 
-export interface TmsProject {
+export interface AsanaProject {
   gid: string;
 }
 
-export interface TmsSection {
+export interface AsanaSection {
   gid: string;
   name: string;
-  project?: TmsProject;
+  project?: AsanaProject;
 }
 
 export interface AsanaUser {
