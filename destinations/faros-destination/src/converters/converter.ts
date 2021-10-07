@@ -69,6 +69,9 @@ export class StreamContext {
     }
     return JSON.stringify(res);
   }
+  records(streamName: string): Dictionary<AirbyteRecord> {
+    return this.recordsByStreamName[streamName] ?? {};
+  }
 }
 
 const StreamNameSeparator = '__';

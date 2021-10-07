@@ -1,6 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+} from '../converter';
 import {JenkinsCommon, Job} from './common';
 
 export class JenkinsJobs extends Converter {
@@ -8,7 +13,7 @@ export class JenkinsJobs extends Converter {
     'cicd_Organization',
     'cicd_Pipeline',
   ];
-  
+
   id(record: AirbyteRecord): any {
     return record?.record?.data?.fullName;
   }
@@ -19,11 +24,11 @@ export class JenkinsJobs extends Converter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
-    
+
     const jenkinsUrl = JenkinsCommon.parseJenkinsUrl(job.url);
     if (!jenkinsUrl) return [];
     const organization = JenkinsCommon.cicd_Organization(jenkinsUrl, source);
-    const orgKey = {uid: organization.record.uid, source}
+    const orgKey = {uid: organization.record.uid, source};
     const pipeline = JenkinsCommon.cicd_Pipeline(job, orgKey);
 
     return [organization, pipeline];

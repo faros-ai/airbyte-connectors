@@ -81,7 +81,7 @@ describe('jira', () => {
     expect(stdout).toMatch('Read 688 messages');
     expect(stdout).toMatch('Read 584 records');
     expect(stdout).toMatch('Processed 584 records');
-    expect(stdout).toMatch('Wrote 1 records');
+    expect(stdout).toMatch('Wrote 11 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
