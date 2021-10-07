@@ -1,5 +1,5 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 import {flatten} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -9,9 +9,18 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
+import {normalize, upperCamelCase} from '../utils';
 import {JiraCommon, JiraConverter} from './common';
 
+interface SprintIssue {
+  id: number;
+  key: string;
+  fields: Dictionary<any>;
+  sprintId: number;
+}
 export class JiraSprints extends JiraConverter {
+  private logger = new AirbyteLogger();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   private static readonly issueFieldsStream = new StreamName(
@@ -24,7 +33,7 @@ export class JiraSprints extends JiraConverter {
   );
 
   private pointsFieldIdsByName?: Dictionary<string[]>;
-  private sprintIssueRecords?: Dictionary<AirbyteRecord[], number>;
+  private sprintIssueRecords?: Dictionary<SprintIssue[], number>;
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [JiraSprints.issueFieldsStream, JiraSprints.sprintIssuesStream];
@@ -36,7 +45,7 @@ export class JiraSprints extends JiraConverter {
     for (const [id, recs] of Object.entries(records)) {
       for (const rec of recs) {
         const name = rec.record?.data?.name;
-        if (!name) continue;
+        if (!JiraCommon.POINTS_FIELD_NAMES.includes(name)) continue;
         if (!(name in results)) {
           results[name] = [];
         }
@@ -48,18 +57,38 @@ export class JiraSprints extends JiraConverter {
 
   private static getSprintIssueRecords(
     ctx: StreamContext
-  ): Dictionary<AirbyteRecord[], number> {
+  ): Dictionary<SprintIssue[], number> {
     const records = ctx.records(JiraSprints.sprintIssuesStream.stringify());
-    const results: Dictionary<AirbyteRecord[], number> = {};
+    const results: Dictionary<SprintIssue[], number> = {};
     for (const record of flatten(Object.values(records))) {
       const sprintId = record.record?.data?.sprintId;
       if (!sprintId) continue;
       if (!(sprintId in results)) {
         results[sprintId] = [];
       }
-      results[sprintId].push(record);
+      results[sprintId].push(record.record.data as SprintIssue);
     }
     return results;
+  }
+
+  private getPoints(issue: SprintIssue): number {
+    let points = 0;
+    for (const fieldName of JiraCommon.POINTS_FIELD_NAMES) {
+      const fieldIds = this.pointsFieldIdsByName[fieldName] ?? [];
+      for (const fieldId of fieldIds) {
+        const pointsString = issue.fields[fieldId];
+        if (!pointsString) continue;
+        try {
+          points = Utils.parseFloatFixedPoint(pointsString);
+        } catch (err: any) {
+          this.logger.warn(
+            `Failed to get story points for issue ${issue.key}: ${err.message}`
+          );
+        }
+        return points;
+      }
+    }
+    return points;
   }
 
   convert(
@@ -74,14 +103,22 @@ export class JiraSprints extends JiraConverter {
       this.sprintIssueRecords = JiraSprints.getSprintIssueRecords(ctx);
     }
 
+    let completedPoints = 0;
+    for (const issue of this.sprintIssueRecords[sprint.id] ?? []) {
+      const status = issue.fields.status?.statusCategory?.name;
+      if (status && normalize(status) === 'done') {
+        completedPoints += this.getPoints(issue);
+      }
+    }
+
     return [
       {
         model: 'tms_Sprint',
         record: {
           uid: String(sprint.id),
           name: sprint.name,
-          state: JiraCommon.upperCamelCase(sprint.state),
-          completedPoints: 0.0,
+          state: upperCamelCase(sprint.state),
+          completedPoints,
           startedAt: Utils.toDate(sprint.startDate),
           endedAt: Utils.toDate(sprint.endDate),
           source: this.streamName.source,

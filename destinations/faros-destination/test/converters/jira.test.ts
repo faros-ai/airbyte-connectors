@@ -34,7 +34,7 @@ describe('jira', () => {
     fs.unlinkSync(configPath);
   });
 
-  test('process and write records', async () => {
+  test.only('process and write records', async () => {
     await mockttp
       .post('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
