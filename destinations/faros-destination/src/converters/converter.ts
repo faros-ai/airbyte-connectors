@@ -39,21 +39,25 @@ export abstract class Converter {
 
 /** Stream context to store records by stream */
 export class StreamContext {
-  private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
-    {};
+  private readonly recordsByStreamName: Dictionary<
+    Dictionary<AirbyteRecord[]>
+  > = {};
 
-  get(streamName: string, id: string): AirbyteRecord | undefined {
-    const recs = this.recordsByStreamName[streamName];
-    if (recs) {
-      const rec = recs[id];
-      if (rec) return rec;
+  get(streamName: string, id: string): AirbyteRecord[] {
+    const streamRecs = this.recordsByStreamName[streamName];
+    if (streamRecs) {
+      const recs = streamRecs[id];
+      if (recs) return recs;
     }
-    return undefined;
+    return [];
   }
-  set(streamName: string, id: string, record: AirbyteRecord): void {
+  add(streamName: string, id: string, record: AirbyteRecord): void {
     const recs = this.recordsByStreamName[streamName];
     if (!recs) this.recordsByStreamName[streamName] = {};
-    this.recordsByStreamName[streamName][id] = record;
+    if (!(id in this.recordsByStreamName[streamName])) {
+      this.recordsByStreamName[streamName][id] = [];
+    }
+    this.recordsByStreamName[streamName][id].push(record);
   }
   stats(includeIds = false): string {
     const sizeInBytes = sizeof(this.recordsByStreamName);
@@ -69,7 +73,7 @@ export class StreamContext {
     }
     return JSON.stringify(res);
   }
-  records(streamName: string): Dictionary<AirbyteRecord> {
+  records(streamName: string): Dictionary<AirbyteRecord[]> {
     return this.recordsByStreamName[streamName] ?? {};
   }
 }
