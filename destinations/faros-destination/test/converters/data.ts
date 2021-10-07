@@ -14,3 +14,5 @@ export const jenkinsLog = readTestResourceFile('jenkins.log');
 export const jenkinsAllStreamsLog = readTestResourceFile(
   'jenkins-all-streams.log'
 );
+
+export const jiraAllStreamsLog = readTestResourceFile('jira-all-streams.log');
