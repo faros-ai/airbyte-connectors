@@ -34,7 +34,7 @@ describe('jira', () => {
     fs.unlinkSync(configPath);
   });
 
-  test.only('process and write records', async () => {
+  test('process and write records', async () => {
     await mockttp
       .post('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
@@ -102,18 +102,15 @@ describe('jira', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('Read 688 messages');
-    /*
     expect(stdout).toMatch('Read 584 records');
     expect(stdout).toMatch('Processed 584 records');
-    expect(stdout).toMatch('Would write 584 records');
+    expect(stdout).toMatch('Would write 11 records');
     expect(stdout).toMatch('Errored 0 records');
-    */
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
 
-  /*
-  test('process raw records', async () => {
+  test.skip('process raw records', async () => {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -122,7 +119,7 @@ describe('jira', () => {
       catalogRawPath,
       '--dry-run',
     ]);
-    cli.stdin.end(githubPGRawLog, 'utf8');
+    cli.stdin.end(jiraAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
@@ -132,7 +129,6 @@ describe('jira', () => {
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
-  */
 
   test('skip to process bad records when strategy is skip', async () => {
     const cli = await CLI.runWith([
@@ -192,7 +188,6 @@ describe('jira', () => {
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 
-  /*
   test('process records from all streams', async () => {
     const cli = await CLI.runWith([
       'write',
@@ -208,29 +203,48 @@ describe('jira', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      assignees: 12,
-      branches: 4,
-      collaborators: 12,
-      comments: 17,
-      commit_comments: 1,
-      commits: 77,
-      events: 300,
-      issue_events: 210,
-      issue_labels: 24,
-      issue_milestones: 1,
-      issues: 39,
-      organizations: 1,
+      application_roles: 1,
+      avatars: 65,
+      boards: 1,
+      board_issues: 4,
+      dashboards: 2,
+      filters: 4,
+      filter_sharing: 4,
+      groups: 11,
+      jira_settings: 47,
+      labels: 47,
+      permissions: 41,
+      permission_schemes: 5,
+      screens: 22,
+      screen_tabs: 22,
+      screen_schemes: 19,
+      sprints: 10,
+      sprint_issues: 15,
+      time_tracking: 2,
+      users: 29,
+      issues: 4,
+      issue_fields: 74,
+      issue_field_configurations: 1,
+      issue_custom_field_contexts: 30,
+      issue_link_types: 6,
+      issue_navigator_settings: 11,
+      issue_notification_schemes: 2,
+      issue_priorities: 5,
+      issue_resolutions: 4,
+      issue_security_schemes: 1,
+      issue_type_schemes: 10,
+      issue_type_screen_schemes: 10,
+      issue_votes: 4,
+      issue_watchers: 4,
       projects: 1,
-      pull_request_stats: 38,
-      pull_requests: 38,
-      releases: 1,
-      repositories: 49,
-      review_comments: 87,
-      reviews: 121,
-      stargazers: 2,
-      tags: 2,
-      teams: 1,
-      users: 24,
+      project_avatars: 26,
+      project_email: 1,
+      project_permission_schemes: 1,
+      project_types: 3,
+      workflows: 13,
+      workflow_schemes: 10,
+      workflow_statuses: 8,
+      workflow_status_categories: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -240,30 +254,8 @@ describe('jira', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Release: 1,
-      cicd_ReleaseTagAssociation: 1,
-      tms_Epic: 1,
-      tms_Label: 24,
-      tms_Project: 50,
-      tms_Task: 1,
-      tms_TaskAssignment: 1,
-      tms_TaskBoard: 50,
-      tms_TaskBoardProjectRelationship: 50,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 14,
-      vcs_Branch: 4,
-      vcs_BranchCommitAssociation: 1,
-      vcs_Commit: 77,
-      vcs_Membership: 12,
-      vcs_Organization: 1,
-      vcs_PullRequestComment: 87,
-      vcs_PullRequestReview: 121,
-      vcs_PullRequest__Update: 38,
-      vcs_PullRequest__Upsert: 38,
-      vcs_Repository: 49,
-      vcs_Tag: 2,
-      vcs_User: 195,
+      tms_Project: 1,
+      tms_Sprint: 10,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -290,5 +282,4 @@ describe('jira', () => {
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
-  */
 });
