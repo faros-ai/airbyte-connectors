@@ -1,6 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
+import {normalize} from '../utils';
+
+export const JiraStatusCategories: ReadonlyMap<string, string> = new Map(
+  ['Todo', 'InProgress', 'Done'].map((s) => [normalize(s), s])
+);
 
 export class JiraCommon {
   static POINTS_FIELD_NAMES = ['Story Points', 'Story point estimate'];

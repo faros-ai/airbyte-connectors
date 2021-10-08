@@ -34,6 +34,7 @@
     "faros-feeds-sdk": "^0.8.33",
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
+    "turndown": "^7.1.1",
     "verror": "^1.10.0"
   },
   "jest": {
@@ -54,5 +55,8 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
+  },
+  "devDependencies": {
+    "@types/turndown": "^5.0.1"
   }
 }
