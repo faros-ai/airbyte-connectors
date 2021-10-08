@@ -79,6 +79,12 @@
         "title": "JSONata destination models",
         "description": "Destination models when using JSONata expression.",
         "examples": ["ims_Incident", "vcs_Commit"]
+      },
+      "jira_use_board_ownership": {
+        "type": "boolean",
+        "title": "Jira - Use Board Ownership",
+        "description": "Use Jira boards for assigning owners of tasks, or use projects.",
+        "default": false
       }
     }
   }

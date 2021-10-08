@@ -13,12 +13,6 @@ import {JiraConverter, JiraStatusCategories} from './common';
 export class JiraEpics extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
-  private static readonly projectsStream = new StreamName('jira', 'projects');
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [JiraEpics.projectsStream];
-  }
-
   private turndown = new TurndownService();
 
   convert(
@@ -35,13 +29,6 @@ export class JiraEpics extends JiraConverter {
       description = this.turndown.turndown(epic.renderedFields.description);
     }
 
-    let project = null;
-    const projectRecords =
-      ctx.get(JiraEpics.projectsStream.stringify(), epic.projectId) ?? [];
-    if (projectRecords.length > 0) {
-      project = {uid: projectRecords[0].record.data.key, source};
-    }
-
     return [
       {
         model: 'tms_Epic',
@@ -55,7 +42,7 @@ export class JiraEpics extends JiraConverter {
             ),
             detail: status.name,
           },
-          project,
+          project: {uid: epic.projectKey, source},
           source,
         },
       },
