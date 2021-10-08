@@ -198,7 +198,7 @@ class FarosDestination extends AirbyteDestination {
     this.init(config);
 
     const {streams, deleteModelEntries, converterDependencies} =
-      this.initStreamsCheckConverters(catalog);
+      this.initStreamsCheckConverters(catalog, config);
 
     const stateMessages: AirbyteStateMessage[] = [];
 
@@ -206,6 +206,7 @@ class FarosDestination extends AirbyteDestination {
     if (config.dry_run === true || dryRun) {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(
+        config,
         stdin,
         streams,
         stateMessages,
@@ -242,6 +243,7 @@ class FarosDestination extends AirbyteDestination {
             );
             // Process input and write entries
             await this.writeEntries(
+              config,
               stdin,
               streams,
               stateMessages,
@@ -264,6 +266,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async writeEntries(
+    config: AirbyteConfig,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
@@ -317,7 +320,7 @@ class FarosDestination extends AirbyteDestination {
             const count = stats.processedByStream[stream];
             stats.processedByStream[stream] = count ? count + 1 : 1;
 
-            const converter = this.getConverter(stream);
+            const converter = this.getConverter(stream, config);
             const writeRecord = (context: StreamContext): void => {
               stats.recordsWritten += this.writeRecord(
                 converter,
@@ -408,7 +411,10 @@ class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
+  private initStreamsCheckConverters(
+    catalog: AirbyteConfiguredCatalog,
+    config: AirbyteConfig
+  ): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
     converterDependencies: Set<string>;
@@ -426,7 +432,7 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const converter = this.getConverter(stream, (err: Error) =>
+      const converter = this.getConverter(stream, config, (err: Error) =>
         this.logger.error(err.message)
       );
       this.logger.info(
@@ -478,10 +484,12 @@ class FarosDestination extends AirbyteDestination {
 
   private getConverter(
     stream: string,
+    config: AirbyteConfig,
     onLoadError?: (err: Error) => void
   ): Converter {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
+      config,
       onLoadError
     );
     if (!converter && !this.jsonataConverter) {

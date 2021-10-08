@@ -15,7 +15,7 @@ export class JSONataConverter extends Converter {
     private readonly jsonataExpr: jsonata.Expression,
     readonly destinationModels: ReadonlyArray<DestinationModel>
   ) {
-    super();
+    super({});
   }
 
   id(record: AirbyteRecord): any {

@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteRecord} from 'faros-airbyte-cdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
@@ -6,6 +6,8 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
+  constructor(protected readonly config: AirbyteConfig) {}
+
   private stream: StreamName;
 
   /** Input stream supported by converter */
