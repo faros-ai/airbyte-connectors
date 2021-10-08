@@ -81,7 +81,7 @@ describe('jira', () => {
     expect(stdout).toMatch('Read 687 messages');
     expect(stdout).toMatch('Read 585 records');
     expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Wrote 11 records');
+    expect(stdout).toMatch('Wrote 12 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -104,7 +104,7 @@ describe('jira', () => {
     expect(stdout).toMatch('Read 687 messages');
     expect(stdout).toMatch('Read 585 records');
     expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Would write 11 records');
+    expect(stdout).toMatch('Would write 12 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -255,6 +255,7 @@ describe('jira', () => {
       .value();
 
     const writtenByModel = {
+      tms_Epic: 1,
       tms_Project: 1,
       tms_Sprint: 10,
     };
