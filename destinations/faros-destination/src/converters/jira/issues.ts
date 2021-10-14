@@ -28,16 +28,6 @@ export class JiraIssues extends JiraConverter {
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
 
-    const dependencies: Dependency[] = [];
-    for (const link of issue.fields.issuelinks ?? []) {
-      const match = link.type.inward?.match(dependencyRegex);
-      const dependency = link.inwardIssue?.key;
-      if (match && dependency) {
-        const blocking = match.groups.type === 'blocked';
-        dependencies.push({key: dependency, blocking});
-      }
-    }
-
     results.push({
       model: 'tms_TaskProjectRelationship',
       record: {
@@ -54,16 +44,23 @@ export class JiraIssues extends JiraConverter {
         },
       });
     }
-    for (const dependency of dependencies) {
-      results.push({
-        model: 'tms_TaskDependency',
-        record: {
-          dependentTask: {uid: issue.key, source},
-          fulfillingTask: {uid: dependency.key, source},
-          blocking: dependency.blocking,
-        },
-      });
+
+    for (const link of issue.fields.issuelinks ?? []) {
+      const match = link.type.inward?.match(dependencyRegex);
+      const dependency = link.inwardIssue?.key;
+      if (match && dependency) {
+        const blocking = match.groups.type === 'blocked';
+        results.push({
+          model: 'tms_TaskDependency',
+          record: {
+            dependentTask: {uid: issue.key, source},
+            fulfillingTask: {uid: dependency, source},
+            blocking,
+          },
+        });
+      }
     }
+
     for (const label of issue.fields.labels) {
       results.push({
         model: 'tms_TaskTag',
