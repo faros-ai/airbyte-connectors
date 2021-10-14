@@ -32,6 +32,10 @@ export class JiraIssues extends JiraConverter {
     for (const link of issue.fields.issuelinks ?? []) {
       const match = link.type.inward?.match(dependencyRegex);
       const dependency = link.inwardIssue?.key;
+      if (match && dependency) {
+        const blocking = match.groups.type === 'blocked';
+        dependencies.push({key: dependency, blocking});
+      }
     }
 
     results.push({

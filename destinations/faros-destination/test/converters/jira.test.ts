@@ -81,7 +81,7 @@ describe('jira', () => {
     expect(stdout).toMatch('Read 687 messages');
     expect(stdout).toMatch('Read 585 records');
     expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Wrote 53 records');
+    expect(stdout).toMatch('Wrote 54 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -104,7 +104,7 @@ describe('jira', () => {
     expect(stdout).toMatch('Read 687 messages');
     expect(stdout).toMatch('Read 585 records');
     expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Would write 53 records');
+    expect(stdout).toMatch('Would write 54 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -261,6 +261,7 @@ describe('jira', () => {
       tms_TaskBoard: 1,
       tms_TaskBoardProjectRelationship: 1,
       tms_TaskBoardRelationship: 4,
+      tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 4,
       tms_TaskTag: 2,
       tms_User: 29,
