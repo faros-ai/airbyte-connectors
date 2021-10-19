@@ -1,0 +1,113 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
+
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {GitlabCommon, GitlabConverter} from './common';
+
+interface CategoryRef {
+  readonly category: string;
+  readonly detail: string;
+}
+
+export class GitlabJobs extends GitlabConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_BuildStep',
+  ];
+
+  private readonly pipelinesStream = new StreamName('gitlab', 'users');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.pipelinesStream];
+  }
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
+    const source = this.streamName.source;
+    const job = record.record.data;
+
+    const repository = GitlabCommon.parseRepositoryKey(job.web_url, source);
+    const pipelinesStream = this.pipelinesStream.stringify();
+    const pipeline = ctx.get(pipelinesStream, String(job.pipeline_id));
+    const pipelineId = pipeline?.record?.data?.id;
+
+    if (!repository || !pipelineId) return [];
+
+    const buildKey = {
+      uid: String(pipelineId),
+      pipeline: {
+        organization: repository.organization,
+        uid: repository.name,
+      },
+    };
+
+    return [
+      {
+        model: 'cicd_BuildStep',
+        record: {
+          uid: String(job.id),
+          name: job.name,
+          type: this.convertBuildStepType(job.stage),
+          createdAt: Utils.toDate(job.created_at),
+          startedAt: Utils.toDate(job.started_at),
+          endedAt: Utils.toDate(job.finished_at),
+          status: this.convertBuildStatus(job.status),
+          url: job.web_url,
+          build: buildKey,
+        },
+      },
+    ];
+  }
+
+  // GitLab defined status for:
+  // >> pipelines (aka builds): created, waiting_for_resource, preparing, pending,
+  //    running, success, failed, canceled, skipped, manual, scheduled
+  // >> jobs: created, pending, running, failed, success, canceled, skipped, or manual.
+  private convertBuildStatus(status?: string): CategoryRef {
+    if (!status) {
+      return {category: 'Unknown', detail: 'undefined'};
+    }
+    const detail = status?.toLowerCase();
+    switch (detail) {
+      case 'canceled':
+        return {category: 'Canceled', detail};
+      case 'failed':
+        return {category: 'Failed', detail};
+      case 'running':
+        return {category: 'Running', detail};
+      case 'success':
+        return {category: 'Success', detail};
+      case 'created':
+      case 'manual':
+      case 'pending':
+      case 'preparing':
+      case 'scheduled':
+      case 'waiting_for_resource':
+        return {category: 'Queued', detail};
+      case 'skipped':
+      default:
+        return {category: 'Custom', detail};
+    }
+  }
+
+  private convertBuildStepType(stage?: string): CategoryRef {
+    if (!stage) {
+      return {category: 'Custom', detail: 'undefined'};
+    }
+    const detail = stage?.toLowerCase();
+    switch (detail) {
+      case 'script':
+        return {category: 'Script', detail};
+      case 'manual':
+        return {category: 'Manual', detail};
+      default:
+        return {category: 'Custom', detail};
+    }
+  }
+}
