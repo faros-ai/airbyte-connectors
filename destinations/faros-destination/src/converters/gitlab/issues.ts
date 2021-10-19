@@ -35,15 +35,15 @@ export class GitlabIssues extends GitlabConverter {
     const uid = String(issue.id);
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
-        const usersStream = this.usersStream.stringify();
-        const user = ctx.get(usersStream, String(assignee));
-        const username = user?.record?.data?.username;
+        const assigneeUsersStream = this.usersStream.stringify();
+        const assigneeUser = ctx.get(assigneeUsersStream, String(assignee));
+        const assigneeUsername = assigneeUser?.record?.data?.username;
 
         res.push({
           model: 'tms_TaskAssignment',
           record: {
             task: {uid, source},
-            assignee: {uid: username, source},
+            assignee: {uid: assigneeUsername, source},
           },
         });
       }
@@ -61,6 +61,10 @@ export class GitlabIssues extends GitlabConverter {
       });
     });
 
+    const usersStream = this.usersStream.stringify();
+    const user = ctx.get(usersStream, String(issue.author_id));
+    const username = user?.record?.data?.username;
+
     const category = issue.state === 'opened' ? 'Todo' : 'Done';
     res.push({
       model: 'tms_Task',
@@ -72,7 +76,7 @@ export class GitlabIssues extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
-        creator: issue.author_id ? {uid: issue.author_id, source} : undefined,
+        creator: username ? {uid: username, source} : null,
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
         source,

@@ -12,6 +12,6 @@ export class GitlabGroupLabels extends GitlabConverter {
   ): ReadonlyArray<DestinationRecord> {
     const label = record.record.data;
 
-    return [{model: 'tms_Label', record: {name: label}}];
+    return [{model: 'tms_Label', record: {name: label.name}}];
   }
 }
