@@ -1,4 +1,5 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {isString, last} from 'lodash';
 
 import {
   DestinationModel,
@@ -6,8 +7,8 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {toDate} from '../utils';
-import {JiraConverter} from './common';
+import {normalize, toDate} from '../utils';
+import {JiraCommon, JiraConverter} from './common';
 
 interface Dependency {
   readonly key: string;
@@ -23,8 +24,16 @@ interface Status {
 }
 
 const dependencyRegex = /((is (?<type>\w+))|tested) by/;
+const statusCategories: ReadonlyMap<string, string> = new Map(
+  ['Todo', 'InProgress', 'Done'].map((s) => [normalize(s), s])
+);
+const typeCategories: ReadonlyMap<string, string> = new Map(
+  ['Bug', 'Story', 'Task'].map((t) => [normalize(t), t])
+);
 
 export class JiraIssues extends JiraConverter {
+  private logger = new AirbyteLogger();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskProjectRelationship',
@@ -34,15 +43,60 @@ export class JiraIssues extends JiraConverter {
     'tms_TaskTag',
   ];
 
+  private static readonly issueFieldsStream = new StreamName(
+    'jira',
+    'issue_fields'
+  );
   private static readonly workflowStatusesStream = new StreamName(
     'jira',
     'workflow_statuses'
   );
 
+  private static readonly standardFieldIds = [
+    'assignee',
+    'created',
+    'creator',
+    'description',
+    'issuelinks',
+    'issuetype',
+    'labels',
+    'parent',
+    'priority',
+    'project',
+    'status',
+    'subtasks',
+    'summary',
+    'updated',
+  ];
+
+  private static readonly fieldsToIgnore = [
+    ...JiraCommon.POINTS_FIELD_NAMES,
+    JiraCommon.DEV_FIELD_NAME,
+    JiraCommon.EPIC_LINK_FIELD_NAME,
+    JiraCommon.SPRINT_FIELD_NAME,
+  ];
+
+  private fieldNameById?: ReadonlyMap<string, string>;
   private statusByName?: ReadonlyMap<string, Status>;
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [JiraIssues.workflowStatusesStream];
+    return [JiraIssues.issueFieldsStream, JiraIssues.workflowStatusesStream];
+  }
+
+  private static getFieldNamesById(
+    ctx: StreamContext
+  ): ReadonlyMap<string, string> {
+    const map = new Map<string, string>();
+    const records = ctx.records(JiraIssues.issueFieldsStream.stringify());
+    for (const [id, recs] of Object.entries(records)) {
+      for (const rec of recs) {
+        const name = rec.record?.data?.name;
+        if (id && name) {
+          map.set(id, name);
+        }
+      }
+    }
+    return map;
   }
 
   private static getStatusesByName(
@@ -132,6 +186,9 @@ export class JiraIssues extends JiraConverter {
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
 
+    if (!this.fieldNameById) {
+      this.fieldNameById = JiraIssues.getFieldNamesById(ctx);
+    }
     if (!this.statusByName) {
       this.statusByName = JiraIssues.getStatusesByName(ctx);
     }
@@ -185,17 +242,23 @@ export class JiraIssues extends JiraConverter {
       });
     }
 
-    const statusChangelog: [Status, Date][] = [];
+    const statusChangelog: any[] = [];
     for (const change of JiraIssues.fieldChangelog(changelog, 'status')) {
       const status = this.statusByName.get(change.value);
       if (status) {
-        statusChangelog.push([status, change.changed]);
+        statusChangelog.push({
+          status: {
+            category: statusCategories.get(normalize(status.category)),
+            detail: status.detail,
+          },
+          changedAt: change.changed,
+        });
       }
     }
     // Timestamp of most recent status change
     let statusChanged: Date | undefined;
     if (statusChangelog.length) {
-      [[, statusChanged]] = statusChangelog;
+      statusChanged = last(statusChangelog).changedAt;
     }
 
     for (const link of issue.fields.issuelinks ?? []) {
@@ -214,7 +277,71 @@ export class JiraIssues extends JiraConverter {
       }
     }
 
-    // console.log(JSON.stringify(results.filter(r => r.model === 'tms_TaskAssignment')));
+    // Rewrite keys of additional fields to use names instead of ids
+    const additionalFields: any[] = [];
+    for (const [id, name] of this.fieldNameById.entries()) {
+      let value = issue.fields[id];
+      if (
+        JiraIssues.standardFieldIds.includes(id) ||
+        JiraIssues.fieldsToIgnore.includes(name)
+      ) {
+        continue;
+      } else if (name && value) {
+        try {
+          // Stringify arrays, objects, booleans, and numbers
+          value = isString(value) ? value : JSON.stringify(value);
+          additionalFields.push({name, value});
+        } catch (err) {
+          this.logger.warn(
+            `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
+          );
+        }
+      }
+    }
+
+    const creator =
+      issue.fields.creator?.accountId || issue.fields.creator?.name;
+    const parent = issue.fields.parent?.key
+      ? {
+          key: issue.fields.parent?.key,
+          type: issue.fields.parent?.fields?.issuetype?.name,
+        }
+      : null;
+    const epicKey = parent?.type === 'Epic' ? parent.key : issue.epic;
+    const type = issue.fields.issuetype?.name;
+
+    results.push({
+      model: 'tms_Task',
+      record: {
+        uid: issue.key,
+        name: issue.fields.summary,
+        description: issue.fields.description,
+        type: {
+          category: typeCategories.get(normalize(type)) ?? 'Custom',
+          detail: type,
+        },
+        status: {
+          category: statusCategories.get(
+            normalize(issue.fields.status?.statusCategory?.name)
+          ),
+          detail: issue.fields.status?.name,
+        },
+        priority: issue.fields.priority?.name,
+        createdAt: created,
+        updatedAt: toDate(issue.fields.updated),
+        statusChangedAt: statusChanged,
+        statusChangelog,
+        points: null, // TODO
+        creator: creator ? {uid: creator, source} : null,
+        parent: parent ? {uid: parent.key, source} : null,
+        epic: epicKey ? {uid: epicKey, source} : null,
+        sprint: null, // TODO
+        source,
+        additionalFields,
+      },
+    });
+
+    console.log(JSON.stringify(results.filter((r) => r.model === 'tms_Task')));
     return results;
   }
 }

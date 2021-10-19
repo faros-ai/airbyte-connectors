@@ -9,6 +9,9 @@ export const JiraStatusCategories: ReadonlyMap<string, string> = new Map(
 
 export class JiraCommon {
   static POINTS_FIELD_NAMES = ['Story Points', 'Story point estimate'];
+  static DEV_FIELD_NAME = 'Development';
+  static EPIC_LINK_FIELD_NAME = 'Epic Link';
+  static SPRINT_FIELD_NAME = 'Sprint';
 }
 
 export abstract class JiraConverter extends Converter {
