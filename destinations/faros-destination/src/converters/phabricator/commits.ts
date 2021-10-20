@@ -33,16 +33,16 @@ export class PhabricatorCommits extends Converter {
     );
     if (!sha || !repository) return res;
 
+    const author = commit.fields?.author;
+
     res.push({
       model: 'vcs_Commit',
       record: {
         sha,
         message: commit.fields?.message,
-        author: commit.author ? {uid: commit.author.userPHID, source} : null,
+        author: author?.userPHID ? {uid: author.userPHID, source} : null,
         htmlUrl: null,
-        createdAt: commit.author?.epoch
-          ? Utils.toDate(commit.author?.epoch)
-          : null,
+        createdAt: author?.epoch ? Utils.toDate(author?.epoch) : null,
         repository,
         source,
       },
