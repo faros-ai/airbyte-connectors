@@ -21,7 +21,7 @@ export class PhabricatorRepositories extends PhabricatorConverter {
     const repository = PhabricatorCommon.repositoryKey(repo, source);
     if (!repository) return res;
 
-    const uris = PhabricatorCommon.getRepositoryURIs(repo);
+    const uris = PhabricatorCommon.repositoryURIs(repo);
 
     // Since there is no separate stream of organizations, we are writing
     // an organization with each repository.

@@ -29,7 +29,7 @@ export class PhabricatorCommon {
     return {category: 'Custom', detail: 'unknown'};
   }
 
-  static getRepositoryURIs(
+  static repositoryURIs(
     repository: Dictionary<any>
   ): ReadonlyArray<Dictionary<any>> {
     const uris = repository?.attachments?.uris?.uris;
@@ -51,6 +51,8 @@ export class PhabricatorCommon {
   }
 
   static orgKey(source: string): undefined | OrgKey {
+    // Since Phabricator does not have a concept of organization,
+    // we are simply using the source name instead
     return {uid: source, source};
   }
 }
