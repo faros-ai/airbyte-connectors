@@ -9,6 +9,26 @@ export class PhabricatorCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
+  static vcs_UserType(user: Dictionary<any>): {
+    category: string;
+    detail: string;
+  } {
+    if (toLower(user.type) === 'user') {
+      const roles: ReadonlyArray<string> = Array.isArray(user?.fields?.roles)
+        ? user?.fields?.roles
+        : [];
+
+      if (roles.includes('bot')) {
+        return {category: 'Bot', detail: 'bot'};
+      }
+      if (roles.includes('list')) {
+        return {category: 'Custom', detail: 'list'};
+      }
+      return {category: 'User', detail: 'user'};
+    }
+    return {category: 'Custom', detail: 'unknown'};
+  }
+
   static getRepositoryURIs(
     repository: Dictionary<any>
   ): ReadonlyArray<Dictionary<any>> {

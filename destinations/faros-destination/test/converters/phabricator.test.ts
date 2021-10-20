@@ -48,7 +48,7 @@ describe('phabricator', () => {
       projects: 4,
       repositories: 2,
       revisions: 2,
-      users: 2,
+      users: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -58,8 +58,10 @@ describe('phabricator', () => {
       .value();
 
     const writtenByModel = {
+      vcs_Membership: 4,
       vcs_Organization: 2,
       vcs_Repository: 2,
+      vcs_User: 4,
     };
 
     const processedTotal = _(processedByStream).values().sum();
