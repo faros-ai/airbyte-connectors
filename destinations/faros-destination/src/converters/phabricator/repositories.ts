@@ -18,13 +18,13 @@ export class PhabricatorRepositories extends PhabricatorConverter {
     const repo = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository = PhabricatorCommon.parseRepositoryKey(repo, source);
+    const repository = PhabricatorCommon.repositoryKey(repo, source);
     if (!repository) return res;
 
     const uris = PhabricatorCommon.getRepositoryURIs(repo);
 
     // Since there is no separate stream of organizations, we are writing
-    // an organization for each repository.
+    // an organization with each repository.
     res.push({
       model: 'vcs_Organization',
       record: {

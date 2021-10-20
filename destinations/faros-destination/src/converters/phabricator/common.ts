@@ -37,29 +37,21 @@ export class PhabricatorCommon {
     return uris;
   }
 
-  static parseRepositoryKey(
+  static repositoryKey(
     repository: Dictionary<any>,
     source: string
   ): undefined | RepositoryKey {
     const repoName = repository?.fields?.shortName;
     if (!repoName) return undefined;
 
-    const uris = PhabricatorCommon.getRepositoryURIs(repository);
-    for (const uri of uris) {
-      try {
-        const url = new URL(uri?.fields?.uri?.effective);
-        const organization = url.hostname;
-        if (organization) {
-          return {
-            name: toLower(repoName),
-            organization: {uid: toLower(organization), source},
-          };
-        }
-      } catch (e) {
-        continue;
-      }
-    }
-    return undefined;
+    return {
+      name: toLower(repoName),
+      organization: PhabricatorCommon.orgKey(source),
+    };
+  }
+
+  static orgKey(source: string): undefined | OrgKey {
+    return {uid: source, source};
   }
 }
 

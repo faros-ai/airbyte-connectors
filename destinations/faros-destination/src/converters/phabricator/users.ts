@@ -1,11 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 export class PhabricatorUsers extends PhabricatorConverter {
@@ -14,15 +9,6 @@ export class PhabricatorUsers extends PhabricatorConverter {
     'vcs_User',
   ];
 
-  private readonly repositoriesStream = new StreamName(
-    'phabricator',
-    'repositories'
-  );
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.repositoriesStream];
-  }
-
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -30,7 +16,6 @@ export class PhabricatorUsers extends PhabricatorConverter {
     const source = this.streamName.source;
     const user = record.record.data;
     const res: DestinationRecord[] = [];
-
     const uid = user.phid;
 
     res.push({
@@ -44,24 +29,13 @@ export class PhabricatorUsers extends PhabricatorConverter {
       },
     });
 
-    // Get organization information from one of the repositories
-    // and assign users to this organization
-    const repositoriesStream = this.repositoriesStream.stringify();
-    const repos = ctx.getAll(repositoriesStream);
-    const repo = repos ? Object.values(repos)[0] : undefined;
-    const repoKey = PhabricatorCommon.parseRepositoryKey(
-      repo?.record?.data,
-      source
-    );
-    if (repoKey) {
-      res.push({
-        model: 'vcs_Membership',
-        record: {
-          user: {uid, source},
-          organization: {uid: repoKey.organization.uid, source},
-        },
-      });
-    }
+    res.push({
+      model: 'vcs_Membership',
+      record: {
+        user: {uid, source},
+        organization: PhabricatorCommon.orgKey(source),
+      },
+    });
 
     return res;
   }
