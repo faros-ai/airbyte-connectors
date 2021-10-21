@@ -47,7 +47,7 @@ describe('phabricator', () => {
       commits: 6,
       projects: 4,
       repositories: 2,
-      revisions: 2,
+      revisions: 3,
       users: 4,
     };
     const processed = _(processedByStream)
@@ -62,9 +62,9 @@ describe('phabricator', () => {
       vcs_Commit: 6,
       vcs_Membership: 4,
       vcs_Organization: 2,
-      vcs_PullRequestReview: 2,
+      vcs_PullRequestReview: 3,
       vcs_PullRequest__Update: 2,
-      vcs_PullRequest__Upsert: 2,
+      vcs_PullRequest__Upsert: 3,
       vcs_Repository: 2,
       vcs_User: 4,
     };
