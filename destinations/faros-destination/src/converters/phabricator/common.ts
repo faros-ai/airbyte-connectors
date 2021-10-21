@@ -29,6 +29,46 @@ export class PhabricatorCommon {
     return {category: 'Custom', detail: 'unknown'};
   }
 
+  static vcs_PullRequestState(revisionStatus: Dictionary<any>): {
+    category: string;
+    detail: string;
+  } {
+    const detail = toLower(revisionStatus?.value);
+    if (!detail) return {category: 'Custom', detail: 'unknown'};
+
+    switch (detail) {
+      case 'abandoned':
+        return {category: 'Closed', detail};
+      case 'published':
+        return {category: 'Merged', detail};
+      case 'needs-review':
+      case 'needs-revision':
+      case 'changes-planned':
+      case 'accepted':
+      case 'draft':
+        return {category: 'Open', detail};
+      default:
+        return {category: 'Custom', detail};
+    }
+  }
+
+  static vcs_PullRequestReviewState(reviewStatus: string): {
+    category: string;
+    detail: string;
+  } {
+    const detail = toLower(reviewStatus);
+    if (!detail) return {category: 'Custom', detail: 'unknown'};
+
+    switch (detail) {
+      case 'rejected':
+        return {category: 'ChangesRequested', detail};
+      case 'accepted':
+        return {category: 'Approved', detail};
+      default:
+        return {category: 'Custom', detail};
+    }
+  }
+
   static repositoryURIs(
     repository: Dictionary<any>
   ): ReadonlyArray<Dictionary<any>> {
