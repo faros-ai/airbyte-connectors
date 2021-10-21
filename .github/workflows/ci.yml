@@ -81,7 +81,7 @@ jobs:
           done
 
       - name: Stop Jenkins server
-        # if: github.ref == 'refs/heads/main' # Skip PRs
+        if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           docker stop jenkins
           docker rm jenkins
