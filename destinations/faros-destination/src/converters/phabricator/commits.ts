@@ -48,7 +48,7 @@ export class PhabricatorCommits extends Converter {
       },
     });
 
-    // TODO: figure out how to get the actual commit branch (hopefully it's possible)
+    // TODO: figure out how to get the actual commit branch
     // Until then we assume the default repository branch for all commits
     const branch = commit.repository.fields?.defaultBranch;
     if (branch) {
