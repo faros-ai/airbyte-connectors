@@ -32,6 +32,8 @@ export class PhabricatorRevisions extends PhabricatorConverter {
     const updatedAt = revision.fields?.dateModified
       ? Utils.toDate(revision.fields?.dateModified * 1000)
       : null;
+
+    // TODO: figure out how to get the actual mergedAt timestamp for each revision
     const mergedAt = state.category === 'Merged' ? updatedAt : null;
 
     const author = revision.fields?.authorPHID
@@ -39,19 +41,24 @@ export class PhabricatorRevisions extends PhabricatorConverter {
       : null;
 
     res.push({
-      model: 'vcs_PullRequest',
+      // We are explicitly passing __Upsert command here with at := 0,
+      // to allow updating PR merge commit from commits stream
+      // in the same revision
+      model: 'vcs_PullRequest__Upsert',
       record: {
-        number: revision.id,
-        title: revision.fields?.title,
-        state,
-        htmlUrl: revision.fields?.uri,
-        createdAt,
-        updatedAt,
-        mergedAt,
-        author,
-        // TODO: figure out how to get the merge commit for a revision
-        mergeCommit: null,
-        repository,
+        at: 0,
+        data: {
+          number: revision.id,
+          title: revision.fields?.title,
+          state,
+          htmlUrl: revision.fields?.uri,
+          createdAt,
+          updatedAt,
+          mergedAt,
+          author,
+          repository,
+          mergeCommit: null, // merge commit is set from commits stream
+        },
       },
     });
 

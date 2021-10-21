@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -69,6 +70,22 @@ export class PhabricatorCommon {
     }
   }
 
+  static parseCommitMessage(message: string): CommitMessage | undefined {
+    if (!message) return undefined;
+
+    const parts = message.split('\n\n');
+    const revision = parts.find((p) => p.startsWith('Differential Revision:'));
+    const revisionIdStr = revision
+      ? revision.split('/D').reverse()[0].trim()
+      : undefined;
+    const revisionId = Utils.parseIntegerWithDefault(revisionIdStr, -1);
+
+    return {
+      message: parts.length > 0 ? parts[0] : undefined,
+      revisionId: revisionId >= 0 ? revisionId : undefined,
+    };
+  }
+
   static repositoryURIs(
     repository: Dictionary<any>
   ): ReadonlyArray<Dictionary<any>> {
@@ -103,6 +120,11 @@ export abstract class PhabricatorConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.phid;
   }
+}
+
+export interface CommitMessage {
+  message?: string;
+  revisionId?: number;
 }
 
 export interface RepositoryKey {

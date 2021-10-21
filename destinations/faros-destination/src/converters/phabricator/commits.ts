@@ -34,12 +34,14 @@ export class PhabricatorCommits extends Converter {
     if (!sha || !repository) return res;
 
     const author = commit.fields?.author;
+    const fullMessage = commit.fields?.message;
+    const commitMessage = PhabricatorCommon.parseCommitMessage(fullMessage);
 
     res.push({
       model: 'vcs_Commit',
       record: {
         sha,
-        message: commit.fields?.message,
+        message: fullMessage,
         author: author?.userPHID ? {uid: author.userPHID, source} : null,
         htmlUrl: null,
         createdAt: author?.epoch ? Utils.toDate(author?.epoch) : null,
@@ -57,6 +59,23 @@ export class PhabricatorCommits extends Converter {
         record: {
           commit: {sha, repository},
           branch: {name: branch, repository},
+        },
+      });
+    }
+
+    if (commitMessage?.revisionId) {
+      res.push({
+        model: 'vcs_PullRequest__Update',
+        record: {
+          at: record.record.emitted_at,
+          where: {
+            number: commitMessage?.revisionId,
+            repository,
+          },
+          mask: ['mergeCommit'],
+          patch: {
+            mergeCommit: {repository, sha},
+          },
         },
       });
     }
