@@ -7,12 +7,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {GitlabCommon, GitlabConverter} from './common';
-
-interface CategoryRef {
-  readonly category: string;
-  readonly detail: string;
-}
+import {CategoryRef, GitlabCommon, GitlabConverter} from './common';
 
 export class GitlabJobs extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -57,43 +52,12 @@ export class GitlabJobs extends GitlabConverter {
           createdAt: Utils.toDate(job.created_at),
           startedAt: Utils.toDate(job.started_at),
           endedAt: Utils.toDate(job.finished_at),
-          status: this.convertBuildStatus(job.status),
+          status: GitlabCommon.convertBuildStatus(job.status),
           url: job.web_url,
           build: buildKey,
         },
       },
     ];
-  }
-
-  // GitLab defined status for:
-  // >> pipelines (aka builds): created, waiting_for_resource, preparing, pending,
-  //    running, success, failed, canceled, skipped, manual, scheduled
-  // >> jobs: created, pending, running, failed, success, canceled, skipped, or manual.
-  private convertBuildStatus(status?: string): CategoryRef {
-    if (!status) {
-      return {category: 'Unknown', detail: 'undefined'};
-    }
-    const detail = status?.toLowerCase();
-    switch (detail) {
-      case 'canceled':
-        return {category: 'Canceled', detail};
-      case 'failed':
-        return {category: 'Failed', detail};
-      case 'running':
-        return {category: 'Running', detail};
-      case 'success':
-        return {category: 'Success', detail};
-      case 'created':
-      case 'manual':
-      case 'pending':
-      case 'preparing':
-      case 'scheduled':
-      case 'waiting_for_resource':
-        return {category: 'Queued', detail};
-      case 'skipped':
-      default:
-        return {category: 'Custom', detail};
-    }
   }
 
   private convertBuildStepType(stage?: string): CategoryRef {

@@ -13,11 +13,10 @@ export class GitlabMergeRequestCommits extends GitlabConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const commit = record.record.data;
-    const res: DestinationRecord[] = [];
 
     const repository = GitlabCommon.parseRepositoryKey(commit.web_url, source);
 
-    if (!repository) return res;
+    if (!repository) return [];
 
     return [
       {

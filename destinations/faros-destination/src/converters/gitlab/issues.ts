@@ -30,21 +30,23 @@ export class GitlabIssues extends GitlabConverter {
     const source = this.streamName.source;
     const issue = record.record.data;
     const res: DestinationRecord[] = [];
+    const usersStream = this.usersStream.stringify();
 
     const uid = String(issue.id);
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
-        const assigneeUsersStream = this.usersStream.stringify();
-        const assigneeUser = ctx.get(assigneeUsersStream, String(assignee));
+        const assigneeUser = ctx.get(usersStream, String(assignee));
         const assigneeUsername = assigneeUser?.record?.data?.username;
 
-        res.push({
-          model: 'tms_TaskAssignment',
-          record: {
-            task: {uid, source},
-            assignee: {uid: assigneeUsername, source},
-          },
-        });
+        if (assigneeUsername) {
+          res.push({
+            model: 'tms_TaskAssignment',
+            record: {
+              task: {uid, source},
+              assignee: {uid: assigneeUsername, source},
+            },
+          });
+        }
       }
     });
 
@@ -60,7 +62,6 @@ export class GitlabIssues extends GitlabConverter {
       });
     });
 
-    const usersStream = this.usersStream.stringify();
     const user = ctx.get(usersStream, String(issue.author_id));
     const username = user?.record?.data?.username;
 

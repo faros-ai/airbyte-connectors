@@ -2,6 +2,11 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
 
+export interface CategoryRef {
+  readonly category: string;
+  readonly detail: string;
+}
+
 interface OrgKey {
   uid: string;
   source: string;
@@ -34,6 +39,37 @@ export class GitlabCommon {
       name: repositoryName?.toLowerCase(),
       organization: {uid: organization?.toLowerCase(), source},
     };
+  }
+
+  // GitLab defined status for:
+  // >> pipelines (aka builds): created, waiting_for_resource, preparing, pending,
+  //    running, success, failed, canceled, skipped, manual, scheduled
+  // >> jobs: created, pending, running, failed, success, canceled, skipped, or manual.
+  static convertBuildStatus(status?: string): CategoryRef {
+    if (!status) {
+      return {category: 'Unknown', detail: 'undefined'};
+    }
+    const detail = status?.toLowerCase();
+    switch (detail) {
+      case 'canceled':
+        return {category: 'Canceled', detail};
+      case 'failed':
+        return {category: 'Failed', detail};
+      case 'running':
+        return {category: 'Running', detail};
+      case 'success':
+        return {category: 'Success', detail};
+      case 'created':
+      case 'manual':
+      case 'pending':
+      case 'preparing':
+      case 'scheduled':
+      case 'waiting_for_resource':
+        return {category: 'Queued', detail};
+      case 'skipped':
+      default:
+        return {category: 'Custom', detail};
+    }
   }
 }
 
