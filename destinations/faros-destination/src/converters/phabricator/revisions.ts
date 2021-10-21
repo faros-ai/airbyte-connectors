@@ -61,8 +61,6 @@ export class PhabricatorRevisions extends PhabricatorConverter {
     const pullRequest = {repository, number: revision.id};
     let reviewId = 0;
     for (const reviewer of reviewers) {
-      // TODO: figure out how to get the actual submittedAt timestamp for each review
-      const submittedAt = updatedAt;
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
@@ -70,7 +68,8 @@ export class PhabricatorRevisions extends PhabricatorConverter {
           pullRequest,
           reviewer: {uid: reviewer.reviewerPHID, source},
           state: PhabricatorCommon.vcs_PullRequestReviewState(reviewer?.status),
-          submittedAt,
+          // TODO: figure out how to get the actual submittedAt timestamp for each revision
+          submittedAt: updatedAt,
         },
       });
       reviewId++;
