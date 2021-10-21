@@ -32,11 +32,11 @@ export class GitlabBranches extends GitlabConverter {
         repository,
       },
     });
-    if (branch.commit) {
+    if (branch.commit_id) {
       res.push({
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha: branch.commit.id, repository},
+          commit: {sha: branch.commit_id, repository},
           branch: {name: branch.name, repository},
         },
       });

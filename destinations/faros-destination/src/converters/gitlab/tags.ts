@@ -31,7 +31,7 @@ export class GitlabTags extends GitlabConverter {
     const projectsStream = this.projectsStream.stringify();
     const project = ctx.get(projectsStream, String(tag.project_id));
     const repository = GitlabCommon.parseRepositoryKey(
-      project?.record?.data.web_url,
+      project?.record?.data?.web_url,
       source
     );
 
@@ -43,7 +43,7 @@ export class GitlabTags extends GitlabConverter {
         record: {
           name: tag.name,
           message: tag.message,
-          commit: {repository, sha: tag.commit_id},
+          commit: {sha: tag.commit_id, repository},
           repository,
         },
       },

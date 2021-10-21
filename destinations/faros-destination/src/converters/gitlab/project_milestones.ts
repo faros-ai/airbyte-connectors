@@ -28,7 +28,6 @@ export class GitlabProjectMilestones extends GitlabConverter {
             0,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
-          // TODO:  get repository from context if web_url does not exist
           project: repository ? {uid: repository.name, source} : null,
           status: this.epicStatus(milestone.state),
           source,

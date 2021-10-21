@@ -14,7 +14,6 @@ export class GitlabIssues extends GitlabConverter {
     'tms_Label',
     'tms_Task',
     'tms_TaskAssignment',
-    'tms_TaskBoardRelationship',
     'tms_TaskTag',
   ];
 
@@ -79,21 +78,8 @@ export class GitlabIssues extends GitlabConverter {
         creator: username ? {uid: username, source} : null,
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
+        url: issue.web_url,
         source,
-      },
-    });
-
-    const repository = GitlabCommon.parseRepositoryKey(issue.web_url, source);
-
-    if (!repository) return res;
-
-    // TODO: If tasks get transferred between repos or projects, delete previous relationship
-    // (this should probably be done in here and in issue-events)
-    res.push({
-      model: 'tms_TaskBoardRelationship',
-      record: {
-        task: {uid, source},
-        board: repository ? {uid: repository.name, source} : null,
       },
     });
 

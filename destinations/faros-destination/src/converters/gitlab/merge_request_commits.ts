@@ -23,7 +23,7 @@ export class GitlabMergeRequestCommits extends GitlabConverter {
       {
         model: 'vcs_Commit',
         record: {
-          sha: String(commit.id),
+          sha: commit.sha,
           message: commit.description?.substring(
             0,
             GitlabCommon.MAX_DESCRIPTION_LENGTH

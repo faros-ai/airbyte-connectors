@@ -15,7 +15,8 @@ export class GitlabGroupMilestones extends GitlabConverter {
 
     const repository = GitlabCommon.parseRepositoryKey(
       milestone.web_url,
-      source
+      source,
+      4
     );
 
     return [

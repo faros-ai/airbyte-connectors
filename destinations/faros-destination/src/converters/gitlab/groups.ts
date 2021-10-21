@@ -21,7 +21,7 @@ export class GitlabGroups extends GitlabConverter {
     res.push({
       model: 'cicd_Organization',
       record: {
-        uid: String(group.id),
+        uid: group.path,
         description: group.description?.substring(
           0,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
@@ -35,7 +35,7 @@ export class GitlabGroups extends GitlabConverter {
     res.push({
       model: 'vcs_Organization',
       record: {
-        uid: String(group.id),
+        uid: group.path,
         name: group.name,
         htmlUrl: group.web_url,
         type: {category: 'Group', detail: ''},

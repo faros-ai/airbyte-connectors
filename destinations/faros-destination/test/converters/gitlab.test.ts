@@ -83,10 +83,10 @@ describe('gitlab', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 67 messages');
-    expect(stdout).toMatch('Read 67 records');
-    expect(stdout).toMatch('Processed 67 records');
-    expect(stdout).toMatch('Wrote 53 records');
+    expect(stdout).toMatch('Read 55 messages');
+    expect(stdout).toMatch('Read 55 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Wrote 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -106,10 +106,10 @@ describe('gitlab', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 67 messages');
-    expect(stdout).toMatch('Read 67 records');
-    expect(stdout).toMatch('Processed 67 records');
-    expect(stdout).toMatch('Would write 53 records');
+    expect(stdout).toMatch('Read 55 messages');
+    expect(stdout).toMatch('Read 55 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Would write 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -128,8 +128,8 @@ describe('gitlab', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Processed 67 records');
-    expect(stdout).toMatch('Would write 53 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Would write 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -210,16 +210,19 @@ describe('gitlab', () => {
     const processedByStream = {
       branches: 7,
       commits: 2,
-      issues: 1,
-      jobs: 20,
-      merge_request_commits: 8,
-      merge_requests: 8,
-      pipelines: 5,
-      project_labels: 10,
-      project_milestones: 1,
+      group_labels: 2,
+      group_milestones: 1,
+      groups: 1,
+      issues: 2,
+      jobs: 8,
+      merge_request_commits: 6,
+      merge_requests: 6,
+      pipelines: 2,
+      project_labels: 12,
+      project_milestones: 2,
       projects: 1,
       releases: 1,
-      tags: 2,
+      tags: 1,
       users: 1,
     };
     const processed = _(processedByStream)
@@ -230,22 +233,25 @@ describe('gitlab', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Build:5,
-      cicd_Pipeline:1,
-      cicd_Release:1,
-      cicd_ReleaseTagAssociation:1,
-      tms_Epic:1,
-      tms_Label:11,
-      tms_Task:1,
-      tms_TaskAssignment:1,
-      tms_TaskBoardRelationship:1,
-      tms_TaskTag:1,
-      vcs_Branch:7,
-      vcs_Commit:10,
-      vcs_PullRequest:8,
-      vcs_Repository:1,
-      vcs_Tag:2,
-      vcs_User:1
+      cicd_Build: 2,
+      cicd_BuildStep: 8,
+      cicd_Organization: 1,
+      cicd_Pipeline: 1,
+      cicd_Release: 1,
+      cicd_ReleaseTagAssociation: 1,
+      tms_Epic: 3,
+      tms_Label: 15,
+      tms_Task: 2,
+      tms_TaskAssignment: 1,
+      tms_TaskTag: 1,
+      vcs_Branch: 7,
+      vcs_BranchCommitAssociation: 7,
+      vcs_Commit: 8,
+      vcs_Organization: 1,
+      vcs_PullRequest: 6,
+      vcs_Repository: 1,
+      vcs_Tag: 1,
+      vcs_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

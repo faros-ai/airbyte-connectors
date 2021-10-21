@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, DestinationRecord} from '../converter';
+import {Converter} from '../converter';
 
 interface OrgKey {
   uid: string;
@@ -12,47 +12,24 @@ interface RepositoryKey {
   organization: OrgKey;
 }
 
-// interface GitLabUser {
-//   state: string;
-//   id: number;
-//   web_url: string | null;
-//   name: string | null;
-//   avatar_url: string | null;
-//   username: string;
-// }
-
 /** Common functions shares across GitLab converters */
 export class GitlabCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  // static vcs_User(user: GitLabUser, source: string): DestinationRecord {
-  //   // GitLab doesn't indicate user type
-  //   const type = {category: 'User', detail: 'user'};
-
-  //   return {
-  //     model: 'vcs_User',
-  //     record: {
-  //       type,
-  //       uid: user.username,
-  //       name: user.name ?? null,
-  //       htmlUrl: user.web_url ?? null,
-  //       source,
-  //     },
-  //   };
-  // }
-
   static parseRepositoryKey(
     webUrl: string | undefined,
-    source: string
+    source: string,
+    startIndex = 3
   ): undefined | RepositoryKey {
     if (!webUrl) return undefined;
+    const repositoryIndex = startIndex + 1;
 
     const orgRepo: ReadonlyArray<string> = webUrl.split('/');
-    if (orgRepo.length < 4) return undefined;
+    if (orgRepo.length < repositoryIndex) return undefined;
 
-    const organization = orgRepo[3];
-    const repositoryName = orgRepo[4];
+    const organization = orgRepo[startIndex];
+    const repositoryName = orgRepo[repositoryIndex];
     return {
       name: repositoryName?.toLowerCase(),
       organization: {uid: organization?.toLowerCase(), source},
