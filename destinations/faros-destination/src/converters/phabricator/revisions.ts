@@ -76,8 +76,6 @@ export class PhabricatorRevisions extends PhabricatorConverter {
       reviewId++;
     }
 
-    console.log(JSON.stringify(res));
-
     return res;
   }
 }
