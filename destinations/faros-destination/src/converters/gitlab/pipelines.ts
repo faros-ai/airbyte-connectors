@@ -13,14 +13,13 @@ export class GitlabPipelines extends GitlabConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const pipeline = record.record.data;
-    const res: DestinationRecord[] = [];
 
     const repository = GitlabCommon.parseRepositoryKey(
       pipeline.web_url,
       source
     );
 
-    if (!repository) return res;
+    if (!repository) return [];
 
     const status = GitlabCommon.convertBuildStatus(pipeline.status);
     const endedAt =
@@ -33,19 +32,19 @@ export class GitlabPipelines extends GitlabConverter {
       uid: repository.name,
     };
 
-    res.push({
-      model: 'cicd_Build',
-      record: {
-        uid: String(pipeline.id),
-        number: pipeline.id,
-        pipeline: pipelineKey,
-        status,
-        url: pipeline.web_url,
-        startedAt: Utils.toDate(pipeline.created_at),
-        endedAt,
+    return [
+      {
+        model: 'cicd_Build',
+        record: {
+          uid: String(pipeline.id),
+          number: pipeline.id,
+          pipeline: pipelineKey,
+          status,
+          url: pipeline.web_url,
+          startedAt: Utils.toDate(pipeline.created_at),
+          endedAt,
+        },
       },
-    });
-
-    return res;
+    ];
   }
 }

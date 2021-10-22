@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {
@@ -10,6 +10,13 @@ import {
 import {GitlabConverter} from './common';
 
 export class GitlabReleases extends GitlabConverter {
+  private readonly logger: AirbyteLogger;
+
+  constructor() {
+    super();
+    this.logger = new AirbyteLogger();
+  }
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
     'cicd_ReleaseTagAssociation',
@@ -35,7 +42,12 @@ export class GitlabReleases extends GitlabConverter {
       '/'
     ).split('/');
 
-    if (!owner || !repo) return res;
+    if (!owner || !repo) {
+      this.logger
+        .warn(`Could not find commit_path or tag_path from StreamContext for
+        this record: ${this.id}`);
+      return res;
+    }
 
     const usersStream = this.usersStream.stringify();
     const user = ctx.get(usersStream, String(release.author_id));
