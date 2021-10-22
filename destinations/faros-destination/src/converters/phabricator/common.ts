@@ -7,9 +7,6 @@ import {Converter} from '../converter';
 
 /** Common functions shares across Phabricator converters */
 export class PhabricatorCommon {
-  // Max length for free-form description text fields such as issue body
-  static readonly MAX_DESCRIPTION_LENGTH = 1000;
-
   static vcs_UserType(user: Dictionary<any>): {
     category: string;
     detail: string;

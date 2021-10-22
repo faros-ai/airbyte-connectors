@@ -41,10 +41,7 @@ export class PhabricatorRepositories extends PhabricatorConverter {
         ...repository,
         fullName: repo.fields?.name,
         private: true,
-        description: repo.fields?.description?.raw.substring(
-          0,
-          PhabricatorCommon.MAX_DESCRIPTION_LENGTH
-        ),
+        description: repo.fields?.description?.raw,
         language: null,
         size: null,
         mainBranch: repo.fields?.defaultBranch,
