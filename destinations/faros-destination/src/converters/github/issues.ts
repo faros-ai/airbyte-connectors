@@ -59,7 +59,7 @@ export class GithubIssues extends GithubConverter {
       });
     });
 
-    const issueLabelsStream = this.issueLabelsStream.stringify();
+    const issueLabelsStream = this.issueLabelsStream.asString;
     for (const id of issue.labels) {
       const label = ctx.get(issueLabelsStream, String(id));
       const name = label?.record?.data?.name;

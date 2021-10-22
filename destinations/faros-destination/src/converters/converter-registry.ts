@@ -27,7 +27,7 @@ export class ConverterRegistry {
     streamName: StreamName,
     onLoadError?: (err: Error) => void
   ): Converter | undefined {
-    const name = streamName.stringify();
+    const name = streamName.asString;
 
     const res = ConverterRegistry.convertersByStream[name];
     if (res && typeof res !== 'boolean') return res;

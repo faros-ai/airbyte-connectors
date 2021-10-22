@@ -91,9 +91,11 @@ const StreamNameSeparator = '__';
 export class StreamName {
   constructor(readonly source: string, readonly name: string) {}
 
-  private readonly str = `${this.source}${StreamNameSeparator}${this.name}`;
+  private str: string;
 
-  stringify(): string {
+  get asString(): string {
+    if (this.str) return this.str;
+    this.str = `${this.source}${StreamNameSeparator}${this.name}`;
     return this.str;
   }
 
