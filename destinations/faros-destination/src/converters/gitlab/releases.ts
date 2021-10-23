@@ -10,12 +10,7 @@ import {
 import {GitlabConverter} from './common';
 
 export class GitlabReleases extends GitlabConverter {
-  private readonly logger: AirbyteLogger;
-
-  constructor() {
-    super();
-    this.logger = new AirbyteLogger();
-  }
+  private readonly logger: AirbyteLogger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',

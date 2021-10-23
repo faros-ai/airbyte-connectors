@@ -10,12 +10,7 @@ import {
 import {GitlabCommon, GitlabConverter} from './common';
 
 export class GitlabIssues extends GitlabConverter {
-  private readonly logger: AirbyteLogger;
-
-  constructor() {
-    super();
-    this.logger = new AirbyteLogger();
-  }
+  private readonly logger: AirbyteLogger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',

@@ -10,12 +10,7 @@ import {
 import {CategoryRef, GitlabCommon, GitlabConverter} from './common';
 
 export class GitlabJobs extends GitlabConverter {
-  private readonly logger: AirbyteLogger;
-
-  constructor() {
-    super();
-    this.logger = new AirbyteLogger();
-  }
+  private readonly logger: AirbyteLogger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_BuildStep',
