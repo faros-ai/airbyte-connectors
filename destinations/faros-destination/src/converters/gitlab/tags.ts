@@ -28,7 +28,7 @@ export class GitlabTags extends GitlabConverter {
     const source = this.streamName.source;
     const tag = record.record.data;
 
-    const projectsStream = this.projectsStream.stringify();
+    const projectsStream = this.projectsStream.asString;
     const project = ctx.get(projectsStream, String(tag.project_id));
     const repository = GitlabCommon.parseRepositoryKey(
       project?.record?.data?.web_url,

@@ -32,7 +32,7 @@ export class GitlabIssues extends GitlabConverter {
     const source = this.streamName.source;
     const issue = record.record.data;
     const res: DestinationRecord[] = [];
-    const usersStream = this.usersStream.stringify();
+    const usersStream = this.usersStream.asString;
 
     const uid = String(issue.id);
     issue.assignees?.forEach((assignee: any) => {

@@ -44,7 +44,7 @@ export class GitlabReleases extends GitlabConverter {
       return res;
     }
 
-    const usersStream = this.usersStream.stringify();
+    const usersStream = this.usersStream.asString;
     const user = ctx.get(usersStream, String(release.author_id));
     const username = user?.record?.data?.username;
 
