@@ -30,7 +30,7 @@ export class GitlabJobs extends GitlabConverter {
     const job = record.record.data;
 
     const repository = GitlabCommon.parseRepositoryKey(job.web_url, source);
-    const pipelinesStream = this.pipelinesStream.stringify();
+    const pipelinesStream = this.pipelinesStream.asString;
     const pipeline = ctx.get(pipelinesStream, String(job.pipeline_id));
     const pipelineId = pipeline?.record?.data?.id;
 

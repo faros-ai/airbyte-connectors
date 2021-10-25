@@ -24,3 +24,7 @@ export const gitlabPGRawLog = readTestResourceFile('gitlab-pg-raw.log');
 export const gitlabAllStreamsLog = readTestResourceFile(
   'gitlab-all-streams.log'
 );
+
+export const phabricatorAllStreamsLog = readTestResourceFile(
+  'phabricator-all-streams.log'
+);
