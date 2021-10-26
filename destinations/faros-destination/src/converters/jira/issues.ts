@@ -307,7 +307,8 @@ export class JiraIssues extends JiraConverter {
           type: issue.fields.parent?.fields?.issuetype?.name,
         }
       : null;
-    const epicKey = parent?.type === 'Epic' ? parent.key : issue.epic;
+    const epicKey = parent?.type === 'Epic' ? parent.key : issue.epic; // TODO: issue.epic
+    // TODO: PRs
     const type = issue.fields.issuetype?.name;
 
     results.push({
