@@ -47,7 +47,7 @@ export class JenkinsBuilds extends Converter {
         startedAt: Utils.toDate(build.timestamp),
         endedAt: Utils.toDate(build.timestamp + build.duration),
         status: this.convertBuildStatus(build.result),
-        url: build.url,
+        url: jenkinsUrl.url,
         pipeline: {
           uid: pipeline.record.uid,
           organization: orgKey,

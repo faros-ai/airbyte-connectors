@@ -87,7 +87,7 @@ export class JiraIssues extends JiraConverter {
     ctx: StreamContext
   ): ReadonlyMap<string, string> {
     const map = new Map<string, string>();
-    const records = ctx.records(JiraIssues.issueFieldsStream.stringify());
+    const records = ctx.records(JiraIssues.issueFieldsStream.asString);
     for (const [id, rec] of Object.entries(records)) {
       const name = rec.record?.data?.name;
       if (id && name) {
@@ -101,7 +101,7 @@ export class JiraIssues extends JiraConverter {
     ctx: StreamContext
   ): ReadonlyMap<string, Status> {
     const map = new Map<string, Status>();
-    const records = ctx.records(JiraIssues.workflowStatusesStream.stringify());
+    const records = ctx.records(JiraIssues.workflowStatusesStream.asString);
     for (const [id, rec] of Object.entries(records)) {
       const detail = rec.record?.data?.name;
       const category = rec.record?.data?.statusCategory?.name;

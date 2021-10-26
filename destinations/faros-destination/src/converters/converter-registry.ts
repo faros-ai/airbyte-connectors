@@ -30,7 +30,7 @@ export class ConverterRegistry {
     config: AirbyteConfig,
     onLoadError?: (err: Error) => void
   ): Converter | undefined {
-    const name = streamName.stringify();
+    const name = streamName.asString;
 
     const res = ConverterRegistry.convertersByStream[name];
     if (res && typeof res !== 'boolean') return res;

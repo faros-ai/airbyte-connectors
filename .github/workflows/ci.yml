@@ -52,7 +52,7 @@ jobs:
         run: lerna run test-cov
 
       - name: Run Jenkins server
-        # if: github.ref == 'refs/heads/main' # Skip PRs
+        if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
           docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
@@ -70,7 +70,7 @@ jobs:
           sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
 
       - name: Source Acceptance Test
-        # if: github.ref == 'refs/heads/main' # Skip PRs
+        if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           for i in $(ls -d sources/*/)
           do
@@ -81,7 +81,7 @@ jobs:
           done
 
       - name: Stop Jenkins server
-        # if: github.ref == 'refs/heads/main' # Skip PRs
+        if: github.ref == 'refs/heads/main' # Skip PRs
         run: |
           docker stop jenkins
           docker rm jenkins

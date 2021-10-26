@@ -40,10 +40,7 @@ export class GithubRepositories extends GithubConverter {
         ...repository,
         fullName: repo.full_name,
         private: repo.private,
-        description: repo.description?.substring(
-          0,
-          GithubCommon.MAX_DESCRIPTION_LENGTH
-        ),
+        description: repo.description,
         language: repo.language ?? null,
         size: repo.size,
         mainBranch: repo.default_branch,

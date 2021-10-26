@@ -44,6 +44,14 @@ export class StreamContext {
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
 
+  getAll(streamName: string): Dictionary<AirbyteRecord> | undefined {
+    const recs = this.recordsByStreamName[streamName];
+    if (recs) {
+      return recs;
+    }
+    return undefined;
+  }
+
   get(streamName: string, id: string): AirbyteRecord | undefined {
     const recs = this.recordsByStreamName[streamName];
     if (recs) {
@@ -88,8 +96,12 @@ const StreamNameSeparator = '__';
 export class StreamName {
   constructor(readonly source: string, readonly name: string) {}
 
-  stringify(): string {
-    return `${this.source}${StreamNameSeparator}${this.name}`;
+  private str: string;
+
+  get asString(): string {
+    if (this.str) return this.str;
+    this.str = `${this.source}${StreamNameSeparator}${this.name}`;
+    return this.str;
   }
 
   static fromString(s: string): StreamName {

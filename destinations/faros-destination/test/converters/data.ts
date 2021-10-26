@@ -16,3 +16,17 @@ export const jenkinsAllStreamsLog = readTestResourceFile(
 );
 
 export const jiraAllStreamsLog = readTestResourceFile('jira-all-streams.log');
+
+export const asanaLog = readTestResourceFile('asana.log');
+export const asanaPGRawLog = readTestResourceFile('asana-pg-raw.log');
+export const asanaAllStreamsLog = readTestResourceFile('asana-all-streams.log');
+
+export const gitlabLog = readTestResourceFile('gitlab.log');
+export const gitlabPGRawLog = readTestResourceFile('gitlab-pg-raw.log');
+export const gitlabAllStreamsLog = readTestResourceFile(
+  'gitlab-all-streams.log'
+);
+
+export const phabricatorAllStreamsLog = readTestResourceFile(
+  'phabricator-all-streams.log'
+);

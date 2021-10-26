@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
