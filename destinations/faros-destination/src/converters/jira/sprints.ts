@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {flatten} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -16,6 +15,7 @@ interface SprintIssue {
   id: number;
   key: string;
   fields: Dictionary<any>;
+  issueId: string;
   sprintId: number;
 }
 export class JiraSprints extends JiraConverter {
@@ -42,15 +42,13 @@ export class JiraSprints extends JiraConverter {
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
     const records = ctx.records(JiraSprints.issueFieldsStream.stringify());
     const results: Dictionary<string[]> = {};
-    for (const [id, recs] of Object.entries(records)) {
-      for (const rec of recs) {
-        const name = rec.record?.data?.name;
-        if (!JiraCommon.POINTS_FIELD_NAMES.includes(name)) continue;
-        if (!(name in results)) {
-          results[name] = [];
-        }
-        results[name].push(id);
+    for (const [id, record] of Object.entries(records)) {
+      const name = record.record?.data?.name;
+      if (!JiraCommon.POINTS_FIELD_NAMES.includes(name)) continue;
+      if (!(name in results)) {
+        results[name] = [];
       }
+      results[name].push(id);
     }
     return results;
   }
@@ -60,7 +58,7 @@ export class JiraSprints extends JiraConverter {
   ): Dictionary<SprintIssue[], number> {
     const records = ctx.records(JiraSprints.sprintIssuesStream.stringify());
     const results: Dictionary<SprintIssue[], number> = {};
-    for (const record of flatten(Object.values(records))) {
+    for (const record of Object.values(records)) {
       const sprintId = record.record?.data?.sprintId;
       if (!sprintId) continue;
       if (!(sprintId in results)) {

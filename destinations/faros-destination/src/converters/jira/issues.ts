@@ -88,12 +88,10 @@ export class JiraIssues extends JiraConverter {
   ): ReadonlyMap<string, string> {
     const map = new Map<string, string>();
     const records = ctx.records(JiraIssues.issueFieldsStream.stringify());
-    for (const [id, recs] of Object.entries(records)) {
-      for (const rec of recs) {
-        const name = rec.record?.data?.name;
-        if (id && name) {
-          map.set(id, name);
-        }
+    for (const [id, rec] of Object.entries(records)) {
+      const name = rec.record?.data?.name;
+      if (id && name) {
+        map.set(id, name);
       }
     }
     return map;
@@ -104,13 +102,11 @@ export class JiraIssues extends JiraConverter {
   ): ReadonlyMap<string, Status> {
     const map = new Map<string, Status>();
     const records = ctx.records(JiraIssues.workflowStatusesStream.stringify());
-    for (const [id, recs] of Object.entries(records)) {
-      for (const rec of recs) {
-        const detail = rec.record?.data?.name;
-        const category = rec.record?.data?.statusCategory?.name;
-        if (detail && category) {
-          map.set(detail, {category, detail});
-        }
+    for (const [id, rec] of Object.entries(records)) {
+      const detail = rec.record?.data?.name;
+      const category = rec.record?.data?.statusCategory?.name;
+      if (detail && category) {
+        map.set(detail, {category, detail});
       }
     }
     return map;

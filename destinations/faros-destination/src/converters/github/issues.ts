@@ -61,9 +61,8 @@ export class GithubIssues extends GithubConverter {
 
     const issueLabelsStream = this.issueLabelsStream.stringify();
     for (const id of issue.labels) {
-      const label = ctx.get(issueLabelsStream, String(id)) ?? [];
-      if (label.length === 0) continue;
-      const name = label[0].record?.data?.name;
+      const label = ctx.get(issueLabelsStream, String(id));
+      const name = label?.record?.data?.name;
       if (!name) continue;
       res.push({
         model: 'tms_TaskTag',
