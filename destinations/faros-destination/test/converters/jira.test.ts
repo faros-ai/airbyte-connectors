@@ -17,8 +17,8 @@ describe('jira', () => {
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/jira-catalog.json';
-  const catalogRawPath = 'test/resources/jira-catalog-raw.json';
+  const catalogPath = 'test/resources/jira/catalog.json';
+  const catalogRawPath = 'test/resources/jira/catalog-raw.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
