@@ -8,7 +8,8 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Jenkins, JenkinsBuilds, JenkinsConfig, JenkinsJobs} from './stream';
+import {Jenkins, JenkinsConfig} from './jenkins';
+import {Builds, Jobs} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -22,18 +23,18 @@ export class JenkinsSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: JenkinsConfig): Promise<[boolean, VError | undefined]> {
-    const [client, errorMessage] = await Jenkins.validateClient(config);
-
-    if (client) {
-      return [true, undefined];
+  async checkConnection(
+    config: JenkinsConfig
+  ): Promise<[boolean, VError | undefined]> {
+    try {
+      const jenkins = Jenkins.instance(config as JenkinsConfig, this.logger);
+      await jenkins.checkConnection();
+    } catch (err: any) {
+      return [false, err];
     }
-    return [false, new VError(errorMessage)];
+    return [true, undefined];
   }
   streams(config: JenkinsConfig): AirbyteStreamBase[] {
-    return [
-      new JenkinsBuilds(config, this.logger),
-      new JenkinsJobs(config, this.logger),
-    ];
+    return [new Builds(config, this.logger), new Jobs(config, this.logger)];
   }
 }

@@ -58,7 +58,7 @@ A source contains one or more streams, which correspond to entity types of the
 system your source is fetching data from. For example, a GitHub source would
 have streams for users, commits, pull requests, etc. Each stream also has its
 own arbitrary state for supporting incremental mode syncs. Implement your
-streams, an example of which is in the `JenkinsBuilds` class in `src/stream.ts`,
+streams, an example of which is in the `Builds` class in `src/stream.ts`,
 and include them in your source via the `streams()` method of your source class.
 
 Each stream has a JSON-Schema object defining the schema of the records that

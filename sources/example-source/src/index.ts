@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {JenkinsBuilds} from './stream';
+import {Builds} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -30,6 +30,6 @@ class ExampleSource extends AirbyteSourceBase {
     return [false, new VError('User is not chris')];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new JenkinsBuilds(this.logger)];
+    return [new Builds(this.logger)];
   }
 }

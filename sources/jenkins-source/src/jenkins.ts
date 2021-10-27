@@ -1,15 +1,9 @@
-import {
-  AirbyteConfig,
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
-import jenkinsClient, {JenkinsPromisifiedAPI} from 'jenkins';
-import {Dictionary} from 'ts-essentials';
+import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
+import jenkinsClient from 'jenkins';
 import {Memoize} from 'typescript-memoize';
 import {URL} from 'url';
 import util from 'util';
+import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
 const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
@@ -27,7 +21,7 @@ export interface JenkinsConfig extends AirbyteConfig {
   readonly last100Builds?: boolean;
 }
 
-interface Job {
+export interface Job {
   _class: string;
   fullName: string;
   name: string;
@@ -38,7 +32,7 @@ interface Job {
   jobs?: Job[];
 }
 
-interface Build {
+export interface Build {
   _class: string;
   actions: any[];
   building: boolean;
@@ -52,63 +46,57 @@ interface Build {
   fullDisplayName: string;
 }
 
-interface JenkinsState {
+export interface JenkinsState {
   newJobsLastCompletedBuilds: Record<string, number>; // job to build number
-}
-
-function parse(str: string, ...args: any[]): string {
-  let i = 0;
-  return str.replace(/%s/g, () => args[i++]);
-}
-
-function buildNameToJob(str: string): string {
-  return str.substring(0, str.indexOf(' '));
-}
-
-function validateInteger(
-  value: number
-): [true | undefined, string | undefined] {
-  if (value) {
-    if (typeof value === 'number' && value > 0) {
-      return [true, undefined];
-    }
-    return [undefined, `${value} must be a valid positive number`];
-  }
-  return [true, undefined];
 }
 
 export class Jenkins {
   constructor(
-    private readonly client: any,
+    private readonly client: any, // It should be 'JenkinsPromisifiedAPI' instead of any, but we could not make it work
     private readonly logger: AirbyteLogger
   ) {}
 
-  static async validateClient(
-    config: JenkinsConfig
-  ): Promise<[JenkinsPromisifiedAPI | undefined, string | undefined]> {
+  private static parse(str: string, ...args: any[]): string {
+    let i = 0;
+    return str.replace(/%s/g, () => args[i++]);
+  }
+
+  private static validateInteger(
+    value: number
+  ): [true | undefined, string | undefined] {
+    if (value) {
+      if (typeof value === 'number' && value > 0) {
+        return [true, undefined];
+      }
+      return [undefined, `${value} must be a valid positive number`];
+    }
+    return [true, undefined];
+  }
+
+  static instance(config: JenkinsConfig, logger: AirbyteLogger): Jenkins {
     if (typeof config.server_url !== 'string') {
-      return [undefined, 'server_url: must be a string'];
+      throw new VError('server_url: must be a string');
     }
     if (typeof config.user !== 'string') {
-      return [undefined, 'User: must be a string'];
+      throw new VError('user: must be a string');
     }
     if (typeof config.token !== 'string') {
-      return [undefined, 'Token: must be a string'];
+      throw new VError('token: must be a string');
     }
-    const depthCheck = validateInteger(config.depth);
+    const depthCheck = Jenkins.validateInteger(config.depth);
     if (!depthCheck[0]) {
-      return [undefined, depthCheck[1]];
+      throw new VError(depthCheck[1]);
     }
-    const pageSizeCheck = validateInteger(config.pageSize);
+    const pageSizeCheck = Jenkins.validateInteger(config.pageSize);
     if (!pageSizeCheck[0]) {
-      return [undefined, pageSizeCheck[1]];
+      throw new VError(pageSizeCheck[1]);
     }
 
-    let jenkinsUrl;
+    let jenkinsUrl: URL;
     try {
       jenkinsUrl = new URL(config.server_url);
     } catch (error) {
-      return [undefined, 'server_url: must be a valid url'];
+      throw new VError('server_url: must be a valid url');
     }
 
     jenkinsUrl.username = config.user;
@@ -120,15 +108,18 @@ export class Jenkins {
       promisify: true,
     });
 
+    return new Jenkins(client, logger);
+  }
+
+  async checkConnection(): Promise<void> {
     try {
-      await client.info();
-    } catch (error) {
-      return [
-        undefined,
-        'server_url: Please verify your user/token is correct',
-      ];
+      await this.client.info();
+    } catch (error: any) {
+      const err = error?.message ?? JSON.stringify(error);
+      throw new VError(
+        `Please verify your server_url and user/token are correct. Error: ${err}`
+      );
     }
-    return [client, undefined];
   }
 
   async *syncBuilds(
@@ -154,12 +145,12 @@ export class Jenkins {
     const pageSize = jenkinsCfg.pageSize || DEFAULT_PAGE_SIZE;
     const last100Builds = jenkinsCfg.last100Builds ?? false;
     const depth = jenkinsCfg.depth ?? (await this.calculateMaxJobsDepth());
-    this.logger.debug(parse('Max depth: %s', depth));
+    this.logger.debug(Jenkins.parse('Max depth: %s', depth));
 
     const numRootJobs = await this.countRootJobs();
     const numPages = Math.ceil(numRootJobs / pageSize);
     this.logger.debug(
-      parse(
+      Jenkins.parse(
         'Number of root jobs: %s. Number of pages: %s',
         numRootJobs,
         numPages
@@ -210,7 +201,7 @@ export class Jenkins {
       existingState?.newJobsLastCompletedBuilds?.[job.fullName];
     const builds = job.allBuilds ?? job.builds ?? [];
     if (!builds.length) {
-      this.logger.info(parse("Job '%s' has no builds", job.fullName));
+      this.logger.info(Jenkins.parse("Job '%s' has no builds", job.fullName));
       return builds;
     }
     return lastBuildNumber
@@ -247,7 +238,7 @@ export class Jenkins {
       return this.retrieveAllJobs(rootJobs);
     } catch (err: any) {
       this.logger.warn(
-        parse(
+        Jenkins.parse(
           'Failed to fetch jobs in page %s: %s. Skipping page.',
           page,
           err.message
@@ -291,118 +282,5 @@ export class Jenkins {
       }
     }
     return allJobs;
-  }
-}
-
-export class JenkinsBuilds extends AirbyteStreamBase {
-  constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
-    super(logger);
-  }
-
-  getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/builds.json');
-  }
-  get primaryKey(): StreamKey {
-    return 'fullDisplayName';
-  }
-  get cursorField(): string | string[] {
-    return 'number';
-  }
-
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Build,
-    streamState?: JenkinsState
-  ): AsyncGenerator<Build, any, any> {
-    const [client, errorMessage] = await Jenkins.validateClient(this.config);
-    if (!client) {
-      this.logger.error(errorMessage || '');
-      return undefined;
-    }
-    const jenkins = new Jenkins(client, this.logger);
-
-    let iter: AsyncGenerator<Build, any, unknown>;
-    if (syncMode === SyncMode.INCREMENTAL) {
-      iter = jenkins.syncBuilds(this.config, streamState ?? null);
-    } else {
-      iter = jenkins.syncBuilds(this.config, null);
-    }
-    yield* iter;
-  }
-
-  getUpdatedState(
-    currentStreamState: JenkinsState,
-    latestRecord: Build
-  ): JenkinsState {
-    const jobName = buildNameToJob(latestRecord.fullDisplayName);
-    if (!currentStreamState.newJobsLastCompletedBuilds) {
-      currentStreamState.newJobsLastCompletedBuilds = {};
-    }
-    currentStreamState.newJobsLastCompletedBuilds[jobName] = Math.max(
-      currentStreamState?.newJobsLastCompletedBuilds[jobName] ?? 0,
-      latestRecord?.number ?? 0
-    );
-    return currentStreamState;
-  }
-}
-
-export class JenkinsJobs extends AirbyteStreamBase {
-  constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
-    super(logger);
-  }
-
-  getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/jobs.json');
-  }
-  get primaryKey(): StreamKey {
-    return 'fullName';
-  }
-  get cursorField(): string | string[] {
-    return ['url'];
-  }
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Job
-  ): AsyncGenerator<Job | undefined> {
-    let cursorValid = false;
-    if (cursorField && streamSlice) {
-      /** Check if streamSlice has all cursorFields. 
-       * First - create list of boolean values to define if fields exist
-       * Second - List is checking to contain 'true' values
-      */
-      const fieldsExistingList = cursorField.map((f) => f in streamSlice);
-      cursorValid = fieldsExistingList.findIndex((b) => !b) <= -1;
-    }
-    if (syncMode === SyncMode.INCREMENTAL && cursorValid) {
-      yield streamSlice;
-    } else {
-      yield undefined;
-    }
-  }
-
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Job,
-    streamState?: any
-  ): AsyncGenerator<Job, any, any> {
-    const [client, errorMessage] = await Jenkins.validateClient(this.config);
-    if (!client) {
-      this.logger.error(errorMessage || '');
-      return undefined;
-    }
-
-    const jenkins = new Jenkins(client, this.logger);
-    let jobs: Job[];
-    if (syncMode === SyncMode.INCREMENTAL) {
-      jobs = await jenkins.syncJobs(this.config, streamSlice || null);
-    } else {
-      jobs = await jenkins.syncJobs(this.config, null);
-    }
-    for (const job of jobs) {
-      yield job;
-    }
   }
 }

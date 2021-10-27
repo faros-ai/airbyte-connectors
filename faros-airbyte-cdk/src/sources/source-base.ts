@@ -107,19 +107,18 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
     catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
+    this.logger.info(`Syncing ${this.name}`);
     const connectorState = cloneDeep(state ?? {});
-    this.logger.info(`Starting syncing ${this.name}`);
     // TODO: assert all streams exist in the connector
     // get the streams once in case the connector needs to make any queries to
     // generate them
     const streamInstances = keyBy(this.streams(config), (s) => s.name);
     for (const configuredStream of catalog.streams) {
-      const streamInstance = streamInstances[configuredStream.stream.name];
+      const streamName = configuredStream.stream.name;
+      const streamInstance = streamInstances[streamName];
       if (!streamInstance) {
         throw new VError(
-          `The requested stream ${
-            configuredStream.stream.name
-          } was not found in the source. Available streams: ${Object.keys(
+          `The requested stream ${streamName} was not found in the source. Available streams: ${Object.keys(
             streamInstances
           )}`
         );
@@ -136,7 +135,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
       } catch (e: any) {
         this.logger.error(
           `Encountered an error while reading stream ${this.name}: ${
-            e.message ?? e
+            e.message ?? JSON.stringify(e)
           }`
         );
         throw e;
@@ -161,7 +160,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
     const mode = useIncremental ? 'incremental' : 'full';
-    this.logger.info(`Syncing stream ${streamName} in ${mode} mode`);
+    this.logger.info(`Syncing ${streamName} stream in ${mode} mode`);
 
     for await (const record of recordGenerator) {
       if (record.type === AirbyteMessageType.RECORD) {
@@ -169,7 +168,9 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
       }
       yield record;
     }
-    this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
+    this.logger.info(
+      `Finished syncing ${streamName} stream. Read ${recordCounter} records`
+    );
   }
 
   private async *readIncremental(

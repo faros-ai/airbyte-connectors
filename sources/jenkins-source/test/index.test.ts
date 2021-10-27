@@ -1,10 +1,15 @@
-import {AirbyteLogger, AirbyteSpec, SyncMode} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteSpec,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import jenkinsClient from 'jenkins';
 import {mocked} from 'ts-jest/utils';
 import {VError} from 'verror';
 
-import {JenkinsSource} from '../src/index';
+import * as sut from '../src/index';
 
 jest.mock('jenkins');
 
@@ -13,11 +18,16 @@ function readTestResourceFile(fileName: string): any {
 }
 
 describe('index', () => {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteLogger(
+    // Shush messages in tests, unless in debug
+    process.env.LOG_LEVEL === 'debug'
+      ? AirbyteLogLevel.DEBUG
+      : AirbyteLogLevel.FATAL
+  );
 
   test('spec', async () => {
-    const source = new JenkinsSource(logger);
-    expect(source.spec()).resolves.toStrictEqual(
+    const source = new sut.JenkinsSource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
   });
@@ -29,15 +39,15 @@ describe('index', () => {
     mocked(jenkinsClient).mockReturnValueOnce({
       info: jest.fn().mockRejectedValue({}),
     } as any);
-    const source = new JenkinsSource(logger);
-    expect(
+    const source = new sut.JenkinsSource(logger);
+    await expect(
       source.checkConnection({
         user: '123',
         token: 'token',
         server_url: 'http://example.com',
       })
     ).resolves.toStrictEqual([true, undefined]);
-    expect(
+    await expect(
       source.checkConnection({
         user: '123',
         token: 'token',
@@ -45,13 +55,15 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('server_url: Please verify your user/token is correct'),
+      new VError(
+        'Please verify your server_url and user/token are correct. Error: {}'
+      ),
     ]);
-    expect(source.checkConnection({} as any)).resolves.toStrictEqual([
+    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
       new VError('server_url: must be a string'),
     ]);
-    expect(
+    await expect(
       source.checkConnection({server_url: '111', user: '', token: ''})
     ).resolves.toStrictEqual([
       false,
@@ -70,7 +82,7 @@ describe('index', () => {
         ),
       },
     } as any);
-    const source = new JenkinsSource(logger);
+    const source = new sut.JenkinsSource(logger);
     const [, jobStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
@@ -118,16 +130,20 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - return undefined if config not correct', async () => {
+  test('streams - error out if config not correct', async () => {
     mocked(jenkinsClient).mockReturnValue({
       info: jest.fn().mockResolvedValue({}),
     } as any);
-    const source = new JenkinsSource(logger);
+    const source = new sut.JenkinsSource(logger);
     const [jobStream, buildStream] = source.streams({} as any);
     const jobIter = jobStream.readRecords(SyncMode.FULL_REFRESH);
     const buildIter = buildStream.readRecords(SyncMode.FULL_REFRESH);
-    expect((await jobIter.next()).value).toBeUndefined();
-    expect((await buildIter.next()).value).toBeUndefined();
+    await expect(jobIter.next()).rejects.toStrictEqual(
+      new VError('server_url: must be a string')
+    );
+    await expect(buildIter.next()).rejects.toStrictEqual(
+      new VError('server_url: must be a string')
+    );
   });
 
   test('streams - builds, use incremental sync mode', async () => {
@@ -139,7 +155,7 @@ describe('index', () => {
           .mockImplementation(async () => readTestResourceFile('jobs.json')),
       },
     } as any);
-    const source = new JenkinsSource(logger);
+    const source = new sut.JenkinsSource(logger);
     const [buildStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',
@@ -156,7 +172,10 @@ describe('index', () => {
     );
     const builds = [];
     expect(
-      buildStream.getUpdatedState(buildState, {fullDisplayName: 'Faros-test-job #1', number: 1})
+      buildStream.getUpdatedState(buildState, {
+        fullDisplayName: 'Faros-test-job #1',
+        number: 1,
+      })
     ).toStrictEqual({
       newJobsLastCompletedBuilds: {'Faros-test-job': 2},
     });
@@ -173,7 +192,10 @@ describe('index', () => {
       },
     ]);
     expect(
-      buildStream.getUpdatedState(buildState, {fullDisplayName: 'Faros-test-job #3', number: 3})
+      buildStream.getUpdatedState(buildState, {
+        fullDisplayName: 'Faros-test-job #3',
+        number: 3,
+      })
     ).toStrictEqual({
       newJobsLastCompletedBuilds: {'Faros-test-job': 3},
     });
@@ -188,7 +210,7 @@ describe('index', () => {
           .mockImplementation(async () => readTestResourceFile('jobs.json')),
       },
     } as any);
-    const source = new JenkinsSource(logger);
+    const source = new sut.JenkinsSource(logger);
     const [buildStream] = source.streams({
       server_url: 'http://localhost:8080',
       user: 'bot',

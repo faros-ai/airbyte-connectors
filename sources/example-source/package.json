@@ -1,8 +1,10 @@
 {
   "name": "example-source",
-  "version": "0.1.19",
+  "version": "0.1.23",
   "description": "Example Airbyte source",
   "keywords": [
+    "airbyte",
+    "source",
     "faros"
   ],
   "homepage": "https://www.faros.ai",
@@ -29,7 +31,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.19",
+    "faros-airbyte-cdk": "^0.1.23",
     "verror": "^1.10.0"
   },
   "jest": {

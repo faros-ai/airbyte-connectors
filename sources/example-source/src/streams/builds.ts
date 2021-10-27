@@ -1,9 +1,9 @@
 import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-export class JenkinsBuilds extends AirbyteStreamBase {
+export class Builds extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../resources/schemas/builds.json');
+    return require('../../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
     return ['uid', 'source'];

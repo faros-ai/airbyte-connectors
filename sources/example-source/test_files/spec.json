@@ -13,16 +13,18 @@
     "properties": {
       "server_url": {
         "type": "string",
-        "description": "Jenkins Server URL",
-        "examples": ["https://my-jenkins-server.example.com"]
+        "title": "Jenkins Server URL",
+        "examples": [
+          "https://my-jenkins-server.example.com"
+        ]
       },
       "user": {
         "type": "string",
-        "description": "Jenkins User"
+        "title": "Jenkins User"
       },
       "token": {
         "type": "string",
-        "description": "Jenkins Token",
+        "title": "Jenkins Token",
         "airbyte_secret": true
       }
     }

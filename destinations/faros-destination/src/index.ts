@@ -331,7 +331,7 @@ class FarosDestination extends AirbyteDestination {
 
             // Check if any converters depend on this record stream.
             // If yes, keep the record in the stream context for other converters to get.
-            const streamName = StreamName.fromString(stream).stringify();
+            const streamName = StreamName.fromString(stream).asString;
             const recordId = converter.id(unpacked);
             if (converterDependencies.has(streamName) && recordId) {
               ctx.set(streamName, String(recordId), unpacked);
@@ -399,7 +399,9 @@ class FarosDestination extends AirbyteDestination {
       processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
-      this.logger.error(`Error processing input: ${e.message ?? e}`);
+      this.logger.error(
+        `Error processing input: ${e.message ?? JSON.stringify(e)}`
+      );
       if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
         throw e;
       }
@@ -433,12 +435,12 @@ class FarosDestination extends AirbyteDestination {
 
       // Collect all converter dependencies
       if (converter.dependencies.length > 0) {
-        const streamName = converter.streamName.stringify();
+        const streamName = converter.streamName.asString;
         if (!dependenciesByStream[streamName]) {
           dependenciesByStream[streamName] = new Set<string>();
         }
         const deps = dependenciesByStream[streamName];
-        converter.dependencies.forEach((d) => deps.add(d.stringify()));
+        converter.dependencies.forEach((d) => deps.add(d.asString));
       }
 
       // Prepare destination models to delete if any

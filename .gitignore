@@ -6,15 +6,16 @@ acceptance_tests_logs/
 .vscode/
 
 .DS_Store
+acceptance-test-*.log
+*.code-workspace
+
 faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json
 sources/**/package-lock.json
-*-acceptance-test.log
-*.code-workspace
 
-jenkins/data/logs
-jenkins/data/war
-jenkins/data/.cache
-jenkins/data/.java
-jenkins/data/.lastStarted
-jenkins/data/*.log
+**/jenkins/data/logs
+**/jenkins/data/war
+**/jenkins/data/.cache
+**/jenkins/data/.java
+**/jenkins/data/.lastStarted
+**/jenkins/data/*.log
