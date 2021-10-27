@@ -15,7 +15,7 @@ describe('phabricator', () => {
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/phabricator-catalog.json';
+  const catalogPath = 'test/resources/phabricator/catalog.json';
   let configPath: string;
   const streamNamePrefix = 'mytestsource__phabricator__';
 
