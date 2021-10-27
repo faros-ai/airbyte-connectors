@@ -26,7 +26,7 @@ with the name of your new source. In this guide we will name our source
 `package.json` and the ExampleSource class in `src/index.ts` with the name of
 your source.
 
-Go back to the root folder of the repo and run `lerna boostrap --hoist` to
+Go back to the root folder of the repo and run `lerna bootstrap --hoist` to
 install the dependencies for all the sources, including our `new-source`.
 
 ### 2: Implement Spec command
