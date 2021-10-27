@@ -8,7 +8,7 @@ import pino from 'pino';
 import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {jiraAllStreamsLog, readTestResourceFile} from './data';
+import {jiraAllStreamsLog, jiraPGRawLog, readTestResourceFile} from './data';
 
 describe('jira', () => {
   const logger = pino({
@@ -110,7 +110,7 @@ describe('jira', () => {
     expect(await cli.wait()).toBe(0);
   });
 
-  test.skip('process raw records', async () => {
+  test('process raw records', async () => {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -119,12 +119,12 @@ describe('jira', () => {
       catalogRawPath,
       '--dry-run',
     ]);
-    cli.stdin.end(jiraAllStreamsLog, 'utf8');
+    cli.stdin.end(jiraPGRawLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Processed 111 records');
-    expect(stdout).toMatch('Would write 146 records');
+    expect(stdout).toMatch('Processed 116 records');
+    expect(stdout).toMatch('Would write 43 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
