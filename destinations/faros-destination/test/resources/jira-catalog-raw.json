@@ -230,6 +230,12 @@
     },
     {
       "stream": {
+        "name": "_airbyte_raw_mytestsource__jira__pull_requests"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "_airbyte_raw_mytestsource__jira__screen_schemes"
       },
       "destination_sync_mode": "append"

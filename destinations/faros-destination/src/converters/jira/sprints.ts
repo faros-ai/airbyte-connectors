@@ -1,5 +1,6 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import {camelCase, upperFirst} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -8,7 +9,6 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {normalize, upperCamelCase} from '../utils';
 import {JiraCommon, JiraConverter} from './common';
 
 interface SprintIssue {
@@ -104,7 +104,7 @@ export class JiraSprints extends JiraConverter {
     let completedPoints = 0;
     for (const issue of this.sprintIssueRecords[sprint.id] ?? []) {
       const status = issue.fields.status?.statusCategory?.name;
-      if (status && normalize(status) === 'done') {
+      if (status && JiraCommon.normalize(status) === 'done') {
         completedPoints += this.getPoints(issue);
       }
     }
@@ -115,7 +115,7 @@ export class JiraSprints extends JiraConverter {
         record: {
           uid: String(sprint.id),
           name: sprint.name,
-          state: upperCamelCase(sprint.state),
+          state: upperFirst(camelCase(sprint.state)),
           completedPoints,
           startedAt: Utils.toDate(sprint.startDate),
           endedAt: Utils.toDate(sprint.endDate),

@@ -7,8 +7,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {normalize} from '../utils';
-import {JiraConverter, JiraStatusCategories} from './common';
+import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
 export class JiraEpics extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
@@ -38,7 +37,7 @@ export class JiraEpics extends JiraConverter {
           description,
           status: {
             category: JiraStatusCategories.get(
-              normalize(status.statusCategory?.name)
+              JiraCommon.normalize(status.statusCategory?.name)
             ),
             detail: status.name,
           },

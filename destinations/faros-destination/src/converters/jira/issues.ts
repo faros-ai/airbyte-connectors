@@ -1,5 +1,9 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {isString, last} from 'lodash';
+import {Utils} from 'faros-feeds-sdk';
+import parseGitUrl from 'git-url-parse';
+import {isPlainObject, isString, last, toLower} from 'lodash';
+import {Dictionary} from 'ts-essentials';
+import TurndownService from 'turndown';
 
 import {
   DestinationModel,
@@ -7,16 +11,26 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {normalize, toDate} from '../utils';
 import {JiraCommon, JiraConverter} from './common';
 
-interface Dependency {
-  readonly key: string;
-  readonly blocking: boolean;
-}
 interface Assignee {
   readonly uid: string;
   readonly assignedAt: Date;
+}
+enum RepoSource {
+  BITBUCKET = 'Bitbucket',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  VCS = 'VCS',
+}
+interface Repo {
+  readonly source: RepoSource;
+  readonly org: string;
+  readonly name: string;
+}
+interface PullRequest {
+  readonly repo: Repo;
+  readonly number: number;
 }
 interface Status {
   readonly category: string;
@@ -24,11 +38,12 @@ interface Status {
 }
 
 const dependencyRegex = /((is (?<type>\w+))|tested) by/;
+const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const statusCategories: ReadonlyMap<string, string> = new Map(
-  ['Todo', 'InProgress', 'Done'].map((s) => [normalize(s), s])
+  ['Todo', 'InProgress', 'Done'].map((s) => [JiraCommon.normalize(s), s])
 );
 const typeCategories: ReadonlyMap<string, string> = new Map(
-  ['Bug', 'Story', 'Task'].map((t) => [normalize(t), t])
+  ['Bug', 'Story', 'Task'].map((t) => [JiraCommon.normalize(t), t])
 );
 
 export class JiraIssues extends JiraConverter {
@@ -41,11 +56,16 @@ export class JiraIssues extends JiraConverter {
     'tms_TaskAssignment',
     'tms_TaskDependency',
     'tms_TaskTag',
+    'tms_TaskPullRequestAssociation',
   ];
 
   private static readonly issueFieldsStream = new StreamName(
     'jira',
     'issue_fields'
+  );
+  private static readonly pullRequestsStream = new StreamName(
+    'jira',
+    'pull_requests'
   );
   private static readonly workflowStatusesStream = new StreamName(
     'jira',
@@ -76,11 +96,31 @@ export class JiraIssues extends JiraConverter {
     JiraCommon.SPRINT_FIELD_NAME,
   ];
 
+  private fieldIdsByName?: Dictionary<string[]>;
   private fieldNameById?: ReadonlyMap<string, string>;
   private statusByName?: ReadonlyMap<string, Status>;
 
+  private turndown = new TurndownService();
+
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [JiraIssues.issueFieldsStream, JiraIssues.workflowStatusesStream];
+    return [
+      JiraIssues.issueFieldsStream,
+      JiraIssues.pullRequestsStream,
+      JiraIssues.workflowStatusesStream,
+    ];
+  }
+
+  private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
+    const records = ctx.records(JiraIssues.issueFieldsStream.asString);
+    const results: Dictionary<string[]> = {};
+    for (const [id, record] of Object.entries(records)) {
+      const name = record.record?.data?.name;
+      if (!(name in results)) {
+        results[name] = [];
+      }
+      results[name].push(id);
+    }
+    return results;
   }
 
   private static getFieldNamesById(
@@ -127,7 +167,7 @@ export class JiraIssues extends JiraConverter {
     for (const change of changelog) {
       for (const item of change.items) {
         if (item.field === field) {
-          const changed = toDate(change.created);
+          const changed = Utils.toDate(change.created);
           if (!changed) {
             continue;
           }
@@ -174,6 +214,122 @@ export class JiraIssues extends JiraConverter {
     return assigneeChangelog;
   }
 
+  private getIssueEpic(issue: Dictionary<any>): string | undefined {
+    for (const id of this.fieldIdsByName[JiraCommon.EPIC_LINK_FIELD_NAME] ??
+      []) {
+      const epic = issue.fields[id];
+      if (epic) {
+        return epic.toString();
+      }
+    }
+    return undefined;
+  }
+
+  private getSprintId(issue: Dictionary<any>): string | undefined {
+    const sprints = [];
+    for (const fieldId of this.fieldIdsByName[JiraCommon.SPRINT_FIELD_NAME] ??
+      []) {
+      for (const sprint of issue.fields[fieldId] ?? []) {
+        // Workaround for string representation of sprint details which are supposedly deprecated
+        // https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-tostring-representation-of-sprints-in-get-issue-response/
+        if (typeof sprint === 'string') {
+          let match;
+          const details = {};
+          while ((match = sprintRegex.exec(sprint)) !== null) {
+            details[match[1]] = match[2];
+          }
+          sprints.push(details);
+        } else if (isPlainObject(sprint)) {
+          sprints.push({
+            id: sprint.id?.toString(),
+            state: sprint.state,
+            startDate: sprint.startDate,
+            endDate: sprint.endDate,
+          });
+        }
+      }
+    }
+    // Sort array in descending order of end date sprints and return the first
+    // one. Future sprints may not have end dates but will take precedence.
+    sprints.sort(function (l, r) {
+      const lDate = Utils.toDate(l.endDate);
+      const rDate = Utils.toDate(r.endDate);
+      if (rDate && lDate) {
+        return rDate.getTime() - lDate.getTime();
+      } else if (toLower(l.state) === 'future') {
+        return -1;
+      }
+      return 1;
+    });
+    return sprints[0]?.id;
+  }
+
+  private getPoints(issue: Dictionary<any>): number | undefined {
+    for (const fieldName of JiraCommon.POINTS_FIELD_NAMES) {
+      const fieldIds = this.fieldIdsByName[fieldName] ?? [];
+      for (const fieldId of fieldIds) {
+        const pointsString = issue.fields[fieldId];
+        if (!pointsString) continue;
+        let points;
+        try {
+          points = Utils.parseFloatFixedPoint(pointsString);
+        } catch (err: any) {
+          this.logger.warn(
+            `Failed to get story points for issue ${issue.key}: ${err.message}`
+          );
+        }
+        return points;
+      }
+    }
+    return undefined;
+  }
+
+  private static extractRepo(repoUrl: string): Repo {
+    const gitUrl = parseGitUrl(repoUrl);
+    const lowerSource = gitUrl.source?.toLowerCase();
+    let source: RepoSource;
+    if (lowerSource?.includes('bitbucket')) source = RepoSource.BITBUCKET;
+    else if (lowerSource?.includes('gitlab')) source = RepoSource.GITLAB;
+    else if (lowerSource?.includes('github')) source = RepoSource.GITHUB;
+    else source = RepoSource.VCS;
+    return {
+      source,
+      org: gitUrl.organization,
+      name: gitUrl.name,
+    };
+  }
+
+  private getPullRequests(
+    ctx: StreamContext,
+    issueId: string
+  ): ReadonlyArray<PullRequest> {
+    const pulls: PullRequest[] = [];
+    const record = ctx.get(JiraIssues.pullRequestsStream.asString, issueId);
+    if (!record) return pulls;
+    const detail = record.record.data;
+    try {
+      const branchToRepoUrl = new Map<string, string>();
+      for (const branch of detail.branches ?? []) {
+        branchToRepoUrl.set(branch.url, branch.repository.url);
+      }
+      for (const pull of detail.pullRequests ?? []) {
+        const repoUrl = branchToRepoUrl.get(pull.source?.url);
+        if (!repoUrl) {
+          continue;
+        }
+        pulls.push({
+          repo: JiraIssues.extractRepo(repoUrl),
+          number: Utils.parseInteger(pull.id.replace('#', '')),
+        });
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to get pull requests for issue ${issueId}: ${err.message}`
+      );
+    }
+    return pulls;
+  }
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -182,6 +338,9 @@ export class JiraIssues extends JiraConverter {
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
 
+    if (!this.fieldIdsByName) {
+      this.fieldIdsByName = JiraIssues.getFieldIdsByName(ctx);
+    }
     if (!this.fieldNameById) {
       this.fieldNameById = JiraIssues.getFieldNamesById(ctx);
     }
@@ -212,14 +371,34 @@ export class JiraIssues extends JiraConverter {
       });
     }
 
-    const created = toDate(issue.fields.created);
+    const pulls = this.getPullRequests(ctx, issue.id);
+    for (const pull of pulls) {
+      results.push({
+        model: 'tms_TaskPullRequestAssociation',
+        record: {
+          task: {uid: issue.key, source},
+          pullRequest: {
+            repository: {
+              organization: {
+                source: pull.repo.source,
+                uid: toLower(pull.repo.org),
+              },
+              name: toLower(pull.repo.name),
+            },
+            number: pull.number,
+          },
+        },
+      });
+    }
+
+    const created = Utils.toDate(issue.fields.created);
     const assignee =
       issue.fields.assignee?.accountId || issue.fields.assignee?.name;
     const changelog: any[] = issue.changelog?.histories || [];
     changelog.sort((e1, e2) => {
       // Sort changes from most to least recent
-      const created1 = +(toDate(e1.created) || new Date(0));
-      const created2 = +(toDate(e2.created) || new Date(0));
+      const created1 = +(Utils.toDate(e1.created) || new Date(0));
+      const created2 = +(Utils.toDate(e2.created) || new Date(0));
       return created2 - created1;
     });
     const assigneeChangelog = JiraIssues.assigneeChangelog(
@@ -244,7 +423,9 @@ export class JiraIssues extends JiraConverter {
       if (status) {
         statusChangelog.push({
           status: {
-            category: statusCategories.get(normalize(status.category)),
+            category: statusCategories.get(
+              JiraCommon.normalize(status.category)
+            ),
             detail: status.detail,
           },
           changedAt: change.changed,
@@ -295,6 +476,13 @@ export class JiraIssues extends JiraConverter {
       }
     }
 
+    let description = null;
+    if (typeof issue.fields.description === 'string') {
+      description = issue.fields.description;
+    } else if (issue.renderedFields.description) {
+      description = this.turndown.turndown(issue.renderedFields.description);
+    }
+
     const creator =
       issue.fields.creator?.accountId || issue.fields.creator?.name;
     const parent = issue.fields.parent?.key
@@ -303,8 +491,10 @@ export class JiraIssues extends JiraConverter {
           type: issue.fields.parent?.fields?.issuetype?.name,
         }
       : null;
-    const epicKey = parent?.type === 'Epic' ? parent.key : issue.epic; // TODO: issue.epic
+    const epicKey =
+      parent?.type === 'Epic' ? parent.key : this.getIssueEpic(issue);
     // TODO: PRs
+    const sprint = this.getSprintId(issue);
     const type = issue.fields.issuetype?.name;
 
     results.push({
@@ -312,33 +502,32 @@ export class JiraIssues extends JiraConverter {
       record: {
         uid: issue.key,
         name: issue.fields.summary,
-        description: issue.fields.description,
+        description,
         type: {
-          category: typeCategories.get(normalize(type)) ?? 'Custom',
+          category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
           detail: type,
         },
         status: {
           category: statusCategories.get(
-            normalize(issue.fields.status?.statusCategory?.name)
+            JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
           ),
           detail: issue.fields.status?.name,
         },
         priority: issue.fields.priority?.name,
         createdAt: created,
-        updatedAt: toDate(issue.fields.updated),
+        updatedAt: Utils.toDate(issue.fields.updated),
         statusChangedAt: statusChanged,
         statusChangelog,
-        points: null, // TODO
+        points: this.getPoints(issue) ?? null,
         creator: creator ? {uid: creator, source} : null,
         parent: parent ? {uid: parent.key, source} : null,
         epic: epicKey ? {uid: epicKey, source} : null,
-        sprint: null, // TODO
+        sprint: sprint ? {uid: sprint, source} : null,
         source,
         additionalFields,
       },
     });
 
-    console.log(JSON.stringify(results.filter((r) => r.model === 'tms_Task')));
     return results;
   }
 }

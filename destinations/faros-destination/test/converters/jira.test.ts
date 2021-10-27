@@ -78,10 +78,10 @@ describe('jira', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 687 messages');
-    expect(stdout).toMatch('Read 585 records');
-    expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Wrote 59 records');
+    expect(stdout).toMatch('Read 689 messages');
+    expect(stdout).toMatch('Read 587 records');
+    expect(stdout).toMatch('Processed 587 records');
+    expect(stdout).toMatch('Wrote 64 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -101,10 +101,10 @@ describe('jira', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 687 messages');
-    expect(stdout).toMatch('Read 585 records');
-    expect(stdout).toMatch('Processed 585 records');
-    expect(stdout).toMatch('Would write 59 records');
+    expect(stdout).toMatch('Read 689 messages');
+    expect(stdout).toMatch('Read 587 records');
+    expect(stdout).toMatch('Processed 587 records');
+    expect(stdout).toMatch('Would write 64 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
@@ -223,7 +223,7 @@ describe('jira', () => {
       sprint_issues: 15,
       time_tracking: 2,
       users: 29,
-      issues: 4,
+      issues: 5,
       issue_fields: 74,
       issue_field_configurations: 1,
       issue_custom_field_contexts: 30,
@@ -242,6 +242,7 @@ describe('jira', () => {
       project_email: 1,
       project_permission_schemes: 1,
       project_types: 3,
+      pull_requests: 1,
       workflows: 13,
       workflow_schemes: 10,
       workflow_statuses: 8,
@@ -258,13 +259,14 @@ describe('jira', () => {
       tms_Epic: 1,
       tms_Project: 1,
       tms_Sprint: 10,
-      tms_Task: 4,
+      tms_Task: 5,
       tms_TaskAssignment: 1,
       tms_TaskBoard: 1,
       tms_TaskBoardProjectRelationship: 1,
-      tms_TaskBoardRelationship: 4,
+      tms_TaskBoardRelationship: 5,
       tms_TaskDependency: 1,
-      tms_TaskProjectRelationship: 4,
+      tms_TaskProjectRelationship: 5,
+      tms_TaskPullRequestAssociation: 2,
       tms_TaskTag: 2,
       tms_User: 29,
     };
