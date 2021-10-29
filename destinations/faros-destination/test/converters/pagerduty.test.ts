@@ -17,7 +17,7 @@ describe('pagerduty', () => {
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/pagerduty-catalog.json';
+  const catalogPath = 'test/resources/pagerduty/catalog.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';

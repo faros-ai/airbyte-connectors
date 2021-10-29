@@ -29,4 +29,4 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
 
-export const pagerdutyLog = readTestResourceFile('pagerduty.log');
+export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
