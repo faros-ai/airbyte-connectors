@@ -28,3 +28,5 @@ export const gitlabAllStreamsLog = readTestResourceFile(
 export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator-all-streams.log'
 );
+
+export const pagerdutyLog = readTestResourceFile('pagerduty.log');
