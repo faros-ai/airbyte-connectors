@@ -7,6 +7,13 @@ import {VError} from 'verror';
 
 import {BitbucketConfig, Branch, Repository, Workspace} from './types';
 
+export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
+
+function buildInnerError(err: any): Error {
+  const {message, error, status} = err;
+  return new VError({info: {status, error: error?.error?.message}}, message);
+}
+
 export async function createClient(
   config: BitbucketConfig
 ): Promise<[BitbucketClient, string]> {
@@ -20,7 +27,7 @@ export async function createClient(
     : {username: config.username, password: config.password};
 
   try {
-    const client = Bitbucket({baseUrl: config.service_url, auth});
+    const client = Bitbucket({baseUrl: config.serverUrl, auth});
     await client.users.getAuthedUser({});
     return [new BitbucketClient(client), null];
   } catch (error) {
@@ -46,20 +53,13 @@ function isValidateConfig(config: BitbucketConfig): [boolean, string] {
   }
 
   try {
-    new URL(config.server_url);
+    new URL(config.serverUrl);
   } catch (error) {
     return [false, 'server_url: must be a valid url'];
   }
 
   return [true, undefined];
 }
-
-function buildInnerError(err: any): Error {
-  const {message, error, status} = err;
-  return new VError({info: {status, error: error?.error?.message}}, message);
-}
-
-export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
 
 export class BitbucketClient {
   private readonly limiter = DEFAULT_LIMITER;
@@ -68,13 +68,13 @@ export class BitbucketClient {
 
   async *getBranches(
     workspace: string,
-    repo: string
-  ): AsyncGenerator<Branch | undefined> {
+    repo_slug: string
+  ): AsyncGenerator<Branch> {
     try {
       let {data} = await this.limiter.schedule(() =>
         this.client.repositories.listBranches({
           workspace,
-          repo_slug: repo,
+          repo_slug,
           pagelen: 100, // TODO: use var
         })
       );
@@ -91,54 +91,31 @@ export class BitbucketClient {
         buildInnerError(err),
         'Error fetching branch(es) for repository "%s/%s"',
         workspace,
-        repo
+        repo_slug
       );
     }
   }
 
-  async *getRepositories(
+  async getRepository(
     workspace: string,
-    repoList?: ReadonlyArray<string>
-  ): AsyncGenerator<Repository | undefined> {
+    repo_slug: string
+  ): Promise<Repository> {
     try {
-      let {data} = await this.limiter.schedule(() =>
-        this.client.repositories.list({workspace})
+      const {data} = await this.limiter.schedule(() =>
+        this.client.repositories.get({workspace, repo_slug})
       );
 
-      let repoCount = 0;
-
-      do {
-        for (const item of data.values) {
-          // only process the repos in the repo list (if specified)
-          if (
-            repoList &&
-            repoList.length > 0 &&
-            !repoList.includes(item.slug)
-          ) {
-            continue;
-          }
-
-          yield this.buildRepository(item);
-          repoCount += 1;
-        }
-
-        // exit early when we have fetched all the repos in the repo list
-        if (repoList && repoList.length > 0 && repoCount == repoList.length) {
-          break;
-        }
-
-        data = await this.nextPage(data);
-      } while (data);
+      return this.buildRepository(data);
     } catch (err) {
       throw new VError(
         buildInnerError(err),
-        'Error fetching repositories for workspace "%s"',
+        'Error fetching workspace %s.',
         workspace
       );
     }
   }
 
-  async getWorkspace(workspace: string): Promise<Workspace | undefined> {
+  async getWorkspace(workspace: string): Promise<Workspace> {
     try {
       const {data} = await this.limiter.schedule(() =>
         this.client.workspaces.getWorkspace({workspace})
@@ -169,8 +146,9 @@ export class BitbucketClient {
   private buildBranch(data: Dictionary<any>): Branch {
     const {
       target,
-      target: {repository, links, author, parents},
+      target: {author, parents, repository: repo},
     } = data;
+
     return {
       name: data.name,
       links: {htmlUrl: data.links?.html?.href},
@@ -180,13 +158,13 @@ export class BitbucketClient {
       target: {
         hash: target.hash,
         repository: {
-          links: {htmlUrl: repository.links?.html?.href},
-          type: repository.type,
-          name: repository.name,
-          fullName: repository.fullName,
-          uuid: repository.uuid,
+          links: {htmlUrl: repo.links?.html?.href},
+          type: repo.type,
+          name: repo.name,
+          fullName: repo.full_name,
+          uuid: repo.uuid,
         },
-        links: {htmlUrl: links?.html?.href},
+        links: {htmlUrl: target.links?.html?.href},
         author: {
           raw: author.raw,
           type: author.type,
@@ -196,16 +174,16 @@ export class BitbucketClient {
             links: {htmlUrl: author.user.links?.html?.href},
             type: author.user.type,
             nickname: author.user.nickname,
-            accountId: author.user.accountId,
+            accountId: author.user.account_id,
           },
         },
-        parent: parents.map((p) => ({
-          hash: p.hash,
-          links: {htmlUrl: p.links?.html?.href},
+        parents: parents.map((parent) => ({
+          hash: parent.hash,
+          links: {htmlUrl: parent.links?.html?.href},
         })),
-        date: data.date,
-        message: data.message,
-        type: data.type,
+        date: target.date,
+        message: target.message,
+        type: target.type,
       },
     };
   }

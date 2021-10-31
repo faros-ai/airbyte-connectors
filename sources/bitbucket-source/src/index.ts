@@ -13,7 +13,7 @@ import {
   BitbucketBranches,
   BitbucketRepositories,
   BitbucketWorkspaces,
-} from './stream';
+} from './streams';
 import {BitbucketConfig} from './types';
 
 /** The main entry point. */
@@ -38,9 +38,10 @@ class BitbucketSource extends AirbyteSourceBase {
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
+    const repositories = config.repository.split(',').map((r) => r.trim());
     return [
-      new BitbucketBranches(config, this.logger),
-      new BitbucketRepositories(config, this.logger),
+      new BitbucketBranches(config, repositories, this.logger),
+      new BitbucketRepositories(config, repositories, this.logger),
       new BitbucketWorkspaces(config, this.logger),
     ];
   }

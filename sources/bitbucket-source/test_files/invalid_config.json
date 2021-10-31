@@ -1,5 +1,5 @@
 {
-  "server_url": "url",
+  "serverUrl": "url",
   "username": "bad-username",
   "password": "bad-password"
 }

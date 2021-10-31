@@ -5,37 +5,37 @@
     "title": "Bitbucket Spec",
     "type": "object",
     "required": [
-      "server_url",
+      "serverUrl",
       "workspace"
     ],
     "additionalProperties": false,
     "properties": {
-      "server_url": {
+      "serverUrl": {
         "type": "string",
-        "description": "Bitbucket Server URL",
+        "description": "Bitbucket server URL",
         "examples": ["https://api.bitbucket.org/2.0"]
       },
       "username": {
         "type": "string",
-        "description": "Bitbucket Username"
+        "description": "Bitbucket username"
       },
       "password": {
         "type": "string",
-        "description": "Bitbucket Password",
+        "description": "Bitbucket password",
         "airbyte_secret": true
       },
       "token": {
         "type": "string",
-        "description": "Bitbucket Token",
+        "description": "Bitbucket token",
         "airbyte_secret": true
       },
       "workspace": {
         "type": "string",
-        "description": "Bitbucket Workspace"
+        "description": "Bitbucket workspace"
       },
-      "repoList": {
+      "repository": {
         "type": "string",
-        "description": "Comma-separated List of Bitbucket Repositories"
+        "description": "Comma-separated list of Bitbucket repositories"
       }
     }
   }

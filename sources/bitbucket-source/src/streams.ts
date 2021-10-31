@@ -7,10 +7,14 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {createClient} from './bitbucket';
-import {BitbucketConfig, Branch, Repository, Workspace} from './types';
+import {BitbucketConfig, Branch, Workspace} from './types';
 
 export class BitbucketBranches extends AirbyteStreamBase {
-  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: BitbucketConfig,
+    readonly repositories: string[],
+    readonly logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
@@ -22,10 +26,20 @@ export class BitbucketBranches extends AirbyteStreamBase {
     return [];
   }
 
+  async *streamSlices(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamState?: Dictionary<any>
+  ): AsyncGenerator<Dictionary<any> | undefined> {
+    for (const repository of this.repositories) {
+      yield {repository};
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Branch,
+    streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Branch, any, unknown> {
     const [client, errorMessage] = await createClient(this.config);
@@ -34,16 +48,17 @@ export class BitbucketBranches extends AirbyteStreamBase {
       return undefined;
     }
 
-    const repos = (this.config.repoList || '').split(',').map((r) => r.trim());
-    for (const repo of repos) {
-      const iter = client.getBranches(this.config.workspace, repo);
-      yield* iter;
-    }
+    const repo_slug = streamSlice.repository;
+    yield* client.getBranches(this.config.workspace, repo_slug);
   }
 }
 
 export class BitbucketRepositories extends AirbyteStreamBase {
-  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: BitbucketConfig,
+    readonly repositories: string[],
+    readonly logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
@@ -55,21 +70,30 @@ export class BitbucketRepositories extends AirbyteStreamBase {
     return ['uuid'];
   }
 
+  async *streamSlices(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamState?: Dictionary<any>
+  ): AsyncGenerator<Dictionary<any> | undefined> {
+    for (const repository of this.repositories) {
+      yield {repository};
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Repository,
+    streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Repository, any, unknown> {
+  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const [client, errorMessage] = await createClient(this.config);
     if (!client) {
       this.logger.error(errorMessage);
       return undefined;
     }
 
-    const repos = (this.config.repoList || '').split(',').map((r) => r.trim());
-    const iter = client.getRepositories(this.config.workspace, repos);
-    yield* iter;
+    const repo_slug = streamSlice.repository;
+    yield await client.getRepository(this.config.workspace, repo_slug);
   }
 }
 
@@ -98,7 +122,6 @@ export class BitbucketWorkspaces extends AirbyteStreamBase {
       return undefined;
     }
 
-    const workspace = await client.getWorkspace(this.config.workspace);
-    yield workspace;
+    yield await client.getWorkspace(this.config.workspace);
   }
 }

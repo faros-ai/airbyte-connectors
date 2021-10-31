@@ -1,12 +1,12 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk/lib';
 
 export interface BitbucketConfig extends AirbyteConfig {
-  readonly server_url: string;
+  readonly serverUrl: string;
   readonly username: string;
   readonly password: string;
   readonly token: string;
   readonly workspace: string;
-  readonly repoList: string;
+  readonly repository: string;
 }
 
 export interface Branch {
@@ -37,7 +37,7 @@ export interface Branch {
         readonly accountId: string;
       };
     };
-    readonly parent: {
+    readonly parents: {
       readonly hash: string;
       readonly links: {readonly htmlUrl: string};
     }[];
