@@ -96,5 +96,108 @@ describe('index', () => {
         expect(campaigns).toEqual(apiCampaigns);
       });
     });
+
+    describe('campaign actions', () => {
+      it('yields all campaign actions', async () => {
+        axiosMock.onGet('/campaigns').replyOnce(200, {
+          campaigns: [
+            {
+              id: 1,
+            },
+            {
+              id: 2,
+              actions: [{}, {}, {}],
+            },
+            {
+              id: 3,
+              actions: [{}, {}],
+            },
+          ],
+        });
+
+        axiosMock.onGet('/campaigns/2/actions').replyOnce(200, {
+          next: 'abcd',
+          actions: [
+            {
+              id: '1',
+            },
+            {
+              id: '2',
+            },
+          ],
+        });
+
+        axiosMock
+          .onGet('/campaigns/2/actions', {
+            params: {
+              start: 'abcd',
+            },
+          })
+          .replyOnce(200, {
+            next: 'bcde',
+            actions: [
+              {
+                id: '3',
+              },
+            ],
+          });
+
+        axiosMock
+          .onGet('/campaigns/2/actions', {
+            params: {
+              start: 'bcde',
+            },
+          })
+          .replyOnce(200, {
+            next: '',
+            actions: [],
+          });
+
+        axiosMock.onGet('/campaigns/3/actions').replyOnce(200, {
+          next: 'cdef',
+          actions: [
+            {
+              id: '4',
+            },
+            {
+              id: '5',
+            },
+          ],
+        });
+
+        axiosMock
+          .onGet('/campaigns/3/actions', {
+            params: {
+              start: 'cdef',
+            },
+          })
+          .replyOnce(200, {
+            next: '',
+            actions: [],
+          });
+
+        const [, campaignActionsStream] = source.streams({
+          app_api_key: 'testkey',
+        });
+
+        const campaignActionsIterator = campaignActionsStream.readRecords(
+          SyncMode.FULL_REFRESH
+        );
+
+        const campaignActions: any[] = [];
+
+        for await (const campaign of campaignActionsIterator) {
+          campaignActions.push(campaign);
+        }
+
+        expect(campaignActions).toEqual([
+          {id: '1'},
+          {id: '2'},
+          {id: '3'},
+          {id: '4'},
+          {id: '5'},
+        ]);
+      });
+    });
   });
 });

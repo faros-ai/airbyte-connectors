@@ -1,5 +1,8 @@
 {
   "campaigns": {
     "cutoff": 1735718400000
+  },
+  "campaign_actions": {
+    "cutoff": 1735718400000
   }
 }

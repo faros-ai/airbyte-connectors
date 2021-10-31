@@ -1,3 +1,2 @@
-import {Campaigns} from './campaigns';
-
-export {Campaigns};
+export {Campaigns} from './campaigns';
+export {CampaignActions} from './campaign-actions';

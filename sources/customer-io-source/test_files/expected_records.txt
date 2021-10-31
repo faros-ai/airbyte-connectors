@@ -2,3 +2,16 @@
 {"stream": "campaigns", "data": {"id":2,"updated":1635549553}, "emitted_at": 1626172757000}
 {"stream": "campaigns", "data": {"id":4,"updated":1635549553}, "emitted_at": 1626172757000}
 {"stream": "campaigns", "data": {"id":5,"updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"3","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"7","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"9","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"13","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"14","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"15","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"18","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"19","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"26","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"29","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"32","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"33","updated":1635549553}, "emitted_at": 1626172757000}
+{"stream": "campaign_actions", "data": {"id":"34","updated":1635549553}, "emitted_at": 1626172757000}

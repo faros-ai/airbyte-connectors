@@ -27,3 +27,4 @@ tests:
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
         campaigns: [ "cutoff" ]
+        campaign_actions: [ "cutoff" ]
