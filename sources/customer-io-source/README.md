@@ -12,7 +12,7 @@ This source is useful for importing Customer.io resource metadata (such as campa
 
 * `campaigns`
 * `campaign_actions`
-* `broadcasts`
+* `newsletters`
 
 ```shell
 docker pull farosai/airbyte-customer-io-source

@@ -11,7 +11,7 @@ import {
 import VError from 'verror';
 
 import {genAuthorizationHeader} from './gen-authorization-header';
-import {CampaignActions, Campaigns} from './streams';
+import {CampaignActions, Campaigns, Newsletters} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -64,6 +64,7 @@ export class CustomerIOSource extends AirbyteSourceBase {
     return [
       new Campaigns(this.logger, this.axios, config),
       new CampaignActions(this.logger, this.axios, config),
+      new Newsletters(this.logger, this.axios, config),
     ];
   }
 }

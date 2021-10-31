@@ -199,5 +199,38 @@ describe('index', () => {
         ]);
       });
     });
+
+    describe('newsletters', () => {
+      it('yields all newsletters', async () => {
+        const apiNewsletters = [
+          {
+            id: 1,
+          },
+          {
+            id: 2,
+          },
+        ];
+
+        axiosMock
+          .onGet('/newsletters')
+          .reply(200, {newsletters: apiNewsletters});
+
+        const [, , newslettersStream] = source.streams({
+          app_api_key: 'testkey',
+        });
+
+        const newslettersIterator = newslettersStream.readRecords(
+          SyncMode.FULL_REFRESH
+        );
+
+        const newsletters: any[] = [];
+
+        for await (const newsletter of newslettersIterator) {
+          newsletters.push(newsletter);
+        }
+
+        expect(newsletters).toEqual(apiNewsletters);
+      });
+    });
   });
 });

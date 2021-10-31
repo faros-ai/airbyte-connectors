@@ -4,5 +4,8 @@
   },
   "campaign_actions": {
     "cutoff": 1735718400000
+  },
+  "newsletters": {
+    "cutoff": 1735718400000
   }
 }

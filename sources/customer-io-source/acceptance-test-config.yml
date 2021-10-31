@@ -28,3 +28,4 @@ tests:
       cursor_paths:
         campaigns: [ "cutoff" ]
         campaign_actions: [ "cutoff" ]
+        newsletters: [ "cutoff" ]
