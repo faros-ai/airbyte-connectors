@@ -198,7 +198,7 @@ class FarosDestination extends AirbyteDestination {
     this.init(config);
 
     const {streams, deleteModelEntries, converterDependencies} =
-      this.initStreamsCheckConverters(catalog, config);
+      this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
 
@@ -283,7 +283,7 @@ class FarosDestination extends AirbyteDestination {
       writtenByModel: {},
     };
 
-    const ctx = new StreamContext();
+    const ctx = new StreamContext(config);
     const recordsToBeProcessedLast: ((ctx: StreamContext) => void)[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
@@ -320,7 +320,7 @@ class FarosDestination extends AirbyteDestination {
             const count = stats.processedByStream[stream];
             stats.processedByStream[stream] = count ? count + 1 : 1;
 
-            const converter = this.getConverter(stream, config);
+            const converter = this.getConverter(stream);
             const writeRecord = (context: StreamContext): void => {
               stats.recordsWritten += this.writeRecord(
                 converter,
@@ -411,10 +411,7 @@ class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private initStreamsCheckConverters(
-    catalog: AirbyteConfiguredCatalog,
-    config: AirbyteConfig
-  ): {
+  private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
     converterDependencies: Set<string>;
@@ -432,7 +429,7 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const converter = this.getConverter(stream, config, (err: Error) =>
+      const converter = this.getConverter(stream, (err: Error) =>
         this.logger.error(err.message)
       );
       this.logger.info(
@@ -484,12 +481,10 @@ class FarosDestination extends AirbyteDestination {
 
   private getConverter(
     stream: string,
-    config: AirbyteConfig,
     onLoadError?: (err: Error) => void
   ): Converter {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
-      config,
       onLoadError
     );
     if (!converter && !this.jsonataConverter) {

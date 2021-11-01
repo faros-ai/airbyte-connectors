@@ -1,4 +1,3 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk/lib';
 import {camelCase, upperFirst} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -21,13 +20,11 @@ export class ConverterRegistry {
    * and create a class GithubPullRequestStats.
    *
    * @param streamName stream name
-   * @param config destination config
    * @param onLoadError handler to call on converter loading error
    * @returns converter if any
    */
   static getConverter(
     streamName: StreamName,
-    config: AirbyteConfig,
     onLoadError?: (err: Error) => void
   ): Converter | undefined {
     const name = streamName.asString;
@@ -43,7 +40,7 @@ export class ConverterRegistry {
 
       // Create converter instance by name
       const className = upperFirst(camelCase(name));
-      const converter = new mod[className](config);
+      const converter = new mod[className]();
 
       // Keep the converter instance in the registry
       ConverterRegistry.convertersByStream[name] = converter;

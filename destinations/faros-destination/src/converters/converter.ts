@@ -6,8 +6,6 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
-  constructor(protected readonly config: AirbyteConfig) {}
-
   private stream: StreamName;
 
   /** Input stream supported by converter */
@@ -41,6 +39,8 @@ export abstract class Converter {
 
 /** Stream context to store records by stream */
 export class StreamContext {
+  constructor(readonly config: AirbyteConfig) {}
+
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
 

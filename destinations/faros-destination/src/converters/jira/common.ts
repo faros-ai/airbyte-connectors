@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 
 export class JiraCommon {
   static POINTS_FIELD_NAMES = ['Story Points', 'Story point estimate'];
@@ -23,6 +23,7 @@ export abstract class JiraConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected useBoardOwnership: boolean =
-    this.config.jira_use_board_ownership ?? false;
+  protected useBoardOwnership(ctx: StreamContext): boolean {
+    return ctx.config.jira_use_board_ownership ?? false;
+  }
 }

@@ -13,7 +13,7 @@ export class JiraBoards extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
-    if (!this.useBoardOwnership) return [];
+    if (!this.useBoardOwnership(ctx)) return [];
     const board = record.record.data;
     const uid = board.id.toString();
     const source = this.streamName.source;
