@@ -11,31 +11,15 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {JiraCommon, JiraConverter} from './common';
-
-interface Assignee {
-  readonly uid: string;
-  readonly assignedAt: Date;
-}
-enum RepoSource {
-  BITBUCKET = 'Bitbucket',
-  GITHUB = 'GitHub',
-  GITLAB = 'GitLab',
-  VCS = 'VCS',
-}
-interface Repo {
-  readonly source: RepoSource;
-  readonly org: string;
-  readonly name: string;
-}
-interface PullRequest {
-  readonly repo: Repo;
-  readonly number: number;
-}
-interface Status {
-  readonly category: string;
-  readonly detail: string;
-}
+import {
+  Assignee,
+  JiraCommon,
+  JiraConverter,
+  PullRequest,
+  Repo,
+  RepoSource,
+  Status,
+} from './common';
 
 const dependencyRegex = /((is (?<type>\w+))|tested) by/;
 const sprintRegex = /([\w]+)=([\w-:. ]+)/g;

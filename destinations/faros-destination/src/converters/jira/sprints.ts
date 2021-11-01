@@ -9,15 +9,8 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {JiraCommon, JiraConverter} from './common';
+import {JiraCommon, JiraConverter, SprintIssue} from './common';
 
-interface SprintIssue {
-  id: number;
-  key: string;
-  fields: Dictionary<any>;
-  issueId: string;
-  sprintId: number;
-}
 export class JiraSprints extends JiraConverter {
   private logger = new AirbyteLogger();
 
