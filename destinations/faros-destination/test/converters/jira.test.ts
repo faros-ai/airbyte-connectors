@@ -2,13 +2,11 @@ import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import os from 'os';
 import pino from 'pino';
 
-import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {jiraAllStreamsLog, jiraPGRawLog, readTestResourceFile} from './data';
+import {jiraAllStreamsLog} from './data';
 
 describe('jira', () => {
   const logger = pino({
@@ -18,10 +16,7 @@ describe('jira', () => {
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/jira/catalog.json';
-  const catalogRawPath = 'test/resources/jira/catalog-raw.json';
   let configPath: string;
-  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
-  const revisionId = 'test-revision-id';
   const streamNamePrefix = 'mytestsource__jira__';
 
   beforeEach(async () => {
@@ -32,160 +27,6 @@ describe('jira', () => {
   afterEach(async () => {
     await mockttp.stop();
     fs.unlinkSync(configPath);
-  });
-
-  test('process and write records', async () => {
-    await mockttp
-      .post('/graphs/test-graph/models')
-      .withQuery({schema: 'canonical'})
-      .once()
-      .thenReply(200, JSON.stringify({}));
-
-    await mockttp
-      .post('/graphs/test-graph/revisions')
-      .once()
-      .thenReply(
-        200,
-        JSON.stringify({
-          entrySchema: graphSchema,
-          revision: {uid: revisionId, lock: {state: {}}},
-        })
-      );
-
-    let entriesSize = 0;
-    await mockttp
-      .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
-      .thenCallback(async (r) => {
-        entriesSize = r.body.buffer.length;
-        return {statusCode: 204};
-      });
-
-    await mockttp
-      .patch(`/graphs/test-graph/revisions/${revisionId}`)
-      .withJsonBodyIncluding({status: 'active'})
-      .once()
-      .thenReply(204);
-
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-    ]);
-    cli.stdin.end(jiraAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 689 messages');
-    expect(stdout).toMatch('Read 587 records');
-    expect(stdout).toMatch('Processed 587 records');
-    expect(stdout).toMatch('Wrote 64 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-    expect(entriesSize).toBeGreaterThan(0);
-  });
-
-  test('process records but skip writes when dry run is enabled', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(jiraAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Read 689 messages');
-    expect(stdout).toMatch('Read 587 records');
-    expect(stdout).toMatch('Processed 587 records');
-    expect(stdout).toMatch('Would write 64 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-  });
-
-  test('process raw records', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogRawPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(jiraPGRawLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 116 records');
-    expect(stdout).toMatch('Would write 43 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-  });
-
-  test('skip to process bad records when strategy is skip', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(
-      JSON.stringify(
-        AirbyteRecord.make('mytestsource__jira__bad', {bad: 'dummy'})
-      ) +
-        os.EOL +
-        JSON.stringify(
-          AirbyteRecord.make('mytestsource__jira__something_else', {
-            foo: 'bar',
-          })
-        ) +
-        os.EOL,
-      'utf8'
-    );
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 1 records');
-    expect(stdout).toMatch('Would write 1 records');
-    expect(stdout).toMatch('Errored 1 records');
-    expect(await read(cli.stderr)).toMatch('');
-    expect(await cli.wait()).toBe(0);
-  });
-
-  test('fail to process bad records when strategy is fail', async () => {
-    fs.unlinkSync(configPath);
-    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(
-      JSON.stringify(
-        AirbyteRecord.make('mytestsource__jira__bad', {bad: 'dummy'})
-      ) + os.EOL,
-      'utf8'
-    );
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 0 records');
-    expect(stdout).toMatch('Would write 0 records');
-    expect(stdout).toMatch('Errored 1 records');
-    const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__jira__bad');
-    expect(await cli.wait()).toBeGreaterThan(0);
   });
 
   test('process records from all streams', async () => {
