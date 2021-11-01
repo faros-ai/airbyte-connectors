@@ -61,7 +61,9 @@ export class Campaigns extends AirbyteStreamBase {
     });
 
     for (const campaign of response.data.campaigns) {
-      yield campaign;
+      if (campaign.updated >= lastCutoff) {
+        yield campaign;
+      }
     }
   }
 }

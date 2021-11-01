@@ -61,7 +61,9 @@ export class Newsletters extends AirbyteStreamBase {
     });
 
     for (const newsletter of response.data.newsletters) {
-      yield newsletter;
+      if (newsletter.updated >= lastCutoff) {
+        yield newsletter;
+      }
     }
   }
 }

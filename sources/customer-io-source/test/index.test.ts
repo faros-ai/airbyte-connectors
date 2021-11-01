@@ -71,9 +71,11 @@ describe('index', () => {
         const apiCampaigns = [
           {
             id: 1,
+            updated: 100,
           },
           {
             id: 2,
+            updated: 100,
           },
         ];
 
@@ -120,9 +122,11 @@ describe('index', () => {
           actions: [
             {
               id: '1',
+              updated: 1000,
             },
             {
               id: '2',
+              updated: 1000,
             },
           ],
         });
@@ -138,6 +142,7 @@ describe('index', () => {
             actions: [
               {
                 id: '3',
+                updated: 1000,
               },
             ],
           });
@@ -158,9 +163,11 @@ describe('index', () => {
           actions: [
             {
               id: '4',
+              updated: 1000,
             },
             {
               id: '5',
+              updated: 1000,
             },
           ],
         });
@@ -191,11 +198,11 @@ describe('index', () => {
         }
 
         expect(campaignActions).toEqual([
-          {id: '1'},
-          {id: '2'},
-          {id: '3'},
-          {id: '4'},
-          {id: '5'},
+          {id: '1', updated: 1000},
+          {id: '2', updated: 1000},
+          {id: '3', updated: 1000},
+          {id: '4', updated: 1000},
+          {id: '5', updated: 1000},
         ]);
       });
     });
@@ -205,9 +212,11 @@ describe('index', () => {
         const apiNewsletters = [
           {
             id: 1,
+            updated: 1000,
           },
           {
             id: 2,
+            updated: 1000,
           },
         ];
 

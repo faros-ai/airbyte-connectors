@@ -78,7 +78,9 @@ export class CampaignActions extends AirbyteStreamBase {
           nextKey = pageResponse.data.next || undefined;
 
           for (const action of pageResponse.data.actions ?? []) {
-            yield action;
+            if (action.updated >= lastCutoff) {
+              yield action;
+            }
           }
         } while (nextKey);
       }
