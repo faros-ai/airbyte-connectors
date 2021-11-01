@@ -42,6 +42,11 @@ export async function tempConfig(
         "uid": foo
       }
    }`,
+    source_specific_configs: {
+      jira: {
+        use_board_ownership: false,
+      },
+    },
   };
   return tempFile(JSON.stringify(conf), {suffix: '.json'});
 }

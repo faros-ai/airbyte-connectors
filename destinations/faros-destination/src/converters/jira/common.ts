@@ -17,13 +17,21 @@ export const JiraStatusCategories: ReadonlyMap<string, string> = new Map(
   ['Todo', 'InProgress', 'Done'].map((s) => [JiraCommon.normalize(s), s])
 );
 
+export interface JiraConfig {
+  use_board_ownership?: boolean;
+}
+
 export abstract class JiraConverter extends Converter {
   /** All Jira records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
+  protected jiraConfig(ctx: StreamContext): JiraConfig {
+    return ctx.config.source_specific_configs?.jira ?? {};
+  }
+
   protected useBoardOwnership(ctx: StreamContext): boolean {
-    return ctx.config.jira_use_board_ownership ?? false;
+    return this.jiraConfig(ctx).use_board_ownership ?? false;
   }
 }
