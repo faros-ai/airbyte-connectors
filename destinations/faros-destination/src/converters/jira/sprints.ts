@@ -40,7 +40,7 @@ export class JiraSprints extends JiraConverter {
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.records(JiraSprints.issueFieldsStream.asString);
+    const records = ctx.getAll(JiraSprints.issueFieldsStream.asString) ?? {};
     const results: Dictionary<string[]> = {};
     for (const [id, record] of Object.entries(records)) {
       const name = record.record?.data?.name;
@@ -56,7 +56,7 @@ export class JiraSprints extends JiraConverter {
   private static getSprintIssueRecords(
     ctx: StreamContext
   ): Dictionary<SprintIssue[], number> {
-    const records = ctx.records(JiraSprints.sprintIssuesStream.asString);
+    const records = ctx.getAll(JiraSprints.sprintIssuesStream.asString) ?? {};
     const results: Dictionary<SprintIssue[], number> = {};
     for (const record of Object.values(records)) {
       const sprintId = record.record?.data?.sprintId;

@@ -111,7 +111,7 @@ export class JiraIssues extends JiraConverter {
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.records(JiraIssues.issueFieldsStream.asString);
+    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
     const results: Dictionary<string[]> = {};
     for (const [id, record] of Object.entries(records)) {
       const name = record.record?.data?.name;
@@ -127,7 +127,7 @@ export class JiraIssues extends JiraConverter {
     ctx: StreamContext
   ): ReadonlyMap<string, string> {
     const map = new Map<string, string>();
-    const records = ctx.records(JiraIssues.issueFieldsStream.asString);
+    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
     for (const [id, rec] of Object.entries(records)) {
       const name = rec.record?.data?.name;
       if (id && name) {
@@ -141,7 +141,8 @@ export class JiraIssues extends JiraConverter {
     ctx: StreamContext
   ): ReadonlyMap<string, Status> {
     const map = new Map<string, Status>();
-    const records = ctx.records(JiraIssues.workflowStatusesStream.asString);
+    const records =
+      ctx.getAll(JiraIssues.workflowStatusesStream.asString) ?? {};
     for (const [id, rec] of Object.entries(records)) {
       const detail = rec.record?.data?.name;
       const category = rec.record?.data?.statusCategory?.name;
