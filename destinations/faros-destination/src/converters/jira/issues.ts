@@ -97,8 +97,8 @@ export class JiraIssues extends JiraConverter {
   ];
 
   private fieldIdsByName?: Dictionary<string[]>;
-  private fieldNameById?: ReadonlyMap<string, string>;
-  private statusByName?: ReadonlyMap<string, Status>;
+  private fieldNameById?: Dictionary<string>;
+  private statusByName?: Dictionary<Status>;
 
   private turndown = new TurndownService();
 
@@ -123,34 +123,30 @@ export class JiraIssues extends JiraConverter {
     return results;
   }
 
-  private static getFieldNamesById(
-    ctx: StreamContext
-  ): ReadonlyMap<string, string> {
-    const map = new Map<string, string>();
+  private static getFieldNamesById(ctx: StreamContext): Dictionary<string> {
+    const results: Dictionary<string> = {};
     const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
     for (const [id, rec] of Object.entries(records)) {
       const name = rec.record?.data?.name;
       if (id && name) {
-        map.set(id, name);
+        results[id] = name;
       }
     }
-    return map;
+    return results;
   }
 
-  private static getStatusesByName(
-    ctx: StreamContext
-  ): ReadonlyMap<string, Status> {
-    const map = new Map<string, Status>();
+  private static getStatusesByName(ctx: StreamContext): Dictionary<Status> {
+    const results: Dictionary<Status> = {};
     const records =
       ctx.getAll(JiraIssues.workflowStatusesStream.asString) ?? {};
     for (const [id, rec] of Object.entries(records)) {
       const detail = rec.record?.data?.name;
       const category = rec.record?.data?.statusCategory?.name;
       if (detail && category) {
-        map.set(detail, {category, detail});
+        results[detail] = {category, detail};
       }
     }
-    return map;
+    return results;
   }
 
   private static fieldChangelog(
@@ -420,7 +416,7 @@ export class JiraIssues extends JiraConverter {
 
     const statusChangelog: any[] = [];
     for (const change of JiraIssues.fieldChangelog(changelog, 'status')) {
-      const status = this.statusByName.get(change.value);
+      const status = this.statusByName[change.value];
       if (status) {
         statusChangelog.push({
           status: {
@@ -457,7 +453,7 @@ export class JiraIssues extends JiraConverter {
 
     // Rewrite keys of additional fields to use names instead of ids
     const additionalFields: any[] = [];
-    for (const [id, name] of this.fieldNameById.entries()) {
+    for (const [id, name] of Object.entries(this.fieldNameById)) {
       let value = issue.fields[id];
       if (
         JiraIssues.standardFieldIds.includes(id) ||
