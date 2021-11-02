@@ -47,11 +47,11 @@ export class IncidentLogEntries extends AirbyteStreamBase {
       .toJSDate();
     let since = null;
     if (syncMode === SyncMode.INCREMENTAL) {
-
+      since =
+        state?.lastSynced !== undefined
+          ? new Date(state.lastSynced)
+          : cutoffTimestamp;
     }
-      syncMode === SyncMode.INCREMENTAL && state?.lastSynced !== undefined
-        ? new Date(state.lastSynced)
-        : cutoffTimestamp;
     const until = now.toJSDate();
 
     yield* pagerduty.getIncidentLogEntries(
