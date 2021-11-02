@@ -30,8 +30,7 @@ export class Users extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-    const state =
-      syncMode === SyncMode.INCREMENTAL ? streamSlice || null : null;
+    const state = syncMode === SyncMode.INCREMENTAL ? streamSlice : null;
 
     yield* pagerduty.getUsers(state, cursorField);
   }

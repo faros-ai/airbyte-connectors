@@ -92,14 +92,14 @@ export class Pagerduty {
 
   private static validateInteger(
     value: number
-  ): [true | undefined, string | undefined] {
+  ):  string | undefined {
     if (value) {
       if (typeof value === 'number' && value > 0) {
-        return [true, undefined];
+        return undefined;
       }
-      return [undefined, `${value} must be a valid positive number`];
+      return  `${value} must be a valid positive number`;
     }
-    return [true, undefined];
+    return undefined;
   }
 
   static instance(config: PagerdutyConfig, logger: AirbyteLogger): Pagerduty {
@@ -110,12 +110,12 @@ export class Pagerduty {
     }
 
     const pageSize = this.validateInteger(config.pageSize);
-    if (!pageSize[0]) {
-      throw new VError(pageSize[1]);
+    if (pageSize) {
+      throw new VError(pageSize);
     }
     const cutoffDays = this.validateInteger(config.cutoffDays);
-    if (!cutoffDays[0]) {
-      throw new VError(cutoffDays[1]);
+    if (cutoffDays) {
+      throw new VError(cutoffDays);
     }
     const client = api({token: config.token});
 
@@ -133,7 +133,7 @@ export class Pagerduty {
       if (err.error_code || err.error_info) {
         throw new VError(`${err.error_code}: ${err.error_info}`);
       }
-      throw new VError(err.message ?? err);
+      throw new VError(err.message ?? err.statusText ?? '');
     }
     return res;
   }
@@ -168,7 +168,7 @@ export class Pagerduty {
     try {
       await this.client.get('/users');
     } catch (error: any) {
-      const err = error?.message ?? error?.statusText ?? error;
+      const err = error?.message ?? error?.statusText ?? '';
       throw new VError(`Please verify your token are correct. Error: ${err}`);
     }
   }
@@ -190,7 +190,7 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since?: Date,
+    since: Date | null,
     limit: number = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
     let until: Date;
@@ -214,7 +214,7 @@ export class Pagerduty {
   }
 
   async *getIncidentLogEntries(
-    since?: Date,
+    since: Date | null,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW
@@ -248,3 +248,11 @@ export class Pagerduty {
     }
   }
 }
+
+async function boot() {
+  const logger = new AirbyteLogger();
+  const pagerduty = Pagerduty.instance({token: 'u+7hX8Jq2WonJqbjCZzw 1'}, logger)
+  await pagerduty.checkConnection();
+}
+
+boot()

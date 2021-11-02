@@ -39,14 +39,16 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     streamState?: IncidentLogEntryState
   ): AsyncGenerator<LogEntry> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-    const state =
-      syncMode === SyncMode.INCREMENTAL ? streamState ?? null : null;
+    const state = syncMode === SyncMode.INCREMENTAL ? streamState : null;
 
     const now = DateTime.now();
     const cutoffTimestamp = now
       .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
       .toJSDate();
-    const since =
+    let since = null;
+    if (syncMode === SyncMode.INCREMENTAL) {
+
+    }
       syncMode === SyncMode.INCREMENTAL && state?.lastSynced !== undefined
         ? new Date(state.lastSynced)
         : cutoffTimestamp;
