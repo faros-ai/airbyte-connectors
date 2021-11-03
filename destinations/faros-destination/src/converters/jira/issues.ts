@@ -501,7 +501,7 @@ export class JiraIssues extends JiraConverter {
         statusChangelog,
         points: this.getPoints(issue) ?? null,
         creator: creator ? {uid: creator, source} : null,
-        parent: parent ? {uid: parent.key, source} : null,
+        parent: parent?.key ? {uid: parent.key, source} : null,
         epic: epicKey ? {uid: epicKey, source} : null,
         sprint: sprint ? {uid: sprint, source} : null,
         source,

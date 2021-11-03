@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {jiraAllStreamsLog} from './data';
@@ -21,7 +22,11 @@ describe('jira', () => {
 
   beforeEach(async () => {
     await mockttp.start({startPort: 30000, endPort: 50000});
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.SKIP, {
+      jira: {
+        use_board_ownership: false,
+      },
+    });
   });
 
   afterEach(async () => {
