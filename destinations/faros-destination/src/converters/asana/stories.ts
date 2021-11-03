@@ -5,9 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
 
 export class AsanaStories extends AsanaConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_Task',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Task'];
 
   convert(
     record: AirbyteRecord,

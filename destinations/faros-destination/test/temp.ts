@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {AffixOptions, open, track} from 'temp';
+import {Dictionary} from 'ts-essentials';
 
 import {InvalidRecordStrategy} from '../src';
 
@@ -26,7 +27,8 @@ export async function tempFile(
  */
 export async function tempConfig(
   api_url: string,
-  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP
+  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
+  source_specific_configs?: Dictionary<any>
 ): Promise<string> {
   const conf = {
     api_url,
@@ -41,7 +43,8 @@ export async function tempConfig(
       "record": {
         "uid": foo
       }
-   }`,
+    }`,
+    source_specific_configs,
   };
   return tempFile(JSON.stringify(conf), {suffix: '.json'});
 }

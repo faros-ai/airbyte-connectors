@@ -61,7 +61,10 @@ export class AsanaCommon {
     };
   }
 
-  static tms_TaskBoard(section: AsanaSection, source: string): DestinationRecord {
+  static tms_TaskBoard(
+    section: AsanaSection,
+    source: string
+  ): DestinationRecord {
     return {
       model: 'tms_TaskBoard',
       record: {

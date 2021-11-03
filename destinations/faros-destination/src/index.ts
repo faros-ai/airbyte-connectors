@@ -206,6 +206,7 @@ class FarosDestination extends AirbyteDestination {
     if (config.dry_run === true || dryRun) {
       this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(
+        config,
         stdin,
         streams,
         stateMessages,
@@ -242,6 +243,7 @@ class FarosDestination extends AirbyteDestination {
             );
             // Process input and write entries
             await this.writeEntries(
+              config,
               stdin,
               streams,
               stateMessages,
@@ -264,6 +266,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async writeEntries(
+    config: AirbyteConfig,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
@@ -280,7 +283,7 @@ class FarosDestination extends AirbyteDestination {
       writtenByModel: {},
     };
 
-    const ctx = new StreamContext();
+    const ctx = new StreamContext(config);
     const recordsToBeProcessedLast: ((ctx: StreamContext) => void)[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
