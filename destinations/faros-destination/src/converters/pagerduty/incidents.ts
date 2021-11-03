@@ -12,7 +12,7 @@ enum IncidentStatusCategory {
   Custom = 'Custom',
 }
 
-type IncidentUrgency = 'high' | 'low'; //Pagerduty only has these two priorities
+type IncidentUrgency = 'high' | 'low'; //PagerDuty only has these two priorities
 type IncidentState = 'triggered' | 'acknowledged' | 'resolved';
 
 interface Acknowledgement {

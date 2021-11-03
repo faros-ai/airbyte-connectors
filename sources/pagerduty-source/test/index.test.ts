@@ -69,12 +69,12 @@ describe('index', () => {
   });
 
   test('streams - incidentLogEntries, use full_refresh sync mode', async () => {
-    const fnUsersList = jest.fn();
+    const fnIncidentLogEntriesList = jest.fn();
 
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnUsersList.mockImplementation(async (path: string) => {
+          get: fnIncidentLogEntriesList.mockImplementation(async (path: string) => {
             const isPathMatch = path.match(/^\/log_entries/);
             if (isPathMatch) {
               return {
@@ -99,19 +99,19 @@ describe('index', () => {
     for await (const logEntry of incidentLogEntriesIter) {
       incidentLogEntries.push(logEntry);
     }
-    expect(fnUsersList).toHaveBeenCalledTimes(1);
+    expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(1);
     expect(incidentLogEntries).toStrictEqual(
       readTestResourceFile('incidentLogEntries.json')
     );
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
-    const fnUsersList = jest.fn();
+    const fnIncidentsList = jest.fn();
 
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnUsersList.mockImplementation(async (path: string) => {
+          get: fnIncidentsList.mockImplementation(async (path: string) => {
             const isPathMatch = path.match(/^\/incidents/);
             if (isPathMatch) {
               return {
@@ -135,17 +135,17 @@ describe('index', () => {
       incidents.push(incident);
     }
 
-    expect(fnUsersList).toHaveBeenCalledTimes(1);
+    expect(fnIncidentsList).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
-  test('streams - priorityResource, use full_refresh sync mode', async () => {
-    const fnUsersList = jest.fn();
+  test('streams - prioritiesResource, use full_refresh sync mode', async () => {
+    const fnPrioritiesResourceList = jest.fn();
 
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnUsersList.mockImplementation(async (path: string) => {
+          get: fnPrioritiesResourceList.mockImplementation(async (path: string) => {
             const isPathMatch = path.match(/^\/priorities/);
             if (isPathMatch) {
               return {
@@ -174,7 +174,7 @@ describe('index', () => {
       priorities.push(priority);
     }
 
-    expect(fnUsersList).toHaveBeenCalledTimes(1);
+    expect(fnPrioritiesResourceList).toHaveBeenCalledTimes(1);
     expect(priorities).toStrictEqual(
       readTestResourceFile('prioritiesResource.json')
     );

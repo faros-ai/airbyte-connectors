@@ -1,7 +1,7 @@
 {
   "name": "pagerduty-source",
   "version": "0.1.23",
-  "description": "Pagerduty Airbyte source",
+  "description": "PagerDuty Airbyte source",
   "keywords": [
     "airbyte",
     "source",

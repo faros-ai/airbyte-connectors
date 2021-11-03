@@ -2,7 +2,7 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Jenkins Spec",
+    "title": "PagerDuty Spec",
     "type": "object",
     "required": [
       "token"
@@ -11,7 +11,7 @@
     "properties": {
       "token": {
         "type": "string",
-        "title": "Pagerduty API key",
+        "title": "PagerDuty API key",
         "airbyte_secret": true
       },
       "pageSize": {
@@ -53,7 +53,7 @@
       "applicationMapping": {
         "type": "string",
         "title": "JSON map to compute_Application",
-        "description": "JSON map of Pagerduty service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object",
+        "description": "JSON map of PagerDuty service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object",
         "default": "{}",
         "examples": ["{'Aion':{'name':'aion','platform':'ECS'}}"]
       }
