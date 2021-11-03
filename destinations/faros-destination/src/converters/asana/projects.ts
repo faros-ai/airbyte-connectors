@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk'
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
@@ -13,11 +13,11 @@ export class AsanaProjects extends AsanaConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const project = record.record.data;
-    
+
     const tmsProject: DestinationRecord = {
       model: 'tms_Project',
       record: {
-        uid: project.gid, 
+        uid: project.gid,
         name: project.name,
         description: project.notes?.substring(
           0,
@@ -26,8 +26,8 @@ export class AsanaProjects extends AsanaConverter {
         createdAt: Utils.toDate(project.created_at),
         updatedAt: Utils.toDate(project.modified_at),
         source,
-      }
-    }
+      },
+    };
 
     return [tmsProject];
   }
