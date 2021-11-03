@@ -6,7 +6,11 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {PagerdutyConverter, PagerdutyObject} from './common';
+import {
+  IncidentSeverityCategory,
+  PagerdutyConverter,
+  PagerdutyObject,
+} from './common';
 
 const SeverityLevel = ['Sev1', 'Sev2', 'Sev3', 'Sev4', 'Sev5'];
 
@@ -45,7 +49,12 @@ export class PagerdutyPrioritiesResource extends PagerdutyConverter {
     const incident = ctx.get(incidentsStream, String(priorityResource.id));
     const incidentPriority = incident?.record?.data?.priority;
 
-    const severity = this.incidentSeverity(priorityResource, incidentPriority);
+    const defaultSeverity = this.defaultSeverity(ctx);
+    const severity = this.incidentSeverity(
+      priorityResource,
+      incidentPriority,
+      defaultSeverity
+    );
 
     if (!severity) return [];
 
@@ -69,14 +78,18 @@ export class PagerdutyPrioritiesResource extends PagerdutyConverter {
 
   private incidentSeverity(
     priorityResource: Priority,
-    incidentPriority?: Priority
+    incidentPriority?: Priority,
+    defaultSeverity?: IncidentSeverityCategory
   ): undefined | {category: string; detail: string} {
-    if (!incidentPriority) {
-      return undefined;
+    if (!incidentPriority && defaultSeverity) {
+      //priorities can be disabled on the PD account
+      return defaultSeverity
+        ? {category: defaultSeverity, detail: 'default'}
+        : undefined;
     }
-    const detail = incidentPriority.summary;
+    const detail = incidentPriority?.summary ?? priorityResource.summary;
     const [severityIndex] = detail.match(/\d$/);
-    if (priorityResource.id === incidentPriority.id) {
+    if (incidentPriority) {
       return {category: SeverityLevel[severityIndex], detail};
     }
     return {category: 'Custom', detail};

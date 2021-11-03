@@ -24,7 +24,9 @@ export class PagerdutyIncidents extends PagerdutyConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
     'ims_Incident',
+    'ims_IncidentApplicationImpact',
     'ims_IncidentAssignment',
   ];
 
@@ -88,6 +90,32 @@ export class PagerdutyIncidents extends PagerdutyConverter {
         },
       });
     }
+
+    const applicationMapping = this.applicationMapping(ctx);
+    let application = {
+      name: incident.service.summary,
+      platform: '',
+    };
+    // if we have an app mapping specified
+    if (
+      incident.service.summary in applicationMapping &&
+      applicationMapping[incident.service.summary].name
+    ) {
+      const mappedApp = applicationMapping[incident.service.summary];
+      application = {
+        name: mappedApp.name,
+        platform: mappedApp.platform ?? application.platform,
+      };
+    }
+    res.push({model: 'compute_Application', record: application});
+
+    res.push({
+      model: 'ims_IncidentApplicationImpact',
+      record: {
+        incident: incidentRef,
+        application,
+      },
+    });
 
     return res;
   }
