@@ -30,3 +30,7 @@ export const gitlabAllStreamsLog = readTestResourceFile(
 export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
+
+export const victoropsAllStreamsLog = readTestResourceFile(
+  'victorops/all-streams.log'
+);
