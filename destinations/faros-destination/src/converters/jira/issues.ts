@@ -1,7 +1,15 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import parseGitUrl from 'git-url-parse';
-import {isPlainObject, isString, last, toLower} from 'lodash';
+import {
+  invertBy,
+  isPlainObject,
+  isString,
+  keyBy,
+  last,
+  mapValues,
+  toLower,
+} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import TurndownService from 'turndown';
 
@@ -96,41 +104,27 @@ export class JiraIssues extends JiraConverter {
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
     const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
-    const results: Dictionary<string[]> = {};
-    for (const [id, record] of Object.entries(records)) {
-      const name = record.record?.data?.name;
-      if (!(name in results)) {
-        results[name] = [];
-      }
-      results[name].push(id);
-    }
-    return results;
+    return invertBy(mapValues(records, (r) => r.record.data.name as string));
   }
 
   private static getFieldNamesById(ctx: StreamContext): Dictionary<string> {
-    const results: Dictionary<string> = {};
     const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
-    for (const [id, rec] of Object.entries(records)) {
-      const name = rec.record?.data?.name;
-      if (id && name) {
-        results[id] = name;
-      }
-    }
-    return results;
+    return mapValues(records, (r) => r.record.data.name);
   }
 
   private static getStatusesByName(ctx: StreamContext): Dictionary<Status> {
-    const results: Dictionary<Status> = {};
     const records =
       ctx.getAll(JiraIssues.workflowStatusesStream.asString) ?? {};
-    for (const [id, rec] of Object.entries(records)) {
-      const detail = rec.record?.data?.name;
-      const category = rec.record?.data?.statusCategory?.name;
-      if (detail && category) {
-        results[detail] = {category, detail};
-      }
-    }
-    return results;
+    return keyBy(
+      Object.values(records).map((r) => {
+        const data = r.record.data;
+        return {
+          detail: data.name,
+          category: data.statusCategory.name,
+        } as Status;
+      }),
+      (s) => s.detail
+    );
   }
 
   private static fieldChangelog(
