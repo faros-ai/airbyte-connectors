@@ -1,5 +1,6 @@
 import {api} from '@pagerduty/pdjs';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -90,14 +91,12 @@ export class Pagerduty {
     private readonly logger: AirbyteLogger
   ) {}
 
-  private static validateInteger(
-    value: number
-  ):  string | undefined {
+  private static validateInteger(value: number): string | undefined {
     if (value) {
       if (typeof value === 'number' && value > 0) {
         return undefined;
       }
-      return  `${value} must be a valid positive number`;
+      return `${value} must be a valid positive number`;
     }
     return undefined;
   }
@@ -133,7 +132,13 @@ export class Pagerduty {
       if (err.error_code || err.error_info) {
         throw new VError(`${err.error_code}: ${err.error_info}`);
       }
-      throw new VError(err.message ?? err.statusText ?? '');
+      let errorMessage;
+      try {
+        errorMessage = err.message ?? err.statusText ?? wrapApiError(err);
+      } catch (wrapError: any) {
+        errorMessage = wrapError.message;
+      }
+      throw new VError(errorMessage);
     }
     return res;
   }
@@ -168,8 +173,15 @@ export class Pagerduty {
     try {
       await this.client.get('/users');
     } catch (error: any) {
-      const err = error?.message ?? error?.statusText ?? '';
-      throw new VError(`Please verify your token are correct. Error: ${err}`);
+      let errorMessage;
+      try {
+        errorMessage = error.message ?? error.statusText ?? wrapApiError(error);
+      } catch (wrapError: any) {
+        errorMessage = wrapError.message;
+      }
+      throw new VError(
+        `Please verify your token are correct. Error: ${errorMessage}`
+      );
     }
   }
 
@@ -248,11 +260,3 @@ export class Pagerduty {
     }
   }
 }
-
-async function boot() {
-  const logger = new AirbyteLogger();
-  const pagerduty = Pagerduty.instance({token: 'u+7hX8Jq2WonJqbjCZzw 1'}, logger)
-  await pagerduty.checkConnection();
-}
-
-boot()

@@ -162,7 +162,7 @@
     "self": "https://api.pagerduty.com/incidents/Q27MXNAJQ834PC",
     "html_url": "https://dev-devcube.pagerduty.com/incidents/Q27MXNAJQ834PC"
   },
-{
+  {
     "incident_number": 2,
     "title": "Incident #2",
     "description": "Incident #2",
@@ -232,7 +232,7 @@
     "self": "https://api.pagerduty.com/incidents/Q2KDNUM7R5JYEK",
     "html_url": "https://dev-devcube.pagerduty.com/incidents/Q2KDNUM7R5JYEK"
   },
-{
+  {
     "incident_number": 3,
     "title": "Incident #3",
     "description": "Incident #3",

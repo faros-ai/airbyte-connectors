@@ -1,5 +1,8 @@
 {
   "incidents": {
-    "lastSynced": 1635321959000
+    "lastSynced": 1636049690000
+  },
+  "incident_log_entries": {
+    "lastSynced": 1636049690000
   }
 }

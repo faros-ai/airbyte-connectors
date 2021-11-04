@@ -64,7 +64,7 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('Please verify your token are correct. Error: '),
+      new VError('Please verify your token are correct. Error: err must be an Error'),
     ]);
   });
 

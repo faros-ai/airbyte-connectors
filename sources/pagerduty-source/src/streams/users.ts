@@ -19,9 +19,6 @@ export class Users extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'id';
-  }
 
   async *readRecords(
     syncMode: SyncMode,

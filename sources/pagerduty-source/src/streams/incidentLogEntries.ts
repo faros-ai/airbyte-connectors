@@ -32,6 +32,7 @@ export class IncidentLogEntries extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'created_at';
   }
+  
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
