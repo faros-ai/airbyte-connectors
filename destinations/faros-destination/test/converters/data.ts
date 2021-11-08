@@ -15,6 +15,8 @@ export const jenkinsAllStreamsLog = readTestResourceFile(
   'jenkins/all-streams.log'
 );
 
+export const jiraAllStreamsLog = readTestResourceFile('jira/all-streams.log');
+
 export const asanaLog = readTestResourceFile('asana/streams.log');
 export const asanaPGRawLog = readTestResourceFile('asana/pg-raw.log');
 export const asanaAllStreamsLog = readTestResourceFile('asana/all-streams.log');
