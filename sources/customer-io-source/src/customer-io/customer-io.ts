@@ -1,6 +1,15 @@
 import axios, {AxiosError, AxiosInstance} from 'axios';
 import {VError} from 'verror';
 
+import {
+  CustomerIOCampaign,
+  CustomerIOCampaignAction,
+  CustomerIOListCampaignActionsResponse,
+  CustomerIOListCampaignsResponse,
+  CustomerIOListNewsletterResponse,
+  CustomerIONewsletter,
+} from './typings';
+
 const CUSTOMER_IO_BETA_API_URL = 'https://beta-api.customer.io/v1/api';
 
 export interface CustomerIOConfig {
@@ -46,8 +55,10 @@ export class CustomerIO {
 
   async *getCampaigns(
     updated = 0
-  ): AsyncGenerator<Record<string, any>, any, any> {
-    const response = await this.axios.get('/campaigns');
+  ): AsyncGenerator<CustomerIOCampaign, any, any> {
+    const response = await this.axios.get<CustomerIOListCampaignsResponse>(
+      '/campaigns'
+    );
 
     for (const campaign of response.data.campaigns) {
       if (campaign.updated >= updated) {
@@ -58,18 +69,20 @@ export class CustomerIO {
 
   async *getCampaignActions(
     updated = 0
-  ): AsyncGenerator<Record<string, any>, any, any> {
-    const campaignsResponse = await this.axios.get('/campaigns');
+  ): AsyncGenerator<CustomerIOCampaignAction, any, any> {
+    const campaignsResponse =
+      await this.axios.get<CustomerIOListCampaignsResponse>('/campaigns');
 
     for (const campaign of campaignsResponse.data.campaigns) {
       if (Array.isArray(campaign?.actions) && campaign.actions.length > 0) {
         let nextKey: string | undefined;
 
         do {
-          const pageResponse = await this.axios.get(
-            `/campaigns/${campaign.id}/actions`,
-            {params: {start: nextKey}}
-          );
+          const pageResponse =
+            await this.axios.get<CustomerIOListCampaignActionsResponse>(
+              `/campaigns/${campaign.id}/actions`,
+              {params: {start: nextKey}}
+            );
 
           nextKey = pageResponse.data.next || undefined;
 
@@ -85,8 +98,10 @@ export class CustomerIO {
 
   async *getNewsletters(
     updated = 0
-  ): AsyncGenerator<Record<string, any>, any, any> {
-    const response = await this.axios.get('/newsletters');
+  ): AsyncGenerator<CustomerIONewsletter, any, any> {
+    const response = await this.axios.get<CustomerIOListNewsletterResponse>(
+      '/newsletters'
+    );
 
     for (const newsletter of response.data.newsletters) {
       if (newsletter.updated >= updated) {

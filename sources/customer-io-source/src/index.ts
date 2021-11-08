@@ -10,7 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {CustomerIO, CustomerIOConfig} from './customer-io';
+import {CustomerIO, CustomerIOConfig} from './customer-io/customer-io';
 import {CampaignActions, Campaigns, Newsletters} from './streams';
 
 /** The main entry point. */

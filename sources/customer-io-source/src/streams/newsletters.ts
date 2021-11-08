@@ -2,7 +2,8 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CustomerIO, CustomerIOConfig} from '../customer-io';
+import {CustomerIO, CustomerIOConfig} from '../customer-io/customer-io';
+import {CustomerIONewsletter} from '../customer-io/typings';
 
 export class Newsletters extends AirbyteStreamBase {
   constructor(
@@ -42,7 +43,7 @@ export class Newsletters extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<CustomerIONewsletter, any, unknown> {
     const lastCutoff: number = streamState?.cutoff ?? 0;
     if (lastCutoff > Date.now() / 1000) {
       this.logger.info(
