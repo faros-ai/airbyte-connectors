@@ -1,4 +1,4 @@
-import Axios, {AxiosError} from 'axios';
+import {AxiosInstance} from 'axios';
 import {Command} from 'commander';
 import {
   AirbyteConfig,
@@ -10,7 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {genAuthorizationHeader} from './gen-authorization-header';
+import {CustomerIO, CustomerIOConfig} from './customer-io';
 import {CampaignActions, Campaigns, Newsletters} from './streams';
 
 /** The main entry point. */
@@ -22,11 +22,9 @@ export function mainCommand(): Command {
 
 /** Customer.io source implementation. */
 export class CustomerIOSource extends AirbyteSourceBase {
-  readonly axios = Axios.create({
-    baseURL: 'https://beta-api.customer.io/v1/api',
-    timeout: 30000,
-    responseType: 'json',
-  });
+  constructor(logger: AirbyteLogger, private readonly axios?: AxiosInstance) {
+    super(logger);
+  }
 
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
@@ -34,37 +32,22 @@ export class CustomerIOSource extends AirbyteSourceBase {
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      await this.axios.get('/campaigns', {
-        headers: genAuthorizationHeader(config),
-      });
-      return [true, undefined];
-    } catch (error) {
-      if (
-        (error as AxiosError).response &&
-        (error as AxiosError).response.status === 401
-      ) {
-        return [
-          false,
-          new VError(
-            'Customer.io authorization failed. Try changing your app api token'
-          ),
-        ];
-      }
-
-      return [
-        false,
-        new VError(
-          `Customer.io api request failed: ${(error as Error).message}`
-        ),
-      ];
+      const customerIO = CustomerIO.instance(
+        config as CustomerIOConfig,
+        this.axios
+      );
+      await customerIO.checkConnection();
+    } catch (err: any) {
+      return [false, err];
     }
+    return [true, undefined];
   }
 
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
-      new Campaigns(this.logger, this.axios, config),
-      new CampaignActions(this.logger, this.axios, config),
-      new Newsletters(this.logger, this.axios, config),
+      new Campaigns(this.logger, config as CustomerIOConfig, this.axios),
+      new CampaignActions(this.logger, config as CustomerIOConfig, this.axios),
+      new Newsletters(this.logger, config as CustomerIOConfig, this.axios),
     ];
   }
 }

@@ -1,19 +1,14 @@
 import {AxiosInstance} from 'axios';
-import {
-  AirbyteConfig,
-  AirbyteLogger,
-  AirbyteStreamBase,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {genAuthorizationHeader} from '../gen-authorization-header';
+import {CustomerIO, CustomerIOConfig} from '../customer-io';
 
 export class Campaigns extends AirbyteStreamBase {
   constructor(
     logger: AirbyteLogger,
-    private readonly axios: AxiosInstance,
-    private readonly config: AirbyteConfig
+    private readonly config: CustomerIOConfig,
+    private readonly axios?: AxiosInstance
   ) {
     super(logger);
   }
@@ -56,14 +51,8 @@ export class Campaigns extends AirbyteStreamBase {
       return;
     }
 
-    const response = await this.axios.get('/campaigns', {
-      headers: genAuthorizationHeader(this.config),
-    });
+    const customerIO = CustomerIO.instance(this.config, this.axios);
 
-    for (const campaign of response.data.campaigns) {
-      if (campaign.updated >= lastCutoff) {
-        yield campaign;
-      }
-    }
+    yield* customerIO.getCampaigns(lastCutoff);
   }
 }

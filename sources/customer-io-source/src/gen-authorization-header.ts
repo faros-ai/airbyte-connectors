@@ -1,4 +1,4 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk/lib';
+import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 export function genAuthorizationHeader(

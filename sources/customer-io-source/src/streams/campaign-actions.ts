@@ -1,19 +1,14 @@
 import {AxiosInstance} from 'axios';
-import {
-  AirbyteConfig,
-  AirbyteLogger,
-  AirbyteStreamBase,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {genAuthorizationHeader} from '../gen-authorization-header';
+import {CustomerIO, CustomerIOConfig} from '../customer-io';
 
 export class CampaignActions extends AirbyteStreamBase {
   constructor(
     logger: AirbyteLogger,
-    private readonly axios: AxiosInstance,
-    private readonly config: AirbyteConfig
+    private readonly config: CustomerIOConfig,
+    private readonly axios?: AxiosInstance
   ) {
     super(logger);
   }
@@ -56,34 +51,8 @@ export class CampaignActions extends AirbyteStreamBase {
       return;
     }
 
-    const campaignsResponse = await this.axios.get('/campaigns', {
-      headers: genAuthorizationHeader(this.config),
-    });
+    const customerIO = CustomerIO.instance(this.config, this.axios);
 
-    for (const campaign of campaignsResponse.data.campaigns) {
-      if (Array.isArray(campaign?.actions) && campaign.actions.length > 0) {
-        let nextKey: string | undefined;
-
-        do {
-          const pageResponse = await this.axios.get(
-            `/campaigns/${campaign.id}/actions`,
-            {
-              headers: genAuthorizationHeader(this.config),
-              params: {
-                start: nextKey,
-              },
-            }
-          );
-
-          nextKey = pageResponse.data.next || undefined;
-
-          for (const action of pageResponse.data.actions ?? []) {
-            if (action.updated >= lastCutoff) {
-              yield action;
-            }
-          }
-        } while (nextKey);
-      }
-    }
+    yield* customerIO.getCampaignActions(lastCutoff);
   }
 }

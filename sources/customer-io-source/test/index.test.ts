@@ -1,3 +1,4 @@
+import axios from 'axios';
 import AxiosMock from 'axios-mock-adapter';
 import {
   AirbyteLogger,
@@ -26,8 +27,10 @@ describe('index', () => {
         : AirbyteLogLevel.FATAL
     );
 
-    source = new CustomerIOSource(logger);
-    axiosMock = new AxiosMock(source.axios);
+    const axiosInstance = axios.create();
+
+    source = new CustomerIOSource(logger, axiosInstance);
+    axiosMock = new AxiosMock(axiosInstance);
   });
 
   describe('spec', () => {
