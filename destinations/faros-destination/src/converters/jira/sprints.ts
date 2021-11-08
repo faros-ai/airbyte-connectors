@@ -1,6 +1,13 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {camelCase, upperFirst} from 'lodash';
+import {
+  camelCase,
+  groupBy,
+  invertBy,
+  mapValues,
+  pickBy,
+  upperFirst,
+} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -34,32 +41,22 @@ export class JiraSprints extends JiraConverter {
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
     const records = ctx.getAll(JiraSprints.issueFieldsStream.asString) ?? {};
-    const results: Dictionary<string[]> = {};
-    for (const [id, record] of Object.entries(records)) {
-      const name = record.record?.data?.name;
-      if (!JiraCommon.POINTS_FIELD_NAMES.includes(name)) continue;
-      if (!(name in results)) {
-        results[name] = [];
-      }
-      results[name].push(id);
-    }
-    return results;
+    return invertBy(
+      pickBy(
+        mapValues(records, (r) => r.record.data.name as string),
+        (name) => JiraCommon.POINTS_FIELD_NAMES.includes(name)
+      )
+    );
   }
 
   private static getSprintIssueRecords(
     ctx: StreamContext
   ): Dictionary<SprintIssue[], number> {
     const records = ctx.getAll(JiraSprints.sprintIssuesStream.asString) ?? {};
-    const results: Dictionary<SprintIssue[], number> = {};
-    for (const record of Object.values(records)) {
-      const sprintId = record.record?.data?.sprintId;
-      if (!sprintId) continue;
-      if (!(sprintId in results)) {
-        results[sprintId] = [];
-      }
-      results[sprintId].push(record.record.data as SprintIssue);
-    }
-    return results;
+    return groupBy(
+      Object.values(records).map((r) => r.record.data as SprintIssue),
+      (si) => si.sprintId
+    );
   }
 
   private getPoints(issue: SprintIssue): number {
