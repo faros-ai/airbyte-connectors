@@ -202,17 +202,17 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since: Date | null,
+    since: string | null,
     limit: number = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
     let until: Date;
     let timeRange = '&date_range=all';
     if (since) {
       until = new Date(since);
-      until.setMonth(since.getMonth() + 5); //default time window is 1 month, setting to max
+      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
       until.setHours(0, 0, 0); //rounding down to whole day
 
-      timeRange = `&since=${since.toISOString()}&until=${until.toISOString()}`;
+      timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
     const limitParam = `&limit=${limit.toFixed()}`;
     const incidentsResource = `/incidents?time_zone=UTC${timeRange}${limitParam}`;
@@ -226,12 +226,12 @@ export class Pagerduty {
   }
 
   async *getIncidentLogEntries(
-    since: Date | null,
+    since: string | null,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW
   ): AsyncGenerator<LogEntry> {
-    const sinceParam = since ? `&since=${since.toISOString()}` : '';
+    const sinceParam = since ? `&since=${since}` : '';
     const untilParam = until ? `&until=${until.toISOString()}` : '';
     const limitParam = `&limit=${limit.toFixed()}`;
     const isOverviewParam = `&is_overview=${isOverview}`;

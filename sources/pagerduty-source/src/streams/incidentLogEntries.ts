@@ -42,12 +42,12 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : null;
 
-    const now = DateTime.now();
-    const cutoffTimestamp = now
-      .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
-      .toJSDate();
     let since = null;
+    const now = DateTime.now();
     if (syncMode === SyncMode.INCREMENTAL) {
+      const cutoffTimestamp = now
+        .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
+        .toJSDate();
       since =
         state?.lastSynced !== undefined
           ? new Date(state.lastSynced)

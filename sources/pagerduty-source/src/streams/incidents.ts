@@ -32,7 +32,7 @@ export class Incidents extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'created_at';
   }
-  
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
@@ -42,12 +42,11 @@ export class Incidents extends AirbyteStreamBase {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : null;
 
-    const now = DateTime.now();
-    const cutoffTimestamp = now
-      .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
-      .toJSDate();
     let since = null;
     if (syncMode === SyncMode.INCREMENTAL) {
+      const cutoffTimestamp = DateTime.now()
+        .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
+        .toJSDate();
       since =
         state?.lastSynced !== undefined
           ? new Date(state.lastSynced)
