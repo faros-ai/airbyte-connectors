@@ -45,12 +45,6 @@ export class CampaignActions extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<CustomerIOCampaignAction, any, unknown> {
     const lastCutoff: number = streamState?.cutoff ?? 0;
-    if (lastCutoff > Date.now() / 1000) {
-      this.logger.info(
-        `Last cutoff ${lastCutoff} is greater than current time`
-      );
-      return;
-    }
 
     const customerIO = CustomerIO.instance(this.config, this.axios);
 
