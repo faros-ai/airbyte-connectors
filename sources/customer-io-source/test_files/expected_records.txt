@@ -15,4 +15,4 @@
 {"stream": "campaign_actions", "data": {"id":"32","updated":1635549553}, "emitted_at": 1626172757000}
 {"stream": "campaign_actions", "data": {"id":"33","updated":1635549553}, "emitted_at": 1626172757000}
 {"stream": "campaign_actions", "data": {"id":"34","updated":1635549553}, "emitted_at": 1626172757000}
-{"stream": "newsletters", "data": {"id":1,"updated":1635716353}, "emitted_at": 1626172757000}
+{"stream": "newsletters", "data": {"id":1,"updated":1636157781}, "emitted_at": 1626172757000}
