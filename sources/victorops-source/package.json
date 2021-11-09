@@ -37,6 +37,9 @@
     "verror": "^1.10.0",
     "victorops-api-client": "^1.0.2"
   },
+  "devDependencies": {
+    "@types/luxon": "^2.0.6"
+  },
   "jest": {
     "coverageDirectory": "out/coverage",
     "coveragePathIgnorePatterns": [
@@ -55,8 +58,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "devDependencies": {
-    "@types/luxon": "^2.0.6"
   }
 }
