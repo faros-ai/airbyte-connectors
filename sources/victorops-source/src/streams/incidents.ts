@@ -37,7 +37,7 @@ export class Incidents extends AirbyteStreamBase {
     streamState?: VictoropsState
   ): AsyncGenerator<Incident> {
     const victorops = Victorops.instance(this.config, this.logger);
-    let state = null;
+    let state: Date | null = null;
     if (syncMode === SyncMode.INCREMENTAL) {
       const defaultCutoffDate = DateTime.now()
         .minus({days: DEFAULT_CUTOFF_DAYS})

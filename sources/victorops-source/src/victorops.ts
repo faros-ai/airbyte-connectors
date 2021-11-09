@@ -167,17 +167,10 @@ export class Victorops {
     }
   }
 
-  async *getTeams(
-    teamExists: (t: Team) => boolean,
-    state?: Team | null
-  ): AsyncGenerator<Team> {
+  async *getTeams(): AsyncGenerator<Team> {
     const res = await this.client.teams.getTeams();
     for (const team of res) {
-      if (!state || (state && !teamExists(team))) {
-        yield team;
-      } else {
-        return undefined;
-      }
+      yield team;
     }
   }
 

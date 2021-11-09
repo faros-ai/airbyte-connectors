@@ -8,6 +8,7 @@ import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
+import {Incident} from '../src/victorops';
 import {Victorops} from '../src/victorops';
 
 jest.mock('axios-retry');
@@ -110,6 +111,47 @@ describe('index', () => {
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
+  test('streams - incidents, use incremental sync mode', async () => {
+    const fnIncidentsList = jest.fn();
+
+    Victorops.instance = jest.fn().mockImplementation(() => {
+      return new Victorops({
+        reporting: {
+          getIncidentHistory: fnIncidentsList.mockImplementation(
+            ({startedAfter}: {startedAfter: Date}) => {
+              const incidentsFile: Incident[] =
+                readTestResourceFile('incidents.json');
+
+              return {
+                incidents: incidentsFile.filter(
+                  (i) => new Date(i.startTime) > startedAfter
+                ),
+              };
+            }
+          ),
+        },
+      } as any);
+    });
+
+    const source = new sut.VictoropsSource(logger);
+    const [incidentsStream] = source.streams({
+      apiId: 'apiId',
+      apiKey: 'apiKey',
+    });
+    const incidentsIter = incidentsStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {cutoff: '2025-01-01T08:00:00.000Z'}
+    );
+    const incidents = [];
+    for await (const incident of incidentsIter) {
+      incidents.push(incident);
+    }
+    expect(fnIncidentsList).toHaveBeenCalledTimes(1);
+    expect(incidents).toStrictEqual([]);
+  });
+
   test('streams - teams, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
 
@@ -135,35 +177,6 @@ describe('index', () => {
     }
     expect(fnTeamsList).toHaveBeenCalledTimes(1);
     expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
-  });
-
-  test('streams - teams, use incremental sync mode', async () => {
-    const fnTeamsList = jest.fn();
-
-    Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        teams: {
-          getTeams: fnTeamsList.mockResolvedValue(
-            readTestResourceFile('teams.json')
-          ),
-        },
-      } as any);
-    });
-
-    const source = new sut.VictoropsSource(logger);
-    const [, teamsStream] = source.streams({
-      apiId: 'apiId',
-      apiKey: 'apiKey',
-    });
-    const teamsIter = teamsStream.readRecords(SyncMode.INCREMENTAL, undefined, {
-      slug: 'team-Z3scfG2gh0qF3QsL',
-    });
-    const teams = [];
-    for await (const team of teamsIter) {
-      teams.push(team);
-    }
-    expect(fnTeamsList).toHaveBeenCalledTimes(1);
-    expect(teams).toStrictEqual([]);
   });
 
   test('streams - users, use full_refresh sync mode', async () => {

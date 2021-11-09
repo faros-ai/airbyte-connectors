@@ -55,5 +55,8 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
+  },
+  "devDependencies": {
+    "@types/luxon": "^2.0.6"
   }
 }
