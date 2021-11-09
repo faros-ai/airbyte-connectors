@@ -1,0 +1,51 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Harness Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "account_id"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "Harness API key",
+        "airbyte_secret": true
+      },
+      "account_id": {
+        "type": "string",
+        "title": "Harness account ID",
+        "airbyte_secret": true
+      },
+      "api_url": {
+        "type": "string",
+        "title": "Harness API URL",
+        "default": "https://app.harness.io",
+        "examples": [
+          "https://my-harness-server.example.com"
+        ]
+      },
+      "cutoff_days": {
+        "type": "number",
+        "title": "Harness Cutoff Days",
+        "default": 90,
+        "description": "Only fetch deployments updated after cutoff"
+      },
+      "page_size": {
+        "type": "number",
+        "title": "Harness Page Size",
+        "default": 100,
+        "description": "number of pipelines (builds) to fetch per call"
+      },
+      "deployment_timeout": {
+        "type": "number",
+        "title": "Harness Deployment Timeout",
+        "default": 24,
+        "description": "Max number of hours to consider for a deployment to be running/queued before giving up on syncing it"
+      }
+    }
+  }
+}
