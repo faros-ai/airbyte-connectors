@@ -32,7 +32,7 @@ export class IncidentLogEntries extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'created_at';
   }
-  
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
@@ -67,7 +67,7 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     currentStreamState: IncidentLogEntryState,
     latestRecord: LogEntry
   ): IncidentLogEntryState {
-    const currentState = new Date(currentStreamState.lastSynced);
+    const currentState = new Date(currentStreamState.lastSynced ?? 0);
     const lastState = new Date(latestRecord.created_at);
     return {
       lastSynced:
