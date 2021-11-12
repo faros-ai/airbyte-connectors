@@ -100,6 +100,18 @@ export interface HarnessExecutionNode {
   };
 }
 
+export interface ExecutionWorkflow {
+  application: ComputeApplication;
+  env: string;
+  build: CICDBuild;
+  artifact: CICDArtifact;
+}
+
+export interface ExecutionPipeline {
+  application: ComputeApplication;
+  env: string;
+}
+
 /** Harness converter base */
 export abstract class HarnessConverter extends Converter {
   id(record: AirbyteRecord): any {

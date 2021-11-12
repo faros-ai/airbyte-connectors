@@ -17,8 +17,7 @@
       },
       "account_id": {
         "type": "string",
-        "title": "Harness account ID",
-        "airbyte_secret": true
+        "title": "Harness account ID"
       },
       "api_url": {
         "type": "string",

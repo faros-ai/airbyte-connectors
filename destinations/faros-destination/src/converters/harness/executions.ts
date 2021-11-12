@@ -8,6 +8,8 @@ import {
   ComputeApplication,
   Execution,
   ExecutionImplementation,
+  ExecutionPipeline,
+  ExecutionWorkflow,
   HarnessConverter,
   HarnessExecutionNode,
 } from './common';
@@ -142,14 +144,7 @@ export class HarnessExecutions extends HarnessConverter {
   private parseWorkflow(
     execution: HarnessExecutionNode,
     source: string
-  ):
-    | {
-        application: ComputeApplication;
-        env: string;
-        build: CICDBuild;
-        artifact: CICDArtifact;
-      }
-    | undefined {
+  ): ExecutionWorkflow | undefined {
     const outcome = execution.outcomes?.nodes.find(
       (o) => o.service?.artifactType
     );
@@ -197,7 +192,7 @@ export class HarnessExecutions extends HarnessConverter {
 
   private parsePipeline(
     execution: HarnessExecutionNode
-  ): {application: ComputeApplication; env: string} | undefined {
+  ): ExecutionPipeline | undefined {
     const service = execution.application.services?.nodes.find(
       (s) => s.artifactType
     );
