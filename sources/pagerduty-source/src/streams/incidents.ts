@@ -60,7 +60,7 @@ export class Incidents extends AirbyteStreamBase {
     currentStreamState: IncidentState,
     latestRecord: Incident
   ): IncidentState {
-    const currentState = new Date(currentStreamState.lastSynced);
+    const currentState = new Date(currentStreamState.lastSynced ?? 0);
     const lastState = new Date(latestRecord.created_at);
     return {
       lastSynced:
