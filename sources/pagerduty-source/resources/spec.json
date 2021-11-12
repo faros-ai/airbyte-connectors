@@ -49,13 +49,6 @@
           "Custom"
         ],
         "pattern": "^(Sev[0-5])?(Custom)?$"
-      },
-      "applicationMapping": {
-        "type": "string",
-        "title": "JSON map to compute_Application",
-        "description": "JSON map of PagerDuty service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object",
-        "default": "{}",
-        "examples": ["{'Aion':{'name':'aion','platform':'ECS'}}"]
       }
     }
   }

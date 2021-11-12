@@ -31,7 +31,6 @@ interface Assignment {
 export interface PagerdutyConfig {
   readonly token: string;
   readonly pageSize?: number;
-  readonly applicationMapping?: string;
   readonly cutoffDays?: number;
   readonly defaultSeverity?: IncidentSeverityCategory;
   readonly incidentLogEntriesOverview?: boolean;
