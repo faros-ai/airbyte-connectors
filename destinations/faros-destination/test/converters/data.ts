@@ -34,3 +34,4 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
 export const victoropsAllStreamsLog = readTestResourceFile(
   'victorops/all-streams.log'
 );
+export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
