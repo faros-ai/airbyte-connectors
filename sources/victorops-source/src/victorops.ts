@@ -154,16 +154,11 @@ export class Victorops {
     }
   }
 
-  async *getUsers(state?: VictoropsState | null): AsyncGenerator<User> {
+  async *getUsers(): AsyncGenerator<User> {
     const res = await this.client.users.getUsers();
 
     for (const user of res.users.flat()) {
-      if (
-        (state && new Date(state.cutoff) < new Date(user.createdAt)) ||
-        !state
-      ) {
-        yield user;
-      }
+      yield user;
     }
   }
 

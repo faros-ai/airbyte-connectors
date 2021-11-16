@@ -19,9 +19,6 @@ export class Users extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'username';
   }
-  get cursorField(): string | string[] {
-    return 'createdAt';
-  }
 
   async *readRecords(
     syncMode: SyncMode,
@@ -29,21 +26,6 @@ export class Users extends AirbyteStreamBase {
     streamSlice?: User,
     streamState?: VictoropsState
   ): AsyncGenerator<User> {
-    const victorops = Victorops.instance(this.config, this.logger);
-    const state = syncMode === SyncMode.INCREMENTAL ? streamState : null;
-    yield* victorops.getUsers(state);
-  }
-
-  getUpdatedState(
-    currentStreamState: VictoropsState,
-    latestRecord: User
-  ): VictoropsState {
-    return {
-      cutoff:
-        currentStreamState.cutoff &&
-        new Date(currentStreamState.cutoff) > new Date(latestRecord.createdAt)
-          ? currentStreamState.cutoff
-          : latestRecord.createdAt,
-    };
+    yield* Victorops.instance(this.config, this.logger).getUsers();
   }
 }

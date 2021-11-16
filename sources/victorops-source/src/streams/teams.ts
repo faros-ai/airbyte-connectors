@@ -26,8 +26,6 @@ export class Teams extends AirbyteStreamBase {
     streamSlice?: Team,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Team> {
-    const victorops = Victorops.instance(this.config, this.logger);
-
-    yield* victorops.getTeams();
+    yield* Victorops.instance(this.config, this.logger).getTeams();
   }
 }
