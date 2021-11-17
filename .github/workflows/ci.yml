@@ -79,7 +79,7 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [[ $source != "phabricator-source" ]]; then
+            if [[ "$source" != "phabricator-source" && "$source" != "victorops-source"]]; then
               ./scripts/source-acceptance-test.sh $source
             fi
           done
