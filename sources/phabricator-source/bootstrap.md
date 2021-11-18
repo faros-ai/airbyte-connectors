@@ -2,14 +2,11 @@
 
 Phabricator is a REST API. This connector has the following streams:
 
-* [Commits](TODO) \(Incremental\)
-* [Projects](TODO) \(Incremental\)
-* [Repositories](TODO) \(Incremental\)
-* [Revisions](TODO) \(Incremental\)
-* [Users](TODO) \(Incremental\)
+* [Commits](https://secure.phabricator.com/conduit/method/diffusion.commit.search/) \(Incremental\)
+* [Projects](https://secure.phabricator.com/conduit/method/project.search/) \(Incremental\)
+* [Repositories](https://secure.phabricator.com/conduit/method/diffusion.repository.search/) \(Incremental\)
+* [Revisions](https://secure.phabricator.com/conduit/method/differential.revision.search/) \(Incremental\)
+* [Users](https://secure.phabricator.com/conduit/method/user.search/) \(Incremental\)
 
-In the above links, replace `your.phabricator.url` with the url of your Jenkins
-instance.
-
-See [https://your.phabricator.url](TODO) for API
+See [here](https://secure.phabricator.com/conduit/) for API
 documentation.
