@@ -1,6 +1,6 @@
-# Pagerduty Source
+# PagerDuty Source
 
-This is the repository for the Pagerduty source connector, written in Typescript.
+This is the repository for the PagerDuty source connector, written in Typescript.
 For information about how to use this connector within Airbyte, see [the
 documentation](https://docs.airbyte.io/integrations/sources/pagerduty).
 
@@ -19,10 +19,10 @@ npm run prepare
 ```
 
 This will install all required dependencies and build all included connectors,
-including the Pagerduty source connector.
+including the PagerDuty source connector.
 
-Now you can cd into the Pagerduty connector directory, `sources/pagerduty-source`,
-and iterate on the Pagerduty source connector. After making code changes, run:
+Now you can cd into the PagerDuty connector directory, `sources/pagerduty-source`,
+and iterate on the PagerDuty source connector. After making code changes, run:
 ```
 npm run build
 ```
@@ -54,7 +54,7 @@ docker build . --build-arg path=sources/pagerduty-source -t pagerduty-source
 ```
 
 #### Run
-Then return to the Pagerduty connector directory and run any of the connector
+Then return to the PagerDuty connector directory and run any of the connector
 commands as follows:
 ```
 docker run --rm pagerduty-source spec
@@ -66,7 +66,7 @@ docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files page
 ## Testing
 
 ### Unit Tests
-To run unit tests locally, from the Pagerduty connector directory run:
+To run unit tests locally, from the PagerDuty connector directory run:
 ```
 npm test
 ```
