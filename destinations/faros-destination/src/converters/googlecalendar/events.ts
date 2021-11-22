@@ -51,7 +51,6 @@ enum EventVisibilityCategory {
 export class GooglecalendarEvents extends GooglecalendarConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cal_Event',
-    'cal_EventGuest',
     'cal_EventGuestAssociation',
     'cal_User',
   ];
@@ -63,14 +62,10 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     const source = this.streamName.source;
     const event = record.record.data as Event;
     const res: DestinationRecord[] = [];
-    const eventRef = {uid: event.id, source};
+    const eventRef = {uid: event.id, calendar: {uid: event.id, source}};
 
     event.attendees?.forEach((attender) => {
       const attenderRef = {uid: attender.id, source};
-      const eventGuestRef = {
-        user: attenderRef,
-        status: this.EventGuestStatus(attender.responseStatus),
-      };
       res.push({
         model: 'cal_User',
         record: {
@@ -80,14 +75,11 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
         },
       });
       res.push({
-        model: 'cal_EventGuest',
-        record: eventGuestRef,
-      });
-      res.push({
         model: 'cal_EventGuestAssociation',
         record: {
           event: eventRef,
-          guest: eventGuestRef,
+          guest: attenderRef,
+          status: this.EventGuestStatus(attender.responseStatus),
         },
       });
     });
@@ -130,7 +122,6 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
         privacy: event.visibility ? this.EventPrivacy(event.visibility) : null,
         status: event.status ? this.EventStatus(event.status) : null,
         organizer: organizerRef,
-        calendar: {uid: event.id, source},
       },
     });
     return res;
