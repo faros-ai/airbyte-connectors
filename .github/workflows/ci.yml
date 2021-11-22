@@ -73,12 +73,13 @@ jobs:
         if: github.ref == 'refs/heads/main' # Skip PRs
         env:
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
+          HARNESS_SOURCE_TEST_CONFIG: ${{ secrets.HARNESS_SOURCE_TEST_CONFIG }}
           PAGERDUTY_SOURCE_TEST_CONFIG: ${{ secrets.PAGERDUTY_SOURCE_TEST_CONFIG }}
         run: |
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [[ $source != "phabricator-source" ]]; then
+            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" ]; then
               ./scripts/source-acceptance-test.sh $source
             fi
           done

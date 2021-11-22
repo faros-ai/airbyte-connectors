@@ -1,6 +1,6 @@
 ## Streams
 
-Jenkins is a REST API. Connector has the following streams:
+Jenkins is a REST API. This connector has the following streams:
 
 * [Builds](https://your.jenkins.url/job/$JOB_NAME/$BUILD_NUMBER/api/json?pretty=true) \(Incremental\)
 * [Jobs](https://your.jenkins.url/job/$JOB_NAME/api/json?pretty=true)
