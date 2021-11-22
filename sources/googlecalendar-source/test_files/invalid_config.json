@@ -1,5 +1,4 @@
 {
-  "server_url":"url",
-  "user":"baduser",
-  "token":"token"
+  "private_key": "",
+  "client_email": ""
 }

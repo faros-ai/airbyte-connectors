@@ -9,27 +9,37 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Builds} from './streams';
+import {Googlecalendar, GoogleCalendarConfig} from './googlecalendar';
+import {CalendarListEntries, Events} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new ExampleSource(logger);
+  const source = new GooglecalendarSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** Example source implementation. */
-class ExampleSource extends AirbyteSourceBase {
+/** GoogleCalendar source implementation. */
+export class GooglecalendarSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    if (config.user === 'chris') {
-      return [true, undefined];
+    try {
+      const googleCalendar = await Googlecalendar.instance(
+        config as GoogleCalendarConfig,
+        this.logger
+      );
+      await googleCalendar.checkConnection();
+    } catch (error: any) {
+      return [false, error];
     }
-    return [false, new VError('User is not chris')];
+    return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new Builds(this.logger)];
+    return [
+      new CalendarListEntries(config as any, this.logger),
+      new Events(config as any, this.logger),
+    ];
   }
 }

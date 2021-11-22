@@ -1,3 +1,4 @@
-import {Builds} from './builds';
+import {CalendarListEntries} from './calendarListEntries';
+import {Events} from './events';
 
-export {Builds};
+export {CalendarListEntries, Events};

@@ -31,9 +31,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
     "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.23",
+    "faros-feeds-sdk": "^0.9.2",
+    "googleapis": "^91.0.0",
     "verror": "^1.10.0"
   },
   "jest": {
