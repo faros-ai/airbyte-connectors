@@ -121,7 +121,7 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
         start,
         end,
         durationMs,
-        htmlLink: event.htmlLink,
+        htmlUrl: event.htmlLink,
         type: event.eventType ? this.EventType(event.eventType) : null,
         location: event.location ? this.EventLocation(event.location) : null,
         visibility: event.transparency
