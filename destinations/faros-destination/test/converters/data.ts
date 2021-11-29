@@ -31,6 +31,18 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
 
+export const statuspageAllStreamsLog = readTestResourceFile(
+  'statuspage/all-streams.log'
+);
+
+export const victoropsAllStreamsLog = readTestResourceFile(
+  'victorops/all-streams.log'
+);
+
+export const harnessAllStreamsLog = readTestResourceFile(
+  'harness/all-streams.log'
+);
+
 export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
 
 export const googlecalendarAllStreamsLog = readTestResourceFile(

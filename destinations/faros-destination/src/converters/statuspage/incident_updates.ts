@@ -1,0 +1,52 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
+
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  IncidentEventType,
+  IncidentEventTypeCategory,
+  IncidentStatus,
+  StatuspageConverter,
+} from './common';
+
+export class StatuspageIncidentUpdates extends StatuspageConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'ims_IncidentEvent',
+  ];
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
+    const source = this.streamName.source;
+    const update = record.record.data;
+
+    return [
+      {
+        model: 'ims_IncidentEvent',
+        record: {
+          uid: update.id,
+          type: this.eventType(update.status),
+          createdAt: Utils.toDate(update.created_at),
+          detail: update.body,
+          incident: {uid: update.incident_id, source},
+        },
+      },
+    ];
+  }
+
+  private eventType(updateStatus: IncidentStatus): IncidentEventType {
+    const detail: string = updateStatus;
+    switch (updateStatus) {
+      case 'investigating':
+        return {category: IncidentEventTypeCategory.Created, detail};
+      case 'identified':
+        return {category: IncidentEventTypeCategory.Acknowledged, detail};
+      case 'resolved':
+        return {category: IncidentEventTypeCategory.Resolved, detail};
+      case 'monitoring':
+      default:
+        return {category: IncidentEventTypeCategory.Custom, detail};
+    }
+  }
+}

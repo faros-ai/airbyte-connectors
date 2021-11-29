@@ -1,19 +1,19 @@
 {
-  "name": "faros-destination",
+  "name": "harness-source",
   "version": "0.1.23",
-  "private": true,
-  "description": "Faros Destination for Airbyte",
+  "description": "Harness Airbyte source",
   "keywords": [
     "airbyte",
-    "destination",
-    "faros"
+    "source",
+    "faros",
+    "harness"
   ],
   "homepage": "https://www.faros.ai",
-  "repository": "https://github.com/faros-ai/airbyte-connectors",
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
   "files": [
-    "lib/"
+    "lib/",
+    "resources/"
   ],
   "engines": {
     "node": ">=14.5"
@@ -30,15 +30,15 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "axios": "^0.21.4",
+    "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.23",
-    "faros-feeds-sdk": "^0.9.0",
-    "git-url-parse": "^11.6.0",
-    "googleapis": "^91.0.0",
-    "jsonata": "^1.8.5",
-    "object-sizeof": "^1.6.1",
-    "statuspage.io": "^3.1.0",
-    "turndown": "^7.1.1",
+    "graphql-request": "^3.6.1",
+    "luxon": "^2.0.2",
     "verror": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^2.0.5"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -52,14 +52,11 @@
       ".d.ts",
       ".js"
     ],
-    "testTimeout": 30000,
+    "testTimeout": 10000,
     "globals": {
       "ts-jest": {
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "devDependencies": {
-    "@types/turndown": "^5.0.1"
   }
 }
