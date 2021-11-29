@@ -1,0 +1,213 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
+
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {
+  Incident,
+  IncidentPriority,
+  IncidentPriorityCategory,
+  IncidentSeverity,
+  IncidentSeverityCategory,
+  IncidentStatusCategory,
+  Service,
+  SquadcastConverter,
+} from './common';
+
+export class SquadcastIncidents extends SquadcastConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
+    'ims_Incident',
+    'ims_IncidentApplicationImpact',
+    'ims_IncidentAssignment',
+    'ims_Label',
+  ];
+
+  private readonly servicesStream = new StreamName('squadcast', 'services');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.servicesStream];
+  }
+
+  convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): ReadonlyArray<DestinationRecord> {
+    const source = this.streamName.source;
+    const incident = record.record.data as Incident;
+    const res: DestinationRecord[] = [];
+
+    const incidentRef = {uid: incident.id, source};
+    const createdAt = Utils.toDate(incident.timeOfCreation);
+    let acknowledgedAt;
+    let resolvedAt;
+    let updatedAt = createdAt;
+
+    const status = incident.status && this.toIncidentStatus(incident.status);
+
+    for (const log of incident.logs) {
+      const logTime = Utils.toDate(log.time);
+
+      if (logTime > updatedAt) {
+        updatedAt = logTime;
+      }
+
+      if (status && status.category === IncidentStatusCategory.Resolved) {
+        const isResolve = / resolved /.test(log.action);
+        if (isResolve) {
+          resolvedAt = logTime;
+        }
+      }
+
+      const isAcknowledged = / acknowledged /.test(log.action);
+      if (isAcknowledged) {
+        acknowledgedAt = logTime;
+      }
+    }
+
+    /** SquadCast doesn't have incident severity and priority, take "severity" and "priority" from tags */
+    let priority: IncidentPriority;
+    let severity: IncidentSeverity;
+    Object.entries(incident.tags || {}).forEach(([name, tag]) => {
+      if (tag.value) {
+        if (name === 'severity') {
+          severity = this.toSeverity(tag.value);
+        }
+        if (name === 'priority') {
+          priority = this.toPriority(tag.value);
+        }
+      }
+
+      const label = {name};
+
+      res.push({
+        model: 'ims_Label',
+        record: label,
+      });
+      res.push({
+        model: 'ims_IncidentTag',
+        record: {
+          incident: incidentRef,
+          label,
+        },
+      });
+    });
+    incident.assignedTo?.forEach((assign) => {
+      if (assign.type === 'user') {
+        res.push({
+          model: 'ims_IncidentAssignment',
+          record: {
+            incident: incidentRef,
+            assignee: {uid: assign.id, source},
+          },
+        });
+      }
+    });
+
+    res.push({
+      model: 'ims_Incident',
+      record: {
+        ...incidentRef,
+        title: incident.message,
+        description: incident.description,
+        createdAt,
+        updatedAt,
+        acknowledgedAt,
+        resolvedAt,
+        priority,
+        severity,
+        status,
+      },
+    });
+
+    const servicesStream = this.servicesStream.asString;
+    const serviceRecord = ctx.get(servicesStream, incident.service_id);
+    const service = serviceRecord?.record?.data as Service;
+
+    if (service) {
+      const applicationMapping = this.applicationMapping(ctx);
+
+      let application = {name: service.name, platform: ''};
+
+      if (
+        service.name in applicationMapping &&
+        applicationMapping[service.name].name
+      ) {
+        const mappedApp = applicationMapping[service.name];
+        application = {
+          name: mappedApp.name,
+          platform: mappedApp.platform ?? application.platform,
+        };
+      }
+
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {
+          incident: incidentRef,
+          application,
+        },
+      });
+    }
+
+    return res;
+  }
+
+  private toPriority(priority: string): IncidentPriority {
+    const detail: string = priority.toLowerCase();
+    switch (detail) {
+      case 'critical':
+        return {category: IncidentPriorityCategory.Critical, detail};
+      case 'high':
+        return {category: IncidentPriorityCategory.High, detail};
+      case 'medium':
+        return {category: IncidentPriorityCategory.Medium, detail};
+      case 'low':
+        return {category: IncidentPriorityCategory.Low, detail};
+      default:
+        return {category: IncidentPriorityCategory.Custom, detail};
+    }
+  }
+
+  private toSeverity(severity: string): IncidentSeverity {
+    const detail: string = severity.toLowerCase();
+    switch (detail) {
+      case 'sev1':
+        return {category: IncidentSeverityCategory.Sev1, detail};
+      case 'sev2':
+        return {category: IncidentSeverityCategory.Sev2, detail};
+      case 'sev3':
+        return {category: IncidentSeverityCategory.Sev3, detail};
+      case 'sev4':
+        return {category: IncidentSeverityCategory.Sev4, detail};
+      case 'sev5':
+        return {category: IncidentSeverityCategory.Sev5, detail};
+      default:
+        return {category: IncidentSeverityCategory.Custom, detail};
+    }
+  }
+
+  private toIncidentStatus(incidentState: string): {
+    category: string;
+    detail: string;
+  } {
+    const detail = incidentState.toLowerCase();
+    switch (incidentState) {
+      case 'investigating':
+      case 'triggered':
+        return {category: IncidentStatusCategory.Investigating, detail};
+      case 'identified':
+      case 'acknowledged':
+        return {category: IncidentStatusCategory.Identified, detail};
+      case 'monitoring':
+        return {category: IncidentStatusCategory.Monitoring, detail};
+      case 'resolved':
+        return {category: IncidentStatusCategory.Resolved, detail};
+      default:
+        return {category: IncidentStatusCategory.Custom, detail};
+    }
+  }
+}

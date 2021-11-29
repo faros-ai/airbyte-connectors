@@ -1,0 +1,31 @@
+[
+  {
+    "incident_id": "619cb810f88b5d9a2ab1271d",
+    "alert_source_id": "5fae6d03ef87d3896aa92ad1",
+    "message": "Faros-test",
+    "description": "incident",
+    "time_of_creation": "2021-11-23T09:44:48.891Z",
+    "tags": {
+      "teg": {
+        "value": "value",
+        "color": "#00A96B"
+      }
+    },
+    "payload": {
+      "assignee": {
+        "id": "619cb17408e88c8a8acdf394",
+        "type": "escalationpolicy"
+      },
+      "created_by": "619cb1620a326c0008d59b51",
+      "description": "incident",
+      "message": "Faros-test",
+      "tags": {
+        "teg": {
+          "color": "#00A96B",
+          "value": "value"
+        }
+      },
+      "status": "resolved"
+    }
+  }
+]

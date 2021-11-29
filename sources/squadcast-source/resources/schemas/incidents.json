@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "alert_source_id": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "incidentNumber": {
+      "type": "number"
+    },
+    "message": {
+      "type": "string"
+    },
+    "assignedTo": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "timeOfAssignment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "timeOfCreation": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "patternProperties": {
+        ".": {
+          "value": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

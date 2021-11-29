@@ -44,3 +44,7 @@ export const harnessAllStreamsLog = readTestResourceFile(
 );
 
 export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
+
+export const squadcastAllStreamsLog = readTestResourceFile(
+  'squadcast/all-streams.log'
+);

@@ -1,0 +1,114 @@
+{
+  "id": "619cb810f88b5d9a2ab1271d",
+  "service_id": "619cb17408e88c8a8acdf395",
+  "alert_source_id": "5fae6d03ef87d3896aa92ad1",
+  "organization_id": "619cb174c80d2600080df0d7",
+  "incidentNumber": 0,
+  "message": "Faros-test",
+  "assignedTo": [
+    {
+      "id": "619cb17408e88c8a8acdf394",
+      "type": "escalationpolicy",
+      "timeOfAssignment": "2021-11-23T09:44:48.715Z"
+    },
+    {
+      "id": "619cb1620a326c0008d59b51",
+      "type": "user",
+      "timeOfAssignment": "2021-11-23T12:13:10.66Z"
+    }
+  ],
+  "description": "incident",
+  "status": "resolved",
+  "timeOfCreation": "2021-11-23T09:44:48.715Z",
+  "tags": {
+    "tag": {
+      "value": "value",
+      "color": "#00A96B"
+    }
+  },
+  "logs": [
+    {
+      "action": "Incident triggered and assigned to Example Escalation Policy",
+      "assignedTo": "escalationpolicy",
+      "id": "619cb17408e88c8a8acdf394",
+      "time": "2021-11-23T09:44:48.686Z",
+      "reason": "",
+      "additionalInfo": null,
+      "type": "activity"
+    },
+    {
+      "action": "Incident tags modified by Roman Kyrnis",
+      "assignedTo": "user",
+      "id": "619cb1620a326c0008d59b51",
+      "time": "2021-11-23T09:45:00.97Z",
+      "reason": "Incident tags modified by Roman Kyrnis",
+      "additionalInfo": null,
+      "type": "activity"
+    },
+    {
+      "action": "Incident reassigned to Roman Kyrnis",
+      "assignedTo": "user",
+      "id": "619cb1620a326c0008d59b51",
+      "time": "2021-11-23T12:13:10.66Z",
+      "reason": "",
+      "additionalInfo": null,
+      "type": "activity"
+    },
+    {
+      "action": "Incident acknowledged by Roman Kyrnis",
+      "assignedTo": "user",
+      "id": "619cb1620a326c0008d59b51",
+      "time": "2021-11-23T12:13:32.443Z",
+      "reason": "",
+      "additionalInfo": null,
+      "type": "activity"
+    },
+    {
+      "action": "Incident resolved by Roman Kyrnis",
+      "assignedTo": "user",
+      "id": "619cb1620a326c0008d59b51",
+      "time": "2021-11-23T12:13:39.843Z",
+      "reason": "",
+      "additionalInfo": null,
+      "type": "activity"
+    },
+    {
+      "action": "Incident postmortem created by Roman Kyrnis",
+      "assignedTo": "user",
+      "id": "619cb1620a326c0008d59b51",
+      "time": "2021-11-23T12:13:47.363Z",
+      "reason": "Incident postmortem created by Roman Kyrnis",
+      "additionalInfo": null,
+      "type": "activity"
+    }
+  ],
+  "analytics": {
+    "tta": {
+      "time": 8923757,
+      "userId": "619cb1620a326c0008d59b51",
+      "escalationPolicyId": "619cb17408e88c8a8acdf394",
+      "squadId": "000000000000000000000000"
+    },
+    "ttr": {
+      "time": 8931157,
+      "userId": "619cb1620a326c0008d59b51",
+      "escalationPolicyId": "619cb17408e88c8a8acdf394",
+      "squadId": "000000000000000000000000"
+    }
+  },
+  "pinned_messages": null,
+  "created_by": "619cb1620a326c0008d59b51",
+  "deleted": false,
+  "event_count": 1,
+  "owner": {
+    "id": "619cb17408e88c8a8acdf393",
+    "type": "team"
+  },
+  "access_control": null,
+  "relevantUsers": [],
+  "relevantEscalationPolicies": [],
+  "relevantSquads": [],
+  "relevantSchedules": [],
+  "relevantPeopleLogs": [],
+  "responseNotes": []
+}
