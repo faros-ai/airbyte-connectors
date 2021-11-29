@@ -14,6 +14,7 @@ Faros Destination | [destinations/faros-destination](destinations/faros-destinat
 Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull farosai/airbyte-jenkins-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 PagerDuty Source | [sources/pagerduty-source](sources/pagerduty-source) | `docker pull farosai/airbyte-pagerduty-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | `docker pull farosai/airbyte-phabricator-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
+GoogleCalendar Source | [sources/googlecalendar-source](sources/googlecalendar-source) | `docker pull farosai/airbyte-googlecalendar-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 
 # Development
 

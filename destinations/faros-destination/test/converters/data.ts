@@ -32,3 +32,7 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
 );
 
 export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
+
+export const googlecalendarAllStreamsLog = readTestResourceFile(
+  'googlecalendar/all-streams.log'
+);
