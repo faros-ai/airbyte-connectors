@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0 # Fetch tags for check below.
 
       - name: Setup Node
-        uses: actions/setup-node@v2.3.0
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org
