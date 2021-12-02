@@ -13,15 +13,16 @@
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type": ["string"]
     },
     "time_of_creation": {
       "type": "string"
     },
     "tags": {
-      "type": "object",
+      "type": ["object", "null"],
+      "additionalProperties": true,
       "patternProperties": {
-        ".": {
+        ".*": {
           "value": {
             "type": "string"
           },
@@ -33,6 +34,7 @@
     },
     "deduplication_reason": {
       "type": "object",
+      "additionalProperties": true,
       "properties": {
         "matched_event_id": {
           "type": "string"
@@ -47,6 +49,7 @@
     },
     "payload": {
       "type": "object",
+      "additionalProperties": true,
       "properties": {
         "description": {
           "type": "string"
@@ -59,6 +62,7 @@
         },
         "metric": {
           "type": "object",
+          "additionalProperties": true,
           "properties": {
             "absolute": {
               "type": "object",
@@ -111,7 +115,7 @@
           "type": "string"
         },
         "tags": {
-          "type": "object",
+          "type": ["object", "null"],
           "patternProperties": {
             ".": {
               "value": {

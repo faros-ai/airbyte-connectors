@@ -38,17 +38,14 @@ describe('index', () => {
   test('check connection', async () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
-        {get: jest.fn().mockResolvedValue({data: {data: {}}})} as any,
+        {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
         'incidentId'
       );
     });
 
     const source = new sut.SquadcastSource(logger);
     await expect(
-      source.checkConnection({
-        token: 'token',
-        incident_id: 'incident_id',
-      })
+      source.checkConnection({token: 'token'})
     ).resolves.toStrictEqual([true, undefined]);
   });
 
@@ -64,9 +61,7 @@ describe('index', () => {
     const source = new sut.SquadcastSource(logger);
     await expect(source.checkConnection({})).resolves.toStrictEqual([
       false,
-      new VError(
-        'Please verify your token and incident_id are correct. Error: some error'
-      ),
+      new VError('Please verify your token are correct. Error: some error'),
     ]);
   });
 
@@ -82,26 +77,23 @@ describe('index', () => {
     const fnEventsFunc = jest.fn();
 
     Squadcast.instance = jest.fn().mockImplementation(() => {
-      return new Squadcast(
-        {
-          get: fnEventsFunc.mockImplementation(async (path: string) => {
-            const isPathMatchEvents =
-              /^incidents\/incidentId-test-event-3234\/events/.test(path);
-            const isPathMatchIncidents =
-              /^incidents\/incidentId-test-event-3234/.test(path);
-            if (isPathMatchEvents) {
-              return {
-                data: {data: {events: readTestResourceFile('events.json')}},
-              };
-            }
-            if (isPathMatchIncidents) {
-              return {data: {data: readTestResourceFile('incidents.json')}};
-            }
-            return {data: {data: []}};
-          }),
-        } as any,
-        'incidentId-test-event-3234'
-      );
+      return new Squadcast({
+        get: fnEventsFunc.mockImplementation(async (path: string) => {
+          const isPathMatchEvents =
+            /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
+          const isPathMatchIncidents = /^incidents\/export/.test(path);
+          if (isPathMatchEvents) {
+            return {
+              data: {data: {events: readTestResourceFile('events.json')}},
+            };
+          }
+          if (isPathMatchIncidents) {
+            return {
+              data: {incidents: readTestResourceFile('incidents.json')},
+            };
+          }
+        }),
+      } as any);
     });
     const source = new sut.SquadcastSource(logger);
     const streams = source.streams({});
@@ -124,10 +116,10 @@ describe('index', () => {
       return new Squadcast(
         {
           get: fnIncidentsFunc.mockImplementation(async (path: string) => {
-            const isPathMatch = /^incidents\/incidentId-123/.test(path);
+            const isPathMatch = /^incidents\/export/.test(path);
             if (isPathMatch) {
               return {
-                data: {data: readTestResourceFile('incidents.json')},
+                data: {incidents: readTestResourceFile('incidents.json')},
               };
             }
           }),
@@ -146,7 +138,7 @@ describe('index', () => {
     }
 
     expect(fnIncidentsFunc).toHaveBeenCalledTimes(1);
-    expect(incidents).toStrictEqual([readTestResourceFile('incidents.json')]);
+    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
   test('streams - services, use full_refresh sync mode', async () => {

@@ -33,6 +33,7 @@
     "axios": "^0.21.4",
     "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.23",
+    "typescript-memoize": "^1.1.0",
     "verror": "^1.10.0"
   },
   "jest": {

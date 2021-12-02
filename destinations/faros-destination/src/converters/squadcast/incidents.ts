@@ -1,12 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   Incident,
   IncidentPriority,
@@ -14,7 +9,6 @@ import {
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
-  Service,
   SquadcastConverter,
 } from './common';
 
@@ -23,15 +17,8 @@ export class SquadcastIncidents extends SquadcastConverter {
     'compute_Application',
     'ims_Incident',
     'ims_IncidentApplicationImpact',
-    'ims_IncidentAssignment',
     'ims_Label',
   ];
-
-  private readonly servicesStream = new StreamName('squadcast', 'services');
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.servicesStream];
-  }
 
   convert(
     record: AirbyteRecord,
@@ -42,32 +29,15 @@ export class SquadcastIncidents extends SquadcastConverter {
     const res: DestinationRecord[] = [];
 
     const incidentRef = {uid: incident.id, source};
-    const createdAt = Utils.toDate(incident.timeOfCreation);
-    let acknowledgedAt;
-    let resolvedAt;
-    let updatedAt = createdAt;
+    const createdAt = Utils.toDate(incident.created_at);
+    const acknowledgedAt = Utils.toDate(incident.acknowledged_at);
+    const resolvedAt = Utils.toDate(incident.resolved_at);
+    let updatedAt = resolvedAt > acknowledgedAt ? resolvedAt : acknowledgedAt;
+    if (createdAt > updatedAt) {
+      updatedAt = createdAt;
+    }
 
     const status = incident.status && this.toIncidentStatus(incident.status);
-
-    for (const log of incident.logs) {
-      const logTime = Utils.toDate(log.time);
-
-      if (logTime > updatedAt) {
-        updatedAt = logTime;
-      }
-
-      if (status && status.category === IncidentStatusCategory.Resolved) {
-        const isResolve = / resolved /.test(log.action);
-        if (isResolve) {
-          resolvedAt = logTime;
-        }
-      }
-
-      const isAcknowledged = / acknowledged /.test(log.action);
-      if (isAcknowledged) {
-        acknowledgedAt = logTime;
-      }
-    }
 
     /** SquadCast doesn't have incident severity and priority, take "severity" and "priority" from tags */
     let priority: IncidentPriority;
@@ -96,23 +66,12 @@ export class SquadcastIncidents extends SquadcastConverter {
         },
       });
     });
-    incident.assignedTo?.forEach((assign) => {
-      if (assign.type === 'user') {
-        res.push({
-          model: 'ims_IncidentAssignment',
-          record: {
-            incident: incidentRef,
-            assignee: {uid: assign.id, source},
-          },
-        });
-      }
-    });
 
     res.push({
       model: 'ims_Incident',
       record: {
         ...incidentRef,
-        title: incident.message,
+        title: incident.title,
         description: incident.description,
         createdAt,
         updatedAt,
@@ -124,20 +83,16 @@ export class SquadcastIncidents extends SquadcastConverter {
       },
     });
 
-    const servicesStream = this.servicesStream.asString;
-    const serviceRecord = ctx.get(servicesStream, incident.service_id);
-    const service = serviceRecord?.record?.data as Service;
-
-    if (service) {
+    if (incident.service) {
       const applicationMapping = this.applicationMapping(ctx);
 
-      let application = {name: service.name, platform: ''};
+      let application = {name: incident.service, platform: ''};
 
       if (
-        service.name in applicationMapping &&
-        applicationMapping[service.name].name
+        incident.service in applicationMapping &&
+        applicationMapping[incident.service].name
       ) {
-        const mappedApp = applicationMapping[service.name];
+        const mappedApp = applicationMapping[incident.service];
         application = {
           name: mappedApp.name,
           platform: mappedApp.platform ?? application.platform,

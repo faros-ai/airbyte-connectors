@@ -10,30 +10,25 @@ export interface AuthorizationResponse {
 
 export interface Incident {
   id: string;
-  service_id: string;
-  alert_source_id: string;
-  organization_id: string;
-  incidentNumber: number;
-  message: string;
-  assignedTo: IncidentAssignee[];
+  title: string;
   description: string;
   status: string;
-  timeOfCreation: string;
+  service: string;
+  alert_source: string;
+  assignee: string;
+  created_at: string;
+  acknowledged_at: string;
+  resolved_at: string;
   tags: Tags;
+  event_count: number;
+  'tta (ms)': number;
+  'ttr (ms)': number;
   logs: Log[];
-  analytics: Record<string, Analytic>;
-  pinned_messages: any | null;
-  deleted: boolean;
-  relevantUsers: any[];
-  relevantEscalationPolicies: any[];
-  relevantSquads: any[];
-  relevantSchedules: any[];
-  relevantPeopleLogs: any[];
-  responseNotes: any[];
+  url: string;
 }
 
-export interface IncidentResponse {
-  data: Incident;
+export interface IncidentsResponse {
+  incidents: Incident[];
 }
 
 export interface Event {
@@ -138,20 +133,9 @@ export interface UserResponse {
   data: User[];
 }
 
-interface Analytic {
-  time: number;
-  userId: string;
-  escalationPolicyId: string;
-  squadId: string;
-}
-
 interface Assignee {
   id: string;
   type: string;
-}
-
-interface IncidentAssignee extends Assignee {
-  timeOfAssignment: string;
 }
 
 interface Log {

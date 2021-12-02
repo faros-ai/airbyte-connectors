@@ -1,6 +1,7 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {
@@ -8,7 +9,7 @@ import {
   Event,
   EventListResponse,
   Incident,
-  IncidentResponse,
+  IncidentsResponse,
   Meta,
   Service,
   ServiceResponse,
@@ -19,11 +20,13 @@ import {
 const API_URL = 'https://api.squadcast.com/v3/';
 const AUTH_URL = 'https://auth.squadcast.com/';
 const AUTH_HEADER_NAME = 'X-Refresh-Token';
+const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
+const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
 
 export interface SquadcastConfig {
   readonly token: string;
-  readonly incident_id: string;
   readonly event_deduped?: boolean;
+  readonly event_incident_id?: string;
 }
 
 interface PaginateResponse<T> {
@@ -36,7 +39,7 @@ export class Squadcast {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly incidentId: string,
+    private readonly eventIncidentId?: string,
     private readonly eventDeduped?: boolean
   ) {}
 
@@ -48,9 +51,6 @@ export class Squadcast {
 
     if (!config.token) {
       throw new VError('token must be a not empty string');
-    }
-    if (!config.incident_id) {
-      throw new VError('incident_id must be a not empty string');
     }
 
     const accessToken = await this.getAccessToken(config.token);
@@ -65,7 +65,7 @@ export class Squadcast {
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
-      config.incident_id,
+      config.event_incident_id,
       config.event_deduped
     );
     logger.debug('Created SquadCast instance');
@@ -75,10 +75,10 @@ export class Squadcast {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.getIncident();
+      const iter = this.getIncidents();
+      await iter.next();
     } catch (err: any) {
-      let errorMessage =
-        'Please verify your token and incident_id are correct. Error: ';
+      let errorMessage = 'Please verify your token are correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);
@@ -137,17 +137,49 @@ export class Squadcast {
     } while (fetchNextFunc);
   }
 
-  async getIncident(): Promise<Incident> {
-    const res = await this.httpClient.get<IncidentResponse>(
-      `incidents/${this.incidentId}`
+  @Memoize(
+    (lastUpdatedAt?: string) =>
+      new Date(lastUpdatedAt ?? DEFAULT_INCIDENTS_START_DATE)
+  )
+  async *getIncidents(lastUpdatedAt?: string): AsyncGenerator<Incident> {
+    const startTime =
+      new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
+        ? lastUpdatedAt
+        : DEFAULT_INCIDENTS_START_DATE;
+    const endTime =
+      new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
+        ? startTime
+        : DEFAULT_INCIDENTS_END_DATE;
+    const res = await this.httpClient.get<IncidentsResponse>(
+      'incidents/export',
+      {
+        params: {
+          type: 'json',
+          start_time: startTime,
+          end_time: endTime,
+        },
+      }
     );
-    return res.data.data;
+    for (const item of res.data.incidents) {
+      yield item;
+    }
   }
 
   async *getEvents(): AsyncGenerator<Event> {
-    const incident = await this.getIncident();
+    const iterIncidents = this.getIncidents();
 
-    const eventUrl = `incidents/${this.incidentId}/events`;
+    for await (const incident of iterIncidents) {
+      if (this.eventIncidentId && incident.id === this.eventIncidentId) {
+        yield* this.fetchIncidentsEvents(incident);
+        break;
+      } else if (!this.eventIncidentId) {
+        yield* this.fetchIncidentsEvents(incident);
+      }
+    }
+  }
+
+  async *fetchIncidentsEvents(incident: Incident): AsyncGenerator<Event> {
+    const eventUrl = `incidents/${incident.id}/events`;
     const func = async (next?: string): Promise<PaginateResponse<Event>> => {
       let res: AxiosResponse<EventListResponse>;
 

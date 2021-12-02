@@ -44,8 +44,8 @@ describe('squadcast', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      events: 1,
-      incidents: 1,
+      events: 3,
+      incidents: 4,
       services: 1,
       users: 1,
     };
@@ -58,12 +58,11 @@ describe('squadcast', () => {
 
     const writtenByModel = {
       compute_Application: 1,
-      ims_Incident: 1,
-      ims_IncidentApplicationImpact: 1,
-      ims_IncidentAssignment: 1,
-      ims_IncidentEvent: 1,
-      ims_IncidentTag: 1,
-      ims_Label: 1,
+      ims_Incident: 4,
+      ims_IncidentApplicationImpact: 4,
+      ims_IncidentEvent: 3,
+      ims_IncidentTag: 3,
+      ims_Label: 3,
       ims_User: 1,
     };
 
