@@ -92,6 +92,7 @@ describe('index', () => {
               data: {incidents: readTestResourceFile('incidents.json')},
             };
           }
+          return {data: {data: {events: []}}};
         }),
       } as any);
     });
@@ -105,7 +106,7 @@ describe('index', () => {
       events.push(event);
     }
 
-    expect(fnEventsFunc).toHaveBeenCalledTimes(2);
+    expect(fnEventsFunc).toHaveBeenCalledTimes(5);
     expect(events).toStrictEqual(readTestResourceFile('events.json'));
   });
 
