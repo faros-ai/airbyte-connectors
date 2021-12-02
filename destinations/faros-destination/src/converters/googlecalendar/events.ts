@@ -53,6 +53,8 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     'cal_Event',
     'cal_EventGuestAssociation',
     'cal_User',
+    'geo_Address',
+    'geo_Location'
   ];
 
   convert(
