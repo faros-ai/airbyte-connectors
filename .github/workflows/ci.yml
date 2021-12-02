@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v2.4.0
 
       - name: Cache Node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         env:
           cache-name: cache-node-modules
         with:
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node
-        uses: actions/setup-node@v2.3.0
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
 
