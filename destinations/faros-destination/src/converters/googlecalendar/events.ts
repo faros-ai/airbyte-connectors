@@ -106,10 +106,16 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     }
     let locationRef;
     if (event.location) {
-      locationRef = {uid: event.location};
+      // TODO: add location geocoding but for now write location as is
+      const uid = event.location;
+      locationRef = {uid};
+      res.push({
+        model: 'geo_Address',
+        record: {uid, fullAddress: event.location},
+      });
       res.push({
         model: 'geo_Location',
-        record: locationRef,
+        record: {uid, address: {uid}},
       });
     }
 
