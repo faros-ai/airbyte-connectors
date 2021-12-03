@@ -30,12 +30,14 @@
       "events_max_results": {
         "type": "number",
         "title": "Google Calendar Events Max Results",
+        "description": "Maximum number of events returned on one result page. The number of events in the resulting page may be less than this value, or none at all, even if there are more events matching the query. Incomplete pages can be detected by a non-empty nextPageToken field in the response",
         "default": 2500,
         "max": 2500
       },
       "calendars_max_results": {
         "type": "number",
         "title": "Google Calendar Calendar Max Results",
+        "description": "Maximum number of entries returned on one result page",
         "default": 250,
         "max": 250
       }
