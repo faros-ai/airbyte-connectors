@@ -12,6 +12,7 @@
       "token": {
         "type": "string",
         "title": "SquadCast Token",
+        "description": "Get API Refresh Token on https://app.squadcast.com/user/USER_ID where USER_ID is user's ID",
         "airbyte_secret": true
       },
       "event_deduped": {
