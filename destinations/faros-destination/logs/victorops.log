@@ -1,0 +1,227 @@
+{"record":{"stream":"victorops__incidents","emitted_at":1635865052219,"data":{"alertCount":1,"currentPhase":"acknowledged","entityDisplayName":"Faros-test","entityId":"40195b07-0656-4fc9-b01f-2cb1962a32f6","entityState":"critical","entityType":"service","incidentNumber":"1","lastAlertId":"97fcff1c-6701-41a0-834d-c0aeb99553fd","lastAlertTime":"2021-11-02T16:22:04Z","routingKey":"default","service":"Faros-test","startTime":"2021-11-02T16:22:04Z","pagedTeams":["team-Z3scfG2gh0qF3QsL"],"pagedUsers":["roman.kyrnis"],"pagedPolicies":[{"policy":{"name":"team-Z3scfG2gh0qF3QsL","slug":"team-Z3scfG2gh0qF3QsL"},"team":{"name":"Example","slug":"team-Z3scfG2gh0qF3QsL"}}],"transitions":[{"name":"triggered","at":"2021-11-02T16:22:04Z","alertId":"97fcff1c-6701-41a0-834d-c0aeb99553fd","alertUrl":"https://api.victorops.com/api-public/v1/alerts/97fcff1c-6701-41a0-834d-c0aeb99553fd"},{"name":"acknowledged","at":"2021-11-02T16:38:34Z","by":"roman.kyrnis","alertId":"97fcff1c-6701-41a0-834d-c0aeb99553fd","alertUrl":"https://api.victorops.com/api-public/v1/alerts/97fcff1c-6701-41a0-834d-c0aeb99553fd"}]}},"type":"RECORD"}
+{"record":{"stream":"victorops__incidents","emitted_at":1635865052219,"data":{"alertCount":1,"currentPhase":"acknowledged","entityDisplayName":"#2","entityId":"7398fad0-337c-4afc-94b4-cd9b716896ff","entityState":"critical","entityType":"service","incidentNumber":"2","lastAlertId":"1004eb2f-94fc-4f27-8ff0-4cabffb48aed","lastAlertTime":"2021-11-02T16:23:32Z","routingKey":"default","service":"#2","startTime":"2021-11-02T16:23:32Z","pagedTeams":["team-Z3scfG2gh0qF3QsL"],"pagedUsers":["roman.kyrnis"],"pagedPolicies":[{"policy":{"name":"team-Z3scfG2gh0qF3QsL","slug":"team-Z3scfG2gh0qF3QsL"},"team":{"name":"Example","slug":"team-Z3scfG2gh0qF3QsL"}}],"transitions":[{"name":"triggered","at":"2021-11-02T16:23:32Z","alertId":"1004eb2f-94fc-4f27-8ff0-4cabffb48aed","alertUrl":"https://api.victorops.com/api-public/v1/alerts/1004eb2f-94fc-4f27-8ff0-4cabffb48aed"},{"name":"acknowledged","at":"2021-11-02T16:38:33Z","by":"roman.kyrnis","alertId":"1004eb2f-94fc-4f27-8ff0-4cabffb48aed","alertUrl":"https://api.victorops.com/api-public/v1/alerts/1004eb2f-94fc-4f27-8ff0-4cabffb48aed"}]}},"type":"RECORD"}
+{"record":{"stream":"victorops__teams","emitted_at":1635865053180,"data":{"_selfUrl":"/api-public/v1/team/team-Z3scfG2gh0qF3QsL","_membersUrl":"/api-public/v1/team/team-Z3scfG2gh0qF3QsL/members","_policiesUrl":"/api-public/v1/team/team-Z3scfG2gh0qF3QsL/policies","_adminsUrl":"/api-public/v1/team/team-Z3scfG2gh0qF3QsL/admins","name":"Example","slug":"team-Z3scfG2gh0qF3QsL","memberCount":1,"version":1,"isDefaultTeam":false,"description":"Example team."}},"type":"RECORD"}
+{"record":{"stream":"victorops__teams","emitted_at":1635865053181,"data":{"_selfUrl":"/api-public/v1/team/team-JsxJ4dtL2oX4SkEx","_membersUrl":"/api-public/v1/team/team-JsxJ4dtL2oX4SkEx/members","_policiesUrl":"/api-public/v1/team/team-JsxJ4dtL2oX4SkEx/policies","_adminsUrl":"/api-public/v1/team/team-JsxJ4dtL2oX4SkEx/admins","name":"Faros","slug":"team-JsxJ4dtL2oX4SkEx","memberCount":1,"version":1,"isDefaultTeam":false,"description":"team"}},"type":"RECORD"}
+{"record":{"stream":"victorops__users","emitted_at":1635865054174,"data":{"firstName":"Roman","lastName":"Kyrnis","displayName":"Roman Kyrnis","username":"roman.kyrnis","email":"roman.ky@mydevcube.com","createdAt":"2021-11-02T16:19:02Z","passwordLastUpdated":"2021-11-02T16:19:02Z","verified":true,"_selfUrl":"/api-public/v1/user/roman.kyrnis"}},"type":"RECORD"}
+{
+      "stream": {
+        "name": "jenkins__jobs"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "jenkins__builds"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "asana__users"
+      },
+      "destination_sync_mode": "override"
+    },
+    {
+      "stream": {
+        "name": "asana__projects"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "asana__sections"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "asana__tasks"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "asana__stories"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__branches"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__commits"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__group_labels"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__group_milestones"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__groups"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__issues"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__jobs"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__pipelines"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__project_labels"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__merge_request_commits"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__merge_requests"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__project_milestones"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__projects"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__releases"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__tags"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "gitlab__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pagerduty__incident_log_entries"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pagerduty__incidents"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pagerduty__priorities_resource"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pagerduty__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "victorops__incidents"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "victorops__teams"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "victorops__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "harness__executions"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "googlecalendar__calendar_list_entries"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "googlecalendar__events"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "squadcast__events"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "squadcast__incidents"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "squadcast__services"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "squadcast__users"
+      },
+      "destination_sync_mode": "append"
+    },

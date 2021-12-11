@@ -8,13 +8,21 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {createClient} from './bitbucket';
+import {Bitbucket} from './bitbucket/bitbucket';
+import {BitbucketConfig} from './bitbucket/types';
 import {
-  BitbucketBranches,
-  BitbucketRepositories,
-  BitbucketWorkspaces,
+  Branches,
+  Commits,
+  Deployments,
+  Issues,
+  Pipelines,
+  PipelineSteps,
+  PullRequestActivities,
+  PullRequests,
+  Repositories,
+  Workspaces,
+  WorkspaceUsers,
 } from './streams';
-import {BitbucketConfig} from './types';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -23,26 +31,40 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-class BitbucketSource extends AirbyteSourceBase {
+export class BitbucketSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
   async checkConnection(config: BitbucketConfig): Promise<[boolean, VError]> {
-    const [client, errorMessage] = await createClient(config);
-    if (client) {
-      return [true, undefined];
+    try {
+      const bitbucket = Bitbucket.instance(
+        config as BitbucketConfig,
+        this.logger
+      );
+      await bitbucket.checkConnection();
+    } catch (error: any) {
+      return [false, error];
     }
-
-    return [false, new VError(errorMessage)];
+    return [true, undefined];
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
     const repositories = config.repository.split(',').map((r) => r.trim());
+    const pipelines = config.pipeline.split(',').map((r) => r.trim());
+    const prIDs = config.pull_request_id.split(',').map((r) => r.trim());
     return [
-      new BitbucketBranches(config, repositories, this.logger),
-      new BitbucketRepositories(config, repositories, this.logger),
-      new BitbucketWorkspaces(config, this.logger),
+      new Branches(config, repositories, this.logger),
+      new Commits(config, repositories, this.logger),
+      new Deployments(config, repositories, this.logger),
+      new Issues(config, repositories, this.logger),
+      new Pipelines(config, repositories, this.logger),
+      new PipelineSteps(config, repositories, pipelines, this.logger),
+      new PullRequestActivities(config, repositories, prIDs, this.logger),
+      new PullRequests(config, repositories, this.logger),
+      new Repositories(config, this.logger),
+      new WorkspaceUsers(config, this.logger),
+      new Workspaces(config, this.logger),
     ];
   }
 }

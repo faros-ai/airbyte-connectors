@@ -28,3 +28,7 @@ export const gitlabAllStreamsLog = readTestResourceFile(
 export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
+
+export const bitbucketAllStreamsLog = readTestResourceFile(
+  'bitbucket/all-streams.log'
+);

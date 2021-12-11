@@ -110,7 +110,7 @@
             }
           }
         },
-        "parent": {
+        "parents": {
           "type": "array",
           "items": {
             "type": "object",

@@ -5,15 +5,18 @@
     "title": "Bitbucket Spec",
     "type": "object",
     "required": [
-      "serverUrl",
-      "workspace"
+      "workspace",
+      "repository",
+      "pipeline",
+      "pull_request_id"
     ],
     "additionalProperties": false,
     "properties": {
       "serverUrl": {
         "type": "string",
         "description": "Bitbucket server URL",
-        "examples": ["https://api.bitbucket.org/2.0"]
+        "examples": ["https://api.bitbucket.org/2.0"],
+        "default": "https://api.bitbucket.org/2.0"
       },
       "username": {
         "type": "string",
@@ -31,11 +34,27 @@
       },
       "workspace": {
         "type": "string",
-        "description": "Bitbucket workspace"
+        "title": "Bitbucket Workspace"
       },
       "repository": {
         "type": "string",
+        "title": "Bitbucket Workspace's Repository", 
         "description": "Comma-separated list of Bitbucket repositories"
+      },
+      "pipeline": {
+        "type": "string",
+        "title": "Bitbucket Workspace Repository's Pipeline",
+        "description": "Comma-separated list of Bitbucket pipelines"
+      },
+      "pull_request_id": {
+        "type": "string",
+        "title": "Bitbucket Workspace Repository's Pull Request ID",
+        "description": "Comma-separated list of Bitbucket Pull Request's IDs. ID is using to pull PullRequest's Activities"
+      },
+      "pagelen": {
+        "type": "number",
+        "description": "Bitbucket Page Length",
+        "default": 100
       }
     }
   }
