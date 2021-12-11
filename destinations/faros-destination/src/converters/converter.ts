@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteRecord} from 'faros-airbyte-cdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
@@ -39,6 +39,8 @@ export abstract class Converter {
 
 /** Stream context to store records by stream */
 export class StreamContext {
+  constructor(readonly config: AirbyteConfig) {}
+
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
 

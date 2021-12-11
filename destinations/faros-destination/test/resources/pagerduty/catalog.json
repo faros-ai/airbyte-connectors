@@ -1,0 +1,34 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__pagerduty__incident_log_entries"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__pagerduty__incidents"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__pagerduty__priorities_resource"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__pagerduty__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__pagerduty__something_else"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

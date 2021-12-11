@@ -15,6 +15,8 @@ export const jenkinsAllStreamsLog = readTestResourceFile(
   'jenkins/all-streams.log'
 );
 
+export const jiraAllStreamsLog = readTestResourceFile('jira/all-streams.log');
+
 export const asanaLog = readTestResourceFile('asana/streams.log');
 export const asanaPGRawLog = readTestResourceFile('asana/pg-raw.log');
 export const asanaAllStreamsLog = readTestResourceFile('asana/all-streams.log');
@@ -32,3 +34,16 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
 export const bitbucketAllStreamsLog = readTestResourceFile(
   'bitbucket/all-streams.log'
 );
+export const statuspageAllStreamsLog = readTestResourceFile(
+  'statuspage/all-streams.log'
+);
+
+export const victoropsAllStreamsLog = readTestResourceFile(
+  'victorops/all-streams.log'
+);
+
+export const harnessAllStreamsLog = readTestResourceFile(
+  'harness/all-streams.log'
+);
+
+export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
