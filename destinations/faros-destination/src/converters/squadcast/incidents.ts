@@ -9,6 +9,7 @@ import {
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
+  SquadcastCommon,
   SquadcastConverter,
 } from './common';
 
@@ -72,7 +73,10 @@ export class SquadcastIncidents extends SquadcastConverter {
       record: {
         ...incidentRef,
         title: incident.title,
-        description: incident.description,
+        description: incident.description?.substring(
+          0,
+          SquadcastCommon.MAX_DESCRIPTION_LENGTH
+        ),
         createdAt,
         updatedAt,
         acknowledgedAt,

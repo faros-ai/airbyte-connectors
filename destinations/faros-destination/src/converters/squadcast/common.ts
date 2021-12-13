@@ -170,6 +170,11 @@ export interface User {
   role: string;
 }
 
+export class SquadcastCommon {
+  // Max length for free-form description text fields such as issue body
+  static readonly MAX_DESCRIPTION_LENGTH = 1000;
+}
+
 /** SquadCast converter base */
 export abstract class SquadcastConverter extends Converter {
   /** Almost every SquadCast record have id property */
