@@ -1,6 +1,6 @@
 {
   "name": "squadcast-source",
-  "version": "0.1.23",
+  "version": "0.1.25",
   "description": "SquadCast Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.23",
+    "faros-airbyte-cdk": "^0.1.25",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.0"
   },
