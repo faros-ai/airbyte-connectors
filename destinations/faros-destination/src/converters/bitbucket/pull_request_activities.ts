@@ -66,13 +66,17 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
       }
     }
     const orgRef = {
-      uid: prActivity.pullRequest.workspace.toLowerCase(),
+      uid: prActivity?.pullRequest?.workspace?.toLowerCase(),
       source,
     };
     const repoRef = {
-      name: prActivity.pullRequest.repositorySlug.toLowerCase(),
+      name: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
       organization: orgRef,
     };
+    if (!orgRef.uid || repoRef.name) {
+      return res;
+    }
+    
     const pullRequest = {
       repository: repoRef,
       number: prActivity.pullRequest.id,

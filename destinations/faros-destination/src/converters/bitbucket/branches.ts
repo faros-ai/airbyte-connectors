@@ -15,6 +15,7 @@ export class BitbucketBranches extends BitbucketConverter {
     const branch = record.record.data as Branch;
 
     const [workspace, repo] = branch.target.repository.fullName.split('/');
+    if (!workspace || !repo) return [];
 
     return [
       {

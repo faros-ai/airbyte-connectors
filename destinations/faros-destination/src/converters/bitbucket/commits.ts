@@ -30,6 +30,9 @@ export class BitbucketCommits extends BitbucketConverter {
         author = {uid: commitUser.accountId, source};
       }
     }
+    if (!workspace || !repo) {
+      return res;
+    }
 
     res.push({
       model: 'vcs_Commit',

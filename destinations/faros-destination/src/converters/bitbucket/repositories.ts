@@ -11,7 +11,7 @@ import {Repository, Workspace} from './types';
 
 export class BitbucketRepositories extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'cicd_Pipeline',
+    'cicd_Repository',
   ];
 
   private readonly workspacesStream = new StreamName('bitbucket', 'workspace');
@@ -33,10 +33,13 @@ export class BitbucketRepositories extends BitbucketConverter {
       repository.workspace.uuid
     );
     const workspace = workspacesRecord?.record?.data as undefined | Workspace;
+    if (!workspace) {
+      return [];
+    }
 
     return [
       {
-        model: 'cicd_Pipeline',
+        model: 'cicd_Repository',
         record: {
           uid: repository.slug.toLowerCase(),
           name: repository.name,

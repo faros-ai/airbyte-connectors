@@ -55,11 +55,10 @@ export abstract class BitbucketConverter extends Converter {
   }
 
   protected bitbucketConfig(ctx: StreamContext): BitbucketConfig {
-    // TODO:
-    return (ctx as any).config.source_specific_configs?.bitbucket;
+    return ctx.config?.source_specific_configs?.bitbucket;
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.bitbucketConfig(ctx).application_mapping ?? {};
+    return this.bitbucketConfig(ctx)?.application_mapping ?? {};
   }
 }

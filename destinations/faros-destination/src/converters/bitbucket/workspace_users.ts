@@ -19,7 +19,6 @@ export class BitbucketWorkspaceUsers extends BitbucketConverter {
     const res: DestinationRecord[] = [];
 
     const user = BitbucketCommon.vcsUser(workspaceUser.user, source);
-
     if (!user) return res;
 
     res.push(user);

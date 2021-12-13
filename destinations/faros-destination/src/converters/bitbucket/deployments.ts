@@ -8,7 +8,7 @@ import {
   StreamName,
 } from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
-import {Commit, Deployment, DeploymentsState} from './types';
+import {Deployment, DeploymentsState, Pipeline} from './types';
 
 enum EnvironmentCategory {
   PROD = 'Prod',
@@ -34,10 +34,10 @@ export class BitbucketDeployments extends BitbucketConverter {
     'cicd_Deployment',
   ];
 
-  private readonly commitsStream = new StreamName('bitbucket', 'commits');
+  private readonly pipelinesStream = new StreamName('bitbucket', 'pipelines');
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.commitsStream];
+    return [this.pipelinesStream];
   }
 
   convert(
@@ -48,20 +48,25 @@ export class BitbucketDeployments extends BitbucketConverter {
     const deployment = record.record.data as Deployment;
 
     const applicationMapping = this.applicationMapping(ctx);
-    const application = applicationMapping[deployment.deployable?.name] ?? null;
+    const application =
+      (applicationMapping && applicationMapping[deployment.deployable?.name]) ??
+      null;
 
-    const commitsStream = this.commitsStream.asString;
-    const commitRecord = ctx.get(
-      commitsStream,
-      deployment.deployable?.commit?.hash
+    const pipelinesStream = this.pipelinesStream.asString;
+
+    const pipelineRecord = ctx.get(
+      pipelinesStream,
+      deployment.commit?.hash ||
+        deployment.deployable?.commit?.hash ||
+        deployment.release?.commit?.hash
     );
-    const commit = commitRecord?.record?.data as undefined | Commit;
 
-    const [workspace, repo] = commit?.repository?.fullName?.split('/');
+    const pipeline = pipelineRecord?.record?.data as undefined | Pipeline;
+    const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
     let build = null;
     if (workspace && repo) {
-      const orgKey = {uid: workspace?.toLowerCase(), source};
-      const pipelineKey = {organization: orgKey, uid: repo?.toLowerCase()};
+      const orgKey = {uid: workspace.toLowerCase(), source};
+      const pipelineKey = {organization: orgKey, uid: repo.toLowerCase()};
       build = {
         pipeline: pipelineKey,
         uid: deployment.deployable?.pipeline?.uuid,
@@ -85,10 +90,6 @@ export class BitbucketDeployments extends BitbucketConverter {
   }
 
   private convertEnvironment(env?: string): CategoryRef {
-    if (!env) {
-      return {category: 'Unknown', detail: 'undefined'};
-    }
-
     const detail = env?.toLowerCase();
     switch (detail) {
       case 'test':
@@ -103,11 +104,7 @@ export class BitbucketDeployments extends BitbucketConverter {
   }
 
   private convertDeploymentStatus(state?: DeploymentsState): CategoryRef {
-    if (!state) {
-      return {category: 'Unknown', detail: 'undefined'};
-    }
-
-    const detail = (state.status?.name || state.name).toLowerCase();
+    const detail = (state.status?.name || state.name)?.toLowerCase();
     switch (detail) {
       case 'failed':
         return {category: DeploymentStatusCategory.FAILED, detail};

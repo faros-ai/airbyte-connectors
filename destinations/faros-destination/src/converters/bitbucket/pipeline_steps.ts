@@ -42,13 +42,12 @@ export class BitbucketPipelineSteps extends BitbucketConverter {
     const pipelinesRecord = ctx.get(pipelinesStream, step.pipeline.uuid);
     const pipeline = pipelinesRecord?.record?.data as undefined | Pipeline;
 
-    const [workspace, repo] = pipeline?.repository?.fullName?.split('/');
-    let build = undefined;
-    if (workspace && repo) {
-      const orgKey = {uid: workspace.toLowerCase(), source};
-      const pipelineKey = {organization: orgKey, uid: repo.toLowerCase()};
-      build = {pipeline: pipelineKey, uid: pipeline.uuid};
-    }
+    const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
+    if (!workspace || !repo) return [];
+
+    const orgKey = {uid: workspace.toLowerCase(), source};
+    const pipelineKey = {organization: orgKey, uid: repo.toLowerCase()};
+    const build = {pipeline: pipelineKey, uid: pipeline.uuid};
 
     return [
       {
@@ -73,7 +72,7 @@ export class BitbucketPipelineSteps extends BitbucketConverter {
     // We're more interest in the "result" than the "state" as this tells the true
     // state of a pipeline build. The switch statement however takes care of all
     // possible entries from both the "result" and "state".
-    const detail = (state.result?.name || state.name).toLowerCase();
+    const detail = (state.result?.name || state.name)?.toLowerCase();
     switch (detail) {
       case 'error':
       case 'failed':

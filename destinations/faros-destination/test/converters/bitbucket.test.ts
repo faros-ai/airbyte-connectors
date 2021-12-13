@@ -6,9 +6,7 @@ import pino from 'pino';
 
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
-import {
-  bitbucketAllStreamsLog,
-} from './data';
+import {bitbucketAllStreamsLog} from './data';
 
 describe('bitbucket', () => {
   const logger = pino({
@@ -46,17 +44,17 @@ describe('bitbucket', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      branches: 1,
-      commits: 1,
-      deployments: 1,
+      branches: 2,
+      commits: 25,
+      deployments: 14,
       issues: 1,
-      pipeline_steps: 1,
-      pipelines: 1,
-      pull_request_activities: 1,
-      pull_request: 1,
-      repositories: 1,
-      workspace_users: 1,
-      workspaces: 1,
+      pipeline_steps: 5,
+      pipelines: 7,
+      pull_request_activities: 4,
+      pull_requests: 2,
+      repositories: 6,
+      workspace_users: 5,
+      workspaces: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -66,11 +64,19 @@ describe('bitbucket', () => {
       .value();
 
     const writtenByModel = {
-      tms_Project: 1,
-      tms_Task: 6,
-      tms_TaskBoard: 3,
-      tms_TaskBoardProjectRelationship: 3,
-      tms_User: 1,
+      cicd_Build: 7,
+      cicd_BuildCommitAssociation: 7,
+      cicd_Deployment: 14,
+      cicd_Organization: 3,
+      tms_Task: 1,
+      tms_TaskAssignment: 1,
+      tms_User: 2,
+      vcs_Branch: 2,
+      vcs_Commit: 25,
+      vcs_Membership: 5,
+      vcs_Organization: 3,
+      vcs_PullRequest: 2,
+      vcs_User: 29,
     };
 
     const processedTotal = _(processedByStream).values().sum();

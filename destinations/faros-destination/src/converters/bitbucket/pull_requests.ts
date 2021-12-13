@@ -37,7 +37,13 @@ export class BitbucketPullRequests extends BitbucketConverter {
     const pr = record.record.data as PullRequest;
     const res: DestinationRecord[] = [];
 
-    const [workspace, repo] = pr.source?.repository?.fullName?.split('/');
+    const [workspace, repo] = (
+      pr?.source?.repository?.fullName ||
+      pr?.destination?.repository?.fullName ||
+      ''
+    ).split('/');
+    if (!workspace || !repo) return res;
+
     const repoRef = {
       organization: {uid: workspace.toLowerCase(), source},
       name: repo.toLowerCase(),
@@ -48,10 +54,12 @@ export class BitbucketPullRequests extends BitbucketConverter {
     if (shortHash) {
       const commitsStream = this.commitsStream.asString;
       const commitRecords = ctx.getAll(commitsStream);
-      const commitHash = Object.keys(commitRecords).find((k: string) =>
-      k.startsWith(shortHash)
+      const commitHash = Object.keys(commitRecords ?? {}).find((k: string) =>
+        k.startsWith(shortHash)
       );
-      mergeCommit = {repository: repoRef, sha: commitHash};
+      if (commitHash) {
+        mergeCommit = {repository: repoRef, sha: commitHash};
+      }
     }
 
     let author = null;
@@ -72,7 +80,7 @@ export class BitbucketPullRequests extends BitbucketConverter {
         htmlUrl: pr?.links?.htmlUrl,
         createdAt: Utils.toDate(pr.createdOn),
         updatedAt: Utils.toDate(pr.updatedOn),
-        mergedAt: pr.calculatedActivity?.mergedAt ?? null,
+        mergedAt: Utils.toDate(pr.calculatedActivity?.mergedAt),
         commentCount: pr.commentCount,
         commitCount: pr.calculatedActivity?.commitCount,
         diffStats: pr.diffStat,
@@ -86,7 +94,7 @@ export class BitbucketPullRequests extends BitbucketConverter {
   }
 
   private toPrState(state: string): CategoryRef {
-    const stateLower = state.toLowerCase();
+    const stateLower = state?.toLowerCase();
     switch (stateLower) {
       case 'open':
         return {category: PullRequestStateCategory.OPEN, detail: stateLower};

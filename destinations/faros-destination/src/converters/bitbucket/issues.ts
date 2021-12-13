@@ -87,7 +87,7 @@ export class BitbucketIssues extends BitbucketConverter {
     return {
       model: 'tms_User',
       record: {
-        uid: user.accountId.toLowerCase(),
+        uid: user.accountId?.toLowerCase(),
         name: user.nickname,
         source,
       },
@@ -95,7 +95,7 @@ export class BitbucketIssues extends BitbucketConverter {
   }
 
   private toTaskType(type: string): {category: string; detail: string} {
-    const typeLower = type.toLowerCase();
+    const typeLower = type?.toLowerCase();
     switch (typeLower) {
       case 'bug':
         return {category: TaskCategory.BUG, detail: typeLower};
@@ -107,7 +107,7 @@ export class BitbucketIssues extends BitbucketConverter {
   }
 
   private toTaskStatus(status: string): {category: string; detail: string} {
-    const statusLower = status.toLowerCase();
+    const statusLower = status?.toLowerCase();
     switch (statusLower) {
       case 'new':
       case 'open':

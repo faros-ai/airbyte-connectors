@@ -29,10 +29,11 @@ export class BitbucketPipelines extends BitbucketConverter {
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    const [workspace, repo] = pipeline.repository.fullName?.split('/');
+    const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
+    if (!workspace || !repo) return res;
     const status = this.convertBuildStatus(pipeline.state);
-    const orgKey = {uid: workspace.toLowerCase(), source};
-    const pipelineKey = {organization: orgKey, uid: repo.toLowerCase()};
+    const orgKey = {uid: workspace?.toLowerCase(), source};
+    const pipelineKey = {organization: orgKey, uid: repo?.toLowerCase()};
 
     res.push({
       model: 'cicd_Build',
@@ -41,7 +42,7 @@ export class BitbucketPipelines extends BitbucketConverter {
         number: pipeline.buildNumber,
         pipeline: pipelineKey,
         status,
-        url: pipeline.links.htmlUrl,
+        url: pipeline.links?.htmlUrl,
         startedAt: Utils.toDate(pipeline.createdOn),
         endedAt: Utils.toDate(pipeline.completedOn),
       },
@@ -72,7 +73,7 @@ export class BitbucketPipelines extends BitbucketConverter {
     // We're more interest in the "stage" than the "state" as this tells the true
     // state of a pipeline build. The switch statement however takes care of all
     // possible entries from both the "stage" and "state".
-    const detail = (state.stage?.name || state.name).toLowerCase();
+    const detail = (state.stage?.name || state.name)?.toLowerCase();
     switch (detail) {
       case 'error':
       case 'failed':
