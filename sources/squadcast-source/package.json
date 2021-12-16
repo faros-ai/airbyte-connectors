@@ -1,12 +1,12 @@
 {
-  "name": "jenkins-source",
+  "name": "squadcast-source",
   "version": "0.1.26",
-  "description": "Jenkins Airbyte source",
+  "description": "SquadCast Airbyte source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "jenkins"
+    "squadcast"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
@@ -31,16 +31,17 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
+    "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.26",
-    "jenkins": "^0.28.1",
-    "typescript-memoize": "^1.0.1",
+    "typescript-memoize": "^1.1.0",
     "verror": "^1.10.0"
-  },
-  "devDependencies": {
-    "@types/jenkins": "^0.23.2"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [

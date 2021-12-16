@@ -1,6 +1,6 @@
 {
   "name": "harness-source",
-  "version": "0.1.24",
+  "version": "0.1.26",
   "description": "Harness Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.24",
+    "faros-airbyte-cdk": "^0.1.26",
     "graphql-request": "^3.6.1",
     "luxon": "^2.0.2",
     "verror": "^1.10.0"
