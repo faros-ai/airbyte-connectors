@@ -79,7 +79,7 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - calendarListEntries, use full_refresh sync mode', async () => {
+  test('streams - calendars, use full_refresh sync mode', async () => {
     const calendarsList = jest.fn();
 
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
@@ -87,7 +87,7 @@ describe('index', () => {
         {
           calendarList: {
             list: calendarsList.mockResolvedValue({
-              data: readTestResourceFile('calendarListEntries.json'),
+              data: readTestResourceFile('calendars.json'),
             }),
           },
         } as any,
@@ -110,7 +110,7 @@ describe('index', () => {
     }
     expect(calendarsList).toHaveBeenCalledTimes(1);
     expect(calendars).toStrictEqual(
-      readTestResourceFile('calendarListEntries.json').items.map((c) => ({
+      readTestResourceFile('calendars.json').items.map((c) => ({
         ...c,
         nextSyncToken: 'sync-token',
       }))

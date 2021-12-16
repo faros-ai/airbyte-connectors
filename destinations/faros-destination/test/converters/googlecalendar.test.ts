@@ -43,7 +43,7 @@ describe('googlecalendar', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
-    const processedByStream = {calendar_list_entries: 1, events: 3};
+    const processedByStream = {calendars: 1, events: 3};
     const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
@@ -54,7 +54,10 @@ describe('googlecalendar', () => {
     const writtenByModel = {
       cal_Calendar: 1,
       cal_Event: 3,
-      cal_User: 3,
+      cal_EventGuestAssociation: 2,
+      cal_User: 5,
+      geo_Address: 2,
+      geo_Location: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

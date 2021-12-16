@@ -6,12 +6,11 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  Event,
-  EventsState,
-  Googlecalendar,
-  GoogleCalendarConfig,
-} from '../googlecalendar';
+import {Event, Googlecalendar, GoogleCalendarConfig} from '../googlecalendar';
+
+interface EventsState {
+  lastSyncToken?: string;
+}
 
 export class Events extends AirbyteStreamBase {
   constructor(readonly config: GoogleCalendarConfig, logger: AirbyteLogger) {
@@ -38,9 +37,12 @@ export class Events extends AirbyteStreamBase {
       this.config,
       this.logger
     );
-    const state = syncMode === SyncMode.INCREMENTAL ? streamState : {};
+    const syncToken =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.lastSyncToken
+        : undefined;
 
-    yield* googleCalendar.getEvents(state);
+    yield* googleCalendar.getEvents(syncToken);
   }
 
   getUpdatedState(
@@ -49,7 +51,7 @@ export class Events extends AirbyteStreamBase {
   ): EventsState {
     return {
       lastSyncToken:
-        latestRecord?.nextSyncToken || currentStreamState.lastSyncToken,
+        latestRecord?.nextSyncToken || currentStreamState?.lastSyncToken,
     };
   }
 }

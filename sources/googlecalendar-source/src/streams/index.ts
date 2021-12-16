@@ -1,4 +1,4 @@
-import {CalendarListEntries} from './calendarListEntries';
+import {Calendars} from './calendars';
 import {Events} from './events';
 
-export {CalendarListEntries, Events};
+export {Calendars, Events};

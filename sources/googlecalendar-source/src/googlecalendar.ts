@@ -12,8 +12,7 @@ const DEFAULT_CALENDAR_LIST_MAX_RESULTS = 250;
 export interface Event extends calendar_v3.Schema$Event {
   nextSyncToken?: string;
 }
-export interface CalendarListEntry
-  extends calendar_v3.Schema$CalendarListEntry {
+export interface Calendar extends calendar_v3.Schema$CalendarListEntry {
   nextSyncToken?: string;
 }
 
@@ -28,11 +27,6 @@ export interface GoogleCalendarConfig extends AirbyteConfig {
 interface MaxResults {
   readonly events: number;
   readonly calendars: number;
-}
-
-export interface EventsState {
-  updated?: string;
-  lastSyncToken?: string;
 }
 
 type PaginationReqFunc = (pageToken?: string) => Promise<any>;
@@ -53,7 +47,7 @@ export class Googlecalendar {
     logger: AirbyteLogger
   ): Promise<Googlecalendar> {
     if (Googlecalendar.googleCalendar) return Googlecalendar.googleCalendar;
-
+    
     if (typeof config.private_key !== 'string') {
       throw new VError('private_key: must be a string');
     }
@@ -62,6 +56,7 @@ export class Googlecalendar {
     }
 
     const calendar = google.calendar('v3');
+    
     const auth = new google.auth.GoogleAuth({
       // Scopes can be specified either as an array or as a single, space-delimited string.
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
@@ -70,7 +65,7 @@ export class Googlecalendar {
         client_email: config.client_email,
       },
     });
-
+    
     // Acquire an auth client, and bind it to all future calls
     const authClient = await auth.getClient();
     google.options({auth: authClient});
@@ -155,21 +150,16 @@ export class Googlecalendar {
     } while (nextPageToken);
   }
 
-  getEvents({updated, lastSyncToken}: EventsState): AsyncGenerator<Event> {
+  getEvents(lastSyncToken?: string): AsyncGenerator<Event> {
     const func = (pageToken?: string, syncToken?: string): Promise<Event> => {
       const params: calendar_v3.Params$Resource$Events$List = {
         calendarId: this.calendarId,
         pageToken,
         maxResults: this.maxResults.events,
       };
-      
-      if (updated) {
-        this.logger.info('Sync Events by updated column');
-        params.updatedMin = updated;
-        params.orderBy = 'updated'
-      }
+
       if (syncToken) {
-        this.logger.info('Sync Events by syncToken column');
+        this.logger.debug('Sync Events by syncToken column');
         params.syncToken = syncToken;
       }
 
@@ -179,11 +169,8 @@ export class Googlecalendar {
     return this.paginate(func, lastSyncToken);
   }
 
-  getCalendarList(lastSyncToken?: string): AsyncGenerator<CalendarListEntry> {
-    const func = (
-      pageToken?: string,
-      syncToken?: string
-    ): Promise<CalendarListEntry> =>
+  getCalendars(lastSyncToken?: string): AsyncGenerator<Calendar> {
+    const func = (pageToken?: string, syncToken?: string): Promise<Calendar> =>
       this.client.calendarList.list({
         pageToken,
         syncToken,

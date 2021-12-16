@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Googlecalendar, GoogleCalendarConfig} from './googlecalendar';
-import {CalendarListEntries, Events} from './streams';
+import {Calendars, Events} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -38,7 +38,7 @@ export class GooglecalendarSource extends AirbyteSourceBase {
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
-      new CalendarListEntries(config as any, this.logger),
+      new Calendars(config as any, this.logger),
       new Events(config as any, this.logger),
     ];
   }

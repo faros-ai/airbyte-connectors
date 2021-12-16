@@ -1,9 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {CalendarListEntry, GooglecalendarConverter} from './common';
+import {
+  Calendar,
+  GooglecalendarCommon,
+  GooglecalendarConverter,
+} from './common';
 
-export class GooglecalendarCalendarListEntries extends GooglecalendarConverter {
+export class GooglecalendarCalendars extends GooglecalendarConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cal_Calendar',
   ];
@@ -13,15 +17,21 @@ export class GooglecalendarCalendarListEntries extends GooglecalendarConverter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-    const cle = record.record.data as CalendarListEntry;
+    const cle = record.record.data as Calendar;
 
     return [
       {
         model: 'cal_Calendar',
         record: {
           uid: cle.id,
-          title: cle.summary,
-          description: cle.description,
+          title: cle.summary?.substring(
+            0,
+            GooglecalendarCommon.MAX_DESCRIPTION_LENGTH
+          ),
+          description: cle.description?.substring(
+            0,
+            GooglecalendarCommon.MAX_DESCRIPTION_LENGTH
+          ),
           source,
         },
       },

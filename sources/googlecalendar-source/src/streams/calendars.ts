@@ -7,22 +7,22 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {
-  CalendarListEntry,
+  Calendar,
   Googlecalendar,
   GoogleCalendarConfig,
 } from '../googlecalendar';
 
-interface CalendarListEntriesState {
-  lastSyncToken: string;
+interface CalendarsState {
+  lastSyncToken?: string;
 }
 
-export class CalendarListEntries extends AirbyteStreamBase {
+export class Calendars extends AirbyteStreamBase {
   constructor(readonly config: GoogleCalendarConfig, logger: AirbyteLogger) {
     super(logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/calendarListEntries.json');
+    return require('../../resources/schemas/calendars.json');
   }
   get primaryKey(): StreamKey {
     return 'id';
@@ -35,8 +35,8 @@ export class CalendarListEntries extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any, string>,
-    streamState?: CalendarListEntriesState
-  ): AsyncGenerator<CalendarListEntry> {
+    streamState?: CalendarsState
+  ): AsyncGenerator<Calendar> {
     const googleCalendar = await Googlecalendar.instance(
       this.config,
       this.logger
@@ -46,16 +46,16 @@ export class CalendarListEntries extends AirbyteStreamBase {
         ? streamState?.lastSyncToken
         : undefined;
 
-    yield* googleCalendar.getCalendarList(syncToken);
+    yield* googleCalendar.getCalendars(syncToken);
   }
 
   getUpdatedState(
-    currentStreamState: CalendarListEntriesState,
-    latestRecord: CalendarListEntry
-  ): CalendarListEntriesState {
+    currentStreamState: CalendarsState,
+    latestRecord: Calendar
+  ): CalendarsState {
     return {
       lastSyncToken:
-        latestRecord?.nextSyncToken || currentStreamState.lastSyncToken,
+        latestRecord?.nextSyncToken || currentStreamState?.lastSyncToken,
     };
   }
 }
