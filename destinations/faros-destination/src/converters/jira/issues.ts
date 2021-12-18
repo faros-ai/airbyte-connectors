@@ -454,7 +454,7 @@ export class JiraIssues extends JiraConverter {
     let description = null;
     if (typeof issue.fields.description === 'string') {
       description = issue.fields.description;
-    } else if (issue.renderedFields.description) {
+    } else if (issue.renderedFields?.description) {
       description = this.turndown.turndown(issue.renderedFields.description);
     }
 
