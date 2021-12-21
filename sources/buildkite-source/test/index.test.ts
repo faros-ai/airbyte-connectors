@@ -7,8 +7,103 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
+import {Buildkite} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
 
+const BuildkiteInstance = Buildkite.instance;
+
+function readTestResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+}
+const DEFAULT_PAGE_SIZE = 1000;
+const DEFAULT_MAX_JOBS_PER_BUILD = 1000;
 describe('index', () => {
-  // TODO: You can do as in StatusPage
+  const logger = new AirbyteLogger(
+    // Shush messages in tests, unless in debug
+    process.env.LOG_LEVEL === 'debug'
+      ? AirbyteLogLevel.DEBUG
+      : AirbyteLogLevel.FATAL
+  );
+
+  beforeEach(() => {
+    Buildkite.instance = BuildkiteInstance;
+  });
+  test('spec', async () => {
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
+      new AirbyteSpec(readTestResourceFile('spec.json'))
+    );
+  });
+  test('check connection', async () => {
+    Buildkite.instance = jest.fn().mockImplementation(async () => {
+      return new Buildkite(
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    await expect(
+      source.checkConnection({token: 'token'})
+    ).resolves.toStrictEqual([true, undefined]);
+  });
+
+  test('check connection - incorrect token', async () => {
+    Buildkite.instance = jest.fn().mockImplementation(async () => {
+      return new Buildkite(
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.checkConnection({})).resolves.toStrictEqual([
+      false,
+      new VError('Please verify your token are correct. Error: some error'),
+    ]);
+  });
+
+  test('check connection - incorrect variables', async () => {
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.checkConnection({})).resolves.toStrictEqual([
+      false,
+      new VError('token must be a not empty string'),
+    ]);
+  });
+
+  test('streams - organizations, use full_refresh sync mode', async () => {
+    const fnOrganizedFunc = jest.fn();
+
+    const fileName = 'organizations.json';
+    Buildkite.instance = jest.fn().mockImplementation(() => {
+      return new Buildkite(
+        {
+          get: fnOrganizedFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        {
+          get: fnOrganizedFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams({});
+    const organizationsStream = streams[0];
+    const organizationsIter = organizationsStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const organizations = [];
+    for await (const organization of organizationsIter) {
+      organizations.push(organization);
+    }
+    expect(fnOrganizedFunc).toHaveBeenCalledTimes(1);
+    expect(organizations).toStrictEqual(readTestResourceFile(fileName));
+  });
 });

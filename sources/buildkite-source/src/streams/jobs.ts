@@ -25,7 +25,7 @@ export class Jobs extends AirbyteStreamBase {
     return require('../../resources/schemas/jobs.json');
   }
   get primaryKey(): StreamKey {
-    return 'uid';
+    return 'uuid';
   }
 
   async *readRecords(

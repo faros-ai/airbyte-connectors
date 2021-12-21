@@ -6,22 +6,21 @@
         "uuid": {
             "type": "string"
         },
-        "label":
-        {
-            "type":"string"
+        "label": {
+            "type": "string"
         },
         "message": {
             "type": "string"
-        }, 
-        "state":{
-            "type":"string"
+        },
+        "state": {
+            "type": "string"
         },
         "createdAt": {
             "type": "string"
         },
         "startedAt": {
             "type": "string"
-        }, 
+        },
         "url": {
             "type": "string"
         },

@@ -20,7 +20,7 @@ export class Builds extends AirbyteStreamBase {
     return require('../../resources/schemas/builds.json');
   }
   get primaryKey(): StreamKey {
-    return 'uid';
+    return 'uuid';
   }
 
   async *readRecords(

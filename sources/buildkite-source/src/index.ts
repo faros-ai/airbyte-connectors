@@ -15,12 +15,12 @@ import {Builds, Jobs, Organizations, Pipelines} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new StatuspageSource(logger);
+  const source = new BuildkiteSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** StatusPage source implementation. */
-export class StatuspageSource extends AirbyteSourceBase {
+export class BuildkiteSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
