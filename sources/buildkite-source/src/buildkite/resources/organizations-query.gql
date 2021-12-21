@@ -1,6 +1,6 @@
- query organizationsQuery {
+ query organizationsQuery{
    viewer {
-     organizations() 
+     organizations
     {
        edges { 
          node {
