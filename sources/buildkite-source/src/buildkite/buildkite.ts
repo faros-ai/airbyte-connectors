@@ -185,13 +185,9 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
-
-  // read gpl from resources folder
   private readGQLFile(fileName: string): any {
     return fs.readFileSync(`resources/${fileName}`, 'utf8');
   }
-
-  // read Organizations
   async *getOrganizations(): AsyncGenerator<Organization> {
     const gqlFile = this.readGQLFile('organizations-query.gql');
     const query = gql`
@@ -203,7 +199,6 @@ export class Buildkite {
       yield item.node;
     }
   }
-  // read Pipelines
   async *getPipelines(): AsyncGenerator<Pipeline> {
     const iterOrganizations = this.getOrganizations();
     for await (const organization of iterOrganizations) {
@@ -247,8 +242,6 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-
-  // read Builds
   async *getBuilds(): AsyncGenerator<Build> {
     const iterPipilines = this.getPipelines();
     for await (const pipeline of iterPipilines) {
@@ -292,9 +285,6 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-
-  // read Jobs
-
   async *getJobs(): AsyncGenerator<Job> {
     const iterBuilds = this.getBuilds();
     for await (const build of iterBuilds) {
@@ -303,13 +293,6 @@ export class Buildkite {
       }
     }
   }
-
-  // async *getJobs(): AsyncGenerator<Jobs> {
-  //   const iterOrganizations = this.getOrganizations();
-  //   for await (const organization of iterOrganizations) {
-  //       yield* this.fetchOrganizationPipelines(organization);
-  //   }
-  // }
 
   // private async *paginate<T>(
   //   func: () => Promise<PagerdutyResponse<T>>,
