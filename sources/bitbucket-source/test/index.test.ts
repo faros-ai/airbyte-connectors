@@ -51,9 +51,9 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         workspace: 'workspace',
-        repository: 'repository',
-        pipeline: 'pipeline',
-        pull_request_id: '1',
+        repository: ['repository'],
+        pipeline: ['pipeline'],
+        pull_request_id: ['1'],
       })
     ).resolves.toStrictEqual([true, undefined]);
   });

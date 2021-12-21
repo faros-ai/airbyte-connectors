@@ -50,9 +50,9 @@ export class BitbucketSource extends AirbyteSourceBase {
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
-    const repositories = config.repository.split(',').map((r) => r.trim());
-    const pipelines = config.pipeline.split(',').map((r) => r.trim());
-    const prIDs = config.pull_request_id.split(',').map((r) => r.trim());
+    const repositories = config.repository;
+    const pipelines = config.pipeline;
+    const prIDs = config.pull_request_id ?? [];
     return [
       new Branches(config, repositories, this.logger),
       new Commits(config, repositories, this.logger),

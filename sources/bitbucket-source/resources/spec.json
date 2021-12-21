@@ -7,8 +7,7 @@
     "required": [
       "workspace",
       "repository",
-      "pipeline",
-      "pull_request_id"
+      "pipeline"
     ],
     "additionalProperties": false,
     "properties": {
@@ -37,19 +36,20 @@
         "title": "Bitbucket Workspace"
       },
       "repository": {
-        "type": "string",
+        "type": "array",
         "title": "Bitbucket Workspace's Repository", 
-        "description": "Comma-separated list of Bitbucket repositories"
+        "description": "List of Bitbucket repositories"
       },
       "pipeline": {
-        "type": "string",
+        "type": "array",
         "title": "Bitbucket Workspace Repository's Pipeline",
-        "description": "Comma-separated list of Bitbucket pipelines"
+        "description": "List of Bitbucket pipelines"
       },
       "pull_request_id": {
-        "type": "string",
+        "type": "array",
         "title": "Bitbucket Workspace Repository's Pull Request ID",
-        "description": "Comma-separated list of Bitbucket Pull Request's IDs. ID is using to pull PullRequest's Activities"
+        "description": "List of Bitbucket Pull Request's IDs. ID is using to pull PullRequest's Activities",
+        "default": []
       },
       "pagelen": {
         "type": "number",

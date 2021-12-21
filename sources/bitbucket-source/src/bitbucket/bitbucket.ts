@@ -114,9 +114,6 @@ export class Bitbucket {
     if (!config.pipeline) {
       return [false, 'No pipeline provided'];
     }
-    if (!config.pull_request_id) {
-      return [false, 'No pull_request_id provided'];
-    }
 
     try {
       config.serverUrl && new URL(config.serverUrl);
@@ -364,10 +361,7 @@ export class Bitbucket {
         const commits = new Set<string>();
         let mergedAt = undefined;
         try {
-          const iterActivities = this.getPRActivities(
-            repoSlug,
-            String(pr.id)
-          );
+          const iterActivities = this.getPRActivities(repoSlug, String(pr.id));
 
           for await (const activity of iterActivities) {
             const change: any =
@@ -405,7 +399,7 @@ export class Bitbucket {
 
   async *getPRActivities(
     repoSlug: string,
-    pullRequestId: string
+    pullRequestId?: string
   ): AsyncGenerator<PRActivity> {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
@@ -434,7 +428,7 @@ export class Bitbucket {
 
   async getPRDiffStats(
     repoSlug: string,
-    pullRequestId: string
+    pullRequestId?: string
   ): Promise<DiffStat> {
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
     try {
@@ -562,7 +556,7 @@ export class Bitbucket {
     }
 
     do {
-      for (const item of (data as {values: T[]})?.values) {
+      for (const item of (data as {values: T[]}).values) {
         const buildedItem = buildTo(item);
         const isValid = !isNew || isNew(buildedItem);
         if (isValid) {
