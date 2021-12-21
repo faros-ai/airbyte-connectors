@@ -22,7 +22,6 @@ export class Pipelines extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'uuid';
   }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
