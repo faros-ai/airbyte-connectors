@@ -196,7 +196,6 @@ export class Squadcast {
       }
       res = await this.httpClient.get<EventListResponse>(eventUrl, {params});
 
-      //
       return {
         data: res.data.data.events.map((e) => {
           if (!e.payload?.status) {
