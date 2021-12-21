@@ -195,14 +195,17 @@ export class Buildkite {
       yield item.node;
     }
   }
-  async *getPipelines(): AsyncGenerator<Pipeline> {
+  @Memoize((cutoff: Date) => cutoff ?? new Date(0))
+  async *getPipelines(cutoff?: Date): AsyncGenerator<Pipeline> {
     const iterOrganizations = this.getOrganizations();
     for await (const organization of iterOrganizations) {
-      yield* this.fetchOrganizationPipelines(organization);
+      yield* this.fetchOrganizationPipelines(organization, cutoff);
     }
   }
+
   async *fetchOrganizationPipelines(
-    organization: Organization
+    organization: Organization,
+    cutoff?: Date
   ): AsyncGenerator<Pipeline> {
     const gqlFile = this.readGQLFile('pipelines-query.gql');
     const query = gql`
@@ -216,6 +219,7 @@ export class Buildkite {
         slug: organization.slug,
         pageSize: this.pageSize,
         after: pageInfo.endCursor,
+        createdAtFrom: cutoff,
       };
       const data = await this.graphClient.request(query, variables);
       return {
@@ -227,14 +231,17 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getBuilds(): AsyncGenerator<Build> {
+  async *getBuilds(cutoff?: Date): AsyncGenerator<Build> {
     const iterPipilines = this.getPipelines();
     for await (const pipeline of iterPipilines) {
-      yield* this.fetchPipelineBuilds(pipeline);
+      yield* this.fetchPipelineBuilds(pipeline, cutoff);
     }
   }
 
-  async *fetchPipelineBuilds(pipeline: Pipeline): AsyncGenerator<Build> {
+  async *fetchPipelineBuilds(
+    pipeline: Pipeline,
+    cutoff?: Date
+  ): AsyncGenerator<Build> {
     const gqlFile = this.readGQLFile('pipelines-query.gql');
     const query = gql`
       ${gqlFile}
@@ -247,6 +254,7 @@ export class Buildkite {
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
         after: pageInfo.endCursor,
+        createdAtFrom: cutoff,
       };
       const data = await this.graphClient.request(query, variables);
       return {

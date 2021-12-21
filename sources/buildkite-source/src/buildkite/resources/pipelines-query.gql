@@ -1,6 +1,6 @@
-query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String) {
+query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String,$createdAtFrom: DateTime) {
   organization(slug: $slug) {
-      pipelines(first: $pageSize, after: $after){
+      pipelines(first: $pageSize, after: $after,createdAtFrom: $createdAtFrom){
         edges{
           node {
             id
