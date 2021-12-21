@@ -130,7 +130,6 @@ export class Buildkite {
 
     return Buildkite.buildkite;
   }
-
   async checkConnection(): Promise<void> {
     try {
       await this.restClient.get(`/organizations`);
@@ -148,7 +147,6 @@ export class Buildkite {
       throw new VError(errorMessage);
     }
   }
-
   private async errorWrapper<T>(func: () => Promise<T>): Promise<T> {
     let res: T;
     try {
@@ -167,7 +165,6 @@ export class Buildkite {
     }
     return res;
   }
-
   private async *paginate<T>(
     func: (pageInfo?: PageInfo) => Promise<PaginateResponse<T>>
   ): AsyncGenerator<T> {
@@ -177,7 +174,6 @@ export class Buildkite {
       const response = await this.errorWrapper<PaginateResponse<T>>(() =>
         func(fetchNextFunc)
       );
-
       if (response?.pageInfo?.hasNextPage) fetchNextFunc = response?.pageInfo;
 
       for (const item of response?.data ?? []) {
@@ -205,7 +201,6 @@ export class Buildkite {
       yield* this.fetchOrganizationPipelines(organization);
     }
   }
-
   async *fetchOrganizationPipelines(
     organization: Organization
   ): AsyncGenerator<Pipeline> {
@@ -217,22 +212,12 @@ export class Buildkite {
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Pipeline>> => {
-      let data;
-      if (pageInfo) {
-        /** Get next url's params */
-        const variables = {
-          slug: organization.slug,
-          pageSize: this.pageSize,
-          after: pageInfo.endCursor,
-        };
-        data = await this.graphClient.request(query, variables);
-      }
       const variables = {
         slug: organization.slug,
         pageSize: this.pageSize,
         after: pageInfo.endCursor,
       };
-      data = await this.graphClient.request(query, variables);
+      const data = await this.graphClient.request(query, variables);
       return {
         data: data.data.organization.pipelines.edges.map((e) => {
           return e.node;
@@ -254,28 +239,16 @@ export class Buildkite {
     const query = gql`
       ${gqlFile}
     `;
-
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Build>> => {
-      let data;
-      if (pageInfo) {
-        const variables = {
-          slug: pipeline.url.replace('https://buildkite.com/', ''),
-          pageSize: this.pageSize,
-          maxJobsPerBuild: this.maxJobsPerBuild,
-          after: pageInfo.endCursor,
-        };
-
-        data = await this.graphClient.request(query, variables);
-      }
       const variables = {
         slug: pipeline.url.replace('https://buildkite.com/', ''),
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
         after: pageInfo.endCursor,
       };
-      data = await this.graphClient.request(query, variables);
+      const data = await this.graphClient.request(query, variables);
       return {
         data: data.data.pipeline.builds.edges.map((e) => {
           return e.node;
@@ -293,32 +266,6 @@ export class Buildkite {
       }
     }
   }
-
-  // private async *paginate<T>(
-  //   func: () => Promise<PagerdutyResponse<T>>,
-  //   broker: (item: T) => boolean = (): boolean => false
-  // ): AsyncGenerator<T> {
-  //   let response = await this.errorWrapper<PagerdutyResponse<T>>(func);
-  //   let fetchNextFunc;
-
-  //   do {
-  //     if (response?.status >= 300) {
-  //       throw new VError(`${response?.status}: ${response?.statusText}`);
-  //     }
-  //     if (response?.next) fetchNextFunc = response?.next;
-
-  //     for (const item of response?.resource ?? []) {
-  //       const stopReading = broker(item);
-  //       if (stopReading) {
-  //         return undefined;
-  //       }
-  //       yield item;
-  //     }
-  //     response = response.next
-  //       ? await this.errorWrapper<PagerdutyResponse<T>>(fetchNextFunc)
-  //       : undefined;
-  //   } while (response);
-  // }
 
   // @Memoize((query: string) => query)
   // private async *graphQLRequest(
