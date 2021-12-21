@@ -5,8 +5,8 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   IncidentEventType,
   IncidentEventTypeCategory,
-  IncidentStatus,
   StatuspageConverter,
+  StatuspageIncidentStatus,
 } from './common';
 
 export class StatuspageIncidentUpdates extends StatuspageConverter {
@@ -35,16 +35,17 @@ export class StatuspageIncidentUpdates extends StatuspageConverter {
     ];
   }
 
-  private eventType(updateStatus: IncidentStatus): IncidentEventType {
+  private eventType(updateStatus: StatuspageIncidentStatus): IncidentEventType {
     const detail: string = updateStatus;
     switch (updateStatus) {
-      case 'investigating':
+      case StatuspageIncidentStatus.Investigating:
         return {category: IncidentEventTypeCategory.Created, detail};
-      case 'identified':
+      case StatuspageIncidentStatus.Identified:
         return {category: IncidentEventTypeCategory.Acknowledged, detail};
-      case 'resolved':
+      case StatuspageIncidentStatus.Resolved:
         return {category: IncidentEventTypeCategory.Resolved, detail};
-      case 'monitoring':
+      case StatuspageIncidentStatus.Monitoring:
+      case StatuspageIncidentStatus.Postmortem:
       default:
         return {category: IncidentEventTypeCategory.Custom, detail};
     }
