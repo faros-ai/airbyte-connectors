@@ -9,8 +9,8 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Statuspage, StatuspageConfig} from './statuspage';
-import {Incidents, IncidentUpdates, Users} from './streams';
+import {Buildkite, BuildkiteConfig} from './buildkite/buildkite';
+import {Builds, Jobs, Organizations, Pipelines} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -26,8 +26,8 @@ export class StatuspageSource extends AirbyteSourceBase {
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const statuspage = Statuspage.instance(
-        config as StatuspageConfig,
+      const statuspage = Buildkite.instance(
+        config as BuildkiteConfig,
         this.logger
       );
       await statuspage.checkConnection();
@@ -38,9 +38,10 @@ export class StatuspageSource extends AirbyteSourceBase {
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
-      new Incidents(config as StatuspageConfig, this.logger),
-      new IncidentUpdates(config as StatuspageConfig, this.logger),
-      new Users(config as StatuspageConfig, this.logger),
+      new Organizations(config as BuildkiteConfig, this.logger),
+      new Pipelines(config as BuildkiteConfig, this.logger),
+      new Builds(config as BuildkiteConfig, this.logger),
+      new Jobs(config as BuildkiteConfig, this.logger),
     ];
   }
 }

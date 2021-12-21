@@ -1,10 +1,13 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
+import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
-import {GraphQLClient} from 'graphql-request';
+import {gql, GraphQLClient} from 'graphql-request';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
+
+import {Jobs, Pipelines} from '../streams';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_JOBS_PER_BUILD = 500;
@@ -13,7 +16,6 @@ const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
 
 export interface Build {
   readonly uid: string;
-  // readonly name: string;
   readonly number: number;
   readonly createdAt?: Date;
   readonly startedAt?: Date;
@@ -21,61 +23,60 @@ export interface Build {
   readonly state: string;
   readonly url: string;
   readonly commit: string;
-  readonly jobs: Array<BuildStep>;
+  readonly jobs: Array<Job>;
 }
-
-export interface BuildStep {
-  readonly uid: string;
-  readonly name?: string;
-  readonly command?: string;
-  readonly type: string;
+// Jobs
+export interface Job {
+  readonly uuid: string;
+  readonly label?: string;
+  readonly state: string;
   readonly createdAt?: Date;
   readonly startedAt?: Date;
   readonly finishedAt?: Date;
-  readonly triggered?: {
-    startedAt?: Date;
-    createdAt?: Date;
-    finishedAt?: Date;
-  };
-  readonly unblockedAt?: Date;
-  readonly state: string;
   readonly url?: string;
-  readonly build: string;
+  readonly command: string;
 }
-
 export interface Organization {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
-  // readonly web_url: string;
 }
 
 export interface Pipeline {
+  readonly id: string;
+  readonly uuid: string;
   readonly slug: string;
   readonly name: string;
-  readonly description?: string;
-  readonly createdAt?: string;
   readonly url: string;
-  readonly repo?: Repo;
+  readonly description?: string;
+  readonly repository?: Repo;
 }
-
 export enum RepoSource {
   BITBUCKET = 'Bitbucket',
   GITHUB = 'GitHub',
   GITLAB = 'GitLab',
   VCS = 'VCS',
 }
-
 export interface Repo {
-  readonly source: RepoSource;
-  readonly org: string;
-  readonly name: string;
+  readonly provider: Provider;
+  readonly url: string;
+}
+export interface Provider {
+  readonly name: RepoSource;
 }
 
 export interface BuildkiteConfig {
   readonly token: string;
   readonly page_size?: number;
   readonly max_jobs_per_build?: number;
+}
+interface PaginateResponse<T> {
+  data: T[];
+  pageInfo: PageInfo;
+}
+export interface PageInfo {
+  hasNextPage: boolean;
+  endCursor: string;
 }
 
 interface BuildkiteResponse<Type> {
@@ -166,6 +167,149 @@ export class Buildkite {
     }
     return res;
   }
+
+  private async *paginate<T>(
+    func: (pageInfo?: PageInfo) => Promise<PaginateResponse<T>>
+  ): AsyncGenerator<T> {
+    let fetchNextFunc: PageInfo = undefined;
+
+    do {
+      const response = await this.errorWrapper<PaginateResponse<T>>(() =>
+        func(fetchNextFunc)
+      );
+
+      if (response?.pageInfo?.hasNextPage) fetchNextFunc = response?.pageInfo;
+
+      for (const item of response?.data ?? []) {
+        yield item;
+      }
+    } while (fetchNextFunc);
+  }
+
+  // read gpl from resources folder
+  private readGQLFile(fileName: string): any {
+    return fs.readFileSync(`resources/${fileName}`, 'utf8');
+  }
+
+  // read Organizations
+  async *getOrganizations(): AsyncGenerator<Organization> {
+    const gqlFile = this.readGQLFile('organizations-query.gql');
+    const query = gql`
+      ${gqlFile}
+    `;
+    const data = await this.graphClient.request(query);
+
+    for (const item of data.data.viewer.organizations.edges) {
+      yield item.node;
+    }
+  }
+  // read Pipelines
+  async *getPipelines(): AsyncGenerator<Pipeline> {
+    const iterOrganizations = this.getOrganizations();
+    for await (const organization of iterOrganizations) {
+      yield* this.fetchOrganizationPipelines(organization);
+    }
+  }
+
+  async *fetchOrganizationPipelines(
+    organization: Organization
+  ): AsyncGenerator<Pipeline> {
+    const gqlFile = this.readGQLFile('pipelines-query.gql');
+    const query = gql`
+      ${gqlFile}
+    `;
+
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<Pipeline>> => {
+      let data;
+      if (pageInfo) {
+        /** Get next url's params */
+        const variables = {
+          slug: organization.slug,
+          pageSize: this.pageSize,
+          after: pageInfo.endCursor,
+        };
+        data = await this.graphClient.request(query, variables);
+      }
+      const variables = {
+        slug: organization.slug,
+        pageSize: this.pageSize,
+        after: pageInfo.endCursor,
+      };
+      data = await this.graphClient.request(query, variables);
+      return {
+        data: data.data.organization.pipelines.edges.map((e) => {
+          return e.node;
+        }),
+        pageInfo: data.data.organization.pipelines.pageInfo,
+      };
+    };
+    yield* this.paginate(func);
+  }
+
+  // read Builds
+  async *getBuilds(): AsyncGenerator<Build> {
+    const iterPipilines = this.getPipelines();
+    for await (const pipeline of iterPipilines) {
+      yield* this.fetchPipelineBuilds(pipeline);
+    }
+  }
+
+  async *fetchPipelineBuilds(pipeline: Pipeline): AsyncGenerator<Build> {
+    const gqlFile = this.readGQLFile('pipelines-query.gql');
+    const query = gql`
+      ${gqlFile}
+    `;
+
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<Build>> => {
+      let data;
+      if (pageInfo) {
+        const variables = {
+          slug: pipeline.url.replace('https://buildkite.com/', ''),
+          pageSize: this.pageSize,
+          maxJobsPerBuild: this.maxJobsPerBuild,
+          after: pageInfo.endCursor,
+        };
+
+        data = await this.graphClient.request(query, variables);
+      }
+      const variables = {
+        slug: pipeline.url.replace('https://buildkite.com/', ''),
+        pageSize: this.pageSize,
+        maxJobsPerBuild: this.maxJobsPerBuild,
+        after: pageInfo.endCursor,
+      };
+      data = await this.graphClient.request(query, variables);
+      return {
+        data: data.data.pipeline.builds.edges.map((e) => {
+          return e.node;
+        }),
+        pageInfo: data.data.pipeline.builds.pageInfo,
+      };
+    };
+    yield* this.paginate(func);
+  }
+
+  // read Jobs
+
+  async *getJobs(): AsyncGenerator<Job> {
+    const iterBuilds = this.getBuilds();
+    for await (const build of iterBuilds) {
+      for await (const job of build.jobs) {
+        yield job;
+      }
+    }
+  }
+
+  // async *getJobs(): AsyncGenerator<Jobs> {
+  //   const iterOrganizations = this.getOrganizations();
+  //   for await (const organization of iterOrganizations) {
+  //       yield* this.fetchOrganizationPipelines(organization);
+  //   }
+  // }
 
   // private async *paginate<T>(
   //   func: () => Promise<PagerdutyResponse<T>>,

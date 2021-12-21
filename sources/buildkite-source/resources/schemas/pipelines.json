@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "uuid": {
+            "type": "string"
+        },
+        "slug": {
+            "type": "string"
+        },
+        "name": {
+            "type": "number"
+        },
+        "url": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "repository": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,18 +1,14 @@
-# query organizationsQuery($pageSize: Int!, $after: String) {
-#   viewer {
-#     organizations(first: $pageSize, after: $after) {
-#       edges {
-#         cursor
-#         node {
-#           id
-#           name
-#           slug
-#         }
-#       }
-#       pageInfo {
-#         hasNextPage
-#         endCursor
-#       }
-#     }
-#   }
-# }
+ query organizationsQuery {
+   viewer {
+     organizations() 
+    {
+       edges { 
+         node {
+           id
+           name
+           slug
+         }
+      } 
+     }
+   }
+ }

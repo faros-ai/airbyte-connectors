@@ -6,7 +6,12 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Buildkite, BuildkiteConfig, Pipeline} from '../buildkite';
+import {
+  Buildkite,
+  BuildkiteConfig,
+  Job,
+  Pipeline,
+} from '../buildkite/buildkite';
 
 export class Jobs extends AirbyteStreamBase {
   constructor(
@@ -28,7 +33,7 @@ export class Jobs extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
-  ): AsyncGenerator<Pipeline> {
+  ): AsyncGenerator<Job> {
     const buildkite = Buildkite.instance(this.config, this.logger);
 
     yield* buildkite.getJobs();

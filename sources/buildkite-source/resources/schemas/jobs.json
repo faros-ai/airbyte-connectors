@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "uuid": {
+            "type": "string"
+        },
+        "label":
+        {
+            "type":"string"
+        },
+        "message": {
+            "type": "string"
+        }, 
+        "state":{
+            "type":"string"
+        },
+        "createdAt": {
+            "type": "string"
+        },
+        "startedAt": {
+            "type": "string"
+        }, 
+        "url": {
+            "type": "string"
+        },
+        "command": {
+            "type": "string"
+        }
+    }
+}

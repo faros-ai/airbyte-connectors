@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Build, Buildkite, BuildkiteConfig} from '../buildkite';
+import {Build, Buildkite, BuildkiteConfig} from '../buildkite/buildkite';
 
 export class Builds extends AirbyteStreamBase {
   constructor(

@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Buildkite, BuildkiteConfig, Pipeline} from '../buildkite';
+import {Buildkite, BuildkiteConfig, Pipeline} from '../buildkite/buildkite';
 
 export class Pipelines extends AirbyteStreamBase {
   constructor(
@@ -20,7 +20,7 @@ export class Pipelines extends AirbyteStreamBase {
     return require('../../resources/schemas/pipelines.json');
   }
   get primaryKey(): StreamKey {
-    return 'uid';
+    return 'uuid';
   }
 
   async *readRecords(

@@ -1,5 +1,5 @@
-import {Incidents} from './incidents';
-import {IncidentUpdates} from './incidentUpdates';
-import {Users} from './users';
-
-export {Incidents, IncidentUpdates, Users};
+import {Builds} from './builds';
+import {Jobs} from './jobs';
+import {Organizations} from './organizations';
+import {Pipelines} from './pipelines';
+export {Organizations, Pipelines, Builds, Jobs};
