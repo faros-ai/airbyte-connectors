@@ -223,25 +223,24 @@ export class Buildkite {
   }
   // async *getOrganizations(): AsyncGenerator<Organization> {
   //   const data = await this.graphClient.request(ORGANIZATIONS_QUERY);
-
   //   for (const item of data.data.viewer.organizations.edges) {
   //     yield item.node;
   //   }
   // }
-  @Memoize((cutoff: Date) => cutoff ?? new Date(0))
+  @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
   async *getPipelines(
-    cutoff?: Date,
+    createdAtFrom?: Date,
     organizaiion?: string
   ): AsyncGenerator<Pipeline> {
     const iterOrganizations = this.getOrganizations(organizaiion);
     for await (const organization of iterOrganizations) {
-      yield* this.fetchOrganizationPipelines(organization, cutoff);
+      yield* this.fetchOrganizationPipelines(organization, createdAtFrom);
     }
   }
 
   async *fetchOrganizationPipelines(
     organization: Organization,
-    cutoff?: Date
+    createdAtFrom?: Date
   ): AsyncGenerator<Pipeline> {
     const func = async (
       pageInfo?: PageInfo
@@ -250,7 +249,7 @@ export class Buildkite {
         slug: organization.slug,
         pageSize: this.pageSize,
         after: pageInfo.endCursor,
-        createdAtFrom: cutoff,
+        createdAtFrom: createdAtFrom,
       };
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
       return {
@@ -263,18 +262,18 @@ export class Buildkite {
     yield* this.paginate(func);
   }
   async *getBuilds(
-    cutoff?: Date,
+    createdAtFrom?: Date,
     organizaiion?: string
   ): AsyncGenerator<Build> {
-    const iterPipilines = this.getPipelines(cutoff, organizaiion);
+    const iterPipilines = this.getPipelines(createdAtFrom, organizaiion);
     for await (const pipeline of iterPipilines) {
-      yield* this.fetchPipelineBuilds(pipeline, cutoff);
+      yield* this.fetchPipelineBuilds(pipeline, createdAtFrom);
     }
   }
 
   async *fetchPipelineBuilds(
     pipeline: Pipeline,
-    cutoff?: Date
+    createdAtFrom?: Date
   ): AsyncGenerator<Build> {
     const func = async (
       pageInfo?: PageInfo
@@ -284,7 +283,7 @@ export class Buildkite {
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
         after: pageInfo.endCursor,
-        createdAtFrom: cutoff,
+        createdAtFrom: createdAtFrom,
       };
       const data = await this.graphClient.request(
         PIPELINE_BUILDS_QUERY,
@@ -303,8 +302,11 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getJobs(cutoff?: Date, organizaiion?: string): AsyncGenerator<Job> {
-    const iterBuilds = this.getBuilds(cutoff, organizaiion);
+  async *getJobs(
+    createdAtFrom?: Date,
+    organizaiion?: string
+  ): AsyncGenerator<Job> {
+    const iterBuilds = this.getBuilds(createdAtFrom, organizaiion);
     for await (const build of iterBuilds) {
       for await (const job of build.jobs) {
         yield job;
