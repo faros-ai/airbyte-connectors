@@ -1,10 +1,12 @@
 [{ 
     "id": "T3JnYW5pemF0aW9uLS0tZjZhNjQ5OWQtN2E2Mi00MzZkLTllMWMtM2M4ZmMzZWQ0Zjk2",
     "name": "DevCube",
-    "slug": "devcube" 
+    "slug": "devcube",
+    "web_url": "https://buildkite.com/devcube"
 },
 { 
     "id": "T3JnYW5pemF0aW9uLS0tOTZhMmEwZDktNzFjOS00M2IxLWExZjEtZTkxYjIzZTg1Y2Rj",
     "name": "Dev-Kelvin",
-    "slug": "dev-kelvin" 
+    "slug": "dev-kelvin",
+    "web_url": "https://buildkite.com/dev-kelvin"
 }]

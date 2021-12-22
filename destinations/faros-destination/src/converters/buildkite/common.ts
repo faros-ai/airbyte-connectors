@@ -15,6 +15,7 @@ export interface Organization {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly web_url: string;
 }
 export interface Build {
   readonly uid: string;

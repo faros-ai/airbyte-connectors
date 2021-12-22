@@ -11,6 +11,9 @@
     },
     "slug": {
       "type": "string"
+    },
+    "web_url": {
+      "type": "string"
     }
   }
 }

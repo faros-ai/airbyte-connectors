@@ -35,7 +35,9 @@ export interface Organization {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly web_url: string;
 }
+
 export interface Build {
   readonly uid: string;
   readonly number: number;
@@ -200,12 +202,18 @@ export class Buildkite {
   }
 
   async *getOrganizations(): AsyncGenerator<Organization> {
-    const data = await this.graphClient.request(ORGANIZATIONS_QUERY);
-
-    for (const item of data.data.viewer.organizations.edges) {
-      yield item.node;
+    const res = await this.restClient.get<Organization[]>('organizations');
+    for (const item of res.data) {
+      yield item;
     }
   }
+  // async *getOrganizations(): AsyncGenerator<Organization> {
+  //   const data = await this.graphClient.request(ORGANIZATIONS_QUERY);
+
+  //   for (const item of data.data.viewer.organizations.edges) {
+  //     yield item.node;
+  //   }
+  // }
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
   async *getPipelines(cutoff?: Date): AsyncGenerator<Pipeline> {
     const iterOrganizations = this.getOrganizations();
