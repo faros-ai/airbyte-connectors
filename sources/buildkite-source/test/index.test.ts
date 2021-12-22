@@ -10,13 +10,15 @@ import {VError} from 'verror';
 import {Buildkite} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
 
+const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_MAX_JOBS_PER_BUILD = 500;
+
 const BuildkiteInstance = Buildkite.instance;
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-const DEFAULT_PAGE_SIZE = 500;
-const DEFAULT_MAX_JOBS_PER_BUILD = 500;
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug

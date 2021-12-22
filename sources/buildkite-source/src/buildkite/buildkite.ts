@@ -4,6 +4,7 @@ import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
 import {gql, GraphQLClient} from 'graphql-request';
+import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -11,8 +12,24 @@ import {Jobs, Pipelines} from '../streams';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_JOBS_PER_BUILD = 500;
+const URL = 'https://buildkite.com/';
 const REST_API_URL = 'https://api.buildkite.com/v2';
 const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
+
+const ORGANIZATIONS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'pipelines-query.gql'),
+  'utf8'
+);
+
+const PIPELINES_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'pipelines-query.gql'),
+  'utf8'
+);
+
+const PIPELINE_BUILDS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'pipeline-builds-query.gql'),
+  'utf8'
+);
 
 export interface Build {
   readonly uid: string;
@@ -181,15 +198,9 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
-  private readGQLFile(fileName: string): any {
-    return fs.readFileSync(`resources/${fileName}`, 'utf8');
-  }
+
   async *getOrganizations(): AsyncGenerator<Organization> {
-    const gqlFile = this.readGQLFile('organizations-query.gql');
-    const query = gql`
-      ${gqlFile}
-    `;
-    const data = await this.graphClient.request(query);
+    const data = await this.graphClient.request(ORGANIZATIONS_QUERY);
 
     for (const item of data.data.viewer.organizations.edges) {
       yield item.node;
@@ -207,11 +218,6 @@ export class Buildkite {
     organization: Organization,
     cutoff?: Date
   ): AsyncGenerator<Pipeline> {
-    const gqlFile = this.readGQLFile('pipelines-query.gql');
-    const query = gql`
-      ${gqlFile}
-    `;
-
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Pipeline>> => {
@@ -221,7 +227,7 @@ export class Buildkite {
         after: pageInfo.endCursor,
         createdAtFrom: cutoff,
       };
-      const data = await this.graphClient.request(query, variables);
+      const data = await this.graphClient.request(PIPELINES_QUERY, variables);
       return {
         data: data.data.organization.pipelines.edges.map((e) => {
           return e.node;
@@ -242,21 +248,20 @@ export class Buildkite {
     pipeline: Pipeline,
     cutoff?: Date
   ): AsyncGenerator<Build> {
-    const gqlFile = this.readGQLFile('pipelines-query.gql');
-    const query = gql`
-      ${gqlFile}
-    `;
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Build>> => {
       const variables = {
-        slug: pipeline.url.replace('https://buildkite.com/', ''),
+        slug: pipeline.url.replace(URL, ''),
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
         after: pageInfo.endCursor,
         createdAtFrom: cutoff,
       };
-      const data = await this.graphClient.request(query, variables);
+      const data = await this.graphClient.request(
+        PIPELINE_BUILDS_QUERY,
+        variables
+      );
       return {
         data: data.data.pipeline.builds.edges.map((e) => {
           e.jobs = e.jobs.edges.map((ee) => {
