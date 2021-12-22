@@ -220,41 +220,37 @@ export class Buildkite {
       }
     }
   }
-  // async *getOrganizations(): AsyncGenerator<Organization> {
-  //   const data = await this.graphClient.request(ORGANIZATIONS_QUERY);
-  //   for (const item of data.data.viewer.organizations.edges) {
-  //     yield item.node;
-  //   }
-  // }
+
   @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
   async *getPipelines(
     createdAtFrom?: Date,
     organizaiion?: string
   ): AsyncGenerator<Pipeline> {
-    const iterOrganizations = this.getOrganizations(organizaiion);
-    for await (const organization of iterOrganizations) {
-      yield* this.fetchOrganizationPipelines(organization, createdAtFrom);
+    const iterOrganizationItems = this.getOrganizations(organizaiion);
+    for await (const organizationItem of iterOrganizationItems) {
+      yield* this.fetchOrganizationPipelines(organizationItem, createdAtFrom);
     }
   }
   async *fetchOrganizationPipelines(
-    organization: Organization,
+    organizationItem: Organization,
     createdAtFrom?: Date
   ): AsyncGenerator<Pipeline> {
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Pipeline>> => {
       const variables = {
-        slug: organization.slug,
+        slug: organizationItem.slug,
         pageSize: this.pageSize,
-        after: pageInfo.endCursor,
+        after: pageInfo?.endCursor,
         createdAtFrom: createdAtFrom,
       };
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
+
       return {
-        data: data.data.organization.pipelines.edges.map((e) => {
+        data: data.organization.pipelines.edges.map((e) => {
           return e.node;
         }),
-        pageInfo: data.data.organization.pipelines.pageInfo,
+        pageInfo: data.organization.pipelines.pageInfo,
       };
     };
     yield* this.paginate(func);
@@ -280,7 +276,7 @@ export class Buildkite {
         slug: pipeline.url.replace(URL, ''),
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
-        after: pageInfo.endCursor,
+        after: pageInfo?.endCursor,
         createdAtFrom: createdAtFrom,
       };
       const data = await this.graphClient.request(
@@ -288,14 +284,14 @@ export class Buildkite {
         variables
       );
       return {
-        data: data.data.pipeline.builds.edges.map((e) => {
-          e.jobs = e.jobs.edges.map((ee) => {
-            ee.type = ee.__typename;
-            return ee;
+        data: data.pipeline.builds.edges.map((e) => {
+          e.node.jobs = e.node.jobs.edges.map((ee) => {
+            ee.node.type = ee.node.__typename;
+            return ee.node;
           });
           return e.node;
         }),
-        pageInfo: data.data.pipeline.builds.pageInfo,
+        pageInfo: data.pipeline.builds.pageInfo,
       };
     };
     yield* this.paginate(func);
