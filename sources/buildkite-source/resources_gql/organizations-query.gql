@@ -1,0 +1,14 @@
+ query organizationsQuery{
+   viewer {
+     organizations
+    {
+       edges { 
+         node {
+           id
+           name
+           slug
+         }
+      } 
+     }
+   }
+ }

@@ -17,17 +17,17 @@ const REST_API_URL = 'https://api.buildkite.com/v2';
 const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
 
 const ORGANIZATIONS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'organizations-query.gql'),
+  path.join(__dirname, '../..', 'resources_gql', 'organizations-query.gql'),
   'utf8'
 );
 
 const PIPELINES_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'pipelines-query.gql'),
+  path.join(__dirname, '../..', 'resources_gql', 'pipelines-query.gql'),
   'utf8'
 );
 
 const PIPELINE_BUILDS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'pipeline-builds-query.gql'),
+  path.join(__dirname, '../..', 'resources_gql', 'pipeline-builds-query.gql'),
   'utf8'
 );
 
