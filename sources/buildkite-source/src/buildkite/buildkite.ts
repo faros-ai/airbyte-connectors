@@ -54,9 +54,18 @@ export interface Job {
   readonly uuid: string;
   readonly label?: string;
   readonly state: string;
+
   readonly createdAt?: Date;
   readonly startedAt?: Date;
   readonly finishedAt?: Date;
+
+  readonly triggered?: {
+    startedAt?: Date;
+    createdAt?: Date;
+    finishedAt?: Date;
+  };
+  readonly unblockedAt?: Date;
+
   readonly url?: string;
   readonly command: string;
 }

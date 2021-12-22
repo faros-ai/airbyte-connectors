@@ -24,6 +24,26 @@
         "startedAt": {
             "type": "string"
         },
+        "triggered":
+        {
+            "type": ["object","null"],
+            "additionalProperties": true,
+            "properties": {
+              "createdAt": {
+                "type": "string"
+              },
+              "startedAt": {
+                "type": "string"
+              },
+              "finishedAt": {
+                "type": "string"
+              }
+            }
+        },
+        "unblockedAt": 
+        {
+            "type": "string"
+        },
         "url": {
             "type": "string"
         },
