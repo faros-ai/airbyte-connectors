@@ -31,6 +31,11 @@ const PIPELINE_BUILDS_QUERY = fs.readFileSync(
   'utf8'
 );
 
+export interface Organization {
+  readonly id: string;
+  readonly slug: string;
+  readonly name: string;
+}
 export interface Build {
   readonly uid: string;
   readonly number: number;
@@ -42,8 +47,8 @@ export interface Build {
   readonly commit: string;
   readonly jobs: Array<Job>;
 }
-// Jobs
 export interface Job {
+  readonly type: string;
   readonly uuid: string;
   readonly label?: string;
   readonly state: string;
@@ -52,11 +57,6 @@ export interface Job {
   readonly finishedAt?: Date;
   readonly url?: string;
   readonly command: string;
-}
-export interface Organization {
-  readonly id: string;
-  readonly slug: string;
-  readonly name: string;
 }
 
 export interface Pipeline {
@@ -265,6 +265,7 @@ export class Buildkite {
       return {
         data: data.data.pipeline.builds.edges.map((e) => {
           e.jobs = e.jobs.edges.map((ee) => {
+            ee.type = ee.__typename;
             return ee;
           });
           return e.node;

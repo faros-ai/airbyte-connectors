@@ -16,6 +16,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
         model: 'ims_Job',
         record: {
           uid: job.uuid,
+          type: job.type,
           label: job.label,
           createdAt: job.createdAt,
           startedAt: job.startedAt,

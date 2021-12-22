@@ -28,6 +28,7 @@ export interface Build {
   readonly jobs: Array<Job>;
 }
 export interface Job {
+  readonly type: string;
   readonly uuid: string;
   readonly label?: string;
   readonly state: string;

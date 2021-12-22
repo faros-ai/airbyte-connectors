@@ -1,5 +1,6 @@
 [
     {
+        "type":"JobTypeCommand",
         "uuid": "443f71ef-e264-4051-a062-e6f2b4e91170",
         "label": "",
         "state": "SCHEDULED",
@@ -10,6 +11,7 @@
         "command": ""
     },
     {
+        "type":"JobTypeCommand",
         "uuid": "109382d0-4ef0-498c-8d56-cd58478b464e",
         "label": "",
         "state": "SCHEDULED",
