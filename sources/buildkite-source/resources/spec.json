@@ -14,6 +14,18 @@
         "title": "Token",
         "description": "To create token go to https://buildkite.com/user/api-access-tokens",
         "airbyte_secret": true
+      },
+      "page_size": {
+        "type": "number",
+        "title": "Page Size",
+        "description": "",
+        "airbyte_secret": false
+      },
+      "max_jobs_per_build": {
+        "type": "number",
+        "title": "Max Jobs Per Build",
+        "description": "",
+        "airbyte_secret": false
       }
     }
   }
