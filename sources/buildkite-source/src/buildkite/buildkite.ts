@@ -125,8 +125,8 @@ export class Buildkite {
   constructor(
     private readonly graphClient: GraphQLClient,
     private readonly restClient: AxiosInstance,
-    private readonly pageSize: number,
-    private readonly maxJobsPerBuild: number
+    private readonly pageSize?: number,
+    private readonly maxJobsPerBuild?: number
   ) {}
 
   static instance(config: BuildkiteConfig, logger: AirbyteLogger): Buildkite {
@@ -209,7 +209,6 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
-
   async *getOrganizations(organizaiion?: string): AsyncGenerator<Organization> {
     if (organizaiion) {
       const res = await this.restClient.get(`/organizations/${organizaiion}`);
@@ -237,7 +236,6 @@ export class Buildkite {
       yield* this.fetchOrganizationPipelines(organization, createdAtFrom);
     }
   }
-
   async *fetchOrganizationPipelines(
     organization: Organization,
     createdAtFrom?: Date

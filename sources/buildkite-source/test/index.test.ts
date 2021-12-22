@@ -10,9 +10,6 @@ import {VError} from 'verror';
 import {Buildkite} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
 
-const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_MAX_JOBS_PER_BUILD = 500;
-
 const BuildkiteInstance = Buildkite.instance;
 
 function readTestResourceFile(fileName: string): any {
@@ -40,9 +37,7 @@ describe('index', () => {
     Buildkite.instance = jest.fn().mockImplementation(async () => {
       return new Buildkite(
         {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -55,9 +50,7 @@ describe('index', () => {
     Buildkite.instance = jest.fn().mockImplementation(async () => {
       return new Buildkite(
         {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -90,9 +83,7 @@ describe('index', () => {
           get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
-        } as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        } as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -122,9 +113,7 @@ describe('index', () => {
           get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
-        } as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        } as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -154,9 +143,7 @@ describe('index', () => {
           get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
-        } as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        } as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -186,9 +173,7 @@ describe('index', () => {
           get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
-        } as any,
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_JOBS_PER_BUILD
+        } as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
