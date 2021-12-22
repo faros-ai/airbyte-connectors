@@ -15,8 +15,8 @@ const BuildkiteInstance = Buildkite.instance;
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-const DEFAULT_PAGE_SIZE = 1000;
-const DEFAULT_MAX_JOBS_PER_BUILD = 1000;
+const DEFAULT_PAGE_SIZE = 500;
+const DEFAULT_MAX_JOBS_PER_BUILD = 500;
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -74,18 +74,18 @@ describe('index', () => {
   });
 
   test('streams - organizations, use full_refresh sync mode', async () => {
-    const fnOrganizedFunc = jest.fn();
+    const fnFunc = jest.fn();
 
     const fileName = 'organizations.json';
     Buildkite.instance = jest.fn().mockImplementation(() => {
       return new Buildkite(
         {
-          get: fnOrganizedFunc.mockResolvedValue({
+          get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
         } as any,
         {
-          get: fnOrganizedFunc.mockResolvedValue({
+          get: fnFunc.mockResolvedValue({
             data: {data: readTestResourceFile(fileName)},
           }),
         } as any,
@@ -95,15 +95,109 @@ describe('index', () => {
     });
     const source = new sut.BuildkiteSource(logger);
     const streams = source.streams({});
-    const organizationsStream = streams[0];
-    const organizationsIter = organizationsStream.readRecords(
-      SyncMode.FULL_REFRESH
-    );
-    const organizations = [];
-    for await (const organization of organizationsIter) {
-      organizations.push(organization);
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
     }
-    expect(fnOrganizedFunc).toHaveBeenCalledTimes(1);
-    expect(organizations).toStrictEqual(readTestResourceFile(fileName));
+    expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
+
+  test('streams - pinelines, use full_refresh sync mode', async () => {
+    const fnFunc = jest.fn();
+
+    const fileName = 'pinelines.json';
+    Buildkite.instance = jest.fn().mockImplementation(() => {
+      return new Buildkite(
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams({});
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
+
+  test('streams - builds, use full_refresh sync mode', async () => {
+    const fnFunc = jest.fn();
+
+    const fileName = 'builds.json';
+    Buildkite.instance = jest.fn().mockImplementation(() => {
+      return new Buildkite(
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams({});
+    const stream = streams[2];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
+
+  test('streams - jobs, use full_refresh sync mode', async () => {
+    const fnFunc = jest.fn();
+
+    const fileName = 'jobs.json';
+    Buildkite.instance = jest.fn().mockImplementation(() => {
+      return new Buildkite(
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        {
+          get: fnFunc.mockResolvedValue({
+            data: {data: readTestResourceFile(fileName)},
+          }),
+        } as any,
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_JOBS_PER_BUILD
+      );
+    });
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams({});
+    const stream = streams[3];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
 });

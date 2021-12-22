@@ -259,6 +259,9 @@ export class Buildkite {
       const data = await this.graphClient.request(query, variables);
       return {
         data: data.data.pipeline.builds.edges.map((e) => {
+          e.jobs = e.jobs.edges.map((ee) => {
+            return ee;
+          });
           return e.node;
         }),
         pageInfo: data.data.pipeline.builds.pageInfo,
