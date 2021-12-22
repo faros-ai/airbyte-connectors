@@ -210,10 +210,15 @@ export class Buildkite {
     } while (fetchNextFunc);
   }
 
-  async *getOrganizations(): AsyncGenerator<Organization> {
-    const res = await this.restClient.get<Organization[]>('organizations');
-    for (const item of res.data) {
-      yield item;
+  async *getOrganizations(organizaiion?: string): AsyncGenerator<Organization> {
+    if (organizaiion) {
+      const res = await this.restClient.get(`/organizations/${organizaiion}`);
+      yield res.data;
+    } else {
+      const res = await this.restClient.get<Organization[]>('organizations');
+      for (const item of res.data) {
+        yield item;
+      }
     }
   }
   // async *getOrganizations(): AsyncGenerator<Organization> {
@@ -224,8 +229,11 @@ export class Buildkite {
   //   }
   // }
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
-  async *getPipelines(cutoff?: Date): AsyncGenerator<Pipeline> {
-    const iterOrganizations = this.getOrganizations();
+  async *getPipelines(
+    cutoff?: Date,
+    organizaiion?: string
+  ): AsyncGenerator<Pipeline> {
+    const iterOrganizations = this.getOrganizations(organizaiion);
     for await (const organization of iterOrganizations) {
       yield* this.fetchOrganizationPipelines(organization, cutoff);
     }
@@ -254,8 +262,11 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getBuilds(cutoff?: Date): AsyncGenerator<Build> {
-    const iterPipilines = this.getPipelines();
+  async *getBuilds(
+    cutoff?: Date,
+    organizaiion?: string
+  ): AsyncGenerator<Build> {
+    const iterPipilines = this.getPipelines(cutoff, organizaiion);
     for await (const pipeline of iterPipilines) {
       yield* this.fetchPipelineBuilds(pipeline, cutoff);
     }
@@ -292,8 +303,8 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getJobs(): AsyncGenerator<Job> {
-    const iterBuilds = this.getBuilds();
+  async *getJobs(cutoff?: Date, organizaiion?: string): AsyncGenerator<Job> {
+    const iterBuilds = this.getBuilds(cutoff, organizaiion);
     for await (const build of iterBuilds) {
       for await (const job of build.jobs) {
         yield job;
