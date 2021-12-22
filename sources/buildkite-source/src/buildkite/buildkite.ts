@@ -17,7 +17,7 @@ const REST_API_URL = 'https://api.buildkite.com/v2';
 const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
 
 const ORGANIZATIONS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'pipelines-query.gql'),
+  path.join(__dirname, '..', 'resources', 'organizations-query.gql'),
   'utf8'
 );
 
