@@ -27,38 +27,40 @@ describe('index', () => {
   beforeEach(() => {
     Buildkite.instance = BuildkiteInstance;
   });
-  // test('spec', async () => {
-  //   const source = new sut.BuildkiteSource(logger);
-  //   await expect(source.spec()).resolves.toStrictEqual(
-  //     new AirbyteSpec(readTestResourceFile('spec.json'))
-  //   );
-  // });
-  // test('check connection', async () => {
-  //   // Buildkite.instance = jest.fn().mockImplementation(async () => {
-  //   //   return new Buildkite(
-  //   //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-  //   //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
-  //   //   );
-  //   // });
-  //   const source = new sut.BuildkiteSource(logger);
-  //   await expect(
-  //     source.checkConnection({token: '87c0cd3efa703a3c1d03828290a93a79d1853c54'})
-  //   ).resolves.toStrictEqual([true, undefined]);
-  // });
+  test('spec', async () => {
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
+      new AirbyteSpec(readTestResourceFile('spec.json'))
+    );
+  });
+  test('check connection', async () => {
+    // Buildkite.instance = jest.fn().mockImplementation(async () => {
+    //   return new Buildkite(
+    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
+    //   );
+    // });
+    const source = new sut.BuildkiteSource(logger);
+    await expect(
+      source.checkConnection({
+        token: '87c0cd3efa703a3c1d03828290a93a79d1853c54',
+      })
+    ).resolves.toStrictEqual([true, undefined]);
+  });
 
-  // test('check connection - incorrect token', async () => {
-  //   // Buildkite.instance = jest.fn().mockImplementation(async () => {
-  //   //   return new Buildkite(
-  //   //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-  //   //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
-  //   //   );
-  //   // });
-  //   const source = new sut.BuildkiteSource(logger);
-  //   await expect(source.checkConnection({})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('Please verify your token are correct. Error: some error'),
-  //   ]);
-  // });
+  test('check connection - incorrect token', async () => {
+    // Buildkite.instance = jest.fn().mockImplementation(async () => {
+    //   return new Buildkite(
+    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
+    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
+    //   );
+    // });
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.checkConnection({})).resolves.toStrictEqual([
+      false,
+      new VError('Please verify your token are correct. Error: some error'),
+    ]);
+  });
 
   // test('check connection - incorrect variables', async () => {
   //   const source = new sut.BuildkiteSource(logger);
@@ -68,36 +70,36 @@ describe('index', () => {
   //   ]);
   // });
 
-  // test('streams - organizations, use full_refresh sync mode', async () => {
-  //   const fnFunc = jest.fn();
+  test('streams - organizations, use full_refresh sync mode', async () => {
+    const fnFunc = jest.fn();
 
-  //   const fileName = 'organizations.json';
-  //   // Buildkite.instance = jest.fn().mockImplementation(() => {
-  //   //   return new Buildkite(
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any,
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any
-  //   //   );
-  //   // });
-  //   const source = new sut.BuildkiteSource(logger);
-  //   const streams = source.streams({});
-  //   const stream = streams[0];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //     console.log(item);
-  //   }
-  //   //expect(fnFunc).toHaveBeenCalledTimes(1);
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+    const fileName = 'organizations.json';
+    // Buildkite.instance = jest.fn().mockImplementation(() => {
+    //   return new Buildkite(
+    //     {
+    //       get: fnFunc.mockResolvedValue({
+    //         data: {data: readTestResourceFile(fileName)},
+    //       }),
+    //     } as any,
+    //     {
+    //       get: fnFunc.mockResolvedValue({
+    //         data: {data: readTestResourceFile(fileName)},
+    //       }),
+    //     } as any
+    //   );
+    // });
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams({});
+    const stream = streams[0];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+      console.log(item);
+    }
+    //expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
 
   // test('streams - pipelines, use full_refresh sync mode', async () => {
   //   const fnFunc = jest.fn();
