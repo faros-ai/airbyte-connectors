@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BuildkiteConverter, Job} from './common';
@@ -11,6 +12,14 @@ export class BuildkiteBuilds extends BuildkiteConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
+
+    const createdAt = Utils.toDate(job.createdAt);
+    const startedAt = Utils.toDate(job.startedAt);
+    const finishedAt = Utils.toDate(job.finishedAt);
+    const triggeredCreatedAt = Utils.toDate(job.triggered?.createdAt);
+    const triggeredStartedAt = Utils.toDate(job.triggered?.startedAt);
+    const triggeredFinishedAt = Utils.toDate(job.triggered?.finishedAt);
+    const unblockedAt = Utils.toDate(job.unblockedAt);
     return [
       {
         model: 'ims_Job',
@@ -18,13 +27,13 @@ export class BuildkiteBuilds extends BuildkiteConverter {
           uid: job.uuid,
           type: job.type,
           label: job.label,
-          createdAt: job.createdAt,
-          startedAt: job.startedAt,
-          finishedAt: job.finishedAt,
-          triggeredCreatedAt: job.triggered?.createdAt,
-          triggeredStartedAt: job.triggered?.startedAt,
-          triggeredFinishedAt: job.triggered?.finishedAt,
-          unblockedAt: job.unblockedAt,
+          createdAt,
+          startedAt,
+          finishedAt,
+          triggeredCreatedAt,
+          triggeredStartedAt,
+          triggeredFinishedAt,
+          unblockedAt,
           state: job.state,
           url: job.url,
           command: job.command,
