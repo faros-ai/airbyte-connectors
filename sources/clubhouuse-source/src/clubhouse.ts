@@ -200,25 +200,26 @@ export class Clubhouse {
     }
   }
   async *getStories(updateRange: [Date, Date]): AsyncGenerator<Story> {
+    const iterProjects = this.getProjects();
+    const [from, to] = updateRange;
+    const rangeQuery = Clubhouse.updatedBetweenQuery(updateRange);
+    for await (const item of iterProjects) {
+      return Clubhouse.iterate<Story>(
+        (url) =>
+          this.request(
+            url ||
+              `/api/${this.cfg.version}/search/stories?query=project:${item.id} ${rangeQuery}`
+          ),
+        (item) => {
+          // We apply additional filtering since Clubhouse API
+          // only supports filtering by dates, e.g YYYY-MM-DD
+          if (!item.updated_at) return false;
+          const updatedAt = Utils.toDate(item.updated_at);
+          return updatedAt && updatedAt >= from && updatedAt < to;
+        }
+      );
+    }
     yield null;
-    // const iterProjects = this.getProjects();
-    // for await (const item of iterProjects) {
-    //     const [from, to] = updateRange;
-    //     const rangeQuery = Clubhouse.updatedBetweenQuery(updateRange);
-    //     return Clubhouse.iterate<Story>(
-    //       (url) =>
-    //         this.request(
-    //           url || `/api/${this.cfg.version}/search/stories?query=project:${item.id} ${rangeQuery}`
-    //         ),
-    //       (item) => {
-    //         // We apply additional filtering since Clubhouse API
-    //         // only supports filtering by dates, e.g YYYY-MM-DD
-    //         if (!item.updated_at) return false;
-    //         const updatedAt = Utils.toDate(item.updated_at);
-    //         return updatedAt && updatedAt >= from && updatedAt < to;
-    //       }
-    //     );
-    // }
   }
   async *getMembers(): AsyncGenerator<Member> {
     const list = await this.client.listMembers();
