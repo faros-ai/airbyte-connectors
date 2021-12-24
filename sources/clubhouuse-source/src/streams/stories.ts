@@ -32,7 +32,7 @@ export class Stories extends AirbyteStreamBase {
     updateRange?: [Date, Date]
   ): AsyncGenerator<Story> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
-    const clubhouse = await new Clubhouse(this.config);
+    const clubhouse = await Clubhouse.instance(this.config);
     yield* clubhouse.getStories(updateRange);
   }
 }

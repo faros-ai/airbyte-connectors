@@ -17,7 +17,7 @@ import {VError} from 'verror';
 
 export interface ClubhouseConfig {
   readonly token: string;
-  readonly baseUrl: string;
+  readonly base_url: string;
   readonly version: string;
 }
 export declare type StoryType = 'bug' | 'chore' | 'feature';
@@ -78,11 +78,22 @@ export interface Repository {
   url: string;
 }
 export class Clubhouse {
+  private static clubhouse: Clubhouse = null;
   private readonly cfg: ClubhouseConfig;
   private readonly client: Client<RequestInfo, Response>;
   constructor(cfg: ClubhouseConfig) {
     this.cfg = cfg;
     this.client = Client.create(cfg.token);
+  }
+
+  static async instance(config: ClubhouseConfig): Promise<Clubhouse> {
+    if (Clubhouse.clubhouse) return Clubhouse.clubhouse;
+
+    if (!config.token) {
+      throw new VError('token must be a not empty string');
+    }
+    Clubhouse.clubhouse = new Clubhouse(config);
+    return Clubhouse.clubhouse;
   }
 
   private async request<T>(
@@ -91,7 +102,7 @@ export class Clubhouse {
     payload?: any,
     method: Method = 'GET'
   ): Promise<T> {
-    const url = `${this.cfg.baseUrl}${path}`;
+    const url = `${this.cfg.base_url}${path}`;
     const httpsAgent = new https.Agent();
     try {
       const res = await axios.request({

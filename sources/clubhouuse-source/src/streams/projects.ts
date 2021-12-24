@@ -31,7 +31,7 @@ export class Projects extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Project> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
-    const clubhouse = await new Clubhouse(this.config);
+    const clubhouse = await Clubhouse.instance(this.config);
     yield* clubhouse.getProjects();
   }
 }

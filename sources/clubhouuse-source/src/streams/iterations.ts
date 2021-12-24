@@ -31,7 +31,7 @@ export class Interations extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Iteration> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
-    const clubhouse = await new Clubhouse(this.config);
+    const clubhouse = await Clubhouse.instance(this.config);
     yield* clubhouse.getIterations();
   }
 }

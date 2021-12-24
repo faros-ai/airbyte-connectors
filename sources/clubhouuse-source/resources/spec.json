@@ -15,12 +15,15 @@
         "type": "base_url",
         "title": "Clubhouse Server URL",
         "examples": [
-          "https://api.app.shortcut.com/api/v3"
+          "https://api.app.shortcut.com"
         ]
       },
       "version": {
         "type": "string",
-        "title": "Clubhouse version"
+        "title": "Clubhouse version",
+        "examples": [
+          "v3"
+        ]
       },
       "token": {
         "type": "string",
