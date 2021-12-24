@@ -210,28 +210,65 @@ export class Clubhouse {
       yield epic;
     }
   }
-  async *getStories(updateRange: [Date, Date]): AsyncGenerator<Story> {
+  // async *getStories(updateRange: [Date, Date]): AsyncGenerator<Story> {
+  //   const iterProjects = this.getProjects();
+  //   const [from, to] = updateRange;
+  //   const rangeQuery = Clubhouse.updatedBetweenQuery(updateRange);
+  //   for await (const item of iterProjects) {
+  //     return Clubhouse.iterate<Story>(
+  //       (url) =>
+  //         this.request(
+  //           url ||
+  //             `/api/${this.cfg.version}/search/stories?query=project:${item.id} ${rangeQuery}`
+  //         ),
+  //       (item) => {
+  //         // We apply additional filtering since Clubhouse API
+  //         // only supports filtering by dates, e.g YYYY-MM-DD
+  //         if (!item.updated_at) return false;
+  //         const updatedAt = Utils.toDate(item.updated_at);
+  //         return updatedAt && updatedAt >= from && updatedAt < to;
+  //       }
+  //     );
+  //   }
+  //   yield null;
+  // }
+
+  async *getStories(): AsyncGenerator<Story> {
     const iterProjects = this.getProjects();
-    const [from, to] = updateRange;
-    const rangeQuery = Clubhouse.updatedBetweenQuery(updateRange);
+    const method = 'GET';
     for await (const item of iterProjects) {
-      return Clubhouse.iterate<Story>(
-        (url) =>
-          this.request(
-            url ||
-              `/api/${this.cfg.version}/search/stories?query=project:${item.id} ${rangeQuery}`
-          ),
-        (item) => {
-          // We apply additional filtering since Clubhouse API
-          // only supports filtering by dates, e.g YYYY-MM-DD
-          if (!item.updated_at) return false;
-          const updatedAt = Utils.toDate(item.updated_at);
-          return updatedAt && updatedAt >= from && updatedAt < to;
+      const path = `/api/${this.cfg.version}/search/stories?query=project:${item.id}`;
+      const url = `${this.cfg.base_url}${path}`;
+      //const httpsAgent = new https.Agent();
+      try {
+        const res = await axios.request({
+          method,
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Clubhouse-Token': this.cfg.token,
+          },
+          //httpsAgent,
+        });
+
+        if (res.status === 200) {
+          for (const item of res.data.data) {
+            yield item as Story;
+          }
+        } else {
+          throw new VError(
+            'Request to %s failed. Unexpected response: %s - %s',
+            url,
+            res.status,
+            JSON.stringify(res.data)
+          );
         }
-      );
+      } catch (err) {
+        throw new VError('Request to %s %s failed: %s', method, url);
+      }
     }
-    yield null;
   }
+
   async *getMembers(): AsyncGenerator<Member> {
     const list = await this.client.listMembers();
     for (const item of list) {
