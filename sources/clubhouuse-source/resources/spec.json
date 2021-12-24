@@ -11,9 +11,9 @@
     ],
     "additionalProperties": false,
     "properties": {
-      "server_url": {
+      "base_url": {
         "type": "base_url",
-        "title": "Clubhouse Server URL",
+        "title": "Clubhouse Base URL",
         "examples": [
           "https://api.app.shortcut.com"
         ]
