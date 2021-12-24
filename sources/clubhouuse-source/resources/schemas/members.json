@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "role": {
+        "type": "string"
+      },
+      "entity_type": {
+        "type": "string"
+      },
+      "disabled": {
+        "type": "boolean"
+      },
+      "state": {
+        "type": "string"
+      },
+      "updated_at": {
+        "type": "string"
+      },
+      "created_without_invite": {
+        "type": "boolean"
+      },
+      "group_ids": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "id": {
+        "type": "string"
+      },
+      "profile": {
+        "type": "object",
+        "properties": {
+          "entity_type": {
+            "type": "string"
+          },
+          "deactivated": {
+            "type": "boolean"
+          },
+          "two_factor_auth_activated": {
+            "type": "boolean"
+          },
+          "mention_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "gravatar_hash": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "display_icon": {
+            "type": "null"
+          },
+          "email_address": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "deactivated",
+          "two_factor_auth_activated",
+          "mention_name",
+          "name",
+          "gravatar_hash",
+          "id",
+          "display_icon",
+          "email_address"
+        ]
+      },
+      "created_at": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "role",
+      "entity_type",
+      "disabled",
+      "state",
+      "updated_at",
+      "created_without_invite",
+      "group_ids",
+      "id",
+      "profile",
+      "created_at"
+    ]
+  }

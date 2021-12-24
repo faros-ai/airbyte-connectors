@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "app_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "days_to_thermometer": {
+      "type": "integer"
+    },
+    "color": {
+      "type": "string"
+    },
+    "workflow_id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "follower_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "external_id": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "show_thermometer": {
+      "type": "boolean"
+    },
+    "team_id": {
+      "type": "integer"
+    },
+    "iteration_length": {
+      "type": "integer"
+    },
+    "abbreviation": {
+      "type": "string"
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "num_stories": {
+          "type": "integer"
+        },
+        "num_points": {
+          "type": "integer"
+        },
+        "num_related_documents": {
+          "type": "integer"
+        }
+      } 
+    },
+    "created_at": {
+      "type": "string"
+    }
+  }
+}

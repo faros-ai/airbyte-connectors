@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "app_url": {
+      "type": "string"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {}
+    },
+    "mention_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "member_mention_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "name": {
+      "type": "string"
+    },
+    "label_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "group_mention_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "end_date": {
+      "type": "string"
+    },
+    "follower_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "group_ids": {
+      "type": "array",
+      "items": {}
+    },
+    "start_date": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "num_points_done": {
+          "type": "integer"
+        },
+        "num_related_documents": {
+          "type": "integer"
+        },
+        "num_stories_unstarted": {
+          "type": "integer"
+        },
+        "num_points_started": {
+          "type": "integer"
+        },
+        "num_points_unstarted": {
+          "type": "integer"
+        },
+        "num_stories_started": {
+          "type": "integer"
+        },
+        "num_stories_unestimated": {
+          "type": "integer"
+        },
+        "num_points": {
+          "type": "integer"
+        },
+        "num_stories_done": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "num_points_done",
+        "num_related_documents",
+        "num_stories_unstarted",
+        "num_points_started",
+        "num_points_unstarted",
+        "num_stories_started",
+        "num_stories_unestimated",
+        "num_points",
+        "num_stories_done"
+      ]
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "app_url",
+    "entity_type",
+    "labels",
+    "mention_ids",
+    "member_mention_ids",
+    "name",
+    "label_ids",
+    "updated_at",
+    "group_mention_ids",
+    "end_date",
+    "follower_ids",
+    "group_ids",
+    "start_date",
+    "status",
+    "id",
+    "stats",
+    "created_at"
+  ]
+}

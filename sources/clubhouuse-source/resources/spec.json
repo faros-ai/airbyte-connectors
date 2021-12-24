@@ -1,0 +1,32 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "clubhouse Spec",
+    "type": "object",
+    "required": [
+      "base_url",
+      "version",
+      "token"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "server_url": {
+        "type": "base_url",
+        "title": "Clubhouse Server URL",
+        "examples": [
+          "https://api.app.shortcut.com/api/v3"
+        ]
+      },
+      "version": {
+        "type": "string",
+        "title": "Clubhouse version"
+      },
+      "token": {
+        "type": "string",
+        "title": "Clubhouse Token",
+        "airbyte_secret": true
+      }
+    }
+  }
+}
