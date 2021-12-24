@@ -247,7 +247,7 @@ export class Buildkite {
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
 
       return {
-        data: data.organization.pipelines.edges.map((e) => {
+        data: data.organization.pipelines!.edges.map((e) => {
           return e.node;
         }),
         pageInfo: data.organization.pipelines.pageInfo,
@@ -284,8 +284,8 @@ export class Buildkite {
         variables
       );
       return {
-        data: data.pipeline.builds.edges.map((e) => {
-          e.node.jobs = e.node.jobs.edges.map((ee) => {
+        data: data.pipeline.builds!.edges.map((e) => {
+          e.node.jobs = e.node.jobs!.edges.map((ee) => {
             ee.node.type = ee.node.__typename;
             return ee.node;
           });
