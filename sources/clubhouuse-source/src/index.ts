@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Clubhouse,ClubhouseConfig} from './clubhouse';
+import {Clubhouse, ClubhouseConfig} from './clubhouse';
 import {
   Epics,
   Interations,
@@ -25,7 +25,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 /** Clubhouse source implementation. */
-class ClubhouseSource extends AirbyteSourceBase {
+export class ClubhouseSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
