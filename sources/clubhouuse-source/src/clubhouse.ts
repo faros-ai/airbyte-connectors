@@ -77,6 +77,9 @@ export interface Repository {
   updated_at: string | null;
   url: string;
 }
+const DEFAULT_STORIES_START_DATE = new Date(-8640000000000000);
+const DEFAULT_STORIES_END_DATE = new Date();
+
 export class Clubhouse {
   private static clubhouse: Clubhouse = null;
   private readonly cfg: ClubhouseConfig;
@@ -210,36 +213,18 @@ export class Clubhouse {
       yield epic;
     }
   }
-  // async *getStories(updateRange: [Date, Date]): AsyncGenerator<Story> {
-  //   const iterProjects = this.getProjects();
-  //   const [from, to] = updateRange;
-  //   const rangeQuery = Clubhouse.updatedBetweenQuery(updateRange);
-  //   for await (const item of iterProjects) {
-  //     return Clubhouse.iterate<Story>(
-  //       (url) =>
-  //         this.request(
-  //           url ||
-  //             `/api/${this.cfg.version}/search/stories?query=project:${item.id} ${rangeQuery}`
-  //         ),
-  //       (item) => {
-  //         // We apply additional filtering since Clubhouse API
-  //         // only supports filtering by dates, e.g YYYY-MM-DD
-  //         if (!item.updated_at) return false;
-  //         const updatedAt = Utils.toDate(item.updated_at);
-  //         return updatedAt && updatedAt >= from && updatedAt < to;
-  //       }
-  //     );
-  //   }
-  //   yield null;
-  // }
-
-  async *getStories(): AsyncGenerator<Story> {
+  async *getStories(updateRange?: [Date, Date]): AsyncGenerator<Story> {
+    let updateRangeUndefuned = true;
+    if (!updateRange) {
+      updateRangeUndefuned = false;
+      updateRange = [DEFAULT_STORIES_START_DATE, DEFAULT_STORIES_END_DATE];
+    }
+    const [from, to] = updateRange;
     const iterProjects = this.getProjects();
     const method = 'GET';
     for await (const item of iterProjects) {
       const path = `/api/${this.cfg.version}/search/stories?query=project:${item.id}`;
       const url = `${this.cfg.base_url}${path}`;
-      //const httpsAgent = new https.Agent();
       try {
         const res = await axios.request({
           method,
@@ -248,12 +233,20 @@ export class Clubhouse {
             'Content-Type': 'application/json',
             'Clubhouse-Token': this.cfg.token,
           },
-          //httpsAgent,
         });
-
         if (res.status === 200) {
           for (const item of res.data.data) {
-            yield item as Story;
+            const storyItem = item as Story;
+            if (storyItem.updated_at) {
+              const updatedAt = Utils.toDate(storyItem.updated_at);
+              if (updatedAt && updatedAt >= from && updatedAt < to) {
+                yield storyItem;
+              }
+            } else {
+              if (updateRangeUndefuned) {
+                yield storyItem;
+              }
+            }
           }
         } else {
           throw new VError(
@@ -268,7 +261,6 @@ export class Clubhouse {
       }
     }
   }
-
   async *getMembers(): AsyncGenerator<Member> {
     const list = await this.client.listMembers();
     for (const item of list) {
