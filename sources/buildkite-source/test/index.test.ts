@@ -2,12 +2,13 @@ import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
+  redactConfig,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {Buildkite} from '../src/buildkite/buildkite';
+import {Buildkite, BuildkiteConfig} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
 
 const BuildkiteInstance = Buildkite.instance;
@@ -15,7 +16,9 @@ const BuildkiteInstance = Buildkite.instance;
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-
+function readConfig(): BuildkiteConfig {
+  return readTestResourceFile('config.json') as BuildkiteConfig;
+}
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -27,6 +30,7 @@ describe('index', () => {
   beforeEach(() => {
     Buildkite.instance = BuildkiteInstance;
   });
+
   test('spec', async () => {
     const source = new sut.BuildkiteSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
@@ -34,27 +38,15 @@ describe('index', () => {
     );
   });
   test('check connection', async () => {
-    // Buildkite.instance = jest.fn().mockImplementation(async () => {
-    //   return new Buildkite(
-    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
-    //   );
-    // });
     const source = new sut.BuildkiteSource(logger);
     await expect(
       source.checkConnection({
-        token: '87c0cd3efa703a3c1d03828290a93a79d1853c54',
+        token: readConfig().token,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
 
   test('check connection - incorrect token', async () => {
-    // Buildkite.instance = jest.fn().mockImplementation(async () => {
-    //   return new Buildkite(
-    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any,
-    //     {get: jest.fn().mockResolvedValue({data: {organizations: []}})} as any
-    //   );
-    // });
     const source = new sut.BuildkiteSource(logger);
     await expect(source.checkConnection({})).resolves.toStrictEqual([
       false,
@@ -62,125 +54,68 @@ describe('index', () => {
     ]);
   });
 
-  // test('check connection - incorrect variables', async () => {
-  //   const source = new sut.BuildkiteSource(logger);
-  //   await expect(source.checkConnection({})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('token must be a not empty string'),
-  //   ]);
-  // });
+  test('check connection - incorrect variables', async () => {
+    const source = new sut.BuildkiteSource(logger);
+    await expect(source.checkConnection({})).resolves.toStrictEqual([
+      false,
+      new VError('token must be a not empty string'),
+    ]);
+  });
 
   test('streams - organizations, use full_refresh sync mode', async () => {
-    const fnFunc = jest.fn();
+    //const fnFunc = jest.fn();
 
     const fileName = 'organizations.json';
-    // Buildkite.instance = jest.fn().mockImplementation(() => {
-    //   return new Buildkite(
-    //     {
-    //       get: fnFunc.mockResolvedValue({
-    //         data: {data: readTestResourceFile(fileName)},
-    //       }),
-    //     } as any,
-    //     {
-    //       get: fnFunc.mockResolvedValue({
-    //         data: {data: readTestResourceFile(fileName)},
-    //       }),
-    //     } as any
-    //   );
-    // });
     const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(readConfig());
     const stream = streams[0];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of itemIter) {
       items.push(item);
-      console.log(item);
     }
     //expect(fnFunc).toHaveBeenCalledTimes(1);
     expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
 
-  // test('streams - pipelines, use full_refresh sync mode', async () => {
-  //   const fnFunc = jest.fn();
-
-  //   const fileName = 'pipelines.json';
-  //   // Buildkite.instance = jest.fn().mockImplementation(() => {
-  //   //   return new Buildkite(
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any,
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any
-  //   //   );
-  //   // });
-  //   const source = new sut.BuildkiteSource(logger);
-  //   const streams = source.streams({});
-  //   const stream = streams[1];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   //xpect(fnFunc).toHaveBeenCalledTimes(1);
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
-
-  // test('streams - builds, use full_refresh sync mode', async () => {
-  //   const fnFunc = jest.fn();
-
-  //   const fileName = 'builds.json';
-  //   // Buildkite.instance = jest.fn().mockImplementation(() => {
-  //   //   return new Buildkite(
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any,
-  //   //     {
-  //   //       get: fnFunc.mockResolvedValue({
-  //   //         data: {data: readTestResourceFile(fileName)},
-  //   //       }),
-  //   //     } as any
-  //   //   );
-  //   // });
-  //   const source = new sut.BuildkiteSource(logger);
-  //   const streams = source.streams({});
-  //   const stream = streams[2];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   //expect(fnFunc).toHaveBeenCalledTimes(1);
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
-
-  test('streams - jobs, use full_refresh sync mode', async () => {
+  test('streams - pipelines, use full_refresh sync mode', async () => {
     const fnFunc = jest.fn();
 
-    const fileName = 'jobs.json';
-    // Buildkite.instance = jest.fn().mockImplementation(() => {
-    //   return new Buildkite(
-    //     {
-    //       get: fnFunc.mockResolvedValue({
-    //         data: {data: readTestResourceFile(fileName)},
-    //       }),
-    //     } as any,
-    //     {
-    //       get: fnFunc.mockResolvedValue({
-    //         data: {data: readTestResourceFile(fileName)},
-    //       }),
-    //     } as any
-    //   );
-    // });
+    const fileName = 'pipelines.json';
     const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(readConfig());
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    //xpect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
+
+  test('streams - builds, use full_refresh sync mode', async () => {
+    //const fnFunc = jest.fn();
+
+    const fileName = 'builds.json';
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams(readConfig());
+    const stream = streams[2];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    //expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
+
+  test('streams - jobs, use full_refresh sync mode', async () => {
+    //const fnFunc = jest.fn();
+
+    const fileName = 'jobs.json';
+    const source = new sut.BuildkiteSource(logger);
+    const streams = source.streams(readConfig());
     const stream = streams[3];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
