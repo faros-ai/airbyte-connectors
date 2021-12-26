@@ -237,13 +237,13 @@ export class Clubhouse {
         if (res.status === 200) {
           for (const item of res.data.data) {
             const storyItem = item as Story;
-            if (storyItem.updated_at) {
-              const updatedAt = Utils.toDate(storyItem.updated_at);
-              if (updatedAt && updatedAt >= from && updatedAt < to) {
+            if (!storyItem.updated_at) {
+              if (updateRangeUndefuned) {
                 yield storyItem;
               }
             } else {
-              if (updateRangeUndefuned) {
+              const updatedAt = Utils.toDate(storyItem.updated_at);
+              if (updatedAt && updatedAt >= from && updatedAt < to) {
                 yield storyItem;
               }
             }
