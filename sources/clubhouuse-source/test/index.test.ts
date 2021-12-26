@@ -47,8 +47,15 @@ describe('index', () => {
   });
 
   test('streams - projects, use full_refresh sync mode', async () => {
-    //const fnFunc = jest.fn();
     const fileName = 'projects.json';
+    const fnFunc = jest.fn();
+
+    Clubhouse.instance = jest.fn().mockImplementation(() => {
+      return new Clubhouse({
+        get: readConfig(),
+      } as any);
+    });
+
     const source = new sut.ClubhouseSource(logger);
     const streams = source.streams(readConfig());
     const stream = streams[0];
@@ -57,7 +64,7 @@ describe('index', () => {
     for await (const item of itemIter) {
       items.push(item);
     }
-    //expect(fnFunc).toHaveBeenCalledTimes(1);
+    expect(fnFunc).toHaveBeenCalledTimes(1);
     expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
 
@@ -73,18 +80,18 @@ describe('index', () => {
     }
     expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
-  // test('streams - epics, use full_refresh sync mode', async () => {
-  //   const fileName = 'epics.json';
-  //   const source = new sut.ClubhouseSource(logger);
-  //   const streams = source.streams(readConfig());
-  //   const stream = streams[2];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+  test('streams - epics, use full_refresh sync mode', async () => {
+    const fileName = 'epics.json';
+    const source = new sut.ClubhouseSource(logger);
+    const streams = source.streams(readConfig());
+    const stream = streams[2];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
   test('streams - stories, use full_refresh sync mode', async () => {
     const fileName = 'stories.json';
     const source = new sut.ClubhouseSource(logger);
@@ -109,16 +116,16 @@ describe('index', () => {
     }
     expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
-  // test('streams - repositories, use full_refresh sync mode', async () => {
-  //   const fileName = 'repositories.json';
-  //   const source = new sut.ClubhouseSource(logger);
-  //   const streams = source.streams(readConfig());
-  //   const stream = streams[5];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+  test('streams - repositories, use full_refresh sync mode', async () => {
+    const fileName = 'repositories.json';
+    const source = new sut.ClubhouseSource(logger);
+    const streams = source.streams(readConfig());
+    const stream = streams[5];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual(readTestResourceFile(fileName));
+  });
 });
