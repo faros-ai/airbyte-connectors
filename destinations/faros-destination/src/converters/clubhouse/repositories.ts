@@ -1,4 +1,4 @@
-import {Iteration} from 'clubhouse-lib';
+import {Repository} from 'clubhouse-lib';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -6,24 +6,24 @@ import {ClubhouseConverter} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_Iteration',
+    'ims_Repository',
   ];
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-    const iteration = record.record.data as Iteration;
+    const repository = record.record.data as Repository;
     return [
       {
-        model: 'ims_Iteration',
+        model: 'ims_Repository',
         record: {
-          uid: iteration.id,
-          name: iteration.name,
-          labels: iteration.labels,
-          end_date: iteration.end_date,
-          entity_type: iteration.entity_type,
-          description: iteration.description,
+          uid: repository.id,
+          full_name: repository.full_name,
+          name: repository.name,
+          type: repository.type,
+          url: repository.url,
           source,
         },
       },
