@@ -97,6 +97,7 @@ export interface BuildkiteConfig {
   readonly token: string;
   readonly page_size?: number;
   readonly max_jobs_per_build?: number;
+  readonly organization?: string;
 }
 interface PaginateResponse<T> {
   data: T[];
@@ -126,7 +127,8 @@ export class Buildkite {
     private readonly graphClient: GraphQLClient,
     private readonly restClient: AxiosInstance,
     private readonly pageSize?: number,
-    private readonly maxJobsPerBuild?: number
+    private readonly maxJobsPerBuild?: number,
+    private readonly organization?: string
   ) {}
 
   static instance(config: BuildkiteConfig, logger: AirbyteLogger): Buildkite {
@@ -152,7 +154,8 @@ export class Buildkite {
       graphClient,
       restClient,
       pageSize,
-      maxJobsPerBuild
+      maxJobsPerBuild,
+      config.organization
     );
     logger.debug('Created Buildkite instance');
     return Buildkite.buildkite;
@@ -208,9 +211,11 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
-  async *getOrganizations(organization?: string): AsyncGenerator<Organization> {
-    if (organization) {
-      const res = await this.restClient.get(`/organizations/${organization}`);
+  async *getOrganizations(): AsyncGenerator<Organization> {
+    if (this.organization) {
+      const res = await this.restClient.get(
+        `/organizations/${this.organization}`
+      );
       yield res.data;
     } else {
       const res = await this.restClient.get<Organization[]>('organizations');
@@ -220,11 +225,8 @@ export class Buildkite {
     }
   }
   @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
-  async *getPipelines(
-    createdAtFrom?: Date,
-    organization?: string
-  ): AsyncGenerator<Pipeline> {
-    const iterOrganizationItems = this.getOrganizations(organization);
+  async *getPipelines(createdAtFrom?: Date): AsyncGenerator<Pipeline> {
+    const iterOrganizationItems = this.getOrganizations();
     for await (const organizationItem of iterOrganizationItems) {
       yield* this.fetchOrganizationPipelines(organizationItem, createdAtFrom);
     }
