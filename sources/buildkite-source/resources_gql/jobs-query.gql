@@ -1,33 +1,10 @@
-query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $maxJobsPerBuild: Int!, $createdAtFrom: DateTime, $after: String) {
-  pipeline(slug: $slug) {
-      id
-      uuid
-      slug
-      name
-      url
-      description
-      repository {
-        url
-        provider {
-          name
-        }
-      }
-      builds(first: $pageSize, createdAtFrom: $createdAtFrom, after: $after) {
-        edges {
-          node {
-            uuid
-            message
-            number
-            createdAt
-            startedAt
-            finishedAt
-            state
-            url
-            commit
-            jobs(first: $maxJobsPerBuild) {
-              edges {
-                node {
-                  __typename
+query jobsQuery {
+  viewer {
+    jobs(first:500) { 
+       edges{
+        node
+        { 
+           __typename
                   ... on JobTypeCommand {
                     uuid
                     label
@@ -58,17 +35,12 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $maxJobsPerBuild: Int!, $
                       createdAt
                       finishedAt
                     }
-                  }
-                }
-              }
-            }
-          }
-          cursor
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
+                  } 
         }
       }
     }
-}
+    }
+  }
+ 
+
+ 

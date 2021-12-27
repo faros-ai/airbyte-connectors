@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
 import {gql, GraphQLClient} from 'graphql-request';
 import path from 'path';
+import {config} from 'process';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -12,22 +13,21 @@ import {Jobs, Pipelines} from '../streams';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_JOBS_PER_BUILD = 500;
-const URL = 'https://buildkite.com/';
 const REST_API_URL = 'https://api.buildkite.com/v2';
 const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
-
-const ORGANIZATIONS_QUERY = fs.readFileSync(
-  path.join(__dirname, '../..', 'resources_gql', 'organizations-query.gql'),
-  'utf8'
-);
 
 const PIPELINES_QUERY = fs.readFileSync(
   path.join(__dirname, '../..', 'resources_gql', 'pipelines-query.gql'),
   'utf8'
 );
 
-const PIPELINE_BUILDS_QUERY = fs.readFileSync(
-  path.join(__dirname, '../..', 'resources_gql', 'pipeline-builds-query.gql'),
+const BUILDS_QUERY = fs.readFileSync(
+  path.join(__dirname, '../..', 'resources_gql', 'builds-query.gql'),
+  'utf8'
+);
+
+const JOBS_QUERY = fs.readFileSync(
+  path.join(__dirname, '../..', 'resources_gql', 'jobs-query.gql'),
   'utf8'
 );
 
@@ -155,7 +155,6 @@ export class Buildkite {
       maxJobsPerBuild
     );
     logger.debug('Created Buildkite instance');
-
     return Buildkite.buildkite;
   }
   async checkConnection(): Promise<void> {
@@ -209,9 +208,9 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
-  async *getOrganizations(organizaiion?: string): AsyncGenerator<Organization> {
-    if (organizaiion) {
-      const res = await this.restClient.get(`/organizations/${organizaiion}`);
+  async *getOrganizations(organization?: string): AsyncGenerator<Organization> {
+    if (organization) {
+      const res = await this.restClient.get(`/organizations/${organization}`);
       yield res.data;
     } else {
       const res = await this.restClient.get<Organization[]>('organizations');
@@ -220,13 +219,12 @@ export class Buildkite {
       }
     }
   }
-
   @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
   async *getPipelines(
     createdAtFrom?: Date,
-    organizaiion?: string
+    organization?: string
   ): AsyncGenerator<Pipeline> {
-    const iterOrganizationItems = this.getOrganizations(organizaiion);
+    const iterOrganizationItems = this.getOrganizations(organization);
     for await (const organizationItem of iterOrganizationItems) {
       yield* this.fetchOrganizationPipelines(organizationItem, createdAtFrom);
     }
@@ -255,85 +253,25 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getBuilds(
-    createdAtFrom?: Date,
-    organizaiion?: string
-  ): AsyncGenerator<Build> {
-    const iterPipilines = this.getPipelines(createdAtFrom, organizaiion);
-    for await (const pipeline of iterPipilines) {
-      yield* this.fetchPipelineBuilds(pipeline, createdAtFrom);
-    }
-  }
-
-  async *fetchPipelineBuilds(
-    pipeline: Pipeline,
-    createdAtFrom?: Date
-  ): AsyncGenerator<Build> {
-    const func = async (
-      pageInfo?: PageInfo
-    ): Promise<PaginateResponse<Build>> => {
-      const variables = {
-        slug: pipeline.url.replace(URL, ''),
-        pageSize: this.pageSize,
-        maxJobsPerBuild: this.maxJobsPerBuild,
-        after: pageInfo?.endCursor,
-        createdAtFrom: createdAtFrom,
-      };
-      const data = await this.graphClient.request(
-        PIPELINE_BUILDS_QUERY,
-        variables
-      );
-      return {
-        data: data.pipeline.builds!.edges.map((e) => {
-          e.node.jobs = e.node.jobs!.edges.map((ee) => {
-            ee.node.type = ee.node.__typename;
-            return ee.node;
-          });
-          return e.node;
-        }),
-        pageInfo: data.pipeline.builds.pageInfo,
-      };
+  async *getBuilds(createdAtFrom?: Date): AsyncGenerator<Build> {
+    const variables = {
+      pageSize: this.pageSize,
+      maxJobsPerBuild: this.maxJobsPerBuild,
     };
-    yield* this.paginate(func);
-  }
-  async *getJobs(
-    createdAtFrom?: Date,
-    organizaiion?: string
-  ): AsyncGenerator<Job> {
-    const iterBuilds = this.getBuilds(createdAtFrom, organizaiion);
-    for await (const build of iterBuilds) {
-      for await (const job of build.jobs) {
-        yield job;
-      }
+    const data = await this.graphClient.request(BUILDS_QUERY, variables);
+    for (const item of data.viewer.builds.edges) {
+      if (!createdAtFrom || item.node.createdAt > createdAtFrom)
+        yield item.node;
     }
   }
-
-  // @Memoize((query: string) => query)
-  // private async *graphQLRequest(
-  //   query: string,
-  //   opts: BuildkiteGraphQLOptions = {}
-  // ): AsyncGenerator<T> {
-  //   const {organization} = await this.graphClient.request(query, {
-  //     ...opts,
-  //     pageSize: opts?.pageSize || this.pageSize,
-  //   });
-
-  //   const pipelines = organization.pipelines.edges.map((p) => {
-  //     const pipeline = p.node;
-  //     const repo = this.extractRepo(
-  //       pipeline.repository.provider.name,
-  //       pipeline.repository.url
-  //     );
-  //     return {
-  //       slug: pipeline.slug,
-  //       name: pipeline.name,
-  //       url: pipeline.url,
-  //       repo,
-  //     };
-  //   });
-  //   const pageInfo = organization.pipelines.pageInfo;
-  //   const nextCursor = pageInfo.hasNextPage ? pageInfo.endCursor : undefined;
-
-  //   yield {pipelines, nextCursor};
-  // }
+  async *getJobs(): AsyncGenerator<Job> {
+    const variables = {
+      pageSize: this.pageSize,
+      maxJobsPerBuild: this.maxJobsPerBuild,
+    };
+    const data = await this.graphClient.request(JOBS_QUERY, variables);
+    for (const item of data.viewer.jobs.edges) {
+      yield item.node;
+    }
+  }
 }

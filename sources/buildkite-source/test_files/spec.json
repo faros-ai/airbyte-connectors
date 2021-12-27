@@ -18,13 +18,19 @@
       "page_size": {
         "type": "number",
         "title": "Page Size",
-        "description": "",
+        "description": "number of pipelines to fetch per call",
         "airbyte_secret": false
       },
       "max_jobs_per_build": {
         "type": "number",
         "title": "Max Jobs Per Build",
-        "description": "",
+        "description": "max jobs per build",
+        "airbyte_secret": false
+      },
+      "organization": {
+        "type": "string",
+        "title": "organization slug",
+        "description": "organization slug. You can pull pipelines to every organization or pull pipelines to organizations",
         "airbyte_secret": false
       }
     }

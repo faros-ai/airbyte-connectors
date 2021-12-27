@@ -1,20 +1,14 @@
-query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $maxJobsPerBuild: Int!, $createdAtFrom: DateTime, $after: String) {
-  pipeline(slug: $slug) {
-      id
-      uuid
-      slug
-      name
-      url
-      description
-      repository {
-        url
-        provider {
-          name
-        }
-      }
-      builds(first: $pageSize, createdAtFrom: $createdAtFrom, after: $after) {
-        edges {
-          node {
+query buildsQuery {
+  viewer {
+    builds() {
+       count,
+       pageInfo {
+         endCursor
+         startCursor
+       },
+       edges{
+        node
+        {
             uuid
             message
             number
@@ -24,7 +18,7 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $maxJobsPerBuild: Int!, $
             state
             url
             commit
-            jobs(first: $maxJobsPerBuild) {
+          ,jobs(first: 500) {
               edges {
                 node {
                   __typename
@@ -62,13 +56,12 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $maxJobsPerBuild: Int!, $
                 }
               }
             }
-          }
-          cursor
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
+          
         }
       }
+      
     }
+  }
 }
+
+ 
