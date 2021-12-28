@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_Epic'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   convert(
     record: AirbyteRecord,
@@ -15,7 +15,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
     const epic = record.record.data as Epic;
     return [
       {
-        model: 'ims_Epic',
+        model: 'tms_Epic',
         record: {
           uid: epic.id,
           app_url: epic.app_url,

@@ -6,7 +6,7 @@ import {ClubhouseConverter} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_Iteration',
+    'tms_Iteration',
   ];
   convert(
     record: AirbyteRecord,
@@ -16,7 +16,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
     const iteration = record.record.data as Iteration;
     return [
       {
-        model: 'ims_Iteration',
+        model: 'tms_Iteration',
         record: {
           uid: iteration.id,
           name: iteration.name,

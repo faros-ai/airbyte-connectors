@@ -60,12 +60,12 @@ describe('clubhouse', () => {
 
     const writtenByModel = {
       compute_Application: 1,
-      ims_Project: 3,
-      ims_Iteration: 1,
-      ims_Epic: 2,
-      ims_Story: 1,
-      ims_Member: 1,
-      ims_Repository: 0,
+      tms_Project: 3,
+      tms_Iteration: 1,
+      tms_Epic: 2,
+      tms_Story: 1,
+      tms_Member: 1,
+      tms_Repository: 0,
     };
 
     const processedTotal = _(processedByStream).values().sum();

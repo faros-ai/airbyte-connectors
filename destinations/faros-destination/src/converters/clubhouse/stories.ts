@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Story} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_Story'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Story'];
 
   convert(
     record: AirbyteRecord,
@@ -15,7 +15,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
     const story = record.record.data as Story;
     return [
       {
-        model: 'ims_Story',
+        model: 'tms_Story',
         record: {
           uid: story.id,
           name: story.name,

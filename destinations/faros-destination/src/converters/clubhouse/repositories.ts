@@ -6,7 +6,7 @@ import {ClubhouseConverter} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_Repository',
+    'tms_Repository',
   ];
 
   convert(
@@ -17,7 +17,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
     const repository = record.record.data as Repository;
     return [
       {
-        model: 'ims_Repository',
+        model: 'tms_Repository',
         record: {
           uid: repository.id,
           full_name: repository.full_name,
