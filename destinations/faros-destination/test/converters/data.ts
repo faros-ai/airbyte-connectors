@@ -48,3 +48,6 @@ export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
 export const squadcastAllStreamsLog = readTestResourceFile(
   'squadcast/all-streams.log'
 );
+export const clubhouseAllStreamsLog = readTestResourceFile(
+  'clubhouse/all-streams.log'
+);
