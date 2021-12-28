@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Build, BuildkiteConverter} from './common';
 
 export class BuildkiteBuilds extends BuildkiteConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_Build'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -18,7 +18,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     const finishedAt = Utils.toDate(build.finishedAt);
     return [
       {
-        model: 'ims_Build',
+        model: 'cicd_Build',
         record: {
           uid: build.uid,
           number: build.number,

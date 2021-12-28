@@ -5,7 +5,7 @@ import {BuildkiteConverter, Organization} from './common';
 
 export class BuildkiteOrganizations extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_Organization',
+    'cicd_Organization',
   ];
 
   convert(
@@ -16,7 +16,7 @@ export class BuildkiteOrganizations extends BuildkiteConverter {
     const organization = record.record.data as Organization;
     return [
       {
-        model: 'ims_Organization',
+        model: 'cicd_Organization',
         record: {
           uid: organization.id,
           name: organization.name,

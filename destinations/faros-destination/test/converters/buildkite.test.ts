@@ -58,10 +58,10 @@ describe('buildkite', () => {
 
     const writtenByModel = {
       compute_Application: 1,
-      ims_Organization: 1,
-      ims_Pipeline: 1,
-      ims_Build: 1,
-      ims_Job: 1,
+      cicd_Organization: 1,
+      cicd_Pipeline: 1,
+      cicd_Build: 1,
+      cicd_Job: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

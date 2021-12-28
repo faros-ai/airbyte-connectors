@@ -6,7 +6,7 @@ import {BuildkiteConverter, Pipeline, Repo, RepoSource} from './common';
 
 export class BuildkitePipelines extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_Pipeline',
+    'cicd_Pipeline',
   ];
 
   private extractRepo(
@@ -43,7 +43,7 @@ export class BuildkitePipelines extends BuildkiteConverter {
 
     return [
       {
-        model: 'ims_Pipeline',
+        model: 'cicd_Pipeline',
         record: {
           id: pipeline.id,
           uid: pipeline.uuid,
