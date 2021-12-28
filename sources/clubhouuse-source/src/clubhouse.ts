@@ -214,9 +214,9 @@ export class Clubhouse {
     }
   }
   async *getStories(updateRange?: [Date, Date]): AsyncGenerator<Story> {
-    let updateRangeUndefuned = true;
+    let updateRangeUndefined = true;
     if (!updateRange) {
-      updateRangeUndefuned = false;
+      updateRangeUndefined = false;
       updateRange = [DEFAULT_STORIES_START_DATE, DEFAULT_STORIES_END_DATE];
     }
     const [from, to] = updateRange;
@@ -238,7 +238,7 @@ export class Clubhouse {
           for (const item of res.data.data) {
             const storyItem = item as Story;
             if (!storyItem.updated_at) {
-              if (updateRangeUndefuned) {
+              if (updateRangeUndefined) {
                 yield storyItem;
               }
             } else {

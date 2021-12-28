@@ -12,7 +12,7 @@
     "additionalProperties": false,
     "properties": {
       "base_url": {
-        "type": "base_url",
+        "type": "string",
         "title": "Clubhouse Base URL",
         "examples": [
           "https://api.app.shortcut.com"
