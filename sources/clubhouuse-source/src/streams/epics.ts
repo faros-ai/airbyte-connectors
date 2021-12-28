@@ -29,10 +29,10 @@ export class Epics extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>,
-    rojectIds?: ReadonlyArray<number>
+    projectIds?: ReadonlyArray<number>
   ): AsyncGenerator<Epic> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
     const clubhouse = await Clubhouse.instance(this.config);
-    yield* clubhouse.getEpics(rojectIds);
+    yield* clubhouse.getEpics(projectIds);
   }
 }

@@ -188,7 +188,6 @@ export class Clubhouse {
     const filterProject = projects.filter(
       (p) => !projectIds || projectIds.includes(p.id)
     );
-
     for (const item of filterProject) {
       yield item;
     }

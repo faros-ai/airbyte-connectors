@@ -8,7 +8,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Clubhouse, ClubhouseConfig} from '../clubhouse';
-export class Interations extends AirbyteStreamBase {
+export class Iterations extends AirbyteStreamBase {
   constructor(
     private readonly config: ClubhouseConfig,
     protected readonly logger: AirbyteLogger
