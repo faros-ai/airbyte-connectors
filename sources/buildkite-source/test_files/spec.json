@@ -30,7 +30,7 @@
       "organization": {
         "type": "string",
         "title": "organization slug",
-        "description": "organization slug. You can pull pipelines to every organization or pull pipelines to organizations",
+        "description": "organization slug. You can pull pipelines to every organization",
         "airbyte_secret": false
       }
     }

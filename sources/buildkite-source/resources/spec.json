@@ -24,7 +24,6 @@
       "max_jobs_per_build": {
         "type": "number",
         "title": "Max Jobs Per Build",
-        "description": "max jobs per build",
         "airbyte_secret": false
       },
       "organization": {

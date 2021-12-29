@@ -1,15 +1,11 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
 import fs from 'fs-extra';
-import parseGitUrl from 'git-url-parse';
-import {gql, GraphQLClient} from 'graphql-request';
+import {GraphQLClient} from 'graphql-request';
 import path from 'path';
-import {config} from 'process';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-
-import {Jobs, Pipelines} from '../streams';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_JOBS_PER_BUILD = 500;
@@ -30,14 +26,12 @@ const JOBS_QUERY = fs.readFileSync(
   path.join(__dirname, '../..', 'resources_gql', 'jobs-query.gql'),
   'utf8'
 );
-
 export interface Organization {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
   readonly web_url: string;
 }
-
 export interface Build {
   readonly uid: string;
   readonly number: number;
@@ -106,18 +100,6 @@ interface PaginateResponse<T> {
 export interface PageInfo {
   hasNextPage: boolean;
   endCursor: string;
-}
-
-interface BuildkiteResponse<Type> {
-  status: number;
-  statusText: string;
-  resource: Type[];
-  next?: () => Promise<BuildkiteResponse<Type>>;
-}
-
-interface BuildkiteGraphQLOptions {
-  after?: string;
-  pageSize?: number;
 }
 
 export class Buildkite {
@@ -224,30 +206,34 @@ export class Buildkite {
       }
     }
   }
-  @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
-  async *getPipelines(createdAtFrom?: Date): AsyncGenerator<Pipeline> {
-    const iterOrganizationItems = this.getOrganizations();
-    for await (const organizationItem of iterOrganizationItems) {
-      yield* this.fetchOrganizationPipelines(organizationItem, createdAtFrom);
+  @Memoize((cutoff: Date) => cutoff ?? new Date(0))
+  async *getPipelines(cutoff?: Date): AsyncGenerator<Pipeline> {
+    if (this.organization) {
+      yield* this.fetchOrganizationPipelines(this.organization, cutoff);
+    } else {
+      const iterOrganizationItems = this.getOrganizations();
+      for await (const organizationItem of iterOrganizationItems) {
+        yield* this.fetchOrganizationPipelines(organizationItem.slug, cutoff);
+      }
     }
   }
   async *fetchOrganizationPipelines(
-    organizationItem: Organization,
-    createdAtFrom?: Date
+    organizationItemSlug: string,
+    cutoff?: Date
   ): AsyncGenerator<Pipeline> {
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Pipeline>> => {
       const variables = {
-        slug: organizationItem.slug,
+        slug: organizationItemSlug,
         pageSize: this.pageSize,
         after: pageInfo?.endCursor,
-        createdAtFrom: createdAtFrom,
+        cutoff: cutoff,
       };
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
 
       return {
-        data: data.organization.pipelines!.edges.map((e) => {
+        data: data.organization.pipelines?.edges.map((e) => {
           return e.node;
         }),
         pageInfo: data.organization.pipelines.pageInfo,
@@ -255,15 +241,14 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getBuilds(createdAtFrom?: Date): AsyncGenerator<Build> {
+  async *getBuilds(cutoff?: Date): AsyncGenerator<Build> {
     const variables = {
       pageSize: this.pageSize,
       maxJobsPerBuild: this.maxJobsPerBuild,
     };
     const data = await this.graphClient.request(BUILDS_QUERY, variables);
     for (const item of data.viewer.builds.edges) {
-      if (!createdAtFrom || item.node.createdAt > createdAtFrom)
-        yield item.node;
+      if (!cutoff || item.node.UpdatedAt > cutoff) yield item.node;
     }
   }
   async *getJobs(): AsyncGenerator<Job> {

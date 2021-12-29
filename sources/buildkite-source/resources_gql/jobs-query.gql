@@ -1,6 +1,6 @@
-query jobsQuery {
+query jobsQuery($maxJobsPerBuild: Int) {
   viewer {
-    jobs(first:500) { 
+    jobs(first: $maxJobsPerBuild) { 
        edges{
         node
         { 

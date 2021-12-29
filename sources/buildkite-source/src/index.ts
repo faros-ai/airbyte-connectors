@@ -19,18 +19,18 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** StatusPage source implementation. */
+/** Buildkite source implementation. */
 export class BuildkiteSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const statuspage = Buildkite.instance(
+      const buildkite = Buildkite.instance(
         config as BuildkiteConfig,
         this.logger
       );
-      await statuspage.checkConnection();
+      await buildkite.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

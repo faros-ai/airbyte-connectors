@@ -1,4 +1,4 @@
-query buildsQuery {
+query buildsQuery ($maxJobsPerBuild: Int){
   viewer {
     builds() {
        count,
@@ -18,7 +18,7 @@ query buildsQuery {
             state
             url
             commit
-          ,jobs(first: 500) {
+          ,jobs(first: $maxJobsPerBuild) {
               edges {
                 node {
                   __typename
