@@ -18,7 +18,7 @@ export interface Organization {
   readonly web_url: string;
 }
 export interface Build {
-  readonly uid: string;
+  readonly uuid: string;
   readonly number: number;
   readonly createdAt?: Date;
   readonly startedAt?: Date;

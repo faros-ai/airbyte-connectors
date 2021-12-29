@@ -44,10 +44,10 @@ describe('buildkite', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      events: 3,
-      incidents: 4,
-      services: 1,
-      users: 1,
+      organizations: 1,
+      pipelines: 1,
+      builds: 1,
+      BuildSteps: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -61,7 +61,7 @@ describe('buildkite', () => {
       cicd_Organization: 1,
       cicd_Pipeline: 1,
       cicd_Build: 1,
-      cicd_Job: 1,
+      cicd_BuildStep: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

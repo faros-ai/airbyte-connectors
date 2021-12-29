@@ -26,14 +26,16 @@ const JOBS_QUERY = fs.readFileSync(
   path.join(__dirname, '../..', 'resources_gql', 'jobs-query.gql'),
   'utf8'
 );
+
 export interface Organization {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
   readonly web_url: string;
 }
+
 export interface Build {
-  readonly uid: string;
+  readonly uuid: string;
   readonly number: number;
   readonly createdAt?: Date;
   readonly startedAt?: Date;
@@ -43,6 +45,7 @@ export interface Build {
   readonly commit: string;
   readonly jobs: Array<Job>;
 }
+
 export interface Job {
   readonly type: string;
   readonly uuid: string;
@@ -73,16 +76,19 @@ export interface Pipeline {
   readonly description?: string;
   readonly repository?: Repo;
 }
+
 export enum RepoSource {
   BITBUCKET = 'Bitbucket',
   GITHUB = 'GitHub',
   GITLAB = 'GitLab',
   VCS = 'VCS',
 }
+
 export interface Repo {
   readonly provider: Provider;
   readonly url: string;
 }
+
 export interface Provider {
   readonly name: RepoSource;
 }
@@ -93,10 +99,12 @@ export interface BuildkiteConfig {
   readonly max_jobs_per_build?: number;
   readonly organization?: string;
 }
+
 interface PaginateResponse<T> {
   data: T[];
   pageInfo: PageInfo;
 }
+
 export interface PageInfo {
   hasNextPage: boolean;
   endCursor: string;
@@ -142,6 +150,7 @@ export class Buildkite {
     logger.debug('Created Buildkite instance');
     return Buildkite.buildkite;
   }
+
   async checkConnection(): Promise<void> {
     try {
       await this.restClient.get(`/organizations`);
@@ -159,6 +168,7 @@ export class Buildkite {
       throw new VError(errorMessage);
     }
   }
+
   private async errorWrapper<T>(func: () => Promise<T>): Promise<T> {
     let res: T;
     try {
@@ -177,6 +187,7 @@ export class Buildkite {
     }
     return res;
   }
+
   private async *paginate<T>(
     func: (pageInfo?: PageInfo) => Promise<PaginateResponse<T>>
   ): AsyncGenerator<T> {
@@ -193,6 +204,7 @@ export class Buildkite {
       }
     } while (fetchNextFunc);
   }
+
   async *getOrganizations(): AsyncGenerator<Organization> {
     if (this.organization) {
       const res = await this.restClient.get(
@@ -206,6 +218,7 @@ export class Buildkite {
       }
     }
   }
+
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
   async *getPipelines(cutoff?: Date): AsyncGenerator<Pipeline> {
     if (this.organization) {
@@ -217,6 +230,7 @@ export class Buildkite {
       }
     }
   }
+
   async *fetchOrganizationPipelines(
     organizationItemSlug: string,
     cutoff?: Date
@@ -241,16 +255,18 @@ export class Buildkite {
     };
     yield* this.paginate(func);
   }
-  async *getBuilds(cutoff?: Date): AsyncGenerator<Build> {
+
+  async *getBuilds(): AsyncGenerator<Build> {
     const variables = {
       pageSize: this.pageSize,
       maxJobsPerBuild: this.maxJobsPerBuild,
     };
     const data = await this.graphClient.request(BUILDS_QUERY, variables);
     for (const item of data.viewer.builds.edges) {
-      if (!cutoff || item.node.UpdatedAt > cutoff) yield item.node;
+      yield item.node;
     }
   }
+
   async *getJobs(): AsyncGenerator<Job> {
     const variables = {
       pageSize: this.pageSize,

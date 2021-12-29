@@ -20,7 +20,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
       {
         model: 'cicd_Build',
         record: {
-          uid: build.uid,
+          uid: build.uuid,
           number: build.number,
           createdAt,
           startedAt,

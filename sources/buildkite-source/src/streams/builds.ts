@@ -30,8 +30,6 @@ export class Builds extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Build> {
     const buildkite = Buildkite.instance(this.config, this.logger);
-    const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
-    const cutoff: Date = state?.cutoff ? new Date(state?.cutoff) : undefined;
-    yield* buildkite.getBuilds(cutoff);
+    yield* buildkite.getBuilds();
   }
 }

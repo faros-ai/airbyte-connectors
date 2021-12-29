@@ -5,7 +5,9 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BuildkiteConverter, Job} from './common';
 
 export class BuildkiteBuilds extends BuildkiteConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Job'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_BuildStep',
+  ];
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -22,7 +24,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     const unblockedAt = Utils.toDate(job.unblockedAt);
     return [
       {
-        model: 'cicd_Job',
+        model: 'cicd_BuildStep',
         record: {
           uid: job.uuid,
           type: job.type,
