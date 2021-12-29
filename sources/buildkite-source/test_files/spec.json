@@ -24,13 +24,12 @@
       "max_jobs_per_build": {
         "type": "number",
         "title": "Max Jobs Per Build",
-        "description": "max jobs per build",
         "airbyte_secret": false
       },
       "organization": {
         "type": "string",
         "title": "organization slug",
-        "description": "organization slug. You can pull pipelines to every organization",
+        "description": "You can pull pipelines to every organizations",
         "airbyte_secret": false
       }
     }
