@@ -12,7 +12,7 @@ import VError from 'verror';
 import {Clubhouse, ClubhouseConfig} from './clubhouse';
 import {
   Epics,
-  Interations,
+  Iterations,
   Members,
   Projects,
   Repositories,
@@ -43,7 +43,7 @@ export class ClubhouseSource extends AirbyteSourceBase {
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
       new Projects(config as ClubhouseConfig, this.logger),
-      new Interations(config as ClubhouseConfig, this.logger),
+      new Iterations(config as ClubhouseConfig, this.logger),
       new Epics(config as ClubhouseConfig, this.logger),
       new Stories(config as ClubhouseConfig, this.logger),
       new Members(config as ClubhouseConfig, this.logger),
