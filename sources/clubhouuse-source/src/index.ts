@@ -32,8 +32,8 @@ export class ClubhouseSource extends AirbyteSourceBase {
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const statuspage = new Clubhouse(config as ClubhouseConfig);
-      await statuspage.checkConnection();
+      const clubhouse = new Clubhouse(config as ClubhouseConfig);
+      await clubhouse.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
