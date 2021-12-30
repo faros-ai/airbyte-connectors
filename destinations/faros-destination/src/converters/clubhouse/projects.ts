@@ -1,8 +1,7 @@
-import {Project} from 'clubhouse-lib';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ClubhouseConverter} from './common';
+import {ClubhouseConverter, Project} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
