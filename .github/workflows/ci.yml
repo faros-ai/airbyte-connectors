@@ -81,7 +81,7 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" -a "$source" != "squadcast-source" ]; then
+            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" -a "$source" != "jenkins-source" ]; then
               ./scripts/source-acceptance-test.sh $source
             fi
           done
