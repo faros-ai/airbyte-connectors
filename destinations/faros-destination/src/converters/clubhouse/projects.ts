@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Project} from './common';
@@ -10,17 +11,19 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
+
     const project = record.record.data as Project;
+    const createdAt = Utils.toDate(project.created_at);
+    const updatedAt = Utils.toDate(project.updated_at);
     return [
       {
         model: 'tms_Project',
         record: {
           uid: project.id,
           name: project.name,
-          abbreviation: project.abbreviation,
-          color: project.color,
-          team_id: project.team_id,
           description: project.description,
+          createdAt,
+          updatedAt,
           source,
         },
       },

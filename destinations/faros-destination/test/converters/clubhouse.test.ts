@@ -64,7 +64,7 @@ describe('clubhouse', () => {
       tms_Iteration: 1,
       tms_Epic: 2,
       tms_Story: 1,
-      tms_Member: 1,
+      tms_User: 1,
       tms_Repository: 0,
     };
 
