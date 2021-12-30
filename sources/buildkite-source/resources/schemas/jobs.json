@@ -24,24 +24,25 @@
         "startedAt": {
             "type": "string"
         },
-        "triggered":
-        {
-            "type": ["object","null"],
+        "triggered": {
+            "type": [
+                "object",
+                "null"
+            ],
             "additionalProperties": true,
             "properties": {
-              "createdAt": {
-                "type": "string"
-              },
-              "startedAt": {
-                "type": "string"
-              },
-              "finishedAt": {
-                "type": "string"
-              }
+                "createdAt": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "finishedAt": {
+                    "type": "string"
+                }
             }
         },
-        "unblockedAt": 
-        {
+        "unblockedAt": {
             "type": "string"
         },
         "url": {
@@ -49,6 +50,14 @@
         },
         "command": {
             "type": "string"
+        },
+        "build": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                }
+            }
         }
     }
 }

@@ -63,6 +63,7 @@ export interface Pipeline {
   readonly url: string;
   readonly description?: string;
   readonly repository?: Repo;
+  readonly createdAt?: Date;
   readonly organization?: {
     id?: string;
   };

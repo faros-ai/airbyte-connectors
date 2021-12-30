@@ -12,6 +12,7 @@ query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String,$createdAtFrom:
             name
             slug
             url
+            createdAt
             description
             repository {
               url

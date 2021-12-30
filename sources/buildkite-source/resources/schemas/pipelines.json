@@ -36,6 +36,17 @@
                     }
                 }
             }
+        },
+        "createdAt": {
+            "type": "string"
+        },
+        "organization": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
         }
     }
 }

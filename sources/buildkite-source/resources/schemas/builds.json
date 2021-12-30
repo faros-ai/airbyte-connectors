@@ -26,6 +26,14 @@
         },
         "commit": {
             "type": "string"
+        },
+        "pipeline": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                }
+            }
         }
     }
 }
