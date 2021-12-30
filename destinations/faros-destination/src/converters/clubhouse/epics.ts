@@ -19,10 +19,22 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
           uid: epic.id,
           name: epic.name,
           description: epic.description,
-          //status: epic.status,
+          project: {uid: epic.project_ids, source},
+          status: this.epicStatus(epic.state),
           source,
         },
       },
     ];
+  }
+
+  private epicStatus(state: string): {category: string; detail: string} {
+    switch (state) {
+      case 'open':
+        return {category: 'InProgress', detail: state};
+      case 'closed':
+        return {category: 'Done', detail: state};
+      default:
+        return {category: 'Custom', detail: state};
+    }
   }
 }
