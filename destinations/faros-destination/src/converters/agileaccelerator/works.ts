@@ -130,7 +130,7 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
           completedPoints: work.agf__Sprint__r.agf__Completed_Story_Points__c,
           state: this.toSprintState(work.agf__Sprint__r.agf__Days_Remaining__c),
           startedAt: this.toDateTime(work.agf__Sprint__r.agf__Start_Date__c),
-          endedAt: this.toDateTime(work.agf__Sprint__r.agf__End_Date__c),
+          endedAt: this.toDateTime(work.agf__Sprint__r.agf__End_Date__c, false),
         },
       });
     }
