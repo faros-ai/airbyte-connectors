@@ -15,7 +15,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
 
     const createdAt = Utils.toDate(build.createdAt);
     const startedAt = Utils.toDate(build.startedAt);
-    const finishedAt = Utils.toDate(build.finishedAt);
+    const endedAt = Utils.toDate(build.finishedAt);
     return [
       {
         model: 'cicd_Build',
@@ -24,10 +24,9 @@ export class BuildkiteBuilds extends BuildkiteConverter {
           number: build.number,
           createdAt,
           startedAt,
-          finishedAt,
+          endedAt,
           state: build.state,
           url: build.url,
-          commit: build.commit,
           source,
         },
       },

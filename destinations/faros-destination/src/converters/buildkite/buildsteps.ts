@@ -17,28 +17,19 @@ export class BuildkiteBuilds extends BuildkiteConverter {
 
     const createdAt = Utils.toDate(job.createdAt);
     const startedAt = Utils.toDate(job.startedAt);
-    const finishedAt = Utils.toDate(job.finishedAt);
-    const triggeredCreatedAt = Utils.toDate(job.triggered?.createdAt);
-    const triggeredStartedAt = Utils.toDate(job.triggered?.startedAt);
-    const triggeredFinishedAt = Utils.toDate(job.triggered?.finishedAt);
-    const unblockedAt = Utils.toDate(job.unblockedAt);
+    const endedAt = Utils.toDate(job.finishedAt);
     return [
       {
         model: 'cicd_BuildStep',
         record: {
           uid: job.uuid,
+          command: job.command,
           type: job.type,
-          label: job.label,
           createdAt,
           startedAt,
-          finishedAt,
-          triggeredCreatedAt,
-          triggeredStartedAt,
-          triggeredFinishedAt,
-          unblockedAt,
+          endedAt,
           state: job.state,
           url: job.url,
-          command: job.command,
           source,
         },
       },

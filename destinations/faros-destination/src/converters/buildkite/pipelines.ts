@@ -45,12 +45,10 @@ export class BuildkitePipelines extends BuildkiteConverter {
       {
         model: 'cicd_Pipeline',
         record: {
-          id: pipeline.id,
           uid: pipeline.uuid,
           name: pipeline.name,
-          slug: pipeline.slug,
-          url: pipeline.url,
           description: pipeline.description,
+          url: pipeline.url,
           repo,
           source,
         },

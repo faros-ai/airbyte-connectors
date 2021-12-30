@@ -21,7 +21,7 @@ export class BuildkiteOrganizations extends BuildkiteConverter {
           uid: organization.id,
           name: organization.name,
           slug: organization.slug,
-          web_url: organization.web_url,
+          url: organization.web_url,
           source,
         },
       },
