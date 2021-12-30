@@ -1,3 +1,4 @@
+import {Story} from 'clubhouse-lib';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -6,7 +7,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Clubhouse, ClubhouseConfig, Story} from '../clubhouse';
+import {Clubhouse, ClubhouseConfig} from '../clubhouse';
 
 export class Stories extends AirbyteStreamBase {
   constructor(
