@@ -27,6 +27,9 @@ export interface Build {
   readonly url: string;
   readonly commit: string;
   readonly jobs: Array<Job>;
+  readonly pipeline?: {
+    uuid?: string;
+  };
 }
 export interface Job {
   readonly type: string;
@@ -47,6 +50,9 @@ export interface Job {
 
   readonly url?: string;
   readonly command: string;
+  readonly build?: {
+    uuid?: string;
+  };
 }
 
 export interface Pipeline {
@@ -57,6 +63,9 @@ export interface Pipeline {
   readonly url: string;
   readonly description?: string;
   readonly repository?: Repo;
+  readonly organization?: {
+    id?: string;
+  };
 }
 export enum RepoSource {
   BITBUCKET = 'Bitbucket',

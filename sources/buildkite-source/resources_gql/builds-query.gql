@@ -11,6 +11,10 @@ query buildsQuery ($maxJobsPerBuild: Int){
         {
             id
             uuid
+            pipeline()
+            {
+              uuid
+            }
             message
             number
             createdAt

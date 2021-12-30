@@ -14,7 +14,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
-
+    const build = {uid: job.build.uuid, source};
     const createdAt = Utils.toDate(job.createdAt);
     const startedAt = Utils.toDate(job.startedAt);
     const endedAt = Utils.toDate(job.finishedAt);
@@ -30,6 +30,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
           endedAt,
           state: job.state,
           url: job.url,
+          build,
           source,
         },
       },

@@ -35,7 +35,7 @@ export class BuildkitePipelines extends BuildkiteConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
-
+    const organization = {uid: pipeline.organization.id, source};
     const repo = this.extractRepo(
       pipeline.repository.provider.name,
       pipeline.repository.url
@@ -50,6 +50,7 @@ export class BuildkitePipelines extends BuildkiteConverter {
           description: pipeline.description,
           url: pipeline.url,
           repo,
+          organization,
           source,
         },
       },

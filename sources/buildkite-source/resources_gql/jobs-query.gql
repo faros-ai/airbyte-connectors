@@ -7,6 +7,10 @@ query jobsQuery($maxJobsPerBuild: Int) {
            __typename
                   ... on JobTypeCommand {
                     uuid
+                    build()
+                    {
+                      uuid
+                    }
                     label
                     state
                     createdAt
@@ -17,17 +21,29 @@ query jobsQuery($maxJobsPerBuild: Int) {
                   }
                   ... on JobTypeBlock {
                     uuid
+                    build()
+                    {
+                      uuid
+                    }
                     state
                     label
                     unblockedAt
                   }
                   ... on JobTypeWait {
                     uuid
+                    build()
+                    {
+                      uuid
+                    }
                     state
                     label
                   }
                   ... on JobTypeTrigger {
                     uuid
+                    build()
+                    {
+                      uuid
+                    }
                     state
                     label
                     triggered {
