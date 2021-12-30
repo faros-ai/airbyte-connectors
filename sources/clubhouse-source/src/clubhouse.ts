@@ -1,4 +1,4 @@
-import axios, {Method} from 'axios';
+import axios from 'axios';
 import Client, {
   Epic,
   ID,
@@ -11,14 +11,13 @@ import Client, {
   Task,
 } from 'clubhouse-lib';
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
-import https from 'https';
-import moment from 'moment';
 import {VError} from 'verror';
 
 export interface ClubhouseConfig {
   readonly token: string;
   readonly base_url: string;
   readonly version: string;
+  readonly project_public_id: number | null;
 }
 export declare type StoryType = 'bug' | 'chore' | 'feature';
 export interface Story {
@@ -99,70 +98,6 @@ export class Clubhouse {
     return Clubhouse.clubhouse;
   }
 
-  private async request<T>(
-    path: string,
-    params?: any,
-    payload?: any,
-    method: Method = 'GET'
-  ): Promise<T> {
-    const url = `${this.cfg.base_url}${path}`;
-    const httpsAgent = new https.Agent();
-    try {
-      const res = await axios.request({
-        method,
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Clubhouse-Token': this.cfg.token,
-        },
-        params,
-        data: payload,
-        httpsAgent,
-      });
-
-      if (res.status !== 200) {
-        throw new VError(
-          'Request to %s failed. Unexpected response: %s - %s',
-          url,
-          res.status,
-          JSON.stringify(res.data)
-        );
-      }
-
-      return res.data;
-    } catch (err) {
-      throw new VError('Request to %s %s failed: %s', method, url);
-    }
-  }
-
-  private static async *iterate<V>(
-    requester: (url: string | undefined) => Promise<any>,
-    filter: (item: V) => boolean
-  ): AsyncGenerator<V> {
-    let next = '';
-    do {
-      const res = await requester(next);
-      const items = Array.isArray(res) ? res : res.data;
-      for (const item of items) {
-        if (filter(item)) yield item;
-      }
-      next = res.next;
-    } while (next);
-  }
-
-  private static updatedBetweenQuery(range: [Date, Date]): string {
-    const [from, to] = range;
-    if (to < from) {
-      throw new VError(
-        `invalid update range: end timestamp '${to}' ` +
-          `is strictly less than start timestamp '${from}'`
-      );
-    }
-    const fromStr = moment.utc(from).format('YYYY-MM-DD');
-    const toStr = moment.utc(to).format('YYYY-MM-DD');
-    return `updated:${fromStr}..${toStr}`;
-  }
-
   async checkConnection(): Promise<void> {
     try {
       await this.client.listProjects();
@@ -192,12 +127,14 @@ export class Clubhouse {
       yield item;
     }
   }
+
   async *getIterations(): AsyncGenerator<Iteration> {
     const list = await this.client.listIterations();
     for (const item of list) {
       yield item;
     }
   }
+
   async *getEpics(projectIds: ReadonlyArray<number>): AsyncGenerator<Epic> {
     const epics = await this.client.listEpics();
     for (const epic of epics) {
@@ -212,6 +149,7 @@ export class Clubhouse {
       yield epic;
     }
   }
+
   async *getStories(updateRange?: [Date, Date]): AsyncGenerator<Story> {
     let updateRangeUndefined = true;
     if (!updateRange) {
@@ -219,53 +157,77 @@ export class Clubhouse {
       updateRange = [DEFAULT_STORIES_START_DATE, DEFAULT_STORIES_END_DATE];
     }
     const [from, to] = updateRange;
-    const iterProjects = this.getProjects();
-    const method = 'GET';
-    for await (const item of iterProjects) {
-      const path = `/api/${this.cfg.version}/search/stories?query=project:${item.id}`;
-      const url = `${this.cfg.base_url}${path}`;
-      try {
-        const res = await axios.request({
-          method,
-          url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Clubhouse-Token': this.cfg.token,
-          },
-        });
-        if (res.status === 200) {
-          for (const item of res.data.data) {
-            const storyItem = item as Story;
-            if (!storyItem.updated_at) {
-              if (updateRangeUndefined) {
-                yield storyItem;
-              }
-            } else {
-              const updatedAt = Utils.toDate(storyItem.updated_at);
-              if (updatedAt && updatedAt >= from && updatedAt < to) {
-                yield storyItem;
-              }
-            }
-          }
-        } else {
-          throw new VError(
-            'Request to %s failed. Unexpected response: %s - %s',
-            url,
-            res.status,
-            JSON.stringify(res.data)
-          );
-        }
-      } catch (err) {
-        throw new VError('Request to %s %s failed: %s', method, url);
+    if (this.cfg.project_public_id) {
+      yield* this.getStorieByProjectId(
+        this.cfg.project_public_id,
+        updateRangeUndefined,
+        updateRange
+      );
+    } else {
+      const iterProjects = this.getProjects();
+      const method = 'GET';
+      for await (const item of iterProjects) {
+        yield* this.getStorieByProjectId(
+          item.id,
+          updateRangeUndefined,
+          updateRange
+        );
       }
     }
   }
+
+  async *getStorieByProjectId(
+    projectPublicId: number,
+    updateRangeUndefined: boolean,
+    updateRange?: [Date, Date]
+  ): AsyncGenerator<Story> {
+    const [from, to] = updateRange;
+    const method = 'GET';
+    const path = `/api/${this.cfg.version}/search/stories?query=project:${projectPublicId}`;
+    const url = `${this.cfg.base_url}${path}`;
+    try {
+      const res = await axios.request({
+        method,
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Clubhouse-Token': this.cfg.token,
+        },
+      });
+      if (res.status === 200) {
+        for (const item of res.data.data) {
+          const storyItem = item as Story;
+          if (!storyItem.updated_at) {
+            if (updateRangeUndefined) {
+              yield storyItem;
+            }
+          } else {
+            const updatedAt = Utils.toDate(storyItem.updated_at);
+            if (updatedAt && updatedAt >= from && updatedAt < to) {
+              yield storyItem;
+            }
+          }
+        }
+      } else {
+        throw new VError(
+          'Request to %s failed. Unexpected response: %s - %s',
+          url,
+          res.status,
+          JSON.stringify(res.data)
+        );
+      }
+    } catch (err) {
+      throw new VError('Request to %s %s failed: %s', method, url);
+    }
+  }
+
   async *getMembers(): AsyncGenerator<Member> {
     const list = await this.client.listMembers();
     for (const item of list) {
       yield item;
     }
   }
+
   async *getRepositories(): AsyncGenerator<Repository> {
     const list = await this.client.listResource('repositories');
     for (const item of list) {

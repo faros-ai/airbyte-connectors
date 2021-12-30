@@ -32,6 +32,11 @@
         "title": "Clubhouse Token",
         "description": "In order to generate a Workspace specific API token, navigate to Settings > Your Account > API Tokens.",
         "airbyte_secret": true
+      },
+      "project_public_id":{
+        "type": "number",
+        "title": "project public ID",
+        "description": "Using project public ID to pull it's stories, if null will pull all stories"
       }
     }
   }
