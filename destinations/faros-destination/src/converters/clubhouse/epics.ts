@@ -19,7 +19,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
           uid: epic.id,
           name: epic.name,
           description: epic.description,
-          project: {uid: epic.project_ids, source},
+          project: {uid: epic.project_ids[0], source},
           status: this.epicStatus(epic.state),
           source,
         },
