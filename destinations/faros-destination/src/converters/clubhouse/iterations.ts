@@ -7,6 +7,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Iteration',
   ];
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext

@@ -6,6 +6,7 @@ import {ClubhouseConverter, Project} from './common';
 
 export class BuildkiteOrganizations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext

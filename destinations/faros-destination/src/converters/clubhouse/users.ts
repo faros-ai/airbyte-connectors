@@ -16,7 +16,7 @@ export class BuildkiteOrganizations extends ClubhouseConverter {
       {
         model: 'tms_User',
         record: {
-          uid: member.id,
+          uid: String(member.id),
           emailAddress: member.profile.email_address,
           name: member.profile.name,
           source,
