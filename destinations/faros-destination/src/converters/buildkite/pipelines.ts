@@ -29,18 +29,14 @@ export class BuildkitePipelines extends BuildkiteConverter {
 
     return source;
   }
+
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
-    const organization = {uid: pipeline.organization.id, source};
-    const repo = this.extractRepo(
-      pipeline.repository.provider.name,
-      pipeline.repository.url
-    );
-
+    const organization = {uid: pipeline.organization.uuid, source};
     return [
       {
         model: 'cicd_Pipeline',
@@ -49,9 +45,7 @@ export class BuildkitePipelines extends BuildkiteConverter {
           name: pipeline.name,
           description: pipeline.description,
           url: pipeline.url,
-          repo,
           organization,
-          source,
         },
       },
     ];

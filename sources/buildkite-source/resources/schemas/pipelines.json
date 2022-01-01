@@ -43,7 +43,7 @@
         "organization": {
             "type": "object",
             "properties": {
-                "id": {
+                "uuid": {
                     "type": "string"
                 }
             }

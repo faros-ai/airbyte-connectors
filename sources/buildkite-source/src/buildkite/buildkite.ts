@@ -84,7 +84,7 @@ export interface Pipeline {
   readonly repository?: Repo;
   readonly createdAt?: Date;
   readonly organization?: {
-    id?: string;
+    uuid?: string;
   };
 }
 
@@ -230,24 +230,19 @@ export class Buildkite {
     }
   }
 
-  @Memoize((createdAtFrom: Date) => createdAtFrom ?? new Date(0))
-  async *getPipelines(createdAtFrom?: Date): AsyncGenerator<Pipeline> {
+  async *getPipelines(): AsyncGenerator<Pipeline> {
     if (this.organization) {
-      yield* this.fetchOrganizationPipelines(this.organization, createdAtFrom);
+      yield* this.fetchOrganizationPipelines(this.organization);
     } else {
       const iterOrganizationItems = this.getOrganizations();
       for await (const organizationItem of iterOrganizationItems) {
-        yield* this.fetchOrganizationPipelines(
-          organizationItem.slug,
-          createdAtFrom
-        );
+        yield* this.fetchOrganizationPipelines(organizationItem.slug);
       }
     }
   }
 
   async *fetchOrganizationPipelines(
-    organizationItemSlug: string,
-    createdAtFrom?: Date
+    organizationItemSlug: string
   ): AsyncGenerator<Pipeline> {
     const func = async (
       pageInfo?: PageInfo
@@ -256,7 +251,6 @@ export class Buildkite {
         slug: organizationItemSlug,
         pageSize: this.pageSize,
         after: pageInfo?.endCursor,
-        createdAtFrom: createdAtFrom,
       };
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
 

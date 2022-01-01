@@ -1,12 +1,12 @@
-query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String,$createdAtFrom: DateTime) {
+query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String) {
   organization(slug: $slug) {
-      pipelines(first: $pageSize, after: $after,createdAtFrom: $createdAtFrom){
+      pipelines(first: $pageSize, after: $after){
         edges{
           node {
             id
             organization()
             {
-              id
+              uuid
             }
             uuid
             name
