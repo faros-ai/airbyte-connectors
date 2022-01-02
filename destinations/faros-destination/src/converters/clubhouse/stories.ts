@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Story} from './common';
 
-export class BuildkiteOrganizations extends ClubhouseConverter {
+export class BuildkiteStories extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Story'];
 
   convert(

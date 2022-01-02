@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Project} from './common';
 
-export class BuildkiteOrganizations extends ClubhouseConverter {
+export class BuildkiteProjects extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
 
   convert(

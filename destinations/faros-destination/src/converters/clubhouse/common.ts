@@ -118,6 +118,7 @@ export declare type IterationStats = {
   num_stories_unstarted: number;
 };
 export declare type IterationStatus = 'unstarted' | 'started' | 'done';
+
 export declare type Iteration = {
   created_at: string;
   description: string;
@@ -135,6 +136,7 @@ export declare type Iteration = {
   status: IterationStatus;
   updated_at: string;
 };
+
 export declare type IterationChange = {
   name?: string;
   description?: string;
@@ -142,6 +144,7 @@ export declare type IterationChange = {
   end_date?: string;
   follower_ids?: Array<ID>;
 };
+
 export declare type Repository = {
   created_ad: string;
   entity_type: string;
@@ -167,6 +170,7 @@ export declare type Member = {
     display_icon?: string;
   };
 };
+
 export declare type Profile = {
   deactivated: boolean;
   display_icon: any;
@@ -183,6 +187,7 @@ export declare type ProjectStats = {
   num_points: number;
   num_stories: number;
 };
+
 export declare type Project = {
   abbreviation: string | null;
   archived: boolean;
@@ -202,6 +207,7 @@ export declare type Project = {
   team_id: number;
   updated_at: string | null;
 };
+
 export declare type ProjectChange = {
   name?: string;
   team_id?: number;
@@ -219,6 +225,7 @@ export declare type ProjectChange = {
 };
 
 export declare type StoryType = 'bug' | 'chore' | 'feature';
+
 export declare type Story = {
   app_url: string;
   archived: boolean;
@@ -279,6 +286,7 @@ export declare type Branch = {
   updated_at: string | null;
   url: string;
 };
+
 export declare type Commit = {
   author_email: string;
   author_id: ID | null;
@@ -302,6 +310,7 @@ export declare type PullRequestLabel = {
   id: number;
   name: string;
 };
+
 export declare type PullRequest = {
   branch_id: number;
   branch_name: string;
@@ -332,6 +341,7 @@ export declare type LinkedFileType =
   | 'dropbox'
   | 'box'
   | 'onedrive';
+
 export declare type LinkedFile = {
   content_type: string | null;
   created_at: string;
