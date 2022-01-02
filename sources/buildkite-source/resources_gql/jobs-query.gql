@@ -10,6 +10,14 @@ query jobsQuery($maxJobsPerBuild: Int) {
                     build()
                     {
                       uuid
+                      pipeline()
+                      {
+                        slug
+                        organization()
+                        {
+                          slug
+                        }
+                      }
                     }
                     label
                     state
@@ -24,6 +32,14 @@ query jobsQuery($maxJobsPerBuild: Int) {
                     build()
                     {
                       uuid
+                      pipeline()
+                      {
+                        slug
+                        organization()
+                        {
+                          slug
+                        }
+                      }
                     }
                     state
                     label
@@ -34,6 +50,14 @@ query jobsQuery($maxJobsPerBuild: Int) {
                     build()
                     {
                       uuid
+                      pipeline()
+                      {
+                        slug
+                        organization()
+                        {
+                          slug
+                        }
+                      }
                     }
                     state
                     label
@@ -43,6 +67,14 @@ query jobsQuery($maxJobsPerBuild: Int) {
                     build()
                     {
                       uuid
+                      pipeline()
+                      {
+                        slug
+                        organization()
+                        {
+                          slug
+                        }
+                      }
                     }
                     state
                     label

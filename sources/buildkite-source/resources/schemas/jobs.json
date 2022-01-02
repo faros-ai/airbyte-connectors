@@ -56,6 +56,22 @@
             "properties": {
                 "uuid": {
                     "type": "string"
+                },
+                "pipeline": {
+                    "type": "object",
+                    "properties": {
+                        "slug": {
+                            "type": "string"
+                        },
+                        "organization": {
+                            "type": "object",
+                            "properties": {
+                                "slug": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

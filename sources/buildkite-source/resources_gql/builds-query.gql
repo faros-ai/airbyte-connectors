@@ -13,7 +13,17 @@ query buildsQuery ($maxJobsPerBuild: Int){
             uuid
             pipeline()
             {
-              uuid
+              slug
+              repository {
+                url
+                provider {
+                  name
+                } 
+              }
+              organization()
+              {
+                slug
+              }
             }
             message
             number

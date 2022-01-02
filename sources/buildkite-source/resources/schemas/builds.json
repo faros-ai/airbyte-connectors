@@ -30,8 +30,32 @@
         "pipeline": {
             "type": "object",
             "properties": {
-                "uuid": {
+                "slug": {
                     "type": "string"
+                },
+                "repository": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "provider": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "organization": {
+                    "type": "object",
+                    "properties": {
+                        "slug": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         }

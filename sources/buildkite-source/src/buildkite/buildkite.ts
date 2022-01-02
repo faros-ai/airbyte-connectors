@@ -46,9 +46,13 @@ export interface Build {
   readonly jobs: Array<Job>;
 
   readonly pipeline?: {
-    uuid?: string;
+    slug?: string;
+    readonly organization?: {
+      slug?: string;
+    };
   };
 }
+
 export interface Job {
   readonly type: string;
   readonly uuid: string;
@@ -71,6 +75,13 @@ export interface Job {
 
   readonly build?: {
     uuid?: string;
+    readonly pipeline?: {
+      readonly repository?: Repo;
+      slug?: string;
+      readonly organization?: {
+        slug?: string;
+      };
+    };
   };
 }
 

@@ -62,6 +62,7 @@ describe('buildkite', () => {
       cicd_Pipeline: 1,
       cicd_Build: 1,
       cicd_BuildStep: 1,
+      cicd_BuildCommitAssociation: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

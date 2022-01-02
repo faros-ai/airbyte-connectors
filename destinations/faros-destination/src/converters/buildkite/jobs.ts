@@ -15,7 +15,13 @@ export class BuildkiteJobs extends BuildkiteConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
-    const build = {uid: job.build.uuid, source};
+    const build = {
+      uid: job.build.uuid,
+      pipeline: {
+        uid: job.build.pipeline.slug,
+        organization: {uid: job.build.pipeline.organization.slug, source},
+      },
+    };
     const createdAt = Utils.toDate(job.createdAt);
     const startedAt = Utils.toDate(job.startedAt);
     const endedAt = Utils.toDate(job.finishedAt);
@@ -26,6 +32,8 @@ export class BuildkiteJobs extends BuildkiteConverter {
         model: 'cicd_BuildStep',
         record: {
           uid: job.uuid,
+          name: '',
+          ...this.convertBuildStepTime(job),
           command: job.command,
           type,
           createdAt,
@@ -37,6 +45,49 @@ export class BuildkiteJobs extends BuildkiteConverter {
         },
       },
     ];
+  }
+
+  //   build: {
+  //     uid: buildStep.build,
+  //     pipeline: {
+  //       uid: pipelineSlug,
+  //       organization: {uid: organizationSlug, source: SOURCE},
+  //     },
+  //   },
+  // },
+
+  convertBuildStepTime(buildStep: Job): {
+    createdAt?: Date;
+    startedAt?: Date;
+    endedAt?: Date;
+  } {
+    const type = buildStep.type;
+    const defaultTime = {
+      createdAt: Utils.toDate(buildStep.createdAt),
+      startedAt: Utils.toDate(buildStep.startedAt),
+      endedAt: Utils.toDate(buildStep.finishedAt),
+    };
+    if (!type) {
+      return defaultTime;
+    }
+    switch (type) {
+      case 'JobTypeBlock':
+        return {
+          createdAt: Utils.toDate(buildStep.unblockedAt),
+          startedAt: Utils.toDate(buildStep.unblockedAt),
+          endedAt: Utils.toDate(buildStep.unblockedAt),
+        };
+      case 'JobTypeTrigger':
+        return {
+          createdAt: Utils.toDate(buildStep.triggered.createdAt),
+          startedAt: Utils.toDate(buildStep.triggered.startedAt),
+          endedAt: Utils.toDate(buildStep.triggered.finishedAt),
+        };
+      case 'JobTypeWait': // This type does not currently have timestamps
+      case 'JobTypeCommand':
+      default:
+        return defaultTime;
+    }
   }
 
   convertBuildStepState(state: string | undefined): {
