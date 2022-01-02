@@ -17,6 +17,7 @@ export interface Organization {
   readonly name: string;
   readonly web_url: string;
 }
+
 export interface Build {
   readonly uuid: string;
   readonly number: number;
@@ -31,6 +32,7 @@ export interface Build {
     uuid?: string;
   };
 }
+
 export interface Job {
   readonly type: string;
   readonly uuid: string;
@@ -65,9 +67,10 @@ export interface Pipeline {
   readonly repository?: Repo;
   readonly createdAt?: string;
   readonly organization?: {
-    uuid?: string;
+    slug?: string;
   };
 }
+
 export enum RepoSource {
   BITBUCKET = 'Bitbucket',
   GITHUB = 'GitHub',

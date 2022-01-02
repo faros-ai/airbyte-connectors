@@ -84,7 +84,7 @@ export interface Pipeline {
   readonly repository?: Repo;
   readonly createdAt?: Date;
   readonly organization?: {
-    uuid?: string;
+    slug?: string;
   };
 }
 
