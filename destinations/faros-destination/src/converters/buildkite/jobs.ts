@@ -32,7 +32,7 @@ export class BuildkiteJobs extends BuildkiteConverter {
         model: 'cicd_BuildStep',
         record: {
           uid: job.uuid,
-          name: '',
+          name: job.label,
           ...this.convertBuildStepTime(job),
           command: job.command,
           type,
@@ -46,15 +46,6 @@ export class BuildkiteJobs extends BuildkiteConverter {
       },
     ];
   }
-
-  //   build: {
-  //     uid: buildStep.build,
-  //     pipeline: {
-  //       uid: pipelineSlug,
-  //       organization: {uid: organizationSlug, source: SOURCE},
-  //     },
-  //   },
-  // },
 
   convertBuildStepTime(buildStep: Job): {
     createdAt?: Date;

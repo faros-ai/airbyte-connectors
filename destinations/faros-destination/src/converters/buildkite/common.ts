@@ -21,6 +21,7 @@ export interface Organization {
 export interface Build {
   readonly uuid: string;
   readonly number: number;
+  readonly message: number;
   readonly createdAt?: string;
   readonly startedAt?: string;
   readonly finishedAt?: string;
@@ -91,6 +92,12 @@ export interface Repo {
   readonly provider: Provider;
   readonly url: string;
 }
+
+export interface RepoExtract {
+  readonly org: string;
+  readonly name: string;
+}
+
 export interface Provider {
   readonly name: RepoSource;
 }

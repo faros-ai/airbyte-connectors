@@ -37,6 +37,7 @@ export interface Organization {
 export interface Build {
   readonly uuid: string;
   readonly number: number;
+  readonly message: number;
   readonly createdAt?: Date;
   readonly startedAt?: Date;
   readonly finishedAt?: Date;

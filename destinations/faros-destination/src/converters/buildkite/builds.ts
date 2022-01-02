@@ -1,9 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import parseGitUrl from 'git-url-parse';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Build, BuildkiteConverter} from './common';
+import {
+  Build,
+  BuildkiteConverter,
+  Repo,
+  RepoExtract,
+  RepoSource,
+} from './common';
 
 export class BuildkiteBuilds extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -32,7 +39,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
       model: 'cicd_Build',
       record: {
         uid: build.uuid,
-        name: '',
+        name: build.message,
         number: build.number,
         createdAt,
         startedAt,
@@ -44,20 +51,43 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     });
     const repo = build.pipeline.repository;
     if (repo) {
-      const repoKey = {
-        organization: {uid: toLower(repo.url), source: repo.provider.name},
-        name: toLower(repo.provider.name),
-      };
-
-      res.push({
-        model: 'cicd_BuildCommitAssociation',
-        record: {
-          build: {uid: build.uuid, pipeline},
-          commit: {repository: repoKey, sha: build.commit},
-        },
-      });
+      const repoExtract = this.extractRepo(repo.provider.name, repo.url);
+      if (repoExtract) {
+        const repoKey = {
+          organization: {uid: toLower(repoExtract.org), source},
+          name: toLower(repoExtract.name),
+        };
+        res.push({
+          model: 'cicd_BuildCommitAssociation',
+          record: {
+            build: {uid: build.uuid, pipeline},
+            commit: {repository: repoKey, sha: build.commit},
+          },
+        });
+      }
     }
     return res;
+  }
+
+  extractRepo(
+    provider: string | undefined,
+    repoUrl: string
+  ): RepoExtract | undefined {
+    const gitUrl = parseGitUrl(repoUrl);
+
+    const lowerSource = provider
+      ? provider.toLowerCase()
+      : gitUrl.source?.toLowerCase();
+
+    let source: RepoSource;
+    if (lowerSource?.includes('bitbucket')) source = RepoSource.BITBUCKET;
+    else if (lowerSource?.includes('gitlab')) source = RepoSource.GITLAB;
+    else if (lowerSource?.includes('github')) source = RepoSource.GITHUB;
+    else source = RepoSource.VCS;
+
+    if (!gitUrl.organization || !gitUrl.name) return undefined;
+
+    return {org: gitUrl.organization, name: gitUrl.name};
   }
 
   convertBuildState(state: string | undefined): {
