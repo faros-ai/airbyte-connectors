@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, StreamContext} from '../converter';
+
 export declare type LabelStats = {
   num_epics: number;
   num_points_completed: number;
@@ -11,6 +12,7 @@ export declare type LabelStats = {
   num_stories_total: number;
   num_stories_unestimated: number;
 };
+
 export declare type Label = {
   app_url: string;
   archived: boolean;
@@ -25,6 +27,7 @@ export declare type Label = {
   updated_at: string | null;
 };
 export declare type ID = string | number;
+
 export declare type EpicStats = {
   average_cycle_time: number;
   average_lead_time: number;
@@ -38,6 +41,7 @@ export declare type EpicStats = {
   num_stories_unestimated: number;
   num_stories_unstarted: number;
 };
+
 export declare type EpicSlim = {
   id: number;
   app_url: string;
@@ -69,7 +73,9 @@ export declare type EpicSlim = {
   stats: EpicStats;
   updated_at: Date | null;
 };
+
 export declare type EpicStates = 'to do' | 'in progress' | 'done';
+
 export declare type Epic = {
   app_url: string;
   archived: string;
@@ -117,6 +123,7 @@ export declare type IterationStats = {
   num_stories_unestimated: number;
   num_stories_unstarted: number;
 };
+
 export declare type IterationStatus = 'unstarted' | 'started' | 'done';
 
 export declare type Iteration = {
@@ -226,51 +233,61 @@ export declare type ProjectChange = {
 
 export declare type StoryType = 'bug' | 'chore' | 'feature';
 
-export declare type Story = {
-  app_url: string;
-  archived: boolean;
-  blocked: boolean;
-  blocker: boolean;
-  branches: Array<Branch>;
-  comments: Array<Comment>;
-  commits: Array<Commit>;
-  completed: boolean;
-  completed_at: string | null;
-  completed_at_override: string | null;
+export interface Story {
+  readonly app_url: string;
+  readonly archived: boolean;
+  readonly blocked: boolean;
+  readonly blocker: boolean;
+  readonly comments: Array<Comment>;
+  readonly completed: boolean;
+  readonly completed_at: string | null;
+  readonly completed_at_override: string | null;
+  readonly created_at: string;
+  readonly cycle_time: number;
+  readonly deadline: string | null;
+  readonly description: string;
+  readonly entity_type: string;
+  readonly epic_id: number | null;
+  readonly estimate: number | null;
+  readonly external_id: string | null;
+  readonly external_links: Array<string>;
+  readonly files: Array<File>;
+  readonly follower_ids: Array<ID>;
+  readonly id: number;
+  readonly iteration_id: number | null;
+  readonly labels: Array<Label>;
+  readonly lead_time: number;
+  readonly member_mention_ids: Array<ID>;
+  readonly mention_ids: Array<ID>;
+  readonly moved_at: string | null;
+  readonly name: string;
+  readonly owner_ids: Array<ID>;
+  readonly position: number;
+  readonly previous_iteration_ids: Array<number>;
+  readonly project_id: number;
+  readonly requested_by_id: ID;
+  readonly started: boolean;
+  readonly started_at: string | null;
+  readonly started_at_override: string | null;
+  readonly story_links: Array<StoryLink>;
+  readonly story_type: StoryType;
+  readonly tasks: Array<Task>;
+  readonly task_ids: Array<number>;
+  readonly updated_at: string | null;
+  readonly workflow_state_id: number;
+  readonly pull_requests: Array<PullRequest>;
+}
+
+export declare type StoryLinkVerb = 'blocks' | 'duplicates' | 'relates to';
+
+export declare type StoryLink = {
+  id: ID;
   created_at: string;
-  cycle_time: number;
-  deadline: string | null;
-  description: string;
-  entity_type: string;
-  epic_id: number | null;
-  estimate: number | null;
-  external_id: string | null;
-  external_links: Array<string>;
-  files: Array<File>;
-  follower_ids: Array<ID>;
-  id: number;
-  iteration_id: number | null;
-  labels: Array<Label>;
-  lead_time: number;
-  linked_files: Array<LinkedFile>;
-  member_mention_ids: Array<ID>;
-  mention_ids: Array<ID>;
-  moved_at: string | null;
-  name: string;
-  owner_ids: Array<ID>;
-  position: number;
-  previous_iteration_ids: Array<number>;
-  project_id: number;
-  pull_requests: Array<PullRequest>;
-  requested_by_id: ID;
-  started: boolean;
-  started_at: string | null;
-  started_at_override: string | null;
-  story_type: StoryType;
-  tasks: Array<Task>;
-  task_ids: Array<ID>;
-  updated_at: string | null;
-  workflow_state_id: number;
+  updated_at: string;
+  type: string;
+  subject_id: ID;
+  object_id: ID;
+  verb: StoryLinkVerb;
 };
 
 export declare type Branch = {
@@ -378,10 +395,17 @@ export declare type Task = {
   updated_at: string | null;
 };
 
+export interface TaskType {
+  category: string;
+  detail?: string;
+}
+
 export type ApplicationMapping = Record<
   string,
   {name: string; platform?: string}
 >;
+
+export const MAX_DESCRIPTION_LENGTH = 1000;
 
 interface ClubhouseConfig {
   application_mapping?: ApplicationMapping;

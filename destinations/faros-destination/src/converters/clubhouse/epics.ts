@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Epic} from './common';
 
-export class BuildkiteEpics extends ClubhouseConverter {
+export class ClubhouseEpics extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   convert(
@@ -16,25 +16,28 @@ export class BuildkiteEpics extends ClubhouseConverter {
       {
         model: 'tms_Epic',
         record: {
-          uid: epic.id,
+          uid: String(epic.id),
           name: epic.name,
           description: epic.description,
-          project: {uid: epic.project_ids[0], source},
-          status: this.epicStatus(epic.state),
+          status: {
+            category: this.getEpicStatus(epic.state),
+          },
+          // TODO: epics and projects relation should be changed to N:N
+          project: undefined,
           source,
         },
       },
     ];
   }
 
-  private epicStatus(state: string): {category: string; detail: string} {
-    switch (state) {
-      case 'open':
-        return {category: 'InProgress', detail: state};
-      case 'closed':
-        return {category: 'Done', detail: state};
+  getEpicStatus(status: string): string {
+    switch (status) {
+      case 'done':
+        return 'Done';
+      case 'in progress':
+        return 'InProgress';
       default:
-        return {category: 'Custom', detail: state};
+        return 'Todo';
     }
   }
 }

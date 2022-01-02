@@ -1,12 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Iteration} from './common';
 
-export class BuildkiteIterationss extends ClubhouseConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_Iteration',
-  ];
+export class ClubhouseIterationss extends ClubhouseConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   convert(
     record: AirbyteRecord,
@@ -16,17 +15,29 @@ export class BuildkiteIterationss extends ClubhouseConverter {
     const iteration = record.record.data as Iteration;
     return [
       {
-        model: 'tms_Iteration',
+        model: 'tms_Sprint',
         record: {
-          uid: iteration.id,
+          uid: String(iteration.id),
           name: iteration.name,
-          labels: iteration.labels,
-          end_date: iteration.end_date,
-          entity_type: iteration.entity_type,
-          description: iteration.description,
+          state: this.getIterationState(iteration),
+          startedAt: Utils.toDate(iteration.start_date),
+          endedAt: Utils.toDate(iteration.end_date),
           source,
         },
       },
     ];
+  }
+
+  getIterationState(iteration: Iteration): string {
+    switch (iteration.status) {
+      case 'done':
+        return 'Closed';
+      case 'started':
+        return 'Active';
+      case 'unstarted':
+        return 'Future';
+      default:
+        return 'Default';
+    }
   }
 }

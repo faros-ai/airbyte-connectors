@@ -1,11 +1,15 @@
 import axios from 'axios';
 import Client, {
   Epic,
+  ID,
   Iteration,
+  Label,
   Member,
   Project,
+  PullRequest,
   Repository,
-  Story,
+  StoryLink,
+  Task,
 } from 'clubhouse-lib';
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
@@ -16,6 +20,53 @@ export interface ClubhouseConfig {
   readonly version: string;
   readonly project_public_id: number | null;
 }
+
+export declare type StoryType = 'bug' | 'chore' | 'feature';
+export interface Story {
+  readonly app_url: string;
+  readonly archived: boolean;
+  readonly blocked: boolean;
+  readonly blocker: boolean;
+  readonly comments: Array<Comment>;
+  readonly completed: boolean;
+  readonly completed_at: string | null;
+  readonly completed_at_override: string | null;
+  readonly created_at: string;
+  readonly cycle_time: number;
+  readonly deadline: string | null;
+  readonly description: string;
+  readonly entity_type: string;
+  readonly epic_id: number | null;
+  readonly estimate: number | null;
+  readonly external_id: string | null;
+  readonly external_links: Array<string>;
+  readonly files: Array<File>;
+  readonly follower_ids: Array<ID>;
+  readonly id: number;
+  readonly iteration_id: number | null;
+  readonly labels: Array<Label>;
+  readonly lead_time: number;
+  readonly member_mention_ids: Array<ID>;
+  readonly mention_ids: Array<ID>;
+  readonly moved_at: string | null;
+  readonly name: string;
+  readonly owner_ids: Array<ID>;
+  readonly position: number;
+  readonly previous_iteration_ids: Array<number>;
+  readonly project_id: number;
+  readonly requested_by_id: ID;
+  readonly started: boolean;
+  readonly started_at: string | null;
+  readonly started_at_override: string | null;
+  readonly story_links: Array<StoryLink>;
+  readonly story_type: StoryType;
+  readonly tasks: Array<Task>;
+  readonly task_ids: Array<number>;
+  readonly updated_at: string | null;
+  readonly workflow_state_id: number;
+  readonly pull_requests: Array<PullRequest>;
+}
+
 const DEFAULT_STORIES_START_DATE = new Date(-8640000000000000);
 const DEFAULT_STORIES_END_DATE = new Date();
 

@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Member} from './common';
 
-export class BuildkiteUsers extends ClubhouseConverter {
+export class ClubhouseUsers extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   convert(
@@ -11,14 +11,14 @@ export class BuildkiteUsers extends ClubhouseConverter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-    const member = record.record.data as Member;
+    const user = record.record.data as Member;
     return [
       {
         model: 'tms_User',
         record: {
-          uid: String(member.id),
-          emailAddress: member.profile.email_address,
-          name: member.profile.name,
+          uid: String(user.id),
+          name: user.profile.name,
+          emailAddress: user.profile.email_address,
           source,
         },
       },
