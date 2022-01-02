@@ -47,7 +47,7 @@ describe('buildkite', () => {
       organizations: 1,
       pipelines: 1,
       builds: 1,
-      BuildSteps: 1,
+      jobs: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -57,7 +57,6 @@ describe('buildkite', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 1,
       cicd_Organization: 1,
       cicd_Pipeline: 1,
       cicd_Build: 1,
