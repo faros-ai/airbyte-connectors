@@ -29,12 +29,6 @@
         "name": "mytestsource__clubhouse__members"
       },
       "destination_sync_mode": "append"
-    },
-    {
-      "stream": {
-        "name": "mytestsource__clubhouse__repositories"
-      },
-      "destination_sync_mode": "append"
     }
   ]
 } 

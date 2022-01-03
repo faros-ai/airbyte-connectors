@@ -48,7 +48,6 @@ describe('clubhouse', () => {
       iterations: 1,
       members: 1,
       projects: 3,
-      repositories: 0,
       stories: 1,
     };
     const processed = _(processedByStream)

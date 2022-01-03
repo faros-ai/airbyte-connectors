@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Member} from './common';
 
-export class ClubhouseUsers extends ClubhouseConverter {
+export class ClubhouseMembers extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   convert(
