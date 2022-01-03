@@ -62,11 +62,10 @@ describe('clubhouse', () => {
       tms_Project: 3,
       tms_Sprint: 1,
       tms_Task: 1,
-      tms_TaskBoard: 1,
-      tms_TaskBoardProjectRelationship: 1,
-      tms_TaskDependency: 1,
+      tms_TaskBoard: 3,
+      tms_TaskBoardProjectRelationship: 3,
+      tms_TaskBoardRelationship: 1,
       tms_TaskProjectRelationship: 1,
-      tms_TaskTag: 1,
       tms_User: 1,
     };
 
