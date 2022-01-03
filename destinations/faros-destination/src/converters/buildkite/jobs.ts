@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BuildkiteConverter, Job, JobState,JobTime} from './common';
+import {BuildkiteConverter, Job} from './common';
 
 export class BuildkiteJobs extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -45,92 +45,5 @@ export class BuildkiteJobs extends BuildkiteConverter {
         },
       },
     ];
-  }
-
-  convertBuildStepTime(buildStep: Job): JobTime {
-    const type = buildStep.type;
-    const defaultTime = {
-      createdAt: Utils.toDate(buildStep.createdAt),
-      startedAt: Utils.toDate(buildStep.startedAt),
-      endedAt: Utils.toDate(buildStep.finishedAt),
-    } as JobTime;
-    if (!type) {
-      return defaultTime;
-    }
-    switch (type) {
-      case 'JobTypeBlock':
-        defaultTime.createdAt = Utils.toDate(buildStep.unblockedAt);
-        defaultTime.startedAt = Utils.toDate(buildStep.unblockedAt);
-        defaultTime.endedAt = Utils.toDate(buildStep.unblockedAt);
-        break;
-      case 'JobTypeTrigger':
-        defaultTime.createdAt = Utils.toDate(buildStep.createdAt);
-        defaultTime.startedAt = Utils.toDate(buildStep.startedAt);
-        defaultTime.endedAt = Utils.toDate(buildStep.finishedAt);
-        break;
-      case 'JobTypeWait': // This type does not currently have timestamps
-      case 'JobTypeCommand':
-      default:
-        return defaultTime;
-    }
-    return defaultTime;
-  }
-
-  convertBuildStepState(state: string | undefined): {
-    category: string;
-    detail: string;
-  } {
-    if (!state) {
-      return {category: 'Unknown', detail: 'undefined'};
-    }
-    const detail = state.toLowerCase();
-
-    // Read more on Buildkite job states:
-    // https://buildkite.com/user/graphql/documentation/type/JobStates
-    switch (detail) {
-      case 'canceling':
-      case 'canceled':
-        return {category: 'Canceled', detail};
-      case 'blocked_failed':
-      case 'broken':
-      case 'timed_out':
-      case 'timing_out':
-      case 'unblocked_failed':
-      case 'waiting_failed':
-        return {category: 'Failed', detail};
-      case 'finished':
-        return {category: 'Success', detail};
-      case 'running':
-        return {category: 'Running', detail};
-      case 'scheduled':
-      case 'accepted':
-      case 'assigned':
-      case 'blocked':
-      case 'limited':
-      case 'limiting':
-      case 'waiting':
-        return {category: 'Queued', detail};
-      case 'skipped':
-      case 'pending':
-      case 'unblocked':
-      default:
-        return {category: 'Custom', detail};
-    }
-  }
-
-  convertBuildStepType(type: string): JobState {
-    if (!type) {
-      return {category: 'Custom', detail: 'undefined'} as JobState;
-    }
-    const detail = type;
-    switch (type) {
-      case 'JobTypeCommand':
-        return {category: 'Script', detail} as JobState;
-      case 'JobTypeBlock':
-        return {category: 'Manual', detail} as JobState;
-      case 'JobTypeWait':
-      default:
-        return {category: 'Custom', detail} as JobState;
-    }
   }
 }
