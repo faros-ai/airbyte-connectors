@@ -19,25 +19,12 @@ export class ClubhouseIterationss extends ClubhouseConverter {
         record: {
           uid: String(iteration.id),
           name: iteration.name,
-          state: this.getIterationState(iteration),
+          state: this.getSprintState(iteration),
           startedAt: Utils.toDate(iteration.start_date),
           endedAt: Utils.toDate(iteration.end_date),
           source,
         },
       },
     ];
-  }
-
-  getIterationState(iteration: Iteration): string {
-    switch (iteration.status) {
-      case 'done':
-        return 'Closed';
-      case 'started':
-        return 'Active';
-      case 'unstarted':
-        return 'Future';
-      default:
-        return 'Default';
-    }
   }
 }

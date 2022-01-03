@@ -29,15 +29,4 @@ export class ClubhouseEpics extends ClubhouseConverter {
       },
     ];
   }
-
-  getEpicStatus(status: string): string {
-    switch (status) {
-      case 'done':
-        return 'Done';
-      case 'in progress':
-        return 'InProgress';
-      default:
-        return 'Todo';
-    }
-  }
 }

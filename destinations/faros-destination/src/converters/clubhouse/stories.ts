@@ -51,7 +51,7 @@ export class ClubhouseStories extends ClubhouseConverter {
         description: story.description?.substring(0, MAX_DESCRIPTION_LENGTH),
         type: this.getTaskType(story.story_type),
         status: {
-          category: this.getStoryStatus(story),
+          category: this.getTaskStatus(story),
         },
         createdAt: Utils.toDate(story.created_at),
         updatedAt: story.updated_at
@@ -134,28 +134,5 @@ export class ClubhouseStories extends ClubhouseConverter {
       });
     }
     return res;
-  }
-
-  getTaskType(storyType: StoryType): TaskType {
-    const detail = storyType;
-    switch (storyType) {
-      case 'bug':
-        return {category: 'Bug', detail};
-      case 'chore':
-      case 'feature':
-        return {category: 'Story', detail};
-      default:
-        return {category: 'Custom', detail};
-    }
-  }
-
-  getStoryStatus(story: Story): string {
-    if (story.completed) {
-      return 'Done';
-    } else if (story.started) {
-      return 'InProgress';
-    } else {
-      return 'Todo';
-    }
   }
 }

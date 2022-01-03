@@ -400,6 +400,34 @@ export interface TaskType {
   detail?: string;
 }
 
+enum EpicStatusCategory {
+  Custom = 'Custom',
+  Done = 'Done',
+  InProgress = 'InProgress',
+  Todo = 'Todo',
+}
+
+enum TaskCategory {
+  Bug = 'Bug',
+  Custom = 'Custom',
+  Story = 'Story',
+  Task = 'Task',
+}
+
+enum TaskStatusCategory {
+  Custom = 'Custom',
+  Done = 'Done',
+  InProgress = 'InProgress',
+  Todo = 'todo',
+}
+
+enum SprintState {
+  Active = 'Active',
+  Closed = 'Closed',
+  Future = 'Future',
+  Default = 'Default',
+}
+
 export type ApplicationMapping = Record<
   string,
   {name: string; platform?: string}
@@ -423,7 +451,50 @@ export abstract class ClubhouseConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected ClubhouseConfig(ctx: StreamContext): ClubhouseConfig {
-    return ctx.config.source_specific_configs?.Clubhouse ?? {};
+  getEpicStatus(status: string): string {
+    switch (status) {
+      case 'done':
+        return EpicStatusCategory.Done;
+      case 'in progress':
+        return EpicStatusCategory.InProgress;
+      default:
+        return EpicStatusCategory.Todo;
+    }
+  }
+
+  getSprintState(iteration: Iteration): string {
+    switch (iteration.status) {
+      case 'done':
+        return SprintState.Closed;
+      case 'started':
+        return SprintState.Active;
+      case 'unstarted':
+        return SprintState.Future;
+      default:
+        return SprintState.Default;
+    }
+  }
+
+  getTaskType(storyType: StoryType): TaskType {
+    const detail = storyType;
+    switch (storyType) {
+      case 'bug':
+        return {category: TaskCategory.Bug, detail};
+      case 'chore':
+      case 'feature':
+        return {category: TaskCategory.Story, detail};
+      default:
+        return {category: TaskCategory.Custom, detail};
+    }
+  }
+
+  getTaskStatus(story: Story): string {
+    if (story.completed) {
+      return TaskStatusCategory.Done;
+    } else if (story.started) {
+      return TaskStatusCategory.InProgress;
+    } else {
+      return TaskStatusCategory.Todo;
+    }
   }
 }
