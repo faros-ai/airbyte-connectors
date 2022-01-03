@@ -32,7 +32,7 @@
     "prettier": "^2.5.0",
     "pino-pretty": "^7.2.0",
     "temp": "^0.9.4",
-    "ts-essentials": "^8.1.0",
+    "ts-essentials": "^9.1.2",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
