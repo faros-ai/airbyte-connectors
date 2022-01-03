@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ClubhouseConverter, Iteration} from './common';
 
-export class ClubhouseIterationss extends ClubhouseConverter {
+export class ClubhouseIterations extends ClubhouseConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   convert(
