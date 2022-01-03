@@ -426,8 +426,4 @@ export abstract class ClubhouseConverter extends Converter {
   protected ClubhouseConfig(ctx: StreamContext): ClubhouseConfig {
     return ctx.config.source_specific_configs?.Clubhouse ?? {};
   }
-
-  protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.ClubhouseConfig(ctx).application_mapping ?? {};
-  }
 }
