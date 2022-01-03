@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BuildkiteConverter, Job} from './common';
+import {BuildkiteConverter, Job, JobState,JobTime} from './common';
 
 export class BuildkiteJobs extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -47,38 +47,33 @@ export class BuildkiteJobs extends BuildkiteConverter {
     ];
   }
 
-  convertBuildStepTime(buildStep: Job): {
-    createdAt?: Date;
-    startedAt?: Date;
-    endedAt?: Date;
-  } {
+  convertBuildStepTime(buildStep: Job): JobTime {
     const type = buildStep.type;
     const defaultTime = {
       createdAt: Utils.toDate(buildStep.createdAt),
       startedAt: Utils.toDate(buildStep.startedAt),
       endedAt: Utils.toDate(buildStep.finishedAt),
-    };
+    } as JobTime;
     if (!type) {
       return defaultTime;
     }
     switch (type) {
       case 'JobTypeBlock':
-        return {
-          createdAt: Utils.toDate(buildStep.unblockedAt),
-          startedAt: Utils.toDate(buildStep.unblockedAt),
-          endedAt: Utils.toDate(buildStep.unblockedAt),
-        };
+        defaultTime.createdAt = Utils.toDate(buildStep.unblockedAt);
+        defaultTime.startedAt = Utils.toDate(buildStep.unblockedAt);
+        defaultTime.endedAt = Utils.toDate(buildStep.unblockedAt);
+        break;
       case 'JobTypeTrigger':
-        return {
-          createdAt: Utils.toDate(buildStep.triggered.createdAt),
-          startedAt: Utils.toDate(buildStep.triggered.startedAt),
-          endedAt: Utils.toDate(buildStep.triggered.finishedAt),
-        };
+        defaultTime.createdAt = Utils.toDate(buildStep.createdAt);
+        defaultTime.startedAt = Utils.toDate(buildStep.startedAt);
+        defaultTime.endedAt = Utils.toDate(buildStep.finishedAt);
+        break;
       case 'JobTypeWait': // This type does not currently have timestamps
       case 'JobTypeCommand':
       default:
         return defaultTime;
     }
+    return defaultTime;
   }
 
   convertBuildStepState(state: string | undefined): {
@@ -123,22 +118,19 @@ export class BuildkiteJobs extends BuildkiteConverter {
     }
   }
 
-  convertBuildStepType(type: string): {
-    category: string;
-    detail: string;
-  } {
+  convertBuildStepType(type: string): JobState {
     if (!type) {
-      return {category: 'Custom', detail: 'undefined'};
+      return {category: 'Custom', detail: 'undefined'} as JobState;
     }
     const detail = type;
     switch (type) {
       case 'JobTypeCommand':
-        return {category: 'Script', detail};
+        return {category: 'Script', detail} as JobState;
       case 'JobTypeBlock':
-        return {category: 'Manual', detail};
+        return {category: 'Manual', detail} as JobState;
       case 'JobTypeWait':
       default:
-        return {category: 'Custom', detail};
+        return {category: 'Custom', detail} as JobState;
     }
   }
 }

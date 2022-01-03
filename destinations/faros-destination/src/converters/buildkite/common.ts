@@ -68,6 +68,16 @@ export interface Job {
   };
 }
 
+export interface JobTime {
+  createdAt?: Date;
+  startedAt?: Date;
+  endedAt?: Date;
+}
+
+export interface JobState {
+  category: string;
+  detail: string;
+}
 export interface Pipeline {
   readonly id: string;
   readonly uuid: string;
@@ -101,24 +111,10 @@ export interface RepoExtract {
 export interface Provider {
   readonly name: RepoSource;
 }
-
-export class BuildkiteCommon {
-  // Max length for free-form description text fields such as issue body
-  static readonly MAX_DESCRIPTION_LENGTH = 1000;
-}
-
 /** Buildkite converter base */
 export abstract class BuildkiteConverter extends Converter {
   /** Almost every Buildkite record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  protected BuildkiteConfig(ctx: StreamContext): BuildkiteConfig {
-    return ctx.config.source_specific_configs?.Buildkite ?? {};
-  }
-
-  protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.BuildkiteConfig(ctx).application_mapping ?? {};
   }
 }

@@ -38,9 +38,9 @@ export interface Build {
   readonly uuid: string;
   readonly number: number;
   readonly message: number;
-  readonly createdAt?: Date;
-  readonly startedAt?: Date;
-  readonly finishedAt?: Date;
+  readonly createdAt?: string;
+  readonly startedAt?: string;
+  readonly finishedAt?: string;
   readonly state: string;
   readonly url: string;
   readonly commit: string;
@@ -60,16 +60,16 @@ export interface Job {
   readonly label?: string;
   readonly state: string;
 
-  readonly createdAt?: Date;
-  readonly startedAt?: Date;
-  readonly finishedAt?: Date;
+  readonly createdAt?: string;
+  readonly startedAt?: string;
+  readonly finishedAt?: string;
 
   readonly triggered?: {
-    startedAt?: Date;
-    createdAt?: Date;
-    finishedAt?: Date;
+    startedAt?: string;
+    createdAt?: string;
+    finishedAt?: string;
   };
-  readonly unblockedAt?: Date;
+  readonly unblockedAt?: string;
 
   readonly url?: string;
   readonly command: string;
@@ -94,7 +94,7 @@ export interface Pipeline {
   readonly url: string;
   readonly description?: string;
   readonly repository?: Repo;
-  readonly createdAt?: Date;
+  readonly createdAt?: string;
   readonly organization?: {
     slug?: string;
   };

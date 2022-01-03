@@ -8,10 +8,6 @@ import {Dictionary} from 'ts-essentials';
 
 import {Buildkite, BuildkiteConfig, Pipeline} from '../buildkite/buildkite';
 
-interface PipelineState {
-  lastUpdatedAt: string;
-}
-
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     private readonly config: BuildkiteConfig,
