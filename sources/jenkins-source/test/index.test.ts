@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import jenkinsClient from 'jenkins';
-import {mocked} from 'ts-jest/utils';
+import {mocked} from 'jest-mock';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
