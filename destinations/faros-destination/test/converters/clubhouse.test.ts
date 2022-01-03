@@ -44,7 +44,6 @@ describe('clubhouse', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      epics: 2,
       iterations: 1,
       members: 1,
       projects: 3,
@@ -58,7 +57,6 @@ describe('clubhouse', () => {
       .value();
 
     const writtenByModel = {
-      tms_Epic: 2,
       tms_Project: 3,
       tms_Sprint: 1,
       tms_Task: 1,
