@@ -35,8 +35,8 @@
       },
       "project_public_id":{
         "type": "number",
-        "title": "project public ID",
-        "description": "Using project public ID to pull it's stories, if null will pull all stories"
+        "title": "project public ID", 
+        "description": "If set it will pull all stories from only this project. If no it pull all stories from all projects"
       }
     }
   }
