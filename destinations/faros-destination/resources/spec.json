@@ -114,6 +114,21 @@
                 "title": "Use Board Ownership",
                 "description": "Use Jira boards for assigning owners of tasks, or use projects.",
                 "default": false
+              },
+              "truncate_limit": {
+                "type": "number",
+                "title": "Truncate Limit",
+                "description": "Truncate the descriptions of projects, tasks, and epics.",
+                "default": 10000
+              },
+              "exclude_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Exclude Fields",
+                "description": "List of fields to exclude when saving tasks. Defaults to no exclusions.",
+                "default": []
               }
             }
           },

@@ -17,7 +17,9 @@ enum IncidentEventTypeCategory {
 }
 
 export class PagerdutyIncidentLogEntries extends PagerdutyConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_IncidentEvent'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'ims_IncidentEvent',
+  ];
 
   convert(
     record: AirbyteRecord,

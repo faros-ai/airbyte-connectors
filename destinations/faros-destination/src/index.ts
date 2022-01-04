@@ -18,6 +18,7 @@ import {
 import {
   EntryUploaderConfig,
   FarosClient,
+  Utils,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
@@ -168,6 +169,13 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(
         'JSONata destination models must be set when using JSONata expression'
       );
+    }
+    const jira_configs = config.source_specific_configs?.jira ?? {};
+    if (
+      typeof jira_configs.truncate_limit === 'number' &&
+      jira_configs.truncate_limit < 0
+    ) {
+      throw new VError('Jira Truncate Limit must be a non-negative number');
     }
     try {
       this.jsonataConverter = config.jsonata_expression

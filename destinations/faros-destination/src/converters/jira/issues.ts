@@ -8,6 +8,7 @@ import {
   keyBy,
   last,
   mapValues,
+  pick,
   toLower,
 } from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -468,40 +469,44 @@ export class JiraIssues extends JiraConverter {
       : null;
     const epicKey =
       parent?.type === 'Epic' ? parent.key : this.getIssueEpic(issue);
-    // TODO: PRs
     const sprint = this.getSprintId(issue);
     const type = issue.fields.issuetype?.name;
 
-    results.push({
-      model: 'tms_Task',
-      record: {
-        uid: issue.key,
-        name: issue.fields.summary,
-        description,
-        type: {
-          category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
-          detail: type,
-        },
-        status: {
-          category: statusCategories.get(
-            JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
-          ),
-          detail: issue.fields.status?.name,
-        },
-        priority: issue.fields.priority?.name,
-        createdAt: created,
-        updatedAt: Utils.toDate(issue.fields.updated),
-        statusChangedAt: statusChanged,
-        statusChangelog,
-        points: this.getPoints(issue) ?? null,
-        creator: creator ? {uid: creator, source} : null,
-        parent: parent?.key ? {uid: parent.key, source} : null,
-        epic: epicKey ? {uid: epicKey, source} : null,
-        sprint: sprint ? {uid: sprint, source} : null,
-        source,
-        additionalFields,
+    const task = {
+      uid: issue.key,
+      name: issue.fields.summary,
+      description: this.truncate(ctx, description),
+      type: {
+        category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
+        detail: type,
       },
-    });
+      status: {
+        category: statusCategories.get(
+          JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
+        ),
+        detail: issue.fields.status?.name,
+      },
+      priority: issue.fields.priority?.name,
+      createdAt: created,
+      updatedAt: Utils.toDate(issue.fields.updated),
+      statusChangedAt: statusChanged,
+      statusChangelog,
+      points: this.getPoints(issue) ?? null,
+      creator: creator ? {uid: creator, source} : null,
+      parent: parent?.key ? {uid: parent.key, source} : null,
+      epic: epicKey ? {uid: epicKey, source} : null,
+      sprint: sprint ? {uid: sprint, source} : null,
+      source,
+      additionalFields,
+    };
+
+    const excludeFields = this.excludeFields(ctx);
+    if (excludeFields.size > 0) {
+      const keys = Object.keys(task).filter((f) => !excludeFields.has(f));
+      results.push({model: 'tms_Task', record: pick(task, keys)});
+    } else {
+      results.push({model: 'tms_Task', record: task});
+    }
 
     return results;
   }

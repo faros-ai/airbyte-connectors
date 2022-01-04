@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {isString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Converter, StreamContext} from '../converter';
@@ -44,6 +45,7 @@ export class JiraCommon {
   static DEV_FIELD_NAME = 'Development';
   static EPIC_LINK_FIELD_NAME = 'Epic Link';
   static SPRINT_FIELD_NAME = 'Sprint';
+  static DEFAULT_TRUNCATE_LIMIT = 10_000;
 
   static normalize(str: string): string {
     return str.replace(/\s/g, '').toLowerCase();
@@ -55,7 +57,9 @@ export const JiraStatusCategories: ReadonlyMap<string, string> = new Map(
 );
 
 export interface JiraConfig {
+  exclude_fields?: string[];
   use_board_ownership?: boolean;
+  truncate_limit?: number;
 }
 
 export abstract class JiraConverter extends Converter {
@@ -66,6 +70,23 @@ export abstract class JiraConverter extends Converter {
 
   protected jiraConfig(ctx: StreamContext): JiraConfig {
     return ctx.config.source_specific_configs?.jira ?? {};
+  }
+
+  protected excludeFields(ctx: StreamContext): Set<string> {
+    return new Set(this.jiraConfig(ctx).exclude_fields ?? []);
+  }
+
+  protected truncateLimit(ctx: StreamContext): number {
+    return (
+      this.jiraConfig(ctx).truncate_limit ?? JiraCommon.DEFAULT_TRUNCATE_LIMIT
+    );
+  }
+
+  protected truncate(ctx: StreamContext, str?: string): string | undefined {
+    if (isString(str) && str.length > this.truncateLimit(ctx)) {
+      return str.substring(0, this.truncateLimit(ctx));
+    }
+    return str;
   }
 
   protected useBoardOwnership(ctx: StreamContext): boolean {
