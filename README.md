@@ -31,6 +31,8 @@ GoogleCalendar Source | [sources/googlecalendar-source](sources/googlecalendar-s
 7. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope faros-destination`)
 8. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope faros-destination`)
 
+👉 Follow our guide on how to develop a new source [here](https://github.com/faros-ai/airbyte-connectors/tree/main/sources#developing-an-airbyte-source).
+
 ## Other useful commands
 
 1. Audit fix `npm audit fix`

@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node
-        uses: actions/setup-node@v2.5.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 14
 
@@ -81,7 +81,7 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" ]; then
+            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" -a "$source" != "jenkins-source" ]; then
               ./scripts/source-acceptance-test.sh $source
             fi
           done

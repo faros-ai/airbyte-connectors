@@ -4,14 +4,14 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   ComponentStatus,
-  IncidentImpact,
   IncidentPriority,
   IncidentPriorityCategory,
   IncidentSeverity,
   IncidentSeverityCategory,
-  IncidentStatus,
   IncidentStatusCategory,
   StatuspageConverter,
+  StatuspageIncidentImpact,
+  StatuspageIncidentStatus,
 } from './common';
 
 export class StatuspageIncidents extends StatuspageConverter {
@@ -42,7 +42,7 @@ export class StatuspageIncidents extends StatuspageConverter {
     for (const update of incident.incident_updates) {
       const eventTime = Utils.toDate(update.created_at);
 
-      if (update.status === IncidentStatus.Investigating) {
+      if (update.status === StatuspageIncidentStatus.Investigating) {
         acknowledgedAt = eventTime;
       }
     }
@@ -99,16 +99,16 @@ export class StatuspageIncidents extends StatuspageConverter {
     return res;
   }
 
-  private getPriority(impact: IncidentImpact): IncidentPriority {
+  private getPriority(impact: StatuspageIncidentImpact): IncidentPriority {
     const detail: string = impact;
     switch (impact) {
-      case IncidentImpact.Critical:
+      case StatuspageIncidentImpact.Critical:
         return {category: IncidentPriorityCategory.Critical, detail};
-      case IncidentImpact.Major:
+      case StatuspageIncidentImpact.Major:
         return {category: IncidentPriorityCategory.High, detail};
-      case IncidentImpact.Minor:
+      case StatuspageIncidentImpact.Minor:
         return {category: IncidentPriorityCategory.Medium, detail};
-      case IncidentImpact.None:
+      case StatuspageIncidentImpact.None:
         return {category: IncidentPriorityCategory.Low, detail};
       default:
         return {category: IncidentPriorityCategory.Custom, detail};
@@ -133,19 +133,20 @@ export class StatuspageIncidents extends StatuspageConverter {
     }
   }
 
-  private getIncidentStatus(incidentState: IncidentStatus): {
+  private getIncidentStatus(incidentState: StatuspageIncidentStatus): {
     category: string;
     detail: string;
   } {
     const detail = incidentState;
     switch (incidentState) {
-      case 'investigating':
+      case StatuspageIncidentStatus.Investigating:
         return {category: IncidentStatusCategory.Investigating, detail};
-      case 'identified':
+      case StatuspageIncidentStatus.Identified:
         return {category: IncidentStatusCategory.Identified, detail};
-      case 'monitoring':
+      case StatuspageIncidentStatus.Monitoring:
+      case StatuspageIncidentStatus.Postmortem:
         return {category: IncidentStatusCategory.Monitoring, detail};
-      case 'resolved':
+      case StatuspageIncidentStatus.Resolved:
         return {category: IncidentStatusCategory.Resolved, detail};
       default:
         return {category: IncidentStatusCategory.Custom, detail};

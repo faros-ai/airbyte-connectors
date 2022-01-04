@@ -1,12 +1,27 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, StreamContext} from '../converter';
-export {IncidentStatus, Component, IncidentImpact} from 'statuspage.io';
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 interface StatuspageConfig {
   application_mapping?: ApplicationMapping;
+}
+
+export interface Component {
+  created_at: string;
+  description: string | null;
+  group: boolean;
+  group_id: string | null;
+  id: string;
+  name: string;
+  only_show_if_degraded: boolean;
+  page_id: string;
+  position: number;
+  showcase: boolean;
+  start_date: string | null;
+  status: string;
+  updated_at: string;
 }
 
 export enum ComponentStatus {
@@ -27,6 +42,21 @@ export enum IncidentEventTypeCategory {
 export interface IncidentEventType {
   category: IncidentEventTypeCategory;
   detail: string;
+}
+
+export enum StatuspageIncidentImpact {
+  Critical = 'critical',
+  Major = 'major',
+  Minor = 'minor',
+  None = 'none',
+}
+
+export enum StatuspageIncidentStatus {
+  Identified = 'identified',
+  Investigating = 'investigating',
+  Monitoring = 'monitoring',
+  Postmortem = 'postmortem',
+  Resolved = 'resolved',
 }
 
 export enum IncidentStatusCategory {
