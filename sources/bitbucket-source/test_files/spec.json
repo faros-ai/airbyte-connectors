@@ -38,7 +38,10 @@
       "repository": {
         "type": "array",
         "title": "Bitbucket Workspace's Repository", 
-        "description": "List of Bitbucket repositories"
+        "description": "List of Bitbucket repositories",
+        "items": {
+          "type": "string"
+        }
       },
       "pipeline": {
         "type": "array",

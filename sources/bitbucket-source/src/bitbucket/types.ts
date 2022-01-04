@@ -467,7 +467,7 @@ export interface PullRequest {
       readonly htmlUrl: string;
     };
   };
-  readonly mergeCommit: null | {
+  readonly mergeCommit?: null | {
     readonly hash: string;
     readonly type: string;
     readonly links: {

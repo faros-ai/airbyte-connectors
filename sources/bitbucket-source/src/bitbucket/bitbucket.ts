@@ -202,8 +202,10 @@ export class Bitbucket {
             deployment.environment.uuid
           );
         } catch (err) {
-          this.logger.warn('Error fetching environment for repository');
-          this.logger.error(JSON.stringify(this.buildInnerError(err)));
+          const stringifiedError = JSON.stringify(this.buildInnerError(err));
+          this.logger.warn(
+            `Error fetching environment for repository: ${repoSlug}. Error: ${stringifiedError}`
+          );
         }
         yield res;
       }

@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Repository} from '../bitbucket/types';
 
-type RepositoryState = {cutoff?: string} | undefined;
+type RepositoryState = {cutoff?: string};
 
 export class Repositories extends AirbyteStreamBase {
   constructor(
@@ -49,7 +49,7 @@ export class Repositories extends AirbyteStreamBase {
     return {
       cutoff:
         new Date(latestRecord.updatedOn) >
-        new Date(currentStreamState.cutoff ?? 0)
+        new Date(currentStreamState?.cutoff ?? 0)
           ? latestRecord.updatedOn
           : currentStreamState.cutoff,
     };
