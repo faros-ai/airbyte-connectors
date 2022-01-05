@@ -1,4 +1,4 @@
-# GoogleCalendar Source
+# Google Calendar Source
 
 This is the repository for the GoogleCalendar source connector, written in Typescript.
 For information about how to use this connector within Airbyte, see [the
