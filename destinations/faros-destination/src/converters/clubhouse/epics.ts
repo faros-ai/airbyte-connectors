@@ -22,8 +22,6 @@ export class ClubhouseEpics extends ClubhouseConverter {
           status: {
             category: this.getEpicStatus(epic.state),
           },
-          // TODO: epics and projects relation should be changed to N:N
-          project: undefined,
           source,
         },
       },

@@ -54,9 +54,7 @@ export class ClubhouseStories extends ClubhouseConverter {
           category: this.getTaskStatus(story),
         },
         createdAt: Utils.toDate(story.created_at),
-        updatedAt: story.updated_at
-          ? Utils.toDate(story.updated_at)
-          : undefined,
+        updatedAt: Utils.toDate(story.updated_at),
         creator: story.requested_by_id
           ? {uid: String(story.requested_by_id), source}
           : undefined,
