@@ -1,6 +1,6 @@
 # Google Calendar Source
 
-This is the repository for the GoogleCalendar source connector, written in Typescript.
+This is the repository for the Google Calendar source connector, written in Typescript.
 For information about how to use this connector within Airbyte, see [the
 documentation](https://docs.airbyte.io/integrations/sources/googlecalendar).
 
@@ -19,10 +19,10 @@ npm run prepare
 ```
 
 This will install all required dependencies and build all included connectors,
-including the GoogleCalendar source connector.
+including the Google Calendar source connector.
 
-Now you can cd into the GoogleCalendar connector directory, `sources/googlecalendar-source`,
-and iterate on the GoogleCalendar source connector. After making code changes, run:
+Now you can cd into the Google Calendar connector directory, `sources/googlecalendar-source`,
+and iterate on the Google Calendar source connector. After making code changes, run:
 ```
 npm run build
 ```
@@ -54,7 +54,7 @@ docker build . --build-arg path=sources/googlecalendar-source -t googlecalendar-
 ```
 
 #### Run
-Then return to the GoogleCalendar connector directory and run any of the connector
+Then return to the Google Calendar connector directory and run any of the connector
 commands as follows:
 ```
 docker run --rm googlecalendar-source spec
@@ -66,7 +66,7 @@ docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files goog
 ## Testing
 
 ### Unit Tests
-To run unit tests locally, from the GoogleCalendar connector directory run:
+To run unit tests locally, from the Google Calendar connector directory run:
 ```
 npm test
 ```
