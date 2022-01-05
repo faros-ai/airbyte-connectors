@@ -177,6 +177,14 @@ class FarosDestination extends AirbyteDestination {
     ) {
       throw new VError('Jira Truncate Limit must be a non-negative number');
     }
+    if (
+      typeof jira_configs.additional_fields_array_limit === 'number' &&
+      jira_configs.additional_fields_array_limit < 0
+    ) {
+      throw new VError(
+        'Jira Additional Fields Array Limit must be a non-negative number'
+      );
+    }
     try {
       this.jsonataConverter = config.jsonata_expression
         ? JSONataConverter.make(

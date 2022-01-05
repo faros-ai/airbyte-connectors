@@ -275,6 +275,79 @@ export class JiraIssues extends JiraConverter {
     };
   }
 
+  /**
+   * Attempts to retrieve a field's value from several typical locations within
+   * the field's JSON blob. If the blob is an array, then each item's value will
+   * be added to an array of strings which will be an entry in the returned
+   * object. Also each item in the array will be exploded across the returned
+   * object with the key '<name>_<index>'. If nothing can be done, then
+   * the JSON blob is set to the additional field's value after being stringified.
+   *
+   * @param name      The name of the additional field
+   * @param jsonValue The field's JSON blob to retrieve the value from
+   * @return          The Record of additional fields
+   */
+  private retrieveAdditionalFieldValue(
+    ctx: StreamContext,
+    name: string,
+    jsonValue: any
+  ): Record<string, string> {
+    const additionalFields = {};
+
+    if (!jsonValue || isString(jsonValue)) {
+      additionalFields[name] = jsonValue;
+      return additionalFields;
+    }
+
+    const retrievedValue = this.retrieveFieldValue(jsonValue);
+    if (retrievedValue) {
+      additionalFields[name] = this.stringifyNonString(retrievedValue);
+      return additionalFields;
+    }
+
+    if (Array.isArray(jsonValue)) {
+      // Truncate the array to the array limit
+      const inputArray = jsonValue.slice(
+        0,
+        this.additionalFieldsArrayLimit(ctx)
+      );
+
+      const resultArray = inputArray.map((item, index) => {
+        const val = this.retrieveFieldValue(item) ?? item;
+        // Also explode each item across additional fields
+        additionalFields[name + '_' + index] = this.stringifyNonString(val);
+        return val;
+      });
+
+      additionalFields[name] = JSON.stringify(resultArray);
+      return additionalFields;
+    }
+
+    // Nothing could be retrieved
+    additionalFields[name] = this.stringifyNonString(jsonValue);
+    return additionalFields;
+  }
+
+  /**
+   * Check for existence of the members 'value', 'name' and then
+   * 'displayName'in that order and return when one is found
+   * (or undefined if none).
+   *
+   * @param jsonValue The object whose members should be considered
+   * @returns         The value, name or displayName within the object
+   */
+  private retrieveFieldValue(jsonValue: any): any | undefined {
+    let val;
+    if (jsonValue?.value) {
+      val = jsonValue.value;
+    } else if (jsonValue?.name) {
+      val = jsonValue.name;
+    } else if (jsonValue?.displayName) {
+      val = jsonValue.displayName;
+    }
+    return val;
+  }
+
   private getPullRequests(
     ctx: StreamContext,
     issueId: string
@@ -304,6 +377,10 @@ export class JiraIssues extends JiraConverter {
       );
     }
     return pulls;
+  }
+
+  private stringifyNonString(value: any): string {
+    return isString(value) ? value : JSON.stringify(value);
   }
 
   convert(
@@ -431,9 +508,9 @@ export class JiraIssues extends JiraConverter {
     }
 
     // Rewrite keys of additional fields to use names instead of ids
-    const additionalFields: any[] = [];
+    let additionalFieldsMap: Record<string, string> = {};
     for (const [id, name] of Object.entries(this.fieldNameById)) {
-      let value = issue.fields[id];
+      const value = issue.fields[id];
       if (
         JiraIssues.standardFieldIds.includes(id) ||
         JiraIssues.fieldsToIgnore.includes(name)
@@ -441,15 +518,21 @@ export class JiraIssues extends JiraConverter {
         continue;
       } else if (name && value) {
         try {
-          // Stringify arrays, objects, booleans, and numbers
-          value = isString(value) ? value : JSON.stringify(value);
-          additionalFields.push({name, value});
+          additionalFieldsMap = Object.assign(
+            additionalFieldsMap,
+            this.retrieveAdditionalFieldValue(ctx, name, value)
+          );
         } catch (err) {
           this.logger.warn(
             `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
           );
         }
       }
+    }
+
+    const additionalFields: any[] = [];
+    for (const [name, value] of Object.entries(additionalFieldsMap)) {
+      additionalFields.push({name, value});
     }
 
     let description = null;
