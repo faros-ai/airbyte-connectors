@@ -8,16 +8,16 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {Clubhouse, ClubhouseConfig} from '../src/clubhouse';
 import * as sut from '../src/index';
+import {Shortcut, ShortcutConfig} from '../src/shortcut';
 
-const ClubhouseInstance = Clubhouse.instance;
+const ShortcutInstance = Shortcut.instance;
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-function readConfig(): ClubhouseConfig {
-  return readTestResourceFile('config.json') as ClubhouseConfig;
+function readConfig(): ShortcutConfig {
+  return readTestResourceFile('config.json') as ShortcutConfig;
 }
 describe('index', () => {
   const logger = new AirbyteLogger(
@@ -28,16 +28,16 @@ describe('index', () => {
   );
 
   beforeEach(() => {
-    Clubhouse.instance = ClubhouseInstance;
+    Shortcut.instance = ShortcutInstance;
   });
   test('spec', async () => {
-    const source = new sut.ClubhouseSource(logger);
+    const source = new sut.ShortcutSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
   });
   // test('check connection', async () => {
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const config = readConfig();
   //   await expect(
   //     source.checkConnection({
@@ -50,13 +50,13 @@ describe('index', () => {
   //   const fileName = 'projects.json';
   //   const fnFunc = jest.fn();
 
-  //   Clubhouse.instance = jest.fn().mockImplementation(() => {
-  //     return new Clubhouse({
+  //   Shortcut.instance = jest.fn().mockImplementation(() => {
+  //     return new Shortcut({
   //       get: readConfig(),
   //     } as any);
   //   });
 
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[0];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -70,7 +70,7 @@ describe('index', () => {
 
   // test('streams - iterations, use full_refresh sync mode', async () => {
   //   const fileName = 'iterations.json';
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[1];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -82,7 +82,7 @@ describe('index', () => {
   // });
   // test('streams - epics, use full_refresh sync mode', async () => {
   //   const fileName = 'epics.json';
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[2];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -94,7 +94,7 @@ describe('index', () => {
   // });
   // test('streams - stories, use full_refresh sync mode', async () => {
   //   const fileName = 'stories.json';
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[3];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -106,7 +106,7 @@ describe('index', () => {
   // });
   // test('streams - members, use full_refresh sync mode', async () => {
   //   const fileName = 'members.json';
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[4];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -118,7 +118,7 @@ describe('index', () => {
   // });
   // test('streams - repositories, use full_refresh sync mode', async () => {
   //   const fileName = 'repositories.json';
-  //   const source = new sut.ClubhouseSource(logger);
+  //   const source = new sut.ShortcutSource(logger);
   //   const streams = source.streams(readConfig());
   //   const stream = streams[5];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);

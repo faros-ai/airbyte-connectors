@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Clubhouse, ClubhouseConfig} from './clubhouse';
+import {Shortcut, ShortcutConfig} from './shortcut';
 import {
   Epics,
   Iterations,
@@ -21,19 +21,19 @@ import {
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new ClubhouseSource(logger);
+  const source = new ShortcutSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
-/** Clubhouse source implementation. */
-export class ClubhouseSource extends AirbyteSourceBase {
+/** Shortcut source implementation. */
+export class ShortcutSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const clubhouse = new Clubhouse(config as ClubhouseConfig);
-      await clubhouse.checkConnection();
+      const shortcut = new Shortcut(config as ShortcutConfig);
+      await shortcut.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -42,12 +42,12 @@ export class ClubhouseSource extends AirbyteSourceBase {
 
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
-      new Projects(config as ClubhouseConfig, this.logger),
-      new Iterations(config as ClubhouseConfig, this.logger),
-      new Epics(config as ClubhouseConfig, this.logger),
-      new Stories(config as ClubhouseConfig, this.logger),
-      new Members(config as ClubhouseConfig, this.logger),
-      new Repositories(config as ClubhouseConfig, this.logger),
+      new Projects(config as ShortcutConfig, this.logger),
+      new Iterations(config as ShortcutConfig, this.logger),
+      new Epics(config as ShortcutConfig, this.logger),
+      new Stories(config as ShortcutConfig, this.logger),
+      new Members(config as ShortcutConfig, this.logger),
+      new Repositories(config as ShortcutConfig, this.logger),
     ];
   }
 }

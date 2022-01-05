@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ClubhouseConverter, Iteration} from './common';
+import {Iteration,ShortcutConverter} from './common';
 
-export class ClubhouseIterations extends ClubhouseConverter {
+export class ShortcutIterations extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   convert(

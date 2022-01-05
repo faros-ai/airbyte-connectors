@@ -2,7 +2,7 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "clubhouse Spec",
+    "title": "shortcut Spec",
     "type": "object",
     "required": [
       "base_url",
@@ -13,8 +13,8 @@
     "properties": {
       "base_url": {
         "type": "string",
-        "title": "Clubhouse Base URL",
-        "description":"Clubhouse Base URL",
+        "title": "Shortcut Base URL",
+        "description":"Shortcut Base URL",
         "default":"https://api.app.shortcut.com",
         "examples": [
           "https://api.app.shortcut.com"
@@ -22,8 +22,8 @@
       },
       "version": {
         "type": "string",
-        "title": "Clubhouse version",
-        "description":"Clubhouse version",
+        "title": "Shortcut version",
+        "description":"Shortcut version",
         "default":"v3",
         "examples": [
           "v3"
@@ -31,7 +31,7 @@
       },
       "token": {
         "type": "string",
-        "title": "Clubhouse Token",
+        "title": "Shortcut Token",
         "description": "In order to generate a Workspace specific API token, navigate to Settings > Your Account > API Tokens.",
         "airbyte_secret": true
       },

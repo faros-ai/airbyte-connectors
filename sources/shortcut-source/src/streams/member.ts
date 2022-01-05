@@ -1,4 +1,4 @@
-import {Iteration} from 'clubhouse-lib';
+import {Member} from 'clubhouse-lib';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -7,16 +7,16 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Clubhouse, ClubhouseConfig} from '../clubhouse';
-export class Iterations extends AirbyteStreamBase {
+import {Shortcut, ShortcutConfig} from '../shortcut';
+export class Members extends AirbyteStreamBase {
   constructor(
-    private readonly config: ClubhouseConfig,
+    private readonly config: ShortcutConfig,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
   }
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/iterations.json');
+    return require('../../resources/schemas/members.json');
   }
   get primaryKey(): StreamKey {
     return ['id'];
@@ -29,9 +29,9 @@ export class Iterations extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
-  ): AsyncGenerator<Iteration> {
+  ): AsyncGenerator<Member> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
-    const clubhouse = await Clubhouse.instance(this.config);
-    yield* clubhouse.getIterations();
+    const shortcut = await Shortcut.instance(this.config);
+    yield* shortcut.getMembers();
   }
 }

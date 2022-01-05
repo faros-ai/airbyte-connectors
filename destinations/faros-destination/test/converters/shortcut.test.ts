@@ -6,18 +6,18 @@ import pino from 'pino';
 
 import {CLI, read} from '../cli';
 import {tempConfig} from '../temp';
-import {clubhouseAllStreamsLog} from './data';
+import {shortcutAllStreamsLog} from './data';
 
-describe('clubhouse', () => {
+describe('shortcut', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/clubhouse/catalog.json';
+  const catalogPath = 'test/resources/shortcut/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__clubhouse__';
+  const streamNamePrefix = 'mytestsource__shortcut__';
 
   beforeEach(async () => {
     await mockttp.start({startPort: 30000, endPort: 50000});
@@ -38,7 +38,7 @@ describe('clubhouse', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(clubhouseAllStreamsLog, 'utf8');
+    cli.stdin.end(shortcutAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);

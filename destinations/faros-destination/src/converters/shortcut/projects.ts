@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ClubhouseConverter, Project} from './common';
+import {Project,ShortcutConverter} from './common';
 
-export class ClubhouseProjects extends ClubhouseConverter {
+export class ShortcutProjects extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',
     'tms_TaskBoard',

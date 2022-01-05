@@ -435,18 +435,18 @@ export type ApplicationMapping = Record<
 
 export const MAX_DESCRIPTION_LENGTH = 1000;
 
-interface ClubhouseConfig {
+interface ShortcutConfig {
   application_mapping?: ApplicationMapping;
 }
 
-export class ClubhouseCommon {
+export class ShortcutCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 }
 
-/** Clubhouse converter base */
-export abstract class ClubhouseConverter extends Converter {
-  /** Almost every Clubhouse record have id property */
+/** Shortcut converter base */
+export abstract class ShortcutConverter extends Converter {
+  /** Almost every Shortcut record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }

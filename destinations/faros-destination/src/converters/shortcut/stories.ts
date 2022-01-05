@@ -3,14 +3,14 @@ import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
-  ClubhouseConverter,
   MAX_DESCRIPTION_LENGTH,
+  ShortcutConverter,
   Story,
   StoryType,
   TaskType,
 } from './common';
 
-export class ClubhouseStories extends ClubhouseConverter {
+export class ShortcutStories extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskTag',
     'tms_Label',

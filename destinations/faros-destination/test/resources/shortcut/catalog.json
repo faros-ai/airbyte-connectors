@@ -2,31 +2,31 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__clubhouse__projects"
+        "name": "mytestsource__shortcut__projects"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__clubhouse__iterations"
+        "name": "mytestsource__shortcut__iterations"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__clubhouse__epics"
+        "name": "mytestsource__shortcut__epics"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__clubhouse__stories"
+        "name": "mytestsource__shortcut__stories"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__clubhouse__members"
+        "name": "mytestsource__shortcut__members"
       },
       "destination_sync_mode": "append"
     }

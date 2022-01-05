@@ -14,7 +14,7 @@ import Client, {
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-export interface ClubhouseConfig {
+export interface ShortcutConfig {
   readonly token: string;
   readonly base_url: string;
   readonly version: string;
@@ -70,23 +70,23 @@ export interface Story {
 const DEFAULT_STORIES_START_DATE = new Date(-8640000000000000);
 const DEFAULT_STORIES_END_DATE = new Date();
 
-export class Clubhouse {
-  private static clubhouse: Clubhouse = null;
-  private readonly cfg: ClubhouseConfig;
+export class Shortcut {
+  private static shortcut: Shortcut = null;
+  private readonly cfg: ShortcutConfig;
   private readonly client: Client<RequestInfo, Response>;
-  constructor(cfg: ClubhouseConfig) {
+  constructor(cfg: ShortcutConfig) {
     this.cfg = cfg;
     this.client = Client.create(cfg.token);
   }
 
-  static async instance(config: ClubhouseConfig): Promise<Clubhouse> {
-    if (Clubhouse.clubhouse) return Clubhouse.clubhouse;
+  static async instance(config: ShortcutConfig): Promise<Shortcut> {
+    if (Shortcut.shortcut) return Shortcut.shortcut;
 
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
-    Clubhouse.clubhouse = new Clubhouse(config);
-    return Clubhouse.clubhouse;
+    Shortcut.shortcut = new Shortcut(config);
+    return Shortcut.shortcut;
   }
 
   async checkConnection(): Promise<void> {
@@ -178,9 +178,9 @@ export class Clubhouse {
     if (this.cfg.version) {
       path = `/api/${this.cfg.version}/search/stories?query=project:${projectPublicId}`;
     }
-    const url = `/api/v3/search/stories?query=project:${projectPublicId}`;
+    let url = `https://api.app.shortcut.com${path}`;
     if (this.cfg.base_url) {
-      path = `${this.cfg.base_url}${path}`;
+      url = `${this.cfg.base_url}${path}`;
     }
     try {
       const res = await axios.request({
@@ -188,7 +188,7 @@ export class Clubhouse {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Clubhouse-Token': this.cfg.token,
+          'Shortcut-Token': this.cfg.token,
         },
       });
       if (res.status === 200) {

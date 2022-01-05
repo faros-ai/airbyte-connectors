@@ -1,4 +1,4 @@
-connector_image: clubhouse-source
+connector_image: shortcut-source
 tests:
   spec:
     - config_path: "secrets/config.json"
