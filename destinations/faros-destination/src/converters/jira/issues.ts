@@ -131,6 +131,7 @@ export class JiraIssues extends JiraConverter {
   private static fieldChangelog(
     changelog: ReadonlyArray<any>,
     field: string,
+    fromField = 'fromString',
     valueField = 'toString'
   ): ReadonlyArray<{
     from: string;
@@ -148,7 +149,7 @@ export class JiraIssues extends JiraConverter {
             continue;
           }
           fieldChangelog.push({
-            from: item.from,
+            from: item[fromField],
             field,
             value: item[valueField],
             changed,
@@ -159,17 +160,19 @@ export class JiraIssues extends JiraConverter {
     return fieldChangelog;
   }
 
-  static assigneeChangelog(
+  private static assigneeChangelog(
     changelog: ReadonlyArray<any>,
     currentAssignee: any,
     created: Date
   ): ReadonlyArray<Assignee> {
     const assigneeChangelog: Array<Assignee> = [];
 
-    // sort assignees from earliest to latest
-    const assigneeChanges = [
-      ...JiraIssues.fieldChangelog(changelog, 'assignee', 'to'),
-    ].reverse();
+    const assigneeChanges = JiraIssues.fieldChangelog(
+      changelog,
+      'assignee',
+      'from',
+      'to'
+    );
 
     if (assigneeChanges.length) {
       // case where task was already assigned at creation
@@ -188,6 +191,36 @@ export class JiraIssues extends JiraConverter {
       assigneeChangelog.push({uid: currentAssignee, assignedAt: created});
     }
     return assigneeChangelog;
+  }
+
+  private statusChangelog(
+    changelog: ReadonlyArray<any>,
+    currentStatus: string,
+    created: Date
+  ): ReadonlyArray<[Status, Date]> {
+    const statusChangelog: Array<[Status, Date]> = [];
+
+    const pushStatusChange = (statusName: string, date: Date) => {
+      const status = this.statusByName[statusName];
+      if (status) statusChangelog.push([status, date]);
+    };
+
+    const statusChanges = JiraIssues.fieldChangelog(changelog, 'status');
+
+    if (statusChanges.length) {
+      // status that was assigned at creation
+      const firstChange = statusChanges[0];
+      if (firstChange.from) {
+        pushStatusChange(firstChange.from, created);
+      }
+      for (const change of statusChanges) {
+        pushStatusChange(change.value, change.changed);
+      }
+    } else if (currentStatus) {
+      // if task was given status at creation and never changed
+      pushStatusChange(currentStatus, created);
+    }
+    return statusChangelog;
   }
 
   private getIssueEpic(issue: Dictionary<any>): string | undefined {
@@ -452,10 +485,10 @@ export class JiraIssues extends JiraConverter {
       issue.fields.assignee?.accountId || issue.fields.assignee?.name;
     const changelog: any[] = issue.changelog?.histories || [];
     changelog.sort((e1, e2) => {
-      // Sort changes from most to least recent
+      // Sort changes from least to most recent
       const created1 = +(Utils.toDate(e1.created) || new Date(0));
       const created2 = +(Utils.toDate(e2.created) || new Date(0));
-      return created2 - created1;
+      return created1 - created2;
     });
     const assigneeChangelog = JiraIssues.assigneeChangelog(
       changelog,
@@ -473,25 +506,15 @@ export class JiraIssues extends JiraConverter {
       });
     }
 
-    const statusChangelog: any[] = [];
-    for (const change of JiraIssues.fieldChangelog(changelog, 'status')) {
-      const status = this.statusByName[change.value];
-      if (status) {
-        statusChangelog.push({
-          status: {
-            category: statusCategories.get(
-              JiraCommon.normalize(status.category)
-            ),
-            detail: status.detail,
-          },
-          changedAt: change.changed,
-        });
-      }
-    }
+    const statusChangelog = this.statusChangelog(
+      changelog,
+      issue.fields.status?.name,
+      created
+    );
     // Timestamp of most recent status change
     let statusChanged: Date | undefined;
     if (statusChangelog.length) {
-      statusChanged = last(statusChangelog).changedAt;
+      statusChanged = statusChangelog[statusChangelog.length - 1][1];
     }
 
     for (const link of issue.fields.issuelinks ?? []) {
