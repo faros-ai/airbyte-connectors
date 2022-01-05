@@ -18,6 +18,7 @@ import {
 import {
   EntryUploaderConfig,
   FarosClient,
+  Utils,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
@@ -92,6 +93,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
@@ -167,6 +169,21 @@ class FarosDestination extends AirbyteDestination {
     ) {
       throw new VError(
         'JSONata destination models must be set when using JSONata expression'
+      );
+    }
+    const jira_configs = config.source_specific_configs?.jira ?? {};
+    if (
+      typeof jira_configs.truncate_limit === 'number' &&
+      jira_configs.truncate_limit < 0
+    ) {
+      throw new VError('Jira Truncate Limit must be a non-negative number');
+    }
+    if (
+      typeof jira_configs.additional_fields_array_limit === 'number' &&
+      jira_configs.additional_fields_array_limit < 0
+    ) {
+      throw new VError(
+        'Jira Additional Fields Array Limit must be a non-negative number'
       );
     }
     try {
@@ -429,9 +446,13 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const converter = this.getConverter(stream, (err: Error) =>
-        this.logger.error(err.message)
-      );
+      const converter = this.getConverter(stream, (err: Error) => {
+        if (err.message.includes('Cannot find module ')) {
+          this.logger.info(`No converter found for ${stream}`);
+        } else {
+          this.logger.error(err.message);
+        }
+      });
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );

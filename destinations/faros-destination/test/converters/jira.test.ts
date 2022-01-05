@@ -1,7 +1,14 @@
-import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+  AirbyteLog,
+  AirbyteLogLevel,
+  AirbyteRecord,
+} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
+import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
@@ -25,6 +32,7 @@ describe('jira', () => {
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.SKIP, {
       jira: {
         use_board_ownership: false,
+        truncate_limit: 1000,
       },
     });
   });
@@ -32,6 +40,29 @@ describe('jira', () => {
   afterEach(async () => {
     await mockttp.stop();
     fs.unlinkSync(configPath);
+  });
+
+  test('check valid jira source config', async () => {
+    await mockttp
+      .get('/users/me')
+      .once()
+      .thenReply(200, JSON.stringify({tenantId: '1'}));
+    await mockttp
+      .get('/graphs/test-graph/statistics')
+      .once()
+      .thenReply(200, JSON.stringify({}));
+
+    const cli = await CLI.runWith(['check', '--config', configPath]);
+
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toBe(
+      JSON.stringify(
+        new AirbyteConnectionStatusMessage({
+          status: AirbyteConnectionStatus.SUCCEEDED,
+        })
+      ) + os.EOL
+    );
+    expect(await cli.wait()).toBe(0);
   });
 
   test('process records from all streams', async () => {
@@ -102,6 +133,7 @@ describe('jira', () => {
       .value();
 
     const writtenByModel = {
+      generic_Record: 438,
       tms_Epic: 1,
       tms_Project: 1,
       tms_Sprint: 10,
