@@ -15,34 +15,33 @@ export class ClubhouseProjects extends ClubhouseConverter {
     ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
-
     const project = record.record.data as Project;
     const uid = String(project.id);
-    return [
-      {
-        model: 'tms_Project',
-        record: {
-          uid,
-          name: project.name,
-          description: project.description,
-          source,
-        },
+    const res: DestinationRecord[] = [];
+    res.push({
+      model: 'tms_Project',
+      record: {
+        uid,
+        name: project.name,
+        description: project.description,
+        source,
       },
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          uid,
-          name: project.name,
-          source,
-        },
+    });
+    res.push({
+      model: 'tms_TaskBoard',
+      record: {
+        uid,
+        name: project.name,
+        source,
       },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: {uid, source},
-          project: {uid, source},
-        },
+    });
+    res.push({
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: {uid, source},
+        project: {uid, source},
       },
-    ];
+    });
+    return res;
   }
 }

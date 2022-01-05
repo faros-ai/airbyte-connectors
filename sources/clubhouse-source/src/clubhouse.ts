@@ -174,8 +174,14 @@ export class Clubhouse {
   ): AsyncGenerator<Story> {
     const [from, to] = updateRange;
     const method = 'GET';
-    const path = `/api/${this.cfg.version}/search/stories?query=project:${projectPublicId}`;
-    const url = `${this.cfg.base_url}${path}`;
+    let path = `/api/v3/search/stories?query=project:${projectPublicId}`;
+    if (this.cfg.version) {
+      path = `/api/${this.cfg.version}/search/stories?query=project:${projectPublicId}`;
+    }
+    const url = `/api/v3/search/stories?query=project:${projectPublicId}`;
+    if (this.cfg.base_url) {
+      path = `${this.cfg.base_url}${path}`;
+    }
     try {
       const res = await axios.request({
         method,

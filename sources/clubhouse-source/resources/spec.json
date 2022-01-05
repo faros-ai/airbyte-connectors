@@ -15,6 +15,7 @@
         "type": "string",
         "title": "Clubhouse Base URL",
         "description":"Clubhouse Base URL",
+        "default":"https://api.app.shortcut.com",
         "examples": [
           "https://api.app.shortcut.com"
         ]
@@ -23,6 +24,7 @@
         "type": "string",
         "title": "Clubhouse version",
         "description":"Clubhouse version",
+        "default":"v3",
         "examples": [
           "v3"
         ]

@@ -27,22 +27,22 @@ export class ClubhouseStories extends ClubhouseConverter {
     const source = this.streamName.source;
     const story = record.record.data as Story;
     const res: DestinationRecord[] = [];
+    const taskKey = {uid: String(story.id), source};
 
     for (const label of story.labels ?? []) {
+      const labelRef = {name: label.name};
       res.push({
         model: 'tms_TaskTag',
         record: {
-          label: {name: label.name},
-          task: {uid: String(story.id), source},
+          label: labelRef,
+          task: taskKey,
         },
       });
       res.push({
         model: 'tms_Label',
-        record: {name: label.name},
+        record: labelRef,
       });
     }
-
-    const taskKey = {uid: String(story.id), source};
     res.push({
       model: 'tms_Task',
       record: {
@@ -67,18 +67,19 @@ export class ClubhouseStories extends ClubhouseConverter {
         parent: undefined,
       },
     });
+    const projectRef = {uid: String(story.project_id), source};
     res.push({
       model: 'tms_TaskProjectRelationship',
       record: {
         task: taskKey,
-        project: {uid: String(story.project_id), source},
+        project: projectRef,
       },
     });
     res.push({
       model: 'tms_TaskBoardRelationship',
       record: {
         task: taskKey,
-        board: {uid: String(story.project_id), source},
+        board: projectRef,
       },
     });
     for (const task of story.tasks ?? []) {
