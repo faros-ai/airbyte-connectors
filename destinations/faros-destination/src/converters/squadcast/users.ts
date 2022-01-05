@@ -4,9 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {SquadcastConverter, User} from './common';
 
 export class SquadcastUsers extends SquadcastConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_User',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   convert(
     record: AirbyteRecord,
