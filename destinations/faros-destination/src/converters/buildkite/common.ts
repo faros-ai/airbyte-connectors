@@ -70,7 +70,7 @@ export interface Job {
   };
 }
 
-export interface JobTime {
+export interface Timestamps {
   createdAt?: Date;
   startedAt?: Date;
   endedAt?: Date;
@@ -181,16 +181,13 @@ export abstract class BuildkiteConverter extends Converter {
     return {org: gitUrl.organization, name: gitUrl.name};
   }
 
-  convertBuildStepTime(buildStep: Job): JobTime {
+  convertBuildStepTime(buildStep: Job): Timestamps {
     const type = buildStep.type;
-    const result = {
+    const result: Timestamps = {
       createdAt: Utils.toDate(buildStep.createdAt),
       startedAt: Utils.toDate(buildStep.startedAt),
       endedAt: Utils.toDate(buildStep.finishedAt),
-    } as JobTime;
-    if (!type) {
-      return result;
-    }
+    };
     switch (type) {
       case JobType.JobTypeBlock:
         result.createdAt = Utils.toDate(buildStep.unblockedAt);
