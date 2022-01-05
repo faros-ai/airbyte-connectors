@@ -44,6 +44,7 @@ export class JiraCommon {
   static POINTS_FIELD_NAMES = ['Story Points', 'Story point estimate'];
   static DEV_FIELD_NAME = 'Development';
   static EPIC_LINK_FIELD_NAME = 'Epic Link';
+  static EPIC_TYPE_NAME = 'Epic';
   static SPRINT_FIELD_NAME = 'Sprint';
   static DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
   static DEFAULT_TRUNCATE_LIMIT = 10_000;

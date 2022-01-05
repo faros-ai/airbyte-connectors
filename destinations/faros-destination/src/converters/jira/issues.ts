@@ -198,6 +198,9 @@ export class JiraIssues extends JiraConverter {
         return epic.toString();
       }
     }
+    if (issue.fields.issuetype?.name === JiraCommon.EPIC_TYPE_NAME) {
+      return issue['key'];
+    }
     return undefined;
   }
 
