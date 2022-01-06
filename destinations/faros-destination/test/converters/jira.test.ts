@@ -133,6 +133,7 @@ describe('jira', () => {
       .value();
 
     const writtenByModel = {
+      generic_Record: 438,
       tms_Epic: 1,
       tms_Project: 1,
       tms_Sprint: 10,

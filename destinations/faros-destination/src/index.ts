@@ -93,6 +93,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
@@ -445,9 +446,13 @@ class FarosDestination extends AirbyteDestination {
           `Undefined destination sync mode for stream ${stream}`
         );
       }
-      const converter = this.getConverter(stream, (err: Error) =>
-        this.logger.error(err.message)
-      );
+      const converter = this.getConverter(stream, (err: Error) => {
+        if (err.message.includes('Cannot find module ')) {
+          this.logger.info(`No converter found for ${stream}`);
+        } else {
+          this.logger.error(err.message);
+        }
+      });
       this.logger.info(
         `Using ${converter.constructor.name} converter to convert ${stream} stream records`
       );
