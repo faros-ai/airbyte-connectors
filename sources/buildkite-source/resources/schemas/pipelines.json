@@ -13,13 +13,13 @@
             "type": "string"
         },
         "name": {
-            "type": "number"
+            "type": "string"
         },
         "url": {
             "type": "string"
         },
         "description": {
-            "type": "string"
+            "type": ["string","null"]
         },
         "repository": {
             "type": "object",
