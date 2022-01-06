@@ -415,10 +415,9 @@ enum TaskCategory {
 }
 
 enum TaskStatusCategory {
-  Custom = 'Custom',
   Done = 'Done',
   InProgress = 'InProgress',
-  Todo = 'todo',
+  Todo = 'Todo',
 }
 
 enum SprintState {
