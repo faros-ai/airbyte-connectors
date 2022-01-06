@@ -2,12 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {
-  MAX_DESCRIPTION_LENGTH,
-  ShortcutCommon,
-  ShortcutConverter,
-  Story,
-} from './common';
+import {ShortcutCommon, ShortcutConverter, Story} from './common';
 
 export class ShortcutStories extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -47,7 +42,10 @@ export class ShortcutStories extends ShortcutConverter {
       record: {
         ...taskKey,
         name: story.name,
-        description: story.description?.substring(0, MAX_DESCRIPTION_LENGTH),
+        description: story.description?.substring(
+          0,
+          ShortcutCommon.MAX_DESCRIPTION_LENGTH
+        ),
         type: ShortcutCommon.getTaskType(story.story_type),
         status: {
           category: ShortcutCommon.getTaskStatus(story),
@@ -82,7 +80,7 @@ export class ShortcutStories extends ShortcutConverter {
     for (const task of story.tasks ?? []) {
       const description = task.description?.substring(
         0,
-        MAX_DESCRIPTION_LENGTH
+        ShortcutCommon.MAX_DESCRIPTION_LENGTH
       );
       res.push({
         model: 'tms_Task',

@@ -431,7 +431,6 @@ enum SprintState {
 export class ShortcutCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
-
   static getEpicStatus(status: string): string {
     switch (status) {
       case 'done':
