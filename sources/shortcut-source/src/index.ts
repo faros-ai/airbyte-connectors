@@ -40,11 +40,15 @@ export class ShortcutSource extends AirbyteSourceBase {
     return [true, undefined];
   }
 
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: ShortcutConfig): AirbyteStreamBase[] {
+    let projectIds = [];
+    if (config.project_public_id) {
+      projectIds = [config.project_public_id];
+    }
     return [
       new Projects(config as ShortcutConfig, this.logger),
       new Iterations(config as ShortcutConfig, this.logger),
-      new Epics(config as ShortcutConfig, this.logger),
+      new Epics(config as ShortcutConfig, this.logger, projectIds),
       new Stories(config as ShortcutConfig, this.logger),
       new Members(config as ShortcutConfig, this.logger),
       new Repositories(config as ShortcutConfig, this.logger),

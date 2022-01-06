@@ -6,11 +6,12 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Epic,Shortcut, ShortcutConfig} from '../shortcut';
+import {Epic, Shortcut, ShortcutConfig} from '../shortcut';
 export class Epics extends AirbyteStreamBase {
   constructor(
     private readonly config: ShortcutConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly projectIds?: ReadonlyArray<number>
   ) {
     super(logger);
   }
@@ -27,11 +28,10 @@ export class Epics extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>,
-    projectIds?: ReadonlyArray<number>
+    streamState?: Dictionary<any>
   ): AsyncGenerator<Epic> {
     syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
     const shortcut = await Shortcut.instance(this.config);
-    yield* shortcut.getEpics(projectIds);
+    yield* shortcut.getEpics(this.projectIds);
   }
 }
