@@ -30,7 +30,6 @@ export class Epics extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Epic> {
-    syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
     const shortcut = await Shortcut.instance(this.config);
     yield* shortcut.getEpics(this.projectIds);
   }

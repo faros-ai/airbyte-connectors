@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter} from '../converter';
 
 export declare type LabelStats = {
   num_epics: number;
@@ -426,17 +426,6 @@ enum SprintState {
   Closed = 'Closed',
   Future = 'Future',
   Default = 'Default',
-}
-
-export type ApplicationMapping = Record<
-  string,
-  {name: string; platform?: string}
->;
-
-export const MAX_DESCRIPTION_LENGTH = 1000;
-
-interface ShortcutConfig {
-  application_mapping?: ApplicationMapping;
 }
 
 export class ShortcutCommon {

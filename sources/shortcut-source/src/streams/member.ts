@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Member,Shortcut, ShortcutConfig} from '../shortcut';
+import {Member, Shortcut, ShortcutConfig} from '../shortcut';
 export class Members extends AirbyteStreamBase {
   constructor(
     private readonly config: ShortcutConfig,
@@ -29,7 +29,6 @@ export class Members extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Member> {
-    syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
     const shortcut = await Shortcut.instance(this.config);
     yield* shortcut.getMembers();
   }

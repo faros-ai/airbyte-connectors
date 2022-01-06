@@ -9,6 +9,7 @@ import Client, {
   PullRequest,
   Repository,
   StoryLink,
+  StoryType,
   Task,
 } from 'clubhouse-lib';
 export {Epic, Iteration, Member, Project, Repository};
@@ -22,7 +23,6 @@ export interface ShortcutConfig {
   readonly project_public_id: number | null;
 }
 
-export declare type StoryType = 'bug' | 'chore' | 'feature';
 export interface Story {
   readonly app_url: string;
   readonly archived: boolean;
@@ -75,9 +75,13 @@ const DEFAULT_STORIES_END_DATE = new Date();
 export class Shortcut {
   private static shortcut: Shortcut = null;
   private readonly cfg: ShortcutConfig;
+  private readonly baseUrl: string;
+  private readonly version: string;
   private readonly client: Client<RequestInfo, Response>;
   constructor(cfg: ShortcutConfig) {
     this.cfg = cfg;
+    this.baseUrl = cfg.base_url ? cfg.base_url : 'https://api.app.shortcut.com';
+    this.version = cfg.version ? cfg.version : 'v3';
     this.client = Client.create(cfg.token);
   }
 
@@ -187,14 +191,8 @@ export class Shortcut {
   ): AsyncGenerator<Story> {
     const [from, to] = updateRange;
     const method = 'GET';
-    let path = `/api/v3/search/stories?query=project:${projectPublicId}`;
-    if (this.cfg.version) {
-      path = `/api/${this.cfg.version}/search/stories?query=project:${projectPublicId}`;
-    }
-    let url = `https://api.app.shortcut.com${path}`;
-    if (this.cfg.base_url) {
-      url = `${this.cfg.base_url}${path}`;
-    }
+    const path = `/api/${this.version}/search/stories?query=project:${projectPublicId}`;
+    const url = `${this.baseUrl}${path}`;
     try {
       const res = await axios.request({
         method,

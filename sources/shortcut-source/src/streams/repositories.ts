@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Repository,Shortcut, ShortcutConfig} from '../shortcut';
+import {Repository, Shortcut, ShortcutConfig} from '../shortcut';
 export class Repositories extends AirbyteStreamBase {
   constructor(
     private readonly config: ShortcutConfig,
@@ -29,9 +29,7 @@ export class Repositories extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Repository> {
-    syncMode === SyncMode.INCREMENTAL ? streamState?.lastUpdatedAt : undefined;
     const shortcut = await Shortcut.instance(this.config);
-
     yield* shortcut.getRepositories();
   }
 }
