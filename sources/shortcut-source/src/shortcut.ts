@@ -13,8 +13,8 @@ import Client, {
 } from 'clubhouse-lib';
 export {Epic, Iteration, Member, Project, Repository};
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-
 export interface ShortcutConfig {
   readonly token: string;
   readonly base_url: string;
@@ -67,8 +67,9 @@ export interface Story {
   readonly workflow_state_id: number;
   readonly pull_requests: Array<PullRequest>;
 }
-
-const DEFAULT_STORIES_START_DATE = new Date(-8640000000000000);
+const DEFAULT_UNIX = -8640000000000000;
+const DEFAULT_ITERATIONS_START_DATE = new Date(DEFAULT_UNIX);
+const DEFAULT_STORIES_START_DATE = new Date(DEFAULT_UNIX);
 const DEFAULT_STORIES_END_DATE = new Date();
 
 export class Shortcut {
@@ -119,11 +120,22 @@ export class Shortcut {
       yield item;
     }
   }
+  // @Memoize(
+  //   (lastUpdatedAt?: string) =>
+  //     new Date(lastUpdatedAt ?? DEFAULT_UNIX)
+  // )
+  async *getIterations(lastUpdatedAt?: string): AsyncGenerator<Iteration> {
+    const startTime =
+      new Date(lastUpdatedAt ?? 0) > DEFAULT_ITERATIONS_START_DATE
+        ? new Date(lastUpdatedAt)
+        : DEFAULT_ITERATIONS_START_DATE;
 
-  async *getIterations(): AsyncGenerator<Iteration> {
     const list = await this.client.listIterations();
     for (const item of list) {
-      yield item;
+      const updatedAt = new Date(item.updated_at);
+      if (updatedAt >= startTime) {
+        yield item;
+      }
     }
   }
 
