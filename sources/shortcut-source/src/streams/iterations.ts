@@ -1,4 +1,3 @@
-import {Iteration} from 'clubhouse-lib';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -7,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Shortcut, ShortcutConfig} from '../shortcut';
+import {Iteration,Shortcut, ShortcutConfig} from '../shortcut';
 export class Iterations extends AirbyteStreamBase {
   constructor(
     private readonly config: ShortcutConfig,

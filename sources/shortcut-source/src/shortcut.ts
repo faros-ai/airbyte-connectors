@@ -11,6 +11,7 @@ import Client, {
   StoryLink,
   Task,
 } from 'clubhouse-lib';
+export {Epic, Iteration, Member, Project, Repository};
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
