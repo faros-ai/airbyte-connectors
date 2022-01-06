@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Epic,ShortcutConverter} from './common';
+import {Epic, ShortcutCommon,ShortcutConverter} from './common';
 
 export class ShortcutEpics extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
@@ -20,7 +20,7 @@ export class ShortcutEpics extends ShortcutConverter {
           name: epic.name,
           description: epic.description,
           status: {
-            category: this.getEpicStatus(epic.state),
+            category: ShortcutCommon.getEpicStatus(epic.state),
           },
           source,
         },

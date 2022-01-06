@@ -4,10 +4,9 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   MAX_DESCRIPTION_LENGTH,
+  ShortcutCommon,
   ShortcutConverter,
   Story,
-  StoryType,
-  TaskType,
 } from './common';
 
 export class ShortcutStories extends ShortcutConverter {
@@ -49,9 +48,9 @@ export class ShortcutStories extends ShortcutConverter {
         ...taskKey,
         name: story.name,
         description: story.description?.substring(0, MAX_DESCRIPTION_LENGTH),
-        type: this.getTaskType(story.story_type),
+        type: ShortcutCommon.getTaskType(story.story_type),
         status: {
-          category: this.getTaskStatus(story),
+          category: ShortcutCommon.getTaskStatus(story),
         },
         createdAt: Utils.toDate(story.created_at),
         updatedAt: Utils.toDate(story.updated_at),

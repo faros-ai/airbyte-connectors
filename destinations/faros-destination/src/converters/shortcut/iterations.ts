@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Iteration,ShortcutConverter} from './common';
+import {Iteration, ShortcutCommon,ShortcutConverter} from './common';
 
 export class ShortcutIterations extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
@@ -19,7 +19,7 @@ export class ShortcutIterations extends ShortcutConverter {
         record: {
           uid: String(iteration.id),
           name: iteration.name,
-          state: this.getSprintState(iteration),
+          state: ShortcutCommon.getSprintState(iteration),
           startedAt: Utils.toDate(iteration.start_date),
           endedAt: Utils.toDate(iteration.end_date),
           source,

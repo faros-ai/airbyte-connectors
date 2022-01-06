@@ -442,16 +442,8 @@ interface ShortcutConfig {
 export class ShortcutCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
-}
 
-/** Shortcut converter base */
-export abstract class ShortcutConverter extends Converter {
-  /** Almost every Shortcut record have id property */
-  id(record: AirbyteRecord): any {
-    return record?.record?.data?.id;
-  }
-
-  getEpicStatus(status: string): string {
+  static getEpicStatus(status: string): string {
     switch (status) {
       case 'done':
         return EpicStatusCategory.Done;
@@ -462,7 +454,7 @@ export abstract class ShortcutConverter extends Converter {
     }
   }
 
-  getSprintState(iteration: Iteration): string {
+  static getSprintState(iteration: Iteration): string {
     switch (iteration.status) {
       case 'done':
         return SprintState.Closed;
@@ -475,7 +467,7 @@ export abstract class ShortcutConverter extends Converter {
     }
   }
 
-  getTaskType(storyType: StoryType): TaskType {
+  static getTaskType(storyType: StoryType): TaskType {
     const detail = storyType;
     switch (storyType) {
       case 'bug':
@@ -488,7 +480,7 @@ export abstract class ShortcutConverter extends Converter {
     }
   }
 
-  getTaskStatus(story: Story): string {
+  static getTaskStatus(story: Story): string {
     if (story.completed) {
       return TaskStatusCategory.Done;
     } else if (story.started) {
@@ -496,5 +488,13 @@ export abstract class ShortcutConverter extends Converter {
     } else {
       return TaskStatusCategory.Todo;
     }
+  }
+}
+
+/** Shortcut converter base */
+export abstract class ShortcutConverter extends Converter {
+  /** Almost every Shortcut record have id property */
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.id;
   }
 }
