@@ -1,0 +1,198 @@
+[
+    {
+        "actor": {
+            "id": "00u4exiwtOxp3yrE35d5",
+            "type": "User",
+            "alternateId": "web@okta.com",
+            "displayName": "Developer Free",
+            "detailEntry": null
+        },
+        "client": {
+            "userAgent": {
+                "rawUserAgent": "Java/11.0.12",
+                "os": "Unknown",
+                "browser": "UNKNOWN"
+            },
+            "zone": "OFF_NETWORK",
+            "device": "Unknown",
+            "id": "capfx6SYTRNSWSMAOWNS",
+            "ipAddress": "52.200.197.156",
+            "geographicalContext": {
+                "city": "Ashburn",
+                "state": "Virginia",
+                "country": "United States",
+                "postalCode": "20149",
+                "geolocation": {
+                    "lat": 39.0469,
+                    "lon": -77.4903
+                }
+            }
+        },
+        "device": null,
+        "authenticationContext": {
+            "authenticationProvider": null,
+            "credentialProvider": null,
+            "credentialType": null,
+            "issuer": null,
+            "interface": null,
+            "authenticationStep": 0,
+            "externalSessionId": "trsCrt9fo5URdOhrsXYIFN0Wg"
+        },
+        "displayMessage": "Update application",
+        "eventType": "application.lifecycle.update",
+        "outcome": {
+            "result": "SUCCESS",
+            "reason": null
+        },
+        "published": "2022-01-07T06:09:36.164Z",
+        "securityContext": {
+            "asNumber": 14618,
+            "asOrg": "amazon technologies inc.",
+            "isp": "amazon.com  inc.",
+            "domain": "amazonaws.com",
+            "isProxy": false
+        },
+        "severity": "INFO",
+        "debugContext": {
+            "debugData": {
+                "requestId": "YdfZH4M51EtIXyx3kQk0tgAADuE",
+                "requestUri": "/api/internal/orgs",
+                "url": "/api/internal/orgs?"
+            }
+        },
+        "legacyEventType": "app.generic.config.app_updated",
+        "transaction": {
+            "type": "WEB",
+            "id": "YdfZH4M51EtIXyx3kQk0tgAADuE",
+            "detail": {}
+        },
+        "uuid": "63bf96a0-6f80-11ec-ab13-1f6dcd6d451c",
+        "version": "0",
+        "request": {
+            "ipChain": [
+                {
+                    "ip": "52.200.197.156",
+                    "geographicalContext": {
+                        "city": "Ashburn",
+                        "state": "Virginia",
+                        "country": "United States",
+                        "postalCode": "20149",
+                        "geolocation": {
+                            "lat": 39.0469,
+                            "lon": -77.4903
+                        }
+                    },
+                    "version": "V4",
+                    "source": null
+                }
+            ]
+        },
+        "target": [
+            {
+                "id": "0oa3iw1gxcbshfSeF5d7",
+                "type": "AppInstance",
+                "alternateId": "Okta Admin Console",
+                "displayName": "Okta Admin Console",
+                "detailEntry": null
+            }
+        ]
+    },
+    {
+        "actor": {
+            "id": "00u4exiwtOxp3yrE35d5",
+            "type": "User",
+            "alternateId": "web@okta.com",
+            "displayName": "Developer Free",
+            "detailEntry": null
+        },
+        "client": {
+            "userAgent": {
+                "rawUserAgent": "Java/11.0.12",
+                "os": "Unknown",
+                "browser": "UNKNOWN"
+            },
+            "zone": "OFF_NETWORK",
+            "device": "Unknown",
+            "id": "capfx6SYTRNSWSMAOWNS",
+            "ipAddress": "52.200.197.156",
+            "geographicalContext": {
+                "city": "Ashburn",
+                "state": "Virginia",
+                "country": "United States",
+                "postalCode": "20149",
+                "geolocation": {
+                    "lat": 39.0469,
+                    "lon": -77.4903
+                }
+            }
+        },
+        "device": null,
+        "authenticationContext": {
+            "authenticationProvider": null,
+            "credentialProvider": null,
+            "credentialType": null,
+            "issuer": null,
+            "interface": null,
+            "authenticationStep": 0,
+            "externalSessionId": "trsCrt9fo5URdOhrsXYIFN0Wg"
+        },
+        "displayMessage": "Update application",
+        "eventType": "application.lifecycle.update",
+        "outcome": {
+            "result": "SUCCESS",
+            "reason": null
+        },
+        "published": "2022-01-07T06:09:36.212Z",
+        "securityContext": {
+            "asNumber": 14618,
+            "asOrg": "amazon technologies inc.",
+            "isp": "amazon.com  inc.",
+            "domain": "amazonaws.com",
+            "isProxy": false
+        },
+        "severity": "INFO",
+        "debugContext": {
+            "debugData": {
+                "requestId": "YdfZH4M51EtIXyx3kQk0tgAADuE",
+                "requestUri": "/api/internal/orgs",
+                "url": "/api/internal/orgs?"
+            }
+        },
+        "legacyEventType": "app.generic.config.app_updated",
+        "transaction": {
+            "type": "WEB",
+            "id": "YdfZH4M51EtIXyx3kQk0tgAADuE",
+            "detail": {}
+        },
+        "uuid": "63c6e9a1-6f80-11ec-ab13-1f6dcd6d451c",
+        "version": "0",
+        "request": {
+            "ipChain": [
+                {
+                    "ip": "52.200.197.156",
+                    "geographicalContext": {
+                        "city": "Ashburn",
+                        "state": "Virginia",
+                        "country": "United States",
+                        "postalCode": "20149",
+                        "geolocation": {
+                            "lat": 39.0469,
+                            "lon": -77.4903
+                        }
+                    },
+                    "version": "V4",
+                    "source": null
+                }
+            ]
+        },
+        "target": [
+            {
+                "id": "0oa3iw1gxgQCU6aOh5d7",
+                "type": "AppInstance",
+                "alternateId": "Cell 3",
+                "displayName": "Cell 3",
+                "detailEntry": null
+            }
+        ]
+    }
+]
