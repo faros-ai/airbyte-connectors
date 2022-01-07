@@ -17,7 +17,7 @@ export class OktaLogs extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/groups.json');
+    return require('../../resources/schemas/logs.json');
   }
   get primaryKey(): StreamKey {
     return ['uid', 'source'];
