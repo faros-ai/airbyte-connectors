@@ -1,0 +1,32 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Okta Spec",
+    "type": "object",
+    "required": [
+      "token",
+      "domain_name" 
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "domain_name": {
+        "type": "string",
+        "title": "Okta Server URL",
+        "examples": [
+          "dev-88164258"
+        ]
+      }, 
+      "token": {
+        "type": "string",
+        "title": "Okta Token",
+        "airbyte_secret": true
+      },
+      "version": {
+        "type": "string",
+        "title": "version",
+        "default":"v1" 
+      }
+    }
+  }
+}
