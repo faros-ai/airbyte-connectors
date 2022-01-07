@@ -8,7 +8,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {Okta, OktaConfig} from '../okta';
 
-export class OktaLogs extends AirbyteStreamBase {
+export class LogEvents extends AirbyteStreamBase {
   constructor(
     private readonly config: OktaConfig,
     protected readonly logger: AirbyteLogger
@@ -17,7 +17,7 @@ export class OktaLogs extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/logs.json');
+    return require('../../resources/schemas/log-events.json');
   }
   get primaryKey(): StreamKey {
     return ['uid', 'source'];

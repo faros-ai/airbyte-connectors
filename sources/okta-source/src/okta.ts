@@ -3,41 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-export interface Meta {
-  total: number;
-  count: number;
-  current: string;
-  next?: string;
-}
-
-export interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  contact: {
-    dial_code: string;
-    phone_number: string;
-  };
-  secondary_emails: string[];
-  email_verified: boolean;
-  phone_verified: boolean;
-  in_grace_period: boolean;
-  time_zone: string;
-  title: string;
-  bio: string;
-  role_id: string;
-  role: string;
-}
-
-export interface Group {
-  id: string;
-}
-
-export interface OktaLog {
-  id: string;
-}
-
+import {Group, LogEvent,User} from './models';
 export interface OktaConfig {
   readonly token: string;
   readonly domain_name: string;
@@ -124,8 +90,8 @@ export class Okta {
     }
   }
 
-  async *getLogs(): AsyncGenerator<OktaLog> {
-    const res = await this.httpClient.get<OktaLog[]>('logs');
+  async *getLogs(): AsyncGenerator<LogEvent> {
+    const res = await this.httpClient.get<LogEvent[]>('logs');
     for (const item of res.data) {
       yield item;
     }
