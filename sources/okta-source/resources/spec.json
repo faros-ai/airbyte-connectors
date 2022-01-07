@@ -12,7 +12,7 @@
     "properties": {
       "domain_name": {
         "type": "string",
-        "title": "Okta Server URL",
+        "title": "Each account have one domain ame",
         "examples": [
           "dev-88164258"
         ]
