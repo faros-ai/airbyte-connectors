@@ -28,8 +28,9 @@ export class Okta {
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
+    const version = config.version ? config.version : 'v1';
     const httpClient = axios.create({
-      baseURL: `https://${config.domain_name}.okta.com/api/${config.version}/`,
+      baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
       timeout: 5000, // default is `0` (no timeout)
       maxContentLength: 20000, //default is 2000 bytes
       headers: {
