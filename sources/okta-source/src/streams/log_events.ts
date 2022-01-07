@@ -22,7 +22,7 @@ export class LogEvents extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/log-events.json');
+    return require('../../resources/schemas/log_events.json');
   }
   get primaryKey(): StreamKey {
     return ['uid', 'source'];
