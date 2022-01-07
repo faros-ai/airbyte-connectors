@@ -23,4 +23,4 @@ tests:
       configured_catalog_path: "test_files/incremental_configured_catalog.json"
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
-        builds: [ "cutoff" ]
+        log_events: [ "lastPublishedAt" ]
