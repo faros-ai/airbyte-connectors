@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {Memoize} from 'typescript-memoize';

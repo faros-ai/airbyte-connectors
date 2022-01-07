@@ -20,10 +20,10 @@ export class Groups extends AirbyteStreamBase {
     return require('../../resources/schemas/groups.json');
   }
   get primaryKey(): StreamKey {
-    return ['uid', 'source'];
+    return ['id', 'source'];
   }
   get cursorField(): string | string[] {
-    return 'updated_at';
+    return 'lastUpdated';
   }
 
   async *readRecords(

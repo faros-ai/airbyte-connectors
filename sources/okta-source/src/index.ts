@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {OktaConfig} from './okta';
+import {Okta, OktaConfig} from './okta';
 import {Groups, LogEvents, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -24,10 +24,13 @@ class OktaSource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    if (config.user === 'chris') {
-      return [true, undefined];
+    try {
+      const okta = await Okta.instance(config as OktaConfig, this.logger);
+      await okta.checkConnection();
+    } catch (err: any) {
+      return [false, err];
     }
-    return [false, new VError('User is not chris')];
+    return [true, undefined];
   }
   streams(config: OktaConfig): AirbyteStreamBase[] {
     return [

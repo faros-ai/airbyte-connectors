@@ -19,11 +19,13 @@ export class Users extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
+
   get primaryKey(): StreamKey {
-    return ['uid', 'source'];
+    return ['id', 'source'];
   }
+
   get cursorField(): string | string[] {
-    return 'updated_at';
+    return 'lastUpdated';
   }
 
   async *readRecords(

@@ -25,10 +25,10 @@ export class LogEvents extends AirbyteStreamBase {
     return require('../../resources/schemas/log_events.json');
   }
   get primaryKey(): StreamKey {
-    return ['uid', 'source'];
+    return ['uuid', 'source'];
   }
   get cursorField(): string | string[] {
-    return 'updated_at';
+    return 'published';
   }
 
   async *readRecords(
