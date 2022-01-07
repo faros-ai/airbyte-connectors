@@ -26,7 +26,11 @@ export class Groups extends AirbyteStreamBase {
     return 'updated_at';
   }
 
-  async *readRecords(): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>
+  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const okta = await Okta.instance(this.config, this.logger);
     yield* okta.getGroups();
   }
