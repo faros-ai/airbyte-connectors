@@ -124,10 +124,8 @@ export class Shortcut {
       yield item;
     }
   }
-  // @Memoize(
-  //   (lastUpdatedAt?: string) =>
-  //     new Date(lastUpdatedAt ?? DEFAULT_UNIX)
-  // )
+
+  @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
   async *getIterations(lastUpdatedAt?: string): AsyncGenerator<Iteration> {
     const startTime =
       new Date(lastUpdatedAt ?? 0) > DEFAULT_ITERATIONS_START_DATE
