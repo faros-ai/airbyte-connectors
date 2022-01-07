@@ -6,7 +6,7 @@ import {VError} from 'verror';
 
 import {Group, LogEvent, User} from './models';
 
-const DEFAULT_EVENT_LOGS_START_DATE = '1970-01-01T00:00:00.000Z';
+const DEFAULT_LOG_EVENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 
 export interface OktaConfig {
   readonly token: string;
@@ -32,7 +32,7 @@ export class Okta {
     const httpClient = axios.create({
       baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
       timeout: 5000, // default is `0` (no timeout)
-      maxContentLength: 20000, //default is 2000 bytes
+      //maxContentLength: 20000, //default is 2000 bytes
       headers: {
         Authorization: `SSWS ${config.token}`,
       },
@@ -62,25 +62,6 @@ export class Okta {
     }
   }
 
-  private async errorWrapper<T>(func: () => Promise<T>): Promise<T> {
-    let res: T;
-    try {
-      res = await func();
-    } catch (err: any) {
-      if (err.error_code || err.error_info) {
-        throw new VError(`${err.error_code}: ${err.error_info}`);
-      }
-      let errorMessage;
-      try {
-        errorMessage = err.message ?? err.statusText ?? wrapApiError(err);
-      } catch (wrapError: any) {
-        errorMessage = wrapError.message;
-      }
-      throw new VError(errorMessage);
-    }
-    return res;
-  }
-
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<User[]>('users');
     for (const item of res.data) {
@@ -97,14 +78,14 @@ export class Okta {
 
   @Memoize(
     (lastPublishedAt?: string) =>
-      new Date(lastPublishedAt ?? DEFAULT_EVENT_LOGS_START_DATE)
+      new Date(lastPublishedAt ?? DEFAULT_LOG_EVENTS_START_DATE)
   )
   async *getLogEvents(lastPublishedAt?: string): AsyncGenerator<LogEvent> {
     const res = await this.httpClient.get<LogEvent[]>('logs');
     const startTime =
-      new Date(lastPublishedAt ?? 0) > new Date(DEFAULT_EVENT_LOGS_START_DATE)
+      new Date(lastPublishedAt ?? 0) > new Date(DEFAULT_LOG_EVENTS_START_DATE)
         ? new Date(lastPublishedAt)
-        : DEFAULT_EVENT_LOGS_START_DATE;
+        : new Date(DEFAULT_LOG_EVENTS_START_DATE);
     for (const item of res.data) {
       const published = new Date(item.published);
       if (published >= startTime) yield item;
