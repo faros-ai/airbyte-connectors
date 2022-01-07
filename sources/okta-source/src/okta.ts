@@ -1,11 +1,7 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
-import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-
-const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
-const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
 
 export interface Meta {
   total: number;
@@ -32,6 +28,14 @@ export interface User {
   bio: string;
   role_id: string;
   role: string;
+}
+
+export interface Group {
+  id: string;
+}
+
+export interface OktaLog {
+  id: string;
 }
 
 export interface OktaConfig {
@@ -108,6 +112,20 @@ export class Okta {
 
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<User[]>('users');
+    for (const item of res.data) {
+      yield item;
+    }
+  }
+
+  async *getGroups(): AsyncGenerator<Group> {
+    const res = await this.httpClient.get<Group[]>('groups');
+    for (const item of res.data) {
+      yield item;
+    }
+  }
+
+  async *getLogs(): AsyncGenerator<OktaLog> {
+    const res = await this.httpClient.get<OktaLog[]>('logs');
     for (const item of res.data) {
       yield item;
     }

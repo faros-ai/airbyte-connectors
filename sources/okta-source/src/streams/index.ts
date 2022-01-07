@@ -1,3 +1,4 @@
+import {Groups} from './groups';
+import {OktaLogs} from './okta-logs';
 import {Users} from './users';
-
-export {Users};
+export {Users, Groups, OktaLogs};

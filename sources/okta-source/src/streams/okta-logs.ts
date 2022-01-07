@@ -8,7 +8,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {Okta, OktaConfig} from '../okta';
 
-export class Users extends AirbyteStreamBase {
+export class OktaLogs extends AirbyteStreamBase {
   constructor(
     private readonly config: OktaConfig,
     protected readonly logger: AirbyteLogger
@@ -17,7 +17,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/users.json');
+    return require('../../resources/schemas/groups.json');
   }
   get primaryKey(): StreamKey {
     return ['uid', 'source'];
@@ -28,6 +28,6 @@ export class Users extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const okta = await Okta.instance(this.config, this.logger);
-    yield* okta.getUsers();
+    yield* okta.getLogs();
   }
 }
