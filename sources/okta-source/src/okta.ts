@@ -4,9 +4,10 @@ import {wrapApiError} from 'faros-feeds-sdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Group, GroupOfUser,LogEvent, User, UserOfGroup} from './models';
+import {Group, GroupOfUser, LogEvent, User, UserOfGroup} from './models';
 
 const DEFAULT_LOG_EVENTS_START_DATE = '1970-01-01T00:00:00.000Z';
+const DEFAULT_VERSION = 'v1';
 
 export interface OktaConfig {
   readonly token: string;
@@ -28,7 +29,7 @@ export class Okta {
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
-    const version = config.version ? config.version : 'v1';
+    const version = config.version ? config.version : DEFAULT_VERSION;
     const httpClient = axios.create({
       baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
       timeout: 5000, // default is `0` (no timeout)
