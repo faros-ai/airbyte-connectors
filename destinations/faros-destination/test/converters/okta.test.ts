@@ -55,8 +55,8 @@ describe('okta', () => {
       .value();
 
     const writtenByModel = {
-      ims_Group: 2,
-      ims_User: 1,
+      org_Employee: 1,
+      org_Team: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

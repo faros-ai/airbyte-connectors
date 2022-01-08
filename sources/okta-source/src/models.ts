@@ -23,7 +23,7 @@ interface Provider {
 }
 
 interface Credentials {
-  password: object;
+  password?: string;
   emails: Email[];
   provider: Provider;
 }
@@ -84,6 +84,7 @@ export interface Group {
   objectClass: string[];
   type: string;
   profile: GroupProfile;
+  credentials: Credentials;
   _links: Links;
 }
 

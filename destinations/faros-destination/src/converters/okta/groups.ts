@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Group,OktaConverter} from './common';
+import {Group, OktaConverter} from './common';
 
 export class OktaGroups extends OktaConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Group'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Team'];
 
   convert(
     record: AirbyteRecord,
@@ -14,11 +14,13 @@ export class OktaGroups extends OktaConverter {
     const group = record.record.data as Group;
     return [
       {
-        model: 'tms_Group',
+        model: 'org_Team',
         record: {
           uid: group.id,
           name: group.profile.name,
           description: group.profile.description,
+          lead: {uid: group.credentials.emails, source},
+          color: group._links.logo,
           source,
         },
       },
