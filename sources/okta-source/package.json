@@ -1,7 +1,7 @@
 {
-  "name": "example-source",
+  "name": "okta-source",
   "version": "0.1.27",
-  "description": "Example Airbyte source",
+  "description": "Okta Airbyte source",
   "keywords": [
     "airbyte",
     "source",
