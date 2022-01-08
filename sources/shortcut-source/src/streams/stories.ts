@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Shortcut, ShortcutConfig, Story} from '../shortcut';
+import {ExtendStory, Shortcut, ShortcutConfig} from '../shortcut';
 
 export class Stories extends AirbyteStreamBase {
   constructor(
@@ -30,7 +30,7 @@ export class Stories extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>,
     updateRange?: [Date, Date]
-  ): AsyncGenerator<Story> {
+  ): AsyncGenerator<ExtendStory> {
     const shortcut = await Shortcut.instance(this.config);
     yield* shortcut.getStories(updateRange);
   }
