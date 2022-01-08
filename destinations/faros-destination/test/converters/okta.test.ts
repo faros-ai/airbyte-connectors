@@ -45,7 +45,7 @@ describe('okta', () => {
 
     const processedByStream = {
       groups: 2,
-      users: 1,
+      users: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -55,7 +55,7 @@ describe('okta', () => {
       .value();
 
     const writtenByModel = {
-      org_Employee: 1,
+      org_Employee: 2,
       org_Team: 2,
     };
 
