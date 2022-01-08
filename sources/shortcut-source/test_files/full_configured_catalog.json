@@ -18,7 +18,7 @@
     },
     {
       "stream": {
-        "name": "interations",
+        "name": "iterations",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
