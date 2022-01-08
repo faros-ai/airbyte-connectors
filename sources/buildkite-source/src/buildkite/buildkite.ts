@@ -4,7 +4,6 @@ import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
 import fs from 'fs-extra';
 import {GraphQLClient} from 'graphql-request';
 import path from 'path';
-import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
