@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
 
 import {Converter} from '../converter';
-import {Schema$CalendarListEntry, Schema$Event} from './calendar_models';
+import {EventDateTime} from './calendar_models';
 
-export type Event = Schema$Event;
-export type Calendar = Schema$CalendarListEntry;
+export {Calendar, Event} from './calendar_models';
 
 export interface CategoryRef {
   category: string;
@@ -44,7 +44,7 @@ export enum EventVisibilityCategory {
   CUSTOM = 'Custom',
 }
 
-/** Common functions shares across GoogleCalendar converters */
+/** Common functions shares across Google Calendar converters */
 export class GooglecalendarCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
@@ -122,11 +122,20 @@ export class GooglecalendarCommon {
         return {category: EventGuestStatusCategory.CUSTOM, detail};
     }
   }
+
+  static getEventDate(dateTime: EventDateTime, isDayStart = true): Date {
+    const hours = isDayStart ? '00' : '24';
+    return Utils.toDate(
+      dateTime?.date
+        ? dateTime.date.concat(`T${hours}:00:00.000Z`)
+        : dateTime?.dateTime
+    );
+  }
 }
 
-/** GoogleCalendar converter base */
+/** Google Calendar converter base */
 export abstract class GooglecalendarConverter extends Converter {
-  /** Every GoogleCalendar record have id property */
+  /** Every Google Calendar record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }

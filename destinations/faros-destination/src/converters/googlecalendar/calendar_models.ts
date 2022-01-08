@@ -1,4 +1,62 @@
-export interface Schema$Event {
+interface Location {
+  uid: string;
+  raw: string;
+  room: string;
+  address: {
+    uid: string;
+    fullAddress: string;
+    street: string;
+    houseNumber: string;
+    unit: string;
+    postalCode: string;
+    city: string;
+    state: string;
+    stateCode: string;
+    country: string;
+    countryCode: string;
+  };
+  coordinates: {
+    lat: number;
+    lon: number;
+  };
+}
+
+const location_geocode: Location = {
+  uid: 'Location - just to test.',
+  raw: 'United States, California, office #1',
+  room: '123',
+  address: {
+    uid: 'United States, California, office #1',
+    city: 'Los Angeles',
+    country: 'United States',
+    countryCode: '100',
+    fullAddress:
+      'United States, California, Los Angeles, undefined street, office #1',
+    houseNumber: '23',
+    postalCode: '45',
+    state: 'California',
+    stateCode: '4',
+    street: 'undefined',
+    unit: '1',
+  },
+  coordinates: {
+    lat: 24.12313213,
+    lon: 67.12313213,
+  },
+};
+
+/** SyncToken point to last variable. It makes the result of this list
+ * request contain only entries that have changed since then */
+export interface Event extends Schema$Event {
+  nextSyncToken?: string;
+  location_geocode?: Location;
+}
+export interface Calendar extends Schema$CalendarListEntry {
+  nextSyncToken?: string;
+}
+export type EventDateTime = Schema$EventDateTime;
+
+interface Schema$Event {
   /**
    * Whether anyone can invite themselves to the event (deprecated). Optional. The default is False.
    */
@@ -216,7 +274,7 @@ export interface Schema$Event {
   visibility?: string | null;
 }
 
-export interface Schema$CalendarListEntry {
+interface Schema$CalendarListEntry {
   /**
    * The effective access role that the authenticated user has on the calendar. Read-only. Possible values are:
    * - "freeBusyReader" - Provides read access to free/busy information.

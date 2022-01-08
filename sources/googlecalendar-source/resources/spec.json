@@ -6,10 +6,21 @@
     "type": "object",
     "required": [
       "client_email",
-      "private_key"
+      "private_key",
+      "faros_api_url",
+      "faros_api_key"
     ],
     "additionalProperties": false,
     "properties": {
+      "faros_api_url": {
+        "type": "string",
+        "title": "Faros API URL"
+      },
+      "faros_api_key": {
+        "type": "string",
+        "title": "Faros API key",
+        "airbyte_secret": true
+      },
       "client_email": {
         "type": "string",
         "title": "Client Email",

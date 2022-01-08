@@ -57,6 +57,7 @@ describe('googlecalendar', () => {
       cal_EventGuestAssociation: 2,
       cal_User: 5,
       geo_Address: 2,
+      geo_Coordinates: 1,
       geo_Location: 2,
     };
 

@@ -30,7 +30,8 @@
       "reminders": {
         "useDefault": true
       },
-      "eventType": "default"
+      "eventType": "default",
+      "location": "test-locations-data"
     },
     {
       "kind": "calendar#event",

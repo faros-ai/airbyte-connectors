@@ -58,32 +58,35 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
       });
     }
 
-    const start = Utils.toDate(
-      event?.start?.date
-        ? event.start.date.concat('T00:00:00.000Z')
-        : event?.start?.dateTime
-    );
-    const end = Utils.toDate(
-      event?.end?.date
-        ? event.end.date.concat('T24:00:00.000Z')
-        : event?.end?.dateTime
-    );
+    const start = GooglecalendarCommon.getEventDate(event?.start);
+    const end = GooglecalendarCommon.getEventDate(event?.end);
     let durationMs: number;
     if (start && end) {
       durationMs = end.getTime() - start.getTime();
     }
+
     let locationRef;
-    if (event.location) {
-      // TODO: add location geocoding but for now write location as is
-      const uid = event.location;
-      locationRef = {uid};
-      res.push({
-        model: 'geo_Address',
-        record: {uid, fullAddress: uid},
-      });
+    if (event.location_geocode) {
+      const geo = event.location_geocode;
+      locationRef = {uid: geo.uid};
+
+      if (geo.coordinates) {
+        res.push({model: 'geo_Coordinates', record: geo.coordinates});
+      }
+      if (geo.address) {
+        res.push({model: 'geo_Address', record: geo.address});
+      }
+
       res.push({
         model: 'geo_Location',
-        record: {uid, address: {uid}},
+        record: {
+          uid: geo.uid,
+          name: event.location,
+          raw: geo.raw,
+          room: geo.room,
+          coordinates: geo.coordinates ? geo.coordinates : null,
+          address: geo.address ? {uid: geo.address.uid} : null,
+        },
       });
     }
 

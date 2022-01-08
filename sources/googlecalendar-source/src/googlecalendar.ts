@@ -1,5 +1,5 @@
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {FarosClient, wrapApiError} from 'faros-feeds-sdk';
 import {calendar_v3, google} from 'googleapis';
 import {VError} from 'verror';
 
@@ -7,10 +7,34 @@ const DEFAULT_CALENDAR_ID = 'primary';
 const DEFAULT_EVENT_MAX_RESULTS = 2500;
 const DEFAULT_CALENDAR_LIST_MAX_RESULTS = 250;
 
+interface Location {
+  uid: string;
+  raw: string;
+  room: string;
+  address: {
+    uid: string;
+    fullAddress: string;
+    street: string;
+    houseNumber: string;
+    unit: string;
+    postalCode: string;
+    city: string;
+    state: string;
+    stateCode: string;
+    country: string;
+    countryCode: string;
+  };
+  coordinates: {
+    lat: number;
+    lon: number;
+  };
+}
+
 /** SyncToken point to last variable. It makes the result of this list
  * request contain only entries that have changed since then */
 export interface Event extends calendar_v3.Schema$Event {
   nextSyncToken?: string;
+  location_geocode?: Location;
 }
 export interface Calendar extends calendar_v3.Schema$CalendarListEntry {
   nextSyncToken?: string;
@@ -19,6 +43,8 @@ export interface Calendar extends calendar_v3.Schema$CalendarListEntry {
 export interface GoogleCalendarConfig extends AirbyteConfig {
   readonly client_email: string;
   readonly private_key: string;
+  readonly faros_api_url: string;
+  readonly faros_api_key: string;
   readonly calendar_id?: string;
   readonly events_max_results?: number;
   readonly calendars_max_results?: number;
@@ -39,6 +65,7 @@ export class Googlecalendar {
     private readonly client: calendar_v3.Calendar,
     private readonly calendarId: string,
     private readonly maxResults: MaxResults,
+    private readonly farosClient: FarosClient,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -47,16 +74,22 @@ export class Googlecalendar {
     logger: AirbyteLogger
   ): Promise<Googlecalendar> {
     if (Googlecalendar.googleCalendar) return Googlecalendar.googleCalendar;
-    
+
     if (typeof config.private_key !== 'string') {
       throw new VError('private_key: must be a string');
     }
     if (typeof config.client_email !== 'string') {
       throw new VError('client_email: must be a string');
     }
+    if (typeof config.faros_api_key !== 'string') {
+      throw new VError('faros_api_url: must be a string');
+    }
+    if (typeof config.faros_api_url !== 'string') {
+      throw new VError('faros_api_key: must be a string');
+    }
 
     const calendar = google.calendar('v3');
-    
+
     const auth = new google.auth.GoogleAuth({
       // Scopes can be specified either as an array or as a single, space-delimited string.
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
@@ -65,7 +98,7 @@ export class Googlecalendar {
         client_email: config.client_email,
       },
     });
-    
+
     // Acquire an auth client, and bind it to all future calls
     const authClient = await auth.getClient();
     google.options({auth: authClient});
@@ -80,10 +113,16 @@ export class Googlecalendar {
         config.calendars_max_results ?? DEFAULT_CALENDAR_LIST_MAX_RESULTS,
     };
 
+    const farosClient = new FarosClient({
+      apiKey: config.faros_api_key,
+      url: config.faros_api_url,
+    });
+
     Googlecalendar.googleCalendar = new Googlecalendar(
       calendar,
       calendarId,
       maxResults,
+      farosClient,
       logger
     );
     return Googlecalendar.googleCalendar;
@@ -126,7 +165,8 @@ export class Googlecalendar {
 
   private async *paginate(
     func: PaginationReqFunc,
-    lastSyncToken?: string
+    lastSyncToken?: string,
+    transform = async (item): Promise<any> => item
   ): AsyncGenerator {
     let nextPageToken: string | undefined;
 
@@ -143,7 +183,8 @@ export class Googlecalendar {
       }
       const nextSyncToken = response?.data?.nextSyncToken;
       for (const item of response?.data.items ?? []) {
-        yield {...item, nextSyncToken};
+        const transformedItem = await transform(item);
+        yield {...transformedItem, nextSyncToken};
       }
 
       nextPageToken = response?.data?.nextPageToken;
@@ -165,8 +206,15 @@ export class Googlecalendar {
 
       return this.client.events.list(params) as any;
     };
+    const transform = async (item: Event): Promise<Event> => {
+      if (item.location) {
+        const [geoLocation] = await this.farosClient.geocode(item.location);
+        return {...item, location_geocode: geoLocation} as Event;
+      }
+      return item;
+    };
 
-    return this.paginate(func, lastSyncToken);
+    return this.paginate(func, lastSyncToken, transform);
   }
 
   getCalendars(lastSyncToken?: string): AsyncGenerator<Calendar> {
