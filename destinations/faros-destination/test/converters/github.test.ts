@@ -242,6 +242,7 @@ describe('github', () => {
     const writtenByModel = {
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
+      generic_Record: 531,
       tms_Epic: 1,
       tms_Label: 24,
       tms_Project: 50,

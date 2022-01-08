@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node
-        uses: actions/setup-node@v2.5.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 14
 
@@ -72,7 +72,9 @@ jobs:
       - name: Source Acceptance Test
         if: github.ref == 'refs/heads/main' # Skip PRs
         env:
+          BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
+          GOOGLECALENDAR_SOURCE_TEST_CONFIG: ${{ secrets.GOOGLECALENDAR_SOURCE_TEST_CONFIG }}
           HARNESS_SOURCE_TEST_CONFIG: ${{ secrets.HARNESS_SOURCE_TEST_CONFIG }}
           PAGERDUTY_SOURCE_TEST_CONFIG: ${{ secrets.PAGERDUTY_SOURCE_TEST_CONFIG }}
           STATUSPAGE_SOURCE_TEST_CONFIG: ${{ secrets.STATUSPAGE_SOURCE_TEST_CONFIG }}
