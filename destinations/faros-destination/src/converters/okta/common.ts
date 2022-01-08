@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
+
 interface Type {
   id: string;
 }
@@ -39,6 +40,10 @@ interface Links {
   self: Self;
 }
 
+export interface GroupOfUser {
+  id: string;
+}
+
 export interface User {
   id: string;
   status: string;
@@ -52,34 +57,38 @@ export interface User {
   profile: Profile;
   credentials: Credentials;
   _links: Links;
+  groupsOfUser: GroupOfUser[];
 }
 
-interface GroupProfile {
+export interface GroupProfile {
   name: string;
-  description: string;
+  description?: any;
 }
 
-interface Logo {
+export interface Logo {
   name: string;
   href: string;
   type: string;
 }
 
-interface Users {
+export interface Users {
   href: string;
 }
 
-interface Apps {
+export interface Apps {
   href: string;
 }
 
-interface Links {
+export interface GroupLinks {
   logo: Logo[];
   users: Users;
   apps: Apps;
 }
-
+export interface UserOfGroup {
+  id: string;
+}
 export interface Group {
+  item: any;
   id: string;
   created: Date;
   lastUpdated: Date;
@@ -87,135 +96,8 @@ export interface Group {
   objectClass: string[];
   type: string;
   profile: GroupProfile;
-  credentials: Credentials;
-  _links: Links;
-}
-
-interface Actor {
-  id: string;
-  type: string;
-  alternateId: string;
-  displayName: string;
-  detailEntry?: any;
-}
-
-interface UserAgent {
-  rawUserAgent: string;
-  os: string;
-  browser: string;
-}
-
-interface Geolocation {
-  lat: number;
-  lon: number;
-}
-
-interface GeographicalContext {
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  geolocation: Geolocation;
-}
-
-interface Client {
-  userAgent: UserAgent;
-  zone: string;
-  device: string;
-  id: string;
-  ipAddress: string;
-  geographicalContext: GeographicalContext;
-}
-
-interface AuthenticationContext {
-  authenticationProvider?: any;
-  credentialProvider?: any;
-  credentialType?: any;
-  issuer?: any;
-  interface?: any;
-  authenticationStep: number;
-  externalSessionId: string;
-}
-
-interface Outcome {
-  result: string;
-  reason?: any;
-}
-
-interface SecurityContext {
-  asNumber: number;
-  asOrg: string;
-  isp: string;
-  domain: string;
-  isProxy: boolean;
-}
-
-interface DebugData {
-  requestId: string;
-  requestUri: string;
-  url: string;
-}
-
-interface DebugContext {
-  debugData: DebugData;
-}
-
-interface Transaction {
-  type: string;
-  id: string;
-  detail: object;
-}
-
-interface Geolocation2 {
-  lat: number;
-  lon: number;
-}
-
-interface GeographicalContext2 {
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  geolocation: Geolocation2;
-}
-
-interface IpChain {
-  ip: string;
-  geographicalContext: GeographicalContext2;
-  version: string;
-  source?: any;
-}
-
-interface Request {
-  ipChain: IpChain[];
-}
-
-interface Target {
-  id: string;
-  type: string;
-  alternateId: string;
-  displayName: string;
-  detailEntry?: any;
-}
-
-export interface LogEvent {
-  actor: Actor;
-  client: Client;
-  device?: any;
-  authenticationContext: AuthenticationContext;
-  displayMessage: string;
-  eventType: string;
-  outcome: Outcome;
-  published: Date;
-  securityContext: SecurityContext;
-  severity: string;
-  debugContext: DebugContext;
-  legacyEventType: string;
-  transaction: Transaction;
-  uuid: string;
-  version: string;
-  request: Request;
-  target: Target[];
+  _links: GroupLinks;
+  usersOfGroup: UserOfGroup[];
 }
 
 export class OktaCommon {

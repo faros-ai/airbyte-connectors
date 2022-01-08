@@ -1,3 +1,5 @@
+import {iteratee} from 'lodash';
+
 interface Type {
   id: string;
 }
@@ -36,6 +38,10 @@ interface Links {
   self: Self;
 }
 
+export interface GroupOfUser {
+  id: string;
+}
+
 export interface User {
   id: string;
   status: string;
@@ -49,34 +55,38 @@ export interface User {
   profile: Profile;
   credentials: Credentials;
   _links: Links;
+  groupsOfUser: GroupOfUser[];
 }
 
-interface GroupProfile {
+export interface GroupProfile {
   name: string;
-  description: string;
+  description?: any;
 }
 
-interface Logo {
+export interface Logo {
   name: string;
   href: string;
   type: string;
 }
 
-interface Users {
+export interface Users {
   href: string;
 }
 
-interface Apps {
+export interface Apps {
   href: string;
 }
 
-interface Links {
+export interface GroupLinks {
   logo: Logo[];
   users: Users;
   apps: Apps;
 }
-
+export interface UserOfGroup {
+  id: string;
+}
 export interface Group {
+  item: any;
   id: string;
   created: Date;
   lastUpdated: Date;
@@ -84,8 +94,8 @@ export interface Group {
   objectClass: string[];
   type: string;
   profile: GroupProfile;
-  credentials: Credentials;
-  _links: Links;
+  _links: GroupLinks;
+  usersOfGroup: UserOfGroup[];
 }
 
 interface Actor {

@@ -4,7 +4,7 @@ import {wrapApiError} from 'faros-feeds-sdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Group, LogEvent, User} from './models';
+import {Group, GroupOfUser,LogEvent, User, UserOfGroup} from './models';
 
 const DEFAULT_LOG_EVENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 
@@ -65,6 +65,10 @@ export class Okta {
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<User[]>('users');
     for (const item of res.data) {
+      const resItem = await this.httpClient.get<GroupOfUser[]>(
+        `users/${item.id}/groups`
+      );
+      item.groupsOfUser = resItem.data;
       yield item;
     }
   }
@@ -72,6 +76,10 @@ export class Okta {
   async *getGroups(): AsyncGenerator<Group> {
     const res = await this.httpClient.get<Group[]>('groups');
     for (const item of res.data) {
+      const resItem = await this.httpClient.get<UserOfGroup[]>(
+        `groups/${item.id}/users`
+      );
+      item.usersOfGroup = resItem.data;
       yield item;
     }
   }
