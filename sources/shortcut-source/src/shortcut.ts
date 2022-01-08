@@ -71,7 +71,8 @@ const DEFAULT_UNIX = -8640000000000000;
 const DEFAULT_ITERATIONS_START_DATE = new Date(DEFAULT_UNIX);
 const DEFAULT_STORIES_START_DATE = new Date(DEFAULT_UNIX);
 const DEFAULT_STORIES_END_DATE = new Date();
-
+const DEFAULT_BASE_URL = 'https://api.app.shortcut.com';
+const DEFAULT_VERSION = 'v3';
 export class Shortcut {
   private static shortcut: Shortcut = null;
   private readonly cfg: ShortcutConfig;
@@ -80,8 +81,8 @@ export class Shortcut {
   private readonly client: Client<RequestInfo, Response>;
   constructor(cfg: ShortcutConfig) {
     this.cfg = cfg;
-    this.baseUrl = cfg.base_url ? cfg.base_url : 'https://api.app.shortcut.com';
-    this.version = cfg.version ? cfg.version : 'v3';
+    this.baseUrl = cfg.base_url ? cfg.base_url : DEFAULT_BASE_URL;
+    this.version = cfg.version ? cfg.version : DEFAULT_VERSION;
     this.client = Client.create(cfg.token);
   }
 
