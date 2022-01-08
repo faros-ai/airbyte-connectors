@@ -97,7 +97,7 @@ export class Shortcut {
     }
   }
 
-  async *getEpics(projectIds: ReadonlyArray<number>): AsyncGenerator<Epic> {
+  async *getEpics(projectId: number): AsyncGenerator<Epic> {
     const epics = await this.client.listEpics();
     for (const epic of epics) {
       if (!epic.project_ids?.length || !epic.updated_at) {
@@ -105,7 +105,7 @@ export class Shortcut {
       }
       // Epic belongs to at least one project id,
       // the endpoint doesn't support filtering, so we have to do it on the client side
-      if (!epic.project_ids.find((x) => projectIds.includes(x))) {
+      if (!epic.project_ids.find((x) => projectId == x)) {
         continue;
       }
       yield epic;

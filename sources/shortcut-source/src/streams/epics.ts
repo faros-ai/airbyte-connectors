@@ -44,10 +44,11 @@ export class Epics extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
+    streamSlice?: StreamSlice,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Epic> {
     const shortcut = await Shortcut.instance(this.config);
-    yield* shortcut.getEpics(this.projectIds);
+    const projectId = streamSlice.projectId;
+    yield* shortcut.getEpics(projectId);
   }
 }
