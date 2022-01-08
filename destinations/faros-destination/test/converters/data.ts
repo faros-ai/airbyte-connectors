@@ -53,3 +53,4 @@ export const googlecalendarAllStreamsLog = readTestResourceFile(
   'googlecalendar/all-streams.log'
 );
 
+export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
