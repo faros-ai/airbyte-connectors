@@ -15,10 +15,10 @@ export class GithubPullRequests extends GithubConverter {
     'vcs_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pr = record.record.data;
     const res: DestinationRecord[] = [];

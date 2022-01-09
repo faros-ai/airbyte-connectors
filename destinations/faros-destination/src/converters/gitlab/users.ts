@@ -6,10 +6,10 @@ import {GitlabConverter} from './common';
 export class GitlabUsers extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_User'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data;
 

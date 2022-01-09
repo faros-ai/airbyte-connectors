@@ -7,10 +7,10 @@ import {JiraConverter} from './common';
 export class JiraPullRequests extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     // TODO: convert records
     return [];
   }

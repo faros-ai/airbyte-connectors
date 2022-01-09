@@ -6,10 +6,10 @@ import {GithubConverter} from './common';
 export class GithubIssueLabels extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const label = record.record.data;
     return [
       {

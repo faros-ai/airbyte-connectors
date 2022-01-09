@@ -301,7 +301,8 @@ class FarosDestination extends AirbyteDestination {
     };
 
     const ctx = new StreamContext(config);
-    const recordsToBeProcessedLast: ((ctx: StreamContext) => void)[] = [];
+    const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
+      [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -313,7 +314,7 @@ class FarosDestination extends AirbyteDestination {
     try {
       // Process input & write records
       for await (const line of input) {
-        this.handleRecordProcessingError(stats, () => {
+        await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
@@ -338,8 +339,10 @@ class FarosDestination extends AirbyteDestination {
             stats.processedByStream[stream] = count ? count + 1 : 1;
 
             const converter = this.getConverter(stream);
-            const writeRecord = (context: StreamContext): void => {
-              stats.recordsWritten += this.writeRecord(
+            const writeRecord = async (
+              context: StreamContext
+            ): Promise<void> => {
+              stats.recordsWritten += await this.writeRecord(
                 converter,
                 unpacked,
                 stats.writtenByModel,
@@ -363,7 +366,7 @@ class FarosDestination extends AirbyteDestination {
             // Process the record immidiately if converter has no dependencies,
             // otherwise process it later once all streams are processed.
             if (converter.dependencies.length === 0) {
-              writeRecord(ctx);
+              await writeRecord(ctx);
             } else {
               recordsToBeProcessedLast.push(writeRecord);
             }
@@ -376,9 +379,9 @@ class FarosDestination extends AirbyteDestination {
           `Stdin processing completed, but still have ${recordsToBeProcessedLast.length} records to process`
         );
         this.logger.info(`Stream context stats: ${ctx.stats(true)}`);
-        recordsToBeProcessedLast.forEach((process) => {
-          this.handleRecordProcessingError(stats, () => process(ctx));
-        });
+        for await (const process of recordsToBeProcessedLast) {
+          await this.handleRecordProcessingError(stats, () => process(ctx));
+        }
       }
     } finally {
       this.logWriteStats(stats, writer);
@@ -411,12 +414,12 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(`Errored ${stats.recordsErrored} records`);
   }
 
-  private handleRecordProcessingError(
+  private async handleRecordProcessingError(
     stats: WriteStats,
-    processRecord: () => void
-  ): void {
+    processRecord: () => Promise<void>
+  ): Promise<void> {
     try {
-      processRecord();
+      await processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
       this.logger.error(
@@ -516,15 +519,15 @@ class FarosDestination extends AirbyteDestination {
       : converter ?? this.jsonataConverter;
   }
 
-  private writeRecord(
+  private async writeRecord(
     converter: Converter,
     recordMessage: AirbyteRecord,
     writtenByModel: Dictionary<number>,
     ctx: StreamContext,
     writer?: Writable
-  ): number {
+  ): Promise<number> {
     // Apply conversion on the input record
-    const results = converter.convert(recordMessage, ctx);
+    const results = await converter.convert(recordMessage, ctx);
 
     if (!Array.isArray(results))
       throw new VError('Invalid results: not an array');
