@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Group, OktaConverter} from './common';
+import {OktaConverter} from './common';
+import {Group} from './models';
 
 export class OktaGroups extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Team'];

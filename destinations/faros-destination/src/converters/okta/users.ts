@@ -2,7 +2,8 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {OktaConverter, User} from './common';
+import {OktaConverter} from './common';
+import {User} from './models';
 
 export class OktaUsers extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
