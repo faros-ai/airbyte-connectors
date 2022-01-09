@@ -1,10 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
+import {Utils, Location} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Event, GooglecalendarCommon, GooglecalendarConverter} from './common';
 
 export class GooglecalendarEvents extends GooglecalendarConverter {
+  // Locations cache to avoid querying the API for the same location
+  private locationsCache = new Map<string, Location>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cal_Event',
     'cal_EventGuestAssociation',
@@ -44,9 +47,9 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
       });
     });
 
-    let organizerRef;
+    let organizer = null;
     if (event.organizer) {
-      organizerRef = {uid: event.organizer?.id, source};
+      organizer = {uid: event.organizer?.id, source};
       res.push({
         model: 'cal_User',
         record: {
@@ -72,19 +75,37 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     if (start && end) {
       durationMs = end.getTime() - start.getTime();
     }
-    let locationRef;
+
+    let location = null;
     if (event.location) {
-      // TODO: add location geocoding but for now write location as is
-      const uid = event.location;
-      locationRef = {uid};
-      res.push({
-        model: 'geo_Address',
-        record: {uid, fullAddress: uid},
-      });
-      res.push({
-        model: 'geo_Location',
-        record: {uid, address: {uid}},
-      });
+      const cachedLocation = this.locationsCache.get(event.location);
+      if (cachedLocation) {
+        location = {uid: cachedLocation.uid};
+      } else {
+        const locations = await ctx.farosClient.geocode(event.location);
+
+        if (locations.length > 0) {
+          const loc = locations[0];
+          this.locationsCache.set(event.location, loc);
+
+          if (loc.coordinates) {
+            res.push({model: 'geo_Coordinates', record: loc.coordinates});
+          }
+          if (loc.address) {
+            res.push({model: 'geo_Address', record: loc.address});
+          }
+          const geo_Location = {
+            uid: loc.uid,
+            name: loc.raw,
+            raw: loc.raw,
+            room: loc.room,
+            coordinates: loc.coordinates ? loc.coordinates : null,
+            address: loc.address ? {uid: loc.address.uid} : null,
+          };
+          res.push({model: 'geo_Location', record: geo_Location});
+          location = {uid: loc.uid};
+        }
+      }
     }
 
     res.push({
@@ -103,20 +124,12 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
         end,
         durationMs,
         url: event.htmlLink,
-        type: event.eventType
-          ? GooglecalendarCommon.EventType(event.eventType)
-          : null,
-        location: locationRef ?? null,
-        visibility: event.transparency
-          ? GooglecalendarCommon.EventVisibility(event.transparency)
-          : null,
-        privacy: event.visibility
-          ? GooglecalendarCommon.EventPrivacy(event.visibility)
-          : null,
-        status: event.status
-          ? GooglecalendarCommon.EventStatus(event.status)
-          : null,
-        organizer: organizerRef,
+        location,
+        organizer,
+        type: GooglecalendarCommon.EventType(event.eventType),
+        visibility: GooglecalendarCommon.EventVisibility(event.transparency),
+        privacy: GooglecalendarCommon.EventPrivacy(event.visibility),
+        status: GooglecalendarCommon.EventStatus(event.status),
       },
     });
     return res;
