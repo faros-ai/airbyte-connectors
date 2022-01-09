@@ -14,10 +14,10 @@ export class StatuspageIncidentUpdates extends StatuspageConverter {
     'ims_IncidentEvent',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const update = record.record.data;
 

@@ -34,7 +34,7 @@ export abstract class Converter {
   abstract convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord>;
+  ): Promise<ReadonlyArray<DestinationRecord>>;
 }
 
 /** Stream context to store records by stream */

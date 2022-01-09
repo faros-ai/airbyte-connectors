@@ -9,10 +9,10 @@ export class JiraBoards extends JiraConverter {
     'tms_TaskBoardProjectRelationship',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     if (!this.useBoardOwnership(ctx)) return [];
     const board = record.record.data;
     const uid = board.id.toString();
