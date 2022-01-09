@@ -10,10 +10,10 @@ export class GithubCommits extends GithubConverter {
     'vcs_Commit',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;
     const res: DestinationRecord[] = [];

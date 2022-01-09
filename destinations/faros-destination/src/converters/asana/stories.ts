@@ -7,10 +7,10 @@ import {AsanaCommon, AsanaConverter} from './common';
 export class AsanaStories extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Task'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
     const source = this.streamName.source;
     const story = record.record.data;

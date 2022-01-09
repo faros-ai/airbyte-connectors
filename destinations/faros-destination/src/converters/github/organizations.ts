@@ -13,10 +13,10 @@ export class GithubOrganizations extends GithubConverter {
     'vcs_Organization',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const org = record.record.data;
 

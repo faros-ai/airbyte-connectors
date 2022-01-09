@@ -6,10 +6,10 @@ import {GithubCommon, GithubConverter} from './common';
 export class GithubTags extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const tag = record.record.data;
     const repository = GithubCommon.parseRepositoryKey(tag.repository, source);

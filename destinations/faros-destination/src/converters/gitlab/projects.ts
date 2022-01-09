@@ -10,10 +10,10 @@ export class GitlabProjects extends GitlabConverter {
     'vcs_Repository',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const project = record.record.data;
     const res: DestinationRecord[] = [];

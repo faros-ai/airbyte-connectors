@@ -57,10 +57,10 @@ export class VictoropsIncidents extends VictoropsConverter {
     return record?.record?.data?.incidentNumber;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const incident = record.record.data;
     const res: DestinationRecord[] = [];

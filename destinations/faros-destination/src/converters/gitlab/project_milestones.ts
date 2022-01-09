@@ -6,10 +6,10 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class GitlabProjectMilestones extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const milestone = record.record.data;
 

@@ -79,10 +79,10 @@ export class JiraSprints extends JiraConverter {
     return points;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprint = record.record.data;
     if (!this.pointsFieldIdsByName) {
       this.pointsFieldIdsByName = JiraSprints.getFieldIdsByName(ctx);

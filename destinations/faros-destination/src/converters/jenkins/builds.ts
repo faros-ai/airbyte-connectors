@@ -19,10 +19,10 @@ export class JenkinsBuilds extends Converter {
     return record?.record?.data?.id;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data;
 
