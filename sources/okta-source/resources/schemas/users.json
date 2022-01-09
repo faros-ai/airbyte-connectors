@@ -12,7 +12,7 @@
       "type": "string"
     },
     "activated": {
-      "type": "boolean"
+      "type": ["boolean","null"]
     },
     "statusChanged": {
       "type": "string"
@@ -61,7 +61,7 @@
       "type": "object",
       "properties": {
         "password": {
-          "type": "object"
+          "type": ["string","null"]
         },
         "emails": {
           "type": "array",
@@ -107,6 +107,19 @@
           }
         }
       } 
+    },
+    "groupsOfUser": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      ]
     }
   } 
 }

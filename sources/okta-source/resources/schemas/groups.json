@@ -32,7 +32,7 @@
             "type": "string"
           },
           "description": {
-            "type": "string"
+            "type": ["string","null"]
           }
         }
       },
@@ -89,6 +89,19 @@
             }
           }
         }
+      },
+      "usersOfGroup": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       }
     }
   }

@@ -1,5 +1,3 @@
-import {iteratee} from 'lodash';
-
 interface Type {
   id: string;
 }
