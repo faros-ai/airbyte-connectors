@@ -33,9 +33,7 @@
     "axios": "^0.21.4",
     "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.26",
-    "git-url-parse": "^11.6.0",
     "graphql-request": "^3.7.0",
-    "typescript-memoize": "^1.0.1",
     "verror": "^1.10.0"
   },
   "jest": {
