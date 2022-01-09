@@ -22,7 +22,7 @@
             "type": ["string","null"]
         },
         "repository": {
-            "type": "object",
+            "type": ["object","null"],
             "properties": {
                 "url": {
                     "type": "string"
@@ -38,7 +38,7 @@
             }
         },
         "createdAt": {
-            "type": "string"
+            "type": ["string","null"]
         },
         "organization": {
             "type": "object",

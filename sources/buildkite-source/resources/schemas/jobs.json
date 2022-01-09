@@ -10,19 +10,16 @@
             "type": "string"
         },
         "label": {
-            "type": "string"
-        },
-        "message": {
-            "type": "string"
-        },
-        "state": {
-            "type": "string"
-        },
+            "type": ["string","null"]
+        }, 
         "createdAt": {
-            "type": "string"
+            "type":["string","null"]
         },
         "startedAt": {
-            "type": "string"
+            "type": ["string","null"]
+        },
+        "finishedAt": {
+            "type": ["string","null"]
         },
         "triggered": {
             "type": [
@@ -32,13 +29,13 @@
             "additionalProperties": true,
             "properties": {
                 "createdAt": {
-                    "type": "string"
+                    "type":["string","null"]
                 },
                 "startedAt": {
-                    "type": "string"
+                    "type": ["string","null"]
                 },
                 "finishedAt": {
-                    "type": "string"
+                    "type": ["string","null"]
                 }
             }
         },
@@ -46,7 +43,7 @@
             "type": "string"
         },
         "url": {
-            "type": "string"
+            "type":  ["string","null"]
         },
         "command": {
             "type": "string"

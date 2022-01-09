@@ -18,6 +18,9 @@
         "startedAt": {
             "type": "string"
         },
+        "finishedAt": {
+            "type": "string"
+        },
         "state": {
             "type": "string"
         },
@@ -26,6 +29,12 @@
         },
         "commit": {
             "type": "string"
+        },
+        "jobs": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
         },
         "pipeline": {
             "type": "object",
