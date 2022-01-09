@@ -2,8 +2,8 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Iteration, ShortcutCommon,ShortcutConverter} from './common';
-
+import {ShortcutCommon, ShortcutConverter} from './common';
+import {Iteration} from './models';
 export class ShortcutIterations extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 

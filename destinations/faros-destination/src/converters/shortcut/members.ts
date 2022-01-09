@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Member,ShortcutConverter} from './common';
-
+import {ShortcutConverter} from './common';
+import {Member} from './models';
 export class ShortcutMembers extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 

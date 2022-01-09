@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Project,ShortcutConverter} from './common';
-
+import {ShortcutConverter} from './common';
+import {Project} from './models';
 export class ShortcutProjects extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',

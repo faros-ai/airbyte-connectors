@@ -2,7 +2,8 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ShortcutCommon, ShortcutConverter, Story} from './common';
+import {ShortcutCommon, ShortcutConverter} from './common';
+import {Story} from './models';
 
 export class ShortcutStories extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

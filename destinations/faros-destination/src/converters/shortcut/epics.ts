@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Epic, ShortcutCommon,ShortcutConverter} from './common';
-
+import {ShortcutCommon, ShortcutConverter} from './common';
+import {Epic} from './models';
 export class ShortcutEpics extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
