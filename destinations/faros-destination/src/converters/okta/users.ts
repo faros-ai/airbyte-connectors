@@ -23,9 +23,19 @@ export class OktaUsers extends OktaConverter {
         model: 'org_Employee',
         record: {
           uid: user.id,
+          title: user.profile.firstName,
           level: user.type,
           joinedAt,
           terminatedAt,
+          // not support
+          department: '',
+          identity: {uid: user.id, source},
+          // not support
+          manager: '',
+          // not support
+          reportingChain: '',
+          location: '',
+          // not support
           name: user.profile.firstName,
           emailAddress: user.profile.email,
           source,
