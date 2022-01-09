@@ -19,7 +19,6 @@ Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | 
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Statuspage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
-GoogleCalendar Source | [sources/googlecalendar-source](sources/googlecalendar-source) | `docker pull farosai/airbyte-googlecalendar-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 
 # Development
 

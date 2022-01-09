@@ -1,6 +1,4 @@
 {
   "private_key": "PRIVATE_KEY",
-  "client_email": "CLIENT_EMAIL",
-  "faros_api_url": "faros_api_url",
-  "faros_api_key": "faros_api_key"  
+  "client_email": "CLIENT_EMAIL"
 }

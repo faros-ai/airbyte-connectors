@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Event, GooglecalendarCommon, GooglecalendarConverter} from './common';
@@ -45,15 +44,15 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     });
 
     let organizerRef;
-    if (event.organizer) {
-      organizerRef = {uid: event.organizer?.id, source};
+    const orgUID = event?.organizer?.id || event?.organizer?.email;
+    if (orgUID) {
+      organizerRef = {uid: orgUID, source};
       res.push({
         model: 'cal_User',
         record: {
-          uid: event.organizer?.id || event.organizer?.email,
+          ...organizerRef,
           email: event.organizer?.email,
           displayName: event.organizer?.displayName,
-          source,
         },
       });
     }
@@ -66,7 +65,7 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
     }
 
     let locationRef;
-    if (event.location_geocode) {
+    if (event.location) {
       const geo = event.location_geocode;
       locationRef = {uid: geo.uid};
 

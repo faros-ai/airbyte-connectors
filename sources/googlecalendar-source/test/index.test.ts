@@ -14,8 +14,6 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
-const locationData = readTestResourceFile('location.data.json');
-
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -45,7 +43,6 @@ describe('index', () => {
         {calendarList: {list: jest.fn().mockResolvedValue({})}} as any,
         'primary',
         {events: 100, calendars: 100},
-        {geocode: jest.fn().mockResolvedValue([{}])} as any,
         logger
       );
     });
@@ -65,7 +62,6 @@ describe('index', () => {
         {calendarList: {list: jest.fn().mockRejectedValue('some text')}} as any,
         'primary',
         {events: 100, calendars: 100},
-        {geocode: jest.fn().mockResolvedValue([{}])} as any,
         logger
       );
     });
@@ -97,7 +93,6 @@ describe('index', () => {
         } as any,
         'primary',
         {events: 100, calendars: 100},
-        {geocode: jest.fn().mockResolvedValue([])} as any,
         logger
       );
     });
@@ -136,7 +131,6 @@ describe('index', () => {
         } as any,
         'primary',
         {events: 100, calendars: 100},
-        {geocode: jest.fn().mockResolvedValue([locationData])} as any,
         logger
       );
     });
@@ -154,16 +148,10 @@ describe('index', () => {
     }
     expect(eventsList).toHaveBeenCalledTimes(1);
     expect(events).toStrictEqual(
-      readTestResourceFile('events.json').items.map((c) => {
-        const res = {
-          ...c,
-          nextSyncToken: 'sync-token-events',
-        };
-        if (c.location) {
-          res.location_geocode = locationData;
-        }
-        return res;
-      })
+      readTestResourceFile('events.json').items.map((c) => ({
+        ...c,
+        nextSyncToken: 'sync-token-events',
+      }))
     );
   });
 
@@ -187,7 +175,6 @@ describe('index', () => {
         } as any,
         'primary',
         {events: 100, calendars: 100},
-        {geocode: jest.fn().mockResolvedValue([locationData])} as any,
         logger
       );
     });

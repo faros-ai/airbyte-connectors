@@ -56,37 +56,6 @@
         }
       }
     },
-    "location_geocode": {
-      "type": "object",
-      "properties": {
-        "uid": { "type": "string" },
-        "raw": { "type": "string" },
-        "room": { "type": "string" },
-        "location_geocode": {
-          "type": "object",
-          "properties": {
-            "uid": { "type": "string" },
-            "fullAddress": { "type": "string" },
-            "street": { "type": "string" },
-            "houseNumber": { "type": "string" },
-            "unit": { "type": "string" },
-            "postalCode": { "type": "string" },
-            "city": { "type": "string" },
-            "state": { "type": "string" },
-            "stateCode": { "type": "string" },
-            "country": { "type": "string" },
-            "countryCode": { "type": "string" }
-          }
-        },
-        "coordinates": {
-          "type": "object",
-          "properties": {
-            "lat": { "type": "number" },
-            "lon": { "type": "number" }
-          }
-        }
-      }
-    },
     "organizer": {
       "type": "object",
       "properties": {
