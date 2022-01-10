@@ -1,4 +1,3 @@
-import stream from 'stream';
 interface Type {
   id: string;
 }
