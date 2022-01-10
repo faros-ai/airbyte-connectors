@@ -25,10 +25,10 @@ export class GitlabIssues extends GitlabConverter {
     return [this.usersStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const issue = record.record.data;
     const res: DestinationRecord[] = [];

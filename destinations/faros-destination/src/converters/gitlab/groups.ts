@@ -10,10 +10,10 @@ export class GitlabGroups extends GitlabConverter {
     'vcs_Organization',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const group = record.record.data;
     const res: DestinationRecord[] = [];

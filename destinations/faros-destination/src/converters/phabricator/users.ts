@@ -9,10 +9,10 @@ export class PhabricatorUsers extends PhabricatorConverter {
     'vcs_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data;
     const res: DestinationRecord[] = [];

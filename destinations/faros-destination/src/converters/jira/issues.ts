@@ -419,10 +419,10 @@ export class JiraIssues extends JiraConverter {
     return isString(value) ? value : JSON.stringify(value);
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data;
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
