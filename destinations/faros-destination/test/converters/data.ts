@@ -31,6 +31,9 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
 
+export const bitbucketAllStreamsLog = readTestResourceFile(
+  'bitbucket/all-streams.log'
+);
 export const statuspageAllStreamsLog = readTestResourceFile(
   'statuspage/all-streams.log'
 );
@@ -52,4 +55,3 @@ export const squadcastAllStreamsLog = readTestResourceFile(
 export const googlecalendarAllStreamsLog = readTestResourceFile(
   'googlecalendar/all-streams.log'
 );
-
