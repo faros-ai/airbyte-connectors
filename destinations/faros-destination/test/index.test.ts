@@ -35,6 +35,7 @@ describe('index', () => {
     const cli = await CLI.runWith(['spec']);
     expect(await read(cli.stderr)).toBe('');
     expect(await read(cli.stdout)).toBe(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
         os.EOL
     );

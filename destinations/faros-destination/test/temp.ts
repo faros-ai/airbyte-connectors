@@ -36,10 +36,10 @@ export async function tempConfig(
     api_key: 'test-api-key',
     graph: 'test-graph',
     origin: 'test-origin',
-    jsonata_destination_models: ['vcs_User'],
+    jsonata_destination_models: ['generic_Record'],
     jsonata_expression: `
     data.{
-      "model": "vcs_User",
+      "model": "generic_Record",
       "record": {
         "uid": foo
       }

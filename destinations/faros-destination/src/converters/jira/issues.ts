@@ -8,6 +8,7 @@ import {
   keyBy,
   last,
   mapValues,
+  pick,
   toLower,
 } from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -130,6 +131,7 @@ export class JiraIssues extends JiraConverter {
   private static fieldChangelog(
     changelog: ReadonlyArray<any>,
     field: string,
+    fromField = 'fromString',
     valueField = 'toString'
   ): ReadonlyArray<{
     from: string;
@@ -147,7 +149,7 @@ export class JiraIssues extends JiraConverter {
             continue;
           }
           fieldChangelog.push({
-            from: item.from,
+            from: item[fromField],
             field,
             value: item[valueField],
             changed,
@@ -158,17 +160,19 @@ export class JiraIssues extends JiraConverter {
     return fieldChangelog;
   }
 
-  static assigneeChangelog(
+  private static assigneeChangelog(
     changelog: ReadonlyArray<any>,
     currentAssignee: any,
     created: Date
   ): ReadonlyArray<Assignee> {
     const assigneeChangelog: Array<Assignee> = [];
 
-    // sort assignees from earliest to latest
-    const assigneeChanges = [
-      ...JiraIssues.fieldChangelog(changelog, 'assignee', 'to'),
-    ].reverse();
+    const assigneeChanges = JiraIssues.fieldChangelog(
+      changelog,
+      'assignee',
+      'from',
+      'to'
+    );
 
     if (assigneeChanges.length) {
       // case where task was already assigned at creation
@@ -189,6 +193,36 @@ export class JiraIssues extends JiraConverter {
     return assigneeChangelog;
   }
 
+  private statusChangelog(
+    changelog: ReadonlyArray<any>,
+    currentStatus: string,
+    created: Date
+  ): ReadonlyArray<[Status, Date]> {
+    const statusChangelog: Array<[Status, Date]> = [];
+
+    const pushStatusChange = (statusName: string, date: Date) => {
+      const status = this.statusByName[statusName];
+      if (status) statusChangelog.push([status, date]);
+    };
+
+    const statusChanges = JiraIssues.fieldChangelog(changelog, 'status');
+
+    if (statusChanges.length) {
+      // status that was assigned at creation
+      const firstChange = statusChanges[0];
+      if (firstChange.from) {
+        pushStatusChange(firstChange.from, created);
+      }
+      for (const change of statusChanges) {
+        pushStatusChange(change.value, change.changed);
+      }
+    } else if (currentStatus) {
+      // if task was given status at creation and never changed
+      pushStatusChange(currentStatus, created);
+    }
+    return statusChangelog;
+  }
+
   private getIssueEpic(issue: Dictionary<any>): string | undefined {
     for (const id of this.fieldIdsByName[JiraCommon.EPIC_LINK_FIELD_NAME] ??
       []) {
@@ -196,6 +230,9 @@ export class JiraIssues extends JiraConverter {
       if (epic) {
         return epic.toString();
       }
+    }
+    if (issue.fields.issuetype?.name === JiraCommon.EPIC_TYPE_NAME) {
+      return issue['key'];
     }
     return undefined;
   }
@@ -274,6 +311,79 @@ export class JiraIssues extends JiraConverter {
     };
   }
 
+  /**
+   * Attempts to retrieve a field's value from several typical locations within
+   * the field's JSON blob. If the blob is an array, then each item's value will
+   * be added to an array of strings which will be an entry in the returned
+   * object. Also each item in the array will be exploded across the returned
+   * object with the key '<name>_<index>'. If nothing can be done, then
+   * the JSON blob is set to the additional field's value after being stringified.
+   *
+   * @param name      The name of the additional field
+   * @param jsonValue The field's JSON blob to retrieve the value from
+   * @return          The Record of additional fields
+   */
+  private retrieveAdditionalFieldValue(
+    ctx: StreamContext,
+    name: string,
+    jsonValue: any
+  ): Record<string, string> {
+    const additionalFields = {};
+
+    if (!jsonValue || isString(jsonValue)) {
+      additionalFields[name] = jsonValue;
+      return additionalFields;
+    }
+
+    const retrievedValue = this.retrieveFieldValue(jsonValue);
+    if (retrievedValue) {
+      additionalFields[name] = this.stringifyNonString(retrievedValue);
+      return additionalFields;
+    }
+
+    if (Array.isArray(jsonValue)) {
+      // Truncate the array to the array limit
+      const inputArray = jsonValue.slice(
+        0,
+        this.additionalFieldsArrayLimit(ctx)
+      );
+
+      const resultArray = inputArray.map((item, index) => {
+        const val = this.retrieveFieldValue(item) ?? item;
+        // Also explode each item across additional fields
+        additionalFields[name + '_' + index] = this.stringifyNonString(val);
+        return val;
+      });
+
+      additionalFields[name] = JSON.stringify(resultArray);
+      return additionalFields;
+    }
+
+    // Nothing could be retrieved
+    additionalFields[name] = this.stringifyNonString(jsonValue);
+    return additionalFields;
+  }
+
+  /**
+   * Check for existence of the members 'value', 'name' and then
+   * 'displayName'in that order and return when one is found
+   * (or undefined if none).
+   *
+   * @param jsonValue The object whose members should be considered
+   * @returns         The value, name or displayName within the object
+   */
+  private retrieveFieldValue(jsonValue: any): any | undefined {
+    let val;
+    if (jsonValue?.value) {
+      val = jsonValue.value;
+    } else if (jsonValue?.name) {
+      val = jsonValue.name;
+    } else if (jsonValue?.displayName) {
+      val = jsonValue.displayName;
+    }
+    return val;
+  }
+
   private getPullRequests(
     ctx: StreamContext,
     issueId: string
@@ -303,6 +413,10 @@ export class JiraIssues extends JiraConverter {
       );
     }
     return pulls;
+  }
+
+  private stringifyNonString(value: any): string {
+    return isString(value) ? value : JSON.stringify(value);
   }
 
   convert(
@@ -371,10 +485,10 @@ export class JiraIssues extends JiraConverter {
       issue.fields.assignee?.accountId || issue.fields.assignee?.name;
     const changelog: any[] = issue.changelog?.histories || [];
     changelog.sort((e1, e2) => {
-      // Sort changes from most to least recent
+      // Sort changes from least to most recent
       const created1 = +(Utils.toDate(e1.created) || new Date(0));
       const created2 = +(Utils.toDate(e2.created) || new Date(0));
-      return created2 - created1;
+      return created1 - created2;
     });
     const assigneeChangelog = JiraIssues.assigneeChangelog(
       changelog,
@@ -392,25 +506,15 @@ export class JiraIssues extends JiraConverter {
       });
     }
 
-    const statusChangelog: any[] = [];
-    for (const change of JiraIssues.fieldChangelog(changelog, 'status')) {
-      const status = this.statusByName[change.value];
-      if (status) {
-        statusChangelog.push({
-          status: {
-            category: statusCategories.get(
-              JiraCommon.normalize(status.category)
-            ),
-            detail: status.detail,
-          },
-          changedAt: change.changed,
-        });
-      }
-    }
+    const statusChangelog = this.statusChangelog(
+      changelog,
+      issue.fields.status?.name,
+      created
+    );
     // Timestamp of most recent status change
     let statusChanged: Date | undefined;
     if (statusChangelog.length) {
-      statusChanged = last(statusChangelog).changedAt;
+      statusChanged = statusChangelog[statusChangelog.length - 1][1];
     }
 
     for (const link of issue.fields.issuelinks ?? []) {
@@ -430,9 +534,9 @@ export class JiraIssues extends JiraConverter {
     }
 
     // Rewrite keys of additional fields to use names instead of ids
-    const additionalFields: any[] = [];
+    let additionalFieldsMap: Record<string, string> = {};
     for (const [id, name] of Object.entries(this.fieldNameById)) {
-      let value = issue.fields[id];
+      const value = issue.fields[id];
       if (
         JiraIssues.standardFieldIds.includes(id) ||
         JiraIssues.fieldsToIgnore.includes(name)
@@ -440,15 +544,21 @@ export class JiraIssues extends JiraConverter {
         continue;
       } else if (name && value) {
         try {
-          // Stringify arrays, objects, booleans, and numbers
-          value = isString(value) ? value : JSON.stringify(value);
-          additionalFields.push({name, value});
+          additionalFieldsMap = Object.assign(
+            additionalFieldsMap,
+            this.retrieveAdditionalFieldValue(ctx, name, value)
+          );
         } catch (err) {
           this.logger.warn(
             `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
           );
         }
       }
+    }
+
+    const additionalFields: any[] = [];
+    for (const [name, value] of Object.entries(additionalFieldsMap)) {
+      additionalFields.push({name, value});
     }
 
     let description = null;
@@ -468,40 +578,44 @@ export class JiraIssues extends JiraConverter {
       : null;
     const epicKey =
       parent?.type === 'Epic' ? parent.key : this.getIssueEpic(issue);
-    // TODO: PRs
     const sprint = this.getSprintId(issue);
     const type = issue.fields.issuetype?.name;
 
-    results.push({
-      model: 'tms_Task',
-      record: {
-        uid: issue.key,
-        name: issue.fields.summary,
-        description,
-        type: {
-          category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
-          detail: type,
-        },
-        status: {
-          category: statusCategories.get(
-            JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
-          ),
-          detail: issue.fields.status?.name,
-        },
-        priority: issue.fields.priority?.name,
-        createdAt: created,
-        updatedAt: Utils.toDate(issue.fields.updated),
-        statusChangedAt: statusChanged,
-        statusChangelog,
-        points: this.getPoints(issue) ?? null,
-        creator: creator ? {uid: creator, source} : null,
-        parent: parent?.key ? {uid: parent.key, source} : null,
-        epic: epicKey ? {uid: epicKey, source} : null,
-        sprint: sprint ? {uid: sprint, source} : null,
-        source,
-        additionalFields,
+    const task = {
+      uid: issue.key,
+      name: issue.fields.summary,
+      description: this.truncate(ctx, description),
+      type: {
+        category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
+        detail: type,
       },
-    });
+      status: {
+        category: statusCategories.get(
+          JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
+        ),
+        detail: issue.fields.status?.name,
+      },
+      priority: issue.fields.priority?.name,
+      createdAt: created,
+      updatedAt: Utils.toDate(issue.fields.updated),
+      statusChangedAt: statusChanged,
+      statusChangelog,
+      points: this.getPoints(issue) ?? null,
+      creator: creator ? {uid: creator, source} : null,
+      parent: parent?.key ? {uid: parent.key, source} : null,
+      epic: epicKey ? {uid: epicKey, source} : null,
+      sprint: sprint ? {uid: sprint, source} : null,
+      source,
+      additionalFields,
+    };
+
+    const excludeFields = this.excludeFields(ctx);
+    if (excludeFields.size > 0) {
+      const keys = Object.keys(task).filter((f) => !excludeFields.has(f));
+      results.push({model: 'tms_Task', record: pick(task, keys)});
+    } else {
+      results.push({model: 'tms_Task', record: task});
+    }
 
     return results;
   }

@@ -23,7 +23,7 @@ export class JiraProjects extends JiraConverter {
       record: {
         uid,
         name: project.name,
-        description: project.description,
+        description: this.truncate(ctx, project.description),
         source,
       },
     });

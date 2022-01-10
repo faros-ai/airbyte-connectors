@@ -51,3 +51,8 @@ export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
 export const squadcastAllStreamsLog = readTestResourceFile(
   'squadcast/all-streams.log'
 );
+
+export const googlecalendarAllStreamsLog = readTestResourceFile(
+  'googlecalendar/all-streams.log'
+);
+
