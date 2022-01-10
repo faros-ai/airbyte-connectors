@@ -5,7 +5,10 @@ import {OktaConverter} from './common';
 import {Group} from './models';
 
 export class OktaGroups extends OktaConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Team'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'org_Team',
+    'org_TeamMembership',
+  ];
 
   convert(
     record: AirbyteRecord,
@@ -13,26 +16,36 @@ export class OktaGroups extends OktaConverter {
   ): ReadonlyArray<DestinationRecord> {
     const source = this.streamName.source;
     const group = record.record.data as Group;
-    return [
-      {
-        model: 'org_Team',
-        record: {
-          uid: group.id,
-          name: group.profile.name,
-          description: group.profile.description,
-          lead: {uid: group.usersOfGroup[0].id, source},
-          // not support
-          parentTeam: '',
-          // not support
-          teamChain: '',
-          // not support
-          tags: '',
-          // not support
-          color: '',
-          photoUrl: group._links.logo[0].href,
-          source,
-        },
+    const res: DestinationRecord[] = [];
+    const leader = group.usersOfGroup[0].id;
+    res.push({
+      model: 'org_Team',
+      record: {
+        uid: group.id,
+        name: group.profile.name,
+        description: group.profile.description,
+        lead: {uid: leader, source},
+        // not support
+        parentTeam: '',
+        // not support
+        teamChain: '',
+        // not support
+        tags: '',
+        // not support
+        color: '',
+        photoUrl: group._links.logo[0].href,
+        source,
       },
-    ];
+    });
+    for (const userId of group.usersOfGroup ?? []) {
+      res.push({
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid: group.id},
+          member: {uid: userId},
+        },
+      });
+    }
+    return res;
   }
 }
