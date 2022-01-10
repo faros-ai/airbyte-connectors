@@ -3,12 +3,32 @@ interface Type {
 }
 
 interface Profile {
-  firstName: string;
+  profileUrl?: string;
   lastName: string;
-  mobilePhone?: any;
-  secondEmail?: any;
-  login: string;
-  email: string;
+  zipCode?: string;
+  preferredLanguage?: string;
+  manager?: string;
+  managerId?: string;
+  city?: string;
+  displayName?: string;
+  nickName?: string;
+  secondEmail?: string;
+  honorificPrefix?: string;
+  title?: string;
+  locale?: string;
+  login?: string;
+  honorificSuffix?: string;
+  firstName?: string;
+  primaryPhone?: string;
+  postalAddress?: string;
+  mobilePhone?: string;
+  streetAddress?: string;
+  countryCode?: string;
+  middleName?: string;
+  state?: string;
+  department?: string;
+  email?: string;
+  userType?: string;
 }
 
 interface Email {
