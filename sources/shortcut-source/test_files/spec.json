@@ -13,8 +13,7 @@
     "properties": {
       "base_url": {
         "type": "string",
-        "title": "Shortcut Base URL",
-        "description":"Shortcut Base URL",
+        "title": "Shortcut Base URL", 
         "default":"https://api.app.shortcut.com",
         "examples": [
           "https://api.app.shortcut.com"
@@ -22,8 +21,7 @@
       },
       "version": {
         "type": "string",
-        "title": "Shortcut version",
-        "description":"Shortcut version",
+        "title": "Shortcut version", 
         "default":"v3",
         "examples": [
           "v3"
