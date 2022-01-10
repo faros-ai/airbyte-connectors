@@ -30,59 +30,6 @@
         "commit": {
             "type": "string"
         },
-        "jobs": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "type": {
-                        "type": "string"
-                    },
-                    "uuid": {
-                        "type": "string"
-                    },
-                    "label": {
-                        "type": ["string","null"]
-                    }, 
-                    "createdAt": {
-                        "type":["string","null"]
-                    },
-                    "startedAt": {
-                        "type": ["string","null"]
-                    },
-                    "finishedAt": {
-                        "type": ["string","null"]
-                    },
-                    "triggered": {
-                        "type": [
-                            "object",
-                            "null"
-                        ],
-                        "additionalProperties": true,
-                        "properties": {
-                            "createdAt": {
-                                "type":["string","null"]
-                            },
-                            "startedAt": {
-                                "type": ["string","null"]
-                            },
-                            "finishedAt": {
-                                "type": ["string","null"]
-                            }
-                        }
-                    },
-                    "unblockedAt": {
-                        "type": "string"
-                    },
-                    "url": {
-                        "type":  ["string","null"]
-                    },
-                    "command": {
-                        "type": "string"
-                    }
-                }
-              }
-        },
         "pipeline": {
             "type": "object",
             "properties": {

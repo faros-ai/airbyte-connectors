@@ -1,4 +1,4 @@
-query buildsQuery ($maxJobsPerBuild: Int){
+query buildsQuery{
   viewer {
     builds() {
        count,
@@ -33,45 +33,6 @@ query buildsQuery ($maxJobsPerBuild: Int){
             state
             url
             commit
-          ,jobs(first: $maxJobsPerBuild) {
-              edges {
-                node {
-                  __typename
-                  ... on JobTypeCommand {
-                    uuid
-                    label
-                    state
-                    createdAt
-                    finishedAt
-                    startedAt
-                    url
-                    command
-                  }
-                  ... on JobTypeBlock {
-                    uuid
-                    state
-                    label
-                    unblockedAt
-                  }
-                  ... on JobTypeWait {
-                    uuid
-                    state
-                    label
-                  }
-                  ... on JobTypeTrigger {
-                    uuid
-                    state
-                    label
-                    triggered {
-                      startedAt
-                      createdAt
-                      finishedAt
-                    }
-                  }
-                }
-              }
-            }
-          
         }
       }
       
