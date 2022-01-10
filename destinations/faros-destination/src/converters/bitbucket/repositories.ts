@@ -20,10 +20,10 @@ export class BitbucketRepositories extends BitbucketConverter {
     return [this.workspacesStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repository = record.record.data as Repository;
 

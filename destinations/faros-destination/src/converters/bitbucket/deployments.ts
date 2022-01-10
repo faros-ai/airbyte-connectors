@@ -40,10 +40,10 @@ export class BitbucketDeployments extends BitbucketConverter {
     return [this.pipelinesStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const deployment = record.record.data as Deployment;
 

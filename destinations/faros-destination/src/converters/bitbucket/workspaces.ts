@@ -18,10 +18,10 @@ export class BitbucketWorkspaces extends BitbucketConverter {
     'vcs_Organization',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const workspace = record.record.data as Workspace;
 

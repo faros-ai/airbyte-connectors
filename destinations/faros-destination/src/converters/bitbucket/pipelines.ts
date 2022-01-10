@@ -21,10 +21,10 @@ export class BitbucketPipelines extends BitbucketConverter {
     'cicd_BuildCommitAssociation',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];

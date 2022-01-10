@@ -7,10 +7,10 @@ import {Branch} from './types';
 export class BitbucketBranches extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Branch'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const branch = record.record.data as Branch;
 

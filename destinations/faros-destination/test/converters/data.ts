@@ -55,4 +55,3 @@ export const squadcastAllStreamsLog = readTestResourceFile(
 export const googlecalendarAllStreamsLog = readTestResourceFile(
   'googlecalendar/all-streams.log'
 );
-

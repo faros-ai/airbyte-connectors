@@ -29,10 +29,10 @@ export class BitbucketPullRequests extends BitbucketConverter {
     return [this.commitsStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pr = record.record.data as PullRequest;
     const res: DestinationRecord[] = [];

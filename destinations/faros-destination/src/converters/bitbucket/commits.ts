@@ -11,10 +11,10 @@ export class BitbucketCommits extends BitbucketConverter {
     'vcs_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data as Commit;
     const res: DestinationRecord[] = [];

@@ -22,10 +22,10 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
     'vcs_PullRequestReview',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prActivity = record.record.data as PRActivity;
     const res: DestinationRecord[] = [];
@@ -76,7 +76,7 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
     if (!orgRef.uid || repoRef.name) {
       return res;
     }
-    
+
     const pullRequest = {
       repository: repoRef,
       number: prActivity.pullRequest.id,
