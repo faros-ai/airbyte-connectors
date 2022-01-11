@@ -44,7 +44,8 @@ describe('shortcut', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      iterations: 1,
+      epics: 1,
+      iterations: 2,
       members: 1,
       projects: 3,
       stories: 1,
@@ -57,8 +58,9 @@ describe('shortcut', () => {
       .value();
 
     const writtenByModel = {
+      tms_Epic: 1,
       tms_Project: 3,
-      tms_Sprint: 1,
+      tms_Sprint: 2,
       tms_Task: 1,
       tms_TaskBoard: 3,
       tms_TaskBoardProjectRelationship: 3,
