@@ -26,7 +26,7 @@ export enum EventTypeCategory {
 }
 
 export enum EventStatusCategory {
-  ACCEPTED = 'Accepted',
+  CONFIRMED = 'Confirmed',
   TENTATIVE = 'Tentative',
   CANCELED = 'Canceled',
   CUSTOM = 'Custom',
@@ -98,7 +98,7 @@ export class GooglecalendarCommon {
 
     switch (detail) {
       case 'confirmed':
-        return {category: EventStatusCategory.ACCEPTED, detail};
+        return {category: EventStatusCategory.CONFIRMED, detail};
       case 'tentative':
         return {category: EventStatusCategory.TENTATIVE, detail};
       case 'cancelled':
