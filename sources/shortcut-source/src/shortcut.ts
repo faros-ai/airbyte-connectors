@@ -90,6 +90,7 @@ export class Shortcut {
 
     const list = await this.client.listIterations();
     for (const item of list) {
+      if (!lastUpdatedAt) yield item;
       const updatedAt = new Date(item.updated_at);
       if (updatedAt >= startTime) {
         yield item;
