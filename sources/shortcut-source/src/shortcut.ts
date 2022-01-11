@@ -23,7 +23,6 @@ export interface ExtendStory extends Story {
   readonly story_links: Array<StoryLink>;
 }
 const DEFAULT_UNIX = -8640000000000000;
-const DEFAULT_ITERATIONS_START_DATE = new Date(DEFAULT_UNIX);
 const DEFAULT_STORIES_START_DATE = new Date(DEFAULT_UNIX);
 const DEFAULT_STORIES_END_DATE = new Date();
 const DEFAULT_BASE_URL = 'https://api.app.shortcut.com';
@@ -69,25 +68,16 @@ export class Shortcut {
     }
   }
 
-  async *getProjects(
-    projectIds?: ReadonlyArray<number>
-  ): AsyncGenerator<Project> {
+  async *getProjects(): AsyncGenerator<Project> {
     const projects = await this.client.listProjects();
-    const filterProject = projects.filter(
-      (p) => !projectIds || projectIds.includes(p.id)
-    );
-    for (const item of filterProject) {
+    for (const item of projects) {
       yield item;
     }
   }
 
   @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
   async *getIterations(lastUpdatedAt?: string): AsyncGenerator<Iteration> {
-    const startTime =
-      new Date(lastUpdatedAt ?? 0) > DEFAULT_ITERATIONS_START_DATE
-        ? new Date(lastUpdatedAt)
-        : DEFAULT_ITERATIONS_START_DATE;
-
+    const startTime = new Date(lastUpdatedAt ?? 0);
     const list = await this.client.listIterations();
     for (const item of list) {
       if (!lastUpdatedAt) yield item;

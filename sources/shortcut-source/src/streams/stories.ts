@@ -25,10 +25,9 @@ export class Stories extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>,
-    updateRange?: [Date, Date]
+    streamState?: Dictionary<any>
   ): AsyncGenerator<ExtendStory> {
     const shortcut = await Shortcut.instance(this.config);
-    yield* shortcut.getStories(updateRange);
+    yield* shortcut.getStories();
   }
 }

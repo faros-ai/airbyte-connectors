@@ -50,9 +50,9 @@ export class Iterations extends AirbyteStreamBase {
     const lastUpdatedAt: Date = new Date(latestRecord.updated_at);
     return {
       lastUpdatedAt:
-        lastUpdatedAt > new Date(currentStreamState?.lastUpdatedAt ?? 0)
-          ? lastUpdatedAt?.toISOString()
-          : currentStreamState?.lastUpdatedAt,
+        lastUpdatedAt >= new Date(currentStreamState?.lastUpdatedAt || 0)
+          ? latestRecord.updated_at
+          : currentStreamState.lastUpdatedAt,
     };
   }
 }
