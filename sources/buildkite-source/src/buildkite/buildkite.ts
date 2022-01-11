@@ -277,7 +277,7 @@ export class Buildkite {
 
   async *getBuilds(): AsyncGenerator<Build> {
     const variables = {
-      pageSize: this.pageSize,
+      maxBuilds: this.pageSize,
     };
     const data = await this.graphClient.request(BUILDS_QUERY, variables);
     for (const item of data.viewer.builds.edges) {

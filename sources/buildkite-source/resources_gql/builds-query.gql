@@ -1,6 +1,6 @@
-query buildsQuery{
+query buildsQuery($maxBuilds: Int){
   viewer {
-    builds() {
+    builds(first:$maxBuilds) {
        count,
        pageInfo {
          endCursor
