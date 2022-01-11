@@ -1,12 +1,10 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
-import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Group, GroupOfUser, LogEvent, User, UserOfGroup} from './models';
+import {Group, GroupOfUser, User, UserOfGroup} from './models';
 
-const DEFAULT_LOG_EVENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 const DEFAULT_VERSION = 'v1';
 
 export interface OktaConfig {
@@ -82,22 +80,6 @@ export class Okta {
       );
       item.usersOfGroup = resItem.data;
       yield item;
-    }
-  }
-
-  @Memoize(
-    (lastPublishedAt?: string) =>
-      new Date(lastPublishedAt ?? DEFAULT_LOG_EVENTS_START_DATE)
-  )
-  async *getLogEvents(lastPublishedAt?: string): AsyncGenerator<LogEvent> {
-    const res = await this.httpClient.get<LogEvent[]>('logs');
-    const startTime =
-      new Date(lastPublishedAt ?? 0) > new Date(DEFAULT_LOG_EVENTS_START_DATE)
-        ? new Date(lastPublishedAt)
-        : new Date(DEFAULT_LOG_EVENTS_START_DATE);
-    for (const item of res.data) {
-      const published = new Date(item.published);
-      if (published >= startTime) yield item;
     }
   }
 }

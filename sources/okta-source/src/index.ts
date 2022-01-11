@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Okta, OktaConfig} from './okta';
-import {Groups, LogEvents, Users} from './streams';
+import {Groups, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -33,10 +33,6 @@ export class OktaSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: OktaConfig): AirbyteStreamBase[] {
-    return [
-      new Users(config, this.logger),
-      new Groups(config, this.logger),
-      new LogEvents(config, this.logger),
-    ];
+    return [new Users(config, this.logger), new Groups(config, this.logger)];
   }
 }

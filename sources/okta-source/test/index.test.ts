@@ -92,17 +92,4 @@ describe('index', () => {
     }
     expect(items).toStrictEqual(readTestResourceFile(fileName));
   });
-
-  test('streams - logevents, use full_refresh sync mode', async () => {
-    const fileName = 'log_events.json';
-    const source = new sut.OktaSource(logger);
-    const streams = source.streams(readConfig());
-    const stream = streams[2];
-    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of itemIter) {
-      items.push(item);
-    }
-    expect(items).toStrictEqual(readTestResourceFile(fileName));
-  });
 });
