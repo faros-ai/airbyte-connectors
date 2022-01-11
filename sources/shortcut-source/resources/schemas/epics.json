@@ -31,19 +31,19 @@
       "items": {}
     },
     "stories_without_projects": {
-      "type": "integer"
+      "type": "number"
     },
     "completed_at_override": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "productboard_plugin_id": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "started_at": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "completed_at": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "name": {
       "type": "string"
@@ -52,32 +52,32 @@
       "type": "boolean"
     },
     "productboard_url": {
-      "type": "null"
+      "type":["string","null"]
     },
     "planned_start_date": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "state": {
       "type": "string"
     },
     "milestone_id": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "requested_by_id": {
       "type": "string"
     },
     "epic_state_id": {
-      "type": "integer"
+      "type": "number"
     },
     "label_ids": {
       "type": "array",
       "items": {}
     },
     "started_at_override": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "group_id": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "updated_at": {
       "type": "string"
@@ -87,126 +87,67 @@
       "items": {}
     },
     "productboard_id": {
-      "type": "null"
-    },
-    "follower_ids": {
-      "type": "array",
-      "items": [
-        {
-          "type": "string"
-        }
-      ]
+      "type": ["string","null"]
     },
     "owner_ids": {
       "type": "array",
       "items": {}
     },
     "external_id": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "id": {
-      "type": "integer"
+      "type": "number"
     },
     "position": {
-      "type": "integer"
+      "type": "number"
     },
     "productboard_name": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "deadline": {
-      "type": "null"
+      "type": ["string","null"]
     },
     "stats": {
       "type": "object",
       "properties": {
         "num_points_done": {
-          "type": "integer"
+          "type": "number"
         },
         "num_related_documents": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_unstarted": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_total": {
-          "type": "integer"
+          "type": "number"
         },
         "last_story_update": {
-          "type": "null"
+          "type": ["string","null"]
         },
         "num_points_started": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points_unstarted": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_started": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_unestimated": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_done": {
-          "type": "integer"
+          "type": "number"
         }
-      },
-      "required": [
-        "num_points_done",
-        "num_related_documents",
-        "num_stories_unstarted",
-        "num_stories_total",
-        "last_story_update",
-        "num_points_started",
-        "num_points_unstarted",
-        "num_stories_started",
-        "num_stories_unestimated",
-        "num_points",
-        "num_stories_done"
-      ]
+      } 
     },
     "created_at": {
       "type": "string"
     }
-  },
-  "required": [
-    "app_url",
-    "archived",
-    "started",
-    "entity_type",
-    "labels",
-    "mention_ids",
-    "member_mention_ids",
-    "project_ids",
-    "stories_without_projects",
-    "completed_at_override",
-    "productboard_plugin_id",
-    "started_at",
-    "completed_at",
-    "name",
-    "completed",
-    "productboard_url",
-    "planned_start_date",
-    "state",
-    "milestone_id",
-    "requested_by_id",
-    "epic_state_id",
-    "label_ids",
-    "started_at_override",
-    "group_id",
-    "updated_at",
-    "group_mention_ids",
-    "productboard_id",
-    "follower_ids",
-    "owner_ids",
-    "external_id",
-    "id",
-    "position",
-    "productboard_name",
-    "deadline",
-    "stats",
-    "created_at"
-  ]
+  }
 }

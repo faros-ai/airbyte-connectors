@@ -10,14 +10,7 @@ import {
 import VError from 'verror';
 
 import {Shortcut, ShortcutConfig} from './shortcut';
-import {
-  Epics,
-  Iterations,
-  Members,
-  Projects,
-  Repositories,
-  Stories,
-} from './streams';
+import {Epics, Iterations, Members, Projects, Stories} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -51,7 +44,6 @@ export class ShortcutSource extends AirbyteSourceBase {
       new Epics(config as ShortcutConfig, this.logger, projectIds),
       new Stories(config as ShortcutConfig, this.logger),
       new Members(config as ShortcutConfig, this.logger),
-      new Repositories(config as ShortcutConfig, this.logger),
     ];
   }
 }

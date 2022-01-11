@@ -27,10 +27,6 @@ export class Epics extends AirbyteStreamBase {
     return ['id'];
   }
 
-  get cursorField(): string | string[] {
-    return 'updated_at';
-  }
-
   async *streamSlices(
     syncMode: SyncMode,
     cursorField?: string[],

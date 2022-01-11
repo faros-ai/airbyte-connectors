@@ -20,9 +20,6 @@ export class Members extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return ['id'];
   }
-  get cursorField(): string | string[] {
-    return 'updated_at';
-  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],

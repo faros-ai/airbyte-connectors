@@ -1,377 +1,287 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-      "app_url": {
-        "type": "string"
-      },
-      "archived": {
-        "type": "boolean"
-      },
-      "blocked": {
-        "type": "boolean"
-      },
-      "blocker": {
-        "type": "boolean"
-      },
-      "branches": {
-        "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "created_at": {
-                "type": "string"
-              },
-              "deleted": {
-                "type": "boolean"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "id": {
-                "type": "integer"
-              },
-              "merged_branch_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "integer"
-                  }
-                ]
-              },
-              "name": {
-                "type": "string"
-              },
-              "persistent": {
-                "type": "boolean"
-              },
-              "pull_requests": {
-                "type": "array",
-                "items": [
-                  {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "app_url": {
+      "type": "string"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "blocked": {
+      "type": "boolean"
+    },
+    "blocker": {
+      "type": "boolean"
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "entity_type": {
+            "type": "string"
+          },
+          "id": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "merged_branch_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "persistent": {
+            "type": "boolean"
+          },
+          "pull_requests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "branch_id": {
+                  "type": "number"
+                },
+                "branch_name": {
+                  "type": "string"
+                },
+                "build_status": {
+                  "type": "string"
+                },
+                "closed": {
+                  "type": "boolean"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "draft": {
+                  "type": "boolean"
+                },
+                "entity_type": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "number"
+                },
+                "merged": {
+                  "type": "boolean"
+                },
+                "num_added": {
+                  "type": "number"
+                },
+                "num_commits": {
+                  "type": "number"
+                },
+                "num_modified": {
+                  "type": "number"
+                },
+                "num_removed": {
+                  "type": "number"
+                },
+                "number": {
+                  "type": "number"
+                },
+                "repository_id": {
+                  "type": "number"
+                },
+                "review_status": {
+                  "type": "string"
+                },
+                "target_branch_id": {
+                  "type": "number"
+                },
+                "target_branch_name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated_at": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "vcs_labels": {
+                  "type": "array",
+                  "items": {
                     "type": "object",
                     "properties": {
-                      "branch_id": {
-                        "type": "integer"
-                      },
-                      "branch_name": {
+                      "color": {
                         "type": "string"
                       },
-                      "build_status": {
+                      "description": {
                         "type": "string"
-                      },
-                      "closed": {
-                        "type": "boolean"
-                      },
-                      "created_at": {
-                        "type": "string"
-                      },
-                      "draft": {
-                        "type": "boolean"
                       },
                       "entity_type": {
                         "type": "string"
                       },
                       "id": {
-                        "type": "integer"
+                        "type": "number"
                       },
-                      "merged": {
-                        "type": "boolean"
-                      },
-                      "num_added": {
-                        "type": "integer"
-                      },
-                      "num_commits": {
-                        "type": "integer"
-                      },
-                      "num_modified": {
-                        "type": "integer"
-                      },
-                      "num_removed": {
-                        "type": "integer"
-                      },
-                      "number": {
-                        "type": "integer"
-                      },
-                      "repository_id": {
-                        "type": "integer"
-                      },
-                      "review_status": {
+                      "name": {
                         "type": "string"
-                      },
-                      "target_branch_id": {
-                        "type": "integer"
-                      },
-                      "target_branch_name": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "updated_at": {
-                        "type": "string"
-                      },
-                      "url": {
-                        "type": "string"
-                      },
-                      "vcs_labels": {
-                        "type": "array",
-                        "items": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "color": {
-                                "type": "string"
-                              },
-                              "description": {
-                                "type": "string"
-                              },
-                              "entity_type": {
-                                "type": "string"
-                              },
-                              "id": {
-                                "type": "integer"
-                              },
-                              "name": {
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "color",
-                              "description",
-                              "entity_type",
-                              "id",
-                              "name"
-                            ]
-                          }
-                        ]
                       }
-                    },
-                    "required": [
-                      "branch_id",
-                      "branch_name",
-                      "build_status",
-                      "closed",
-                      "created_at",
-                      "draft",
-                      "entity_type",
-                      "id",
-                      "merged",
-                      "num_added",
-                      "num_commits",
-                      "num_modified",
-                      "num_removed",
-                      "number",
-                      "repository_id",
-                      "review_status",
-                      "target_branch_id",
-                      "target_branch_name",
-                      "title",
-                      "updated_at",
-                      "url",
-                      "vcs_labels"
-                    ]
+                    }
                   }
-                ]
-              },
-              "repository_id": {
-                "type": "integer"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
+                }
               }
-            },
-            "required": [
-              "created_at",
-              "deleted",
-              "entity_type",
-              "id",
-              "merged_branch_ids",
-              "name",
-              "persistent",
-              "pull_requests",
-              "repository_id",
-              "updated_at",
-              "url"
+            }
+          },
+          "repository_id": {
+            "type": [
+              "number",
+              "null"
             ]
+          },
+          "updated_at": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "url": {
+            "type": "string"
           }
-        ]
-      },
-      "comments": {
-        "type": "array",
-        "items": [
-          {
+        }
+      }
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "app_url": {
+            "type": "string"
+          },
+          "author_id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "entity_type": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "group_mention_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "number"
+          },
+          "member_mention_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mention_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parent_id": {
+            "type": "number"
+          },
+          "position": {
+            "type": "number"
+          },
+          "story_id": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "author_email": {
+            "type": "string"
+          },
+          "author_id": {
+            "type": "string"
+          },
+          "author_identity": {
             "type": "object",
             "properties": {
-              "app_url": {
-                "type": "string"
-              },
-              "author_id": {
-                "type": "string"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "deleted": {
-                "type": "boolean"
-              },
               "entity_type": {
                 "type": "string"
               },
-              "external_id": {
+              "name": {
                 "type": "string"
               },
-              "group_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "id": {
-                "type": "integer"
-              },
-              "member_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "parent_id": {
-                "type": "integer"
-              },
-              "position": {
-                "type": "integer"
-              },
-              "story_id": {
-                "type": "integer"
-              },
-              "text": {
-                "type": "string"
-              },
-              "updated_at": {
+              "type": {
                 "type": "string"
               }
             },
-            "required": [
-              "app_url",
-              "author_id",
-              "created_at",
-              "deleted",
-              "entity_type",
-              "external_id",
-              "group_mention_ids",
-              "id",
-              "member_mention_ids",
-              "mention_ids",
-              "parent_id",
-              "position",
-              "story_id",
-              "text",
-              "updated_at"
-            ]
-          }
-        ]
-      },
-      "commits": {
-        "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "author_email": {
-                "type": "string"
-              },
-              "author_id": {
-                "type": "string"
-              },
-              "author_identity": {
-                "type": "object",
-                "properties": {
-                  "entity_type": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "entity_type",
-                  "name",
-                  "type"
-                ]
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "hash": {
-                "type": "string"
-              },
-              "id": {
-                "type": "integer"
-              },
-              "merged_branch_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "integer"
-                  }
-                ]
-              },
-              "message": {
-                "type": "string"
-              },
-              "repository_id": {
-                "type": "integer"
-              },
-              "timestamp": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
+            "created_at": {
+              "type": "string"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "hash": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "merged_branch_ids": {
+              "type": "array",
+              "items": {
+                "type": "number"
               }
             },
-            "required": [
-              "author_email",
-              "author_id",
-              "author_identity",
-              "created_at",
-              "entity_type",
-              "hash",
-              "id",
-              "merged_branch_ids",
-              "message",
-              "repository_id",
-              "timestamp",
-              "updated_at",
-              "url"
-            ]
+            "message": {
+              "type": "string"
+            },
+            "repository_id": {
+              "type": "number"
+            },
+            "timestamp": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
           }
-        ]
+        }
       },
       "completed": {
         "type": "boolean"
@@ -386,7 +296,7 @@
         "type": "string"
       },
       "cycle_time": {
-        "type": "integer"
+        "type": "number"
       },
       "deadline": {
         "type": "string"
@@ -398,10 +308,10 @@
         "type": "string"
       },
       "epic_id": {
-        "type": "integer"
+        "type": "number"
       },
       "estimate": {
-        "type": "integer"
+        "type": "number"
       },
       "external_id": {
         "type": "string"
@@ -412,303 +322,216 @@
       },
       "files": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "content_type": {
-                "type": "string"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "external_id": {
-                "type": "string"
-              },
-              "filename": {
-                "type": "string"
-              },
-              "group_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "id": {
-                "type": "integer"
-              },
-              "member_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "name": {
-                "type": "string"
-              },
-              "size": {
-                "type": "integer"
-              },
-              "story_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "integer"
-                  }
-                ]
-              },
-              "thumbnail_url": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "uploader_id": {
-                "type": "string"
-              },
-              "url": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "content_type": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "external_id": {
+              "type": "string"
+            },
+            "filename": {
+              "type": "string"
+            },
+            "group_mention_ids": {
+              "type": "array",
+              "items": {
                 "type": "string"
               }
             },
-            "required": [
-              "content_type",
-              "created_at",
-              "description",
-              "entity_type",
-              "external_id",
-              "filename",
-              "group_mention_ids",
-              "id",
-              "member_mention_ids",
-              "mention_ids",
-              "name",
-              "size",
-              "story_ids",
-              "thumbnail_url",
-              "updated_at",
-              "uploader_id",
-              "url"
-            ]
+            "id": {
+              "type": "number"
+            },
+            "member_mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            },
+            "story_ids": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "thumbnail_url": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "uploader_id": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
           }
-        ]
-      },
-      "follower_ids": {
-        "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
+        }
       },
       "group_id": {
         "type": "string"
       },
       "group_mention_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
+        "items": {
+          "type": "string"
+        }
       },
       "id": {
-        "type": "integer"
+        "type": "number"
       },
       "iteration_id": {
-        "type": "integer"
+        "type": "number"
       },
       "label_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "integer"
-          }
-        ]
+        "items": {
+          "type": "number"
+        }
       },
       "labels": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "app_url": {
-                "type": "string"
-              },
-              "archived": {
-                "type": "boolean"
-              },
-              "color": {
-                "type": "string"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "external_id": {
-                "type": "string"
-              },
-              "id": {
-                "type": "integer"
-              },
-              "name": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              }
+        "items": {
+          "type": "object",
+          "properties": {
+            "app_url": {
+              "type": "string"
             },
-            "required": [
-              "app_url",
-              "archived",
-              "color",
-              "created_at",
-              "description",
-              "entity_type",
-              "external_id",
-              "id",
-              "name",
-              "updated_at"
-            ]
+            "archived": {
+              "type": "boolean"
+            },
+            "color": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "external_id": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            }
           }
-        ]
+        }
       },
       "lead_time": {
-        "type": "integer"
+        "type": "number"
       },
       "linked_files": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "content_type": {
-                "type": "string"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "group_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "id": {
-                "type": "integer"
-              },
-              "member_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "name": {
-                "type": "string"
-              },
-              "size": {
-                "type": "integer"
-              },
-              "story_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "integer"
-                  }
-                ]
-              },
-              "thumbnail_url": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "uploader_id": {
-                "type": "string"
-              },
-              "url": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "content_type": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "group_mention_ids": {
+              "type": "array",
+              "items": {
                 "type": "string"
               }
             },
-            "required": [
-              "content_type",
-              "created_at",
-              "description",
-              "entity_type",
-              "group_mention_ids",
-              "id",
-              "member_mention_ids",
-              "mention_ids",
-              "name",
-              "size",
-              "story_ids",
-              "thumbnail_url",
-              "type",
-              "updated_at",
-              "uploader_id",
-              "url"
-            ]
+            "id": {
+              "type": "number"
+            },
+            "member_mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            },
+            "story_ids": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "thumbnail_url": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "uploader_id": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
           }
-        ]
+        }
       },
       "member_mention_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
+        "items": {
+          "type": "string"
+        }
       },
       "mention_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
+        "items": {
+          "type": "string"
+        }
       },
       "moved_at": {
         "type": "string"
@@ -718,154 +541,115 @@
       },
       "owner_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
+        "items": {
+          "type": "string"
+        }
       },
       "position": {
-        "type": "integer"
+        "type": "number"
       },
       "previous_iteration_ids": {
         "type": "array",
-        "items": [
-          {
-            "type": "integer"
-          }
-        ]
+        "items": {
+          "type": "number"
+        }
       },
       "project_id": {
-        "type": "integer"
+        "type": "number"
       },
       "pull_requests": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "branch_id": {
-                "type": "integer"
-              },
-              "branch_name": {
-                "type": "string"
-              },
-              "build_status": {
-                "type": "string"
-              },
-              "closed": {
-                "type": "boolean"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "draft": {
-                "type": "boolean"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "id": {
-                "type": "integer"
-              },
-              "merged": {
-                "type": "boolean"
-              },
-              "num_added": {
-                "type": "integer"
-              },
-              "num_commits": {
-                "type": "integer"
-              },
-              "num_modified": {
-                "type": "integer"
-              },
-              "num_removed": {
-                "type": "integer"
-              },
-              "number": {
-                "type": "integer"
-              },
-              "repository_id": {
-                "type": "integer"
-              },
-              "review_status": {
-                "type": "string"
-              },
-              "target_branch_id": {
-                "type": "integer"
-              },
-              "target_branch_name": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
-              },
-              "vcs_labels": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "color": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "type": "string"
-                      },
-                      "entity_type": {
-                        "type": "string"
-                      },
-                      "id": {
-                        "type": "integer"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "color",
-                      "description",
-                      "entity_type",
-                      "id",
-                      "name"
-                    ]
-                  }
-                ]
-              }
+        "items": {
+          "type": "object",
+          "properties": {
+            "branch_id": {
+              "type": "number"
             },
-            "required": [
-              "branch_id",
-              "branch_name",
-              "build_status",
-              "closed",
-              "created_at",
-              "draft",
-              "entity_type",
-              "id",
-              "merged",
-              "num_added",
-              "num_commits",
-              "num_modified",
-              "num_removed",
-              "number",
-              "repository_id",
-              "review_status",
-              "target_branch_id",
-              "target_branch_name",
-              "title",
-              "updated_at",
-              "url",
-              "vcs_labels"
-            ]
+            "branch_name": {
+              "type": "string"
+            },
+            "build_status": {
+              "type": "string"
+            },
+            "closed": {
+              "type": "boolean"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "draft": {
+              "type": "boolean"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "merged": {
+              "type": "boolean"
+            },
+            "num_added": {
+              "type": "number"
+            },
+            "num_commits": {
+              "type": "number"
+            },
+            "num_modified": {
+              "type": "number"
+            },
+            "num_removed": {
+              "type": "number"
+            },
+            "number": {
+              "type": "number"
+            },
+            "repository_id": {
+              "type": "number"
+            },
+            "review_status": {
+              "type": "string"
+            },
+            "target_branch_id": {
+              "type": "number"
+            },
+            "target_branch_name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "vcs_labels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        ]
+        }
       },
       "requested_by_id": {
         "type": "string"
@@ -883,56 +667,41 @@
         "type": "object",
         "properties": {
           "num_related_documents": {
-            "type": "integer"
+            "type": "number"
           }
-        },
-        "required": [
-          "num_related_documents"
-        ]
+        }
       },
       "story_links": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "created_at": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "id": {
-                "type": "integer"
-              },
-              "object_id": {
-                "type": "integer"
-              },
-              "subject_id": {
-                "type": "integer"
-              },
-              "type": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "verb": {
-                "type": "string"
-              }
+        "items": {
+          "type": "object",
+          "properties": {
+            "created_at": {
+              "type": "string"
             },
-            "required": [
-              "created_at",
-              "entity_type",
-              "id",
-              "object_id",
-              "subject_id",
-              "type",
-              "updated_at",
-              "verb"
-            ]
+            "entity_type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "object_id": {
+              "type": "number"
+            },
+            "subject_id": {
+              "type": "number"
+            },
+            "type": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "verb": {
+              "type": "string"
+            }
           }
-        ]
+        }
       },
       "story_template_id": {
         "type": "string"
@@ -942,152 +711,75 @@
       },
       "tasks": {
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "complete": {
-                "type": "boolean"
-              },
-              "completed_at": {
-                "type": "string"
-              },
-              "created_at": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "entity_type": {
-                "type": "string"
-              },
-              "external_id": {
-                "type": "string"
-              },
-              "group_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "id": {
-                "type": "integer"
-              },
-              "member_mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "mention_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "owner_ids": {
-                "type": "array",
-                "items": [
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "position": {
-                "type": "integer"
-              },
-              "story_id": {
-                "type": "integer"
-              },
-              "updated_at": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "complete": {
+              "type": "boolean"
+            },
+            "completed_at": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_type": {
+              "type": "string"
+            },
+            "external_id": {
+              "type": "string"
+            },
+            "group_mention_ids": {
+              "type": "array",
+              "items": {
                 "type": "string"
               }
             },
-            "required": [
-              "complete",
-              "completed_at",
-              "created_at",
-              "description",
-              "entity_type",
-              "external_id",
-              "group_mention_ids",
-              "id",
-              "member_mention_ids",
-              "mention_ids",
-              "owner_ids",
-              "position",
-              "story_id",
-              "updated_at"
-            ]
+            "id": {
+              "type": "number"
+            },
+            "member_mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mention_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "owner_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "position": {
+              "type": "number"
+            },
+            "story_id": {
+              "type": "number"
+            },
+            "updated_at": {
+              "type": "string"
+            }
           }
-        ]
+        }
       },
       "updated_at": {
         "type": "string"
       },
       "workflow_id": {
-        "type": "integer"
+        "type": "number"
       },
       "workflow_state_id": {
-        "type": "integer"
+        "type": "number"
       }
-    },
-    "required": [
-      "app_url",
-      "archived",
-      "blocked",
-      "blocker",
-      "branches",
-      "comments",
-      "commits",
-      "completed",
-      "completed_at",
-      "completed_at_override",
-      "created_at",
-      "cycle_time",
-      "deadline",
-      "description",
-      "entity_type",
-      "epic_id",
-      "estimate",
-      "external_id",
-      "external_links",
-      "files",
-      "follower_ids",
-      "group_id",
-      "group_mention_ids",
-      "id",
-      "iteration_id",
-      "label_ids",
-      "labels",
-      "lead_time",
-      "linked_files",
-      "member_mention_ids",
-      "mention_ids",
-      "moved_at",
-      "name",
-      "owner_ids",
-      "position",
-      "previous_iteration_ids",
-      "project_id",
-      "pull_requests",
-      "requested_by_id",
-      "started",
-      "started_at",
-      "started_at_override",
-      "stats",
-      "story_links",
-      "story_template_id",
-      "story_type",
-      "tasks",
-      "updated_at",
-      "workflow_id",
-      "workflow_state_id"
-    ]
+    }
   }
+}

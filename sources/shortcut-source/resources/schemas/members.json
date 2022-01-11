@@ -20,14 +20,6 @@
       "created_without_invite": {
         "type": "boolean"
       },
-      "group_ids": {
-        "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
-      },
       "id": {
         "type": "string"
       },
@@ -61,33 +53,10 @@
           "email_address": {
             "type": "string"
           }
-        },
-        "required": [
-          "entity_type",
-          "deactivated",
-          "two_factor_auth_activated",
-          "mention_name",
-          "name",
-          "gravatar_hash",
-          "id",
-          "display_icon",
-          "email_address"
-        ]
+        }
       },
       "created_at": {
         "type": "string"
       }
-    },
-    "required": [
-      "role",
-      "entity_type",
-      "disabled",
-      "state",
-      "updated_at",
-      "created_without_invite",
-      "group_ids",
-      "id",
-      "profile",
-      "created_at"
-    ]
+    }
   }

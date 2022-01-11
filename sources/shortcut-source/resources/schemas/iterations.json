@@ -5,6 +5,9 @@
     "app_url": {
       "type": "string"
     },
+    "description": {
+      "type": "string"
+    },
     "entity_type": {
       "type": "string"
     },
@@ -37,10 +40,6 @@
     "end_date": {
       "type": "string"
     },
-    "follower_ids": {
-      "type": "array",
-      "items": {}
-    },
     "group_ids": {
       "type": "array",
       "items": {}
@@ -52,72 +51,42 @@
       "type": "string"
     },
     "id": {
-      "type": "integer"
+      "type": "number"
     },
     "stats": {
       "type": "object",
       "properties": {
         "num_points_done": {
-          "type": "integer"
+          "type": "number"
         },
         "num_related_documents": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_unstarted": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points_started": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points_unstarted": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_started": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_unestimated": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points": {
-          "type": "integer"
+          "type": "number"
         },
         "num_stories_done": {
-          "type": "integer"
+          "type": "number"
         }
-      },
-      "required": [
-        "num_points_done",
-        "num_related_documents",
-        "num_stories_unstarted",
-        "num_points_started",
-        "num_points_unstarted",
-        "num_stories_started",
-        "num_stories_unestimated",
-        "num_points",
-        "num_stories_done"
-      ]
+      }
     },
     "created_at": {
       "type": "string"
     }
-  },
-  "required": [
-    "app_url",
-    "entity_type",
-    "labels",
-    "mention_ids",
-    "member_mention_ids",
-    "name",
-    "label_ids",
-    "updated_at",
-    "group_mention_ids",
-    "end_date",
-    "follower_ids",
-    "group_ids",
-    "start_date",
-    "status",
-    "id",
-    "stats",
-    "created_at"
-  ]
+  }
 }

@@ -6,7 +6,7 @@
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type":  ["string","null"]
     },
     "archived": {
       "type": "boolean"
@@ -15,13 +15,13 @@
       "type": "string"
     },
     "days_to_thermometer": {
-      "type": "integer"
+      "type": "number"
     },
     "color": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "workflow_id": {
-      "type": "integer"
+      "type": "number"
     },
     "name": {
       "type": "string"
@@ -30,46 +30,42 @@
       "type": "string"
     },
     "updated_at": {
-      "type": "string"
-    },
-    "follower_ids": {
-      "type": "array",
-      "items": {}
+      "type": ["string","null"]
     },
     "external_id": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "id": {
-      "type": "integer"
+      "type": "number"
     },
     "show_thermometer": {
       "type": "boolean"
     },
     "team_id": {
-      "type": "integer"
+      "type": "number"
     },
     "iteration_length": {
-      "type": "integer"
+      "type": "number"
     },
     "abbreviation": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "stats": {
       "type": "object",
       "properties": {
         "num_stories": {
-          "type": "integer"
+          "type": "number"
         },
         "num_points": {
-          "type": "integer"
+          "type": "number"
         },
         "num_related_documents": {
-          "type": "integer"
+          "type": "number"
         }
       } 
     },
     "created_at": {
-      "type": "string"
+      "type": ["string","null"]
     }
   }
 }

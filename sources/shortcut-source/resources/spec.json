@@ -34,7 +34,7 @@
         "airbyte_secret": true
       },
       "project_public_id":{
-        "type": "number",
+        "type": ["number","null"],
         "title": "project public ID", 
         "description": "If set it will pull all stories from only this project. If no it pull all stories from all projects"
       }

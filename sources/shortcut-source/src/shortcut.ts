@@ -127,7 +127,6 @@ export class Shortcut {
       );
     } else {
       const iterProjects = this.getProjects();
-      const method = 'GET';
       for await (const item of iterProjects) {
         yield* this.getStorieByProjectId(
           item.id,
@@ -187,13 +186,6 @@ export class Shortcut {
     const list = await this.client.listMembers();
     for (const item of list) {
       yield item;
-    }
-  }
-
-  async *getRepositories(): AsyncGenerator<Repository> {
-    const list = await this.client.listResource('repositories');
-    for (const item of list) {
-      yield item as Repository;
     }
   }
 }
