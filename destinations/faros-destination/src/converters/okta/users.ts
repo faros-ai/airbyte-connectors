@@ -7,9 +7,9 @@ import {User} from './models';
 
 export class OktaUsers extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'identity_Identity',
     'org_Employee',
   ];
-
   convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -23,25 +23,33 @@ export class OktaUsers extends OktaConverter {
         : user.profile.manager,
       source,
     };
-    return [
-      {
-        model: 'org_Employee',
-        record: {
-          uid: user.id,
-          title: user.profile.title,
-          level: user.profile.userType,
-          joinedAt,
-          // not support
-          terminatedAt: '',
-          department: user.profile.department,
-          identity: {uid: user.credentials.emails[0].value, source},
-          manager,
-          // not support
-          reportingChain: '',
-          location: {uid: user.profile.postalAddress, source},
-          source,
-        },
+    const res: DestinationRecord[] = [];
+    res.push({
+      model: 'identity_Identity',
+      record: {
+        uid: user.id,
+        fullName: `${user.profile.firstName} ${user.profile.middleName} ${user.profile.lastName}`,
+        primaryEmail: user.profile.email,
       },
-    ];
+    });
+    res.push({
+      model: 'org_Employee',
+      record: {
+        uid: user.id,
+        title: user.profile.title,
+        level: user.profile.userType,
+        joinedAt,
+        // not support
+        terminatedAt: '',
+        department: user.profile.department,
+        identity: {uid: user.credentials.emails[0].value, source},
+        manager,
+        // not support
+        reportingChain: '',
+        location: {uid: user.profile.postalAddress, source},
+        source,
+      },
+    });
+    return res;
   }
 }

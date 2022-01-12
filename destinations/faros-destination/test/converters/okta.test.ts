@@ -55,6 +55,7 @@ describe('okta', () => {
       .value();
 
     const writtenByModel = {
+      identity_Identity: 3,
       org_Employee: 3,
       org_Team: 2,
       org_TeamMembership: 5,
