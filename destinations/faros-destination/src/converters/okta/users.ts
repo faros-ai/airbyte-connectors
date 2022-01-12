@@ -8,7 +8,10 @@ import {User} from './models';
 export class OktaUsers extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
+    'ims_UserIdentity',
     'org_Employee',
+    'tms_UserIdentity',
+    'vcs_UserIdentity',
   ];
   convert(
     record: AirbyteRecord,
@@ -30,6 +33,14 @@ export class OktaUsers extends OktaConverter {
         uid: user.id,
         fullName: `${user.profile.firstName} ${user.profile.middleName} ${user.profile.lastName}`,
         primaryEmail: user.profile.email,
+        emails: user.credentials.emails,
+      },
+    });
+    res.push({
+      model: 'ims_UserIdentity',
+      record: {
+        imsUser: {uid: user.id, source},
+        identity: {uid: user.id},
       },
     });
     res.push({
@@ -48,6 +59,20 @@ export class OktaUsers extends OktaConverter {
         reportingChain: '',
         location: {uid: user.profile.postalAddress, source},
         source,
+      },
+    });
+    res.push({
+      model: 'tms_UserIdentity',
+      record: {
+        tmsUser: {uid: user.id, source},
+        identity: {uid: user.id},
+      },
+    });
+    res.push({
+      model: 'vcs_UserIdentity',
+      record: {
+        vcsUser: {uid: user.id, source},
+        identity: {uid: user.id},
       },
     });
     return res;
