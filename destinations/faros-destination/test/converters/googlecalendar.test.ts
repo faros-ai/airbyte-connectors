@@ -20,7 +20,32 @@ describe('googlecalendar', () => {
   const streamNamePrefix = 'mytestsource__googlecalendar__';
 
   beforeEach(async () => {
+    const locationsRes = [
+      {
+        uid: '419 University Ave, Palo Alto, CA 94301',
+        raw: '419 University Ave, Palo Alto, CA 94301',
+        address: {
+          // eslint-disable-next-line max-len
+          uid: 'EjI0MjAgVW5pdmVyc2l0eSBBdmUgIzMzM2EsIFBhbG8gQWx0bywgQ0EgOTQzMDEsIFVTQSIgGh4KFgoUChIJJy30Azm7j4ARbLmzlBtnYb8SBDMzM2E',
+          fullAddress: '420 University Ave #333a, Palo Alto, CA 94301, USA',
+          street: 'University Avenue',
+          houseNumber: '420',
+          unit: '333a',
+          postalCode: '94301',
+          city: 'Palo Alto',
+          state: 'California',
+          stateCode: 'CA',
+          country: 'United States',
+          countryCode: 'US',
+        },
+        coordinates: {lat: 37.4471709, lon: -122.1599896},
+      },
+    ];
+
     await mockttp.start({startPort: 30000, endPort: 50000});
+    mockttp
+      .forPost('/geocoding/lookup')
+      .thenReply(200, JSON.stringify({locations: locationsRes}));
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -57,6 +82,7 @@ describe('googlecalendar', () => {
       cal_EventGuestAssociation: 2,
       cal_User: 5,
       geo_Address: 2,
+      geo_Coordinates: 2,
       geo_Location: 2,
     };
 

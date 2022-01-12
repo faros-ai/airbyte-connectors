@@ -1,4 +1,5 @@
 import {AirbyteConfig, AirbyteRecord} from 'faros-airbyte-cdk';
+import {FarosClient} from 'faros-feeds-sdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
@@ -37,9 +38,12 @@ export abstract class Converter {
   ): Promise<ReadonlyArray<DestinationRecord>>;
 }
 
-/** Stream context to store records by stream */
+/** Stream context to store records by stream and other helpers */
 export class StreamContext {
-  constructor(readonly config: AirbyteConfig) {}
+  constructor(
+    readonly config: AirbyteConfig,
+    readonly farosClient: FarosClient
+  ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
@@ -51,7 +55,6 @@ export class StreamContext {
     }
     return undefined;
   }
-
   get(streamName: string, id: string): AirbyteRecord | undefined {
     const recs = this.recordsByStreamName[streamName];
     if (recs) {

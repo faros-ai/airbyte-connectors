@@ -18,7 +18,6 @@ import {
 import {
   EntryUploaderConfig,
   FarosClient,
-  Utils,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
@@ -300,7 +299,7 @@ class FarosDestination extends AirbyteDestination {
       writtenByModel: {},
     };
 
-    const ctx = new StreamContext(config);
+    const ctx = new StreamContext(config, this.getFarosClient());
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
 
