@@ -5,8 +5,7 @@
         "name": "users",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
+          "full_refresh"
         ],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
@@ -26,8 +25,7 @@
         "name": "groups",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
+          "full_refresh"
         ],
         "source_defined_cursor": true,
         "source_defined_primary_key": [

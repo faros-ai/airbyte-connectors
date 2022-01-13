@@ -12,19 +12,22 @@
       "type": "string"
     },
     "activated": {
-      "type": ["boolean","null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "statusChanged": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "lastLogin": {
-      "type": "string"
+      "type":["string","null"]
     },
     "lastUpdated": {
       "type": "string"
     },
     "passwordChanged": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "type": {
       "type": "object",
@@ -38,79 +41,148 @@
       "type": "object",
       "properties": {
         "profileUrl": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastName": {
           "type": "string"
         },
         "zipCode": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "preferredLanguage": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "manager": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "city": {
-          "type":["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "displayName":{
-          "type": ["string","null"]
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "nickName": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "secondEmail": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "honorificPrefix": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "title": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "locale":{
-          "type": ["string","null"]
+        "locale": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "login": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "honorificSuffix": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "firstName": {
           "type": "string"
         },
         "primaryPhone": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "postalAddress":{
-          "type": ["string","null"]
+        "postalAddress": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "mobilePhone": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "streetAddress":{
-          "type": ["string","null"]
+        "streetAddress": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "countryCode": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "middleName": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "state": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "department": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "email":{
-          "type": ["string","null"]
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "userType":{
-          "type": ["string","null"]
+        "userType": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -118,26 +190,24 @@
       "type": "object",
       "properties": {
         "password": {
-          "type": ["string","null"]
+          "type": ["object","null"]
         },
         "emails": {
           "type": "array",
-          "items": [
-            {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "string"
-                },
-                "status": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string"
-                }
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
               }
             }
-          ]
+          }
         },
         "provider": {
           "type": "object",
@@ -148,9 +218,9 @@
             "name": {
               "type": "string"
             }
-          } 
+          }
         }
-      } 
+      }
     },
     "_links": {
       "type": "object",
@@ -163,20 +233,18 @@
             }
           }
         }
-      } 
+      }
     },
     "groupsOfUser": {
       "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
           }
         }
-      ]
+      }
     }
-  } 
+  }
 }

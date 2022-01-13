@@ -43,7 +43,7 @@ interface Provider {
 }
 
 interface Credentials {
-  password?: string;
+  password?: any;
   emails: Email[];
   provider: Provider;
 }
@@ -64,7 +64,7 @@ export interface User {
   id: string;
   status: string;
   created: Date;
-  activated?: any;
+  activated?: Date;
   statusChanged: Date;
   lastLogin: Date;
   lastUpdated: Date;
