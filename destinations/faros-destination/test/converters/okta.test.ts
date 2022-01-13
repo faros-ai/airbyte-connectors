@@ -53,12 +53,14 @@ describe('okta', () => {
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
     const writtenByModel = {
       identity_Identity: 3,
+      ims_UserIdentity: 3,
       org_Employee: 3,
       org_Team: 2,
       org_TeamMembership: 5,
+      tms_UserIdentity: 3,
+      vcs_UserIdentity: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();
