@@ -48,12 +48,12 @@ export class StreamContext {
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
 
-  getAll(streamName: string): Dictionary<AirbyteRecord> | undefined {
+  getAll(streamName: string): Dictionary<AirbyteRecord> {
     const recs = this.recordsByStreamName[streamName];
     if (recs) {
       return recs;
     }
-    return undefined;
+    return {};
   }
   get(streamName: string, id: string): AirbyteRecord | undefined {
     const recs = this.recordsByStreamName[streamName];

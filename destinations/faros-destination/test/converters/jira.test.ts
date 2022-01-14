@@ -3,7 +3,6 @@ import {
   AirbyteConnectionStatusMessage,
   AirbyteLog,
   AirbyteLogLevel,
-  AirbyteRecord,
 } from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
@@ -119,6 +118,7 @@ describe('jira', () => {
       project_email: 1,
       project_permission_schemes: 1,
       project_types: 3,
+      project_versions: 3,
       pull_requests: 1,
       workflows: 13,
       workflow_schemes: 10,
@@ -136,6 +136,8 @@ describe('jira', () => {
       generic_Record: 438,
       tms_Epic: 1,
       tms_Project: 1,
+      tms_ProjectReleaseRelationship: 3,
+      tms_Release: 3,
       tms_Sprint: 10,
       tms_Task: 5,
       tms_TaskAssignment: 1,
@@ -145,6 +147,8 @@ describe('jira', () => {
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 5,
       tms_TaskPullRequestAssociation: 2,
+      tms_TaskReleaseRelationship__Deletion: 1,
+      tms_TaskReleaseRelationship__Upsert: 3,
       tms_TaskTag: 2,
       tms_User: 29,
     };
