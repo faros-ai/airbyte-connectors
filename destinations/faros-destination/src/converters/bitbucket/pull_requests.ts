@@ -54,7 +54,7 @@ export class BitbucketPullRequests extends BitbucketConverter {
     if (shortHash) {
       const commitsStream = this.commitsStream.asString;
       const commitRecords = ctx.getAll(commitsStream);
-      const commitHash = Object.keys(commitRecords ?? {}).find((k: string) =>
+      const commitHash = Object.keys(commitRecords).find((k: string) =>
         k.startsWith(shortHash)
       );
       if (commitHash) {

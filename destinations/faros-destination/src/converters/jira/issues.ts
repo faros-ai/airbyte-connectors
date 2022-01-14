@@ -45,6 +45,7 @@ export class JiraIssues extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskProjectRelationship',
+    'tms_TaskReleaseRelationship',
     'tms_TaskBoardRelationship',
     'tms_TaskAssignment',
     'tms_TaskDependency',
@@ -104,18 +105,17 @@ export class JiraIssues extends JiraConverter {
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
+    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString);
     return invertBy(mapValues(records, (r) => r.record.data.name as string));
   }
 
   private static getFieldNamesById(ctx: StreamContext): Dictionary<string> {
-    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString) ?? {};
+    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString);
     return mapValues(records, (r) => r.record.data.name);
   }
 
   private static getStatusesByName(ctx: StreamContext): Dictionary<Status> {
-    const records =
-      ctx.getAll(JiraIssues.workflowStatusesStream.asString) ?? {};
+    const records = ctx.getAll(JiraIssues.workflowStatusesStream.asString);
     return keyBy(
       Object.values(records).map((r) => {
         const data = r.record.data;
@@ -502,6 +502,51 @@ export class JiraIssues extends JiraConverter {
           task: {uid: issue.key, source},
           assignee: {uid: assignee.uid, source},
           assignedAt: assignee.assignedAt,
+        },
+      });
+    }
+
+    const fixVersionChangelog = JiraIssues.fieldChangelog(
+      changelog,
+      'Fix Version',
+      'from',
+      'to'
+    );
+    for (const change of fixVersionChangelog) {
+      if (change.from) {
+        results.push({
+          model: 'tms_TaskReleaseRelationship__Deletion',
+          record: {
+            at: change.changed.getTime(),
+            where: {
+              task: {uid: issue.key, source},
+              release: {uid: change.from, source},
+            },
+          },
+        });
+      }
+      if (change.value) {
+        results.push({
+          model: 'tms_TaskReleaseRelationship__Upsert',
+          record: {
+            at: change.changed.getTime(),
+            where: {
+              task: {uid: issue.key, source},
+              release: {uid: change.value, source},
+            },
+          },
+        });
+      }
+    }
+    for (const fixVersion of issue.fields.fixVersions ?? []) {
+      results.push({
+        model: 'tms_TaskReleaseRelationship__Upsert',
+        record: {
+          at: record.record.emitted_at,
+          where: {
+            task: {uid: issue.key, source},
+            release: {uid: fixVersion.id, source},
+          },
         },
       });
     }
