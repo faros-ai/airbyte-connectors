@@ -3,7 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Project} from './models';
+import {Issue, Project} from './models';
 
 const DEFAULT_VERSION = 'v2';
 
@@ -28,7 +28,7 @@ export class Backlog {
     }
     const version = config.version ? config.version : DEFAULT_VERSION;
     const httpClient = axios.create({
-      baseURL: `https://${config.domain_name}.backlog.com/api/${version}`,
+      baseURL: `https://${config.space}.backlog.com/api/${version}`,
       timeout: 5000,
       params: {
         apiKey: config.apiKey,
@@ -61,6 +61,13 @@ export class Backlog {
 
   async *getProjects(): AsyncGenerator<Project> {
     const res = await this.httpClient.get<Project[]>('projects');
+    for (const item of res.data) {
+      yield item;
+    }
+  }
+
+  async *getIssues(): AsyncGenerator<Issue> {
+    const res = await this.httpClient.get<Issue[]>('issues');
     for (const item of res.data) {
       yield item;
     }

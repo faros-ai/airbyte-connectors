@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "created": {
+        "type": "string"
+      },
+      "lastUpdated": {
+        "type": "string"
+      },
+      "lastMembershipUpdated": {
+        "type": "string"
+      },
+      "objectClass": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "type": {
+        "type": "string"
+      } 
+    }
+  }

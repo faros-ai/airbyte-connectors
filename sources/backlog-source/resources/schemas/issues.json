@@ -1,0 +1,404 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "number"
+        },
+        "projectId": {
+            "type": "number"
+        },
+        "issueKey": {
+            "type": "string"
+        },
+        "keyId": {
+            "type": "number"
+        },
+        "issueType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "projectId": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "displayOrder": {
+                    "type": "number"
+                }
+            }
+        },
+        "summary": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "resolution": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ]
+        },
+        "priority": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "status": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "projectId": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "displayOrder": {
+                    "type": "number"
+                }
+            }
+        },
+        "assignee": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roleType": {
+                    "type": "number"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "mailAddress": {
+                    "type": "string"
+                },
+                "nulabAccount": {
+                    "type": "object",
+                    "properties": {
+                        "nulabId": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "uniqueId": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "keyword": {
+                    "type": "string"
+                }
+            }
+        },
+        "category": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "displayOrder": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "versions": {
+            "type": "array",
+            "items": { "type": "string"}
+        },
+        "milestone": {
+            "type": "array",
+            "items": { "type": "string"}
+        },
+        "startDate": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "dueDate": {
+            "type": "string"
+        },
+        "estimatedHours": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "actualHours": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "parentIssueId": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "createdUser": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roleType": {
+                    "type": "number"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "mailAddress": {
+                    "type": "string"
+                },
+                "nulabAccount": {
+                    "type": "object",
+                    "properties": {
+                        "nulabId": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "uniqueId": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "keyword": {
+                    "type": "string"
+                }
+            }
+        },
+        "created": {
+            "type": "string"
+        },
+        "updatedUser": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roleType": {
+                    "type": "number"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "mailAddress": {
+                    "type": "string"
+                },
+                "nulabAccount": {
+                    "type": "object",
+                    "properties": {
+                        "nulabId": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "uniqueId": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "keyword": {
+                    "type": "string"
+                }
+            }
+        },
+        "updated": {
+            "type": "string"
+        },
+        "customFields": {
+            "type": "array",
+            "items": { "type": "string"}
+        },
+        "attachments": {
+            "type": "array",
+            "items":   
+            { 
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "number"
+                  },
+                  "createdUser": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "userId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "roleType": {
+                        "type": "number"
+                      },
+                      "lang": {
+                        "type": "string"
+                      },
+                      "mailAddress": {
+                        "type": "string"
+                      },
+                      "nulabAccount": {
+                        "type": "object",
+                        "properties": {
+                          "nulabId": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "uniqueId": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "keyword": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "created": {
+                    "type": "string"
+                  }
+                }
+              }
+        },
+        "sharedFiles": {
+            "type": "array",
+            "items": { "type": "string"}
+        },
+        "stars": {
+            "type": "array",
+            "items":  
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "number"
+                        },
+                        "comment": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "presenter": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number"
+                                },
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "roleType": {
+                                    "type": "number"
+                                },
+                                "lang": {
+                                    "type": "string"
+                                },
+                                "mailAddress": {
+                                    "type": "string"
+                                },
+                                "nulabAccount": {
+                                    "type": "object",
+                                    "properties": {
+                                        "nulabId": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "uniqueId": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "keyword": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "created": {
+                            "type": "string"
+                        }
+                    }
+                }  
+        }
+    }
+}
