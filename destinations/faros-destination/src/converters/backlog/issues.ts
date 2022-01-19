@@ -9,6 +9,7 @@ export class BacklogIssues extends BacklogConverter {
     'tms_TaskTag',
     'tms_Label',
     'tms_Task',
+    'tms_TaskAssignment',
     'tms_TaskProjectRelationship',
     'tms_TaskBoardRelationship',
     'tms_TaskDependency',
@@ -34,6 +35,15 @@ export class BacklogIssues extends BacklogConverter {
           taskStatusChanges.push({
             status: BacklogCommon.getTaskStatus(changeLog.newValue),
             changedAt: Utils.toDate(comment.created),
+          });
+        } else if (changeLog.field === 'assigner' && changeLog.newValue) {
+          res.push({
+            model: 'tms_TaskAssignment',
+            record: {
+              task: taskKey,
+              assignee: {uid: String(changeLog.newValue), source},
+              assignedAt: Utils.toDate(comment.created),
+            },
           });
         }
       }
@@ -69,6 +79,31 @@ export class BacklogIssues extends BacklogConverter {
         //   : undefined,
       },
     });
+    const projectRef = {uid: String(issue.projectId), source};
+    res.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: taskKey,
+        project: projectRef,
+      },
+    });
+    res.push({
+      model: 'tms_TaskBoardRelationship',
+      record: {
+        task: taskKey,
+        board: projectRef,
+      },
+    });
+    if (issue.parentIssueId) {
+      res.push({
+        model: 'tms_TaskDependency',
+        record: {
+          dependentTask: {uid: String(issue.parentIssueId), source},
+          fulfillingTask: {uid: String(issue.id), source},
+          blocking: false,
+        },
+      });
+    }
     return res;
   }
 }
