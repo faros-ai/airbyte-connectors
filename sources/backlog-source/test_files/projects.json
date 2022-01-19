@@ -1,1 +1,15 @@
-[]
+[
+    {
+        "id": 68075,
+        "projectKey": "DEVCUBE",
+        "name": "devcube",
+        "chartEnabled": false,
+        "subtaskingEnabled": false,
+        "projectLeaderCanEditProjectLeader": false,
+        "useWikiTreeView": true,
+        "textFormattingRule": "markdown",
+        "archived": false,
+        "displayOrder": 2147483646,
+        "useDevAttributes": false
+    }
+]
