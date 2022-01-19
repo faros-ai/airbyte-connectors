@@ -1,7 +1,10 @@
-export interface Project {
+interface CommonKey {
   id: number;
-  projectKey: string;
   name: string;
+}
+
+export interface Project extends CommonKey {
+  projectKey: string;
   chartEnabled: boolean;
   subtaskingEnabled: boolean;
   projectLeaderCanEditProjectLeader: boolean;
@@ -12,28 +15,14 @@ export interface Project {
   useDevAttributes: boolean;
 }
 
-interface IssueType {
-  id: number;
+interface IssueType extends CommonKey {
   projectId: number;
-  name: string;
   color: string;
   displayOrder: number;
 }
 
-interface Resolution {
-  id: number;
-  name: string;
-}
-
-interface Priority {
-  id: number;
-  name: string;
-}
-
-interface Status {
-  id: number;
+interface Status extends CommonKey {
   projectId: number;
-  name: string;
   color: string;
   displayOrder: number;
 }
@@ -44,10 +33,8 @@ interface NulabAccount {
   uniqueId: string;
 }
 
-interface User {
-  id: number;
+interface User extends CommonKey {
   userId: string;
-  name: string;
   roleType: number;
   lang: string;
   mailAddress: string;
@@ -55,15 +42,11 @@ interface User {
   keyword: string;
 }
 
-interface Category {
-  id: number;
-  name: string;
+interface Category extends CommonKey {
   displayOrder: number;
 }
 
-interface Attachment {
-  id: number;
-  name: string;
+interface Attachment extends CommonKey {
   size: number;
   createdUser: User;
   created: Date;
@@ -85,8 +68,8 @@ export interface Issue {
   issueType: IssueType;
   summary: string;
   description?: string;
-  resolution?: Resolution;
-  priority?: Priority;
+  resolution?: CommonKey;
+  priority?: CommonKey;
   Status: Status;
   assignee?: User;
   category: [Category];
