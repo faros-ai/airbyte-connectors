@@ -1,0 +1,74 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk';
+
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {BacklogCommon, BacklogConverter} from './common';
+import {Issue, TaskStatusChange} from './models';
+export class BacklogIssues extends BacklogConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_TaskTag',
+    'tms_Label',
+    'tms_Task',
+    'tms_TaskProjectRelationship',
+    'tms_TaskBoardRelationship',
+    'tms_TaskDependency',
+  ];
+  async convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const source = this.streamName.source;
+    const issue = record.record.data as Issue;
+    const res: DestinationRecord[] = [];
+    const taskKey = {uid: String(issue.id), source};
+
+    let taskStatusChanges: TaskStatusChange[];
+
+    let statusChangedAt: Date = undefined;
+    for (const comment of issue.comments) {
+      for (const changeLog in comment.changeLog) {
+        if (changeLog.field === 'status') {
+          if (!statusChangedAt) {
+            statusChangedAt = Utils.toDate(comment.created);
+          }
+          taskStatusChanges.push({
+            status: BacklogCommon.getTaskStatus(changeLog.newValue),
+            changedAt: Utils.toDate(comment.created),
+          });
+        }
+      }
+    }
+
+    res.push({
+      model: 'tms_Task',
+      record: {
+        ...taskKey,
+        name: issue.summary,
+        description: issue.description?.substring(
+          0,
+          BacklogCommon.MAX_DESCRIPTION_LENGTH
+        ),
+        priority: issue.priority?.name,
+        type: BacklogCommon.getTaskType(issue.issueType),
+        status: {
+          category: BacklogCommon.getTaskStatus(issue.status.name),
+        },
+        createdAt: Utils.toDate(issue.created),
+        updatedAt: Utils.toDate(issue.updated),
+        statusChangedAt,
+        creator: issue.createdUser
+          ? {uid: String(issue.createdUser.id), source}
+          : undefined,
+        taskStatusChanges,
+        parent: issue.parentIssueId
+          ? {uid: String(issue.parentIssueId), source}
+          : undefined,
+        // epic: issue.epic_id ? {uid: String(issue.epic_id), source} : undefined,
+        // sprint: issue.iteration_id
+        //   ? {uid: String(issue.iteration_id), source}
+        //   : undefined,
+      },
+    });
+    return res;
+  }
+}

@@ -15,7 +15,7 @@ export interface Project extends CommonKey {
   useDevAttributes: boolean;
 }
 
-interface IssueType extends CommonKey {
+export interface IssueType extends CommonKey {
   projectId: number;
   color: string;
   displayOrder: number;
@@ -69,6 +69,7 @@ interface ChangeLog {
   attributeInfo?: any;
   notificationInfo?: any;
 }
+
 export interface Comment {
   id: number;
   content?: string;
@@ -109,4 +110,27 @@ export interface Issue {
   sharedFiles: any;
   stars: Star[];
   comments: Comment[];
+}
+
+export interface TaskType {
+  category: string;
+  detail?: string;
+}
+
+export enum TaskCategory {
+  Bug = 'Bug',
+  Custom = 'Custom',
+  Story = 'Story',
+  Task = 'Task',
+}
+
+export enum TaskStatusCategory {
+  Done = 'Done',
+  InProgress = 'InProgress',
+  Todo = 'Todo',
+}
+
+export interface TaskStatusChange {
+  status: string;
+  changedAt: Date;
 }
