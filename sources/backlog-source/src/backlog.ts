@@ -3,7 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Issue, Project, User} from './models';
+import {Comment, Issue, Project, User} from './models';
 
 const DEFAULT_VERSION = 'v2';
 
@@ -69,6 +69,10 @@ export class Backlog {
   async *getIssues(): AsyncGenerator<Issue> {
     const res = await this.httpClient.get<Issue[]>('issues');
     for (const item of res.data) {
+      const comment = await this.httpClient.get<Comment[]>(
+        `issues/${item.id}/comments`
+      );
+      item.comments = comment.data;
       yield item;
     }
   }

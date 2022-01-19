@@ -60,6 +60,26 @@ interface Star {
   presenter: User;
   created: Date;
 }
+
+interface ChangeLog {
+  field: string;
+  newValue?: string;
+  originalValue?: string;
+  attachmentInfo?: any;
+  attributeInfo?: any;
+  notificationInfo?: any;
+}
+export interface Comment {
+  id: number;
+  content?: string;
+  changeLog: ChangeLog[];
+  createdUser: User;
+  created: Date;
+  updated: Date;
+  stars: Star[];
+  notifications: any;
+}
+
 export interface Issue {
   id: number;
   projectId: number;
@@ -72,9 +92,9 @@ export interface Issue {
   priority?: CommonKey;
   status: Status;
   assignee?: User;
-  category: [Category];
-  versions: [string];
-  milestone: [string];
+  category: Category[];
+  versions: string[];
+  milestone: string[];
   startDate?: Date;
   dueDate?: Date;
   estimatedHours?: number;
@@ -84,8 +104,9 @@ export interface Issue {
   created: Date;
   updatedUser: User;
   updated: Date;
-  customFields: [string];
-  attachments: [Attachment];
-  sharedFiles: [any];
-  stars: [Star];
+  customFields: string[];
+  attachments: Attachment[];
+  sharedFiles: any;
+  stars: Star[];
+  comments: Comment[];
 }
