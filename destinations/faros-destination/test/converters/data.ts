@@ -55,3 +55,7 @@ export const squadcastAllStreamsLog = readTestResourceFile(
 export const googlecalendarAllStreamsLog = readTestResourceFile(
   'googlecalendar/all-streams.log'
 );
+
+export const backlogAllStreamsLog = readTestResourceFile(
+  'backlog/all-streams.log'
+);
