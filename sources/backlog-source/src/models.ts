@@ -33,7 +33,7 @@ interface NulabAccount {
   uniqueId: string;
 }
 
-interface User extends CommonKey {
+export interface User extends CommonKey {
   userId: string;
   roleType: number;
   lang: string;
@@ -70,7 +70,7 @@ export interface Issue {
   description?: string;
   resolution?: CommonKey;
   priority?: CommonKey;
-  Status: Status;
+  status: Status;
   assignee?: User;
   category: [Category];
   versions: [string];

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "roleType": {
+      "type": "number"
+    },
+    "lang": {
+      "type": "string"
+    },
+    "mailAddress": {
+      "type": "string"
+    },
+    "nulabAccount": {
+      "type": "object",
+      "properties": {
+        "nulabId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "uniqueId": {
+          "type": "string"
+        }
+      }
+    },
+    "keyword": {
+      "type": "string"
+    }
+  }
+}

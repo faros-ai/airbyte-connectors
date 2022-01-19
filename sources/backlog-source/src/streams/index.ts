@@ -1,3 +1,4 @@
 import {Issues} from './issues';
 import {Projects} from './projects';
-export {Projects, Issues};
+import {Users} from './users';
+export {Projects, Issues, Users};

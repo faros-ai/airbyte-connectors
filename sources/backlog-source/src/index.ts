@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Backlog, BacklogConfig} from './backlog';
-import {Issues, Projects} from './streams';
+import {Issues, Projects, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -40,6 +40,7 @@ export class BacklogSource extends AirbyteSourceBase {
     return [
       new Projects(config as BacklogConfig, this.logger),
       new Issues(config as BacklogConfig, this.logger),
+      new Users(config as BacklogConfig, this.logger),
     ];
   }
 }
