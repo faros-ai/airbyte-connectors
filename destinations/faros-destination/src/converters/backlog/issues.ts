@@ -21,14 +21,14 @@ export class BacklogIssues extends BacklogConverter {
     const res: DestinationRecord[] = [];
     const taskKey = {uid: String(issue.id), source};
 
-    let statusChangelog: TaskStatusChange[];
+    const statusChangelog: TaskStatusChange[] = [];
 
-    let additionalFields: TaskField[];
+    const additionalFields: TaskField[] = [];
 
     let statusChangedAt: Date = undefined;
-    for (const comment of issue.comments) {
-      for (const changeLog of comment.changeLog) {
-        if (changeLog.field === 'status') {
+    for (const comment of issue.comments ?? []) {
+      for (const changeLog of comment.changeLog ?? []) {
+        if (changeLog.field === 'status' && changeLog.newValue) {
           if (!statusChangedAt) {
             statusChangedAt = Utils.toDate(comment.created);
           }
@@ -38,7 +38,7 @@ export class BacklogIssues extends BacklogConverter {
           });
         } else if (changeLog.field === 'assigner' && changeLog.newValue) {
           let assignUserId = 0;
-          for (const notification of comment.notifications) {
+          for (const notification of comment.notifications ?? []) {
             if (notification.user.name === changeLog.newValue) {
               assignUserId = notification.user.id;
               break;
@@ -55,7 +55,7 @@ export class BacklogIssues extends BacklogConverter {
         }
       }
     }
-    for (const additionalField of issue.customFields) {
+    for (const additionalField of issue.customFields ?? []) {
       additionalFields.push({
         name: additionalField.name,
         value: additionalField.value,
