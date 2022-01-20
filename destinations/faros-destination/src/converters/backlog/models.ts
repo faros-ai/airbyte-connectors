@@ -70,6 +70,11 @@ interface ChangeLog {
   notificationInfo?: any;
 }
 
+export interface customFields {
+  name: string;
+  value: string;
+}
+
 export interface Comment {
   id: number;
   content?: string;
@@ -105,7 +110,7 @@ export interface Issue {
   created: string;
   updatedUser: User;
   updated: string;
-  customFields: string[];
+  customFields: customFields[];
   attachments: Attachment[];
   sharedFiles: any;
   stars: Star[];
@@ -133,4 +138,9 @@ export enum TaskStatusCategory {
 export interface TaskStatusChange {
   status: string;
   changedAt: Date;
+}
+
+export interface TaskField {
+  name: string;
+  value: string;
 }

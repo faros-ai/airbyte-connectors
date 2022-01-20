@@ -3,7 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogCommon, BacklogConverter} from './common';
-import {Issue, TaskStatusChange} from './models';
+import {Issue, TaskField, TaskStatusChange} from './models';
 export class BacklogIssues extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskTag',
@@ -23,7 +23,9 @@ export class BacklogIssues extends BacklogConverter {
     const res: DestinationRecord[] = [];
     const taskKey = {uid: String(issue.id), source};
 
-    let taskStatusChanges: TaskStatusChange[];
+    let statusChangelog: TaskStatusChange[];
+
+    let additionalFields: TaskField[];
 
     let statusChangedAt: Date = undefined;
     for (const comment of issue.comments) {
@@ -32,7 +34,7 @@ export class BacklogIssues extends BacklogConverter {
           if (!statusChangedAt) {
             statusChangedAt = Utils.toDate(comment.created);
           }
-          taskStatusChanges.push({
+          statusChangelog.push({
             status: BacklogCommon.getTaskStatus(changeLog.newValue),
             changedAt: Utils.toDate(comment.created),
           });
@@ -48,7 +50,12 @@ export class BacklogIssues extends BacklogConverter {
         }
       }
     }
-
+    for (const additionalField of issue.customFields) {
+      additionalFields.push({
+        name: additionalField.name,
+        value: additionalField.value,
+      });
+    }
     res.push({
       model: 'tms_Task',
       record: {
@@ -63,15 +70,16 @@ export class BacklogIssues extends BacklogConverter {
         status: {
           category: BacklogCommon.getTaskStatus(issue.status.name),
         },
+        additionalFields,
         createdAt: Utils.toDate(issue.created),
         updatedAt: Utils.toDate(issue.updated),
         statusChangedAt,
-        creator: issue.createdUser
-          ? {uid: String(issue.createdUser.id), source}
-          : undefined,
-        taskStatusChanges,
+        statusChangelog,
         parent: issue.parentIssueId
           ? {uid: String(issue.parentIssueId), source}
+          : undefined,
+        creator: issue.createdUser
+          ? {uid: String(issue.createdUser.id), source}
           : undefined,
         // epic: issue.epic_id ? {uid: String(issue.epic_id), source} : undefined,
         // sprint: issue.iteration_id

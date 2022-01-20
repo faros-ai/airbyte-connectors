@@ -271,7 +271,15 @@
         "customFields": {
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "attachments": {
@@ -412,10 +420,10 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "content": {
-                        "type": "null"
+                        "type": ["string","null"]
                     },
                     "changeLog": {
                         "type": "array",
