@@ -58,7 +58,7 @@ describe('backlog', () => {
     const writtenByModel = {
       tms_Project: 1,
       tms_Task: 3,
-      tms_TaskAssignment: 2,
+      tms_TaskAssignment: 1,
       tms_TaskBoard: 1,
       tms_TaskBoardProjectRelationship: 1,
       tms_TaskBoardRelationship: 3,
