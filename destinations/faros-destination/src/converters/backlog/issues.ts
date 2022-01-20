@@ -70,6 +70,7 @@ export class BacklogIssues extends BacklogConverter {
         status: {
           category: BacklogCommon.getTaskStatus(issue.status.name),
         },
+        points: 0,
         additionalFields,
         createdAt: Utils.toDate(issue.created),
         updatedAt: Utils.toDate(issue.updated),
