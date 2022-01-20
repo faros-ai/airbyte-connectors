@@ -86,7 +86,10 @@
             }
         },
         "assignee": {
-            "type": ["object","null"],
+            "type": [
+                "object",
+                "null"
+            ],
             "properties": {
                 "id": {
                     "type": "number"
@@ -601,7 +604,78 @@
                 },
                 "notifications": {
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "number"
+                            },
+                            "alreadyRead": {
+                                "type": "boolean"
+                            },
+                            "reason": {
+                                "type": "number"
+                            },
+                            "user": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "number"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "roleType": {
+                                        "type": "number"
+                                    },
+                                    "lang": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "mailAddress": {
+                                        "type": "string"
+                                    },
+                                    "nulabAccount": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "properties": {
+                                            "nulabId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "name": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "uniqueId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "keyword": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "resourceAlreadyRead": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
                 }
             }
         }

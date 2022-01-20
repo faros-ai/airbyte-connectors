@@ -37,11 +37,18 @@ export class BacklogIssues extends BacklogConverter {
             changedAt: Utils.toDate(comment.created),
           });
         } else if (changeLog.field === 'assigner' && changeLog.newValue) {
+          let assignUserId = 0;
+          for (const notification of comment.notifications) {
+            if (notification.user.name === changeLog.newValue) {
+              assignUserId = notification.user.id;
+              break;
+            }
+          }
           res.push({
             model: 'tms_TaskAssignment',
             record: {
               task: taskKey,
-              assignee: {uid: String(changeLog.newValue), source},
+              assignee: {uid: String(assignUserId), source},
               assignedAt: Utils.toDate(comment.created),
             },
           });

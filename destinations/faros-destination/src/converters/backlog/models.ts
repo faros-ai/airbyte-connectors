@@ -75,6 +75,14 @@ export interface customFields {
   value: string;
 }
 
+export interface Notification {
+  id: number;
+  alreadyRead: boolean;
+  reason: number;
+  user: User;
+  resourceAlreadyRead: boolean;
+}
+
 export interface Comment {
   id: number;
   content?: string;
@@ -83,7 +91,7 @@ export interface Comment {
   created: string;
   updated: string;
   stars: Star[];
-  notifications: any;
+  notifications: Notification[];
 }
 
 export interface Issue {
