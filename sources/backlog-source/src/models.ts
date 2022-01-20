@@ -30,7 +30,7 @@ interface Status extends CommonKey {
 interface NulabAccount {
   nulabId: string;
   name: string;
-  uniqueId: string;
+  uniqueId?: string;
 }
 
 export interface User extends CommonKey {
@@ -38,7 +38,7 @@ export interface User extends CommonKey {
   roleType: number;
   lang: string;
   mailAddress: string;
-  nulabAccount: NulabAccount;
+  nulabAccount?: NulabAccount;
   keyword: string;
 }
 
@@ -65,7 +65,7 @@ interface ChangeLog {
   field: string;
   newValue?: string;
   originalValue?: string;
-  attachmentInfo?: any;
+  attachmentInfo?: CommonKey;
   attributeInfo?: any;
   notificationInfo?: any;
 }

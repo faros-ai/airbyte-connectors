@@ -38,8 +38,8 @@ export class BacklogSource extends AirbyteSourceBase {
 
   streams(config: BacklogConfig): AirbyteStreamBase[] {
     return [
-      new Projects(config as BacklogConfig, this.logger),
       new Issues(config as BacklogConfig, this.logger),
+      new Projects(config as BacklogConfig, this.logger),
       new Users(config as BacklogConfig, this.logger),
     ];
   }

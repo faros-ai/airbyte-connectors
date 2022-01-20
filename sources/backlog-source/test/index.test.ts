@@ -20,9 +20,9 @@ const BacklogInstance = Backlog.instance;
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-function readConfig(): BacklogConfig {
-  return readTestResourceFile('config.json') as BacklogConfig;
-}
+// function readConfig(): BacklogConfig {
+//   return readTestResourceFile('config.json') as BacklogConfig;
+// }
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug

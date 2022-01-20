@@ -6,13 +6,11 @@ import {BacklogCommon, BacklogConverter} from './common';
 import {Issue, TaskField, TaskStatusChange} from './models';
 export class BacklogIssues extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_TaskTag',
-    'tms_Label',
     'tms_Task',
     'tms_TaskAssignment',
-    'tms_TaskProjectRelationship',
     'tms_TaskBoardRelationship',
     'tms_TaskDependency',
+    'tms_TaskProjectRelationship',
   ];
   async convert(
     record: AirbyteRecord,
@@ -29,7 +27,7 @@ export class BacklogIssues extends BacklogConverter {
 
     let statusChangedAt: Date = undefined;
     for (const comment of issue.comments) {
-      for (const changeLog in comment.changeLog) {
+      for (const changeLog of comment.changeLog) {
         if (changeLog.field === 'status') {
           if (!statusChangedAt) {
             statusChangedAt = Utils.toDate(comment.created);

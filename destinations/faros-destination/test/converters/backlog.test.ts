@@ -44,8 +44,8 @@ describe('backlog', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      projects: 1,
       issues: 3,
+      projects: 1,
       users: 2,
     };
     const processed = _(processedByStream)
@@ -56,14 +56,14 @@ describe('backlog', () => {
       .value();
 
     const writtenByModel = {
-      tms_Project: 3,
-      tms_Sprint: 2,
-      tms_Task: 1,
-      tms_TaskBoard: 3,
-      tms_TaskBoardProjectRelationship: 3,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskProjectRelationship: 1,
-      tms_User: 1,
+      tms_Project: 1,
+      tms_Task: 3,
+      tms_TaskAssignment: 2,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskBoardRelationship: 3,
+      tms_TaskProjectRelationship: 3,
+      tms_User: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

@@ -41,7 +41,10 @@
             "type": "string"
         },
         "resolution": {
-            "type": "object",
+            "type": [
+                "object",
+                "null"
+            ],
             "properties": {
                 "id": {
                     "type": "number"
@@ -49,11 +52,7 @@
                 "name": {
                     "type": "string"
                 }
-            },
-            "required": [
-                "id",
-                "name"
-            ]
+            }
         },
         "priority": {
             "type": "object",
@@ -87,7 +86,7 @@
             }
         },
         "assignee": {
-            "type": "object",
+            "type": ["object","null"],
             "properties": {
                 "id": {
                     "type": "number"
@@ -102,22 +101,34 @@
                     "type": "number"
                 },
                 "lang": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "mailAddress": {
                     "type": "string"
                 },
                 "nulabAccount": {
-                    "type": "object",
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "properties": {
                         "nulabId": {
                             "type": "string"
                         },
                         "name": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "uniqueId": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         }
                     }
                 },
@@ -198,22 +209,34 @@
                     "type": "number"
                 },
                 "lang": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "mailAddress": {
                     "type": "string"
                 },
                 "nulabAccount": {
-                    "type": "object",
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "properties": {
                         "nulabId": {
                             "type": "string"
                         },
                         "name": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "uniqueId": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         }
                     }
                 },
@@ -241,22 +264,34 @@
                     "type": "number"
                 },
                 "lang": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "mailAddress": {
                     "type": "string"
                 },
                 "nulabAccount": {
-                    "type": "object",
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "properties": {
                         "nulabId": {
                             "type": "string"
                         },
                         "name": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "uniqueId": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         }
                     }
                 },
@@ -312,22 +347,34 @@
                                 "type": "number"
                             },
                             "lang": {
-                                "type": "string"
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
                             },
                             "mailAddress": {
                                 "type": "string"
                             },
                             "nulabAccount": {
-                                "type": "object",
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
                                 "properties": {
                                     "nulabId": {
                                         "type": "string"
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "uniqueId": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -384,22 +431,34 @@
                                 "type": "number"
                             },
                             "lang": {
-                                "type": "string"
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
                             },
                             "mailAddress": {
                                 "type": "string"
                             },
                             "nulabAccount": {
-                                "type": "object",
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
                                 "properties": {
                                     "nulabId": {
                                         "type": "string"
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "uniqueId": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -423,7 +482,10 @@
                         "type": "number"
                     },
                     "content": {
-                        "type": ["string","null"]
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "changeLog": {
                         "type": "array",
@@ -434,86 +496,112 @@
                                     "type": "string"
                                 },
                                 "newValue": {
-                                    "type": "string"
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
                                 },
                                 "originalValue": {
-                                    "type": "string"
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
                                 },
                                 "attachmentInfo": {
                                     "type": [
-                                        "string",
+                                        "object",
                                         "null"
-                                    ]
-                                },
-                                "attributeInfo": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "notificationInfo": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "createdUser": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "number"
-                            },
-                            "userId": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "roleType": {
-                                "type": "number"
-                            },
-                            "lang": {
-                                "type": "string"
-                            },
-                            "mailAddress": {
-                                "type": "string"
-                            },
-                            "nulabAccount": {
-                                "type": "object",
-                                "properties": {
-                                    "nulabId": {
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "uniqueId": {
-                                        "type": "string"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        }
                                     }
                                 }
                             },
-                            "keyword": {
-                                "type": "string"
+                            "attributeInfo": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "notificationInfo": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
                             }
                         }
-                    },
-                    "created": {
-                        "type": "string"
-                    },
-                    "updated": {
-                        "type": "string"
-                    },
-                    "stars": {
-                        "type": "array",
-                        "items": {}
-                    },
-                    "notifications": {
-                        "type": "array",
-                        "items": {}
                     }
+                },
+                "createdUser": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "number"
+                        },
+                        "userId": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "roleType": {
+                            "type": "number"
+                        },
+                        "lang": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "mailAddress": {
+                            "type": "string"
+                        },
+                        "nulabAccount": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "properties": {
+                                "nulabId": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "uniqueId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "keyword": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "created": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "stars": {
+                    "type": "array",
+                    "items": {}
+                },
+                "notifications": {
+                    "type": "array",
+                    "items": {}
                 }
             }
         }
