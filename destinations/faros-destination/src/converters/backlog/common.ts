@@ -2,11 +2,12 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
 import {
-  Issue,
   IssueType,
+  SprintState,
   TaskCategory,
   TaskStatusCategory,
   TaskType,
+  VersionMilestone,
 } from './models';
 
 export class BacklogCommon {
@@ -37,6 +38,11 @@ export class BacklogCommon {
       default:
         return TaskStatusCategory.InProgress;
     }
+  }
+
+  static getSprintState(versionMilestone: VersionMilestone): string {
+    if (versionMilestone.releaseDueDate) return SprintState.Closed;
+    return SprintState.Active;
   }
 }
 

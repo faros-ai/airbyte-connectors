@@ -13,6 +13,7 @@ export interface Project extends CommonKey {
   archived: boolean;
   displayOrder: number;
   useDevAttributes: boolean;
+  versionMilestones: VersionMilestone[];
 }
 
 interface IssueType extends CommonKey {
@@ -46,7 +47,7 @@ interface Category extends CommonKey {
   displayOrder: number;
 }
 
-interface VersionMilestone extends CommonKey {
+export interface VersionMilestone extends CommonKey {
   projectId: number;
   description?: string;
   startDate?: string;

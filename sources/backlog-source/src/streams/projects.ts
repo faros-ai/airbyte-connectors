@@ -24,10 +24,6 @@ export class Projects extends AirbyteStreamBase {
     return ['id', 'source'];
   }
 
-  get cursorField(): string | string[] {
-    return 'lastUpdated';
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
