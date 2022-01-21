@@ -46,6 +46,15 @@ interface Category extends CommonKey {
   displayOrder: number;
 }
 
+interface VersionMilestone extends CommonKey {
+  projectId: number;
+  description?: string;
+  startDate?: string;
+  releaseDueDate?: string;
+  archived: boolean;
+  displayOrder: number;
+}
+
 interface Attachment extends CommonKey {
   size: number;
   createdUser: User;
@@ -107,8 +116,8 @@ export interface Issue {
   status: Status;
   assignee?: User;
   category: Category[];
-  versions: string[];
-  milestone: string[];
+  versions: VersionMilestone[];
+  milestone: VersionMilestone[];
   startDate?: string;
   dueDate?: string;
   estimatedHours?: number;

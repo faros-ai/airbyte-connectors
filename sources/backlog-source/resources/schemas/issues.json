@@ -160,13 +160,65 @@
         "versions": {
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "displayOrder": {
+                        "type": "number"
+                    },
+                    "projectId":{
+                        "type": "number"
+                    },
+                    "description":{
+                        "type": ["string","null"]
+                    },
+                    "startDate":{
+                        "type": ["string","null"]
+                    },
+                    "releaseDueDate":{
+                        "type": ["string","null"]
+                    },
+                    "archived":{
+                        "type": "boolean"
+                    }
+                }
             }
         },
         "milestone": {
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "displayOrder": {
+                        "type": "number"
+                    },
+                    "projectId":{
+                        "type": "number"
+                    },
+                    "description":{
+                        "type": ["string","null"]
+                    },
+                    "startDate":{
+                        "type": ["string","null"]
+                    },
+                    "releaseDueDate":{
+                        "type": ["string","null"]
+                    },
+                    "archived":{
+                        "type": "boolean"
+                    }
+                }
             }
         },
         "startDate": {
