@@ -1,11 +1,13 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {Comment, Issue, Project, User, VersionMilestone} from './models';
 
 const DEFAULT_VERSION = 'v2';
+const DEFAULT_UNIX = -8640000000000000;
 
 export interface BacklogConfig {
   readonly apiKey: string;
@@ -70,14 +72,18 @@ export class Backlog {
     }
   }
 
-  async *getIssues(): AsyncGenerator<Issue> {
+  @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
+  async *getIssues(lastUpdatedAt?: string): AsyncGenerator<Issue> {
+    const startTime = new Date(lastUpdatedAt ?? 0);
     const res = await this.httpClient.get<Issue[]>('issues');
     for (const item of res.data) {
-      const comment = await this.httpClient.get<Comment[]>(
-        `issues/${item.id}/comments`
-      );
-      item.comments = comment.data;
-      yield item;
+      if (!lastUpdatedAt || new Date(item.updated) >= startTime) {
+        const comment = await this.httpClient.get<Comment[]>(
+          `issues/${item.id}/comments`
+        );
+        item.comments = comment.data;
+        yield item;
+      }
     }
   }
 

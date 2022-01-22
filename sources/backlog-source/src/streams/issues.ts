@@ -7,6 +7,11 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Backlog, BacklogConfig} from '../backlog';
+import {Issue} from '../models';
+
+interface IssueState {
+  lastUpdatedAt: string;
+}
 
 export class Issues extends AirbyteStreamBase {
   constructor(
@@ -31,9 +36,27 @@ export class Issues extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>
+    streamSlice?: Dictionary<any>,
+    streamState?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+    const lastUpdatedAt =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.lastUpdatedAt
+        : undefined;
     const backlog = await Backlog.instance(this.config, this.logger);
-    yield* backlog.getIssues();
+    yield* backlog.getIssues(lastUpdatedAt);
+  }
+
+  getUpdatedState(
+    currentStreamState: IssueState,
+    latestRecord: Issue
+  ): IssueState {
+    const lastUpdatedAt: Date = new Date(latestRecord.updated);
+    return {
+      lastUpdatedAt:
+        lastUpdatedAt >= new Date(currentStreamState?.lastUpdatedAt || 0)
+          ? latestRecord.updated
+          : currentStreamState.lastUpdatedAt,
+    };
   }
 }
