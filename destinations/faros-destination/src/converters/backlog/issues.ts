@@ -28,6 +28,34 @@ export class BacklogIssues extends BacklogConverter {
     const additionalFields: TaskField[] = [];
 
     let statusChangedAt: Date = undefined;
+    // for (const label of issue.milestone) {
+    //   const labelRef = {name: label.name};
+    //   res.push({
+    //     model: 'tms_TaskTag',
+    //     record: {
+    //       label: labelRef,
+    //       task: taskKey,
+    //     },
+    //   });
+    //   res.push({
+    //     model: 'tms_Label',
+    //     record: labelRef,
+    //   });
+    // }
+    // for (const label of issue.versions) {
+    //   const labelRef = {name: label.name};
+    //   res.push({
+    //     model: 'tms_TaskTag',
+    //     record: {
+    //       label: labelRef,
+    //       task: taskKey,
+    //     },
+    //   });
+    //   res.push({
+    //     model: 'tms_Label',
+    //     record: labelRef,
+    //   });
+    // }
     for (const comment of issue.comments ?? []) {
       for (const changeLog of comment.changeLog ?? []) {
         if (changeLog.field === 'status' && changeLog.newValue) {
