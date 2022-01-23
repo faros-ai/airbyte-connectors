@@ -1,32 +1,40 @@
 {
-    "documentationUrl": "https://docs.faros.ai",
-    "connectionSpecification": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Backlog Spec",
-      "type": "object",
-      "required": [
-        "apiKey",
-        "space" 
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "space": {
-          "type": "string",
-          "title": "Each account have some spaces",
-          "examples": [
-            "devcube"
-          ]
-        }, 
-        "apiKey": {
-          "type": "string",
-          "title": "Backlog Apikey",
-          "airbyte_secret": true
-        },
-        "version": {
-          "type": "string",
-          "title": "version",
-          "default":"v2" 
-        }
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Backlog Spec",
+    "type": "object",
+    "required": [
+      "apiKey",
+      "space"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "space": {
+        "type": "string",
+        "title": "Each account have some spaces",
+        "examples": [
+          "devcube"
+        ]
+      },
+      "apiKey": {
+        "type": "string",
+        "title": "Backlog Apikey",
+        "airbyte_secret": true
+      },
+      "version": {
+        "type": "string",
+        "title": "version",
+        "default": "v2"
+      },
+      "project_id": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "project ID",
+        "description": "If set it will pull all issues from only this project. If no it pull all issues from all projects"
       }
     }
   }
+}

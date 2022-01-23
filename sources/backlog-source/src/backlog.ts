@@ -13,12 +13,15 @@ export interface BacklogConfig {
   readonly apiKey: string;
   readonly space: string;
   readonly version?: string;
+  readonly project_id: number | null;
 }
 
 export class Backlog {
   private static backlog: Backlog = null;
-
-  constructor(private readonly httpClient: AxiosInstance) {}
+  private readonly cfg: BacklogConfig;
+  constructor(private readonly httpClient: AxiosInstance, cfg: BacklogConfig) {
+    this.cfg = cfg;
+  }
   static async instance(
     config: BacklogConfig,
     logger: AirbyteLogger
@@ -37,7 +40,7 @@ export class Backlog {
       },
     });
 
-    Backlog.backlog = new Backlog(httpClient);
+    Backlog.backlog = new Backlog(httpClient, config);
     logger.debug('Created Backlog instance');
     return Backlog.backlog;
   }
@@ -75,7 +78,16 @@ export class Backlog {
   @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
   async *getIssues(lastUpdatedAt?: string): AsyncGenerator<Issue> {
     const startTime = new Date(lastUpdatedAt ?? 0);
-    const res = await this.httpClient.get<Issue[]>('issues');
+    const res = await this.httpClient.get<Issue[]>(
+      'issues',
+      this.cfg.project_id
+        ? {
+            params: {
+              'projectId[]': this.cfg.project_id,
+            },
+          }
+        : {}
+    );
     for (const item of res.data) {
       if (!lastUpdatedAt || new Date(item.updated) >= startTime) {
         const comment = await this.httpClient.get<Comment[]>(

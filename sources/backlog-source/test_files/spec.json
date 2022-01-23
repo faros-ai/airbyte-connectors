@@ -6,7 +6,7 @@
     "type": "object",
     "required": [
       "apiKey",
-      "space" 
+      "space"
     ],
     "additionalProperties": false,
     "properties": {
@@ -16,7 +16,7 @@
         "examples": [
           "devcube"
         ]
-      }, 
+      },
       "apiKey": {
         "type": "string",
         "title": "Backlog Apikey",
@@ -25,7 +25,15 @@
       "version": {
         "type": "string",
         "title": "version",
-        "default":"v2" 
+        "default": "v2"
+      },
+      "project_id": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "project ID",
+        "description": "If set it will pull all issues from only this project. If no it pull all issues from all projects"
       }
     }
   }
