@@ -2,27 +2,54 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "StatusPage Spec",
+    "title": "Spinnaker Spec",
     "type": "object",
     "required": [
-      "page_id",
-      "api_key"
+      "server_url"
     ],
     "additionalProperties": false,
     "properties": {
-      "page_id": {
+      "server_url": {
         "type": "string",
-        "title": "StatusPage Page ID",
-        "airbyte_secret": true
+        "title": "Server URL",
+        "examples": [
+          "https://localhost:8084/"
+        ]
       },
-      "api_key": {
+      "api_version": {
         "type": "string",
-        "title": "StatusPage API key",
-        "airbyte_secret": true
+        "title": "API Version",
+        "default": "v2"
       },
-      "org_id": {
-        "type": "string",
-        "title": "StatusPage Organization ID"
+      "applications": {
+        "type": "array",
+        "title": "Applications",
+        "description": "Use to fetch Pipelines",
+        "item": {
+          "type": "string"
+        }
+      },
+      "buildMasters": {
+        "type": "array",
+        "title": "Build Masters",
+        "description": "Use to fetch Builds and Jobs",
+        "item": {
+          "type": "string"
+        }
+      },
+      "pipelineConfigIds": {
+        "type": "array",
+        "title": "Pipeline Config IDs",
+        "description": "Use to fetch Executions",
+        "item": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "type": "number",
+        "title": "Limit",
+        "description": "Use to fetch Pipelines and Executions using limit",
+        "default": 500
       }
     }
   }

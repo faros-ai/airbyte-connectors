@@ -2,15 +2,10 @@
   "streams": [
     {
       "stream": {
-        "name": "incidents",
+        "name": "applications",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
-        "source_defined_cursor": true,
-        "default_cursor_field": [
-          "updated_at"
+          "full_refresh"
         ],
         "source_defined_primary_key": [
           [
@@ -23,15 +18,94 @@
     },
     {
       "stream": {
-        "name": "incident_updates",
-        "json_schema": {},
+        "name": "builds",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
+          "full_refresh"
         ],
-        "source_defined_cursor": true,
-        "default_cursor_field": [
-          "updated_at"
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "executions",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "jobs",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "pipelines",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh"
         ],
         "source_defined_primary_key": [
           [

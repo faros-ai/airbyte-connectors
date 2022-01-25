@@ -1,4 +1,4 @@
-connector_image: statuspage-source
+connector_image: spinnaker-source
 tests:
   spec:
     - config_path: "secrets/config.json"
@@ -18,10 +18,3 @@ tests:
   full_refresh:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"
-  incremental:
-    - config_path: "secrets/config.json"
-      configured_catalog_path: "test_files/incremental_configured_catalog.json"
-      future_state_path: "test_files/abnormal_state.json"
-      cursor_paths:
-        incidents: [ "cutoff" ]
-        incident_updates: [ "cutoff" ]
