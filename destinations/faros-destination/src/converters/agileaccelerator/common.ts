@@ -1,13 +1,15 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 import {
   EpicHealth,
   SpringDaysRemaining,
   WorkStatus,
   WorkType,
 } from './agileaccelerator_types';
+
+const MAX_DESCRIPTION_LENGTH = 1000;
 
 type EpicStatus = {
   category: EpicStatusCategory;
@@ -51,10 +53,12 @@ enum TaskStatusCategory {
   Todo = 'Todo',
 }
 
-export class AgileacceleratorCommon {
+interface AgileAcceleratorConfig {
   // Max length for free-form description text fields such as works description
-  static readonly MAX_DESCRIPTION_LENGTH = 1000;
+  max_description_length?: number;
+}
 
+export class AgileAcceleratorCommon {
   static toDateTime(date: string, isStart = true): Date {
     const hours = isStart ? '00' : '24';
     const dateString = date.includes('T')
@@ -168,5 +172,16 @@ export abstract class AgileacceleratorConverter extends Converter {
   /** Almost every AgileAccelerator record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.Id;
+  }
+
+  protected agileacceleratorConfig(ctx: StreamContext): AgileAcceleratorConfig {
+    return ctx.config.source_specific_configs?.agileaccelerator ?? {};
+  }
+
+  protected maxDescriptionLength(ctx: StreamContext): number {
+    return (
+      this.agileacceleratorConfig(ctx).max_description_length ??
+      MAX_DESCRIPTION_LENGTH
+    );
   }
 }

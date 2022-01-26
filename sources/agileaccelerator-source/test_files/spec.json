@@ -36,7 +36,8 @@
       },
       "password": {
         "type": "string",
-        "title": "Password"
+        "title": "Password",
+        "airbyte_secret": true
       },
       "api_token": {
         "type": "string",

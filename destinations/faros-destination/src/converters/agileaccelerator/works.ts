@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Work} from './agileaccelerator_types';
-import {AgileacceleratorCommon, AgileacceleratorConverter} from './common';
+import {AgileAcceleratorCommon, AgileacceleratorConverter} from './common';
 
 export class AgileacceleratorWorks extends AgileacceleratorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -13,13 +13,15 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
     'tms_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const work = record.record.data as Work;
     const res: DestinationRecord[] = [];
+
+    const maxDescriptionLength = this.maxDescriptionLength(ctx);
 
     let creatorRef = undefined;
     let epicRef = undefined;
@@ -46,12 +48,12 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
           description:
             work.agf__Epic__r.agf__Project__r.agf__Project_Management_Notes__c?.substring(
               0,
-              AgileacceleratorCommon.MAX_DESCRIPTION_LENGTH
+              maxDescriptionLength
             ),
-          createdAt: AgileacceleratorCommon.toDateTime(
+          createdAt: AgileAcceleratorCommon.toDateTime(
             work.agf__Epic__r.agf__Project__r.CreatedDate
           ),
-          updatedAt: AgileacceleratorCommon.toDateTime(
+          updatedAt: AgileAcceleratorCommon.toDateTime(
             work.agf__Epic__r.agf__Project__r.LastModifiedDate
           ),
         },
@@ -63,9 +65,9 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
           name: work.agf__Epic__r.Name,
           description: work.agf__Epic__r.agf__Description__c?.substring(
             0,
-            AgileacceleratorCommon.MAX_DESCRIPTION_LENGTH
+            maxDescriptionLength
           ),
-          status: AgileacceleratorCommon.toEpicStatus(
+          status: AgileAcceleratorCommon.toEpicStatus(
             work.agf__Epic__r.agf__Health__c
           ),
           project: projectRef,
@@ -81,13 +83,13 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
           name: work.agf__Sprint__r.Name,
           plannedPoints: work.agf__Sprint__r.agf__Committed_Points__c,
           completedPoints: work.agf__Sprint__r.agf__Completed_Story_Points__c,
-          state: AgileacceleratorCommon.toSprintState(
+          state: AgileAcceleratorCommon.toSprintState(
             work.agf__Sprint__r.agf__Days_Remaining__c
           ),
-          startedAt: AgileacceleratorCommon.toDateTime(
+          startedAt: AgileAcceleratorCommon.toDateTime(
             work.agf__Sprint__r.agf__Start_Date__c
           ),
-          endedAt: AgileacceleratorCommon.toDateTime(
+          endedAt: AgileAcceleratorCommon.toDateTime(
             work.agf__Sprint__r.agf__End_Date__c,
             false
           ),
@@ -98,19 +100,16 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
     const task = {
       uid: work.Id,
       name: work.Name,
-      description: work.agf__Description__c?.substring(
-        0,
-        AgileacceleratorCommon.MAX_DESCRIPTION_LENGTH
-      ),
+      description: work.agf__Description__c?.substring(0, maxDescriptionLength),
       url: work.baseUrl.concat(work.attributes.url),
-      type: AgileacceleratorCommon.toType(work.agf__Type__c),
+      type: AgileAcceleratorCommon.toType(work.agf__Type__c),
       priority: work.agf__Priority__c,
-      status: AgileacceleratorCommon.toStatus(work.agf__Status__c),
+      status: AgileAcceleratorCommon.toStatus(work.agf__Status__c),
       points: work.agf__Story_Points__c,
       // TODO:  "Stores additional fields not explicitly tracked by the model"
       // additionalFields: [tms_TaskField]
-      createdAt: AgileacceleratorCommon.toDateTime(work.CreatedDate),
-      updatedAt: AgileacceleratorCommon.toDateTime(work.LastModifiedDate),
+      createdAt: AgileAcceleratorCommon.toDateTime(work.CreatedDate),
+      updatedAt: AgileAcceleratorCommon.toDateTime(work.LastModifiedDate),
       parent: {uid: work.agf__Parent_ID__c, source},
       creator: creatorRef,
       epic: epicRef,
