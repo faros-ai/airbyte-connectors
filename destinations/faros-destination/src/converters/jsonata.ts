@@ -22,10 +22,10 @@ export class JSONataConverter extends Converter {
     return undefined;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const res = this.jsonataExpr.evaluate(record.record);
     if (!res) return [];
     if (!Array.isArray(res)) return [res];

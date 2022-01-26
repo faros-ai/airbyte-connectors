@@ -12,10 +12,10 @@ export class GithubRepositories extends GithubConverter {
     'vcs_Repository',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repo = record.record.data;
     const res: DestinationRecord[] = [];

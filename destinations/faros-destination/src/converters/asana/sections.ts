@@ -9,10 +9,10 @@ export class AsanaSections extends AsanaConverter {
     'tms_TaskBoardProjectRelationship',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
     const source = this.streamName.source;
     const section = record.record.data as AsanaSection;

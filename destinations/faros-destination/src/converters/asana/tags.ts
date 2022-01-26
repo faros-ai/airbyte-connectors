@@ -6,10 +6,10 @@ import {AsanaConverter} from './common';
 export class AsanaTags extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const tag = record.record.data;
 
     return [

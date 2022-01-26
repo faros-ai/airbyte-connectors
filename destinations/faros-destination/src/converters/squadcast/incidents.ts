@@ -21,10 +21,10 @@ export class SquadcastIncidents extends SquadcastConverter {
     'ims_Label',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const incident = record.record.data as Incident;
     const res: DestinationRecord[] = [];

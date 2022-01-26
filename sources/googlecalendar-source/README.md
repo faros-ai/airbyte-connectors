@@ -35,6 +35,10 @@ conforming to the `resources/spec.json` file.  Note that any directory named
 `secrets` is gitignored across the entire `airbyte-connectors` repo, so there is
 no danger of accidentally checking in sensitive information.  See
 `test_files/config.json` for a sample config file.
+Create credentials:
+- This source can accept using read-only access to Calendars.
+- Create [Service Account](https://console.cloud.google.com/apis/credentials)
+- Use client_email and private_key from Service account
 
 ### Locally running the connector
 ```

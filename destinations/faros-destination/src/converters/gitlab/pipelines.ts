@@ -7,10 +7,10 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class GitlabPipelines extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data;
 

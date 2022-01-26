@@ -12,10 +12,10 @@ export class GooglecalendarCalendars extends GooglecalendarConverter {
     'cal_Calendar',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const cle = record.record.data as Calendar;
 

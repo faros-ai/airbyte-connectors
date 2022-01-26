@@ -8,10 +8,10 @@ export class GithubPullRequestStats extends GithubConverter {
     'vcs_PullRequest',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prStats = record.record.data;
     const repository = GithubCommon.parseRepositoryKey(
