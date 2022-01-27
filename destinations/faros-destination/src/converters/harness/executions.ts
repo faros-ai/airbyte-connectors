@@ -30,10 +30,10 @@ export class HarnessExecutions extends HarnessConverter {
     'compute_Application',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const executionRaw = record.record.data;
     const source = this.streamName.source;
     const res: DestinationRecord[] = [];

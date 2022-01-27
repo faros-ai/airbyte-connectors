@@ -6,10 +6,10 @@ import {GithubCommon, GithubConverter} from './common';
 export class GithubAssignees extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data;
 

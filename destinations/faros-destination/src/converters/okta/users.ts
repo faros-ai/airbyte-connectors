@@ -13,10 +13,10 @@ export class OktaUsers extends OktaConverter {
     'tms_UserIdentity',
     'vcs_UserIdentity',
   ];
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.created);

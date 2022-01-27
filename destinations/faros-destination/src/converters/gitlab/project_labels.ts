@@ -6,10 +6,10 @@ import {GitlabConverter} from './common';
 export class GitlabProjectLabels extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const label = record.record.data;
 
     return [{model: 'tms_Label', record: {name: label.name}}];

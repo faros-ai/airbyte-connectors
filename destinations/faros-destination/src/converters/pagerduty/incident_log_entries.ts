@@ -21,10 +21,10 @@ export class PagerdutyIncidentLogEntries extends PagerdutyConverter {
     'ims_IncidentEvent',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const event = record.record.data;
 

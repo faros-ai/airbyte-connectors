@@ -18,10 +18,10 @@ export class JenkinsJobs extends Converter {
     return record?.record?.data?.fullName;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
 

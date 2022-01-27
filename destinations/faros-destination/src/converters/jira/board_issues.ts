@@ -8,10 +8,10 @@ export class JiraBoardIssues extends JiraConverter {
     'tms_TaskBoardRelationship',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     if (!this.useBoardOwnership(ctx)) return [];
     const issue = record.record.data;
     const source = this.streamName.source;

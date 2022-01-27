@@ -26,7 +26,7 @@ export enum EventTypeCategory {
 }
 
 export enum EventStatusCategory {
-  ACCEPTED = 'Accepted',
+  CONFIRMED = 'Confirmed',
   TENTATIVE = 'Tentative',
   CANCELED = 'Canceled',
   CUSTOM = 'Custom',
@@ -50,6 +50,7 @@ export class GooglecalendarCommon {
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
   static EventType(type: string): CategoryRef {
+    if (!type) return null;
     const detail = type?.toLowerCase();
 
     switch (detail) {
@@ -63,6 +64,7 @@ export class GooglecalendarCommon {
   }
 
   static EventPrivacy(privacy: string): CategoryRef {
+    if (!privacy) return null;
     const detail = privacy?.toLowerCase();
 
     switch (detail) {
@@ -77,6 +79,7 @@ export class GooglecalendarCommon {
   }
 
   static EventVisibility(visibility: string): CategoryRef {
+    if (!visibility) return null;
     const detail = visibility?.toLowerCase();
 
     switch (detail) {
@@ -90,11 +93,12 @@ export class GooglecalendarCommon {
   }
 
   static EventStatus(status: string): CategoryRef {
+    if (!status) return null;
     const detail = status?.toLowerCase();
 
     switch (detail) {
       case 'confirmed':
-        return {category: EventStatusCategory.ACCEPTED, detail};
+        return {category: EventStatusCategory.CONFIRMED, detail};
       case 'tentative':
         return {category: EventStatusCategory.TENTATIVE, detail};
       case 'cancelled':
@@ -105,6 +109,7 @@ export class GooglecalendarCommon {
   }
 
   static EventGuestStatus(status: string): CategoryRef {
+    if (!status) return null;
     const detail = status?.toLowerCase();
 
     switch (detail) {
