@@ -19,10 +19,10 @@ export class PhabricatorCommits extends Converter {
     return record?.record?.data?.fields?.identifier;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;
     const res: DestinationRecord[] = [];

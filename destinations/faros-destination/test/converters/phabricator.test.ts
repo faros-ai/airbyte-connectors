@@ -58,6 +58,7 @@ describe('phabricator', () => {
       .value();
 
     const writtenByModel = {
+      generic_Record: 4,
       vcs_BranchCommitAssociation: 6,
       vcs_Commit: 6,
       vcs_Membership: 4,

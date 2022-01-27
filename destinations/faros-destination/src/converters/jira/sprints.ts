@@ -40,7 +40,7 @@ export class JiraSprints extends JiraConverter {
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.getAll(JiraSprints.issueFieldsStream.asString) ?? {};
+    const records = ctx.getAll(JiraSprints.issueFieldsStream.asString);
     return invertBy(
       pickBy(
         mapValues(records, (r) => r.record.data.name as string),
@@ -52,7 +52,7 @@ export class JiraSprints extends JiraConverter {
   private static getSprintIssueRecords(
     ctx: StreamContext
   ): Dictionary<SprintIssue[], number> {
-    const records = ctx.getAll(JiraSprints.sprintIssuesStream.asString) ?? {};
+    const records = ctx.getAll(JiraSprints.sprintIssuesStream.asString);
     return groupBy(
       Object.values(records).map((r) => r.record.data as SprintIssue),
       (si) => si.sprintId
@@ -79,10 +79,10 @@ export class JiraSprints extends JiraConverter {
     return points;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprint = record.record.data;
     if (!this.pointsFieldIdsByName) {
       this.pointsFieldIdsByName = JiraSprints.getFieldIdsByName(ctx);

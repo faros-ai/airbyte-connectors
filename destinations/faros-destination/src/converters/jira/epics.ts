@@ -14,10 +14,10 @@ export class JiraEpics extends JiraConverter {
 
   private turndown = new TurndownService();
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const epic = record.record.data;
     const source = this.streamName.source;
     const status = epic.fields.status ?? {};
@@ -34,7 +34,7 @@ export class JiraEpics extends JiraConverter {
         record: {
           uid: epic.key,
           name: epic.fields.summary ?? null,
-          description,
+          description: this.truncate(ctx, description),
           status: {
             category: JiraStatusCategories.get(
               JiraCommon.normalize(status.statusCategory?.name)

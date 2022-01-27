@@ -15,10 +15,10 @@ export class ShortcutStories extends ShortcutConverter {
     'tms_TaskDependency',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const story = record.record.data as Story;
     const res: DestinationRecord[] = [];

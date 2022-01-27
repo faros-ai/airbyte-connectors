@@ -10,10 +10,10 @@ export class PhabricatorRevisions extends PhabricatorConverter {
     'vcs_PullRequestReview',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const revision = record.record.data;
     const res: DestinationRecord[] = [];

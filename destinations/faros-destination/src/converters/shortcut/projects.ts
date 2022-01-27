@@ -10,10 +10,10 @@ export class ShortcutProjects extends ShortcutConverter {
     'tms_TaskBoardProjectRelationship',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const project = record.record.data as Project;
     const uid = String(project.id);

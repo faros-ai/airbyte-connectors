@@ -2,7 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, StreamContext} from '../converter';
 
-export type ApplicationMapping = Record<string, {name: string; platform?: string}>;
+export type ApplicationMapping = Record<
+  string,
+  {name: string; platform?: string}
+>;
 
 interface SquadcastConfig {
   application_mapping?: ApplicationMapping;
@@ -69,7 +72,6 @@ interface Tag {
   value: string;
   color: string;
 }
-
 
 export interface Event {
   incident_id: string;

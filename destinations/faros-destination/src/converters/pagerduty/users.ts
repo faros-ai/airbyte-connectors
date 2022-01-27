@@ -6,10 +6,10 @@ import {PagerdutyConverter} from './common';
 export class PagerdutyUsers extends PagerdutyConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data;
 
