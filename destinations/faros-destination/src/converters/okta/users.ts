@@ -50,12 +50,10 @@ export class OktaUsers extends OktaConverter {
         title: user.profile.title,
         level: user.profile.userType,
         joinedAt,
-        // not support
         terminatedAt: '',
         department: user.profile.department,
         identity: {uid: user.credentials.emails[0].value, source},
         manager,
-        // not support
         reportingChain: '',
         location: {uid: user.profile.postalAddress, source},
         source,

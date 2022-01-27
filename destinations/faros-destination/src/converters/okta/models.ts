@@ -61,12 +61,12 @@ export interface GroupOfUser {
 export interface User {
   id: string;
   status: string;
-  created: Date;
+  created: string;
   activated?: any;
-  statusChanged: Date;
-  lastLogin: Date;
-  lastUpdated: Date;
-  passwordChanged: Date;
+  statusChanged: string;
+  lastLogin: string;
+  lastUpdated: string;
+  passwordChanged: string;
   type: Type;
   profile: Profile;
   credentials: Credentials;
@@ -104,9 +104,9 @@ export interface UserOfGroup {
 export interface Group {
   item: any;
   id: string;
-  created: Date;
-  lastUpdated: Date;
-  lastMembershipUpdated: Date;
+  created: string;
+  lastUpdated: string;
+  lastMembershipUpdated: string;
   objectClass: string[];
   type: string;
   profile: GroupProfile;

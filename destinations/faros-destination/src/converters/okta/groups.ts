@@ -25,13 +25,9 @@ export class OktaGroups extends OktaConverter {
         name: group.profile.name,
         description: group.profile.description,
         lead: {uid: leader, source},
-        // not support
         parentTeam: '',
-        // not support
         teamChain: '',
-        // not support
         tags: '',
-        // not support
         color: '',
         photoUrl: group._links.logo[0].href,
         source,

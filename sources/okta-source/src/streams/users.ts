@@ -21,7 +21,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['id', 'source'];
+    return 'id';
   }
 
   get cursorField(): string | string[] {
