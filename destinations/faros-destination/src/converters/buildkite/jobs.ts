@@ -9,10 +9,10 @@ export class BuildkiteJobs extends BuildkiteConverter {
     'cicd_BuildStep',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
     const build = {

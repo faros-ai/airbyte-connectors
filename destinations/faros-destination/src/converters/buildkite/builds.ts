@@ -11,10 +11,10 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     'cicd_BuildCommitAssociation',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data as Build;
 

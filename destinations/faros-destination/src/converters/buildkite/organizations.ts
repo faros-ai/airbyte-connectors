@@ -8,10 +8,10 @@ export class BuildkiteOrganizations extends BuildkiteConverter {
     'cicd_Organization',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const organization = record.record.data as Organization;
     return [
