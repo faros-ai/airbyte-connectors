@@ -276,6 +276,12 @@
                 "title": "Max Description Length",
                 "description": "Value to cut description to specific length",
                 "default": 1000
+              },
+              "work_additional_fields": {
+                "type": "array",
+                "title": "Work Additional Fields",
+                "description": "Fields to save to tms_Task's additionalFields variable",
+                "default": []
               }
             }
           }

@@ -2,7 +2,11 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Work} from './agileaccelerator_types';
-import {AgileAcceleratorCommon, AgileacceleratorConverter} from './common';
+import {
+  AgileAcceleratorCommon,
+  AgileacceleratorConverter,
+  TaskField,
+} from './common';
 
 export class AgileacceleratorWorks extends AgileacceleratorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -97,6 +101,17 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
       });
     }
 
+    const additionalFields: TaskField[] = [];
+    const workFieldNames = this.workAdditionalFields(ctx);
+    for (const fieldName of workFieldNames) {
+      const value = work[fieldName];
+      if (value) {
+        additionalFields.push(
+          AgileAcceleratorCommon.toTaskField(fieldName, value)
+        );
+      }
+    }
+
     const task = {
       uid: work.Id,
       name: work.Name,
@@ -106,8 +121,7 @@ export class AgileacceleratorWorks extends AgileacceleratorConverter {
       priority: work.agf__Priority__c,
       status: AgileAcceleratorCommon.toStatus(work.agf__Status__c),
       points: work.agf__Story_Points__c,
-      // TODO:  "Stores additional fields not explicitly tracked by the model"
-      // additionalFields: [tms_TaskField]
+      additionalFields,
       createdAt: AgileAcceleratorCommon.toDateTime(work.CreatedDate),
       updatedAt: AgileAcceleratorCommon.toDateTime(work.LastModifiedDate),
       parent: {uid: work.agf__Parent_ID__c, source},

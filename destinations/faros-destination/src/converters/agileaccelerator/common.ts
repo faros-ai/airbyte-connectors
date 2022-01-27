@@ -11,6 +11,11 @@ import {
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
+export type TaskField = {
+  name: string;
+  value: string;
+};
+
 type EpicStatus = {
   category: EpicStatusCategory;
   detail: string;
@@ -56,6 +61,7 @@ enum TaskStatusCategory {
 interface AgileAcceleratorConfig {
   // Max length for free-form description text fields such as works description
   max_description_length?: number;
+  work_additional_fields?: string[];
 }
 
 export class AgileAcceleratorCommon {
@@ -165,6 +171,10 @@ export class AgileAcceleratorCommon {
         return SprintState.Future;
     }
   }
+
+  static toTaskField(name: string, value: string): TaskField {
+    return {name, value};
+  }
 }
 
 /** AgileAccelerator converter base */
@@ -183,5 +193,9 @@ export abstract class AgileacceleratorConverter extends Converter {
       this.agileacceleratorConfig(ctx).max_description_length ??
       MAX_DESCRIPTION_LENGTH
     );
+  }
+
+  protected workAdditionalFields(ctx: StreamContext): string[] {
+    return this.agileacceleratorConfig(ctx).work_additional_fields ?? [];
   }
 }
