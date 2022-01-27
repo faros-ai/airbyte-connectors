@@ -10,10 +10,10 @@ export class JiraProjects extends JiraConverter {
     'tms_TaskBoardProjectRelationship',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data;
     const source = this.streamName.source;
     const uid = project.key;
@@ -23,7 +23,7 @@ export class JiraProjects extends JiraConverter {
       record: {
         uid,
         name: project.name,
-        description: project.description,
+        description: this.truncate(ctx, project.description),
         source,
       },
     });

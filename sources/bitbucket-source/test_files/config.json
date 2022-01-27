@@ -1,0 +1,8 @@
+{
+  "username": "User",
+  "password": "Pass",
+  "workspace": "Workspace_name",
+  "repository": "repo_slugs",
+  "pipeline": "Pipeline IDs",
+  "pull_request_id": "Pull Request IDs"
+}

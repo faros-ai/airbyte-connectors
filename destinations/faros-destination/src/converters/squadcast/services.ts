@@ -8,10 +8,10 @@ export class SquadcastServices extends SquadcastConverter {
     'compute_Application',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const service = record.record.data as Service;
 
     const applicationMapping = this.applicationMapping(ctx);

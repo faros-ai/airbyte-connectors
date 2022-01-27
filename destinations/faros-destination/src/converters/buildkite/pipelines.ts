@@ -8,10 +8,10 @@ export class BuildkitePipelines extends BuildkiteConverter {
     'cicd_Pipeline',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
     const organization = {uid: pipeline.organization.slug, source};

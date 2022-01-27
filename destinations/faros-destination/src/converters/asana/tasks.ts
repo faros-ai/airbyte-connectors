@@ -43,10 +43,10 @@ export class AsanaTasks extends AsanaConverter {
     'tms_TaskTag',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
 
     const source = this.streamName.source;

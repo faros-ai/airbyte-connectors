@@ -8,10 +8,10 @@ export class JiraUsers extends JiraConverter {
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data;
     const uid = user.accountId ?? user.name;
     if (!uid) {

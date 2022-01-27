@@ -14,10 +14,10 @@ export class VictoropsTeams extends Converter {
     return record?.record?.data?.slug;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const team = record.record.data;
 

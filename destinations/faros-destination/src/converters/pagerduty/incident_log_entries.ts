@@ -17,12 +17,14 @@ enum IncidentEventTypeCategory {
 }
 
 export class PagerdutyIncidentLogEntries extends PagerdutyConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_IncidentEvent'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'ims_IncidentEvent',
+  ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const event = record.record.data;
 
