@@ -31,6 +31,7 @@ export class Backlog {
     if (!config.apiKey) {
       throw new VError('apiKey must be a not empty string');
     }
+
     const version = config.version ? config.version : DEFAULT_VERSION;
     const httpClient = axios.create({
       baseURL: `https://${config.space}.backlog.com/api/${version}`,
@@ -78,16 +79,19 @@ export class Backlog {
   @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
   async *getIssues(lastUpdatedAt?: string): AsyncGenerator<Issue> {
     const startTime = new Date(lastUpdatedAt ?? 0);
-    const res = await this.httpClient.get<Issue[]>(
-      'issues',
-      this.cfg.project_id
-        ? {
-            params: {
-              'projectId[]': this.cfg.project_id,
-            },
-          }
-        : {}
-    );
+    const config = this.cfg.project_id
+      ? {
+          params: {
+            'projectId[]': this.cfg.project_id,
+            updatedSince: lastUpdatedAt ? this.formatDate(startTime) : '',
+          },
+        }
+      : {
+          params: {
+            updatedSince: lastUpdatedAt ? this.formatDate(startTime) : '',
+          },
+        };
+    const res = await this.httpClient.get<Issue[]>('issues', config);
     for (const item of res.data) {
       if (!lastUpdatedAt || new Date(item.updated) >= startTime) {
         const comment = await this.httpClient.get<Comment[]>(
@@ -97,6 +101,15 @@ export class Backlog {
         yield item;
       }
     }
+  }
+
+  formatDate(d): string {
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    return [year, month, day].join('-');
   }
 
   async *getUsers(): AsyncGenerator<User> {
