@@ -4,6 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogCommon, BacklogConverter} from './common';
 import {Project} from './models';
+
 export class BacklogProjects extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',
@@ -51,8 +52,6 @@ export class BacklogProjects extends BacklogConverter {
           uid: String(versionMilestone.id),
           name: versionMilestone.name,
           description: versionMilestone.description,
-          plannedPoints: 0,
-          completedPoints: 0,
           startedAt: Utils.toDate(versionMilestone.startDate),
           endedAt: Utils.toDate(versionMilestone.releaseDueDate),
           state: BacklogCommon.getSprintState(versionMilestone),

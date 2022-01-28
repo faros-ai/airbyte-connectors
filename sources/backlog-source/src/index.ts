@@ -23,12 +23,9 @@ export class BacklogSource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: BacklogConfig): Promise<[boolean, VError]> {
     try {
-      const backlog = await Backlog.instance(
-        config as BacklogConfig,
-        this.logger
-      );
+      const backlog = await Backlog.instance(config, this.logger);
       await backlog.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -38,9 +35,9 @@ export class BacklogSource extends AirbyteSourceBase {
 
   streams(config: BacklogConfig): AirbyteStreamBase[] {
     return [
-      new Issues(config as BacklogConfig, this.logger),
-      new Projects(config as BacklogConfig, this.logger),
-      new Users(config as BacklogConfig, this.logger),
+      new Issues(config, this.logger),
+      new Projects(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

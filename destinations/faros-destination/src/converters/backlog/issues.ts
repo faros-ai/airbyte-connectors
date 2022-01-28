@@ -4,6 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogCommon, BacklogConverter} from './common';
 import {Issue, TaskField, TaskStatusChange} from './models';
+
 export class BacklogIssues extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
@@ -77,7 +78,6 @@ export class BacklogIssues extends BacklogConverter {
         status: {
           category: BacklogCommon.getTaskStatus(issue.status.name),
         },
-        points: 0,
         additionalFields,
         createdAt: Utils.toDate(issue.created),
         updatedAt: Utils.toDate(issue.updated),
@@ -89,7 +89,6 @@ export class BacklogIssues extends BacklogConverter {
         creator: issue.createdUser
           ? {uid: String(issue.createdUser.id), source}
           : undefined,
-        epic: undefined,
         sprint:
           issue.milestone.length > 0
             ? {uid: String(issue.milestone[0].id), source}

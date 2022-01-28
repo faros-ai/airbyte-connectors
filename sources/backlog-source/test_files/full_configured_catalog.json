@@ -24,9 +24,7 @@
                     "full_refresh"
                 ],
                 "source_defined_cursor": true,
-                "default_cursor_field": [
-                    "lastUpdated"
-                ]
+                "default_cursor_field": []
             },
             "sync_mode": "full_refresh",
             "destination_sync_mode": "overwrite"
