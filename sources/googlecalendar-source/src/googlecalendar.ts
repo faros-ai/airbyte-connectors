@@ -47,7 +47,7 @@ export class Googlecalendar {
     logger: AirbyteLogger
   ): Promise<Googlecalendar> {
     if (Googlecalendar.googleCalendar) return Googlecalendar.googleCalendar;
-    
+
     if (typeof config.private_key !== 'string') {
       throw new VError('private_key: must be a string');
     }
@@ -56,7 +56,7 @@ export class Googlecalendar {
     }
 
     const calendar = google.calendar('v3');
-    
+
     const auth = new google.auth.GoogleAuth({
       // Scopes can be specified either as an array or as a single, space-delimited string.
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
@@ -65,7 +65,7 @@ export class Googlecalendar {
         client_email: config.client_email,
       },
     });
-    
+
     // Acquire an auth client, and bind it to all future calls
     const authClient = await auth.getClient();
     google.options({auth: authClient});
