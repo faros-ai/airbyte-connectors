@@ -8,6 +8,7 @@ import {VError} from 'verror';
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
   private stream: StreamName;
+  jsonata = false;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {
@@ -42,7 +43,7 @@ export abstract class Converter {
 export class StreamContext {
   constructor(
     readonly config: AirbyteConfig,
-    readonly farosClient: FarosClient
+    readonly farosClient?: FarosClient
   ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =

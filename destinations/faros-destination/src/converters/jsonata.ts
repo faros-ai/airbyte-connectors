@@ -16,6 +16,7 @@ export class JSONataConverter extends Converter {
     readonly destinationModels: ReadonlyArray<DestinationModel>
   ) {
     super();
+    this.jsonata = true;
   }
 
   id(record: AirbyteRecord): any {

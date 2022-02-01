@@ -13,11 +13,30 @@
     "title": "Faros Destination Spec",
     "type": "object",
     "required": [
-      "api_key",
-      "origin"
+      "origin",
+      "run_mode"
     ],
     "additionalProperties": false,
     "properties": {
+      "run_mode": {
+        "type": "string",
+        "title": "Run Mode",
+        "description": "TODO: description",
+        "enum": ["community_edition", "full_edition"],
+        "default": ["full_edition"]
+      },
+      "ce_hasura_url": {
+        "type": "string",
+        "title": "Community Edition Hasura URL",
+        "description": "The Faros Community Edition Hasura URL.",
+        "default": "http://localhost:8080"
+      },
+      "ce_mutation_batch_size": {
+        "type": "number",
+        "title": "Community Edition Batch size",
+        "description": "The Faros Community Edition batch size when mutating records.",
+        "default": 100
+      },
       "api_url": {
         "type": "string",
         "title": "API URL",
