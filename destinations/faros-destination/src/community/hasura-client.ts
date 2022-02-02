@@ -111,6 +111,8 @@ export class HasuraClient {
     }
   }
 
+  // TODO: find alternate batching strategy
+  // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
   async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
     const obj = this.createMutationObject(model, record);
     const mutation = {
