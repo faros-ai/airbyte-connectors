@@ -181,14 +181,8 @@ class FarosDestination extends AirbyteDestination {
       if (!config.ce_hasura_url) {
         throw new VError('Community Edition Hasura URL is not set');
       }
-      if (config.ce_mutation_batch_size <= 0) {
-        throw new VError('Community Edition batch size must be greater than 0');
-      }
       try {
-        this.hasuraClient = new HasuraClient(
-          config.ce_hasura_url,
-          config.ce_mutation_batch_size
-        );
+        this.hasuraClient = new HasuraClient(config.ce_hasura_url);
       } catch (e) {
         throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
       }

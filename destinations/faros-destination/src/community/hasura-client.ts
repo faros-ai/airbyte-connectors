@@ -44,7 +44,7 @@ export class HasuraClient {
   private readonly scalars: Dictionary<Dictionary<string>> = {};
   private readonly references: Dictionary<Dictionary<Reference>> = {};
 
-  constructor(url: string, private readonly batch_size: number) {
+  constructor(url: string) {
     this.api = axios.create({
       baseURL: url,
       headers: {'X-Hasura-Role': 'admin'},

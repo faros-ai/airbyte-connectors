@@ -21,7 +21,7 @@
       "run_mode": {
         "type": "string",
         "title": "Run Mode",
-        "description": "TODO: description",
+        "description": "Faros version-specific mode to run the destination",
         "enum": ["community_edition", "full_edition"],
         "default": ["full_edition"]
       },
