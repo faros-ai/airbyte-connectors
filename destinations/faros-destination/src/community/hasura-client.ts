@@ -1,16 +1,12 @@
 import axios, {AxiosInstance} from 'axios';
+import dateformat from 'date-format';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {DocumentNode, Kind, parse, print} from 'graphql';
+import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {difference, find} from 'lodash';
 import path from 'path';
-import pino, {Logger} from 'pino';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
-
-interface Scalar {
-  name: string;
-  type: string;
-}
 
 interface Table {
   schema: string;
@@ -36,13 +32,17 @@ interface Source {
   configuration: any;
 }
 
+interface Reference {
+  field: string;
+  model: string;
+}
+
 export class HasuraClient {
   private readonly api: AxiosInstance;
-  private readonly logger: Logger = pino({name: 'hasura-client'});
-  private readonly primaryKeyDefs: Dictionary<string[]> = {};
-  private readonly scalars: Dictionary<Scalar[]> = {};
-  private readonly references: Dictionary<Dictionary<string>> = {};
-  private source: Source = undefined;
+  private readonly logger = new AirbyteLogger();
+  private readonly primaryKeys: Dictionary<string[]> = {};
+  private readonly scalars: Dictionary<Dictionary<string>> = {};
+  private readonly references: Dictionary<Dictionary<Reference>> = {};
 
   constructor(url: string, private readonly batch_size: number) {
     this.api = axios.create({
@@ -59,7 +59,7 @@ export class HasuraClient {
     }
   }
 
-  async fetchDbSource(): Promise<Source> {
+  private async fetchDbSource(): Promise<Source> {
     const response = await this.api.post('/v1/metadata', {
       type: 'export_metadata',
       version: 2,
@@ -70,13 +70,11 @@ export class HasuraClient {
     if (!defaultSource) {
       throw new VError('Faros database not connected to Hasura');
     }
-    this.source = defaultSource;
     return defaultSource;
   }
 
-  async introspect(): Promise<any> {
-    await this.fetchPrimaryKeyDefs();
-    console.log(this.primaryKeyDefs);
+  async loadSchema(): Promise<any> {
+    await this.fetchPrimaryKeys();
     const source = await this.fetchDbSource();
     const query = await fs.readFile(
       path.join(__dirname, '../../resources/instrospection-query.gql'),
@@ -96,57 +94,103 @@ export class HasuraClient {
           t.type.kind === 'SCALAR' ||
           (t.type.kind === 'NON_NULL' && t.type.ofType.kind === 'SCALAR')
       );
-      const scalars: Scalar[] = scalarTypes.map((t) => {
-        return {
-          name: t.name,
-          type: t.type.ofType?.name ?? t.type.name,
-        };
-      });
+      const scalars: Dictionary<string> = {};
+      for (const scalar of scalarTypes) {
+        scalars[scalar.name] = scalar.type.ofType?.name ?? scalar.type.name;
+      }
       this.scalars[tableName] = scalars;
-      const references: Dictionary<string> = {};
+      const references: Dictionary<Reference> = {};
       for (const rel of table.object_relationships ?? []) {
-        references[rel.using.foreign_key_constraint_on] = rel.name;
+        const [refType, _] = rel.name.split('__');
+        references[rel.using.foreign_key_constraint_on] = {
+          field: rel.name,
+          model: refType,
+        };
       }
       this.references[tableName] = references;
     }
   }
 
-  async writeRecord(model: string, record: any): Promise<void> {
-    for (const field in record) {
-      this.formatFieldValue(model, field, record[field]);
+  async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
+    const obj = this.createMutationObject(model, record);
+    const mutation = {
+      mutation: {
+        [`insert_${model}_one`]: {__args: obj, id: true},
+      },
+    };
+    const response = await this.api.post('/v1/graphql', {
+      query: jsonToGraphQLQuery(mutation),
+    });
+    if (response.data.errors) {
+      throw new VError(
+        `Failed to write ${model} record ${JSON.stringify(
+          record
+        )}: ${JSON.stringify(response.data.errors)}`
+      );
     }
   }
 
-  formatFieldValue(model: string, field: string, value: any): void {
-    if (this.references[model][field]) {
-      console.log(`Found ${model} ${field} ${this.references[model][field]}`);
+  private createMutationObject(
+    model: string,
+    record: Dictionary<any>,
+    nested?: boolean
+  ): any {
+    const obj = {};
+    for (const [field, value] of Object.entries(record)) {
+      const nestedModel = this.references[model][field];
+      if (nestedModel && value) {
+        obj[nestedModel.field] = this.createMutationObject(
+          nestedModel.model,
+          value,
+          true
+        );
+      } else {
+        const val = this.formatFieldValue(model, field, value);
+        if (val) obj[field] = val;
+      }
     }
+    return {
+      [nested ? 'data' : 'object']: obj,
+      on_conflict: this.createConflictConf(model, nested),
+    };
+  }
+
+  private formatFieldValue(model: string, field: string, value: any): any {
+    if (!value) return undefined;
+    const type = this.scalars[model][field];
+    if (!type) {
+      this.logger.debug(`Could not find type of ${field} in ${model}`);
+      return undefined;
+    }
+    return type === 'timestamptz' ? timestamptz(value) : value;
   }
 
   private createConflictConf(
     model: string,
-    record: Dictionary<any>
-  ): Dictionary<any> {
-    const cols = difference(
-      Object.keys(record),
-      this.primaryKeyDefs[model]
-    ).concat(['refreshedAt']);
+    nested?: boolean
+  ): {
+    constraint: EnumType;
+    update_columns: EnumType[];
+  } {
+    const cols = nested
+      ? ['refreshedAt']
+      : difference(
+          Object.keys(this.scalars[model]),
+          this.primaryKeys[model].concat('id')
+        );
     return {
-      constraint: `${model}_pkey`,
-      update_columns: difference(
-        Object.keys(record),
-        this.primaryKeyDefs[model]
-      ).concat(['refreshedAt']),
+      constraint: new EnumType(`${model}_pkey`),
+      update_columns: cols.map((c) => new EnumType(c)),
     };
   }
 
-  async fetchPrimaryKeyDefs(): Promise<void> {
+  private async fetchPrimaryKeys(): Promise<void> {
     const response = await this.api.post('/v2/query', {
       type: 'run_sql',
       args: {
         source: 'default',
         sql: await fs.readFile(
-          path.join(__dirname, '../../resources/primary-key-defs.sql'),
+          path.join(__dirname, '../../resources/fetch-primary-keys.sql'),
           'utf8'
         ),
         cascade: false,
@@ -157,23 +201,17 @@ export class HasuraClient {
     result
       .filter((row) => row[0] !== 'table_name')
       .forEach(([table, exp]) => {
+        // TODO: better way to do this?
         const columns = exp
           .replace('pkey(VARIADIC ARRAY[', '')
           .replace('])', '')
           .split(', ')
-          .map((col) => col.replace('"', ''));
-        this.primaryKeyDefs[table] = columns;
+          .map((col) => col.replace(/"/g, ''));
+        this.primaryKeys[table] = columns;
       });
   }
+}
 
-  async parseMutation(): Promise<any> {
-    const file = await fs.readFile(
-      path.join(__dirname, '../../resources/mutation.gql'),
-      'utf8'
-    );
-    const doc = parse(file);
-    console.log(JSON.stringify(doc.definitions, null, 2));
-    const newDoc: DocumentNode = {kind: Kind.DOCUMENT, definitions: []};
-    console.log(print(newDoc));
-  }
+function timestamptz(date: Date): string {
+  return dateformat.asString(dateformat.ISO8601_WITH_TZ_OFFSET_FORMAT, date);
 }

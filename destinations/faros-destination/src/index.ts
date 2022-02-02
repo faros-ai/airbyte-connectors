@@ -84,7 +84,7 @@ interface FarosDestinationState {
 class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
-    private ce: boolean = false,
+    private runMode: RunMode = undefined,
     private farosClient: FarosClient = undefined,
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
@@ -121,7 +121,6 @@ class FarosDestination extends AirbyteDestination {
     if (config.run_mode === RunMode.COMMUNITY_EDITION) {
       try {
         await this.getHasuraClient().healthCheck();
-        await this.getHasuraClient().parseMutation();
       } catch (e) {
         return new AirbyteConnectionStatusMessage({
           status: AirbyteConnectionStatus.FAILED,
@@ -167,7 +166,7 @@ class FarosDestination extends AirbyteDestination {
           `Possible values are ${Object.values(RunMode).join(',')}`
       );
     }
-    this.ce = config.run_mode === RunMode.COMMUNITY_EDITION;
+    this.runMode = config.run_mode;
     try {
       this.jsonataConverter = config.jsonata_expression
         ? JSONataConverter.make(
@@ -274,10 +273,16 @@ class FarosDestination extends AirbyteDestination {
 
     const stateMessages: AirbyteStateMessage[] = [];
 
-    // Avoid creating a new revision and writer when dry run is enabled
-    if (config.dry_run === true || this.ce || dryRun) {
-      this.logger.info("Dry run is ENABLED. Won't write any records");
-      await this.getHasuraClient().introspect();
+    if (this.runMode === RunMode.COMMUNITY_EDITION) {
+      await this.getHasuraClient().loadSchema();
+    }
+
+    // Avoid creating a new revision and writer when dry run or community edition is enabled
+    const dryRunEnabled = config.dry_run === true || dryRun;
+    if (dryRunEnabled || this.runMode === RunMode.COMMUNITY_EDITION) {
+      if (dryRunEnabled) {
+        this.logger.info("Dry run is ENABLED. Won't write any records");
+      }
       await this.writeEntries(
         config,
         stdin,
@@ -358,7 +363,9 @@ class FarosDestination extends AirbyteDestination {
 
     const ctx = new StreamContext(
       config,
-      this.ce ? undefined : this.getFarosClient()
+      this.runMode === RunMode.COMMUNITY_EDITION
+        ? undefined
+        : this.getFarosClient()
     );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -460,7 +467,10 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(
       `Processed records by stream: ${JSON.stringify(processed)}`
     );
-    const writeMsg = writer ? 'Wrote' : 'Would write';
+    const writeMsg =
+      writer || this.runMode === RunMode.COMMUNITY_EDITION
+        ? 'Wrote'
+        : 'Would write';
     this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
     const written = _(stats.writtenByModel)
       .toPairs()
@@ -605,10 +615,12 @@ class FarosDestination extends AirbyteDestination {
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
       writer?.write(obj);
-      if (this.ce && !converter.jsonata) {
-        console.log('Hasura record ' + JSON.stringify(obj));
+      if (this.runMode === RunMode.COMMUNITY_EDITION) {
         if (result.model.includes('__')) {
-          console.log('Skipping Clio-specific record');
+          // TODO: handle __Upsert, __Deletion, and __Update records
+          this.logger.warn(
+            `Record ${JSON.stringify(result)} requires full edition`
+          );
         } else {
           await this.getHasuraClient().writeRecord(result.model, result.record);
         }

@@ -500,7 +500,7 @@ export class JiraIssues extends JiraConverter {
         model: 'tms_TaskAssignment',
         record: {
           task: {uid: issue.key, source},
-          assignee: {uid: assignee.uid, source},
+          assignee: {uid: assignee.uid || 'Unassigned', source},
           assignedAt: assignee.assignedAt,
         },
       });
