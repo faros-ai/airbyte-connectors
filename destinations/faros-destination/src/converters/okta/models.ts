@@ -1,6 +1,7 @@
 interface Type {
   id: string;
 }
+
 interface Profile {
   profileUrl?: string;
   lastName: string;
@@ -29,6 +30,7 @@ interface Profile {
   email?: string;
   userType?: string;
 }
+
 interface Email {
   value: string;
   status: string;
@@ -98,9 +100,11 @@ export interface GroupLinks {
   users: Users;
   apps: Apps;
 }
+
 export interface UserOfGroup {
   id: string;
 }
+
 export interface Group {
   item: any;
   id: string;

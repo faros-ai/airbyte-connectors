@@ -18,6 +18,7 @@ export class OktaGroups extends OktaConverter {
     const group = record.record.data as Group;
     const res: DestinationRecord[] = [];
     const leader = group.usersOfGroup[0].id;
+
     res.push({
       model: 'org_Team',
       record: {
@@ -25,14 +26,15 @@ export class OktaGroups extends OktaConverter {
         name: group.profile.name,
         description: group.profile.description,
         lead: {uid: leader, source},
-        parentTeam: '',
-        teamChain: '',
-        tags: '',
-        color: '',
+        parentTeam: null,
+        teamChain: null,
+        tags: null,
+        color: null,
         photoUrl: group._links.logo[0].href,
         source,
       },
     });
+
     for (const userId of group.usersOfGroup ?? []) {
       res.push({
         model: 'org_TeamMembership',

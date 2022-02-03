@@ -13,6 +13,7 @@ export class OktaUsers extends OktaConverter {
     'tms_UserIdentity',
     'vcs_UserIdentity',
   ];
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -27,6 +28,7 @@ export class OktaUsers extends OktaConverter {
       source,
     };
     const res: DestinationRecord[] = [];
+
     res.push({
       model: 'identity_Identity',
       record: {
@@ -50,11 +52,11 @@ export class OktaUsers extends OktaConverter {
         title: user.profile.title,
         level: user.profile.userType,
         joinedAt,
-        terminatedAt: '',
+        terminatedAt: null,
         department: user.profile.department,
         identity: {uid: user.credentials.emails[0].value, source},
         manager,
-        reportingChain: '',
+        reportingChain: null,
         location: {uid: user.profile.postalAddress, source},
         source,
       },
@@ -73,6 +75,7 @@ export class OktaUsers extends OktaConverter {
         identity: {uid: user.id},
       },
     });
+
     return res;
   }
 }
