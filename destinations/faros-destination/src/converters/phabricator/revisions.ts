@@ -49,6 +49,7 @@ export class PhabricatorRevisions extends PhabricatorConverter {
         at: 0,
         data: {
           number: revision.id,
+          uid: revision.id.toString(),
           title: revision.fields?.title,
           state,
           htmlUrl: revision.fields?.uri,
@@ -72,6 +73,7 @@ export class PhabricatorRevisions extends PhabricatorConverter {
         model: 'vcs_PullRequestReview',
         record: {
           number: reviewId,
+          uid: reviewId.toString(),
           pullRequest,
           reviewer: {uid: reviewer.reviewerPHID, source},
           state: PhabricatorCommon.vcs_PullRequestReviewState(reviewer?.status),

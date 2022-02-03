@@ -473,8 +473,10 @@ export class JiraIssues extends JiraConverter {
                 uid: toLower(pull.repo.org),
               },
               name: toLower(pull.repo.name),
+              uid: toLower(pull.repo.name),
             },
             number: pull.number,
+            uid: pull.number.toString(),
           },
         },
       });

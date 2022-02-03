@@ -40,6 +40,7 @@ export class PhabricatorCommits extends Converter {
     res.push({
       model: 'vcs_Commit',
       record: {
+        uid: sha,
         sha,
         message: fullMessage,
         author: author?.userPHID ? {uid: author.userPHID, source} : null,
@@ -58,7 +59,7 @@ export class PhabricatorCommits extends Converter {
         model: 'vcs_BranchCommitAssociation',
         record: {
           commit: {sha, repository},
-          branch: {name: branch, repository},
+          branch: {name: branch, uid: branch, repository},
         },
       });
     }
@@ -70,6 +71,7 @@ export class PhabricatorCommits extends Converter {
           at: record.record.emitted_at,
           where: {
             number: commitMessage?.revisionId,
+            uid: commitMessage?.revisionId.toString(),
             repository,
           },
           mask: ['mergeCommit'],

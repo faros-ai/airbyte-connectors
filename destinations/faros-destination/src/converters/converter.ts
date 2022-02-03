@@ -8,7 +8,6 @@ import {VError} from 'verror';
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
   private stream: StreamName;
-  jsonata = false;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {

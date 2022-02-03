@@ -34,6 +34,7 @@ export class GithubReviewComments extends GithubConverter {
         model: 'vcs_PullRequestComment',
         record: {
           number: comment.id,
+          uid: comment.id.toString(),
           comment: comment.body,
           createdAt: Utils.toDate(comment.created_at),
           updatedAt: Utils.toDate(comment.updated_at),

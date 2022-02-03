@@ -87,6 +87,7 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
         model: 'vcs_PullRequestComment',
         record: {
           number: id,
+          uid: id.toString(),
           comment: change?.content?.raw,
           createdAt: Utils.toDate(change?.created_on),
           updatedAt: Utils.toDate(change?.updated_on),
@@ -99,6 +100,7 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
         model: 'vcs_PullRequestReview',
         record: {
           number: id,
+          uid: id.toString(),
           htmlUrl: change?.pull_request?.links?.html?.href,
           pullRequest,
           reviewer,

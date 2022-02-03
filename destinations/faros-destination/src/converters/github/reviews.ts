@@ -54,6 +54,7 @@ export class GithubReviews extends GithubConverter {
       model: 'vcs_PullRequestReview',
       record: {
         number: review.id,
+        uid: review.id.toString(),
         htmlUrl: review.html_url,
         pullRequest,
         reviewer: author ? {uid: author.record.uid, source} : null,
