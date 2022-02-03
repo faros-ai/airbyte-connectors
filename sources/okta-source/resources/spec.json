@@ -12,7 +12,7 @@
     "properties": {
       "domain_name": {
         "type": "string",
-        "title": "Each account have one domain ame",
+        "title": "Each account have one domain name",
         "examples": [
           "dev-88164258"
         ]

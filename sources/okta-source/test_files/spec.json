@@ -6,17 +6,17 @@
     "type": "object",
     "required": [
       "token",
-      "domain_name" 
+      "domain_name"
     ],
     "additionalProperties": false,
     "properties": {
       "domain_name": {
         "type": "string",
-        "title": "Each account have one domain ame",
+        "title": "Each account have one domain name",
         "examples": [
           "dev-88164258"
         ]
-      }, 
+      },
       "token": {
         "type": "string",
         "title": "Okta Token",
@@ -25,7 +25,7 @@
       "version": {
         "type": "string",
         "title": "version",
-        "default":"v1" 
+        "default": "v1"
       }
     }
   }

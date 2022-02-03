@@ -42,35 +42,29 @@ describe('index', () => {
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
   });
-  // test('check connection', async () => {
-  //   const source = new sut.OktaSource(logger);
-  //   await expect(
-  //     source.checkConnection({
-  //       token: "",
-  //     })
-  //   ).resolves.toStrictEqual([true, undefined]);
-  // });
 
-  // test('check connection - incorrect token', async () => {
-  //   const source = new sut.OktaSource(logger);
-  //   await expect(source.checkConnection({token: ''})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('Please verify your token are correct. Error: some error'),
-  //   ]);
-  // });
-
-  // test('check connection - incorrect variables', async () => {
-  //   const source = new sut.OktaSource(logger);
-  //   await expect(source.checkConnection({})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('token must be a not empty string'),
-  //   ]);
-  // });
+  test('check connection bad token', async () => {
+    const source = new sut.OktaSource(logger);
+    await expect(
+      source.checkConnection({
+        token: 'secrettoken',
+        domain_name: 'faros-ai',
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        'Please verify your token are correct. Error: Request failed with status code 401'
+      ),
+    ]);
+  });
 
   // test('streams - users, use full_refresh sync mode', async () => {
   //   const fileName = 'users.json';
   //   const source = new sut.OktaSource(logger);
-  //   const streams = source.streams({});
+  //   const streams = source.streams({
+  //     token: '',
+  //     domain_name: '',
+  //   });
   //   const stream = streams[0];
   //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
   //   const items = [];
