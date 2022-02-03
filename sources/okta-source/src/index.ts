@@ -24,7 +24,7 @@ export class OktaSource extends AirbyteSourceBase {
   }
   async checkConnection(config: OktaConfig): Promise<[boolean, VError]> {
     try {
-      const okta = await Okta.instance(config, this.logger);
+      const okta = await Okta.init(config);
       await okta.checkConnection();
     } catch (err: any) {
       return [false, err];

@@ -31,7 +31,7 @@ export class Groups extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const okta = await Okta.instance(this.config, this.logger);
+    const okta = (await Okta.instance()) || (await Okta.init(this.config));
     yield* okta.getGroups();
   }
 }

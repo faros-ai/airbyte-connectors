@@ -1,13 +1,7 @@
-describe('index', () => {
-  test('ok?', async () => {
-    expect('OK').toEqual('OK');
-  });
-});
 import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
-  redactConfig,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
@@ -16,14 +10,16 @@ import {VError} from 'verror';
 import * as sut from '../src/index';
 import {Okta, OktaConfig} from '../src/okta';
 
-const OktaInstance = Okta.instance;
+describe('index', () => {
+  test('ok?', async () => {
+    expect('OK').toEqual('OK');
+  });
+});
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
-// function readConfig(): OktaConfig {
-//   return readTestResourceFile('config.json') as OktaConfig;
-// }
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -31,10 +27,6 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
-
-  beforeEach(() => {
-    Okta.instance = OktaInstance;
-  });
 
   test('spec', async () => {
     const source = new sut.OktaSource(logger);
@@ -48,15 +40,25 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: 'secrettoken',
-        domain_name: 'faros-ai',
+        domain_name: 'dev-12345678',
       })
     ).resolves.toStrictEqual([
       false,
       new VError(
-        'Please verify your token are correct. Error: Request failed with status code 401'
+        'Please verify your token is correct. Error: Request failed with status code 401'
       ),
     ]);
   });
+
+  // test('check connection good token', async () => {
+  //   const source = new sut.OktaSource(logger);
+  //   await expect(
+  //     source.checkConnection({
+  //       token: 'EDITME',
+  //       domain_name: 'EDITME',
+  //     })
+  //   ).resolves.toStrictEqual([true, undefined]);
+  // });
 
   // test('streams - users, use full_refresh sync mode', async () => {
   //   const fileName = 'users.json';
@@ -73,6 +75,10 @@ describe('index', () => {
   //   }
   //   expect(items).toStrictEqual(readTestResourceFile(fileName));
   // });
+
+  // function readConfig(): OktaConfig {
+  //   return readTestResourceFile('config.json') as OktaConfig;
+  // }
 
   // test('streams - groups, use full_refresh sync mode', async () => {
   //   const fileName = 'groups.json';

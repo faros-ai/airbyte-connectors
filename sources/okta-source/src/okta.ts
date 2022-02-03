@@ -18,27 +18,25 @@ export class Okta {
 
   constructor(private readonly httpClient: AxiosInstance) {}
 
-  static async instance(
-    config: OktaConfig,
-    logger: AirbyteLogger
-  ): Promise<Okta> {
-    if (Okta.okta) return Okta.okta;
-
+  static async init(config: OktaConfig): Promise<Okta> {
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
     const version = config.version ? config.version : DEFAULT_VERSION;
     const httpClient = axios.create({
       baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
-      timeout: 5000, // default is `0` (no timeout)
-      //maxContentLength: 20000, //default is 2000 bytes
+      timeout: 10000, // default is `0` (no timeout)
+      maxContentLength: 50000, //default is 2000 bytes
       headers: {
         Authorization: `SSWS ${config.token}`,
       },
     });
 
     Okta.okta = new Okta(httpClient);
-    logger.debug('Created Okta instance');
+    return Okta.okta;
+  }
+
+  static async instance(): Promise<Okta> {
     return Okta.okta;
   }
 
@@ -47,7 +45,7 @@ export class Okta {
       const iter = this.getUsers();
       await iter.next();
     } catch (err: any) {
-      let errorMessage = 'Please verify your token are correct. Error: ';
+      let errorMessage = 'Please verify your token is correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);

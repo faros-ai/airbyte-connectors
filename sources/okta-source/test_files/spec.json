@@ -12,9 +12,9 @@
     "properties": {
       "domain_name": {
         "type": "string",
-        "title": "Each account have one domain name",
+        "title": "Domain name (org name part of your Okta URL)",
         "examples": [
-          "dev-88164258"
+          "dev-12345678"
         ]
       },
       "token": {
