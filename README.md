@@ -20,6 +20,8 @@ Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | 
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Statuspage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
+Okta Source | [sources/okta-source](sources/okta-source) | `docker pull farosai/airbyte-okta-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
+
 
 # Development
 
