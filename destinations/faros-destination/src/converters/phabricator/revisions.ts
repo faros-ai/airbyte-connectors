@@ -66,7 +66,11 @@ export class PhabricatorRevisions extends PhabricatorConverter {
     const reviewers = Array.isArray(revision.attachments?.reviewers?.reviewers)
       ? revision.attachments?.reviewers?.reviewers
       : [];
-    const pullRequest = {repository, number: revision.id};
+    const pullRequest = {
+      repository,
+      number: revision.id,
+      uid: revision.id.toString(),
+    };
     let reviewId = 0;
     for (const reviewer of reviewers) {
       res.push({

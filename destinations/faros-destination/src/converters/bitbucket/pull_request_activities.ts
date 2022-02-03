@@ -80,6 +80,7 @@ export class BitbucketPullRequestActivities extends BitbucketConverter {
     const pullRequest = {
       repository: repoRef,
       number: prActivity.pullRequest.id,
+      uid: prActivity.pullRequest.id.toString(),
     };
 
     if (prActivity?.comment && (prActivity?.comment as any)?.inline) {
