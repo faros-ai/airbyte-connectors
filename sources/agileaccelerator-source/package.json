@@ -1,6 +1,6 @@
 {
   "name": "agileaccelerator-source",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "description": "AgileAccelerator Airbyte source",
   "keywords": [
     "airbyte",
@@ -34,7 +34,7 @@
   "dependencies": {
     "axios": "^0.25.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.29",
+    "faros-airbyte-cdk": "^0.1.30",
     "verror": "^1.10.0"
   },
   "jest": {
