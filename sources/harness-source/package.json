@@ -30,7 +30,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.25.0",
     "commander": "^8.2.0",
     "faros-airbyte-cdk": "^0.1.29",
     "graphql-request": "^3.6.1",
