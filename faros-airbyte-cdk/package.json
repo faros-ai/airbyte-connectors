@@ -37,7 +37,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^8.2.0",
+    "commander": "^9.0.0",
     "fast-redact": "^3.0.2",
     "lodash": "^4.17.21",
     "pino": "^7.5.1",
