@@ -43,7 +43,7 @@ export class GitlabTags extends GitlabConverter {
         record: {
           name: tag.name,
           message: tag.message,
-          commit: {sha: tag.commit_id, repository},
+          commit: {sha: tag.commit_id, uid: tag.commit_id, repository},
           repository,
         },
       },

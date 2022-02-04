@@ -40,6 +40,7 @@ export class GitlabMergeRequests extends GitlabConverter {
         model: 'vcs_PullRequest',
         record: {
           number: mr.id,
+          uid: mr.id.toString(),
           title: mr.title,
           state: this.pullRequestState(mr.state),
           htmlUrl: mr.web_url,

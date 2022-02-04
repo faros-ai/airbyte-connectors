@@ -38,6 +38,7 @@ export class BitbucketCommits extends BitbucketConverter {
       model: 'vcs_Commit',
       record: {
         sha: commit.hash,
+        uid: commit.hash,
         message: commit.message,
         htmlUrl: commit.links.htmlUrl,
         createdAt: Utils.toDate(commit.date),

@@ -25,6 +25,7 @@ export class GithubBranches extends GithubConverter {
         model: 'vcs_Branch',
         record: {
           name: branch.name,
+          uid: branch.name,
           repository,
         },
       },

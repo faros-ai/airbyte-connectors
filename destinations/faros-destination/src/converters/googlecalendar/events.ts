@@ -81,7 +81,7 @@ export class GooglecalendarEvents extends GooglecalendarConverter {
       if (cachedLocation) {
         location = {uid: cachedLocation.uid};
       } else {
-        const locations = await ctx.farosClient.geocode(event.location);
+        const locations = await ctx.farosClient?.geocode(event.location);
 
         if (locations.length > 0) {
           const loc = locations[0];
