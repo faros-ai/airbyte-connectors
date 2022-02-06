@@ -39,5 +39,3 @@ query buildsQuery($maxBuilds: Int){
     }
   }
 }
-
- 

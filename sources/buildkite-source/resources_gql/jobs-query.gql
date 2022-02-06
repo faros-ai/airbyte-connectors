@@ -89,6 +89,3 @@ query jobsQuery($maxJobsPerBuild: Int) {
     }
     }
   }
- 
-
- 
