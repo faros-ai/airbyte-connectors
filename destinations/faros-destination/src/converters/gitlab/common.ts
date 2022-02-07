@@ -14,6 +14,7 @@ interface OrgKey {
 
 interface RepositoryKey {
   name: string;
+  uid: string;
   organization: OrgKey;
 }
 
@@ -37,6 +38,7 @@ export class GitlabCommon {
     const repositoryName = orgRepo[repositoryIndex];
     return {
       name: repositoryName?.toLowerCase(),
+      uid: repositoryName?.toLowerCase(),
       organization: {uid: organization?.toLowerCase(), source},
     };
   }

@@ -84,9 +84,14 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" -a "$source" != "jenkins-source" ]; then
-              ./scripts/source-acceptance-test.sh $source
-            fi
+            case "$source" in
+              phabricator-source|victorops-source|jenkins-source|pagerduty-source|harness-source|okta-source)
+                echo "Skipping $source acceptance tests"
+                ;;
+              *)
+                ./scripts/source-acceptance-test.sh $source
+                ;;
+            esac
           done
 
       - name: Stop Jenkins server

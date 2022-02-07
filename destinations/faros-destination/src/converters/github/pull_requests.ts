@@ -25,6 +25,7 @@ export class GithubPullRequests extends GithubConverter {
 
     const repository: RepositoryKey = {
       name: toLower(pr.base.repo.name),
+      uid: toLower(pr.base.repo.name),
       organization: {uid: toLower(pr.base.repo.owner.login), source},
     };
 
@@ -51,6 +52,7 @@ export class GithubPullRequests extends GithubConverter {
         at: 0,
         data: {
           number: pr.number,
+          uid: pr.number.toString(),
           title: pr.title,
           state,
           htmlUrl: pr.url,

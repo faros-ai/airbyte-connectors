@@ -42,7 +42,7 @@ export abstract class Converter {
 export class StreamContext {
   constructor(
     readonly config: AirbyteConfig,
-    readonly farosClient: FarosClient
+    readonly farosClient?: FarosClient
   ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =

@@ -28,6 +28,7 @@ export class GithubPullRequestStats extends GithubConverter {
           at: record.record.emitted_at,
           where: {
             number: prStats.number,
+            uid: prStats.number.toString(),
             repository,
           },
           mask: ['commitCount', 'commentCount', 'diffStats'],

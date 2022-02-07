@@ -473,8 +473,10 @@ export class JiraIssues extends JiraConverter {
                 uid: toLower(pull.repo.org),
               },
               name: toLower(pull.repo.name),
+              uid: toLower(pull.repo.name),
             },
             number: pull.number,
+            uid: pull.number.toString(),
           },
         },
       });
@@ -500,7 +502,7 @@ export class JiraIssues extends JiraConverter {
         model: 'tms_TaskAssignment',
         record: {
           task: {uid: issue.key, source},
-          assignee: {uid: assignee.uid, source},
+          assignee: {uid: assignee.uid || 'Unassigned', source},
           assignedAt: assignee.assignedAt,
         },
       });

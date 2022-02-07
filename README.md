@@ -15,11 +15,13 @@ Faros Destination | [destinations/faros-destination](destinations/faros-destinat
 Google Calendar Source | [sources/googlecalendar-source](sources/googlecalendar-source) | `docker pull farosai/airbyte-googlecalendar-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Harness Source | [sources/harness-source](sources/harness-source) | `docker pull farosai/airbyte-harness-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull farosai/airbyte-jenkins-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
+Okta Source | [sources/okta-source](sources/okta-source) | `docker pull farosai/airbyte-okta-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 PagerDuty Source | [sources/pagerduty-source](sources/pagerduty-source) | `docker pull farosai/airbyte-pagerduty-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | `docker pull farosai/airbyte-phabricator-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 Statuspage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/github/v/tag/faros-ai/airbyte-connectors?label=)](https://hub.docker.com/orgs/farosai/repositories)
+
 
 # Development
 

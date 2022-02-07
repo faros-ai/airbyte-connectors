@@ -1,6 +1,6 @@
 {
   "name": "customer-io-source",
-  "version": "0.1.28",
+  "version": "0.1.30",
   "description": "Customer.io Airbyte source",
   "keywords": [
     "airbyte",
@@ -30,10 +30,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.25.0",
     "axios-mock-adapter": "^1.20.0",
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.28",
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.30",
     "verror": "^1.10.0"
   },
   "jest": {
