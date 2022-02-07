@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__docker__tags"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
