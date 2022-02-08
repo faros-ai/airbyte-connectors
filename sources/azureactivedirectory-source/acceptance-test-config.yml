@@ -1,4 +1,4 @@
-connector_image: azure-active-directory-source
+connector_image: azureactivedirectory-source
 tests:
   spec:
     - config_path: "secrets/config.json"

@@ -11,7 +11,7 @@ import VError from 'verror';
 import {
   AzureActiveDirectory,
   AzureActiveDirectoryConfig,
-} from './azure-active-directory';
+} from './azureactivedirectory';
 import {Groups, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {

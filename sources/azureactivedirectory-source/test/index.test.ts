@@ -10,7 +10,7 @@ import {VError} from 'verror';
 import {
   AzureActiveDirectory,
   AzureActiveDirectoryConfig,
-} from '../src/azure-active-directory';
+} from '../src/azureactivedirectory';
 import * as sut from '../src/index';
 
 describe('index', () => {

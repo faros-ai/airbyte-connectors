@@ -1,5 +1,5 @@
 {
-  "name": "azure-active-directory-source",
+  "name": "azureactivedirectory-source",
   "version": "0.1.30",
   "description": "Azure Active Directory Airbyte source",
   "keywords": [

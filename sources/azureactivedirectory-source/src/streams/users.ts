@@ -9,9 +9,9 @@ import {Dictionary} from 'ts-essentials';
 import {
   AzureActiveDirectory,
   AzureActiveDirectoryConfig,
-} from '../azure-active-directory';
+} from '../azureactivedirectory';
 
-export class Groups extends AirbyteStreamBase {
+export class Users extends AirbyteStreamBase {
   constructor(
     private readonly config: AzureActiveDirectoryConfig,
     protected readonly logger: AirbyteLogger
@@ -20,13 +20,11 @@ export class Groups extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/groups.json');
+    return require('../../resources/schemas/users.json');
   }
+
   get primaryKey(): StreamKey {
     return 'id';
-  }
-  get cursorField(): string | string[] {
-    return 'createdDateTime';
   }
 
   async *readRecords(
@@ -37,6 +35,6 @@ export class Groups extends AirbyteStreamBase {
     const azureActiveDirectory =
       (await AzureActiveDirectory.instance()) ||
       (await AzureActiveDirectory.init(this.config));
-    yield* azureActiveDirectory.getGroups();
+    yield* azureActiveDirectory.getUsers();
   }
 }
