@@ -1,4 +1,5 @@
 import fs from 'fs';
+import {Mockttp} from 'mockttp';
 import {AffixOptions, open, track} from 'temp';
 import {Dictionary} from 'ts-essentials';
 
@@ -50,4 +51,16 @@ export async function tempConfig(
     source_specific_configs,
   };
   return tempFile(JSON.stringify(conf), {suffix: '.json'});
+}
+
+export async function initMockttp(mockttp: Mockttp): Promise<void> {
+  await mockttp.start({startPort: 30000, endPort: 50000});
+  await mockttp
+    .forGet('/users/me')
+    .once()
+    .thenReply(200, JSON.stringify({tenantId: '1'}));
+  await mockttp
+    .forGet('/graphs/test-graph/statistics')
+    .once()
+    .thenReply(200, JSON.stringify({}));
 }

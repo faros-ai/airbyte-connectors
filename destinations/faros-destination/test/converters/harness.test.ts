@@ -6,10 +6,9 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {harnessAllStreamsLog} from './data';
-import {initMockttp} from './mockttp';
 
 describe('harness', () => {
   const logger = pino({

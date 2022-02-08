@@ -11,10 +11,9 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {jiraAllStreamsLog} from './data';
-import {initMockttp} from './mockttp';
 
 describe('jira', () => {
   const logger = pino({

@@ -4,10 +4,9 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {squadcastAllStreamsLog} from './data';
-import {initMockttp} from './mockttp';
 
 describe('squadcast', () => {
   const logger = pino({

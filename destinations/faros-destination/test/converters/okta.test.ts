@@ -5,9 +5,8 @@ import {getLocal} from 'mockttp';
 import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../temp';
 import {oktaAllStreamsLog} from './data';
-import {initMockttp} from './mockttp';
 
 describe('okta', () => {
   const logger = pino({
