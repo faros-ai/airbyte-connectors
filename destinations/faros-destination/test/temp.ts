@@ -2,7 +2,7 @@ import fs from 'fs';
 import {AffixOptions, open, track} from 'temp';
 import {Dictionary} from 'ts-essentials';
 
-import {InvalidRecordStrategy, RunMode} from '../src';
+import {Edition, InvalidRecordStrategy} from '../src';
 
 // Automatically track and cleanup temp files at exit
 // TODO: this does not seem to work - figure out what's wrong
@@ -31,11 +31,13 @@ export async function tempConfig(
   source_specific_configs?: Dictionary<any>
 ): Promise<string> {
   const conf = {
-    run_mode: RunMode.FULL_EDITION,
-    api_url,
+    edition_configs: {
+      edition: Edition.PREMIUM,
+      api_url,
+      api_key: 'test-api-key',
+      graph: 'test-graph',
+    },
     invalid_record_strategy,
-    api_key: 'test-api-key',
-    graph: 'test-graph',
     origin: 'test-origin',
     jsonata_destination_models: ['generic_Record'],
     jsonata_expression: `

@@ -2,7 +2,7 @@
   "documentationUrl": "https://docs.faros.ai",
   "supportsIncremental": true,
   "supportsNormalization": false,
-  "supportsDBT": false,
+  "supportsDBT": true,
   "supported_destination_sync_modes": [
     "overwrite",
     "append",
@@ -13,44 +13,84 @@
     "title": "Faros Destination Spec",
     "type": "object",
     "required": [
-      "origin",
-      "run_mode"
+      "edition_configs",
+      "origin"
     ],
     "additionalProperties": false,
     "properties": {
-      "run_mode": {
-        "type": "string",
-        "title": "Run Mode",
-        "description": "Faros version-specific mode to run the destination",
-        "enum": ["community_edition", "full_edition"],
-        "default": ["full_edition"]
-      },
-      "ce_hasura_url": {
-        "type": "string",
-        "title": "Community Edition Hasura URL",
-        "description": "The Faros Community Edition Hasura URL.",
-        "default": "http://localhost:8080"
-      },
-      "ce_mutation_batch_size": {
-        "type": "number",
-        "title": "Community Edition Batch size",
-        "description": "The Faros Community Edition batch size when mutating records.",
-        "default": 100
-      },
-      "api_url": {
-        "type": "string",
-        "title": "API URL",
-        "description": "The Faros API URL.",
-        "default": "https://prod.api.faros.ai",
-        "examples": [
-          "https://prod.api.faros.ai"
+      "edition_configs": {
+        "title": "Faros Edition",
+        "description": "Choose your Faros Edition.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Community Edition",
+            "required": [
+              "hasura_url"
+            ],
+            "properties": {
+              "edition": {
+                "type": "string",
+                "title": "Community Edition",
+                "description": "Community Edition",
+                "const": "community"
+              },
+              "hasura_url": {
+                "type": "string",
+                "title": "Hasura URL",
+                "description": "The Community Edition Hasura URL.",
+                "default": "http://localhost:8080"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Premium Edition",
+            "required": [
+              "api_key",
+              "api_url"
+            ],
+            "properties": {
+              "edition": {
+                "type": "string",
+                "title": "Premium Edition",
+                "description": "Premium Edition",
+                "const": "premium"
+              },
+              "api_url": {
+                "type": "string",
+                "title": "API URL",
+                "description": "The Faros API URL.",
+                "default": "https://prod.api.faros.ai",
+                "examples": [
+                  "https://prod.api.faros.ai"
+                ]
+              },
+              "api_key": {
+                "title": "API Key",
+                "type": "string",
+                "description": "The Faros API key to use to access the API.",
+                "airbyte_secret": true
+              },
+              "graph": {
+                "type": "string",
+                "title": "Graph name",
+                "description": "The Faros graph name.",
+                "default": "default"
+              },
+              "expiration": {
+                "type": "string",
+                "title": "Revision expiration",
+                "description": "The Faros revision expiration time.",
+                "default": "5 seconds",
+                "examples": [
+                  "5 seconds"
+                ]
+              }
+            }
+          }
         ]
-      },
-      "api_key": {
-        "title": "API Key",
-        "type": "string",
-        "description": "The Faros API key to use to access the API.",
-        "airbyte_secret": true
       },
       "origin": {
         "type": "string",
@@ -58,21 +98,6 @@
         "description": "The Faros origin name used for uploaded entries. Must be unique.",
         "examples": [
           "my-faros-destination"
-        ]
-      },
-      "graph": {
-        "type": "string",
-        "title": "Graph name",
-        "description": "The Faros graph name.",
-        "default": "default"
-      },
-      "expiration": {
-        "type": "string",
-        "title": "Revision expiration",
-        "description": "The Faros revision expiration time.",
-        "default": "5 seconds",
-        "examples": [
-          "5 seconds"
         ]
       },
       "dry_run": {

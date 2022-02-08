@@ -61,9 +61,9 @@ export enum InvalidRecordStrategy {
   SKIP = 'SKIP',
 }
 
-export enum RunMode {
-  COMMUNITY_EDITION = 'community_edition',
-  FULL_EDITION = 'full_edition',
+export enum Edition {
+  COMMUNITY = 'community',
+  PREMIUM = 'premium',
 }
 
 interface WriteStats {
@@ -84,7 +84,7 @@ interface FarosDestinationState {
 class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
-    private runMode: RunMode = undefined,
+    private edition: Edition = undefined,
     private farosClient: FarosClient = undefined,
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
@@ -118,7 +118,7 @@ class FarosDestination extends AirbyteDestination {
         message: e.message,
       });
     }
-    if (config.run_mode === RunMode.COMMUNITY_EDITION) {
+    if (this.edition === Edition.COMMUNITY) {
       try {
         await this.getHasuraClient().healthCheck();
       } catch (e) {
@@ -136,15 +136,16 @@ class FarosDestination extends AirbyteDestination {
           message: `Invalid Faros API url or API key. Error: ${e}`,
         });
       }
+      const graph = config.edition_configs.graph;
       try {
-        const exists = await this.getFarosClient().graphExists(config.graph);
+        const exists = await this.getFarosClient().graphExists(graph);
         if (!exists) {
-          throw new VError(`Faros graph ${config.graph} does not exist`);
+          throw new VError(`Faros graph ${graph} does not exist`);
         }
       } catch (e) {
         return new AirbyteConnectionStatusMessage({
           status: AirbyteConnectionStatus.FAILED,
-          message: `Invalid Faros graph ${config.graph}. Error: ${e}`,
+          message: `Invalid Faros graph ${graph}. Error: ${e}`,
         });
       }
     }
@@ -157,16 +158,17 @@ class FarosDestination extends AirbyteDestination {
     if (!config.origin) {
       throw new VError('Faros origin is not set');
     }
-    if (!config.run_mode) {
-      throw new VError('Run mode is not set');
+    const edition = config.edition_configs?.edition;
+    if (!edition) {
+      throw new VError('Faros Edition is not set');
     }
-    if (!Object.values(RunMode).includes(config.run_mode)) {
+    if (!Object.values(Edition).includes(edition)) {
       throw new VError(
-        `Invalid run mode ${config.run_mode}. ` +
-          `Possible values are ${Object.values(RunMode).join(',')}`
+        `Invalid run mode ${edition}. ` +
+          `Possible values are ${Object.values(Edition).join(',')}`
       );
     }
-    this.runMode = config.run_mode;
+    this.edition = edition;
     try {
       this.jsonataConverter = config.jsonata_expression
         ? JSONataConverter.make(
@@ -177,19 +179,22 @@ class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize JSONata converter. Error: ${e}`);
     }
-    if (config.run_mode === RunMode.COMMUNITY_EDITION) {
-      if (!config.ce_hasura_url) {
+    if (edition === Edition.COMMUNITY) {
+      if (!config.edition_configs.hasura_url) {
         throw new VError('Community Edition Hasura URL is not set');
       }
       try {
-        this.hasuraClient = new HasuraClient(config.ce_hasura_url);
+        this.hasuraClient = new HasuraClient(config.edition_configs.hasura_url);
       } catch (e) {
         throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
       }
       return;
     }
 
-    if (!config.api_key) {
+    if (!config.edition_configs.api_url) {
+      throw new VError('API URL is not set');
+    }
+    if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
     if (
@@ -246,8 +251,8 @@ class FarosDestination extends AirbyteDestination {
     }
     try {
       this.farosClient = new FarosClient({
-        url: config.api_url,
-        apiKey: config.api_key,
+        url: config.edition_configs.api_url,
+        apiKey: config.edition_configs.api_key,
       });
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
@@ -267,13 +272,13 @@ class FarosDestination extends AirbyteDestination {
 
     const stateMessages: AirbyteStateMessage[] = [];
 
-    if (this.runMode === RunMode.COMMUNITY_EDITION) {
+    if (this.edition === Edition.COMMUNITY) {
       await this.getHasuraClient().loadSchema();
     }
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     const dryRunEnabled = config.dry_run === true || dryRun;
-    if (dryRunEnabled || this.runMode === RunMode.COMMUNITY_EDITION) {
+    if (dryRunEnabled || this.edition === Edition.COMMUNITY) {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
       }
@@ -289,16 +294,16 @@ class FarosDestination extends AirbyteDestination {
       if (deleteModelEntries.length > 0) {
         const modelsToDelete = sortBy(deleteModelEntries).join(',');
         this.logger.info(
-          `Deleting records in destination graph ${config.graph} for models: ${modelsToDelete}`
+          `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
         );
       }
       // Create an entry uploader for the destination graph
       const entryUploaderConfig: EntryUploaderConfig = {
         name: config.origin,
-        url: config.api_url,
-        authHeader: config.api_key,
-        expiration: config.expiration,
-        graphName: config.graph,
+        url: config.edition_configs.api_url,
+        authHeader: config.edition_configs.api_key,
+        expiration: config.edition_configs.expiration,
+        graphName: config.edition_configs.graph,
         deleteModelEntries,
         logger: this.logger.asPino('debug'),
       };
@@ -311,7 +316,7 @@ class FarosDestination extends AirbyteDestination {
               ? `last synced at ${state.lastSynced}`
               : 'not synced yet';
             this.logger.info(
-              `Destination graph ${config.graph} was ${lastSynced}`
+              `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
             );
             // Process input and write entries
             await this.writeEntries(
@@ -357,9 +362,7 @@ class FarosDestination extends AirbyteDestination {
 
     const ctx = new StreamContext(
       config,
-      this.runMode === RunMode.COMMUNITY_EDITION
-        ? undefined
-        : this.getFarosClient()
+      this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
     );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -462,9 +465,7 @@ class FarosDestination extends AirbyteDestination {
       `Processed records by stream: ${JSON.stringify(processed)}`
     );
     const writeMsg =
-      writer || this.runMode === RunMode.COMMUNITY_EDITION
-        ? 'Wrote'
-        : 'Would write';
+      writer || this.edition === Edition.COMMUNITY ? 'Wrote' : 'Would write';
     this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
     const written = _(stats.writtenByModel)
       .toPairs()
@@ -609,11 +610,11 @@ class FarosDestination extends AirbyteDestination {
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
       writer?.write(obj);
-      if (this.runMode === RunMode.COMMUNITY_EDITION) {
+      if (this.edition === Edition.COMMUNITY) {
         if (result.model.includes('__')) {
           // TODO: handle __Upsert, __Deletion, and __Update records
           this.logger.warn(
-            `Record ${JSON.stringify(result)} requires full edition`
+            `Record ${JSON.stringify(result)} requires premium edition`
           );
         } else {
           await this.getHasuraClient().writeRecord(result.model, result.record);
