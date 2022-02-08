@@ -11,7 +11,7 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
-import {initMockttp, tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {jiraAllStreamsLog} from './data';
 

@@ -7,7 +7,7 @@ import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {jenkinsAllStreamsLog, jenkinsLog, readTestResourceFile} from './data';
 
 describe('jenkins', () => {

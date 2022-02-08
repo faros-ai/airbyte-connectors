@@ -8,7 +8,7 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {CLI, read} from './cli';
-import {initMockttp, tempConfig} from './temp';
+import {initMockttp, tempConfig} from './testing-tools';
 
 describe('index', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
