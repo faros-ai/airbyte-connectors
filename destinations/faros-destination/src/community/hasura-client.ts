@@ -77,7 +77,7 @@ export class HasuraClient {
     await this.fetchPrimaryKeys();
     const source = await this.fetchDbSource();
     const query = await fs.readFile(
-      path.join(__dirname, '../../resources/instrospection-query.gql'),
+      path.join(__dirname, '../../resources/introspection-query.gql'),
       'utf8'
     );
     const response = await this.api.post('/v1/graphql', {query});

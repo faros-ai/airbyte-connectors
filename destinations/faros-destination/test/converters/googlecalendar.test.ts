@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {googlecalendarAllStreamsLog} from './data';
 
@@ -42,7 +42,7 @@ describe('googlecalendar', () => {
       },
     ];
 
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     mockttp
       .forPost('/geocoding/lookup')
       .thenReply(200, JSON.stringify({locations: locationsRes}));
