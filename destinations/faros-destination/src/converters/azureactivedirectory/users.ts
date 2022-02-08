@@ -20,7 +20,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;
-    //const joinedAt = Utils.toDate(user.createdDateTime);
+    const joinedAt = Utils.toDate(user.createdDateTime);
     const manager = {
       uid: user.manager ? user.manager.id : '',
       source,
@@ -49,7 +49,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         uid: user.id,
         title: user.displayName,
         level: user.jobTitle,
-        //joinedAt,
+        joinedAt,
         terminatedAt: null,
         department: user.department,
         identity: {uid: user.mail, source},

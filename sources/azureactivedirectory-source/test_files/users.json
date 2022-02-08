@@ -12,7 +12,8 @@
         "userPrincipalName": "huongkstn_gmail.com#EXT#@huongkstngmail.onmicrosoft.com",
         "id": "441362ab-404d-437e-ad65-619df92a5515",
         "department": null,
-        "postalCode": null
+        "postalCode": null,
+        "createdDateTime": "2019-03-12T02:15:42Z"
     },
     {
         "businessPhones": [
@@ -30,6 +31,7 @@
         "id": "192f576b-6f3c-4229-bc9b-98efdbff7504",
         "department": "Software Department",
         "postalCode": "10000",
+        "createdDateTime": "2022-01-29T22:31:03Z",
         "manager": {
             "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects/$entity",
             "@odata.type": "#microsoft.graph.user",

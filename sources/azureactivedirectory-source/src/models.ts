@@ -17,11 +17,13 @@ export interface User {
   department?: string;
   postalCode?: string;
   manager?: User;
+  createdDateTime?: string;
 }
 
 export interface UserDepartment {
   department?: string;
   postalCode?: string;
+  createdDateTime?: string;
 }
 
 export interface GroupResponse {

@@ -13,6 +13,7 @@ export interface User {
   department?: string;
   postalCode?: string;
   manager?: User;
+  createdDateTime?: string;
 }
 
 export interface UserDepartment {

@@ -114,10 +114,11 @@ export class AzureActiveDirectory {
     const res = await this.httpClient.get<UserResponse>('users');
     for (const item of res.data.value) {
       const departmentItem = await this.httpClient.get<UserDepartment>(
-        `users/${item.id}?$select=Department,postalCode`
+        `users/${item.id}?$select=Department,postalCode,createdDateTime`
       );
       item.department = departmentItem.data.department;
       item.postalCode = departmentItem.data.postalCode;
+      item.createdDateTime = departmentItem.data.createdDateTime;
       try {
         const managerItem = await this.httpClient.get<User>(
           `users/${item.id}/manager`

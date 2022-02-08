@@ -65,6 +65,12 @@
         "null"
       ]
     },
+    "createdDateTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "manager": {
       "profile": {
         "type": [
