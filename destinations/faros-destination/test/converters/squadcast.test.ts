@@ -7,6 +7,7 @@ import pino from 'pino';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {squadcastAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('squadcast', () => {
   const logger = pino({
@@ -20,7 +21,7 @@ describe('squadcast', () => {
   const streamNamePrefix = 'mytestsource__squadcast__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

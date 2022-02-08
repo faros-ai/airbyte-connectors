@@ -7,6 +7,7 @@ import pino from 'pino';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {googlecalendarAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('googlecalendar', () => {
   const logger = pino({
@@ -42,7 +43,7 @@ describe('googlecalendar', () => {
       },
     ];
 
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     mockttp
       .forPost('/geocoding/lookup')
       .thenReply(200, JSON.stringify({locations: locationsRes}));

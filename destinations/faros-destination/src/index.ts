@@ -63,7 +63,7 @@ export enum InvalidRecordStrategy {
 
 export enum Edition {
   COMMUNITY = 'community',
-  PREMIUM = 'premium',
+  CLOUD = 'cloud',
 }
 
 interface WriteStats {
@@ -111,64 +111,66 @@ class FarosDestination extends AirbyteDestination {
 
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
     try {
-      this.init(config);
+      await this.init(config);
     } catch (e: any) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
         message: e.message,
       });
     }
-    if (this.edition === Edition.COMMUNITY) {
-      try {
-        await this.getHasuraClient().healthCheck();
-      } catch (e) {
-        return new AirbyteConnectionStatusMessage({
-          status: AirbyteConnectionStatus.FAILED,
-          message: `Invalid Hasura url. Error: ${e}`,
-        });
-      }
-    } else {
-      try {
-        await this.getFarosClient().tenant();
-      } catch (e) {
-        return new AirbyteConnectionStatusMessage({
-          status: AirbyteConnectionStatus.FAILED,
-          message: `Invalid Faros API url or API key. Error: ${e}`,
-        });
-      }
-      const graph = config.edition_configs.graph;
-      try {
-        const exists = await this.getFarosClient().graphExists(graph);
-        if (!exists) {
-          throw new VError(`Faros graph ${graph} does not exist`);
-        }
-      } catch (e) {
-        return new AirbyteConnectionStatusMessage({
-          status: AirbyteConnectionStatus.FAILED,
-          message: `Invalid Faros graph ${graph}. Error: ${e}`,
-        });
-      }
-    }
     return new AirbyteConnectionStatusMessage({
       status: AirbyteConnectionStatus.SUCCEEDED,
     });
   }
 
-  private init(config: AirbyteConfig): void {
-    if (!config.origin) {
-      throw new VError('Faros origin is not set');
+  private async initCommunity(config: AirbyteConfig): Promise<void> {
+    if (!config.edition_configs.hasura_url) {
+      throw new VError('Community Edition Hasura URL is not set');
     }
-    const edition = config.edition_configs?.edition;
-    if (!edition) {
-      throw new VError('Faros Edition is not set');
+    try {
+      this.hasuraClient = new HasuraClient(config.edition_configs.hasura_url);
+    } catch (e) {
+      throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
-    if (!Object.values(Edition).includes(edition)) {
-      throw new VError(
-        `Invalid run mode ${edition}. ` +
-          `Possible values are ${Object.values(Edition).join(',')}`
-      );
+    try {
+      await this.getHasuraClient().healthCheck();
+    } catch (e) {
+      throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
-    this.edition = edition;
+  }
+
+  private async initCloud(config: AirbyteConfig): Promise<void> {
+    if (!config.edition_configs.api_url) {
+      throw new VError('API URL is not set');
+    }
+    if (!config.edition_configs.api_key) {
+      throw new VError('API key is not set');
+    }
+    try {
+      this.farosClient = new FarosClient({
+        url: config.edition_configs.api_url,
+        apiKey: config.edition_configs.api_key,
+      });
+    } catch (e) {
+      throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
+    }
+    try {
+      await this.getFarosClient().tenant();
+    } catch (e) {
+      throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
+    }
+    const graph = config.edition_configs.graph;
+    try {
+      const exists = await this.getFarosClient().graphExists(graph);
+      if (!exists) {
+        throw new VError(`Faros graph ${graph} does not exist`);
+      }
+    } catch (e) {
+      throw new VError(`Invalid Faros graph ${graph}. Error: ${e}`);
+    }
+  }
+
+  private initGlobal(config: AirbyteConfig): void {
     try {
       this.jsonataConverter = config.jsonata_expression
         ? JSONataConverter.make(
@@ -178,24 +180,6 @@ class FarosDestination extends AirbyteDestination {
         : undefined;
     } catch (e) {
       throw new VError(`Failed to initialize JSONata converter. Error: ${e}`);
-    }
-    if (edition === Edition.COMMUNITY) {
-      if (!config.edition_configs.hasura_url) {
-        throw new VError('Community Edition Hasura URL is not set');
-      }
-      try {
-        this.hasuraClient = new HasuraClient(config.edition_configs.hasura_url);
-      } catch (e) {
-        throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
-      }
-      return;
-    }
-
-    if (!config.edition_configs.api_url) {
-      throw new VError('API URL is not set');
-    }
-    if (!config.edition_configs.api_key) {
-      throw new VError('API key is not set');
     }
     if (
       config.invalid_record_strategy &&
@@ -249,14 +233,28 @@ class FarosDestination extends AirbyteDestination {
         'Jira Additional Fields Array Limit must be a non-negative number'
       );
     }
-    try {
-      this.farosClient = new FarosClient({
-        url: config.edition_configs.api_url,
-        apiKey: config.edition_configs.api_key,
-      });
-    } catch (e) {
-      throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
+  }
+
+  private async init(config: AirbyteConfig): Promise<void> {
+    if (!config.origin) {
+      throw new VError('Faros origin is not set');
     }
+    const edition = config.edition_configs?.edition;
+    if (!edition) {
+      throw new VError('Faros Edition is not set');
+    }
+    this.edition = edition;
+    if (edition === Edition.COMMUNITY) {
+      await this.initCommunity(config);
+    } else if (edition === Edition.CLOUD) {
+      await this.initCloud(config);
+    } else {
+      throw new VError(
+        `Invalid run mode ${edition}. ` +
+          `Possible values are ${Object.values(Edition).join(',')}`
+      );
+    }
+    this.initGlobal(config);
   }
 
   async *write(
@@ -265,7 +263,7 @@ class FarosDestination extends AirbyteDestination {
     stdin: NodeJS.ReadStream,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
-    this.init(config);
+    await this.init(config);
 
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
@@ -614,7 +612,7 @@ class FarosDestination extends AirbyteDestination {
         if (result.model.includes('__')) {
           // TODO: handle __Upsert, __Deletion, and __Update records
           this.logger.warn(
-            `Record ${JSON.stringify(result)} requires premium edition`
+            `Record ${JSON.stringify(result)} requires ${Edition.CLOUD} edition`
           );
         } else {
           await this.getHasuraClient().writeRecord(result.model, result.record);

@@ -9,6 +9,7 @@ import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {pagerdutyLog, readTestResourceFile} from './data';
+import {initMockttp} from './mockttp';
 
 describe('pagerduty', () => {
   const logger = pino({
@@ -24,7 +25,7 @@ describe('pagerduty', () => {
   const streamNamePrefix = 'mytestsource__pagerduty__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

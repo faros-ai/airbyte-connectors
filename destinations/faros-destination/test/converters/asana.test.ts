@@ -14,6 +14,7 @@ import {
   asanaPGRawLog,
   readTestResourceFile,
 } from './data';
+import {initMockttp} from './mockttp';
 
 describe('asana', () => {
   const logger = pino({
@@ -30,7 +31,7 @@ describe('asana', () => {
   const streamNamePrefix = 'mytestsource__asana__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

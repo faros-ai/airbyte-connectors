@@ -9,6 +9,7 @@ import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {harnessAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('harness', () => {
   const logger = pino({
@@ -22,7 +23,7 @@ describe('harness', () => {
   const streamNamePrefix = 'mytestsource__harness__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

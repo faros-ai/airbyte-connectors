@@ -14,6 +14,7 @@ import {InvalidRecordStrategy} from '../../src';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {jiraAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('jira', () => {
   const logger = pino({
@@ -27,7 +28,7 @@ describe('jira', () => {
   const streamNamePrefix = 'mytestsource__jira__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.SKIP, {
       jira: {
         use_board_ownership: false,
@@ -42,15 +43,6 @@ describe('jira', () => {
   });
 
   test('check valid jira source config', async () => {
-    await mockttp
-      .get('/users/me')
-      .once()
-      .thenReply(200, JSON.stringify({tenantId: '1'}));
-    await mockttp
-      .get('/graphs/test-graph/statistics')
-      .once()
-      .thenReply(200, JSON.stringify({}));
-
     const cli = await CLI.runWith(['check', '--config', configPath]);
 
     expect(await read(cli.stderr)).toBe('');

@@ -7,6 +7,7 @@ import pino from 'pino';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {statuspageAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('statuspage', () => {
   const logger = pino({
@@ -20,7 +21,7 @@ describe('statuspage', () => {
   const streamNamePrefix = 'mytestsource__statuspage__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

@@ -7,6 +7,7 @@ import pino from 'pino';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {victoropsAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('victorops', () => {
   const logger = pino({
@@ -20,7 +21,7 @@ describe('victorops', () => {
   const streamNamePrefix = 'mytestsource__victorops__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

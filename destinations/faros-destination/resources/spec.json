@@ -46,7 +46,7 @@
           },
           {
             "type": "object",
-            "title": "Premium Edition",
+            "title": "Cloud Edition",
             "required": [
               "api_key",
               "api_url"
@@ -54,9 +54,9 @@
             "properties": {
               "edition": {
                 "type": "string",
-                "title": "Premium Edition",
-                "description": "Premium Edition",
-                "const": "premium"
+                "title": "Cloud Edition",
+                "description": "Cloud Edition",
+                "const": "cloud"
               },
               "api_url": {
                 "type": "string",

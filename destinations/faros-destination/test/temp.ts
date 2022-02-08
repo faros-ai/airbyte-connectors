@@ -32,7 +32,7 @@ export async function tempConfig(
 ): Promise<string> {
   const conf = {
     edition_configs: {
-      edition: Edition.PREMIUM,
+      edition: Edition.CLOUD,
       api_url,
       api_key: 'test-api-key',
       graph: 'test-graph',

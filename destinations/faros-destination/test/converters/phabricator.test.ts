@@ -7,6 +7,7 @@ import pino from 'pino';
 import {tempConfig} from '../temp';
 import {CLI, read} from './../cli';
 import {phabricatorAllStreamsLog} from './data';
+import {initMockttp} from './mockttp';
 
 describe('phabricator', () => {
   const logger = pino({
@@ -20,7 +21,7 @@ describe('phabricator', () => {
   const streamNamePrefix = 'mytestsource__phabricator__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

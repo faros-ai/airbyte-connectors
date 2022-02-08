@@ -14,6 +14,7 @@ import {
   githubPGRawLog,
   readTestResourceFile,
 } from './data';
+import {initMockttp} from './mockttp';
 
 describe('github', () => {
   const logger = pino({
@@ -30,7 +31,7 @@ describe('github', () => {
   const streamNamePrefix = 'mytestsource__github__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 
