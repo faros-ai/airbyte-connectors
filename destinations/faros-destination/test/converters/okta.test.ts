@@ -5,7 +5,7 @@ import {getLocal} from 'mockttp';
 import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {oktaAllStreamsLog} from './data';
 
 describe('okta', () => {
