@@ -5,27 +5,34 @@
     "title": "Azure Active Directory Spec",
     "type": "object",
     "required": [
-      "token",
-      "domain_name"
+      "client_id",
+      "client_secret"
     ],
     "additionalProperties": false,
     "properties": {
-      "domain_name": {
+      "client_id": {
         "type": "string",
-        "title": "Domain name (org name part of your Okta URL)",
-        "examples": [
-          "dev-12345678"
-        ]
-      },
-      "token": {
-        "type": "string",
-        "title": "Okta Token",
+        "title": "client id of azure",
         "airbyte_secret": true
+      },
+      "client_secret": {
+        "type": "string",
+        "title": "client secret",
+        "airbyte_secret": true
+      },
+      "namespace": {
+        "type": "string",
+        "title": "namespace"
+      },
+      "auth_version": {
+        "type": "string",
+        "title": "auth version",
+        "default": "v2.0"
       },
       "version": {
         "type": "string",
         "title": "version",
-        "default": "v1"
+        "default": "v1.0"
       }
     }
   }
