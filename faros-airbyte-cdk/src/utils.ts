@@ -15,14 +15,13 @@ export const PACKAGE_VERSION = packageInfo.version;
 
 /** Redact config of all secret values based on the provided specification */
 export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
-  const props = spec.spec.connectionSpecification?.properties ?? {};
   const paths = [];
   traverse(spec.spec.connectionSpecification ?? {}, {
     cb: (schema, pointer) => {
       if (schema.airbyte_secret) {
         paths.push(
           pointer
-            .replace(/\/oneOf\/d\+/g, '')
+            .replace(/\/oneOf\/\d+/g, '')
             .split('/properties/')
             .filter((s) => s)
             .join('.')
