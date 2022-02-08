@@ -1,4 +1,4 @@
-connector_image: okta-source
+connector_image: azure-active-directory-source
 tests:
   spec:
     - config_path: "secrets/config.json"

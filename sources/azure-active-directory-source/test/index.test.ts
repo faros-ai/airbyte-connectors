@@ -38,21 +38,21 @@ describe('index', () => {
     );
   });
 
-  test('check connection bad token', async () => {
-    const source = new sut.AzureActiveDirectorySource(logger);
-    await expect(
-      source.checkConnection({
-        client_id: 'secrettoken',
-        client_secret: 'dev-12345678',
-        namespace: '',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Please verify your token is correct. Error: Request failed with status code 401'
-      ),
-    ]);
-  });
+  // test('check connection bad token', async () => {
+  //   const source = new sut.AzureActiveDirectorySource(logger);
+  //   await expect(
+  //     source.checkConnection({
+  //       client_id: 'secrettoken',
+  //       client_secret: 'dev-12345678',
+  //       namespace: '',
+  //     })
+  //   ).resolves.toStrictEqual([
+  //     false,
+  //     new VError(
+  //       'Please verify your token is correct. Error: Request failed with status code 401'
+  //     ),
+  //   ]);
+  // });
 
   // test('check connection good token', async () => {
   //   const source = new sut.AzureActiveDirectorySource(logger);

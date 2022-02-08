@@ -9,7 +9,6 @@ import {
   GroupResponse,
   User,
   UserDepartment,
-  UserManager,
   UserResponse,
 } from './models';
 
@@ -120,15 +119,15 @@ export class AzureActiveDirectory {
       item.department = departmentItem.data.department;
       item.postalCode = departmentItem.data.postalCode;
       try {
-        const managerItem = await this.httpClient.get<UserManager>(
+        const managerItem = await this.httpClient.get<User>(
           `users/${item.id}/manager`
         );
         if (managerItem.status === 200) {
           item.manager = managerItem.data;
         }
-        // eslint-disable-next-line no-empty
-      } catch {}
-
+      } catch (error) {
+        console.error(error);
+      }
       yield item;
     }
   }

@@ -16,11 +16,7 @@ export interface User {
   id: string;
   department?: string;
   postalCode?: string;
-  manager?: UserManager;
-}
-
-export interface UserManager {
-  id: string;
+  manager?: User;
 }
 
 export interface UserDepartment {

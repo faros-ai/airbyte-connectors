@@ -24,7 +24,10 @@
       ]
     },
     "mobilePhone": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "officeLocation": {
       "type": [
@@ -100,7 +103,10 @@
             ]
           },
           "mobilePhone": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "officeLocation": {
             "type": [
