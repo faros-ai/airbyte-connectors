@@ -1,12 +1,3 @@
-export interface AuthorizationResponse {
-  data: {
-    token_type: string;
-    expires_in: number;
-    ext_expires_in: number;
-    access_token: string;
-  };
-}
-
 export interface UserResponse {
   value: User[];
 }
@@ -25,7 +16,16 @@ export interface User {
   id: string;
   department?: string;
   postalCode?: string;
-  manager?: User;
+  manager?: UserManager;
+}
+
+export interface UserManager {
+  id: string;
+}
+
+export interface UserDepartment {
+  department?: string;
+  postalCode?: string;
 }
 
 export interface GroupResponse {

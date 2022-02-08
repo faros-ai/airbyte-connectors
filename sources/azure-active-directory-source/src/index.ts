@@ -29,8 +29,8 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase {
     config: AzureActiveDirectoryConfig
   ): Promise<[boolean, VError]> {
     try {
-      const okta = await AzureActiveDirectory.init(config);
-      await okta.checkConnection();
+      const azureActiveDirectory = await AzureActiveDirectory.init(config);
+      await azureActiveDirectory.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

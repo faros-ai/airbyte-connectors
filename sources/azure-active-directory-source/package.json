@@ -1,5 +1,5 @@
 {
-  "name": "okta-source",
+  "name": "azure-active-directory-source",
   "version": "0.1.30",
   "description": "Okta Airbyte source",
   "keywords": [

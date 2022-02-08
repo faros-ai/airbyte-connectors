@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "client_id",
-      "client_secret"
+      "client_secret",
+      "namespace"
     ],
     "additionalProperties": false,
     "properties": {

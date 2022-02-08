@@ -2,18 +2,20 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
+const FormData = require('form-data');
 
 import {
-  AuthorizationResponse,
   Group,
   GroupResponse,
   User,
+  UserDepartment,
+  UserManager,
   UserResponse,
 } from './models';
 
 const DEFAULT_AUTH_VERSION = 'v2.0';
 const DEFAULT_VERSION = 'v1.0';
-const AUTH_URL = 'https://login.microsoftonline.com/';
+const AUTH_URL = 'https://login.microsoftonline.com';
 
 export interface AzureActiveDirectoryConfig {
   readonly client_id: string;
@@ -63,25 +65,31 @@ export class AzureActiveDirectory {
   private static async getAccessToken(
     config: AzureActiveDirectoryConfig
   ): Promise<string> {
+    const request = require('request');
     const version = config.auth_version
       ? config.auth_version
       : DEFAULT_AUTH_VERSION;
-    const res = await axios.post<AuthorizationResponse>(
-      `${config.namespace}/oauth2/${version}/token`,
-      null,
-      {
-        baseURL: AUTH_URL,
-        timeout: 5000, // default is `0` (no timeout)
-        maxContentLength: 20000, //default is 2000 bytes
-        params: {
-          client_id: config.client_id,
-          scope: 'https://graph.microsoft.com/.default',
-          client_secret: config.client_secret,
-          grant_type: 'client_credentials',
+    return new Promise(function (resolve, reject) {
+      request(
+        {
+          method: 'POST',
+          url: `${AUTH_URL}/${config.namespace}/oauth2/${version}/token`,
+          formData: {
+            client_id: config.client_id,
+            scope: 'https://graph.microsoft.com/.default',
+            client_secret: config.client_secret,
+            grant_type: 'client_credentials',
+          },
         },
-      }
-    );
-    return res.data.data.access_token;
+        function (error, res, body) {
+          if (!error && res.statusCode == 200) {
+            resolve(JSON.parse(body).access_token);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
   }
 
   async checkConnection(): Promise<void> {
@@ -106,16 +114,21 @@ export class AzureActiveDirectory {
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<UserResponse>('users');
     for (const item of res.data.value) {
-      const managerItem = await this.httpClient.get<User>(
-        `users/${item.id}/manager`
-      );
-      item.manager = managerItem.data;
-
-      const departmentItem = await this.httpClient.get<User>(
+      const departmentItem = await this.httpClient.get<UserDepartment>(
         `users/${item.id}?$select=Department,postalCode`
       );
       item.department = departmentItem.data.department;
       item.postalCode = departmentItem.data.postalCode;
+      try {
+        const managerItem = await this.httpClient.get<UserManager>(
+          `users/${item.id}/manager`
+        );
+        if (managerItem.status === 200) {
+          item.manager = managerItem.data;
+        }
+        // eslint-disable-next-line no-empty
+      } catch {}
+
       yield item;
     }
   }

@@ -42,8 +42,9 @@ describe('index', () => {
     const source = new sut.AzureActiveDirectorySource(logger);
     await expect(
       source.checkConnection({
-        token: 'secrettoken',
-        domain_name: 'dev-12345678',
+        client_id: 'secrettoken',
+        client_secret: 'dev-12345678',
+        namespace: '',
       })
     ).resolves.toStrictEqual([
       false,
