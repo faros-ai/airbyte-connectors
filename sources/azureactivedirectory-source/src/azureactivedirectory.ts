@@ -40,6 +40,10 @@ export class AzureActiveDirectory {
       throw new VError('client_secret must be a not empty string');
     }
 
+    if (!config.namespace) {
+      throw new VError('namespace must be a not empty string');
+    }
+
     const version = config.version ? config.version : DEFAULT_VERSION;
     const accessToken = await this.getAccessToken(config);
     const httpClient = axios.create({
