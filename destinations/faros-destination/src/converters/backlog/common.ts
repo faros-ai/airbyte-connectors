@@ -58,7 +58,7 @@ export abstract class BacklogConverter extends Converter {
   }
 
   protected backlogConfig(ctx: StreamContext): BacklogConfig {
-    return ctx.config.source_specific_configs?.agileaccelerator ?? {};
+    return ctx.config.source_specific_configs?.backlog ?? {};
   }
 
   protected maxDescriptionLength(ctx: StreamContext): number {
