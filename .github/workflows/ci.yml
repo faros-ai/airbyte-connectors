@@ -72,6 +72,7 @@ jobs:
       - name: Source Acceptance Test
         if: github.ref == 'refs/heads/main' # Skip PRs
         env:
+          AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
           GOOGLECALENDAR_SOURCE_TEST_CONFIG: ${{ secrets.GOOGLECALENDAR_SOURCE_TEST_CONFIG }}
@@ -83,9 +84,14 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            if [ "$source" != "phabricator-source" -a "$source" != "victorops-source" -a "$source" != "jenkins-source" ]; then
-              ./scripts/source-acceptance-test.sh $source
-            fi
+            case "$source" in
+              phabricator-source|victorops-source|jenkins-source|pagerduty-source|harness-source|okta-source)
+                echo "Skipping $source acceptance tests"
+                ;;
+              *)
+                ./scripts/source-acceptance-test.sh $source
+                ;;
+            esac
           done
 
       - name: Stop Jenkins server

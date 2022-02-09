@@ -49,6 +49,7 @@ export class PhabricatorRevisions extends PhabricatorConverter {
         at: 0,
         data: {
           number: revision.id,
+          uid: revision.id.toString(),
           title: revision.fields?.title,
           state,
           htmlUrl: revision.fields?.uri,
@@ -65,13 +66,18 @@ export class PhabricatorRevisions extends PhabricatorConverter {
     const reviewers = Array.isArray(revision.attachments?.reviewers?.reviewers)
       ? revision.attachments?.reviewers?.reviewers
       : [];
-    const pullRequest = {repository, number: revision.id};
+    const pullRequest = {
+      repository,
+      number: revision.id,
+      uid: revision.id.toString(),
+    };
     let reviewId = 0;
     for (const reviewer of reviewers) {
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
           number: reviewId,
+          uid: reviewId.toString(),
           pullRequest,
           reviewer: {uid: reviewer.reviewerPHID, source},
           state: PhabricatorCommon.vcs_PullRequestReviewState(reviewer?.status),

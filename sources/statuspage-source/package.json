@@ -1,6 +1,6 @@
 {
   "name": "statuspage-source",
-  "version": "0.1.28",
+  "version": "0.1.31",
   "description": "StatusPage Airbyte source",
   "keywords": [
     "airbyte",
@@ -30,9 +30,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.28",
+    "axios": "^0.25.0",
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.31",
     "statuspage.io": "^3.1.0",
     "typescript-memoize": "^1.0.1",
     "verror": "^1.10.0"

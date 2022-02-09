@@ -59,3 +59,9 @@ export const googlecalendarAllStreamsLog = readTestResourceFile(
 export const backlogAllStreamsLog = readTestResourceFile(
   'backlog/all-streams.log'
 );
+
+export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
+
+export const agileacceleratorAllStreamsLog = readTestResourceFile(
+  'agileaccelerator/all-streams.log'
+);

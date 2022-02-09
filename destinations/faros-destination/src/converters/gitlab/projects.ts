@@ -40,6 +40,7 @@ export class GitlabProjects extends GitlabConverter {
       model: 'vcs_Repository',
       record: {
         name: project.path?.toLowerCase(),
+        uid: project.path?.toLowerCase(),
         fullName: project.name_with_namespace,
         private: project.visibility === 'private',
         description: project.description?.substring(
