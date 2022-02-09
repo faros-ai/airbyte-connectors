@@ -23,10 +23,6 @@ describe('index', () => {
   });
 });
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
-
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -34,6 +30,14 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
+
+  beforeEach(() => {
+    AzureActiveDirectory.instance = azureActiveDirectoryInstance;
+  });
+
+  function readTestResourceFile(fileName: string): any {
+    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+  }
 
   test('spec', async () => {
     const source = new sut.AzureActiveDirectorySource(logger);
@@ -72,53 +76,53 @@ describe('index', () => {
     ]);
   });
 
-  // test('streams - users, use full_refresh sync mode', async () => {
-  //   const fnWorksFunc = jest.fn();
+  test('streams - users, use full_refresh sync mode', async () => {
+    const fnUsersFunc = jest.fn();
 
-  //   AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
-  //     const worksResource: any[] = readTestResourceFile('users.json');
-  //     return new AzureActiveDirectory({
-  //       get: fnWorksFunc.mockResolvedValue({
-  //         data: {totalSize: worksResource.length, records: worksResource},
-  //       }),
-  //     } as any);
-  //   });
-  //   const source = new sut.AzureActiveDirectorySource(logger);
-  //   const streams = source.streams({} as any);
+    AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
+      const usersResource: any[] = readTestResourceFile('users.json');
+      return new AzureActiveDirectory({
+        get: fnUsersFunc.mockResolvedValue({
+          data: {value: usersResource},
+        }),
+      } as any);
+    });
+    const source = new sut.AzureActiveDirectorySource(logger);
+    const streams = source.streams({} as any);
 
-  //   const worksStream = streams[0];
-  //   const worksIter = worksStream.readRecords(SyncMode.FULL_REFRESH);
-  //   const works = [];
-  //   for await (const work of worksIter) {
-  //     works.push(work);
-  //   }
+    const usersStream = streams[0];
+    const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of userIter) {
+      users.push(user);
+    }
 
-  //   expect(fnWorksFunc).toHaveBeenCalledTimes(1);
-  //   expect(works).toStrictEqual(readTestResourceFile('users.json'));
-  // });
+    expect(fnUsersFunc).toHaveBeenCalledTimes(5);
+    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+  });
 
-  // test('streams - groups, use full_refresh sync mode', async () => {
-  //   const fnWorksFunc = jest.fn();
+  test('streams - groups, use full_refresh sync mode', async () => {
+    const fnGroupsFunc = jest.fn();
 
-  //   AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
-  //     const worksResource: any[] = readTestResourceFile('groups.json');
-  //     return new AzureActiveDirectory({
-  //       get: fnWorksFunc.mockResolvedValue({
-  //         data: {totalSize: worksResource.length, records: worksResource},
-  //       }),
-  //     } as any);
-  //   });
-  //   const source = new sut.AzureActiveDirectorySource(logger);
-  //   const streams = source.streams({} as any);
+    AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
+      const groupsResource: any[] = readTestResourceFile('groups.json');
+      return new AzureActiveDirectory({
+        get: fnGroupsFunc.mockResolvedValue({
+          data: {value: groupsResource},
+        }),
+      } as any);
+    });
+    const source = new sut.AzureActiveDirectorySource(logger);
+    const streams = source.streams({} as any);
 
-  //   const worksStream = streams[1];
-  //   const worksIter = worksStream.readRecords(SyncMode.FULL_REFRESH);
-  //   const works = [];
-  //   for await (const work of worksIter) {
-  //     works.push(work);
-  //   }
+    const groupsStream = streams[1];
+    const groupsIter = groupsStream.readRecords(SyncMode.FULL_REFRESH);
+    const groups = [];
+    for await (const group of groupsIter) {
+      groups.push(group);
+    }
 
-  //   expect(fnWorksFunc).toHaveBeenCalledTimes(1);
-  //   expect(works).toStrictEqual(readTestResourceFile('groups.json'));
-  // });
+    expect(fnGroupsFunc).toHaveBeenCalledTimes(3);
+    expect(groups).toStrictEqual(readTestResourceFile('groups.json'));
+  });
 });

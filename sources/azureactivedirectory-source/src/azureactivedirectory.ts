@@ -120,11 +120,15 @@ export class AzureActiveDirectory {
       const extraUserInfo = await this.httpClient.get<UserExtraInfo>(
         `users/${item.id}?$select=Department,postalCode,createdDateTime,identities,streetAddress`
       );
-      item.department = extraUserInfo.data.department;
-      item.postalCode = extraUserInfo.data.postalCode;
-      item.createdDateTime = extraUserInfo.data.createdDateTime;
-      item.streetAddress = extraUserInfo.data.streetAddress;
-      item.identities = extraUserInfo.data.identities;
+
+      if (extraUserInfo.status === 200) {
+        item.department = extraUserInfo.data.department;
+        item.postalCode = extraUserInfo.data.postalCode;
+        item.createdDateTime = extraUserInfo.data.createdDateTime;
+        item.streetAddress = extraUserInfo.data.streetAddress;
+        item.identities = extraUserInfo.data.identities;
+      }
+
       try {
         const managerItem = await this.httpClient.get<User>(
           `users/${item.id}/manager`
@@ -145,11 +149,12 @@ export class AzureActiveDirectory {
       const memberItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/members`
       );
-      item.members = memberItems.data.value;
+      if (memberItems.status === 200) item.members = memberItems.data.value;
+
       const ownerItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/owners`
       );
-      item.owners = ownerItems.data.value;
+      if (ownerItems.status === 200) item.owners = ownerItems.data.value;
       yield item;
     }
   }
