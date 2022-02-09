@@ -18,13 +18,21 @@ export class AzureActiveDirectoryGroups extends AzureActiveDirectoryConverter {
     const group = record.record.data as Group;
     const res: DestinationRecord[] = [];
 
+    const lead =
+      group.owners.length >= 1
+        ? {
+            uid: group.owners[0].id,
+            source,
+          }
+        : undefined;
+
     res.push({
       model: 'org_Team',
       record: {
         uid: group.id,
         name: group.displayName,
         description: group.description,
-        lead: null,
+        lead,
         parentTeam: null,
         teamChain: null,
         tags: null,
