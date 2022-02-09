@@ -13,7 +13,8 @@
         "id": "441362ab-404d-437e-ad65-619df92a5515",
         "department": null,
         "postalCode": null,
-        "createdDateTime": "2019-03-12T02:15:42Z"
+        "createdDateTime": "2019-03-12T02:15:42Z",
+        "streetAddress": null
     },
     {
         "businessPhones": [
@@ -32,6 +33,7 @@
         "department": "Software Department",
         "postalCode": "10000",
         "createdDateTime": "2022-01-29T22:31:03Z",
+        "streetAddress": "32 dai tu",
         "manager": {
             "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects/$entity",
             "@odata.type": "#microsoft.graph.user",

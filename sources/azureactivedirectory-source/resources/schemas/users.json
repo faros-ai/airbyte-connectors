@@ -71,6 +71,12 @@
         "null"
       ]
     },
+    "streetAddress": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "manager": {
       "profile": {
         "type": [

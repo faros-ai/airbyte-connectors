@@ -18,12 +18,14 @@ export interface User {
   postalCode?: string;
   manager?: User;
   createdDateTime?: string;
+  streetAddress?: string;
 }
 
-export interface UserDepartment {
+export interface UserExtraInfo {
   department?: string;
   postalCode?: string;
   createdDateTime?: string;
+  streetAddress?: string;
 }
 
 export interface GroupResponse {

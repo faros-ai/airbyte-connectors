@@ -55,7 +55,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         identity: {uid: user.mail, source},
         manager,
         reportingChain: null,
-        location: {uid: user.postalCode, source},
+        location: {uid: user.streetAddress, source},
         source,
       },
     });

@@ -8,7 +8,7 @@ import {
   Group,
   GroupResponse,
   User,
-  UserDepartment,
+  UserExtraInfo,
   UserResponse,
 } from './models';
 
@@ -113,12 +113,13 @@ export class AzureActiveDirectory {
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<UserResponse>('users');
     for (const item of res.data.value) {
-      const departmentItem = await this.httpClient.get<UserDepartment>(
-        `users/${item.id}?$select=Department,postalCode,createdDateTime`
+      const extraUserInfo = await this.httpClient.get<UserExtraInfo>(
+        `users/${item.id}?$select=Department,postalCode,createdDateTime,streetAddress`
       );
-      item.department = departmentItem.data.department;
-      item.postalCode = departmentItem.data.postalCode;
-      item.createdDateTime = departmentItem.data.createdDateTime;
+      item.department = extraUserInfo.data.department;
+      item.postalCode = extraUserInfo.data.postalCode;
+      item.createdDateTime = extraUserInfo.data.createdDateTime;
+      item.streetAddress = extraUserInfo.data.streetAddress;
       try {
         const managerItem = await this.httpClient.get<User>(
           `users/${item.id}/manager`

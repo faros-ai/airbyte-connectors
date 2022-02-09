@@ -14,11 +14,7 @@ export interface User {
   postalCode?: string;
   manager?: User;
   createdDateTime?: string;
-}
-
-export interface UserDepartment {
-  department?: string;
-  postalCode?: string;
+  streetAddress?: string;
 }
 
 export interface Group {
