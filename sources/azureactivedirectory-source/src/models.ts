@@ -2,6 +2,20 @@ export interface UserResponse {
   value: User[];
 }
 
+interface UserIdentity {
+  signInType?: string;
+  issuer: string;
+  issuerAssignedId?: string;
+}
+
+export interface UserExtraInfo {
+  department?: string;
+  postalCode?: string;
+  createdDateTime?: string;
+  streetAddress?: string;
+  identities: UserIdentity[];
+}
+
 export interface User {
   businessPhones: string[];
   displayName: string;
@@ -19,13 +33,7 @@ export interface User {
   manager?: User;
   createdDateTime?: string;
   streetAddress?: string;
-}
-
-export interface UserExtraInfo {
-  department?: string;
-  postalCode?: string;
-  createdDateTime?: string;
-  streetAddress?: string;
+  identities: UserIdentity[];
 }
 
 export interface GroupResponse {

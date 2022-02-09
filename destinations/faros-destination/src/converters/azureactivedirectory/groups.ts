@@ -43,6 +43,7 @@ export class AzureActiveDirectoryGroups extends AzureActiveDirectoryConverter {
         },
       });
     }
+
     return res;
   }
 }

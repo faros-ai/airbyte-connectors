@@ -77,6 +77,26 @@
         "null"
       ]
     },
+    "identities": {
+      "type": "array",
+      "item": {
+        "signInType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "issuerAssignedId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "manager": {
       "profile": {
         "type": [
@@ -95,12 +115,6 @@
           },
           "created": {
             "type": "string"
-          },
-          "activated": {
-            "type": [
-              "string",
-              "null"
-            ]
           },
           "displayName": {
             "type": [

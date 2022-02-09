@@ -92,12 +92,6 @@
         "created": {
           "type": "string"
         },
-        "activated": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "displayName": {
           "type": [
             "string",
@@ -156,12 +150,6 @@
         },
         "created": {
           "type": "string"
-        },
-        "activated": {
-          "type": [
-            "string",
-            "null"
-          ]
         },
         "displayName": {
           "type": [

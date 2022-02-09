@@ -36,6 +36,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         emails: user.mail,
       },
     });
+
     res.push({
       model: 'ims_UserIdentity',
       record: {
@@ -43,6 +44,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         identity: {uid: user.id},
       },
     });
+
     res.push({
       model: 'org_Employee',
       record: {
@@ -59,6 +61,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         source,
       },
     });
+
     res.push({
       model: 'tms_UserIdentity',
       record: {
@@ -66,6 +69,7 @@ export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
         identity: {uid: user.id},
       },
     });
+
     res.push({
       model: 'vcs_UserIdentity',
       record: {

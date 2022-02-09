@@ -14,7 +14,19 @@
         "department": null,
         "postalCode": null,
         "createdDateTime": "2019-03-12T02:15:42Z",
-        "streetAddress": null
+        "streetAddress": null,
+        "identities": [
+            {
+                "signInType": "federated",
+                "issuer": "MicrosoftAccount",
+                "issuerAssignedId": null
+            },
+            {
+                "signInType": "userPrincipalName",
+                "issuer": "huongkstngmail.onmicrosoft.com",
+                "issuerAssignedId": "huongkstn_gmail.com#EXT#@huongkstngmail.onmicrosoft.com"
+            }
+        ]
     },
     {
         "businessPhones": [
@@ -34,6 +46,13 @@
         "postalCode": "10000",
         "createdDateTime": "2022-01-29T22:31:03Z",
         "streetAddress": "32 dai tu",
+        "identities": [
+            {
+                "signInType": "userPrincipalName",
+                "issuer": "huongkstngmail.onmicrosoft.com",
+                "issuerAssignedId": "yen@huongkstngmail.onmicrosoft.com"
+            }
+        ],
         "manager": {
             "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects/$entity",
             "@odata.type": "#microsoft.graph.user",

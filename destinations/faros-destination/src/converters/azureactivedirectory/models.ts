@@ -1,3 +1,9 @@
+interface UserIdentity {
+  signInType?: string;
+  issuer: string;
+  issuerAssignedId?: string;
+}
+
 export interface User {
   businessPhones: string[];
   displayName: string;
@@ -15,6 +21,7 @@ export interface User {
   manager?: User;
   createdDateTime?: string;
   streetAddress?: string;
+  identities: UserIdentity[];
 }
 
 export interface Group {
