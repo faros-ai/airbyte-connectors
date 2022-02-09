@@ -4,8 +4,8 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
-import {CLI, read} from '../cli';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
+import {CLI, read} from './../cli';
 import {azureactivedirectoryAllStreamsLog} from './data';
 
 describe('azureactivedirectory', () => {
@@ -20,7 +20,7 @@ describe('azureactivedirectory', () => {
   const streamNamePrefix = 'mytestsource__azureactivedirectory__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -53,6 +53,7 @@ describe('azureactivedirectory', () => {
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
+
     const writtenByModel = {
       identity_Identity: 2,
       ims_UserIdentity: 2,

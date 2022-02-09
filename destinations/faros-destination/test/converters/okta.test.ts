@@ -5,7 +5,7 @@ import {getLocal} from 'mockttp';
 import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {oktaAllStreamsLog} from './data';
 
 describe('okta', () => {
@@ -20,7 +20,7 @@ describe('okta', () => {
   const streamNamePrefix = 'mytestsource__okta__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 

@@ -6,7 +6,7 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {pagerdutyLog, readTestResourceFile} from './data';
 
@@ -24,7 +24,7 @@ describe('pagerduty', () => {
   const streamNamePrefix = 'mytestsource__pagerduty__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -35,13 +35,13 @@ describe('pagerduty', () => {
 
   test('process and write records', async () => {
     await mockttp
-      .post('/graphs/test-graph/models')
+      .forPost('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
       .once()
       .thenReply(200, JSON.stringify({}));
 
     await mockttp
-      .post('/graphs/test-graph/revisions')
+      .forPost('/graphs/test-graph/revisions')
       .once()
       .thenReply(
         200,
@@ -53,14 +53,14 @@ describe('pagerduty', () => {
 
     let entriesSize = 0;
     await mockttp
-      .post(`/graphs/test-graph/revisions/${revisionId}/entries`)
+      .forPost(`/graphs/test-graph/revisions/${revisionId}/entries`)
       .thenCallback(async (r) => {
         entriesSize = r.body.buffer.length;
         return {statusCode: 204};
       });
 
     await mockttp
-      .patch(`/graphs/test-graph/revisions/${revisionId}`)
+      .forPatch(`/graphs/test-graph/revisions/${revisionId}`)
       .withJsonBodyIncluding({status: 'active'})
       .once()
       .thenReply(204);
