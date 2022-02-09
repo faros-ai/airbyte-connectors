@@ -1,11 +1,13 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
+import os from 'os';
 import pino from 'pino';
 
-import {CLI, read} from '../cli';
-import {tempConfig} from '../temp';
+import {InvalidRecordStrategy} from '../../src';
+import {initMockttp, tempConfig} from '../testing-tools';
+import {CLI, read} from './../cli';
 import {buildkiteAllStreamsLog} from './data';
 
 describe('buildkite', () => {
