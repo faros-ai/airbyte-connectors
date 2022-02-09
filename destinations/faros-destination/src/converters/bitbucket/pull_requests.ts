@@ -75,6 +75,7 @@ export class BitbucketPullRequests extends BitbucketConverter {
       model: 'vcs_PullRequest',
       record: {
         number: pr.id,
+        uid: pr.id.toString(),
         title: pr.title,
         state: this.toPrState(pr.state),
         htmlUrl: pr?.links?.htmlUrl,

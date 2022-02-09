@@ -30,6 +30,7 @@ export class GithubCommits extends GithubConverter {
     res.push({
       model: 'vcs_Commit',
       record: {
+        uid: commit.sha,
         sha: commit.sha,
         message: commit.commit.message,
         author,
@@ -44,8 +45,8 @@ export class GithubCommits extends GithubConverter {
       res.push({
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha: commit.sha, repository},
-          branch: {name: commit.branch, repository},
+          commit: {sha: commit.sha, uid: commit.sha, repository},
+          branch: {name: commit.branch, uid: commit.branch, repository},
         },
       });
     }

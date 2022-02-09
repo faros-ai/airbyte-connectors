@@ -41,7 +41,7 @@ export class GithubReviews extends GithubConverter {
 
     // Parse the PR number from the pull request url
     const prNum = GithubCommon.parsePRnumber(review.pull_request_url);
-    const pullRequest = {repository, number: prNum};
+    const pullRequest = {repository, number: prNum, uid: prNum.toString()};
 
     const state = ReviewStates.includes(review.state.toLowerCase())
       ? {
@@ -54,6 +54,7 @@ export class GithubReviews extends GithubConverter {
       model: 'vcs_PullRequestReview',
       record: {
         number: review.id,
+        uid: review.id.toString(),
         htmlUrl: review.html_url,
         pullRequest,
         reviewer: author ? {uid: author.record.uid, source} : null,
