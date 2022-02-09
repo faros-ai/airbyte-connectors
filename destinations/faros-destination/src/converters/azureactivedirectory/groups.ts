@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureActiveDirectoryConverter} from './common';
+import {AzureactivedirectoryConverter} from './common';
 import {Group} from './models';
 
-export class AzureActiveDirectoryGroups extends AzureActiveDirectoryConverter {
+export class AzureactivedirectoryGroups extends AzureactivedirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'org_Team',
     'org_TeamMembership',

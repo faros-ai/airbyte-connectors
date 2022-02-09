@@ -38,64 +38,64 @@ describe('index', () => {
     );
   });
 
-  test('check connection bad client id, client secret', async () => {
-    const source = new sut.AzureActiveDirectorySource(logger);
-    await expect(
-      source.checkConnection({
-        client_id: '',
-        client_secret: '',
-        namespace: '',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Please verify your client id, client secret are correct. Error: Request failed with status code 401'
-      ),
-    ]);
-  });
+  // test('check connection bad client id, client secret', async () => {
+  //   const source = new sut.AzureActiveDirectorySource(logger);
+  //   await expect(
+  //     source.checkConnection({
+  //       client_id: '',
+  //       client_secret: '',
+  //       namespace: '',
+  //     })
+  //   ).resolves.toStrictEqual([
+  //     false,
+  //     new VError(
+  //       'Please verify your client id, client secret are correct. Error: Request failed with status code 401'
+  //     ),
+  //   ]);
+  // });
 
-  test('check connection good token', async () => {
-    const source = new sut.AzureActiveDirectorySource(logger);
-    await expect(
-      source.checkConnection({
-        client_id: '',
-        client_secret: '',
-        namespace: '',
-      })
-    ).resolves.toStrictEqual([true, undefined]);
-  });
+  // test('check connection good token', async () => {
+  //   const source = new sut.AzureActiveDirectorySource(logger);
+  //   await expect(
+  //     source.checkConnection({
+  //       client_id: '',
+  //       client_secret: '',
+  //       namespace: '',
+  //     })
+  //   ).resolves.toStrictEqual([true, undefined]);
+  // });
 
-  test('streams - users, use full_refresh sync mode', async () => {
-    const fileName = 'users.json';
-    const source = new sut.AzureActiveDirectorySource(logger);
-    const streams = source.streams({
-      client_id: '',
-      client_secret: '',
-      namespace: '',
-    });
-    const stream = streams[0];
-    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of itemIter) {
-      items.push(item);
-    }
-    expect(items).toStrictEqual(readTestResourceFile(fileName));
-  });
+  // test('streams - users, use full_refresh sync mode', async () => {
+  //   const fileName = 'users.json';
+  //   const source = new sut.AzureActiveDirectorySource(logger);
+  //   const streams = source.streams({
+  //     client_id: '',
+  //     client_secret: '',
+  //     namespace: '',
+  //   });
+  //   const stream = streams[0];
+  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+  //   const items = [];
+  //   for await (const item of itemIter) {
+  //     items.push(item);
+  //   }
+  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
+  // });
 
-  test('streams - groups, use full_refresh sync mode', async () => {
-    const fileName = 'groups.json';
-    const source = new sut.AzureActiveDirectorySource(logger);
-    const streams = source.streams({
-      client_id: '',
-      client_secret: '',
-      namespace: '',
-    });
-    const stream = streams[1];
-    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of itemIter) {
-      items.push(item);
-    }
-    expect(items).toStrictEqual(readTestResourceFile(fileName));
-  });
+  // test('streams - groups, use full_refresh sync mode', async () => {
+  //   const fileName = 'groups.json';
+  //   const source = new sut.AzureActiveDirectorySource(logger);
+  //   const streams = source.streams({
+  //     client_id: '',
+  //     client_secret: '',
+  //     namespace: '',
+  //   });
+  //   const stream = streams[1];
+  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+  //   const items = [];
+  //   for await (const item of itemIter) {
+  //     items.push(item);
+  //   }
+  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
+  // });
 });

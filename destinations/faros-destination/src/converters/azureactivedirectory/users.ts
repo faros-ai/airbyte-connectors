@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureActiveDirectoryConverter} from './common';
+import {AzureactivedirectoryConverter} from './common';
 import {User} from './models';
 
-export class AzureActiveDirectoryUsers extends AzureActiveDirectoryConverter {
+export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
     'ims_UserIdentity',
