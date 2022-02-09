@@ -58,7 +58,6 @@ describe('buildkite', () => {
 
     const writtenByModel = {
       cicd_Build: 2,
-      cicd_BuildCommitAssociation: 2,
       cicd_BuildStep: 2,
       cicd_Organization: 2,
       cicd_Pipeline: 1,

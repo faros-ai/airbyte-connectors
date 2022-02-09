@@ -14,7 +14,7 @@ export class BuildkitePipelines extends BuildkiteConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
-    const organization = {uid: pipeline.organization.slug, source};
+    const organization = {uid: pipeline.organization?.slug, source};
     return [
       {
         model: 'cicd_Pipeline',

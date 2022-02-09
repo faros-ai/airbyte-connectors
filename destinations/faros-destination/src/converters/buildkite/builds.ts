@@ -42,7 +42,7 @@ export class BuildkiteBuilds extends BuildkiteConverter {
         pipeline,
       },
     });
-    const repo = build.pipeline.repository;
+    const repo = build.pipeline?.repository;
     if (repo) {
       const repoExtract = this.extractRepo(repo.url);
       if (repoExtract) {
