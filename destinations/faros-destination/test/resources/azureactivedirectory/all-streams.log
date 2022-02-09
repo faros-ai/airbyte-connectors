@@ -1,4 +1,4 @@
-{"log":{"level":"INFO","message":"config: {\"client_id\":\"REDACTED\",\"client_secret\":\"REDACTED\",\"namespace\":\"d8a49a51-6453-4210-9e51-974ec7e355fc\"}"},"type":"LOG"}
+{"log":{"level":"INFO","message":"config: {\"client_id\":\"REDACTED\",\"client_secret\":\"REDACTED\",\"tenant_id\":\"d8a49a51-6453-4210-9e51-974ec7e355fc\"}"},"type":"LOG"}
 {"log":{"level":"INFO","message":"catalog: {\"streams\":[{\"stream\":{\"name\":\"users\",\"json_schema\":{},\"supported_sync_modes\":[\"full_refresh\"],\"source_defined_cursor\":true,\"default_cursor_field\":[\"lastUpdated\"]},\"sync_mode\":\"full_refresh\",\"destination_sync_mode\":\"overwrite\"},{\"stream\":{\"name\":\"groups\",\"json_schema\":{},\"supported_sync_modes\":[\"full_refresh\"],\"source_defined_cursor\":true,\"default_cursor_field\":[\"lastUpdated\"]},\"sync_mode\":\"full_refresh\",\"destination_sync_mode\":\"overwrite\"}]}"},"type":"LOG"}
 {"log":{"level":"INFO","message":"Syncing AzureActiveDirectorySource"},"type":"LOG"}
 {"log":{"level":"INFO","message":"Syncing users stream in full mode"},"type":"LOG"}

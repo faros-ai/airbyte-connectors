@@ -58,7 +58,7 @@ describe('index', () => {
       source.checkConnection({
         client_id: 'client_id',
         client_secret: 'client_secret',
-        namespace: 'namespace',
+        tenant_id: 'tenant_id',
       })
     ).resolves.toStrictEqual([false, null]);
   });
@@ -68,7 +68,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         client_id: 'client_id',
-        namespace: 'namespace',
+        tenant_id: 'tenant_id',
       } as any)
     ).resolves.toStrictEqual([
       false,

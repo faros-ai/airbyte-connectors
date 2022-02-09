@@ -7,7 +7,7 @@
     "required": [
       "client_id",
       "client_secret",
-      "namespace"
+      "tenant_id"
     ],
     "additionalProperties": false,
     "properties": {
@@ -21,9 +21,9 @@
         "title": "client secret",
         "airbyte_secret": true
       },
-      "namespace": {
+      "tenant_id": {
         "type": "string",
-        "title": "namespace"
+        "title": "tenant_id of microsoft azure"
       },
       "auth_version": {
         "type": "string",
@@ -32,7 +32,7 @@
       },
       "version": {
         "type": "string",
-        "title": "version",
+        "title": "graph version",
         "default": "v1.0"
       }
     }

@@ -19,7 +19,7 @@ const AUTH_URL = 'https://login.microsoftonline.com';
 export interface AzureActiveDirectoryConfig {
   readonly client_id: string;
   readonly client_secret: string;
-  readonly namespace: string;
+  readonly tenant_id: string;
   readonly auth_version?: string;
   readonly version?: string;
 }
@@ -40,8 +40,8 @@ export class AzureActiveDirectory {
       throw new VError('client_secret must be a not empty string');
     }
 
-    if (!config.namespace) {
-      throw new VError('namespace must be a not empty string');
+    if (!config.tenant_id) {
+      throw new VError('tenant_id must be a not empty string');
     }
 
     const version = config.version ? config.version : DEFAULT_VERSION;
@@ -76,7 +76,7 @@ export class AzureActiveDirectory {
       request(
         {
           method: 'POST',
-          url: `${AUTH_URL}/${config.namespace}/oauth2/${version}/token`,
+          url: `${AUTH_URL}/${config.tenant_id}/oauth2/${version}/token`,
           formData: {
             client_id: config.client_id,
             scope: 'https://graph.microsoft.com/.default',
