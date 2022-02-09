@@ -59,3 +59,9 @@ export const shortcutAllStreamsLog = readTestResourceFile(
 export const googlecalendarAllStreamsLog = readTestResourceFile(
   'googlecalendar/all-streams.log'
 );
+
+export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
+
+export const agileacceleratorAllStreamsLog = readTestResourceFile(
+  'agileaccelerator/all-streams.log'
+);

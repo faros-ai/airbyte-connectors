@@ -1,6 +1,6 @@
 {
   "name": "googlecalendar-source",
-  "version": "0.1.28",
+  "version": "0.1.31",
   "description": "GoogleCalendar Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,10 +33,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.28",
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.31",
     "faros-feeds-sdk": "^0.9.7",
-    "googleapis": "^92.0.0",
+    "googleapis": "^95.0.0",
     "verror": "^1.10.0"
   },
   "jest": {

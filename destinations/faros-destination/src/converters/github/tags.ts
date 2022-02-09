@@ -21,7 +21,9 @@ export class GithubTags extends GithubConverter {
         model: 'vcs_Tag',
         record: {
           name: tag.name,
-          commit: tag?.commit?.sha ? {repository, sha: tag.commit.sha} : null,
+          commit: tag?.commit?.sha
+            ? {repository, sha: tag.commit.sha, uid: tag.commit.sha}
+            : null,
           repository,
         },
       },
