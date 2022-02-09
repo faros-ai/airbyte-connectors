@@ -4,8 +4,8 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {tempConfig} from '../temp';
-import {CLI, read} from './../cli';
 import {buildkiteAllStreamsLog} from './data';
 
 describe('buildkite', () => {
