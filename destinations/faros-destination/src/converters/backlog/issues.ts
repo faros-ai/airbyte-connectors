@@ -22,6 +22,9 @@ export class BacklogIssues extends BacklogConverter {
     const source = this.streamName.source;
     const issue = record.record.data as Issue;
     const res: DestinationRecord[] = [];
+
+    const maxDescriptionLength = this.maxDescriptionLength(ctx);
+
     const taskKey = {uid: String(issue.id), source};
 
     const statusChangelog: TaskStatusChange[] = [];
@@ -69,10 +72,7 @@ export class BacklogIssues extends BacklogConverter {
       record: {
         ...taskKey,
         name: issue.summary,
-        description: issue.description?.substring(
-          0,
-          BacklogCommon.MAX_DESCRIPTION_LENGTH
-        ),
+        description: issue.description?.substring(0, maxDescriptionLength),
         priority: issue.priority?.name,
         type: BacklogCommon.getTaskType(issue.issueType),
         status: {

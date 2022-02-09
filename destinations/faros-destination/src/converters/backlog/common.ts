@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 import {
   IssueType,
   SprintState,
@@ -10,10 +10,14 @@ import {
   VersionMilestone,
 } from './models';
 
-export class BacklogCommon {
-  // Max length for free-form description text fields such as issue body
-  static readonly MAX_DESCRIPTION_LENGTH = 1000;
+const MAX_DESCRIPTION_LENGTH = 1000;
 
+interface BacklogConfig {
+  // Max length for free-form description text fields such as task description
+  max_description_length?: number;
+}
+
+export class BacklogCommon {
   static getTaskType(issueType: IssueType): TaskType {
     const detail = issueType.name;
     const issueTypeName = issueType.name;
@@ -51,5 +55,15 @@ export abstract class BacklogConverter extends Converter {
   /** Almost every Backlog record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected backlogConfig(ctx: StreamContext): BacklogConfig {
+    return ctx.config.source_specific_configs?.agileaccelerator ?? {};
+  }
+
+  protected maxDescriptionLength(ctx: StreamContext): number {
+    return (
+      this.backlogConfig(ctx).max_description_length ?? MAX_DESCRIPTION_LENGTH
+    );
   }
 }
