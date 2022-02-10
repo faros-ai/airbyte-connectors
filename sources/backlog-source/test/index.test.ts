@@ -1,8 +1,4 @@
-describe('index', () => {
-  test('ok?', async () => {
-    expect('OK').toEqual('OK');
-  });
-});
+import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -15,14 +11,18 @@ import {VError} from 'verror';
 import {Backlog, BacklogConfig} from '../src/backlog';
 import * as sut from '../src/index';
 
-const BacklogInstance = Backlog.instance;
+const azureActiveDirectoryInstance = Backlog.instance;
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
-// function readConfig(): BacklogConfig {
-//   return readTestResourceFile('config.json') as BacklogConfig;
-// }
+jest.mock('axios');
+
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+describe('index', () => {
+  test('ok?', async () => {
+    expect('OK').toEqual('OK');
+  });
+});
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -32,8 +32,12 @@ describe('index', () => {
   );
 
   beforeEach(() => {
-    Backlog.instance = BacklogInstance;
+    Backlog.instance = azureActiveDirectoryInstance;
   });
+
+  function readTestResourceFile(fileName: string): any {
+    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+  }
 
   test('spec', async () => {
     const source = new sut.BacklogSource(logger);
@@ -41,52 +45,102 @@ describe('index', () => {
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
   });
-  // test('check connection', async () => {
-  //   const source = new sut.BacklogSource(logger);
-  //   await expect(
-  //     source.checkConnection(readConfig())
-  //   ).resolves.toStrictEqual([true, undefined]);
-  // });
 
-  // test('check connection - incorrect token', async () => {
-  //   const source = new sut.BacklogSource(logger);
-  //   await expect(source.checkConnection({token: ''})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('Please verify your token are correct. Error: some error'),
-  //   ]);
-  // });
+  test('check connection - no apiKey', async () => {
+    const source = new sut.BacklogSource(logger);
+    await expect(
+      source.checkConnection({
+        apiKey: '',
+        space: 'space',
+        project_id: null,
+      } as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('apiKey must be a not empty string'),
+    ]);
+  });
 
-  // test('check connection - incorrect variables', async () => {
-  //   const source = new sut.BacklogSource(logger);
-  //   await expect(source.checkConnection({})).resolves.toStrictEqual([
-  //     false,
-  //     new VError('token must be a not empty string'),
-  //   ]);
-  // });
+  test('streams - issues, use full_refresh sync mode', async () => {
+    const fnIssuesFunc = jest.fn();
 
-  // test('streams - projects, use full_refresh sync mode', async () => {
-  //   const fileName = 'projects.json';
-  //   const source = new sut.BacklogSource(logger);
-  //   const streams = source.streams(readConfig());
-  //   const stream = streams[0];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+    Backlog.instance = jest.fn().mockImplementation(() => {
+      const issuesResource: any[] = readTestResourceFile('issues.json');
+      return new Backlog(
+        {
+          get: fnIssuesFunc.mockResolvedValue({
+            data: issuesResource,
+          }),
+        } as any,
+        {} as BacklogConfig
+      );
+    });
+    const source = new sut.BacklogSource(logger);
+    const streams = source.streams({} as any);
 
-  // test('streams - issues, use full_refresh sync mode', async () => {
-  //   const fileName = 'issues.json';
-  //   const source = new sut.BacklogSource(logger);
-  //   const streams = source.streams(readConfig());
-  //   const stream = streams[1];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+    const issuesStream = streams[0];
+    const issueIter = issuesStream.readRecords(SyncMode.FULL_REFRESH);
+    const issues = [];
+    for await (const issue of issueIter) {
+      issues.push(issue);
+    }
+
+    expect(fnIssuesFunc).toHaveBeenCalledTimes(4);
+    expect(issues).toStrictEqual(readTestResourceFile('issues.json'));
+  });
+
+  test('streams - projects, use full_refresh sync mode', async () => {
+    const fnProjectsFunc = jest.fn();
+
+    Backlog.instance = jest.fn().mockImplementation(() => {
+      const projecjtsResource: any[] = readTestResourceFile('projects.json');
+      return new Backlog(
+        {
+          get: fnProjectsFunc.mockResolvedValue({
+            data: projecjtsResource,
+          }),
+        } as any,
+        {} as BacklogConfig
+      );
+    });
+    const source = new sut.BacklogSource(logger);
+    const streams = source.streams({} as any);
+
+    const projectsStream = streams[1];
+    const projectIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
+    const projects = [];
+    for await (const project of projectIter) {
+      projects.push(project);
+    }
+
+    expect(fnProjectsFunc).toHaveBeenCalledTimes(2);
+    expect(projects).toStrictEqual(readTestResourceFile('projects.json'));
+  });
+
+  test('streams - users, use full_refresh sync mode', async () => {
+    const fnUsersFunc = jest.fn();
+
+    Backlog.instance = jest.fn().mockImplementation(() => {
+      const usersResource: any[] = readTestResourceFile('users.json');
+      return new Backlog(
+        {
+          get: fnUsersFunc.mockResolvedValue({
+            data: usersResource,
+          }),
+        } as any,
+        {} as BacklogConfig
+      );
+    });
+    const source = new sut.BacklogSource(logger);
+    const streams = source.streams({} as any);
+
+    const usersStream = streams[2];
+    const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of userIter) {
+      users.push(user);
+    }
+
+    expect(fnUsersFunc).toHaveBeenCalledTimes(1);
+    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+  });
 });

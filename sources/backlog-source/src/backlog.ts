@@ -71,7 +71,10 @@ export class Backlog {
       const versionMilestone = await this.httpClient.get<VersionMilestone[]>(
         `projects/${item.id}/versions`
       );
-      item.versionMilestones = versionMilestone.data;
+
+      if (versionMilestone.status === 200)
+        item.versionMilestones = versionMilestone.data;
+
       yield item;
     }
   }
@@ -97,7 +100,9 @@ export class Backlog {
         const comment = await this.httpClient.get<Comment[]>(
           `issues/${item.id}/comments`
         );
-        item.comments = comment.data;
+
+        if (comment.status === 200) item.comments = comment.data;
+
         yield item;
       }
     }
