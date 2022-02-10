@@ -1,12 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import TurndownService from 'turndown';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
 export class JiraEpics extends JiraConverter {

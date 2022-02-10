@@ -3,10 +3,18 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, find, sortBy} from 'lodash';
+import {difference, find} from 'lodash';
 import path from 'path';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
+
+import {
+  DeletionRecord,
+  Operation,
+  TimestampedRecord,
+  UpdateRecord,
+  UpsertRecord,
+} from './types';
 
 interface Table {
   schema: string;
@@ -42,52 +50,12 @@ interface ConflictClause {
   update_columns: EnumType[];
 }
 
-enum Operation {
-  UPSERT = 'Upsert',
-  UPDATE = 'Update',
-  DELETION = 'Deletion',
-}
-
-interface TimestampedRecord {
-  model: string;
-  at: number;
-  operation: Operation;
-}
-
-interface UpsertRecord extends TimestampedRecord {
-  operation: Operation.UPSERT;
-  data: Dictionary<any>;
-}
-
-interface UpdateRecord extends TimestampedRecord {
-  operation: Operation.UPDATE;
-  where: Dictionary<any>;
-  mask: string[];
-  patch: Dictionary<any>;
-}
-
-interface DeletionRecord extends TimestampedRecord {
-  operation: Operation.DELETION;
-  where: Dictionary<any>;
-}
-
-function isUpsertRecord(record: TimestampedRecord): record is UpsertRecord {
-  return record.operation === Operation.UPSERT;
-}
-function isUpdateRecord(record: TimestampedRecord): record is UpdateRecord {
-  return record.operation === Operation.UPDATE;
-}
-function isDeletionRecord(record: TimestampedRecord): record is DeletionRecord {
-  return record.operation === Operation.DELETION;
-}
-
 export class HasuraClient {
   private readonly api: AxiosInstance;
   private readonly logger = new AirbyteLogger();
   private readonly primaryKeys: Dictionary<string[]> = {};
   private readonly scalars: Dictionary<Dictionary<string>> = {};
   private readonly references: Dictionary<Dictionary<Reference>> = {};
-  private readonly timestampedRecords: TimestampedRecord[] = [];
 
   constructor(url: string) {
     this.api = axios.create({
@@ -146,7 +114,7 @@ export class HasuraClient {
       this.scalars[tableName] = scalars;
       const references: Dictionary<Reference> = {};
       for (const rel of table.object_relationships ?? []) {
-        const [refType, _] = rel.name.split('__');
+        const [refType] = rel.name.split('__');
         references[rel.using.foreign_key_constraint_on] = {
           field: rel.name,
           model: refType,
@@ -186,45 +154,6 @@ export class HasuraClient {
   // TODO: find alternate batching strategy
   // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
   async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
-    const [baseModel, operation] = model.split('__', 2);
-    if (!operation) {
-      await this.writeStandardRecord(model, record);
-    } else if (operation === 'Upsert' && record.at === 0) {
-      await this.writeStandardRecord(baseModel, record.data);
-    } else if (Object.values(Operation).includes(operation as Operation)) {
-      this.timestampedRecords.push({
-        model: baseModel,
-        operation,
-        ...record,
-      } as TimestampedRecord);
-    } else {
-      throw new VError(
-        `Unuspported model operation ${operation} for ${model}: ${record}`
-      );
-    }
-  }
-
-  async writeTimestampedRecords(): Promise<void> {
-    const sortedRecords = sortBy(this.timestampedRecords, (r) => r.at);
-    for (const record of sortedRecords) {
-      if (isUpsertRecord(record)) {
-        await this.writeStandardRecord(record.model, record.data);
-      } else if (isUpdateRecord(record)) {
-        await this.writeUpdateRecord(record);
-      } else if (isDeletionRecord(record)) {
-        await this.writeDeletionRecord(record);
-      } else {
-        throw new VError(
-          `Unuspported model operation ${record.operation} for ${record}`
-        );
-      }
-    }
-  }
-
-  private async writeStandardRecord(
-    model: string,
-    record: Dictionary<any>
-  ): Promise<void> {
     const obj = this.createMutationObject(model, record);
     const mutation = {
       mutation: {
@@ -239,6 +168,20 @@ export class HasuraClient {
         `Failed to write ${model} record ${JSON.stringify(
           record
         )}: ${JSON.stringify(response.data.errors)}`
+      );
+    }
+  }
+
+  async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
+    if (record.operation === Operation.UPSERT) {
+      await this.writeRecord(record.model, (record as UpsertRecord).data);
+    } else if (record.operation === Operation.UPDATE) {
+      await this.writeUpdateRecord(record as UpdateRecord);
+    } else if (record.operation === Operation.DELETION) {
+      await this.writeDeletionRecord(record as DeletionRecord);
+    } else {
+      throw new VError(
+        `Unuspported operation ${record.operation} for ${record}`
       );
     }
   }

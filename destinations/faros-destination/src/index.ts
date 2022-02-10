@@ -27,6 +27,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {HasuraClient} from './community/hasura-client';
+import {Operation, TimestampedRecord} from './community/types';
 import {Converter, StreamContext, StreamName} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
@@ -364,6 +365,7 @@ class FarosDestination extends AirbyteDestination {
     );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
+    const timestampedRecords: TimestampedRecord[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -408,6 +410,7 @@ class FarosDestination extends AirbyteDestination {
                 unpacked,
                 stats.writtenByModel,
                 context,
+                timestampedRecords,
                 writer
               );
               stats.recordsProcessed++;
@@ -446,7 +449,16 @@ class FarosDestination extends AirbyteDestination {
       }
 
       if (this.edition === Edition.COMMUNITY) {
-        await this.getHasuraClient().writeTimestampedRecords();
+        for (const record of sortBy(timestampedRecords, (r) => r.at)) {
+          await this.handleRecordProcessingError(stats, async () => {
+            await this.getHasuraClient().writeTimestampedRecord(record);
+            stats.recordsWritten++;
+            this.updateModelWriteStats(
+              stats.writtenByModel,
+              `${record.model}__${record.operation}`
+            );
+          });
+        }
       }
     } finally {
       this.logWriteStats(stats, writer);
@@ -590,6 +602,7 @@ class FarosDestination extends AirbyteDestination {
     recordMessage: AirbyteRecord,
     writtenByModel: Dictionary<number>,
     ctx: StreamContext,
+    timestampedRecords: TimestampedRecord[],
     writer?: Writable
   ): Promise<number> {
     // Apply conversion on the input record
@@ -598,6 +611,7 @@ class FarosDestination extends AirbyteDestination {
     if (!Array.isArray(results))
       throw new VError('Invalid results: not an array');
 
+    let recordsWritten = 0;
     // Write out the results to the output stream
     for (const result of results) {
       if (!result.model) throw new VError('Invalid result: undefined model');
@@ -611,15 +625,42 @@ class FarosDestination extends AirbyteDestination {
       }
       const obj: Dictionary<any> = {};
       obj[result.model] = result.record;
-      writer?.write(obj);
+      let isTimestamped = false;
       if (this.edition === Edition.COMMUNITY) {
-        await this.getHasuraClient().writeRecord(result.model, result.record);
+        const hasura = this.getHasuraClient();
+        const [baseModel, operation] = result.model.split('__', 2);
+        if (!operation) {
+          await hasura.writeRecord(result.model, result.record);
+        } else if (Object.values(Operation).includes(operation as Operation)) {
+          timestampedRecords.push({
+            model: baseModel,
+            operation,
+            ...result.record,
+          } as TimestampedRecord);
+          isTimestamped = true;
+        } else {
+          throw new VError(
+            `Unuspported model operation ${operation} for ${result.model}: ${result.record}`
+          );
+        }
+      } else {
+        writer?.write(obj);
       }
 
-      const count = writtenByModel[result.model];
-      writtenByModel[result.model] = count ? count + 1 : 1;
+      if (!isTimestamped) {
+        recordsWritten++;
+        this.updateModelWriteStats(writtenByModel, result.model);
+      }
     }
 
-    return results.length;
+    return recordsWritten;
+  }
+
+  private updateModelWriteStats(
+    writtenByModel: Dictionary<number>,
+    model: string
+  ): void {
+    const count = writtenByModel[model];
+    writtenByModel[model] = count ? count + 1 : 1;
   }
 }
