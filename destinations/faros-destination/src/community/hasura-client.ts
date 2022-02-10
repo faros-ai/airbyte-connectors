@@ -37,32 +37,48 @@ interface Reference {
   model: string;
 }
 
+interface ConflictClause {
+  constraint: EnumType;
+  update_columns: EnumType[];
+}
+
+enum Operation {
+  UPSERT = 'Upsert',
+  UPDATE = 'Update',
+  DELETION = 'Deletion',
+}
+
 interface TimestampedRecord {
   model: string;
   at: number;
-  operation: 'Upsert' | 'Update' | 'Deletion';
+  operation: Operation;
 }
 
 interface UpsertRecord extends TimestampedRecord {
-  operation: 'Upsert';
+  operation: Operation.UPSERT;
   data: Dictionary<any>;
 }
 
 interface UpdateRecord extends TimestampedRecord {
-  operation: 'Update';
+  operation: Operation.UPDATE;
   where: Dictionary<any>;
   mask: string[];
   patch: Dictionary<any>;
 }
 
 interface DeletionRecord extends TimestampedRecord {
-  operation: 'Deletion';
+  operation: Operation.DELETION;
   where: Dictionary<any>;
 }
 
-interface ConflictClause {
-  constraint: EnumType;
-  update_columns: EnumType[];
+function isUpsertRecord(record: TimestampedRecord): record is UpsertRecord {
+  return record.operation === Operation.UPSERT;
+}
+function isUpdateRecord(record: TimestampedRecord): record is UpdateRecord {
+  return record.operation === Operation.UPDATE;
+}
+function isDeletionRecord(record: TimestampedRecord): record is DeletionRecord {
+  return record.operation === Operation.DELETION;
 }
 
 export class HasuraClient {
@@ -173,17 +189,9 @@ export class HasuraClient {
     const [baseModel, operation] = model.split('__', 2);
     if (!operation) {
       await this.writeStandardRecord(model, record);
-    } else if (operation === 'Upsert') {
-      if (record.at === 0) {
-        await this.writeStandardRecord(baseModel, record.data);
-      } else {
-        this.timestampedRecords.push({
-          model: baseModel,
-          operation,
-          ...record,
-        } as UpsertRecord);
-      }
-    } else if (operation === 'Update' || operation === 'Deletion') {
+    } else if (operation === 'Upsert' && record.at === 0) {
+      await this.writeStandardRecord(baseModel, record.data);
+    } else if (Object.values(Operation).includes(operation as Operation)) {
       this.timestampedRecords.push({
         model: baseModel,
         operation,
@@ -199,15 +207,12 @@ export class HasuraClient {
   async writeTimestampedRecords(): Promise<void> {
     const sortedRecords = sortBy(this.timestampedRecords, (r) => r.at);
     for (const record of sortedRecords) {
-      if (record.operation === 'Upsert') {
-        await this.writeStandardRecord(
-          record.model,
-          (record as UpsertRecord).data
-        );
-      } else if (record.operation === 'Update') {
-        await this.writeUpdateRecord(record as UpdateRecord);
-      } else if (record.operation === 'Deletion') {
-        await this.writeDeletionRecord(record as DeletionRecord);
+      if (isUpsertRecord(record)) {
+        await this.writeStandardRecord(record.model, record.data);
+      } else if (isUpdateRecord(record)) {
+        await this.writeUpdateRecord(record);
+      } else if (isDeletionRecord(record)) {
+        await this.writeDeletionRecord(record);
       } else {
         throw new VError(
           `Unuspported model operation ${record.operation} for ${record}`
