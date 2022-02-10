@@ -8,6 +8,14 @@ import path from 'path';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {
+  DeletionRecord,
+  Operation,
+  TimestampedRecord,
+  UpdateRecord,
+  UpsertRecord,
+} from './types';
+
 interface Table {
   schema: string;
   name: string;
@@ -35,6 +43,11 @@ interface Source {
 interface Reference {
   field: string;
   model: string;
+}
+
+interface ConflictClause {
+  constraint: EnumType;
+  update_columns: EnumType[];
 }
 
 export class HasuraClient {
@@ -101,7 +114,7 @@ export class HasuraClient {
       this.scalars[tableName] = scalars;
       const references: Dictionary<Reference> = {};
       for (const rel of table.object_relationships ?? []) {
-        const [refType, _] = rel.name.split('__');
+        const [refType] = rel.name.split('__');
         references[rel.using.foreign_key_constraint_on] = {
           field: rel.name,
           model: refType,
@@ -109,81 +122,6 @@ export class HasuraClient {
       }
       this.references[tableName] = references;
     }
-  }
-
-  // TODO: find alternate batching strategy
-  // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
-  async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
-    const obj = this.createMutationObject(model, record);
-    const mutation = {
-      mutation: {
-        [`insert_${model}_one`]: {__args: obj, id: true},
-      },
-    };
-    const response = await this.api.post('/v1/graphql', {
-      query: jsonToGraphQLQuery(mutation),
-    });
-    if (response.data.errors) {
-      throw new VError(
-        `Failed to write ${model} record ${JSON.stringify(
-          record
-        )}: ${JSON.stringify(response.data.errors)}`
-      );
-    }
-  }
-
-  private createMutationObject(
-    model: string,
-    record: Dictionary<any>,
-    nested?: boolean
-  ): any {
-    const obj = {};
-    for (const [field, value] of Object.entries(record)) {
-      const nestedModel = this.references[model][field];
-      if (nestedModel && value) {
-        obj[nestedModel.field] = this.createMutationObject(
-          nestedModel.model,
-          value,
-          true
-        );
-      } else {
-        const val = this.formatFieldValue(model, field, value);
-        if (val) obj[field] = val;
-      }
-    }
-    return {
-      [nested ? 'data' : 'object']: obj,
-      on_conflict: this.createConflictConf(model, nested),
-    };
-  }
-
-  private formatFieldValue(model: string, field: string, value: any): any {
-    if (!value) return undefined;
-    const type = this.scalars[model][field];
-    if (!type) {
-      this.logger.debug(`Could not find type of ${field} in ${model}`);
-      return undefined;
-    }
-    return type === 'timestamptz' ? timestamptz(value) : value;
-  }
-
-  private createConflictConf(
-    model: string,
-    nested?: boolean
-  ): {
-    constraint: EnumType;
-    update_columns: EnumType[];
-  } {
-    const cols = nested
-      ? ['refreshedAt']
-      : difference(
-          Object.keys(this.scalars[model]),
-          this.primaryKeys[model].concat('id')
-        );
-    return {
-      constraint: new EnumType(`${model}_pkey`),
-      update_columns: cols.map((c) => new EnumType(c)),
-    };
   }
 
   private async fetchPrimaryKeys(): Promise<void> {
@@ -211,6 +149,169 @@ export class HasuraClient {
           .map((col) => col.replace(/"/g, ''));
         this.primaryKeys[table] = columns;
       });
+  }
+
+  // TODO: find alternate batching strategy
+  // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
+  async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
+    const obj = this.createMutationObject(model, record);
+    const mutation = {
+      mutation: {
+        [`insert_${model}_one`]: {__args: obj, id: true},
+      },
+    };
+    const response = await this.api.post('/v1/graphql', {
+      query: jsonToGraphQLQuery(mutation),
+    });
+    if (response.data.errors) {
+      throw new VError(
+        `Failed to write ${model} record ${JSON.stringify(
+          record
+        )}: ${JSON.stringify(response.data.errors)}`
+      );
+    }
+  }
+
+  async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
+    switch (record.operation) {
+      case Operation.UPSERT:
+        await this.writeRecord(record.model, (record as UpsertRecord).data);
+        break;
+      case Operation.UPDATE:
+        await this.writeUpdateRecord(record as UpdateRecord);
+        break;
+      case Operation.DELETION:
+        await this.writeDeletionRecord(record as DeletionRecord);
+        break;
+      default:
+        throw new VError(
+          `Unuspported operation ${record.operation} for ${record}`
+        );
+    }
+  }
+
+  private async writeUpdateRecord(record: UpdateRecord): Promise<void> {
+    const mutation = {
+      mutation: {
+        [`update_${record.model}`]: {
+          __args: {
+            where: this.createWhereClause(record.model, record.where),
+            _set: this.createMutationObject(record.model, record.patch).object,
+          },
+          returning: {
+            id: true,
+          },
+        },
+      },
+    };
+    const response = await this.api.post('/v1/graphql', {
+      query: jsonToGraphQLQuery(mutation),
+    });
+    if (response.data.errors) {
+      throw new VError(
+        `Failed to update ${record.model} record ${JSON.stringify(
+          record
+        )}: ${JSON.stringify(response.data.errors)}`
+      );
+    }
+  }
+
+  private async writeDeletionRecord(record: DeletionRecord): Promise<void> {
+    const mutation = {
+      mutation: {
+        [`delete_${record.model}`]: {
+          __args: {
+            where: this.createWhereClause(record.model, record.where),
+          },
+          affected_rows: true,
+        },
+      },
+    };
+    const response = await this.api.post('/v1/graphql', {
+      query: jsonToGraphQLQuery(mutation),
+    });
+    if (response.data.errors) {
+      throw new VError(
+        `Failed to delete ${record.model} record ${JSON.stringify(
+          record
+        )}: ${JSON.stringify(response.data.errors)}`
+      );
+    }
+  }
+
+  private createWhereClause(
+    model: string,
+    record: Dictionary<any>
+  ): Dictionary<any> {
+    const obj = {};
+    for (const [field, value] of Object.entries(record)) {
+      const nestedModel = this.references[model][field];
+      if (nestedModel && value) {
+        obj[nestedModel.field] = this.createWhereClause(
+          nestedModel.model,
+          value
+        );
+      } else {
+        const val = this.formatFieldValue(model, field, value);
+        if (val) obj[field] = {_eq: val};
+      }
+    }
+    return obj;
+  }
+
+  private createMutationObject(
+    model: string,
+    record: Dictionary<any>,
+    nested?: boolean
+  ): {
+    data?: Dictionary<any>;
+    object?: Dictionary<any>;
+    on_conflict: Dictionary<any>;
+  } {
+    const obj = {};
+    for (const [field, value] of Object.entries(record)) {
+      const nestedModel = this.references[model][field];
+      if (nestedModel && value) {
+        obj[nestedModel.field] = this.createMutationObject(
+          nestedModel.model,
+          value,
+          true
+        );
+      } else {
+        const val = this.formatFieldValue(model, field, value);
+        if (val) obj[field] = val;
+      }
+    }
+    return {
+      [nested ? 'data' : 'object']: obj,
+      on_conflict: this.createConflictClause(model, nested),
+    };
+  }
+
+  private formatFieldValue(model: string, field: string, value: any): any {
+    if (!value) return undefined;
+    const type = this.scalars[model][field];
+    if (!type) {
+      this.logger.debug(`Could not find type of ${field} in ${model}`);
+      return undefined;
+    }
+    return type === 'timestamptz' ? timestamptz(value) : value;
+  }
+
+  private createConflictClause(
+    model: string,
+    nested?: boolean
+  ): ConflictClause {
+    const cols = nested
+      ? ['refreshedAt']
+      : difference(
+          Object.keys(this.scalars[model]),
+          this.primaryKeys[model].concat('id')
+        );
+    return {
+      constraint: new EnumType(`${model}_pkey`),
+      update_columns: cols.map((c) => new EnumType(c)),
+    };
   }
 }
 
