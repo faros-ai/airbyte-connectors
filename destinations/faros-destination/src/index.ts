@@ -424,7 +424,7 @@ class FarosDestination extends AirbyteDestination {
                 this.logger.info(`Stream context stats: ${ctx.stats(false)}`);
               }
             }
-            // Process the record immidiately if converter has no dependencies,
+            // Process the record immediately if converter has no dependencies,
             // otherwise process it later once all streams are processed.
             if (converter.dependencies.length === 0) {
               await writeRecord(ctx);
@@ -443,6 +443,10 @@ class FarosDestination extends AirbyteDestination {
         for await (const process of recordsToBeProcessedLast) {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
+      }
+
+      if (this.edition === Edition.COMMUNITY) {
+        await this.getHasuraClient().writeTimestampedRecords();
       }
     } finally {
       this.logWriteStats(stats, writer);
@@ -609,14 +613,7 @@ class FarosDestination extends AirbyteDestination {
       obj[result.model] = result.record;
       writer?.write(obj);
       if (this.edition === Edition.COMMUNITY) {
-        if (result.model.includes('__')) {
-          // TODO: handle __Upsert, __Deletion, and __Update records
-          this.logger.warn(
-            `Record ${JSON.stringify(result)} requires ${Edition.CLOUD} edition`
-          );
-        } else {
-          await this.getHasuraClient().writeRecord(result.model, result.record);
-        }
+        await this.getHasuraClient().writeRecord(result.model, result.record);
       }
 
       const count = writtenByModel[result.model];
