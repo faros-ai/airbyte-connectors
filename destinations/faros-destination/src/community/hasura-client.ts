@@ -173,16 +173,20 @@ export class HasuraClient {
   }
 
   async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
-    if (record.operation === Operation.UPSERT) {
-      await this.writeRecord(record.model, (record as UpsertRecord).data);
-    } else if (record.operation === Operation.UPDATE) {
-      await this.writeUpdateRecord(record as UpdateRecord);
-    } else if (record.operation === Operation.DELETION) {
-      await this.writeDeletionRecord(record as DeletionRecord);
-    } else {
-      throw new VError(
-        `Unuspported operation ${record.operation} for ${record}`
-      );
+    switch (record.operation) {
+      case Operation.UPSERT:
+        await this.writeRecord(record.model, (record as UpsertRecord).data);
+        break;
+      case Operation.UPDATE:
+        await this.writeUpdateRecord(record as UpdateRecord);
+        break;
+      case Operation.DELETION:
+        await this.writeDeletionRecord(record as DeletionRecord);
+        break;
+      default:
+        throw new VError(
+          `Unuspported operation ${record.operation} for ${record}`
+        );
     }
   }
 
