@@ -11,7 +11,7 @@ import {VError} from 'verror';
 import {Backlog, BacklogConfig} from '../src/backlog';
 import * as sut from '../src/index';
 
-const azureActiveDirectoryInstance = Backlog.instance;
+const backlogInstance = Backlog.instance;
 
 jest.mock('axios');
 
@@ -32,7 +32,7 @@ describe('index', () => {
   );
 
   beforeEach(() => {
-    Backlog.instance = azureActiveDirectoryInstance;
+    Backlog.instance = backlogInstance;
   });
 
   function readTestResourceFile(fileName: string): any {
