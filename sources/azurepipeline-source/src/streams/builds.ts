@@ -23,7 +23,7 @@ export class Builds extends AirbyteStreamBase {
     return 'id';
   }
   get cursorField(): string | string[] {
-    return 'createdDateTime';
+    return 'startTime';
   }
 
   async *readRecords(

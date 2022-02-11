@@ -46,16 +46,17 @@ describe('index', () => {
     );
   });
 
-  test('check connection - no client_secret', async () => {
+  test('check connection - no access token', async () => {
     const source = new sut.AzurePipelineSource(logger);
     await expect(
       source.checkConnection({
-        client_id: 'client_id',
-        tenant_id: 'tenant_id',
+        access_token: '',
+        organization: 'organization',
+        project: 'project',
       } as any)
     ).resolves.toStrictEqual([
       false,
-      new VError('client_secret must be a not empty string'),
+      new VError('access_token must be a not empty string'),
     ]);
   });
 
@@ -83,7 +84,35 @@ describe('index', () => {
       pipelines.push(pipeline);
     }
 
-    expect(fnPipelinesFunc).toHaveBeenCalledTimes(5);
+    expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
     expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+  });
+
+  test('streams - builds, use full_refresh sync mode', async () => {
+    const fnBuildsFunc = jest.fn();
+
+    AzurePipeline.instance = jest.fn().mockImplementation(() => {
+      const buildsResource: any[] = readTestResourceFile('builds.json');
+      return new AzurePipeline(
+        {
+          get: fnBuildsFunc.mockResolvedValue({
+            data: {value: buildsResource},
+          }),
+        } as any,
+        null
+      );
+    });
+    const source = new sut.AzurePipelineSource(logger);
+    const streams = source.streams({} as any);
+
+    const buildsStream = streams[0];
+    const buildIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);
+    const builds = [];
+    for await (const build of buildIter) {
+      builds.push(build);
+    }
+
+    expect(fnBuildsFunc).toHaveBeenCalledTimes(1);
+    expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
 });
