@@ -7,6 +7,7 @@ import {
   Build,
   BuildArtifactResponse,
   BuildResponse,
+  BuildTimelineResponse,
   Pipeline,
   PipelineResponse,
   Release,
@@ -114,6 +115,17 @@ export class AzurePipeline {
         `build/builds/${item.id}/artifacts`
       );
       item.artifacts = artifact.data.value;
+
+      const timeline = await this.httpClient.get<BuildTimelineResponse>(
+        `build/builds/${item.id}/timeline`
+      );
+      const timelines = [];
+      if (timeline.status === 200) {
+        for (const item of timeline.data.records) {
+          if (item.type === 'Job') timelines.push(item);
+        }
+      }
+      item.jobs = timelines;
       yield item;
     }
   }

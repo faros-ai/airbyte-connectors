@@ -123,6 +123,45 @@ export interface BuildArtifactResponse {
   value: BuildArtifact[];
 }
 
+interface BuildTimelineIssue {
+  type: string;
+  category?: any;
+  message: string;
+}
+
+interface BuildTimeline {
+  previousAttempts: any[];
+  id: string;
+  parentId: string;
+  type: string;
+  name: string;
+  startTime?: any;
+  finishTime?: any;
+  currentOperation?: any;
+  percentComplete?: any;
+  state: string;
+  result: string;
+  resultCode?: any;
+  changeId: number;
+  lastModified: Date;
+  workerName?: any;
+  queueId: number;
+  order: number;
+  details?: any;
+  errorCount: number;
+  warningCount: number;
+  url?: any;
+  log?: any;
+  task?: any;
+  attempt: number;
+  identifier: string;
+  issues: BuildTimelineIssue[];
+}
+
+export interface BuildTimelineResponse {
+  records: BuildTimeline[];
+}
+
 export interface Build {
   _links: BuildLink;
   properties: any;
@@ -158,6 +197,7 @@ export interface Build {
   retainedByRelease: boolean;
   triggeredByBuild: any;
   artifacts: BuildArtifact[];
+  jobs: BuildTimeline[];
 }
 
 export interface BuildResponse {

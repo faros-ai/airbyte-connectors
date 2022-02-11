@@ -457,6 +457,127 @@
           }
         }
       }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "previousAttempts": {
+            "type": "array",
+            "items": {}
+          },
+          "id": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "null"
+          },
+          "finishTime": {
+            "type": "null"
+          },
+          "currentOperation": {
+            "type": "null"
+          },
+          "percentComplete": {
+            "type": "null"
+          },
+          "state": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "resultCode": {
+            "type": "null"
+          },
+          "changeId": {
+            "type": "number"
+          },
+          "lastModified": {
+            "type": "string"
+          },
+          "workerName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "queueId": {
+            "type": "number"
+          },
+          "order": {
+            "type": "number"
+          },
+          "details": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "errorCount": {
+            "type": "number"
+          },
+          "warningCount": {
+            "type": "number"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "log": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "task": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attempt": {
+            "type": "number"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }
