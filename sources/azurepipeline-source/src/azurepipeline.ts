@@ -3,9 +3,9 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Pipeline, PipelineResponse} from './models';
+import {Build, BuildResponse, Pipeline, PipelineResponse} from './models';
 
-const DEFAULT_API_VERSION = '6.0-preview.1';
+const DEFAULT_API_VERSION = '6.0';
 
 export interface AzurePipelineConfig {
   readonly access_token: string;
@@ -44,7 +44,7 @@ export class AzurePipeline {
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
       timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 50000, //default is 2000 bytes
+      maxContentLength: Infinity, //default is 2000 bytes
       params: {
         'api-version': version,
       },
@@ -78,6 +78,13 @@ export class AzurePipeline {
 
   async *getPipelines(): AsyncGenerator<Pipeline> {
     const res = await this.httpClient.get<PipelineResponse>('pipelines');
+    for (const item of res.data.value) {
+      yield item;
+    }
+  }
+
+  async *getBuilds(): AsyncGenerator<Build> {
+    const res = await this.httpClient.get<BuildResponse>('build/builds');
     for (const item of res.data.value) {
       yield item;
     }

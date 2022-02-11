@@ -27,7 +27,7 @@
       "api_version": {
         "type": "string",
         "title": "api version",
-        "default": "6.0-preview.1"
+        "default": "6.0"
       }
     }
   }
