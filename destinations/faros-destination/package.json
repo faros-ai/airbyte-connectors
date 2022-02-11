@@ -39,6 +39,7 @@
     "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
+    "toposort": "^2.0.2",
     "turndown": "^7.1.1",
     "verror": "^1.10.0"
   },
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
+    "@types/toposort": "^2.0.3",
     "@types/turndown": "^5.0.1"
   }
 }

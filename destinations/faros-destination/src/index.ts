@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
+import _, {intersection, isEmpty, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -28,7 +28,12 @@ import {VError} from 'verror';
 
 import {HasuraClient} from './community/hasura-client';
 import {Operation, TimestampedRecord} from './community/types';
-import {Converter, StreamContext, StreamName} from './converters/converter';
+import {
+  Converter,
+  StreamContext,
+  StreamName,
+  StreamNameSeparator,
+} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
@@ -237,9 +242,6 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
-    if (!config.origin) {
-      throw new VError('Faros origin is not set');
-    }
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -266,7 +268,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     await this.init(config);
 
-    const {streams, deleteModelEntries, converterDependencies} =
+    const {origin, streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
@@ -274,7 +276,6 @@ class FarosDestination extends AirbyteDestination {
     if (this.edition === Edition.COMMUNITY) {
       await this.getHasuraClient().loadSchema();
     }
-
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     const dryRunEnabled = config.dry_run === true || dryRun;
     if (dryRunEnabled || this.edition === Edition.COMMUNITY) {
@@ -283,6 +284,7 @@ class FarosDestination extends AirbyteDestination {
       }
       await this.writeEntries(
         config,
+        origin,
         stdin,
         streams,
         stateMessages,
@@ -298,7 +300,7 @@ class FarosDestination extends AirbyteDestination {
       }
       // Create an entry uploader for the destination graph
       const entryUploaderConfig: EntryUploaderConfig = {
-        name: config.origin,
+        name: origin,
         url: config.edition_configs.api_url,
         authHeader: config.edition_configs.api_key,
         expiration: config.edition_configs.expiration,
@@ -320,6 +322,7 @@ class FarosDestination extends AirbyteDestination {
             // Process input and write entries
             await this.writeEntries(
               config,
+              origin,
               stdin,
               streams,
               stateMessages,
@@ -343,6 +346,7 @@ class FarosDestination extends AirbyteDestination {
 
   private async writeEntries(
     config: AirbyteConfig,
+    origin: string,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
@@ -382,6 +386,13 @@ class FarosDestination extends AirbyteDestination {
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
+            if (this.edition === Edition.COMMUNITY) {
+              const data = (msg as AirbyteStateMessage).state?.data;
+              if (data && isEmpty(data)) {
+                this.logger.info(`Resetting data for origin ${origin}`);
+                await this.getHasuraClient().resetData(origin);
+              }
+            }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -408,6 +419,7 @@ class FarosDestination extends AirbyteDestination {
               stats.recordsWritten += await this.writeRecord(
                 converter,
                 unpacked,
+                origin,
                 stats.writtenByModel,
                 context,
                 timestampedRecords,
@@ -510,6 +522,7 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
+    origin: string;
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
     converterDependencies: Set<string>;
@@ -518,6 +531,20 @@ class FarosDestination extends AirbyteDestination {
     const streamKeys = Object.keys(streams);
     const deleteModelEntries: string[] = [];
     const dependenciesByStream: Dictionary<Set<string>> = {};
+
+    // Determine origin from stream prefixes
+    const origins = uniq(
+      streamKeys.map((key) =>
+        key.substring(0, key.indexOf(StreamNameSeparator))
+      )
+    );
+    if (origins.length === 0) {
+      throw new VError('Could not determine origin from catalog');
+    } else if (origins.length > 1) {
+      throw new VError(
+        `Found multiple possible origins from catalog: ${origins.join(',')}`
+      );
+    }
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -575,6 +602,7 @@ class FarosDestination extends AirbyteDestination {
     );
 
     return {
+      origin: origins[0],
       streams,
       deleteModelEntries: uniq(deleteModelEntries),
       converterDependencies,
@@ -600,6 +628,7 @@ class FarosDestination extends AirbyteDestination {
   private async writeRecord(
     converter: Converter,
     recordMessage: AirbyteRecord,
+    origin: string,
     writtenByModel: Dictionary<number>,
     ctx: StreamContext,
     timestampedRecords: TimestampedRecord[],
@@ -630,10 +659,11 @@ class FarosDestination extends AirbyteDestination {
         const hasura = this.getHasuraClient();
         const [baseModel, operation] = result.model.split('__', 2);
         if (!operation) {
-          await hasura.writeRecord(result.model, result.record);
+          await hasura.writeRecord(result.model, origin, result.record);
         } else if (Object.values(Operation).includes(operation as Operation)) {
           timestampedRecords.push({
             model: baseModel,
+            origin,
             operation,
             ...result.record,
           } as TimestampedRecord);
