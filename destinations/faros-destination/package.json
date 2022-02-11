@@ -1,7 +1,6 @@
 {
   "name": "faros-destination",
   "version": "0.1.29",
-  "private": true,
   "description": "Faros Destination for Airbyte",
   "keywords": [
     "airbyte",
@@ -13,7 +12,8 @@
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
   "files": [
-    "lib/"
+    "lib/",
+    "resources/"
   ],
   "engines": {
     "node": ">=14.5"
