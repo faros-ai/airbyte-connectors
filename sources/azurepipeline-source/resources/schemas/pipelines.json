@@ -2,6 +2,27 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
+    "_link":{
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "web": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "id": {
       "type": "number"
     },
