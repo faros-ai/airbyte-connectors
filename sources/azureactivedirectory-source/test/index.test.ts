@@ -46,23 +46,6 @@ describe('index', () => {
     );
   });
 
-  test('check connection', async () => {
-    AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
-      return new AzureActiveDirectory({
-        get: jest.fn().mockResolvedValue({}),
-      } as any);
-    });
-
-    const source = new sut.AzureActiveDirectorySource(logger);
-    await expect(
-      source.checkConnection({
-        client_id: 'client_id',
-        client_secret: 'client_secret',
-        tenant_id: 'tenant_id',
-      })
-    ).resolves.toStrictEqual([false, null]);
-  });
-
   test('check connection - no client_secret', async () => {
     const source = new sut.AzureActiveDirectorySource(logger);
     await expect(
@@ -81,11 +64,14 @@ describe('index', () => {
 
     AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
-      return new AzureActiveDirectory({
-        get: fnUsersFunc.mockResolvedValue({
-          data: {value: usersResource},
-        }),
-      } as any);
+      return new AzureActiveDirectory(
+        {
+          get: fnUsersFunc.mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any,
+        null
+      );
     });
     const source = new sut.AzureActiveDirectorySource(logger);
     const streams = source.streams({} as any);
@@ -106,11 +92,14 @@ describe('index', () => {
 
     AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
       const groupsResource: any[] = readTestResourceFile('groups.json');
-      return new AzureActiveDirectory({
-        get: fnGroupsFunc.mockResolvedValue({
-          data: {value: groupsResource},
-        }),
-      } as any);
+      return new AzureActiveDirectory(
+        {
+          get: fnGroupsFunc.mockResolvedValue({
+            data: {value: groupsResource},
+          }),
+        } as any,
+        null
+      );
     });
     const source = new sut.AzureActiveDirectorySource(logger);
     const streams = source.streams({} as any);

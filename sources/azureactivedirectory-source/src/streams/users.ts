@@ -22,11 +22,9 @@ export class Users extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
-
   get primaryKey(): StreamKey {
     return 'id';
   }
-
   get cursorField(): string | string[] {
     return 'createdDateTime';
   }
@@ -36,9 +34,10 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const azureActiveDirectory =
-      (await AzureActiveDirectory.instance()) ||
-      (await AzureActiveDirectory.init(this.config));
+    const azureActiveDirectory = await AzureActiveDirectory.instance(
+      this.config,
+      this.logger
+    );
     yield* azureActiveDirectory.getUsers();
   }
 }

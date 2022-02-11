@@ -8,11 +8,11 @@ import {User} from './models';
 export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
-    'ims_UserIdentity',
+    'org_Department',
     'org_Employee',
-    'tms_UserIdentity',
-    'vcs_UserIdentity',
   ];
+
+  private seenDepartments = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -22,15 +22,28 @@ export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.createdDateTime);
     const manager = {
-      uid: user.manager ? user.manager.id : '',
+      uid: user.manager ?? '',
       source,
     };
+    const uid = user.id;
     const res: DestinationRecord[] = [];
+
+    if (user.department && !this.seenDepartments.has(user.department)) {
+      this.seenDepartments.add(user.department);
+      res.push({
+        model: 'org_Department',
+        record: {
+          uid: user.department,
+          name: user.department,
+          description: null,
+        },
+      });
+    }
 
     res.push({
       model: 'identity_Identity',
       record: {
-        uid: user.id,
+        uid,
         fullName: `${user.givenName} ${user.surname}`,
         primaryEmail: user.mail,
         emails: user.mail,
@@ -38,17 +51,9 @@ export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
     });
 
     res.push({
-      model: 'ims_UserIdentity',
-      record: {
-        imsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
-
-    res.push({
       model: 'org_Employee',
       record: {
-        uid: user.id,
+        uid,
         title: user.displayName,
         level: user.jobTitle,
         joinedAt,
@@ -61,23 +66,6 @@ export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
         source,
       },
     });
-
-    res.push({
-      model: 'tms_UserIdentity',
-      record: {
-        tmsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
-
-    res.push({
-      model: 'vcs_UserIdentity',
-      record: {
-        vcsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
-
     return res;
   }
 }

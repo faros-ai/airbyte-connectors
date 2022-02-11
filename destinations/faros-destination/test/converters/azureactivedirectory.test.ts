@@ -56,12 +56,10 @@ describe('azureactivedirectory', () => {
 
     const writtenByModel = {
       identity_Identity: 2,
-      ims_UserIdentity: 2,
+      org_Department: 1,
       org_Employee: 2,
       org_Team: 1,
       org_TeamMembership: 2,
-      tms_UserIdentity: 2,
-      vcs_UserIdentity: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

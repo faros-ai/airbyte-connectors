@@ -34,9 +34,10 @@ export class Groups extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const azureActiveDirectory =
-      (await AzureActiveDirectory.instance()) ||
-      (await AzureActiveDirectory.init(this.config));
+    const azureActiveDirectory = await AzureActiveDirectory.instance(
+      this.config,
+      this.logger
+    );
     yield* azureActiveDirectory.getGroups();
   }
 }

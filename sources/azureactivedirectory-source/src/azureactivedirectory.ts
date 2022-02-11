@@ -1,8 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
-const FormData = require('form-data');
 
 import {
   Group,
@@ -27,11 +26,18 @@ export interface AzureActiveDirectoryConfig {
 export class AzureActiveDirectory {
   private static azureActiveDirectory: AzureActiveDirectory = null;
 
-  constructor(private readonly httpClient: AxiosInstance) {}
+  constructor(
+    private readonly httpClient: AxiosInstance,
+    private readonly logger: AirbyteLogger
+  ) {}
 
-  static async init(
-    config: AzureActiveDirectoryConfig
+  static async instance(
+    config: AzureActiveDirectoryConfig,
+    logger: AirbyteLogger
   ): Promise<AzureActiveDirectory> {
+    if (AzureActiveDirectory.azureActiveDirectory)
+      return AzureActiveDirectory.azureActiveDirectory;
+
     if (!config.client_id) {
       throw new VError('client_id must be a not empty string');
     }
@@ -56,23 +62,19 @@ export class AzureActiveDirectory {
     });
 
     AzureActiveDirectory.azureActiveDirectory = new AzureActiveDirectory(
-      httpClient
+      httpClient,
+      logger
     );
-    return AzureActiveDirectory.azureActiveDirectory;
-  }
-
-  static async instance(): Promise<AzureActiveDirectory> {
     return AzureActiveDirectory.azureActiveDirectory;
   }
 
   private static async getAccessToken(
     config: AzureActiveDirectoryConfig
   ): Promise<string> {
-    const request = require('request');
-    const version = config.auth_version
-      ? config.auth_version
-      : DEFAULT_AUTH_VERSION;
+    const version = config.auth_version ?? DEFAULT_AUTH_VERSION;
     return new Promise(function (resolve, reject) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const request = require('request');
       request(
         {
           method: 'POST',
@@ -134,7 +136,7 @@ export class AzureActiveDirectory {
           `users/${item.id}/manager`
         );
         if (managerItem.status === 200) {
-          item.manager = managerItem.data;
+          item.manager = managerItem.data.id;
         }
       } catch (error) {
         console.error(error);
@@ -149,12 +151,23 @@ export class AzureActiveDirectory {
       const memberItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/members`
       );
-      if (memberItems.status === 200) item.members = memberItems.data.value;
-
+      if (memberItems.status === 200) {
+        const members: string[] = [];
+        for (const item of memberItems.data.value) {
+          members.push(item.id);
+        }
+        item.members = members;
+      }
       const ownerItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/owners`
       );
-      if (ownerItems.status === 200) item.owners = ownerItems.data.value;
+      if (ownerItems.status === 200) {
+        const owners: string[] = [];
+        for (const item of ownerItems.data.value) {
+          owners.push(item.id);
+        }
+        item.owners = owners;
+      }
       yield item;
     }
   }

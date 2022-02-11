@@ -17,11 +17,11 @@ export class AzureactivedirectoryGroups extends AzureactivedirectoryConverter {
     const source = this.streamName.source;
     const group = record.record.data as Group;
     const res: DestinationRecord[] = [];
-
+    const uid = group.id;
     const lead =
       group.owners.length >= 1
         ? {
-            uid: group.owners[0].id,
+            uid: group.owners[0],
             source,
           }
         : undefined;
@@ -29,15 +29,15 @@ export class AzureactivedirectoryGroups extends AzureactivedirectoryConverter {
     res.push({
       model: 'org_Team',
       record: {
-        uid: group.id,
+        uid,
         name: group.displayName,
         description: group.description,
         lead,
-        parentTeam: null,
-        teamChain: null,
+        parentTeam: {uid: 'all_teams'}, // TODO: compute parent team
+        teamChain: ['all_teams'], // TODO: team chain
         tags: null,
         color: null,
-        photoUrl: group.theme,
+        photoUrl: null,
         source,
       },
     });
@@ -46,12 +46,11 @@ export class AzureactivedirectoryGroups extends AzureactivedirectoryConverter {
       res.push({
         model: 'org_TeamMembership',
         record: {
-          team: {uid: group.id},
-          member: {uid: user.id},
+          team: {uid},
+          member: {uid: user},
         },
       });
     }
-
     return res;
   }
 }

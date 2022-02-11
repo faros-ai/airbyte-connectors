@@ -18,7 +18,7 @@ export interface User {
   id: string;
   department?: string;
   postalCode?: string;
-  manager?: User;
+  manager?: string;
   createdDateTime?: string;
   streetAddress?: string;
   identities: UserIdentity[];
@@ -57,6 +57,6 @@ export interface Group {
   theme?: string;
   visibility?: string;
   onPremisesProvisioningErrors: string[];
-  members: User[];
-  owners: User[];
+  members: string[];
+  owners: string[];
 }

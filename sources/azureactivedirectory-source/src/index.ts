@@ -29,7 +29,10 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase {
     config: AzureActiveDirectoryConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = await AzureActiveDirectory.init(config);
+      const azureActiveDirectory = await AzureActiveDirectory.instance(
+        config,
+        this.logger
+      );
       await azureActiveDirectory.checkConnection();
     } catch (err: any) {
       return [false, err];

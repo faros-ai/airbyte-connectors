@@ -98,68 +98,10 @@
       }
     },
     "manager": {
-      "profile": {
-        "type": [
-          "object",
-          "null"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "businessPhones": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "created": {
-            "type": "string"
-          },
-          "displayName": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "givenName": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "mobilePhone": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "officeLocation": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "preferredLanguage": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "surname": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "userPrincipalName": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        }
-      }
+      "type": [
+        "string",
+        "null"
+      ]
     }
   }
 }
