@@ -102,6 +102,27 @@ interface Repository {
   checkoutSubmodules: boolean;
 }
 
+interface ArtifactResource {
+  data: string;
+  downloadUrl: string;
+  properties: any;
+  type: string;
+  url: string;
+  _links: any;
+}
+
+interface BuildArtifact {
+  id: number;
+  name: string;
+  resource: ArtifactResource;
+  source: string;
+}
+
+export interface BuildArtifactResponse {
+  count: number;
+  value: BuildArtifact[];
+}
+
 export interface Build {
   _links: BuildLink;
   properties: any;
@@ -136,6 +157,7 @@ export interface Build {
   keepForever: boolean;
   retainedByRelease: boolean;
   triggeredByBuild: any;
+  artifacts: BuildArtifact[];
 }
 
 export interface BuildResponse {

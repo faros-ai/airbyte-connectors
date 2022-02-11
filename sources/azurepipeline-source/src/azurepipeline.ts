@@ -5,6 +5,7 @@ import {VError} from 'verror';
 
 import {
   Build,
+  BuildArtifactResponse,
   BuildResponse,
   Pipeline,
   PipelineResponse,
@@ -26,7 +27,7 @@ export class AzurePipeline {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly httpvsrmClient: AxiosInstance,
+    private readonly httpVSRMClient: AxiosInstance,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -60,7 +61,7 @@ export class AzurePipeline {
         Authorization: `Basic ${config.access_token}`,
       },
     });
-    const httpvsrmClient = axios.create({
+    const httpVSRMClient = axios.create({
       baseURL: `https://vsrm.dev.azure.com/${config.organization}/${config.project}/_apis`,
       timeout: 10000, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes
@@ -74,7 +75,7 @@ export class AzurePipeline {
 
     AzurePipeline.azurePipeline = new AzurePipeline(
       httpClient,
-      httpvsrmClient,
+      httpVSRMClient,
       logger
     );
     return AzurePipeline.azurePipeline;
@@ -109,13 +110,16 @@ export class AzurePipeline {
   async *getBuilds(): AsyncGenerator<Build> {
     const res = await this.httpClient.get<BuildResponse>('build/builds');
     for (const item of res.data.value) {
+      const artifact = await this.httpClient.get<BuildArtifactResponse>(
+        `build/builds/${item.id}/artifacts`
+      );
+      item.artifacts = artifact.data.value;
       yield item;
     }
   }
 
   async *getReleases(): AsyncGenerator<Release> {
-    console.log(1);
-    const res = await this.httpvsrmClient.get<ReleaseResponse>(
+    const res = await this.httpVSRMClient.get<ReleaseResponse>(
       'release/releases'
     );
     for (const item of res.data.value) {

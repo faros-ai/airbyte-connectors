@@ -411,6 +411,52 @@
         "string",
         "null"
       ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "string"
+              },
+              "downloadUrl": {
+                "type": "string"
+              },
+              "properties": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "_links": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
