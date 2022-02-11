@@ -50,7 +50,7 @@ export class AzureActiveDirectory {
       throw new VError('tenant_id must be a not empty string');
     }
 
-    const version = config.version ? config.version : DEFAULT_VERSION;
+    const version = config.version ?? DEFAULT_VERSION;
     const accessToken = await this.getAccessToken(config);
     const httpClient = axios.create({
       baseURL: `https://graph.microsoft.com/${version}`,
