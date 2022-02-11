@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "revision": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string"
+    },
+    "folder": {
+      "type": ["string","null"]
+    },
+    "url": {
+      "type": ["string","null"]
+    }
+  }
+}
