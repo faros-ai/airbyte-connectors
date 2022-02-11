@@ -3,7 +3,14 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Build, BuildResponse, Pipeline, PipelineResponse} from './models';
+import {
+  Build,
+  BuildResponse,
+  Pipeline,
+  PipelineResponse,
+  Release,
+  ReleaseResponse,
+} from './models';
 
 const DEFAULT_API_VERSION = '6.0';
 
@@ -19,6 +26,7 @@ export class AzurePipeline {
 
   constructor(
     private readonly httpClient: AxiosInstance,
+    private readonly httpvsrmClient: AxiosInstance,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -52,8 +60,23 @@ export class AzurePipeline {
         Authorization: `Basic ${config.access_token}`,
       },
     });
+    const httpvsrmClient = axios.create({
+      baseURL: `https://vsrm.dev.azure.com/${config.organization}/${config.project}/_apis`,
+      timeout: 10000, // default is `0` (no timeout)
+      maxContentLength: Infinity, //default is 2000 bytes
+      params: {
+        'api-version': version,
+      },
+      headers: {
+        Authorization: `Basic ${config.access_token}`,
+      },
+    });
 
-    AzurePipeline.azurePipeline = new AzurePipeline(httpClient, logger);
+    AzurePipeline.azurePipeline = new AzurePipeline(
+      httpClient,
+      httpvsrmClient,
+      logger
+    );
     return AzurePipeline.azurePipeline;
   }
 
@@ -85,6 +108,16 @@ export class AzurePipeline {
 
   async *getBuilds(): AsyncGenerator<Build> {
     const res = await this.httpClient.get<BuildResponse>('build/builds');
+    for (const item of res.data.value) {
+      yield item;
+    }
+  }
+
+  async *getReleases(): AsyncGenerator<Release> {
+    console.log(1);
+    const res = await this.httpvsrmClient.get<ReleaseResponse>(
+      'release/releases'
+    );
     for (const item of res.data.value) {
       yield item;
     }

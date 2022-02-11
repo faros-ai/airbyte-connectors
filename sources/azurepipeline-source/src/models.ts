@@ -142,3 +142,49 @@ export interface BuildResponse {
   count: number;
   value: Build[];
 }
+
+interface ReleaseByUser {
+  id: string;
+  displayName: string;
+  uniqueName: string;
+  url: string;
+  imageUrl?: string;
+}
+
+interface ReleaseLink {
+  self: Href;
+  web: Href;
+}
+
+interface ReleaseProjectReference {
+  id: string;
+  name: string;
+}
+
+export interface Release {
+  id: number;
+  name: string;
+  status: string;
+  createdOn: string;
+  modifiedOn?: string;
+  modifiedBy?: ReleaseByUser;
+  createdBy: ReleaseByUser;
+  variables: any;
+  variableGroups: [any];
+  description?: string;
+  reason?: string;
+  releaseNameFormat?: string;
+  keepForever: boolean;
+  definitionSnapshotRevision: number;
+  logsContainerUrl: string;
+  url: string;
+  _links: ReleaseLink;
+  tags: [any];
+  projectReference: ReleaseProjectReference;
+  properties: any;
+}
+
+export interface ReleaseResponse {
+  count: number;
+  value: Release[];
+}

@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {AzurePipeline, AzurePipelineConfig} from './azurepipeline';
-import {Builds, Pipelines} from './streams';
+import {Builds, Pipelines, Releases} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -40,6 +40,7 @@ export class AzurePipelineSource extends AirbyteSourceBase {
     return [
       new Pipelines(config, this.logger),
       new Builds(config, this.logger),
+      new Releases(config, this.logger),
     ];
   }
 }

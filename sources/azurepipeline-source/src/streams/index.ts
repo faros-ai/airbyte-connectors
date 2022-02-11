@@ -1,3 +1,4 @@
 import {Builds} from './builds';
 import {Pipelines} from './pipelines';
-export {Pipelines, Builds};
+import {Releases} from './releases';
+export {Pipelines, Builds, Releases};
