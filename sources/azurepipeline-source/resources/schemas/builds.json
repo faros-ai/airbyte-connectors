@@ -60,16 +60,14 @@
     },
     "plans": {
       "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "planId": {
-              "type": "string"
-            }
+      "items": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string"
           }
         }
-      ]
+      }
     },
     "triggerInfo": {
       "type": "object",
@@ -392,7 +390,10 @@
           "type": "string"
         },
         "clean": {
-          "type": ["string","null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "checkoutSubmodules": {
           "type": "boolean"
@@ -406,7 +407,10 @@
       "type": "boolean"
     },
     "triggeredByBuild": {
-      "type": ["string","null"]
+      "type": [
+        "string",
+        "null"
+      ]
     }
-  } 
+  }
 }
