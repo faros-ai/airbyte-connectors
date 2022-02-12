@@ -45,7 +45,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        'Please verify your token is correct. Error: Request failed with status code 401'
+        'Connection check failed. Please verify your token is correct. Error: API responded with status 401'
       ),
     ]);
   });

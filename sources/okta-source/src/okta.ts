@@ -4,7 +4,7 @@ import {wrapApiError} from 'faros-feeds-sdk';
 import parseLinkHeader from 'parse-link-header';
 import {VError} from 'verror';
 
-import {Group, GroupOfUser, User, UserOfGroup} from './models';
+import {Group, User, UserOfGroup} from './models';
 
 const DEFAULT_VERSION = 'v1';
 
@@ -29,7 +29,7 @@ export class Okta {
     if (Okta.okta) return Okta.okta;
 
     if (!config.token) {
-      throw new VError('token must be a not empty string');
+      throw new VError('Token must be a not empty string');
     }
     const version = config.version ?? DEFAULT_VERSION;
     const httpClient = axios.create({
@@ -53,7 +53,7 @@ export class Okta {
       await iter.next();
     } catch (err: any) {
       throw new VError(
-        `Please verify your token is correct. Error: ${err.message}`
+        `Connection check failed. Please verify your token is correct. Error: ${err.message}`
       );
     }
   }
@@ -70,10 +70,12 @@ export class Okta {
           yield item;
         }
       } catch (err: any) {
-        const errorMessage = `Failed requesting '${path}' with params ${JSON.stringify(
-          finalParams
-        )}. Error: ${wrapApiError(err)}`;
-        this.logger.error(errorMessage);
+        const errorMessage = wrapApiError(err).message;
+        this.logger.error(
+          `Failed requesting '${path}' with params ${JSON.stringify(
+            finalParams
+          )}. Error: ${errorMessage}`
+        );
         throw new VError(errorMessage);
       }
     } while (after);

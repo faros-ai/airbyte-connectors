@@ -1,6 +1,6 @@
 {
   "name": "faros-destination",
-  "version": "0.1.29",
+  "version": "0.1.32",
   "description": "Faros Destination for Airbyte",
   "keywords": [
     "airbyte",
@@ -30,13 +30,17 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "faros-airbyte-cdk": "^0.1.28",
+    "axios": "^0.25.0",
+    "date-format": "^4.0.3",
+    "faros-airbyte-cdk": "^0.1.32",
     "faros-feeds-sdk": "^0.9.7",
+    "fs-extra": "^10.0.0",
     "git-url-parse": "^11.6.0",
+    "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
     "turndown": "^7.1.1",
-    "verror": "^1.10.0"
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -56,8 +60,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "devDependencies": {
-    "@types/turndown": "^5.0.1"
   }
 }

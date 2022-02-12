@@ -139,7 +139,12 @@ export class Phabricator {
         : PHABRICATOR_DEFAULT_LIMIT;
 
     const axios = Axios.create({baseURL, timeout: 30000});
-    const client = new Condoit(config.server_url, config.token, {}, axios);
+    const client = new Condoit(
+      config.server_url,
+      config.token,
+      {},
+      axios as any
+    );
 
     Phabricator.phabricator = new Phabricator(
       client,

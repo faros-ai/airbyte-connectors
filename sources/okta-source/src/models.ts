@@ -57,10 +57,6 @@ interface Links {
   self: Self;
 }
 
-export interface GroupOfUser {
-  id: string;
-}
-
 export interface User {
   id: string;
   status: string;

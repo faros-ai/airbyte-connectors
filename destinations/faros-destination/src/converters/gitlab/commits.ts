@@ -23,6 +23,7 @@ export class GitlabCommits extends GitlabConverter {
         model: 'vcs_Commit',
         record: {
           sha: commit.id,
+          uid: commit.id,
           message: commit.message,
           author: commit.author_name ? {uid: commit.author_name, source} : null,
           htmlUrl: commit.web_url,

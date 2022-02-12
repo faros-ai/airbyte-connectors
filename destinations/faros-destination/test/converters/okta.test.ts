@@ -5,7 +5,7 @@ import {getLocal} from 'mockttp';
 import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {tempConfig} from '../temp';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {oktaAllStreamsLog} from './data';
 
 describe('okta', () => {
@@ -20,7 +20,7 @@ describe('okta', () => {
   const streamNamePrefix = 'mytestsource__okta__';
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -55,12 +55,10 @@ describe('okta', () => {
       .value();
     const writtenByModel = {
       identity_Identity: 3,
-      ims_UserIdentity: 3,
+      org_Department: 3,
       org_Employee: 3,
       org_Team: 2,
       org_TeamMembership: 5,
-      tms_UserIdentity: 3,
-      vcs_UserIdentity: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();

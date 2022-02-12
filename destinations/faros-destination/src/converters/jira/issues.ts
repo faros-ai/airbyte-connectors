@@ -6,7 +6,6 @@ import {
   isPlainObject,
   isString,
   keyBy,
-  last,
   mapValues,
   pick,
   toLower,
@@ -200,7 +199,7 @@ export class JiraIssues extends JiraConverter {
   ): ReadonlyArray<[Status, Date]> {
     const statusChangelog: Array<[Status, Date]> = [];
 
-    const pushStatusChange = (statusName: string, date: Date) => {
+    const pushStatusChange = (statusName: string, date: Date): void => {
       const status = this.statusByName[statusName];
       if (status) statusChangelog.push([status, date]);
     };
@@ -473,8 +472,10 @@ export class JiraIssues extends JiraConverter {
                 uid: toLower(pull.repo.org),
               },
               name: toLower(pull.repo.name),
+              uid: toLower(pull.repo.name),
             },
             number: pull.number,
+            uid: pull.number.toString(),
           },
         },
       });
@@ -500,7 +501,7 @@ export class JiraIssues extends JiraConverter {
         model: 'tms_TaskAssignment',
         record: {
           task: {uid: issue.key, source},
-          assignee: {uid: assignee.uid, source},
+          assignee: {uid: assignee.uid || 'Unassigned', source},
           assignedAt: assignee.assignedAt,
         },
       });
@@ -530,7 +531,7 @@ export class JiraIssues extends JiraConverter {
           model: 'tms_TaskReleaseRelationship__Upsert',
           record: {
             at: change.changed.getTime(),
-            where: {
+            data: {
               task: {uid: issue.key, source},
               release: {uid: change.value, source},
             },
@@ -543,7 +544,7 @@ export class JiraIssues extends JiraConverter {
         model: 'tms_TaskReleaseRelationship__Upsert',
         record: {
           at: record.record.emitted_at,
-          where: {
+          data: {
             task: {uid: issue.key, source},
             release: {uid: fixVersion.id, source},
           },

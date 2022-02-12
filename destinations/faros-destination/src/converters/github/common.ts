@@ -139,6 +139,7 @@ export class GithubCommon {
     const [organization, repositoryName] = orgRepo;
     return {
       name: toLower(repositoryName),
+      uid: toLower(repositoryName),
       organization: {uid: toLower(organization), source},
     };
   }
@@ -160,6 +161,7 @@ export abstract class GithubConverter extends Converter {
 
 export interface RepositoryKey {
   name: string;
+  uid: string;
   organization: OrgKey;
 }
 

@@ -22,6 +22,7 @@ export class BitbucketBranches extends BitbucketConverter {
         model: 'vcs_Branch',
         record: {
           name: branch.name,
+          uid: branch.name,
           repository: {
             organization: {uid: workspace.toLowerCase(), source},
             name: repo.toLowerCase(),
