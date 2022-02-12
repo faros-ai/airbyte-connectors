@@ -46,6 +46,7 @@ describe('azurepipeline', () => {
     const processedByStream = {
       builds: 9,
       pipelines: 1,
+      releases: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -59,6 +60,7 @@ describe('azurepipeline', () => {
       cicd_BuildStep: 10,
       cicd_Organization: 1,
       cicd_Pipeline: 1,
+      cicd_Release: 1,
       cicd_Repository: 1,
     };
 
