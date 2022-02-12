@@ -120,40 +120,24 @@ export abstract class AzurepipelineConverter extends Converter {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
     const detail = state.toLowerCase();
-
-    // Read more on Azurepipeline job states:
-    // https://Azurepipeline.com/user/graphql/documentation/type/JobStates
+    //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get?view=azure-devops-rest-6.0#taskresult
     switch (detail) {
-      case 'canceling':
+      case 'abandoned':
       case 'canceled':
         return {category: BuildStateCategory.Canceled, detail};
-      case 'blocked_failed':
-      case 'broken':
-      case 'timed_out':
-      case 'timing_out':
-      case 'unblocked_failed':
-      case 'waiting_failed':
-        return {category: BuildStateCategory.Failed, detail};
-      case 'finished':
-        return {category: BuildStateCategory.Success, detail};
-      case 'running':
-        return {category: BuildStateCategory.Running, detail};
-      case 'scheduled':
-      case 'accepted':
-      case 'assigned':
-      case 'blocked':
-      case 'limited':
-      case 'limiting':
-      case 'waiting':
-        return {category: BuildStateCategory.Queued, detail};
+      case 'failed':
       case 'skipped':
-      case 'pending':
-      case 'unblocked':
+        return {category: BuildStateCategory.Failed, detail};
+      case 'succeeded':
+        return {category: BuildStateCategory.Success, detail};
+      case 'succeededWithIssues':
+        return {category: BuildStateCategory.Queued, detail};
       default:
         return {category: BuildStateCategory.Custom, detail};
     }
   }
 
+  // TODO
   convertBuildStepType(type: string): JobState {
     if (!type) {
       return {category: JobCategory.Custom, detail: 'undefined'};

@@ -61,3 +61,6 @@ export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
 export const agileacceleratorAllStreamsLog = readTestResourceFile(
   'agileaccelerator/all-streams.log'
 );
+export const azurepipelineAllStreamsLog = readTestResourceFile(
+  'azurepipeline/all-streams.log'
+);
