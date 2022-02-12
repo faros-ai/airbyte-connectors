@@ -56,6 +56,7 @@ describe('azurepipeline', () => {
 
     const writtenByModel = {
       cicd_Build: 9,
+      cicd_BuildStep: 10,
       cicd_Organization: 1,
       cicd_Pipeline: 1,
       cicd_Repository: 1,

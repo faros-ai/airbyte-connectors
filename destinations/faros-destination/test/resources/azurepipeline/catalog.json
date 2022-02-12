@@ -2,19 +2,19 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__agileaccelerator__pipelines"
+        "name": "mytestsource__azurepipeline__pipelines"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__agileaccelerator__builds"
+        "name": "mytestsource__azurepipeline__builds"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__agileaccelerator__releases"
+        "name": "mytestsource__azurepipeline__releases"
       },
       "destination_sync_mode": "append"
     }

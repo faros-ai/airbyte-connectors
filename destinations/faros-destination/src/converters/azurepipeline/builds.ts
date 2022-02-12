@@ -14,6 +14,8 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
     'cicd_Repository',
   ];
 
+  private seenRepositories = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -51,12 +53,13 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
 
     // TODO
     const repo = build.repository;
-    if (repo) {
+    if (!this.seenRepositories.has(repo.id)) {
+      this.seenRepositories.add(repo.id);
       res.push({
         model: 'cicd_Repository',
         record: {
           uid: repo.id,
-          name: build.id,
+          name: repo.name,
           description: null,
           url: this.getRepoUrl(repo),
           organization,
