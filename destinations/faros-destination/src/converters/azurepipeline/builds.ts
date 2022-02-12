@@ -57,7 +57,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
           uid: repo.id,
           name: build.id,
           description: null,
-          url: repo.id,
+          url: this.getRepoUrl(repo),
           organization,
         },
       });

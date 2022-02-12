@@ -88,7 +88,7 @@ interface BuildLog {
   url: string;
 }
 
-interface Repository {
+export interface Repository {
   id: string;
   type: string;
   name: string;

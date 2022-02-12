@@ -10,6 +10,7 @@ import {
   JobState,
   JobType,
   RepoExtract,
+  Repository,
   Timestamps,
 } from './models';
 
@@ -63,10 +64,24 @@ export abstract class AzurepipelineConverter extends Converter {
     }
   }
 
-  extractRepo(repoUrl: string): RepoExtract | undefined {
-    const gitUrl = parseGitUrl(repoUrl);
-    if (!gitUrl.organization || !gitUrl.name) return undefined;
-    return {org: gitUrl.organization, name: gitUrl.name};
+  // extractRepo(repoUrl: string): RepoExtract | undefined {
+  //   const gitUrl = parseGitUrl(repoUrl);
+  //   if (!gitUrl.organization || !gitUrl.name) return undefined;
+  //   return {org: gitUrl.organization, name: gitUrl.name};
+  // }
+
+  getRepoUrl(repo: Repository): string | undefined {
+    switch (repo.type) {
+      case 'Bitbucket':
+        return `https://bitbucket.org/${repo.id}`;
+      case 'GitHub':
+      case 'GitHubEnterprise':
+        return `https://github.com/${repo.id}`;
+      case 'GitLab':
+        return `https://gitlab.com/${repo.id}`;
+      default:
+        return repo.id;
+    }
   }
 
   convertBuildStepTime(buildStep: BuildTimeline): Timestamps {
