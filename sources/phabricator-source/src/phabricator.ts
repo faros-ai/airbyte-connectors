@@ -143,7 +143,7 @@ export class Phabricator {
       config.server_url,
       config.token,
       {},
-      axios as any
+      axios as any // TODO: figure out how to deal with Axios versions mismatch
     );
 
     Phabricator.phabricator = new Phabricator(
