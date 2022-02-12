@@ -79,8 +79,10 @@ export abstract class AzurepipelineConverter extends Converter {
         return `https://github.com/${repo.id}`;
       case 'GitLab':
         return `https://gitlab.com/${repo.id}`;
+      case 'TfsGit':
+        return repo.url;
       default:
-        return repo.id;
+        return repo.url;
     }
   }
 

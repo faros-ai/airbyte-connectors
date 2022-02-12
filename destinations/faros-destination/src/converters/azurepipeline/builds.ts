@@ -21,6 +21,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
     const source = this.streamName.source;
     const build = record.record.data as Build;
     const uid = String(build.id);
+    const buildUid = {uid, source};
     const organizationName = this.getOrganizationFromUrl(build.url);
     const organization = {uid: organizationName, source};
     const pipeline = {
@@ -67,7 +68,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
       const createdAt = Utils.toDate(job.startTime);
       const startedAt = Utils.toDate(job.startTime);
       const endedAt = Utils.toDate(job.finishTime);
-      const status = this.convertBuildStepState(job.state);
+      const status = this.convertBuildStepState(job.result);
       const type = this.convertBuildStepType(job.type);
 
       res.push({
@@ -81,8 +82,8 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
           startedAt,
           endedAt,
           status,
-          url: build.url,
-          build: {uid, source},
+          url: job.url,
+          build: buildUid,
         },
       });
     }
@@ -98,7 +99,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
           type: artifact.resource.type,
           createdAt,
           tags: null,
-          build: {uid, source},
+          build: buildUid,
           repository: {uid: repo.id, source},
         },
       });
