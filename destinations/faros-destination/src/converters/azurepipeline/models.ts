@@ -280,3 +280,8 @@ export interface JobState {
   category: string;
   detail: string;
 }
+
+export interface Tag {
+  readonly name: string;
+  readonly value: string;
+}

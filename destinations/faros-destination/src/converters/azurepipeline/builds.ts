@@ -4,7 +4,7 @@ import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurepipelineConverter} from './common';
-import {Build} from './models';
+import {Build, Tag} from './models';
 
 export class AzurepipelineBuilds extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -93,6 +93,10 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
 
     for (const artifact of build.artifacts) {
       const createdAt = Utils.toDate(build.startTime);
+      const tags: Tag[] = [];
+      for (const [key, value] of Object.entries(artifact.resource.properties)) {
+        tags.push({name: key, value: String(value)});
+      }
       res.push({
         model: 'cicd_Artifact',
         record: {
@@ -101,7 +105,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
           url: artifact.resource.url,
           type: artifact.resource.type,
           createdAt,
-          tags: null,
+          tags,
           build: buildUid,
           repository: {uid: repo.id, source},
         },
