@@ -172,6 +172,18 @@ export class HasuraClient {
       });
   }
 
+  private backReferenceOriginCheck(br: Reference, origin: string): any {
+    const base = {origin: {_neq: origin}};
+    const nestedChecks = this.backReferences[br.model]
+      .filter((nbr) => nbr.field != br.field)
+      .map((nbr) => this.backReferenceOriginCheck(nbr, origin));
+    return {
+      [br.field]: {
+        _or: [base].concat(nestedChecks),
+      },
+    };
+  }
+
   async resetData(origin: string): Promise<void> {
     const modelDeps: [string, string][] = [];
     for (const model of Object.keys(this.references)) {
@@ -181,22 +193,14 @@ export class HasuraClient {
         }
       }
     }
-    const recordsUsedByOtherOrigins: Dictionary<string[]> = {};
     for (const model of toposort(modelDeps)) {
       this.logger.info(`Resetting ${model} data for origin ${origin}`);
       const deleteConditions = {
         origin: {_eq: origin},
         _not: {
-          _or: this.backReferences[model].map((br) => {
-            return {
-              [br.field]: {
-                _or: [
-                  {origin: {_neq: origin}},
-                  {id: {_in: recordsUsedByOtherOrigins[br.model] ?? []}},
-                ],
-              },
-            };
-          }),
+          _or: this.backReferences[model].map((br) =>
+            this.backReferenceOriginCheck(br, origin)
+          ),
         },
       };
       const mutation = {
@@ -212,21 +216,6 @@ export class HasuraClient {
       await this.postQuery(
         {mutation},
         `Failed to reset ${model} data for origin ${origin}`
-      );
-      const query = {
-        [model]: {
-          __args: {
-            where: {origin: {_eq: origin}},
-          },
-          id: true,
-        },
-      };
-      const response = await this.postQuery(
-        {query},
-        `Failed to fetch ${model} records referenced by other origins`
-      );
-      recordsUsedByOtherOrigins[model] = response.data[model].map(
-        (r: {id: string}) => r.id
       );
     }
   }
