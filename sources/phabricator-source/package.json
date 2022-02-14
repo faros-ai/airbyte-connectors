@@ -1,6 +1,6 @@
 {
   "name": "phabricator-source",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Phabricator Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "axios": "^0.21.4",
     "commander": "^9.0.0",
     "condoit": "^2.1.0",
-    "faros-airbyte-cdk": "^0.1.32",
+    "faros-airbyte-cdk": "^0.1.33",
     "moment": "^2.29.1",
     "verror": "^1.10.0"
   },
