@@ -42,28 +42,22 @@ export abstract class AzurepipelineConverter extends Converter {
     }
     const detail = state.toLowerCase();
 
-    // Read more on Azurepipeline build states:
-    // https://Azurepipeline.com/user/graphql/documentation/type/BuildStates
+    // Read more on Azure pipeline build result:
+    // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildresult
     switch (detail) {
-      case 'canceling':
       case 'canceled':
         return {category: BuildStateCategory.Canceled, detail};
       case 'failed':
         return {category: BuildStateCategory.Failed, detail};
-      case 'passed':
+      case 'succeeded':
+      case 'partiallySucceeded':
         return {category: BuildStateCategory.Success, detail};
       case 'running':
         return {category: BuildStateCategory.Running, detail};
-      case 'scheduled':
-      case 'blocked':
-        return {category: BuildStateCategory.Queued, detail};
-      case 'skipped':
-      case 'not_run':
       default:
         return {category: BuildStateCategory.Custom, detail};
     }
   }
-
   // extractRepo(repoUrl: string): RepoExtract | undefined {
   //   const gitUrl = parseGitUrl(repoUrl);
   //   if (!gitUrl.organization || !gitUrl.name) return undefined;

@@ -45,7 +45,7 @@ export class AzurepipelineReleases extends AzurepipelineConverter {
         name: release.name,
         htmlUrl: release.url,
         description: release.description,
-        draft: release.keepForever,
+        draft: null,
         createdAt,
         releasedAt,
         author: {uid: release.createdBy.id, source},
