@@ -28,12 +28,7 @@ import {VError} from 'verror';
 
 import {HasuraClient} from './community/hasura-client';
 import {Operation, TimestampedRecord} from './community/types';
-import {
-  Converter,
-  StreamContext,
-  StreamName,
-  StreamNameSeparator,
-} from './converters/converter';
+import {Converter, StreamContext, StreamName} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
