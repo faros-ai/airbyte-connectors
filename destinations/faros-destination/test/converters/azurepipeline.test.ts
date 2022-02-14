@@ -63,6 +63,7 @@ describe('azurepipeline', () => {
       cicd_Pipeline: 2,
       cicd_Release: 1,
       cicd_Repository: 2,
+      vcs_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

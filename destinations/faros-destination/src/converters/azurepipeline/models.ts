@@ -285,3 +285,10 @@ export interface Tag {
   readonly name: string;
   readonly value: string;
 }
+
+export enum UserTypeCategory {
+  BOT = 'Bot',
+  ORGANIZATION = 'Organization',
+  USER = 'User',
+  CUSTOM = 'Custom',
+}
