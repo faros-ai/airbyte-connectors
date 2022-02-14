@@ -8,6 +8,7 @@ import {Release, UserTypeCategory} from './models';
 export class AzurepipelineReleases extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
+    'vcs_User',
   ];
 
   private seenUsers = new Set<string>();
