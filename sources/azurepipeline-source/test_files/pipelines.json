@@ -17,46 +17,16 @@
     {
         "_links": {
             "self": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/4?revision=1"
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1"
             },
             "web": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=4"
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=6"
             }
         },
-        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/4?revision=1",
-        "id": 4,
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1",
+        "id": 6,
         "revision": 1,
         "name": "devcube",
-        "folder": "\\"
-    },
-    {
-        "_links": {
-            "self": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/3?revision=1"
-            },
-            "web": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=3"
-            }
-        },
-        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/3?revision=1",
-        "id": 3,
-        "revision": 1,
-        "name": "gotit_feedback.ios-gotit",
-        "folder": "\\"
-    },
-    {
-        "_links": {
-            "self": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/1?revision=1"
-            },
-            "web": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=1"
-            }
-        },
-        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/1?revision=1",
-        "id": 1,
-        "revision": 1,
-        "name": "taxigroup.taxi-driver",
         "folder": "\\"
     }
 ]

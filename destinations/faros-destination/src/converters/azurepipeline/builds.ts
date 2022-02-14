@@ -50,7 +50,6 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
         pipeline,
       },
     });
-
     // TODO
     const repo = build.repository;
     if (!this.seenRepositories.has(repo.id)) {
@@ -111,7 +110,6 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
         },
       });
     }
-
     return res;
   }
 }

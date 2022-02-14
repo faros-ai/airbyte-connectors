@@ -44,8 +44,8 @@ describe('azurepipeline', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      builds: 9,
-      pipelines: 1,
+      builds: 11,
+      pipelines: 2,
       releases: 1,
     };
     const processed = _(processedByStream)
@@ -56,12 +56,13 @@ describe('azurepipeline', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Build: 9,
-      cicd_BuildStep: 10,
+      cicd_Artifact: 1,
+      cicd_Build: 11,
+      cicd_BuildStep: 13,
       cicd_Organization: 1,
-      cicd_Pipeline: 1,
+      cicd_Pipeline: 2,
       cicd_Release: 1,
-      cicd_Repository: 1,
+      cicd_Repository: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();
