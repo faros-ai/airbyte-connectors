@@ -13,7 +13,8 @@
     "title": "Faros Destination Spec",
     "type": "object",
     "required": [
-      "edition_configs"
+      "edition_configs",
+      "origin"
     ],
     "additionalProperties": false,
     "properties": {
@@ -89,6 +90,14 @@
               }
             }
           }
+        ]
+      },
+      "origin": {
+        "type": "string",
+        "title": "Origin name",
+        "description": "The Faros origin name used for uploaded entries. Must be unique.",
+        "examples": [
+          "my-faros-destination"
         ]
       },
       "dry_run": {

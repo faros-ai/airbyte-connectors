@@ -242,6 +242,9 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
+    if (!config.origin) {
+      throw new VError('Faros origin is not set');
+    }
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -268,7 +271,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     await this.init(config);
 
-    const {origin, streams, deleteModelEntries, converterDependencies} =
+    const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
@@ -276,6 +279,7 @@ class FarosDestination extends AirbyteDestination {
     if (this.edition === Edition.COMMUNITY) {
       await this.getHasuraClient().loadSchema();
     }
+
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     const dryRunEnabled = config.dry_run === true || dryRun;
     if (dryRunEnabled || this.edition === Edition.COMMUNITY) {
@@ -284,7 +288,6 @@ class FarosDestination extends AirbyteDestination {
       }
       await this.writeEntries(
         config,
-        origin,
         stdin,
         streams,
         stateMessages,
@@ -300,7 +303,7 @@ class FarosDestination extends AirbyteDestination {
       }
       // Create an entry uploader for the destination graph
       const entryUploaderConfig: EntryUploaderConfig = {
-        name: origin,
+        name: config.origin,
         url: config.edition_configs.api_url,
         authHeader: config.edition_configs.api_key,
         expiration: config.edition_configs.expiration,
@@ -322,7 +325,6 @@ class FarosDestination extends AirbyteDestination {
             // Process input and write entries
             await this.writeEntries(
               config,
-              origin,
               stdin,
               streams,
               stateMessages,
@@ -346,7 +348,6 @@ class FarosDestination extends AirbyteDestination {
 
   private async writeEntries(
     config: AirbyteConfig,
-    origin: string,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
@@ -389,8 +390,8 @@ class FarosDestination extends AirbyteDestination {
             if (this.edition === Edition.COMMUNITY) {
               const data = (msg as AirbyteStateMessage).state?.data;
               if (data && isEmpty(data)) {
-                this.logger.info(`Resetting data for origin ${origin}`);
-                await this.getHasuraClient().resetData(origin);
+                this.logger.info(`Resetting data for origin ${config.origin}`);
+                await this.getHasuraClient().resetData(config.origin);
               }
             }
           } else if (msg.type === AirbyteMessageType.RECORD) {
@@ -419,7 +420,7 @@ class FarosDestination extends AirbyteDestination {
               stats.recordsWritten += await this.writeRecord(
                 converter,
                 unpacked,
-                origin,
+                config.origin,
                 stats.writtenByModel,
                 context,
                 timestampedRecords,
@@ -522,7 +523,6 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
-    origin: string;
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
     converterDependencies: Set<string>;
@@ -531,20 +531,6 @@ class FarosDestination extends AirbyteDestination {
     const streamKeys = Object.keys(streams);
     const deleteModelEntries: string[] = [];
     const dependenciesByStream: Dictionary<Set<string>> = {};
-
-    // Determine origin from stream prefixes
-    const origins = uniq(
-      streamKeys.map((key) =>
-        key.substring(0, key.indexOf(StreamNameSeparator))
-      )
-    );
-    if (origins.length === 0) {
-      throw new VError('Could not determine origin from catalog');
-    } else if (origins.length > 1) {
-      throw new VError(
-        `Found multiple possible origins from catalog: ${origins.join(',')}`
-      );
-    }
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -602,7 +588,6 @@ class FarosDestination extends AirbyteDestination {
     );
 
     return {
-      origin: origins[0],
       streams,
       deleteModelEntries: uniq(deleteModelEntries),
       converterDependencies,

@@ -10,10 +10,10 @@ export interface Assignee {
 }
 
 export enum RepoSource {
-  BITBUCKET = 'bitbucket',
-  GITHUB = 'github',
-  GITLAB = 'gitlab',
-  VCS = 'vcs',
+  BITBUCKET = 'Bitbucket',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  VCS = 'VCS',
 }
 
 export interface Repo {

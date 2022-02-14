@@ -7,7 +7,7 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
-  private stream: StreamName;
+  protected stream: StreamName;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {
