@@ -100,7 +100,7 @@ describe('index', () => {
       token: '',
       domain_name: '',
     });
-    const stream = streams[0];
+    const stream = streams[1];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of itemIter) {
