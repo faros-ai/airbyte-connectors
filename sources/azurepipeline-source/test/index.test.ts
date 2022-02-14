@@ -117,4 +117,33 @@ describe('index', () => {
     expect(fnBuildsFunc).toHaveBeenCalledTimes(1);
     expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
+
+  test('streams - releases, use full_refresh sync mode', async () => {
+    const fnReleasesFunc = jest.fn();
+
+    AzurePipeline.instance = jest.fn().mockImplementation(() => {
+      const releasesResource: any[] = readTestResourceFile('releases.json');
+      return new AzurePipeline(
+        {
+          get: fnReleasesFunc.mockResolvedValue({
+            data: {value: releasesResource},
+          }),
+        } as any,
+        null,
+        null
+      );
+    });
+    const source = new sut.AzurePipelineSource(logger);
+    const streams = source.streams({} as any);
+
+    const releasesStream = streams[0];
+    const releaseIter = releasesStream.readRecords(SyncMode.FULL_REFRESH);
+    const releases = [];
+    for await (const release of releaseIter) {
+      releases.push(release);
+    }
+
+    expect(fnReleasesFunc).toHaveBeenCalledTimes(1);
+    expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
+  });
 });

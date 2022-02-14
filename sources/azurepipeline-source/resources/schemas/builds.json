@@ -424,7 +424,10 @@
             "type": "string"
           },
           "source": {
-            "type": "string"
+            "type": [
+              "object",
+              "null"
+            ]
           },
           "resource": {
             "type": "object",
@@ -556,7 +559,7 @@
           },
           "issues": {
             "type": "array",
-            "items": [
+            "items":
               {
                 "type": "object",
                 "properties": {
@@ -574,7 +577,6 @@
                   }
                 }
               }
-            ]
           }
         }
       }

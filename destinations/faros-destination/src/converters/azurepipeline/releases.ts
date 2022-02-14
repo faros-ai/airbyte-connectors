@@ -30,7 +30,7 @@ export class AzurepipelineReleases extends AzurepipelineConverter {
           draft: release.keepForever,
           createdAt,
           releasedAt,
-          author: {uid: release.modifiedBy.id, source},
+          author: {uid: release.createdBy.id, source},
           source,
         },
       },
