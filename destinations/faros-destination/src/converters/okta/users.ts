@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import {sortBy} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OktaConverter} from './common';
@@ -8,11 +9,11 @@ import {User} from './models';
 export class OktaUsers extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
-    'ims_UserIdentity',
+    'org_Department',
     'org_Employee',
-    'tms_UserIdentity',
-    'vcs_UserIdentity',
   ];
+
+  private seenDepartments = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -20,61 +21,73 @@ export class OktaUsers extends OktaConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;
-    const joinedAt = Utils.toDate(user.created);
-    const manager = {
-      uid: user.profile.managerId
-        ? user.profile.managerId
-        : user.profile.manager,
-      source,
-    };
+    const profile = user.profile;
+    const uid = user.id;
     const res: DestinationRecord[] = [];
 
-    res.push({
-      model: 'identity_Identity',
-      record: {
-        uid: user.id,
-        fullName: `${user.profile.firstName} ${user.profile.middleName} ${user.profile.lastName}`,
-        primaryEmail: user.profile.email,
-        emails: user.credentials.emails,
+    const fullName = [profile.firstName, profile.middleName, profile.lastName]
+      .filter((x) => x)
+      .join(' ');
+
+    const joinedAt =
+      Utils.toDate(profile.startDate) ?? Utils.toDate(user.created) ?? null;
+
+    const departments = sortBy(
+      Object.entries(profile).filter(([k, v]) =>
+        k.toLowerCase().includes('department')
+      ),
+      ([k, v]) => k
+    ).map(([k, v]) => v);
+
+    const department =
+      (departments.length > 0 ? departments[0] : null) ??
+      profile.department ??
+      null;
+
+    if (!this.seenDepartments.has(department)) {
+      this.seenDepartments.add(department);
+      res.push({
+        model: 'org_Department',
+        record: {
+          uid: department,
+          name: department,
+          description: null,
+        },
+      });
+    }
+
+    res.push(
+      {
+        model: 'identity_Identity',
+        record: {
+          uid,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          fullName,
+          photoUrl: null,
+          primaryEmail: profile.email,
+          emails: [profile.email],
+          createdAt: null,
+          updatedAt: null,
+        },
       },
-    });
-    res.push({
-      model: 'ims_UserIdentity',
-      record: {
-        imsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
-    res.push({
-      model: 'org_Employee',
-      record: {
-        uid: user.id,
-        title: user.profile.title,
-        level: user.profile.userType,
-        joinedAt,
-        terminatedAt: null,
-        department: user.profile.department,
-        identity: {uid: user.credentials.emails[0].value, source},
-        manager,
-        reportingChain: null,
-        location: {uid: user.profile.postalAddress, source},
-        source,
-      },
-    });
-    res.push({
-      model: 'tms_UserIdentity',
-      record: {
-        tmsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
-    res.push({
-      model: 'vcs_UserIdentity',
-      record: {
-        vcsUser: {uid: user.id, source},
-        identity: {uid: user.id},
-      },
-    });
+      {
+        model: 'org_Employee',
+        record: {
+          uid,
+          title: profile.title,
+          level: null,
+          joinedAt,
+          terminatedAt: null,
+          department: {uid: department},
+          identity: {uid, source},
+          manager: profile.manager ? {uid: profile.manager, source} : null,
+          reportingChain: null, // TODO: compute reporting chain
+          location: null, // TODO: lookup location
+          source,
+        },
+      }
+    );
 
     return res;
   }

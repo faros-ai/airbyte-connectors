@@ -308,6 +308,9 @@ class FarosDestination extends AirbyteDestination {
         converterDependencies
       );
     } else {
+      this.logger.info(
+        `Opening a new revision on graph ${config.graph} with expiration of ${config.expiration}`
+      );
       // Log all models to be deleted (if any)
       if (deleteModelEntries.length > 0) {
         const modelsToDelete = sortBy(deleteModelEntries).join(',');
