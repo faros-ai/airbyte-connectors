@@ -86,7 +86,7 @@ export class HasuraClient {
     return defaultSource;
   }
 
-  async loadSchema(): Promise<any> {
+  async loadSchema(): Promise<void> {
     await this.fetchPrimaryKeys();
     const source = await this.fetchDbSource();
     const query = await fs.readFile(

@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 export type ApplicationMapping = Record<
   string,
@@ -189,6 +189,11 @@ export abstract class SquadcastConverter extends Converter {
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.squadcastConfig(ctx).application_mapping ?? {};
+    return (
+      parseObjectConfig(
+        this.squadcastConfig(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
 }

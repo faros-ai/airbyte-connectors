@@ -32,7 +32,8 @@
     "axios": "^0.25.0",
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.32",
-    "verror": "^1.10.0"
+    "parse-link-header": "2.0.0",
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
