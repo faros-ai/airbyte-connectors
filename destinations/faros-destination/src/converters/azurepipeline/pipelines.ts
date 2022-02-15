@@ -54,7 +54,7 @@ export class AzurepipelinePipelines extends AzurepipelineConverter {
           startedAt,
           endedAt,
           env: null,
-          status: status,
+          status,
           source,
         },
       });

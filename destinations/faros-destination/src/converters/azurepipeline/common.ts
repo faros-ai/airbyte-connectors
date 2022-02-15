@@ -34,12 +34,12 @@ export abstract class AzurepipelineConverter extends Converter {
     return url.split('/')[3];
   }
 
-  protected bitbucketConfig(ctx: StreamContext): AzurepipelineConfig {
+  protected azurepipleConfig(ctx: StreamContext): AzurepipelineConfig {
     return ctx.config?.source_specific_configs?.azurepipeline;
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.bitbucketConfig(ctx)?.application_mapping ?? {};
+    return this.azurepipleConfig(ctx)?.application_mapping ?? {};
   }
 
   convertBuildState(state: string | undefined): {
