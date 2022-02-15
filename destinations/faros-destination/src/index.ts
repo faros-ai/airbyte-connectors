@@ -28,7 +28,12 @@ import {VError} from 'verror';
 
 import {HasuraClient} from './community/hasura-client';
 import {Operation, TimestampedRecord} from './community/types';
-import {Converter, StreamContext, StreamName} from './converters/converter';
+import {
+  Converter,
+  parseObjectConfig,
+  StreamContext,
+  StreamName,
+} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
@@ -234,6 +239,20 @@ class FarosDestination extends AirbyteDestination {
         'Jira Additional Fields Array Limit must be a non-negative number'
       );
     }
+
+    const objectTypeConfigKeys: [string, string][] = [
+      ['bitbucket', 'application_mapping'],
+      ['pagerduty', 'application_mapping'],
+      ['squadcast', 'application_mapping'],
+      ['statuspage', 'application_mapping'],
+      ['victorops', 'application_mapping'],
+    ];
+    objectTypeConfigKeys.forEach((k) =>
+      parseObjectConfig(
+        config.source_specific_configs?.[k[0]]?.[k[1]],
+        k.join('.')
+      )
+    );
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
