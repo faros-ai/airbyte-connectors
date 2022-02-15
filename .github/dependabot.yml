@@ -10,4 +10,4 @@ updates:
       interval: "monthly"
     labels:
       - 'dependencies'
-    open-pull-requests-limit: 20
+    open-pull-requests-limit: 10

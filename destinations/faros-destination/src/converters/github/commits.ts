@@ -10,10 +10,10 @@ export class GithubCommits extends GithubConverter {
     'vcs_Commit',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;
     const res: DestinationRecord[] = [];
@@ -30,6 +30,7 @@ export class GithubCommits extends GithubConverter {
     res.push({
       model: 'vcs_Commit',
       record: {
+        uid: commit.sha,
         sha: commit.sha,
         message: commit.commit.message,
         author,
@@ -44,8 +45,8 @@ export class GithubCommits extends GithubConverter {
       res.push({
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha: commit.sha, repository},
-          branch: {name: commit.branch, repository},
+          commit: {sha: commit.sha, uid: commit.sha, repository},
+          branch: {name: commit.branch, uid: commit.branch, repository},
         },
       });
     }

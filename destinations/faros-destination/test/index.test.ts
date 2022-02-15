@@ -8,14 +8,14 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {CLI, read} from './cli';
-import {tempConfig} from './temp';
+import {initMockttp, tempConfig} from './testing-tools';
 
 describe('index', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   let configPath: string;
 
   beforeEach(async () => {
-    await mockttp.start({startPort: 30000, endPort: 50000});
+    await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -35,6 +35,7 @@ describe('index', () => {
     const cli = await CLI.runWith(['spec']);
     expect(await read(cli.stderr)).toBe('');
     expect(await read(cli.stdout)).toBe(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
         os.EOL
     );
@@ -42,15 +43,6 @@ describe('index', () => {
   });
 
   test('check', async () => {
-    await mockttp
-      .get('/users/me')
-      .once()
-      .thenReply(200, JSON.stringify({tenantId: '1'}));
-    await mockttp
-      .get('/graphs/test-graph/statistics')
-      .once()
-      .thenReply(200, JSON.stringify({}));
-
     const cli = await CLI.runWith(['check', '--config', configPath]);
 
     expect(await read(cli.stderr)).toBe('');

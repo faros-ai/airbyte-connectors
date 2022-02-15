@@ -19,10 +19,10 @@ export class GithubReviews extends GithubConverter {
     'vcs_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const review = record.record.data;
     const res: DestinationRecord[] = [];
@@ -41,7 +41,7 @@ export class GithubReviews extends GithubConverter {
 
     // Parse the PR number from the pull request url
     const prNum = GithubCommon.parsePRnumber(review.pull_request_url);
-    const pullRequest = {repository, number: prNum};
+    const pullRequest = {repository, number: prNum, uid: prNum.toString()};
 
     const state = ReviewStates.includes(review.state.toLowerCase())
       ? {
@@ -54,6 +54,7 @@ export class GithubReviews extends GithubConverter {
       model: 'vcs_PullRequestReview',
       record: {
         number: review.id,
+        uid: review.id.toString(),
         htmlUrl: review.html_url,
         pullRequest,
         reviewer: author ? {uid: author.record.uid, source} : null,

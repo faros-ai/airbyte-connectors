@@ -38,10 +38,10 @@ export class PagerdutyPrioritiesResource extends PagerdutyConverter {
     return [this.incidentsStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const priorityResource = record.record.data as Priority;
 

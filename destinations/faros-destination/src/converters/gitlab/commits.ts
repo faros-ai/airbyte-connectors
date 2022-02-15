@@ -7,10 +7,10 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class GitlabCommits extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;
 
@@ -23,6 +23,7 @@ export class GitlabCommits extends GitlabConverter {
         model: 'vcs_Commit',
         record: {
           sha: commit.id,
+          uid: commit.id,
           message: commit.message,
           author: commit.author_name ? {uid: commit.author_name, source} : null,
           htmlUrl: commit.web_url,

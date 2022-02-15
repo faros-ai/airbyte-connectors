@@ -31,7 +31,33 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
 
+export const bitbucketAllStreamsLog = readTestResourceFile(
+  'bitbucket/all-streams.log'
+);
+export const statuspageAllStreamsLog = readTestResourceFile(
+  'statuspage/all-streams.log'
+);
+
+export const victoropsAllStreamsLog = readTestResourceFile(
+  'victorops/all-streams.log'
+);
+
 export const harnessAllStreamsLog = readTestResourceFile(
   'harness/all-streams.log'
 );
+
 export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
+
+export const squadcastAllStreamsLog = readTestResourceFile(
+  'squadcast/all-streams.log'
+);
+
+export const googlecalendarAllStreamsLog = readTestResourceFile(
+  'googlecalendar/all-streams.log'
+);
+
+export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
+
+export const agileacceleratorAllStreamsLog = readTestResourceFile(
+  'agileaccelerator/all-streams.log'
+);

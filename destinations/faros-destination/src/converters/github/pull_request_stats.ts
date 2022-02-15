@@ -8,10 +8,10 @@ export class GithubPullRequestStats extends GithubConverter {
     'vcs_PullRequest',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prStats = record.record.data;
     const repository = GithubCommon.parseRepositoryKey(
@@ -28,6 +28,7 @@ export class GithubPullRequestStats extends GithubConverter {
           at: record.record.emitted_at,
           where: {
             number: prStats.number,
+            uid: prStats.number.toString(),
             repository,
           },
           mask: ['commitCount', 'commentCount', 'diffStats'],

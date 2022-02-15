@@ -13,10 +13,10 @@ export class GitlabBranches extends GitlabConverter {
     return record?.record?.data?.name;
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const branch = record.record.data;
     const res: DestinationRecord[] = [];
@@ -29,6 +29,7 @@ export class GitlabBranches extends GitlabConverter {
       model: 'vcs_Branch',
       record: {
         name: branch.name,
+        uid: branch.name,
         repository,
       },
     });
@@ -36,8 +37,8 @@ export class GitlabBranches extends GitlabConverter {
       res.push({
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha: branch.commit_id, repository},
-          branch: {name: branch.name, repository},
+          commit: {sha: branch.commit_id, uid: branch.commit_id, repository},
+          branch: {name: branch.name, uid: branch.name, repository},
         },
       });
     }

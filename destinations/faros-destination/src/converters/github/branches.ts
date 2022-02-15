@@ -6,10 +6,10 @@ import {GithubCommon, GithubConverter} from './common';
 export class GithubBranches extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Branch'];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const branch = record.record.data;
 
@@ -25,6 +25,7 @@ export class GithubBranches extends GithubConverter {
         model: 'vcs_Branch',
         record: {
           name: branch.name,
+          uid: branch.name,
           repository,
         },
       },

@@ -1,6 +1,6 @@
 {
   "name": "harness-source",
-  "version": "0.1.23",
+  "version": "0.1.32",
   "description": "Harness Airbyte source",
   "keywords": [
     "airbyte",
@@ -30,10 +30,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.23",
-    "graphql-request": "^3.6.1",
+    "axios": "^0.25.0",
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.32",
+    "graphql-request": "^4.0.0",
     "luxon": "^2.0.2",
     "verror": "^1.10.0"
   },

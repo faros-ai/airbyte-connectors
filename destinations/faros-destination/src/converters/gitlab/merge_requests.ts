@@ -20,10 +20,10 @@ export class GitlabMergeRequests extends GitlabConverter {
     return [this.usersStream];
   }
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const mr = record.record.data;
 
@@ -40,6 +40,7 @@ export class GitlabMergeRequests extends GitlabConverter {
         model: 'vcs_PullRequest',
         record: {
           number: mr.id,
+          uid: mr.id.toString(),
           title: mr.title,
           state: this.pullRequestState(mr.state),
           htmlUrl: mr.web_url,

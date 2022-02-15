@@ -15,21 +15,22 @@ export class GithubPullRequests extends GithubConverter {
     'vcs_User',
   ];
 
-  convert(
+  async convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): ReadonlyArray<DestinationRecord> {
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pr = record.record.data;
     const res: DestinationRecord[] = [];
 
     const repository: RepositoryKey = {
       name: toLower(pr.base.repo.name),
+      uid: toLower(pr.base.repo.name),
       organization: {uid: toLower(pr.base.repo.owner.login), source},
     };
 
     const mergeCommit = pr.merge_commit_sha
-      ? {repository, sha: pr.merge_commit_sha}
+      ? {repository, sha: pr.merge_commit_sha, uid: pr.merge_commit_sha}
       : null;
 
     let author: DestinationRecord | undefined = undefined;
@@ -51,6 +52,7 @@ export class GithubPullRequests extends GithubConverter {
         at: 0,
         data: {
           number: pr.number,
+          uid: pr.number.toString(),
           title: pr.title,
           state,
           htmlUrl: pr.url,
