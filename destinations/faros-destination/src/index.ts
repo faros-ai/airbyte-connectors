@@ -20,7 +20,7 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
+import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -359,11 +359,17 @@ class FarosDestination extends AirbyteDestination {
             return {lastSynced: new Date().toISOString()};
           } finally {
             // Don't forget to close the writer
-            writer.end();
+            if (!writer.writableEnded) writer.end();
           }
         }
       );
     }
+
+    // Log collected statistics
+    stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
+
+    // TODO: report stats to Segment
+
     // Since we are writing all records in a single revision,
     // we should be ok to return all the state messages at the end,
     // once the revision has been closed.
@@ -465,43 +471,11 @@ class FarosDestination extends AirbyteDestination {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
-      if (writer && writer instanceof HasuraWriter) {
-        await writer.end();
-      }
-
-      // TODO: report stats to Segment (within the try block)
+      // Don't forget to close the writer
+      await writer?.end();
     } finally {
-      this.logWriteStats(stats, writer);
       input.close();
     }
-  }
-
-  private logWriteStats(
-    stats: WriteStats,
-    writer?: Writable | HasuraWriter
-  ): void {
-    this.logger.info(`Read ${stats.messagesRead} messages`);
-    this.logger.info(`Read ${stats.recordsRead} records`);
-    this.logger.info(`Processed ${stats.recordsProcessed} records`);
-    const processed = _(stats.processedByStream)
-      .toPairs()
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-    this.logger.info(
-      `Processed records by stream: ${JSON.stringify(processed)}`
-    );
-    const writeMsg = writer ? 'Wrote' : 'Would write';
-    this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
-    const written = _(stats.writtenByModel)
-      .toPairs()
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-    this.logger.info(
-      `${writeMsg} records by model: ${JSON.stringify(written)}`
-    );
-    this.logger.info(`Errored ${stats.recordsErrored} records`);
   }
 
   private async handleRecordProcessingError(
