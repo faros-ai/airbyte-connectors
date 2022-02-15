@@ -321,7 +321,7 @@
                   "type": "string"
                 },
                 "title": "Skip tags",
-                "description": "The images with the listed tags will be ignored by the feed. Must be a comma separated list."
+                "description": "The images with the listed tags will be ignored by the feed"
               },
               "organization": {
                 "type": "string",

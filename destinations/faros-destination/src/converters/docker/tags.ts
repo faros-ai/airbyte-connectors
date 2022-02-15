@@ -111,7 +111,7 @@ export class DockerTags extends DockerConverter {
       }
     } else {
       this.logger.info(
-        `kipped artifact in repo ${repositoryKey.uid} (uid: ${tag.name})`
+        `Skipped artifact in repo ${repositoryKey.uid} (uid: ${tag.name})`
       );
     }
 

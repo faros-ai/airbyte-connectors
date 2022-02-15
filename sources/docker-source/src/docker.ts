@@ -8,7 +8,7 @@ import {VError} from 'verror';
 const DEFAULT_REGISTRY_BASE = 'registry-1.docker.io';
 const DEFAULT_MAX_PAGES = 5;
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_AUTH_ENDPOINT = 'tags/list';
+const DEFAULT_AUTH_ENDPOINT = '/tags/list';
 
 type DockerCredentials = {username: string; password: string};
 
@@ -109,7 +109,7 @@ export class Docker {
 
   protected static getAuthToken(config: DockerConfig): Promise<string> {
     const authEndpoint = config.authEndpoint || DEFAULT_AUTH_ENDPOINT;
-    const authPath = `/${config.projectName}/${authEndpoint}`;
+    const authPath = `/${config.projectName}${authEndpoint}`;
     const registryBase = config.registryBase || DEFAULT_REGISTRY_BASE;
 
     return dockerRegistry.getAuthTokenForEndpoint(

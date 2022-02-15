@@ -34,7 +34,7 @@
         "type": "string",
         "title": "Authorization endpoint",
         "description": "Endpoint used to get access token",
-        "default": "tags/list"
+        "default": "/tags/list"
       },
       "bearerAuthorization": {
         "type": "boolean",
