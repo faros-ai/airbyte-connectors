@@ -3,7 +3,6 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAUTL_OVERVIEW = true;
 const DEFAULT_PAGE_SIZE = 25; // 25 is API default
 
@@ -31,7 +30,6 @@ interface Assignment {
 export interface PagerdutyConfig {
   readonly token: string;
   readonly pageSize?: number;
-  readonly cutoffDays?: number;
   readonly defaultSeverity?: IncidentSeverityCategory;
   readonly incidentLogEntriesOverview?: boolean;
 }
@@ -110,10 +108,6 @@ export class Pagerduty {
     const pageSize = this.validateInteger(config.pageSize);
     if (pageSize) {
       throw new VError(pageSize);
-    }
-    const cutoffDays = this.validateInteger(config.cutoffDays);
-    if (cutoffDays) {
-      throw new VError(cutoffDays);
     }
     const client = api({token: config.token});
 
@@ -201,8 +195,8 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since: string | null,
-    limit: number = DEFAULT_PAGE_SIZE
+    since?: string,
+    limit = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
     let until: Date;
     let timeRange = '&date_range=all';
@@ -225,7 +219,7 @@ export class Pagerduty {
   }
 
   async *getIncidentLogEntries(
-    since: string | null,
+    since?: string,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW

@@ -1,6 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {ClientError, GraphQLClient} from 'graphql-request';
-import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 import {
@@ -11,7 +10,6 @@ import {
 } from './harness_models';
 import {getQueryExecution, getQueryToCheckConnection} from './resources';
 
-export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_HARNESS_API_URL = 'https://app.harness.io';
 
@@ -99,13 +97,13 @@ export class Harness {
           // deployments without ended times
           if (!endedAt && startedAt && since >= startedAt) {
             logger.info(
-              `Skipping deployment: ${item.application.id} with no finished time but has started time: ${item.startedAt}, which is before current cutoff: ${since}`
+              `Skipping deployment: ${item.application.id} with no finished time but has started time: ${item.startedAt}, which is before current since time: ${since}`
             );
             continue;
           }
           if (endedAt && since >= endedAt) {
             logger.info(
-              `Skipping execution ${item.id}, ended ${item.endedAt} before cutoff ${since}`
+              `Skipping execution ${item.id}, ended ${item.endedAt} before since time ${since}`
             );
             return null;
           }

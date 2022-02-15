@@ -4,10 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {DateTime, Duration, Interval} from 'luxon';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_CUTOFF_DAYS, Harness} from '../harness';
+import {Harness} from '../harness';
 import {ExecutionNode, ExecutionState, HarnessConfig} from '../harness_models';
 
 const DEFAULT_DEPLOYMENT_TIMEOUT = 24;
@@ -37,18 +37,8 @@ export class Executions extends AirbyteStreamBase {
   ): AsyncGenerator<ExecutionNode> {
     const harness = Harness.instance(this.config, this.logger);
 
-    let since: number = null;
-    if (syncMode === SyncMode.INCREMENTAL) {
-      const defaultCutoffDate: number = DateTime.now()
-        .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
-        .toMillis();
-      /** If we have already synced this execution, ignore cutoffDays
-        and get everything since last sync to avoid gaps in data. Instead
-        of sync execution from cutoff days*/
-      since = streamState?.lastEndedAt
-        ? streamState.lastEndedAt
-        : defaultCutoffDate;
-    }
+    const since =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.lastEndedAt : undefined;
 
     yield* harness.getExecutions(since);
   }
@@ -57,10 +47,12 @@ export class Executions extends AirbyteStreamBase {
     currentStreamState: ExecutionState,
     latestRecord: ExecutionNode
   ): ExecutionState {
+    console.log({});
+
     const deploymentStatus = this.toDeploymentStatus(latestRecord.status);
     const isRunning = ['Running', 'Queued'].includes(deploymentStatus.category);
-    const lastEndedAt = currentStreamState.lastEndedAt;
-    const startedAt = latestRecord.startedAt;
+    const lastEndedAt = currentStreamState?.lastEndedAt ?? 0;
+    const startedAt = latestRecord?.startedAt ?? 0;
 
     if (startedAt && isRunning) {
       const startedAtDate = DateTime.fromMillis(startedAt);
@@ -76,7 +68,7 @@ export class Executions extends AirbyteStreamBase {
     }
 
     return {
-      lastEndedAt: Math.max(lastEndedAt ?? 0, latestRecord.endedAt || 0),
+      lastEndedAt: Math.max(lastEndedAt, latestRecord.endedAt),
     };
   }
 
