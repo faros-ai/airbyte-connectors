@@ -38,6 +38,21 @@ export abstract class Converter {
   ): Promise<ReadonlyArray<DestinationRecord>>;
 }
 
+export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
+  if (!obj) return undefined;
+  if (typeof obj === 'object') return obj;
+  if (typeof obj === 'string') {
+    try {
+      return JSON.parse(obj);
+    } catch (e) {
+      throw new VError(
+        `Could not parse JSON object from ${name} ${obj}. Error: ${e}`
+      );
+    }
+  }
+  throw new VError(`${name} must be a JSON object or stringified JSON object`);
+}
+
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
   constructor(

@@ -1,6 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, DestinationRecord, StreamContext} from '../converter';
+import {
+  Converter,
+  DestinationRecord,
+  parseObjectConfig,
+  StreamContext,
+} from '../converter';
 import {User} from './types';
 
 interface BitbucketConfig {
@@ -59,6 +64,11 @@ export abstract class BitbucketConverter extends Converter {
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.bitbucketConfig(ctx)?.application_mapping ?? {};
+    return (
+      parseObjectConfig(
+        this.bitbucketConfig(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
 }
