@@ -141,40 +141,6 @@
         "jobs": [
             {
                 "previousAttempts": [],
-                "id": "b79b690b-82d1-5750-8a0a-452d70195841",
-                "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
-                "type": "Job",
-                "name": "B",
-                "startTime": null,
-                "finishTime": null,
-                "currentOperation": null,
-                "percentComplete": null,
-                "state": "completed",
-                "result": "failed",
-                "resultCode": null,
-                "changeId": 10,
-                "lastModified": "0001-01-01T00:00:00",
-                "workerName": null,
-                "queueId": 9,
-                "order": 1,
-                "details": null,
-                "errorCount": 1,
-                "warningCount": 0,
-                "url": null,
-                "log": null,
-                "task": null,
-                "attempt": 1,
-                "identifier": "B.__default",
-                "issues": [
-                    {
-                        "type": "error",
-                        "category": null,
-                        "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request"
-                    }
-                ]
-            },
-            {
-                "previousAttempts": [],
                 "id": "b44a04b4-b5b2-595a-77f4-4561138d2268",
                 "parentId": "67c760f8-35f0-533f-1d24-8e8c3788c96d",
                 "type": "Job",
@@ -199,6 +165,40 @@
                 "task": null,
                 "attempt": 1,
                 "identifier": "A.__default",
+                "issues": [
+                    {
+                        "type": "error",
+                        "category": null,
+                        "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request"
+                    }
+                ]
+            },
+            {
+                "previousAttempts": [],
+                "id": "b79b690b-82d1-5750-8a0a-452d70195841",
+                "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
+                "type": "Job",
+                "name": "B",
+                "startTime": null,
+                "finishTime": null,
+                "currentOperation": null,
+                "percentComplete": null,
+                "state": "completed",
+                "result": "failed",
+                "resultCode": null,
+                "changeId": 10,
+                "lastModified": "0001-01-01T00:00:00",
+                "workerName": null,
+                "queueId": 9,
+                "order": 1,
+                "details": null,
+                "errorCount": 1,
+                "warningCount": 0,
+                "url": null,
+                "log": null,
+                "task": null,
+                "attempt": 1,
+                "identifier": "B.__default",
                 "issues": [
                     {
                         "type": "error",
@@ -376,40 +376,6 @@
         "jobs": [
             {
                 "previousAttempts": [],
-                "id": "b79b690b-82d1-5750-8a0a-452d70195841",
-                "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
-                "type": "Job",
-                "name": "B",
-                "startTime": null,
-                "finishTime": null,
-                "currentOperation": null,
-                "percentComplete": null,
-                "state": "completed",
-                "result": "failed",
-                "resultCode": null,
-                "changeId": 10,
-                "lastModified": "0001-01-01T00:00:00",
-                "workerName": null,
-                "queueId": 9,
-                "order": 1,
-                "details": null,
-                "errorCount": 1,
-                "warningCount": 0,
-                "url": null,
-                "log": null,
-                "task": null,
-                "attempt": 1,
-                "identifier": "B.__default",
-                "issues": [
-                    {
-                        "type": "error",
-                        "category": null,
-                        "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request"
-                    }
-                ]
-            },
-            {
-                "previousAttempts": [],
                 "id": "b44a04b4-b5b2-595a-77f4-4561138d2268",
                 "parentId": "67c760f8-35f0-533f-1d24-8e8c3788c96d",
                 "type": "Job",
@@ -434,6 +400,40 @@
                 "task": null,
                 "attempt": 1,
                 "identifier": "A.__default",
+                "issues": [
+                    {
+                        "type": "error",
+                        "category": null,
+                        "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request"
+                    }
+                ]
+            },
+            {
+                "previousAttempts": [],
+                "id": "b79b690b-82d1-5750-8a0a-452d70195841",
+                "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
+                "type": "Job",
+                "name": "B",
+                "startTime": null,
+                "finishTime": null,
+                "currentOperation": null,
+                "percentComplete": null,
+                "state": "completed",
+                "result": "failed",
+                "resultCode": null,
+                "changeId": 10,
+                "lastModified": "0001-01-01T00:00:00",
+                "workerName": null,
+                "queueId": 9,
+                "order": 1,
+                "details": null,
+                "errorCount": 1,
+                "warningCount": 0,
+                "url": null,
+                "log": null,
+                "task": null,
+                "attempt": 1,
+                "identifier": "B.__default",
                 "issues": [
                     {
                         "type": "error",

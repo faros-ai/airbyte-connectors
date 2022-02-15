@@ -12,6 +12,7 @@ import {
   PipelineResponse,
   Release,
   ReleaseResponse,
+  RunResponse,
 } from './models';
 
 const DEFAULT_API_VERSION = '6.0';
@@ -104,6 +105,12 @@ export class AzurePipeline {
   async *getPipelines(): AsyncGenerator<Pipeline> {
     const res = await this.httpClient.get<PipelineResponse>('pipelines');
     for (const item of res.data.value) {
+      const run = await this.httpClient.get<RunResponse>(
+        `pipelines/${item.id}/runs`
+      );
+      if (run.status === 200) {
+        item.runs = run.data.value;
+      }
       yield item;
     }
   }
@@ -114,8 +121,9 @@ export class AzurePipeline {
       const artifact = await this.httpClient.get<BuildArtifactResponse>(
         `build/builds/${item.id}/artifacts`
       );
-      item.artifacts = artifact.data.value;
-
+      if (artifact.status === 200) {
+        item.artifacts = artifact.data.value;
+      }
       const timeline = await this.httpClient.get<BuildTimelineResponse>(
         `build/builds/${item.id}/timeline`
       );

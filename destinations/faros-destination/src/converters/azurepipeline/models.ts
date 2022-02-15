@@ -7,6 +7,32 @@ interface PipelineLink {
   web: Href;
 }
 
+interface RunLink {
+  self: Href;
+  web: Href;
+  pipeline: Href;
+}
+
+interface RunPipeline {
+  url: string;
+  id: number;
+  revision: number;
+  name: string;
+  folder: string;
+}
+
+interface Run {
+  _links: RunLink;
+  pipeline: RunPipeline;
+  state: string;
+  result: string;
+  createdDate: string;
+  finishedDate: string;
+  url: string;
+  id: number;
+  name: string;
+}
+
 export interface Pipeline {
   id: number;
   revision: number;
@@ -14,6 +40,7 @@ export interface Pipeline {
   url?: string;
   folder?: string;
   _links: PipelineLink;
+  runs: Run[];
 }
 
 interface BuildLink {
