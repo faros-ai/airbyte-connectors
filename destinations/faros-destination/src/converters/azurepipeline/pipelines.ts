@@ -1,11 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurepipelineConverter} from './common';
-import {Pipeline} from './models';
+import {ComputeApplication, Pipeline} from './models';
 
 export class AzurepipelinePipelines extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Deployment',
     'cicd_Organization',
     'cicd_Pipeline',
   ];
@@ -31,6 +33,28 @@ export class AzurepipelinePipelines extends AzurepipelineConverter {
           name: organizationName,
           description: null,
           url: null,
+          source,
+        },
+      });
+    }
+
+    for (const runItem of pipeline.runs) {
+      const applicationMapping = this.applicationMapping(ctx);
+      const application =
+        (applicationMapping && applicationMapping[runItem.name]) ?? null;
+      const startedAt = Utils.toDate(runItem.createdDate);
+      const endedAt = Utils.toDate(runItem.finishedDate);
+      const status = this.convertDeploymentStatus(runItem.result);
+      res.push({
+        model: 'cicd_Deployment',
+        record: {
+          uid: String(runItem.id),
+          application,
+          build: {uid: String(runItem.id), source},
+          startedAt,
+          endedAt,
+          env: null,
+          status: status,
           source,
         },
       });

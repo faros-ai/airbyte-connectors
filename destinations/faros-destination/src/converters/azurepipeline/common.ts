@@ -2,14 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import parseGitUrl from 'git-url-parse';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 import {
   BuildStateCategory,
   BuildTimeline,
+  DeploymentStatus,
+  DeploymentStatusCategory,
   JobCategory,
   JobState,
-  JobType,
-  RepoExtract,
   Repository,
   Timestamps,
 } from './models';
@@ -33,6 +33,15 @@ export abstract class AzurepipelineConverter extends Converter {
   getOrganizationFromUrl(url: string): string {
     return url.split('/')[3];
   }
+
+  protected bitbucketConfig(ctx: StreamContext): AzurepipelineConfig {
+    return ctx.config?.source_specific_configs?.azurepipeline;
+  }
+
+  protected applicationMapping(ctx: StreamContext): ApplicationMapping {
+    return this.bitbucketConfig(ctx)?.application_mapping ?? {};
+  }
+
   convertBuildState(state: string | undefined): {
     category: string;
     detail: string;
@@ -136,15 +145,23 @@ export abstract class AzurepipelineConverter extends Converter {
     if (!type) {
       return {category: JobCategory.Custom, detail: 'undefined'};
     }
-    const detail = type;
-    switch (type) {
-      case JobType.JobTypeCommand:
-        return {category: JobCategory.Script, detail};
-      case JobType.JobTypeBlock:
-        return {category: JobCategory.Manual, detail};
-      case JobType.JobTypeWait:
+    return {category: JobCategory.Custom, detail: type};
+  }
+
+  convertDeploymentStatus(result: string): DeploymentStatus {
+    if (!result) {
+      return {category: DeploymentStatusCategory.Custom, detail: 'undefined'};
+    }
+    const detail = result;
+    switch (result) {
+      case 'canceled':
+        return {category: DeploymentStatusCategory.Canceled, detail};
+      case 'failed':
+        return {category: DeploymentStatusCategory.Failed, detail};
+      case 'succeeded':
+        return {category: DeploymentStatusCategory.Success, detail};
       default:
-        return {category: JobCategory.Custom, detail};
+        return {category: DeploymentStatusCategory.Custom, detail};
     }
   }
 }

@@ -271,13 +271,6 @@ export enum BuildStateCategory {
   Custom = 'Custom',
 }
 
-export enum JobType {
-  JobTypeBlock = 'JobTypeBlock',
-  JobTypeTrigger = 'JobTypeTrigger',
-  JobTypeWait = 'JobTypeWait',
-  JobTypeCommand = 'JobTypeCommand',
-}
-
 export enum JobCategory {
   Custom = 'Custom',
   Script = 'Script',
@@ -318,4 +311,24 @@ export enum UserTypeCategory {
   ORGANIZATION = 'Organization',
   USER = 'User',
   CUSTOM = 'Custom',
+}
+
+export enum DeploymentStatusCategory {
+  Canceled = 'Canceled',
+  Custom = 'Custom',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  RolledBack = 'RolledBack',
+  Success = 'Success',
+}
+
+export interface DeploymentStatus {
+  category: DeploymentStatusCategory;
+  detail: string;
+}
+
+export interface ComputeApplication {
+  name: string;
+  platform: string;
 }

@@ -59,6 +59,7 @@ describe('azurepipeline', () => {
       cicd_Artifact: 1,
       cicd_Build: 11,
       cicd_BuildStep: 13,
+      cicd_Deployment: 3,
       cicd_Organization: 1,
       cicd_Pipeline: 2,
       cicd_Release: 1,
