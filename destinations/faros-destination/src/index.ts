@@ -26,8 +26,9 @@ import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {WriteStats} from './common/write-stats';
 import {HasuraClient} from './community/hasura-client';
-import {Operation, TimestampedRecord} from './community/types';
+import {HasuraWriter} from './community/hasura-writer';
 import {
   Converter,
   parseObjectConfig,
@@ -70,16 +71,6 @@ export enum InvalidRecordStrategy {
 export enum Edition {
   COMMUNITY = 'community',
   CLOUD = 'cloud',
-}
-
-interface WriteStats {
-  messagesRead: number;
-  recordsRead: number;
-  recordsProcessed: number;
-  recordsWritten: number;
-  recordsErrored: number;
-  processedByStream: Dictionary<number>;
-  writtenByModel: Dictionary<number>;
 }
 
 interface FarosDestinationState {
@@ -139,7 +130,9 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
     try {
-      await this.getHasuraClient().healthCheck();
+      if (config.dry_run !== true) {
+        await this.getHasuraClient().healthCheck();
+      }
     } catch (e) {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
@@ -161,7 +154,9 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
     try {
-      await this.getFarosClient().tenant();
+      if (config.dry_run !== true) {
+        await this.getFarosClient().tenant();
+      }
     } catch (e) {
       throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
     }
@@ -289,23 +284,37 @@ class FarosDestination extends AirbyteDestination {
       this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
-
-    if (this.edition === Edition.COMMUNITY) {
-      await this.getHasuraClient().loadSchema();
-    }
+    const stats = new WriteStats();
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     const dryRunEnabled = config.dry_run === true || dryRun;
-    if (dryRunEnabled || this.edition === Edition.COMMUNITY) {
-      if (dryRunEnabled) {
-        this.logger.info("Dry run is ENABLED. Won't write any records");
-      }
+    if (dryRunEnabled) {
+      this.logger.info("Dry run is ENABLED. Won't write any records");
       await this.writeEntries(
         config,
         stdin,
         streams,
         stateMessages,
-        converterDependencies
+        converterDependencies,
+        stats
+      );
+    } else if (this.edition === Edition.COMMUNITY) {
+      await this.getHasuraClient().loadSchema();
+
+      const writer = new HasuraWriter(
+        this.getHasuraClient(),
+        stats,
+        this.handleRecordProcessingError
+      );
+
+      await this.writeEntries(
+        config,
+        stdin,
+        streams,
+        stateMessages,
+        converterDependencies,
+        stats,
+        writer
       );
     } else {
       // Log all models to be deleted (if any)
@@ -343,6 +352,7 @@ class FarosDestination extends AirbyteDestination {
               streams,
               stateMessages,
               converterDependencies,
+              stats,
               writer
             );
             // Return the current time
@@ -366,25 +376,15 @@ class FarosDestination extends AirbyteDestination {
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
     converterDependencies: Set<string>,
-    writer?: Writable
+    stats: WriteStats,
+    writer?: Writable | HasuraWriter
   ): Promise<void> {
-    const stats = {
-      messagesRead: 0,
-      recordsRead: 0,
-      recordsProcessed: 0,
-      recordsWritten: 0,
-      recordsErrored: 0,
-      processedByStream: {},
-      writtenByModel: {},
-    };
-
     const ctx = new StreamContext(
       config,
       this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
     );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
-    const timestampedRecords: TimestampedRecord[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -398,6 +398,7 @@ class FarosDestination extends AirbyteDestination {
       for await (const line of input) {
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
+
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
@@ -417,8 +418,7 @@ class FarosDestination extends AirbyteDestination {
               throw new VError('Empty unpacked record');
             }
             const stream = unpacked.record.stream;
-            const count = stats.processedByStream[stream];
-            stats.processedByStream[stream] = count ? count + 1 : 1;
+            stats.incrementProcessedByStream(stream);
 
             const converter = this.getConverter(stream);
             const writeRecord = async (
@@ -427,9 +427,8 @@ class FarosDestination extends AirbyteDestination {
               stats.recordsWritten += await this.writeRecord(
                 converter,
                 unpacked,
-                stats.writtenByModel,
+                stats,
                 context,
-                timestampedRecords,
                 writer
               );
               stats.recordsProcessed++;
@@ -466,26 +465,21 @@ class FarosDestination extends AirbyteDestination {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
-
-      if (this.edition === Edition.COMMUNITY) {
-        for (const record of sortBy(timestampedRecords, (r) => r.at)) {
-          await this.handleRecordProcessingError(stats, async () => {
-            await this.getHasuraClient().writeTimestampedRecord(record);
-            stats.recordsWritten++;
-            this.updateModelWriteStats(
-              stats.writtenByModel,
-              `${record.model}__${record.operation}`
-            );
-          });
-        }
+      if (writer && writer instanceof HasuraWriter) {
+        await writer.end();
       }
+
+      // TODO: report stats to Segment (within the try block)
     } finally {
       this.logWriteStats(stats, writer);
       input.close();
     }
   }
 
-  private logWriteStats(stats: WriteStats, writer?: Writable): void {
+  private logWriteStats(
+    stats: WriteStats,
+    writer?: Writable | HasuraWriter
+  ): void {
     this.logger.info(`Read ${stats.messagesRead} messages`);
     this.logger.info(`Read ${stats.recordsRead} records`);
     this.logger.info(`Processed ${stats.recordsProcessed} records`);
@@ -497,8 +491,7 @@ class FarosDestination extends AirbyteDestination {
     this.logger.info(
       `Processed records by stream: ${JSON.stringify(processed)}`
     );
-    const writeMsg =
-      writer || this.edition === Edition.COMMUNITY ? 'Wrote' : 'Would write';
+    const writeMsg = writer ? 'Wrote' : 'Would write';
     this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
     const written = _(stats.writtenByModel)
       .toPairs()
@@ -619,10 +612,9 @@ class FarosDestination extends AirbyteDestination {
   private async writeRecord(
     converter: Converter,
     recordMessage: AirbyteRecord,
-    writtenByModel: Dictionary<number>,
+    stats: WriteStats,
     ctx: StreamContext,
-    timestampedRecords: TimestampedRecord[],
-    writer?: Writable
+    writer?: Writable | HasuraWriter
   ): Promise<number> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
@@ -642,44 +634,23 @@ class FarosDestination extends AirbyteDestination {
       if (!result.record['source']) {
         result.record['source'] = converter.streamName.source;
       }
-      const obj: Dictionary<any> = {};
-      obj[result.model] = result.record;
-      let isTimestamped = false;
-      if (this.edition === Edition.COMMUNITY) {
-        const hasura = this.getHasuraClient();
-        const [baseModel, operation] = result.model.split('__', 2);
-        if (!operation) {
-          await hasura.writeRecord(result.model, result.record);
-        } else if (Object.values(Operation).includes(operation as Operation)) {
-          timestampedRecords.push({
-            model: baseModel,
-            operation,
-            ...result.record,
-          } as TimestampedRecord);
-          isTimestamped = true;
-        } else {
-          throw new VError(
-            `Unuspported model operation ${operation} for ${result.model}: ${result.record}`
-          );
-        }
-      } else {
-        writer?.write(obj);
-      }
 
+      let isTimestamped = false;
+      if (writer) {
+        if (writer instanceof HasuraWriter) {
+          isTimestamped = await writer.write(result);
+        } else {
+          const obj: Dictionary<any> = {};
+          obj[result.model] = result.record;
+          writer.write(obj);
+        }
+      }
       if (!isTimestamped) {
         recordsWritten++;
-        this.updateModelWriteStats(writtenByModel, result.model);
+        stats.incrementWrittenByModel(result.model);
       }
     }
 
     return recordsWritten;
-  }
-
-  private updateModelWriteStats(
-    writtenByModel: Dictionary<number>,
-    model: string
-  ): void {
-    const count = writtenByModel[model];
-    writtenByModel[model] = count ? count + 1 : 1;
   }
 }
