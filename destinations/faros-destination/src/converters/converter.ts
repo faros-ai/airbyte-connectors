@@ -38,6 +38,8 @@ export abstract class Converter {
   ): Promise<ReadonlyArray<DestinationRecord>>;
 }
 
+// Helper function for reading object type configurations that
+// may be inputted as proper JSON via API or stringified JSON via Airbyte UI
 export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
   if (!obj) return undefined;
   if (typeof obj === 'object') return obj;
