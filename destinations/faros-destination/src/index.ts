@@ -272,7 +272,9 @@ class FarosDestination extends AirbyteDestination {
     const stateMessages: AirbyteStateMessage[] = [];
 
     if (this.edition === Edition.COMMUNITY) {
-      await this.getHasuraClient().loadSchema();
+      const hasura = this.getHasuraClient();
+      await hasura.loadSchema();
+      await hasura.resetData(config.origin, deleteModelEntries);
     }
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
@@ -382,13 +384,6 @@ class FarosDestination extends AirbyteDestination {
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
-            if (this.edition === Edition.COMMUNITY) {
-              const data = (msg as AirbyteStateMessage).state?.data;
-              if (data && isEmpty(data)) {
-                this.logger.info(`Resetting data for origin ${config.origin}`);
-                await this.getHasuraClient().resetData(config.origin);
-              }
-            }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;

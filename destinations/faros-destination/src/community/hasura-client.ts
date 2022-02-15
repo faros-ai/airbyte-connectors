@@ -3,7 +3,7 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, find} from 'lodash';
+import {difference, find, intersection} from 'lodash';
 import path from 'path';
 import toposort from 'toposort';
 import {Dictionary} from 'ts-essentials';
@@ -69,6 +69,7 @@ export class HasuraClient {
   private readonly scalars: Dictionary<Dictionary<string>> = {};
   private readonly references: Dictionary<Dictionary<Reference>> = {};
   private readonly backReferences: Dictionary<Reference[]> = {};
+  private sortedModelDependencies: ReadonlyArray<string>;
 
   constructor(url: string) {
     this.api = axios.create({
@@ -143,6 +144,15 @@ export class HasuraClient {
         }
       );
     }
+    const modelDeps: [string, string][] = [];
+    for (const model of Object.keys(this.references)) {
+      for (const ref of Object.values(this.references[model])) {
+        if (model !== ref.model) {
+          modelDeps.push([model, ref.model]);
+        }
+      }
+    }
+    this.sortedModelDependencies = toposort(modelDeps);
   }
 
   private async fetchPrimaryKeys(): Promise<void> {
@@ -184,16 +194,11 @@ export class HasuraClient {
     };
   }
 
-  async resetData(origin: string): Promise<void> {
-    const modelDeps: [string, string][] = [];
-    for (const model of Object.keys(this.references)) {
-      for (const ref of Object.values(this.references[model])) {
-        if (model !== ref.model) {
-          modelDeps.push([model, ref.model]);
-        }
-      }
-    }
-    for (const model of toposort(modelDeps)) {
+  async resetData(
+    origin: string,
+    models: ReadonlyArray<string>
+  ): Promise<void> {
+    for (const model of intersection(this.sortedModelDependencies, models)) {
       this.logger.info(`Resetting ${model} data for origin ${origin}`);
       const deleteConditions = {
         origin: {_eq: origin},
