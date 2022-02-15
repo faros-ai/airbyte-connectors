@@ -67,11 +67,6 @@ export abstract class AzurepipelineConverter extends Converter {
         return {category: BuildStateCategory.Custom, detail};
     }
   }
-  // extractRepo(repoUrl: string): RepoExtract | undefined {
-  //   const gitUrl = parseGitUrl(repoUrl);
-  //   if (!gitUrl.organization || !gitUrl.name) return undefined;
-  //   return {org: gitUrl.organization, name: gitUrl.name};
-  // }
 
   getRepoUrl(repo: Repository): string | undefined {
     switch (repo.type) {
@@ -96,22 +91,6 @@ export abstract class AzurepipelineConverter extends Converter {
       startedAt: Utils.toDate(buildStep.startTime),
       endedAt: Utils.toDate(buildStep.finishTime),
     };
-    // switch (type) {
-    //   case JobType.JobTypeBlock:
-    //     result.createdAt = Utils.toDate(buildStep.unblockedAt);
-    //     result.startedAt = Utils.toDate(buildStep.unblockedAt);
-    //     result.endedAt = Utils.toDate(buildStep.unblockedAt);
-    //     break;
-    //   case JobType.JobTypeTrigger:
-    //     result.createdAt = Utils.toDate(buildStep.createdAt);
-    //     result.startedAt = Utils.toDate(buildStep.startedAt);
-    //     result.endedAt = Utils.toDate(buildStep.finishedAt);
-    //     break;
-    //   case JobType.JobTypeWait: // This type does not currently have timestamps
-    //   case JobType.JobTypeCommand:
-    //   default:
-    //     break;
-    // }
     return result;
   }
 
