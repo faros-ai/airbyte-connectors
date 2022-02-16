@@ -42,6 +42,11 @@
                 "title": "Hasura URL",
                 "description": "The Community Edition Hasura URL.",
                 "default": "http://localhost:8080"
+              },
+              "segment_user_id": {
+                "type": "string",
+                "title": "Segment User Id",
+                "description": "The User Id with which to track events in Segment. If not present, then reporting is disabled."
               }
             }
           },

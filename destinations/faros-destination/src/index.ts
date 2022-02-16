@@ -1,3 +1,4 @@
+import Analytics from 'analytics-node';
 import {Command} from 'commander';
 import {
   AirbyteConfig,
@@ -86,7 +87,8 @@ class FarosDestination extends AirbyteDestination {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-    private hasuraClient: HasuraClient = undefined
+    private hasuraClient: HasuraClient = undefined,
+    private analytics: Analytics = undefined
   ) {
     super();
   }
@@ -135,6 +137,11 @@ class FarosDestination extends AirbyteDestination {
       }
     } catch (e) {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
+    }
+
+    if (config.edition_configs.segment_user_id) {
+      // Only create the client if there's a user id specified
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
     }
   }
 
@@ -373,7 +380,14 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      // TODO: report stats to Segment if segment key is provided
+      if (this.analytics) {
+        this.logger.info('Sending write stats to Segment.');
+        this.analytics.track({
+          event: 'Write Stats',
+          userId: config.edition_configs.segment_user_id,
+          stats,
+        });
+      }
 
       // Since we are writing all records in a single revision,
       // we should be ok to return all the state messages at the end,
