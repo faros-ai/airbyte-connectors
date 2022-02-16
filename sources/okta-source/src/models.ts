@@ -29,6 +29,7 @@ interface Profile {
   department?: string;
   email?: string;
   userType?: string;
+  startDate?: string;
 }
 
 interface Email {
@@ -56,10 +57,6 @@ interface Links {
   self: Self;
 }
 
-export interface GroupOfUser {
-  id: string;
-}
-
 export interface User {
   id: string;
   status: string;
@@ -73,7 +70,6 @@ export interface User {
   profile: Profile;
   credentials: Credentials;
   _links: Links;
-  groupsOfUser: GroupOfUser[];
 }
 
 export interface GroupProfile {
@@ -113,5 +109,5 @@ export interface Group {
   type: string;
   profile: GroupProfile;
   _links: GroupLinks;
-  usersOfGroup: UserOfGroup[];
+  usersOfGroup: string[];
 }

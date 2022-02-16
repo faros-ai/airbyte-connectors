@@ -100,7 +100,7 @@ export class HasuraClient {
     return defaultSource;
   }
 
-  async loadSchema(): Promise<any> {
+  async loadSchema(): Promise<void> {
     await this.fetchPrimaryKeys();
     const source = await this.fetchDbSource();
     const query = await fs.readFile(
@@ -230,8 +230,8 @@ export class HasuraClient {
   // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
   async writeRecord(
     model: string,
-    origin: string,
-    record: Dictionary<any>
+    record: Dictionary<any>,
+    origin: string
   ): Promise<void> {
     const obj = this.createMutationObject(model, origin, record);
     const mutation = {
@@ -245,8 +245,8 @@ export class HasuraClient {
       case Operation.UPSERT:
         await this.writeRecord(
           record.model,
-          record.origin,
-          (record as UpsertRecord).data
+          (record as UpsertRecord).data,
+          record.origin
         );
         break;
       case Operation.UPDATE:

@@ -34,7 +34,7 @@
     "axios-mock-adapter": "^1.20.0",
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.33",
-    "verror": "^1.10.0"
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

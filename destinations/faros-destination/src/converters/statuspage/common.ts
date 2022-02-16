@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
@@ -106,6 +106,11 @@ export abstract class StatuspageConverter extends Converter {
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.statuspageConfig(ctx).application_mapping ?? {};
+    return (
+      parseObjectConfig(
+        this.statuspageConfig(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
 }
