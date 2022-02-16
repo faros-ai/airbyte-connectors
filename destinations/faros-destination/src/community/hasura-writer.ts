@@ -22,6 +22,7 @@ export class HasuraWriter {
 
     if (!operation) {
       await this.hasuraClient.writeRecord(result.model, result.record);
+      return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
       this.timestampedRecords.push({
         model: baseModel,
