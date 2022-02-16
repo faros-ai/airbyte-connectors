@@ -286,94 +286,97 @@ class FarosDestination extends AirbyteDestination {
     const stateMessages: AirbyteStateMessage[] = [];
     const stats = new WriteStats();
 
-    // Avoid creating a new revision and writer when dry run or community edition is enabled
     const dryRunEnabled = config.dry_run === true || dryRun;
-    if (dryRunEnabled) {
-      this.logger.info("Dry run is ENABLED. Won't write any records");
-      await this.writeEntries(
-        config,
-        stdin,
-        streams,
-        stateMessages,
-        converterDependencies,
-        stats
-      );
-    } else if (this.edition === Edition.COMMUNITY) {
-      await this.getHasuraClient().loadSchema();
 
-      const writer = new HasuraWriter(
-        this.getHasuraClient(),
-        stats,
-        this.handleRecordProcessingError
-      );
+    // Avoid creating a new revision and writer when dry run or community edition is enabled
+    try {
+      if (dryRunEnabled) {
+        this.logger.info("Dry run is ENABLED. Won't write any records");
+        await this.writeEntries(
+          config,
+          stdin,
+          streams,
+          stateMessages,
+          converterDependencies,
+          stats
+        );
+      } else if (this.edition === Edition.COMMUNITY) {
+        await this.getHasuraClient().loadSchema();
 
-      await this.writeEntries(
-        config,
-        stdin,
-        streams,
-        stateMessages,
-        converterDependencies,
-        stats,
-        writer
-      );
-    } else {
-      // Log all models to be deleted (if any)
-      if (deleteModelEntries.length > 0) {
-        const modelsToDelete = sortBy(deleteModelEntries).join(',');
-        this.logger.info(
-          `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
+        const writer = new HasuraWriter(
+          this.getHasuraClient(),
+          stats,
+          this.handleRecordProcessingError
+        );
+
+        await this.writeEntries(
+          config,
+          stdin,
+          streams,
+          stateMessages,
+          converterDependencies,
+          stats,
+          writer
+        );
+      } else {
+        // Log all models to be deleted (if any)
+        if (deleteModelEntries.length > 0) {
+          const modelsToDelete = sortBy(deleteModelEntries).join(',');
+          this.logger.info(
+            `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
+          );
+        }
+        // Create an entry uploader for the destination graph
+        const entryUploaderConfig: EntryUploaderConfig = {
+          name: config.origin,
+          url: config.edition_configs.api_url,
+          authHeader: config.edition_configs.api_key,
+          expiration: config.edition_configs.expiration,
+          graphName: config.edition_configs.graph,
+          deleteModelEntries,
+          logger: this.logger.asPino('debug'),
+        };
+        await withEntryUploader<FarosDestinationState>(
+          entryUploaderConfig,
+          async (writer, state) => {
+            try {
+              // Log last synced time
+              const lastSynced = state?.lastSynced
+                ? `last synced at ${state.lastSynced}`
+                : 'not synced yet';
+              this.logger.info(
+                `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
+              );
+              // Process input and write entries
+              await this.writeEntries(
+                config,
+                stdin,
+                streams,
+                stateMessages,
+                converterDependencies,
+                stats,
+                writer
+              );
+              // Return the current time
+              return {lastSynced: new Date().toISOString()};
+            } finally {
+              // Don't forget to close the writer
+              if (!writer.writableEnded) writer.end();
+            }
+          }
         );
       }
-      // Create an entry uploader for the destination graph
-      const entryUploaderConfig: EntryUploaderConfig = {
-        name: config.origin,
-        url: config.edition_configs.api_url,
-        authHeader: config.edition_configs.api_key,
-        expiration: config.edition_configs.expiration,
-        graphName: config.edition_configs.graph,
-        deleteModelEntries,
-        logger: this.logger.asPino('debug'),
-      };
-      await withEntryUploader<FarosDestinationState>(
-        entryUploaderConfig,
-        async (writer, state) => {
-          try {
-            // Log last synced time
-            const lastSynced = state?.lastSynced
-              ? `last synced at ${state.lastSynced}`
-              : 'not synced yet';
-            this.logger.info(
-              `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
-            );
-            // Process input and write entries
-            await this.writeEntries(
-              config,
-              stdin,
-              streams,
-              stateMessages,
-              converterDependencies,
-              stats,
-              writer
-            );
-            // Return the current time
-            return {lastSynced: new Date().toISOString()};
-          } finally {
-            // Don't forget to close the writer
-            if (!writer.writableEnded) writer.end();
-          }
-        }
-      );
+
+      // TODO: report stats to Segment if segment key is provided
+
+      // Since we are writing all records in a single revision,
+      // we should be ok to return all the state messages at the end,
+      // once the revision has been closed.
+      for (const state of stateMessages) yield state;
+    } finally {
+      // Log collected statistics
+      stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
     }
-
-    // Log collected statistics
-    stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
-
-    // TODO: report stats to Segment
-
-    // Since we are writing all records in a single revision,
-    // we should be ok to return all the state messages at the end,
-    // once the revision has been closed.
-    for (const state of stateMessages) yield state;
   }
 
   private async writeEntries(
