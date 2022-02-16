@@ -45,51 +45,67 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        'Please verify your token is correct. Error: Request failed with status code 401'
+        'Connection check failed. Please verify your token is correct. Error: API responded with status 401'
       ),
     ]);
   });
 
-  // test('check connection good token', async () => {
-  //   const source = new sut.OktaSource(logger);
-  //   await expect(
-  //     source.checkConnection({
-  //       token: 'EDITME',
-  //       domain_name: 'EDITME',
-  //     })
-  //   ).resolves.toStrictEqual([true, undefined]);
-  // });
+  test('check connection good token', async () => {
+    Okta.instance = jest.fn().mockImplementation(() => {
+      return new Okta(
+        {get: jest.fn().mockResolvedValue({data: []})} as any,
+        logger
+      );
+    });
+    const source = new sut.OktaSource(logger);
+    await expect(
+      source.checkConnection({token: '', domain_name: ''})
+    ).resolves.toStrictEqual([true, undefined]);
+  });
 
-  // test('streams - users, use full_refresh sync mode', async () => {
-  //   const fileName = 'users.json';
-  //   const source = new sut.OktaSource(logger);
-  //   const streams = source.streams({
-  //     token: '',
-  //     domain_name: '',
-  //   });
-  //   const stream = streams[0];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+  test('streams - users, use full_refresh sync mode', async () => {
+    const users = readTestResourceFile('users.json');
+    Okta.instance = jest.fn().mockImplementation(() => {
+      return new Okta(
+        {get: jest.fn().mockResolvedValue({data: users})} as any,
+        logger
+      );
+    });
 
-  // function readConfig(): OktaConfig {
-  //   return readTestResourceFile('config.json') as OktaConfig;
-  // }
+    const source = new sut.OktaSource(logger);
+    const streams = source.streams({
+      token: '',
+      domain_name: '',
+    });
+    const stream = streams[0];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual(users);
+  });
 
-  // test('streams - groups, use full_refresh sync mode', async () => {
-  //   const fileName = 'groups.json';
-  //   const source = new sut.OktaSource(logger);
-  //   const streams = source.streams(readConfig());
-  //   const stream = streams[1];
-  //   const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual(readTestResourceFile(fileName));
-  // });
+  test('streams - groups, use full_refresh sync mode', async () => {
+    const groups = readTestResourceFile('groups.json');
+    Okta.instance = jest.fn().mockImplementation(() => {
+      return new Okta(
+        {get: jest.fn().mockResolvedValue({data: groups})} as any,
+        logger
+      );
+    });
+
+    const source = new sut.OktaSource(logger);
+    const streams = source.streams({
+      token: '',
+      domain_name: '',
+    });
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual(groups);
+  });
 });

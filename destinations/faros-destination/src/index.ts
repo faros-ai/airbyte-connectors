@@ -292,6 +292,7 @@ class FarosDestination extends AirbyteDestination {
     try {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
+
         await this.writeEntries(
           config,
           stdin,
@@ -319,6 +320,11 @@ class FarosDestination extends AirbyteDestination {
           writer
         );
       } else {
+        this.logger.info(
+          `Opening a new revision on graph ${config.edition_configs.graph} ` +
+            `with expiration of ${config.edition_configs.expiration}`
+        );
+
         // Log all models to be deleted (if any)
         if (deleteModelEntries.length > 0) {
           const modelsToDelete = sortBy(deleteModelEntries).join(',');
