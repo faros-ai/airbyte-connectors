@@ -1,3 +1,4 @@
+import Analytics from 'analytics-node';
 import {Command} from 'commander';
 import {
   AirbyteConfig,
@@ -86,7 +87,8 @@ class FarosDestination extends AirbyteDestination {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-    private hasuraClient: HasuraClient = undefined
+    private hasuraClient: HasuraClient = undefined,
+    private analytics: Analytics = undefined
   ) {
     super();
   }
@@ -135,6 +137,18 @@ class FarosDestination extends AirbyteDestination {
       }
     } catch (e) {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
+    }
+
+    if (config.edition_configs.segment_config) {
+      if (!config.edition_configs.segment_config.segment_api_key) {
+        throw new VError('Community Edition Segment API key is not set');
+      }
+      if (!config.edition_configs.segment_config.segment_user_id) {
+        throw new VError('Community Edition Segment User Id is not set');
+      }
+      this.analytics = new Analytics(
+        config.edition_configs.segment_config.segment_api_key
+      );
     }
   }
 
@@ -373,7 +387,16 @@ class FarosDestination extends AirbyteDestination {
         );
       }
 
-      // TODO: report stats to Segment if segment key is provided
+      if (this.analytics) {
+        this.logger.info('Sending stats to Segment.');
+        this.analytics.track({
+          event: 'Records written',
+          userId: config.edition_configs.segment_config.segment_user_id,
+          stats,
+        });
+      } else {
+        this.logger.info('Segment tracking not configured.');
+      }
 
       // Since we are writing all records in a single revision,
       // we should be ok to return all the state messages at the end,
