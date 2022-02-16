@@ -43,26 +43,10 @@
                 "description": "The Community Edition Hasura URL.",
                 "default": "http://localhost:8080"
               },
-              "segment_config" : {
-                "type": "object",
-                "title": "Segment configuration",
-                "required": [
-                  "segment_api_key",
-                  "segment_user_id"
-                ],
-                "properties": {
-                  "segment_api_key": {
-                    "type": "string",
-                    "title": "Segment API key",
-                    "description": "Segment API key",
-                    "default": "YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn"
-                  },
-                  "segment_user_id": {
-                    "type": "string",
-                    "title": "Segment User Id",
-                    "description": "The User Id with which to track events in Segment"
-                  }
-                }
+              "segment_user_id": {
+                "type": "string",
+                "title": "Segment User Id",
+                "description": "The User Id with which to track events in Segment. If not present, then reporting is disabled."
               }
             }
           },

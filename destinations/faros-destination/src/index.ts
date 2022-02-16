@@ -139,16 +139,9 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
 
-    if (config.edition_configs.segment_config) {
-      if (!config.edition_configs.segment_config.segment_api_key) {
-        throw new VError('Community Edition Segment API key is not set');
-      }
-      if (!config.edition_configs.segment_config.segment_user_id) {
-        throw new VError('Community Edition Segment User Id is not set');
-      }
-      this.analytics = new Analytics(
-        config.edition_configs.segment_config.segment_api_key
-      );
+    if (config.edition_configs.segment_user_id) {
+      // Only create the client if there's a user id specified
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
     }
   }
 
@@ -388,14 +381,12 @@ class FarosDestination extends AirbyteDestination {
       }
 
       if (this.analytics) {
-        this.logger.info('Sending stats to Segment.');
+        this.logger.info('Sending write stats to Segment.');
         this.analytics.track({
-          event: 'Records written',
-          userId: config.edition_configs.segment_config.segment_user_id,
+          event: 'Write Stats',
+          userId: config.edition_configs.segment_user_id,
           stats,
         });
-      } else {
-        this.logger.info('Segment tracking not configured.');
       }
 
       // Since we are writing all records in a single revision,
