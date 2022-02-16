@@ -371,10 +371,7 @@ export class HasuraClient {
   ): ConflictClause {
     const updateColumns = nested
       ? ['refreshedAt']
-      : difference(
-          Object.keys(this.scalars[model]),
-          this.primaryKeys[model].concat('id')
-        );
+      : difference(Object.keys(this.scalars[model]), this.primaryKeys[model]);
     return {
       constraint: new EnumType(`${model}_pkey`),
       update_columns: updateColumns.map((c) => new EnumType(c)),
