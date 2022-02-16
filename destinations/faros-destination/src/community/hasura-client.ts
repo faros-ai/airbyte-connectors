@@ -118,8 +118,9 @@ export class HasuraClient {
       if (!type) continue;
       const scalarTypes: any[] = type.fields.filter(
         (t) =>
-          t.type.kind === 'SCALAR' ||
-          (t.type.kind === 'NON_NULL' && t.type.ofType.kind === 'SCALAR')
+          (t.type.kind === 'SCALAR' ||
+            (t.type.kind === 'NON_NULL' && t.type.ofType.kind === 'SCALAR')) &&
+          t.description !== 'generated'
       );
       const scalars: Dictionary<string> = {};
       for (const scalar of scalarTypes) {
