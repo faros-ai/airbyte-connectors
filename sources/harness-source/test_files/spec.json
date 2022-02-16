@@ -27,6 +27,12 @@
           "https://my-harness-server.example.com"
         ]
       },
+      "cutoff_days": {
+        "type": "number",
+        "title": "Harness Cutoff Days",
+        "default": 90,
+        "description": "Only fetch deployments updated after cutoff"
+      },
       "page_size": {
         "type": "number",
         "title": "Harness Page Size",

@@ -30,12 +30,12 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@pagerduty/pdjs": "^2.2.3",
+    "@pagerduty/pdjs": "^2.2.4",
     "axios": "^0.25.0",
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.32",
-    "faros-feeds-sdk": "^0.9.7",
-    "luxon": "^2.0.2",
+    "faros-feeds-sdk": "^0.9.9",
+    "luxon": "^2.3.0",
     "verror": "^1.10.1"
   },
   "jest": {

@@ -3,6 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
+export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAUTL_OVERVIEW = true;
 const DEFAULT_PAGE_SIZE = 25; // 25 is API default
 
@@ -29,9 +30,10 @@ interface Assignment {
 
 export interface PagerdutyConfig {
   readonly token: string;
-  readonly pageSize?: number;
-  readonly defaultSeverity?: IncidentSeverityCategory;
-  readonly incidentLogEntriesOverview?: boolean;
+  readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly default_severity?: IncidentSeverityCategory;
+  readonly incident_log_entries_overview?: boolean;
 }
 
 interface PagerdutyResponse<Type> {
@@ -88,16 +90,6 @@ export class Pagerduty {
     private readonly logger: AirbyteLogger
   ) {}
 
-  private static validateInteger(value: number): string | undefined {
-    if (value) {
-      if (typeof value === 'number' && value > 0) {
-        return undefined;
-      }
-      return `${value} must be a valid positive number`;
-    }
-    return undefined;
-  }
-
   static instance(config: PagerdutyConfig, logger: AirbyteLogger): Pagerduty {
     if (Pagerduty.pagerduty) return Pagerduty.pagerduty;
 
@@ -105,10 +97,6 @@ export class Pagerduty {
       throw new VError('token must be not an empty string');
     }
 
-    const pageSize = this.validateInteger(config.pageSize);
-    if (pageSize) {
-      throw new VError(pageSize);
-    }
     const client = api({token: config.token});
 
     Pagerduty.pagerduty = new Pagerduty(client, logger);

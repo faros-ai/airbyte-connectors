@@ -38,7 +38,7 @@ export class Incidents extends AirbyteStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.lastSynced : undefined;
 
-    yield* pagerduty.getIncidents(since, this.config.pageSize);
+    yield* pagerduty.getIncidents(since, this.config.page_size);
   }
 
   getUpdatedState(

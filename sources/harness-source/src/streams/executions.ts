@@ -7,7 +7,7 @@ import {
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {Harness} from '../harness';
+import {DEFAULT_CUTOFF_DAYS, Harness} from '../harness';
 import {ExecutionNode, ExecutionState, HarnessConfig} from '../harness_models';
 
 const DEFAULT_DEPLOYMENT_TIMEOUT = 24;
@@ -37,8 +37,17 @@ export class Executions extends AirbyteStreamBase {
   ): AsyncGenerator<ExecutionNode> {
     const harness = Harness.instance(this.config, this.logger);
 
-    const since =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.lastEndedAt : undefined;
+    let since: number = null;
+    if (syncMode === SyncMode.INCREMENTAL) {
+      const lastEndedAt = streamState?.lastEndedAt;
+      const defaultCutoffDate: number = DateTime.now()
+        .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
+        .toMillis();
+      /** If we have already synced this execution, ignore cutoffDays
+        and get everything since last sync to avoid gaps in data. Instead
+        of sync execution from cutoff days*/
+      since = lastEndedAt ? lastEndedAt : defaultCutoffDate;
+    }
 
     yield* harness.getExecutions(since);
   }
