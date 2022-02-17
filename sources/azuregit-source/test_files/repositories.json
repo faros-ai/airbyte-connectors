@@ -1,0 +1,23 @@
+[
+    {
+        "id": "e2c13ba0-1427-4f26-b8df-60bdf26ae1bb",
+        "name": "devcube",
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb",
+        "project": {
+            "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+            "name": "devcube",
+            "description": "tesst",
+            "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+            "state": "wellFormed",
+            "revision": 12,
+            "visibility": "private",
+            "lastUpdateTime": "2022-02-10T07:00:49.76Z"
+        },
+        "defaultBranch": "refs/heads/master",
+        "size": 791346794,
+        "remoteUrl": "https://huongkstn@dev.azure.com/huongkstn/devcube/_git/devcube",
+        "sshUrl": "git@ssh.dev.azure.com:v3/huongkstn/devcube/devcube",
+        "webUrl": "https://dev.azure.com/huongkstn/devcube/_git/devcube",
+        "isDisabled": false
+    }
+]

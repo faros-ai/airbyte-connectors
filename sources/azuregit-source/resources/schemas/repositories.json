@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        },
+        "visibility": {
+          "type": "string"
+        },
+        "lastUpdateTime": {
+          "type": "string"
+        }
+      }
+    },
+    "defaultBranch": {
+      "type": "string"
+    },
+    "size": {
+      "type": "number"
+    },
+    "remoteUrl": {
+      "type": "string"
+    },
+    "sshUrl": {
+      "type": "string"
+    },
+    "webUrl": {
+      "type": "string"
+    },
+    "isDisabled": {
+      "type": "boolean"
+    }
+  }
+}
