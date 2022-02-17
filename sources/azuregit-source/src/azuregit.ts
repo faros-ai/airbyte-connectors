@@ -19,7 +19,6 @@ export class AzureGit {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly httpVSRMClient: AxiosInstance,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -53,19 +52,7 @@ export class AzureGit {
         Authorization: `Basic ${config.access_token}`,
       },
     });
-    const httpVSRMClient = axios.create({
-      baseURL: `https://vsrm.dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
-      },
-      headers: {
-        Authorization: `Basic ${config.access_token}`,
-      },
-    });
-
-    AzureGit.azureGit = new AzureGit(httpClient, httpVSRMClient, logger);
+    AzureGit.azureGit = new AzureGit(httpClient, logger);
     return AzureGit.azureGit;
   }
 
