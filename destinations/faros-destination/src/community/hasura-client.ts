@@ -3,8 +3,9 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, find} from 'lodash';
+import {difference, find, intersection} from 'lodash';
 import path from 'path';
+import toposort from 'toposort';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -28,9 +29,20 @@ interface ObjectRelationship {
   };
 }
 
+interface ArrayRelationship {
+  name: string;
+  using: {
+    foreign_key_constraint_on: {
+      column: string;
+      table: Table;
+    };
+  };
+}
+
 interface TableWithRelationships {
   table: Table;
   object_relationships: ReadonlyArray<ObjectRelationship>;
+  array_relationships: ReadonlyArray<ArrayRelationship>;
 }
 
 interface Source {
@@ -56,6 +68,8 @@ export class HasuraClient {
   private readonly primaryKeys: Dictionary<string[]> = {};
   private readonly scalars: Dictionary<Dictionary<string>> = {};
   private readonly references: Dictionary<Dictionary<Reference>> = {};
+  private readonly backReferences: Dictionary<Reference[]> = {};
+  private sortedModelDependencies: ReadonlyArray<string>;
 
   constructor(url: string) {
     this.api = axios.create({
@@ -104,8 +118,9 @@ export class HasuraClient {
       if (!type) continue;
       const scalarTypes: any[] = type.fields.filter(
         (t) =>
-          t.type.kind === 'SCALAR' ||
-          (t.type.kind === 'NON_NULL' && t.type.ofType.kind === 'SCALAR')
+          (t.type.kind === 'SCALAR' ||
+            (t.type.kind === 'NON_NULL' && t.type.ofType.kind === 'SCALAR')) &&
+          t.description !== 'generated'
       );
       const scalars: Dictionary<string> = {};
       for (const scalar of scalarTypes) {
@@ -121,7 +136,24 @@ export class HasuraClient {
         };
       }
       this.references[tableName] = references;
+      this.backReferences[tableName] = (table.array_relationships ?? []).map(
+        (rel) => {
+          return {
+            field: rel.name,
+            model: rel.using.foreign_key_constraint_on.table.name,
+          };
+        }
+      );
     }
+    const modelDeps: [string, string][] = [];
+    for (const model of Object.keys(this.references)) {
+      for (const ref of Object.values(this.references[model])) {
+        if (model !== ref.model) {
+          modelDeps.push([model, ref.model]);
+        }
+      }
+    }
+    this.sortedModelDependencies = toposort(modelDeps);
   }
 
   private async fetchPrimaryKeys(): Promise<void> {
@@ -151,31 +183,71 @@ export class HasuraClient {
       });
   }
 
-  // TODO: find alternate batching strategy
-  // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
-  async writeRecord(model: string, record: Dictionary<any>): Promise<void> {
-    const obj = this.createMutationObject(model, record);
-    const mutation = {
-      mutation: {
-        [`insert_${model}_one`]: {__args: obj, id: true},
+  private backReferenceOriginCheck(br: Reference, origin: string): any {
+    const base = {origin: {_neq: origin}};
+    const nestedChecks = this.backReferences[br.model]
+      .filter((nbr) => nbr.field != br.field)
+      .map((nbr) => this.backReferenceOriginCheck(nbr, origin));
+    return {
+      [br.field]: {
+        _or: [base].concat(nestedChecks),
       },
     };
-    const response = await this.api.post('/v1/graphql', {
-      query: jsonToGraphQLQuery(mutation),
-    });
-    if (response.data.errors) {
-      throw new VError(
-        `Failed to write ${model} record ${JSON.stringify(
-          record
-        )}: ${JSON.stringify(response.data.errors)}`
+  }
+
+  async resetData(
+    origin: string,
+    models: ReadonlyArray<string>
+  ): Promise<void> {
+    for (const model of intersection(this.sortedModelDependencies, models)) {
+      this.logger.info(`Resetting ${model} data for origin ${origin}`);
+      const deleteConditions = {
+        origin: {_eq: origin},
+        _not: {
+          _or: this.backReferences[model].map((br) =>
+            this.backReferenceOriginCheck(br, origin)
+          ),
+        },
+      };
+      const mutation = {
+        [`delete_${model}`]: {
+          __args: {
+            where: {
+              _and: {...deleteConditions},
+            },
+          },
+          affected_rows: true,
+        },
+      };
+      await this.postQuery(
+        {mutation},
+        `Failed to reset ${model} data for origin ${origin}`
       );
     }
+  }
+
+  // TODO: find alternate batching strategy
+  // cannot use Hasura batching due to https://github.com/hasura/graphql-engine/issues/4633
+  async writeRecord(
+    model: string,
+    record: Dictionary<any>,
+    origin: string
+  ): Promise<void> {
+    const obj = this.createMutationObject(model, origin, record);
+    const mutation = {
+      [`insert_${model}_one`]: {__args: obj, id: true},
+    };
+    await this.postQuery({mutation}, `Failed to write ${model} record`);
   }
 
   async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
     switch (record.operation) {
       case Operation.UPSERT:
-        await this.writeRecord(record.model, (record as UpsertRecord).data);
+        await this.writeRecord(
+          record.model,
+          (record as UpsertRecord).data,
+          record.origin
+        );
         break;
       case Operation.UPDATE:
         await this.writeUpdateRecord(record as UpdateRecord);
@@ -192,51 +264,43 @@ export class HasuraClient {
 
   private async writeUpdateRecord(record: UpdateRecord): Promise<void> {
     const mutation = {
-      mutation: {
-        [`update_${record.model}`]: {
-          __args: {
-            where: this.createWhereClause(record.model, record.where),
-            _set: this.createMutationObject(record.model, record.patch).object,
-          },
-          returning: {
-            id: true,
-          },
+      [`update_${record.model}`]: {
+        __args: {
+          where: this.createWhereClause(record.model, record.where),
+          _set: this.createMutationObject(
+            record.model,
+            record.origin,
+            record.patch
+          ).object,
+        },
+        returning: {
+          id: true,
         },
       },
     };
-    const response = await this.api.post('/v1/graphql', {
-      query: jsonToGraphQLQuery(mutation),
-    });
-    if (response.data.errors) {
-      throw new VError(
-        `Failed to update ${record.model} record ${JSON.stringify(
-          record
-        )}: ${JSON.stringify(response.data.errors)}`
-      );
-    }
+    await this.postQuery({mutation}, `Failed to update ${record.model} record`);
   }
 
   private async writeDeletionRecord(record: DeletionRecord): Promise<void> {
     const mutation = {
-      mutation: {
-        [`delete_${record.model}`]: {
-          __args: {
-            where: this.createWhereClause(record.model, record.where),
-          },
-          affected_rows: true,
+      [`delete_${record.model}`]: {
+        __args: {
+          where: this.createWhereClause(record.model, record.where),
         },
+        affected_rows: true,
       },
     };
+    await this.postQuery({mutation}, `Failed to delete ${record.model} record`);
+  }
+
+  private async postQuery(query: any, errorMsg: string): Promise<any> {
     const response = await this.api.post('/v1/graphql', {
-      query: jsonToGraphQLQuery(mutation),
+      query: jsonToGraphQLQuery(query),
     });
     if (response.data.errors) {
-      throw new VError(
-        `Failed to delete ${record.model} record ${JSON.stringify(
-          record
-        )}: ${JSON.stringify(response.data.errors)}`
-      );
+      throw new VError(`${errorMsg}: ${JSON.stringify(response.data.errors)}`);
     }
+    return response.data;
   }
 
   private createWhereClause(
@@ -261,6 +325,7 @@ export class HasuraClient {
 
   private createMutationObject(
     model: string,
+    origin: string,
     record: Dictionary<any>,
     nested?: boolean
   ): {
@@ -274,6 +339,7 @@ export class HasuraClient {
       if (nestedModel && value) {
         obj[nestedModel.field] = this.createMutationObject(
           nestedModel.model,
+          origin,
           value,
           true
         );
@@ -282,6 +348,7 @@ export class HasuraClient {
         if (val) obj[field] = val;
       }
     }
+    obj['origin'] = origin;
     return {
       [nested ? 'data' : 'object']: obj,
       on_conflict: this.createConflictClause(model, nested),
@@ -302,15 +369,12 @@ export class HasuraClient {
     model: string,
     nested?: boolean
   ): ConflictClause {
-    const cols = nested
+    const updateColumns = nested
       ? ['refreshedAt']
-      : difference(
-          Object.keys(this.scalars[model]),
-          this.primaryKeys[model].concat('id')
-        );
+      : difference(Object.keys(this.scalars[model]), this.primaryKeys[model]);
     return {
       constraint: new EnumType(`${model}_pkey`),
-      update_columns: cols.map((c) => new EnumType(c)),
+      update_columns: updateColumns.map((c) => new EnumType(c)),
     };
   }
 }

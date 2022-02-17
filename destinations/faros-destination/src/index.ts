@@ -309,10 +309,13 @@ class FarosDestination extends AirbyteDestination {
           stats
         );
       } else if (this.edition === Edition.COMMUNITY) {
-        await this.getHasuraClient().loadSchema();
+        const hasura = this.getHasuraClient();
+        await hasura.loadSchema();
+        await hasura.resetData(config.origin, deleteModelEntries);
 
         const writer = new HasuraWriter(
-          this.getHasuraClient(),
+          hasura,
+          config.origin,
           stats,
           this.handleRecordProcessingError
         );

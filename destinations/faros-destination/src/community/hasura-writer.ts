@@ -10,6 +10,7 @@ export class HasuraWriter {
 
   constructor(
     private readonly hasuraClient: HasuraClient,
+    private readonly origin: string,
     private readonly stats: WriteStats,
     private readonly handleRecordProcessingError: (
       stats: WriteStats,
@@ -21,7 +22,11 @@ export class HasuraWriter {
     const [baseModel, operation] = result.model.split('__', 2);
 
     if (!operation) {
-      await this.hasuraClient.writeRecord(result.model, result.record);
+      await this.hasuraClient.writeRecord(
+        result.model,
+        result.record,
+        this.origin
+      );
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
       this.timestampedRecords.push({
