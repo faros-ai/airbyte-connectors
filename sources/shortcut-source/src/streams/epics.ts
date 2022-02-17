@@ -8,13 +8,11 @@ import {Dictionary} from 'ts-essentials';
 
 import {Epic, Shortcut, ShortcutConfig} from '../shortcut';
 
-type StreamSlice = {projectId: number} | undefined;
-
 export class Epics extends AirbyteStreamBase {
   constructor(
     private readonly config: ShortcutConfig,
     protected readonly logger: AirbyteLogger,
-    protected readonly projectIds?: ReadonlyArray<number>
+    protected readonly projectId?: number
   ) {
     super(logger);
   }
@@ -27,24 +25,12 @@ export class Epics extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
-    for (const projectId of this.projectIds) {
-      yield {projectId};
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Epic> {
     const shortcut = await Shortcut.instance(this.config);
-    const projectId = streamSlice.projectId;
-    yield* shortcut.getEpics(projectId);
+    yield* shortcut.getEpics(this.projectId);
   }
 }

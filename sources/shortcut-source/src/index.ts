@@ -25,8 +25,8 @@ export class ShortcutSource extends AirbyteSourceBase {
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const shortcut = new Shortcut(config as ShortcutConfig);
-      await shortcut.checkConnection();
+      const shortcut = Shortcut.instance(config as ShortcutConfig);
+      await (await shortcut).checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -34,14 +34,14 @@ export class ShortcutSource extends AirbyteSourceBase {
   }
 
   streams(config: ShortcutConfig): AirbyteStreamBase[] {
-    let projectIds = [];
-    if (config.project_public_id) {
-      projectIds = [config.project_public_id];
-    }
     return [
       new Projects(config as ShortcutConfig, this.logger),
       new Iterations(config as ShortcutConfig, this.logger),
-      new Epics(config as ShortcutConfig, this.logger, projectIds),
+      new Epics(
+        config as ShortcutConfig,
+        this.logger,
+        config.project_public_id
+      ),
       new Stories(config as ShortcutConfig, this.logger),
       new Members(config as ShortcutConfig, this.logger),
     ];

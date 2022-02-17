@@ -33,11 +33,11 @@ export class Shortcut {
   private readonly baseUrl: string;
   private readonly version: string;
   private readonly client: Client<RequestInfo, Response>;
-  constructor(cfg: ShortcutConfig) {
+  constructor(cfg: ShortcutConfig, client: Client<RequestInfo, Response>) {
     this.cfg = cfg;
     this.baseUrl = cfg.base_url ? cfg.base_url : DEFAULT_BASE_URL;
     this.version = cfg.version ? cfg.version : DEFAULT_VERSION;
-    this.client = Client.create(cfg.token);
+    this.client = client;
   }
 
   static async instance(config: ShortcutConfig): Promise<Shortcut> {
@@ -46,7 +46,7 @@ export class Shortcut {
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
-    Shortcut.shortcut = new Shortcut(config);
+    Shortcut.shortcut = new Shortcut(config, Client.create(config.token));
     return Shortcut.shortcut;
   }
 
@@ -80,10 +80,13 @@ export class Shortcut {
     const startTime = new Date(lastUpdatedAt ?? 0);
     const list = await this.client.listIterations();
     for (const item of list) {
-      if (!lastUpdatedAt) yield item;
-      const updatedAt = new Date(item.updated_at);
-      if (updatedAt >= startTime) {
+      if (!lastUpdatedAt) {
         yield item;
+      } else {
+        const updatedAt = new Date(item.updated_at);
+        if (updatedAt >= startTime) {
+          yield item;
+        }
       }
     }
   }
