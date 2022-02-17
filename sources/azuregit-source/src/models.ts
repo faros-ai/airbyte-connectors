@@ -12,6 +12,28 @@ export interface Project {
   lastUpdateTime: string;
 }
 
+export interface Creator {
+  displayName: string;
+  url: string;
+  id: string;
+  uniqueName: string;
+  imageUrl: string;
+  descriptor: string;
+}
+
+export interface Ref {
+  id: string;
+  name: string;
+  objectId: string;
+  url: Project;
+  creator: Creator;
+}
+
+export interface RefResponse {
+  count: number;
+  value: Ref[];
+}
+
 export interface Repository {
   id: string;
   name: string;
@@ -23,6 +45,7 @@ export interface Repository {
   sshUrl: string;
   webUrl: string;
   isDisabled: boolean;
+  refs: Ref[];
 }
 
 export interface RepositoryResponse {

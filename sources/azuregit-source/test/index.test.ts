@@ -87,7 +87,7 @@ describe('index', () => {
     for await (const repository of repositoryIter) {
       repositories.push(repository);
     }
-    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(1);
+    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(2);
     expect(repositories).toStrictEqual(
       readTestResourceFile('repositories.json')
     );

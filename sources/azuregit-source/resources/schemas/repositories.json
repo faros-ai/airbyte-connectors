@@ -57,6 +57,59 @@
     },
     "isDisabled": {
       "type": "boolean"
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "objectId": {
+            "type": "string"
+          },
+          "creator": {
+            "type": "object",
+            "properties": {
+              "displayName": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "_links": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "id": {
+                "type": "string"
+              },
+              "uniqueName": {
+                "type": "string"
+              },
+              "imageUrl": {
+                "type": "string"
+              },
+              "descriptor": {
+                "type": "string"
+              }
+            }
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

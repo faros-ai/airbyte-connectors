@@ -3,7 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Repository, RepositoryResponse} from './models';
+import {RefResponse, Repository, RepositoryResponse} from './models';
 
 const DEFAULT_API_VERSION = '6.0';
 
@@ -93,6 +93,12 @@ export class AzureGit {
       'git/repositories'
     );
     for (const item of res.data.value) {
+      const ref = await this.httpClient.get<RefResponse>(
+        `git/repositories/${item.id}/refs`
+      );
+      if (ref.status === 200) {
+        item.refs = ref.data.value;
+      }
       yield item;
     }
   }
