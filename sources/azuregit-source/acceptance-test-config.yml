@@ -1,4 +1,4 @@
-connector_image: azurepipeline-source
+connector_image: azuregit-source
 tests:
   spec:
     - config_path: "secrets/config.json"
