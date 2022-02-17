@@ -1,7 +1,7 @@
 {
-  "name": "azurepipeline-source",
+  "name": "azuregit-source",
   "version": "0.1.30",
-  "description": "Azure Pipeline Airbyte source",
+  "description": "Azure Git Airbyte source",
   "keywords": [
     "airbyte",
     "source",
