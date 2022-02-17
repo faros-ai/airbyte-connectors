@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "visibility": {
+              "type": "string"
+            },
+            "lastUpdateTime": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "pullRequestId": {
+      "type": "number"
+    },
+    "codeReviewId": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdBy": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "descriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "creationDate": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "sourceRefName": {
+      "type": "string"
+    },
+    "targetRefName": {
+      "type": "string"
+    },
+    "mergeStatus": {
+      "type": "string"
+    },
+    "isDraft": {
+      "type": "boolean"
+    },
+    "mergeId": {
+      "type": "string"
+    },
+    "lastMergeSourceCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "lastMergeTargetCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "lastMergeCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewers": {
+      "type": "array",
+      "items": {}
+    },
+    "url": {
+      "type": "string"
+    },
+    "supportsIterations": {
+      "type": "boolean"
+    }
+  }
+}

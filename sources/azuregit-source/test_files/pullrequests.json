@@ -1,0 +1,55 @@
+[
+    {
+        "repository": {
+            "id": "e2c13ba0-1427-4f26-b8df-60bdf26ae1bb",
+            "name": "devcube",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb",
+            "project": {
+                "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+                "name": "devcube",
+                "state": "unchanged",
+                "visibility": "unchanged",
+                "lastUpdateTime": "0001-01-01T00:00:00"
+            }
+        },
+        "pullRequestId": 1,
+        "codeReviewId": 1,
+        "status": "active",
+        "createdBy": {
+            "displayName": "tran ngoc huong",
+            "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+            "_links": {
+                "avatar": {
+                    "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+                }
+            },
+            "id": "8725d325-8926-6514-a563-8717451ce799",
+            "uniqueName": "huongkstn@gmail.com",
+            "imageUrl": "https://dev.azure.com/huongkstn/_api/_common/identityImage?id=8725d325-8926-6514-a563-8717451ce799",
+            "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+        },
+        "creationDate": "2022-02-16T14:49:11.9334753Z",
+        "title": "Updated favicons.html",
+        "description": "Updated favicons.html",
+        "sourceRefName": "refs/heads/all-contributors/add-arungupta21",
+        "targetRefName": "refs/heads/master",
+        "mergeStatus": "succeeded",
+        "isDraft": false,
+        "mergeId": "b8128879-18a7-44ef-a7dd-678490b489be",
+        "lastMergeSourceCommit": {
+            "commitId": "5f41601752a6899889c432d116fc2f8ed35cfef0",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb/commits/5f41601752a6899889c432d116fc2f8ed35cfef0"
+        },
+        "lastMergeTargetCommit": {
+            "commitId": "a33f7539fa3453eb521d4359b92d1858e41ecb3d",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb/commits/a33f7539fa3453eb521d4359b92d1858e41ecb3d"
+        },
+        "lastMergeCommit": {
+            "commitId": "999e07113ad17e95bb2e44a75fc781d0a5816f0f",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb/commits/999e07113ad17e95bb2e44a75fc781d0a5816f0f"
+        },
+        "reviewers": [],
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/e2c13ba0-1427-4f26-b8df-60bdf26ae1bb/pullRequests/1",
+        "supportsIterations": true
+    }
+]

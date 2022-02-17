@@ -3,7 +3,13 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {RefResponse, Repository, RepositoryResponse} from './models';
+import {
+  PullRequest,
+  PullRequestResponse,
+  RefResponse,
+  Repository,
+  RepositoryResponse,
+} from './models';
 
 const DEFAULT_API_VERSION = '6.0';
 
@@ -86,6 +92,15 @@ export class AzureGit {
       if (ref.status === 200) {
         item.refs = ref.data.value;
       }
+      yield item;
+    }
+  }
+
+  async *getPullRequests(): AsyncGenerator<PullRequest> {
+    const res = await this.httpClient.get<PullRequestResponse>(
+      'git/pullrequests'
+    );
+    for (const item of res.data.value) {
       yield item;
     }
   }

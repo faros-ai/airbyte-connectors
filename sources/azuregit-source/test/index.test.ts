@@ -72,7 +72,6 @@ describe('index', () => {
             data: {value: repositoriesResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -90,6 +89,37 @@ describe('index', () => {
     expect(fnRepositoriesFunc).toHaveBeenCalledTimes(2);
     expect(repositories).toStrictEqual(
       readTestResourceFile('repositories.json')
+    );
+  });
+  test('streams - pullrequests, use full_refresh sync mode', async () => {
+    const fnPullrequestsFunc = jest.fn();
+
+    AzureGit.instance = jest.fn().mockImplementation(() => {
+      const pullrequestsResource: any[] =
+        readTestResourceFile('pullrequests.json');
+      return new AzureGit(
+        {
+          get: fnPullrequestsFunc.mockResolvedValue({
+            data: {value: pullrequestsResource},
+          }),
+        } as any,
+        null
+      );
+    });
+    const source = new sut.AzureGitSource(logger);
+    const streams = source.streams({} as any);
+
+    const pullrequestsStream = streams[1];
+    const pullrequestIter = pullrequestsStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const pullrequests = [];
+    for await (const pullrequest of pullrequestIter) {
+      pullrequests.push(pullrequest);
+    }
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(1);
+    expect(pullrequests).toStrictEqual(
+      readTestResourceFile('pullrequests.json')
     );
   });
 });

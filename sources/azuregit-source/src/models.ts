@@ -52,3 +52,41 @@ export interface RepositoryResponse {
   count: number;
   value: Repository[];
 }
+
+interface MergeSourceCommit {
+  commitId: string;
+  url: string;
+}
+
+export interface PullRequestRepository {
+  id: string;
+  name: string;
+  url: string;
+  project: Project;
+}
+
+export interface PullRequest {
+  pullRequestId: number;
+  codeReviewId: number;
+  status: string;
+  createdBy: Creator;
+  creationDate: string;
+  title: string;
+  description: string;
+  sourceRefName: string;
+  targetRefName: string;
+  mergeStatus: string;
+  isDraft: boolean;
+  mergeId: string;
+  lastMergeSourceCommit: MergeSourceCommit;
+  lastMergeCommit: MergeSourceCommit;
+  reviewers: [any];
+  url: string;
+  supportsIterations: boolean;
+  repository: PullRequestRepository;
+}
+
+export interface PullRequestResponse {
+  count: number;
+  value: PullRequest[];
+}
