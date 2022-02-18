@@ -3,6 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
+import {PullRequestCommitResponse} from './models';
 import {
   Branch,
   BranchResponse,
@@ -114,6 +115,12 @@ export class AzureGit {
       'git/pullrequests'
     );
     for (const item of res.data.value) {
+      const commitsItem = await this.httpClient.get<PullRequestCommitResponse>(
+        `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
+      );
+      if (commitsItem.status === 200) {
+        item.commits = commitsItem.data.value;
+      }
       yield item;
     }
   }

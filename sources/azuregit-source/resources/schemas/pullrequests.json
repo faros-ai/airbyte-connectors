@@ -147,6 +147,51 @@
     },
     "supportsIterations": {
       "type": "boolean"
+    },
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "commitId": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "url": {
+            "type": "number"
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number"
+              }
+            }
+          },
+          "committer": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

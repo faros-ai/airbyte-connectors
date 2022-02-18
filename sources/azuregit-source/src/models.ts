@@ -65,6 +65,19 @@ export interface PullRequestRepository {
   project: Project;
 }
 
+export interface PullRequestCommit {
+  commitId: string;
+  author: CommitAuthor;
+  committer: CommitAuthor;
+  comment: string;
+  url: string;
+}
+
+export interface PullRequestCommitResponse {
+  count: number;
+  value: PullRequestCommit[];
+}
+
 export interface PullRequest {
   pullRequestId: number;
   codeReviewId: number;
@@ -84,6 +97,7 @@ export interface PullRequest {
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;
+  commits: PullRequestCommit[];
 }
 
 export interface PullRequestResponse {
