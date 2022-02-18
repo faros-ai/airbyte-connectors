@@ -58,7 +58,7 @@
     "isDisabled": {
       "type": "boolean"
     },
-    "refs": {
+    "branches": {
       "type": "array",
       "items": {
         "type": "object",
@@ -66,47 +66,79 @@
           "name": {
             "type": "string"
           },
-          "objectId": {
+          "url": {
             "type": "string"
           },
-          "creator": {
-            "type": "object",
-            "properties": {
-              "displayName": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
-              },
-              "_links": {
-                "type": "object",
-                "properties": {
-                  "avatar": {
-                    "type": "object",
-                    "properties": {
-                      "href": {
-                        "type": "string"
-                      }
+          "aheadCount": {
+            "type": "number"
+          },
+          "behindCount": {
+            "type": "number"
+          },
+          "isBaseVersion": {
+            "type": "boolean"
+          },
+          "commits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "commitId": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "number"
+                },
+                "remoteUrl": {
+                  "type": "number"
+                },
+                "author": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "committer": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "changeCounts": {
+                  "type": "object",
+                  "properties": {
+                    "Add": {
+                      "type": "number"
+                    },
+                    "Edit": {
+                      "type": "number"
+                    },
+                    "date": {
+                      "Delete": "number"
                     }
                   }
                 }
-              },
-              "id": {
-                "type": "string"
-              },
-              "uniqueName": {
-                "type": "string"
-              },
-              "imageUrl": {
-                "type": "string"
-              },
-              "descriptor": {
-                "type": "string"
               }
             }
-          },
-          "url": {
-            "type": "string"
           }
         }
       }

@@ -4,9 +4,11 @@ import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
 import {
+  Branch,
+  BranchResponse,
+  CommitResponse,
   PullRequest,
   PullRequestResponse,
-  RefResponse,
   Repository,
   RepositoryResponse,
 } from './models';
@@ -86,11 +88,22 @@ export class AzureGit {
       'git/repositories'
     );
     for (const item of res.data.value) {
-      const ref = await this.httpClient.get<RefResponse>(
-        `git/repositories/${item.id}/refs`
+      const branchesItem = await this.httpClient.get<BranchResponse>(
+        `git/repositories/${item.id}/stats/branches`
       );
-      if (ref.status === 200) {
-        item.refs = ref.data.value;
+      if (branchesItem.status === 200) {
+        const branches: Branch[] = [];
+        for (const branch of branchesItem.data.value) {
+          const branchItem: Branch = branch;
+          const commitsItem = await this.httpClient.get<CommitResponse>(
+            `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
+          );
+          if (commitsItem.status === 200) {
+            branchItem.commits = commitsItem.data.value;
+          }
+          branches.push(branchItem);
+        }
+        item.branches = branches;
       }
       yield item;
     }

@@ -1,7 +1,7 @@
 interface Href {
   href: string;
 }
-export interface Project {
+interface Project {
   id: string;
   name: string;
   url: string;
@@ -12,7 +12,7 @@ export interface Project {
   lastUpdateTime: string;
 }
 
-export interface Creator {
+interface Creator {
   displayName: string;
   url: string;
   id: string;
@@ -21,17 +21,17 @@ export interface Creator {
   descriptor: string;
 }
 
-export interface Ref {
-  id: string;
+export interface Branch {
   name: string;
-  objectId: string;
-  url: Project;
-  creator: Creator;
+  aheadCount: number;
+  behindCount: number;
+  isBaseVersion: boolean;
+  commits: Commit[];
 }
 
-export interface RefResponse {
+export interface BranchResponse {
   count: number;
-  value: Ref[];
+  value: Branch[];
 }
 
 export interface Repository {
@@ -45,7 +45,7 @@ export interface Repository {
   sshUrl: string;
   webUrl: string;
   isDisabled: boolean;
-  refs: Ref[];
+  branches: Branch[];
 }
 
 export interface RepositoryResponse {
@@ -89,4 +89,31 @@ export interface PullRequest {
 export interface PullRequestResponse {
   count: number;
   value: PullRequest[];
+}
+
+interface CommitAuthor {
+  name: string;
+  email: string;
+  date: string;
+}
+
+interface CommitChange {
+  Add: number;
+  Edit: number;
+  Delete: number;
+}
+
+export interface Commit {
+  commitId: string;
+  author: CommitAuthor;
+  committer: CommitAuthor;
+  comment: string;
+  changeCounts: CommitChange;
+  url: string;
+  remoteUrl: string;
+}
+
+export interface CommitResponse {
+  count: number;
+  value: Commit[];
 }
