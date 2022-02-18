@@ -13,8 +13,7 @@
     "title": "Faros Destination Spec",
     "type": "object",
     "required": [
-      "edition_configs",
-      "origin"
+      "edition_configs"
     ],
     "additionalProperties": false,
     "properties": {
