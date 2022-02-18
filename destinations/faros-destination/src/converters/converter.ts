@@ -101,7 +101,7 @@ export class StreamContext {
   }
 }
 
-const StreamNameSeparator = '__';
+export const StreamNameSeparator = '__';
 
 /**
  * Stream name with source prefix, e.g

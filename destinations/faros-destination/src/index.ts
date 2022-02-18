@@ -35,6 +35,7 @@ import {
   parseObjectConfig,
   StreamContext,
   StreamName,
+  StreamNameSeparator,
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
@@ -258,9 +259,6 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
-    if (!config.origin) {
-      throw new VError('Faros origin is not set');
-    }
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -279,6 +277,30 @@ class FarosDestination extends AirbyteDestination {
     this.initGlobal(config);
   }
 
+  private getOrigin(
+    config: AirbyteConfig,
+    catalog: AirbyteConfiguredCatalog
+  ): string {
+    if (config.origin) {
+      this.logger.info(`Using origin ${config.origin} found in config`);
+      return config.origin;
+    }
+
+    // Determine origin from stream prefixes
+    const origins = uniq(
+      catalog.streams.map((s) => s.stream.name.split(StreamNameSeparator, 1)[0])
+    );
+    if (origins.length === 0) {
+      throw new VError('Could not determine origin from catalog');
+    } else if (origins.length > 1) {
+      throw new VError(
+        `Found multiple possible origins from catalog: ${origins.join(',')}`
+      );
+    }
+    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
+    return origins[0];
+  }
+
   async *write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
@@ -287,6 +309,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     await this.init(config);
 
+    const origin = this.getOrigin(config, catalog);
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
@@ -311,11 +334,11 @@ class FarosDestination extends AirbyteDestination {
       } else if (this.edition === Edition.COMMUNITY) {
         const hasura = this.getHasuraClient();
         await hasura.loadSchema();
-        await hasura.resetData(config.origin, deleteModelEntries);
+        await hasura.resetData(origin, deleteModelEntries);
 
         const writer = new HasuraWriter(
           hasura,
-          config.origin,
+          origin,
           stats,
           this.handleRecordProcessingError
         );
@@ -344,7 +367,7 @@ class FarosDestination extends AirbyteDestination {
         }
         // Create an entry uploader for the destination graph
         const entryUploaderConfig: EntryUploaderConfig = {
-          name: config.origin,
+          name: origin,
           url: config.edition_configs.api_url,
           authHeader: config.edition_configs.api_key,
           expiration: config.edition_configs.expiration,
