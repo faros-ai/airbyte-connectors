@@ -281,7 +281,10 @@ class FarosDestination extends AirbyteDestination {
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog
   ): string {
-    if (config.origin) return config.origin;
+    if (config.origin) {
+      this.logger.info(`Using origin ${config.origin} found in config`);
+      return config.origin;
+    }
 
     // Determine origin from stream prefixes
     const origins = uniq(
@@ -294,6 +297,7 @@ class FarosDestination extends AirbyteDestination {
         `Found multiple possible origins from catalog: ${origins.join(',')}`
       );
     }
+    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
     return origins[0];
   }
 
