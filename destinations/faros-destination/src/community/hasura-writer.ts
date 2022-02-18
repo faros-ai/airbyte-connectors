@@ -32,6 +32,7 @@ export class HasuraWriter {
       this.timestampedRecords.push({
         model: baseModel,
         operation,
+        origin: this.origin,
         ...result.record,
       } as TimestampedRecord);
       return true;
