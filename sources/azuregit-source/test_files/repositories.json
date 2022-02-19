@@ -1752,6 +1752,41 @@
                     }
                 ]
             }
+        ],
+        "tags": [
+            {
+                "name": "refs/tags/1.0.0-release",
+                "objectId": "281bbb446076396995bef17d10b78782cd7d874e",
+                "creator": {
+                    "displayName": "tran ngoc huong",
+                    "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+                        }
+                    },
+                    "id": "8725d325-8926-6514-a563-8717451ce799",
+                    "uniqueName": "huongkstn@gmail.com",
+                    "imageUrl": "https://dev.azure.com/huongkstn/_api/_common/identityImage?id=8725d325-8926-6514-a563-8717451ce799",
+                    "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+                },
+                "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/42f66930-c321-4e84-8b71-0f7fbf37d0df/refs?filter=tags%2F1.0.0-release",
+                "commit": {
+                    "name": "1.0.0-release",
+                    "objectId": "281bbb446076396995bef17d10b78782cd7d874e",
+                    "taggedObject": {
+                        "objectId": "25f47a819d39df327a70b950d08f1eabd951e244",
+                        "objectType": "commit"
+                    },
+                    "taggedBy": {
+                        "name": "tran ngoc huong",
+                        "email": "huongkstn@gmail.com",
+                        "date": "2022-02-19T03:56:58"
+                    },
+                    "message": "test",
+                    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/42f66930-c321-4e84-8b71-0f7fbf37d0df/annotatedTags/281bbb446076396995bef17d10b78782cd7d874e"
+                }
+            }
         ]
     }
 ]

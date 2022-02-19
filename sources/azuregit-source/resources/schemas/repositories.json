@@ -142,6 +142,103 @@
           }
         }
       }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string"
+            },
+            "creator": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "_links": {
+                  "type": "object",
+                  "properties": {
+                    "avatar": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "id": {
+                  "type": "string"
+                },
+                "uniqueName": {
+                  "type": "string"
+                },
+                "imageUrl": {
+                  "type": "string"
+                },
+                "descriptor": {
+                  "type": "string"
+                }
+              }
+            },
+            "url": {
+              "type": "string"
+            },
+            "commit": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "objectId": {
+                  "type": "string"
+                },
+                "taggedObject": {
+                  "type": "object",
+                  "properties": {
+                    "objectId": {
+                      "type": "string"
+                    },
+                    "objectType": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "taggedBy": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

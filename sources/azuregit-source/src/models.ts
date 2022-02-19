@@ -34,11 +34,26 @@ export interface BranchResponse {
   value: Branch[];
 }
 
+interface TagCommitObject {
+  objectId: string;
+  objectType: string;
+}
+
+export interface TagCommit {
+  name: string;
+  objectId: string;
+  taggedObject: TagCommitObject;
+  taggedBy: CommitAuthor;
+  message: string;
+  url: string;
+}
+
 export interface Tag {
   name: string;
   objectId: string;
   url: string;
   creator: Creator;
+  commit: TagCommit;
 }
 
 export interface TagResponse {

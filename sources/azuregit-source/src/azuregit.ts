@@ -3,6 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
+import {TagCommit} from './models';
 import {
   Branch,
   BranchResponse,
@@ -98,11 +99,11 @@ export class AzureGit {
         const branches: Branch[] = [];
         for (const branch of branchResponse.data.value) {
           const branchItem: Branch = branch;
-          const commitsItem = await this.httpClient.get<CommitResponse>(
+          const commitResponse = await this.httpClient.get<CommitResponse>(
             `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
           );
-          if (commitsItem.status === 200) {
-            branchItem.commits = commitsItem.data.value;
+          if (commitResponse.status === 200) {
+            branchItem.commits = commitResponse.data.value;
           }
           branches.push(branchItem);
         }
@@ -112,7 +113,18 @@ export class AzureGit {
         `git/repositories/${item.id}/refs?filter=tags`
       );
       if (tagsResponse.status === 200) {
-        item.tags = tagsResponse.data.value;
+        const tags: Tag[] = [];
+        for (const tag of tagsResponse.data.value) {
+          const tagItem: Tag = tag;
+          const commitResponse = await this.httpClient.get<TagCommit>(
+            `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
+          );
+          if (commitResponse.status === 200) {
+            tagItem.commit = commitResponse.data;
+          }
+          tags.push(tagItem);
+        }
+        item.tags = tags;
       }
       yield item;
     }
