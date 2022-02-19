@@ -45,7 +45,7 @@
               "segment_user_id": {
                 "type": "string",
                 "title": "Segment User Id",
-                "description": "The User Id with which to track events in Segment. If not present, then reporting is disabled. See https://faros-ce.readme.io/docs/faq#statistics-we-collect for more details."
+                "description": "The User Id with which to track events in Segment. If not present, then reporting is disabled. See https://faros-ce.readme.io/docs/telemetry for more details."
               }
             }
           },
