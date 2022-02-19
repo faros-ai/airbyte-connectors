@@ -3,15 +3,17 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {PullRequestCommitResponse} from './models';
 import {
   Branch,
   BranchResponse,
   CommitResponse,
   PullRequest,
+  PullRequestCommitResponse,
   PullRequestResponse,
   Repository,
   RepositoryResponse,
+  Tag,
+  TagResponse,
 } from './models';
 
 const DEFAULT_API_VERSION = '6.0';
@@ -89,12 +91,12 @@ export class AzureGit {
       'git/repositories'
     );
     for (const item of res.data.value) {
-      const branchesItem = await this.httpClient.get<BranchResponse>(
+      const branchResponse = await this.httpClient.get<BranchResponse>(
         `git/repositories/${item.id}/stats/branches`
       );
-      if (branchesItem.status === 200) {
+      if (branchResponse.status === 200) {
         const branches: Branch[] = [];
-        for (const branch of branchesItem.data.value) {
+        for (const branch of branchResponse.data.value) {
           const branchItem: Branch = branch;
           const commitsItem = await this.httpClient.get<CommitResponse>(
             `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
@@ -106,6 +108,12 @@ export class AzureGit {
         }
         item.branches = branches;
       }
+      const tagsResponse = await this.httpClient.get<TagResponse>(
+        `git/repositories/${item.id}/refs?filter=tags`
+      );
+      if (tagsResponse.status === 200) {
+        item.tags = tagsResponse.data.value;
+      }
       yield item;
     }
   }
@@ -115,11 +123,12 @@ export class AzureGit {
       'git/pullrequests'
     );
     for (const item of res.data.value) {
-      const commitsItem = await this.httpClient.get<PullRequestCommitResponse>(
-        `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
-      );
-      if (commitsItem.status === 200) {
-        item.commits = commitsItem.data.value;
+      const commitResponse =
+        await this.httpClient.get<PullRequestCommitResponse>(
+          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
+        );
+      if (commitResponse.status === 200) {
+        item.commits = commitResponse.data.value;
       }
       yield item;
     }

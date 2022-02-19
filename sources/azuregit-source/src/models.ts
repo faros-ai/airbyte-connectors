@@ -34,6 +34,18 @@ export interface BranchResponse {
   value: Branch[];
 }
 
+export interface Tag {
+  name: string;
+  objectId: string;
+  url: string;
+  creator: Creator;
+}
+
+export interface TagResponse {
+  count: number;
+  value: Tag[];
+}
+
 export interface Repository {
   id: string;
   name: string;
@@ -46,6 +58,7 @@ export interface Repository {
   webUrl: string;
   isDisabled: boolean;
   branches: Branch[];
+  tags: Tag[];
 }
 
 export interface RepositoryResponse {
