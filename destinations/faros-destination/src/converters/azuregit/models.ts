@@ -63,6 +63,27 @@ export interface Repository {
   tags: Tag[];
 }
 
+export interface PullRequestThreadComment {
+  id: number;
+  parentCommentId: number;
+  content: string;
+  publishedDate: string;
+  lastUpdatedDate: string;
+  lastContentUpdatedDate: string;
+  commentType: string;
+  author: Creator;
+}
+
+export interface PullRequestThread {
+  pullRequestThreadContext?: string;
+  id: number;
+  publishedDate: string;
+  lastUpdatedDate: string;
+  status: string;
+  threadContext?: string;
+  comments: PullRequestThreadComment[];
+}
+
 interface MergeSourceCommit {
   commitId: string;
   url: string;
@@ -115,6 +136,7 @@ export interface PullRequest {
   supportsIterations: boolean;
   repository: PullRequestRepository;
   commits: PullRequestCommit[];
+  threads: PullRequestThread[];
 }
 
 interface CommitAuthor {

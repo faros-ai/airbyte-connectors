@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzuregitConverter} from './common';
 import {OrgTypeCategory, Repository} from './models';
 
-export class AzuregitPipelines extends AzuregitConverter {
+export class AzuregitRepositories extends AzuregitConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
     'vcs_Commit',

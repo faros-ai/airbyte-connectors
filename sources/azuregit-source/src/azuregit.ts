@@ -3,7 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {TagCommit} from './models';
+import {PullRequestThreadResponse, TagCommit} from './models';
 import {
   Branch,
   BranchResponse,
@@ -141,6 +141,13 @@ export class AzureGit {
         );
       if (commitResponse.status === 200) {
         item.commits = commitResponse.data.value;
+      }
+      const threadResponse =
+        await this.httpClient.get<PullRequestThreadResponse>(
+          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
+        );
+      if (threadResponse.status === 200) {
+        item.threads = threadResponse.data.value;
       }
       yield item;
     }

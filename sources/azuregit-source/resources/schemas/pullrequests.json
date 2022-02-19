@@ -155,19 +155,19 @@
           "isFlagged": {
             "type": "boolean"
           },
-          "displayName":{
-            "type": "string"
-          }, 
-          "url":{
+          "displayName": {
             "type": "string"
           },
-          "id":{
+          "url": {
             "type": "string"
           },
-          "uniqueName":{
+          "id": {
             "type": "string"
           },
-          "supportsIterations":{
+          "uniqueName": {
+            "type": "string"
+          },
+          "supportsIterations": {
             "type": "boolean"
           }
         }
@@ -218,6 +218,156 @@
               },
               "date": {
                 "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "threads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "publishedDate": {
+            "type": "string"
+          },
+          "lastUpdatedDate": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "parentCommentId": {
+                  "type": "number"
+                },
+                "author": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "_links": {
+                      "type": "object",
+                      "properties": {
+                        "avatar": {
+                          "type": "object",
+                          "properties": {
+                            "href": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "uniqueName": {
+                      "type": "string"
+                    },
+                    "imageUrl": {
+                      "type": "string"
+                    },
+                    "descriptor": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "content": {
+                  "type": "string"
+                },
+                "publishedDate": {
+                  "type": "string"
+                },
+                "lastUpdatedDate": {
+                  "type": "string"
+                },
+                "lastContentUpdatedDate": {
+                  "type": "string"
+                },
+                "commentType": {
+                  "type": "string"
+                },
+                "usersLiked": {
+                  "type": "array",
+                  "items": {}
+                },
+                "_links": {
+                  "type": "object",
+                  "properties": {
+                    "self": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "repository": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "threads": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "pullRequests": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
+              },
+              "repository": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }

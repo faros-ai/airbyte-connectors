@@ -117,7 +117,7 @@ describe('index', () => {
     for await (const pullrequest of pullrequestIter) {
       pullrequests.push(pullrequest);
     }
-    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(2);
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(3);
     expect(pullrequests).toStrictEqual(
       readTestResourceFile('pullrequests.json')
     );
