@@ -140,7 +140,38 @@
     },
     "reviewers": {
       "type": "array",
-      "items": {}
+      "items": {
+        "type": "object",
+        "properties": {
+          "reviewerUrl": {
+            "type": "string"
+          },
+          "vote": {
+            "type": "number"
+          },
+          "hasDeclined": {
+            "type": "boolean"
+          },
+          "isFlagged": {
+            "type": "boolean"
+          },
+          "displayName":{
+            "type": "string"
+          }, 
+          "url":{
+            "type": "string"
+          },
+          "id":{
+            "type": "string"
+          },
+          "uniqueName":{
+            "type": "string"
+          },
+          "supportsIterations":{
+            "type": "boolean"
+          }
+        }
+      }
     },
     "url": {
       "type": "string"

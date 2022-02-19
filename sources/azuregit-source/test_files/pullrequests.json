@@ -49,7 +49,24 @@
             "commitId": "f6e2c2462bc4928fa2f0f8a22c5815674572ffa1",
             "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/42f66930-c321-4e84-8b71-0f7fbf37d0df/commits/f6e2c2462bc4928fa2f0f8a22c5815674572ffa1"
         },
-        "reviewers": [],
+        "reviewers": [
+            {
+                "reviewerUrl": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/42f66930-c321-4e84-8b71-0f7fbf37d0df/pullRequests/2/reviewers/8725d325-8926-6514-a563-8717451ce799",
+                "vote": 10,
+                "hasDeclined": false,
+                "isFlagged": false,
+                "displayName": "tran ngoc huong",
+                "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+                    }
+                },
+                "id": "8725d325-8926-6514-a563-8717451ce799",
+                "uniqueName": "huongkstn@gmail.com",
+                "imageUrl": "https://dev.azure.com/huongkstn/_api/_common/identityImage?id=8725d325-8926-6514-a563-8717451ce799"
+            }
+        ],
         "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/42f66930-c321-4e84-8b71-0f7fbf37d0df/pullRequests/2",
         "supportsIterations": true,
         "commits": [

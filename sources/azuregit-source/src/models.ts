@@ -1,6 +1,3 @@
-interface Href {
-  href: string;
-}
 interface Project {
   id: string;
   name: string;
@@ -106,6 +103,18 @@ export interface PullRequestCommitResponse {
   value: PullRequestCommit[];
 }
 
+export interface PullRequestReviewer {
+  reviewerUrl: string;
+  vote: number;
+  hasDeclined: boolean;
+  isFlagged: boolean;
+  displayName: string;
+  url: string;
+  id: string;
+  uniqueName: string;
+  imageUrl: string;
+}
+
 export interface PullRequest {
   pullRequestId: number;
   codeReviewId: number;
@@ -121,7 +130,7 @@ export interface PullRequest {
   mergeId: string;
   lastMergeSourceCommit: MergeSourceCommit;
   lastMergeCommit: MergeSourceCommit;
-  reviewers: [any];
+  reviewers: [PullRequestReviewer];
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;
