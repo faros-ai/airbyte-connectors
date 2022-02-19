@@ -97,7 +97,7 @@ export class AzuregitRepositories extends AzuregitConverter {
         record: {
           name: tag.name,
           message: tag.commit.message,
-          commit: {sha: tag.commit.objectId},
+          commit: {sha: tag.commit.taggedObject.objectId},
           repository,
         },
       });
