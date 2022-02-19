@@ -12,6 +12,7 @@ export class AzuregitRepositories extends AzuregitConverter {
     'vcs_BranchCommitAssociation',
     'vcs_Organization',
     'vcs_Repository',
+    'vcs_Tag',
   ];
 
   private seenOrganizations = new Set<string>();
@@ -89,6 +90,17 @@ export class AzuregitRepositories extends AzuregitConverter {
           },
         });
       }
+    }
+    for (const tag of repositoryItem.tags) {
+      res.push({
+        model: 'vcs_Tag',
+        record: {
+          name: tag.name,
+          message: tag.commit.message,
+          commit: {sha: tag.commit.objectId},
+          repository,
+        },
+      });
     }
     return res;
   }
