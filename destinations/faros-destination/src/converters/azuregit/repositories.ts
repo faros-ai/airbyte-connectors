@@ -43,26 +43,17 @@ export class AzuregitRepositories extends AzuregitConverter {
         },
       });
     }
-    res.push({
-      model: 'vcs_Repository',
-      record: {
-        uid: repositoryItem.id,
-        name: repositoryItem.name,
-        fullName: repositoryItem.name,
-        description: repositoryItem.name,
-        private: repositoryItem.project.visibility == 'private',
-        language: null,
-        size: repositoryItem.size,
-        mainBranch: repositoryItem.defaultBranch,
-        htmlUrl: repositoryItem.webUrl,
-        type: {category: OrgTypeCategory.Organization, organizationName},
-        createdAt: null,
-        updatedAt: null,
-        organization,
-      },
-    });
 
+    let createdAt: Date = null;
     for (const branch of repositoryItem.branches) {
+      if (
+        createdAt != null &&
+        repositoryItem.defaultBranch.endsWith(branch.name)
+      ) {
+        createdAt = Utils.toDate(
+          branch.commits[branch.commits.length - 1].committer.date
+        );
+      }
       res.push({
         model: 'vcs_Branch',
         record: {
@@ -91,6 +82,25 @@ export class AzuregitRepositories extends AzuregitConverter {
         });
       }
     }
+
+    res.push({
+      model: 'vcs_Repository',
+      record: {
+        uid: repositoryItem.id,
+        name: repositoryItem.name,
+        fullName: repositoryItem.name,
+        description: repositoryItem.name,
+        private: repositoryItem.project.visibility == 'private',
+        language: null,
+        size: repositoryItem.size,
+        mainBranch: repositoryItem.defaultBranch,
+        htmlUrl: repositoryItem.webUrl,
+        createdAt,
+        updatedAt: null,
+        organization,
+      },
+    });
+
     for (const tag of repositoryItem.tags) {
       res.push({
         model: 'vcs_Tag',
