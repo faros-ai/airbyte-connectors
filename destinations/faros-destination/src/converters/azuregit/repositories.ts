@@ -35,7 +35,7 @@ export class AzuregitRepositories extends AzuregitConverter {
         record: {
           uid: repositoryItem.id,
           name: organizationName,
-          htmlUrl: null,
+          htmlUrl: `https://dev.azure.com/${organizationName}`,
           type: {category: OrgTypeCategory.Organization, organizationName},
           description: organizationName,
           createdAt: null,
@@ -47,7 +47,7 @@ export class AzuregitRepositories extends AzuregitConverter {
     let createdAt: Date = null;
     for (const branch of repositoryItem.branches) {
       if (
-        createdAt != null &&
+        createdAt == null &&
         repositoryItem.defaultBranch.endsWith(branch.name)
       ) {
         createdAt = Utils.toDate(
@@ -76,7 +76,7 @@ export class AzuregitRepositories extends AzuregitConverter {
         res.push({
           model: 'vcs_BranchCommitAssociation',
           record: {
-            commit: {sha: commit.commitId},
+            commit: {sha: commit.commitId, repository},
             branch: {name: branch.name},
           },
         });

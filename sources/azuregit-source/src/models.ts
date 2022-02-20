@@ -147,6 +147,7 @@ export interface PullRequest {
   status: string;
   createdBy: Creator;
   creationDate: string;
+  closedDate?: string;
   title: string;
   description: string;
   sourceRefName: string;

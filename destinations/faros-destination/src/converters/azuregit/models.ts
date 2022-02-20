@@ -122,6 +122,7 @@ export interface PullRequest {
   status: string;
   createdBy: Creator;
   creationDate: string;
+  closedDate?: string;
   title: string;
   description: string;
   sourceRefName: string;
@@ -170,5 +171,30 @@ export enum OrgTypeCategory {
   Organization = 'Organization',
   Workspace = 'Workspace',
   Group = 'Group',
+  Custom = 'Custom',
+}
+
+export interface PullRequestState {
+  category: PullRequestStateCategory;
+  detail: string;
+}
+
+export enum PullRequestStateCategory {
+  Closed = 'Closed',
+  Merged = 'Merged',
+  Open = 'Open',
+  Custom = 'Custom',
+}
+
+export interface PullRequestReviewState {
+  category: PullRequestReviewStateCategory;
+  detail: string;
+}
+
+export enum PullRequestReviewStateCategory {
+  Approved = 'Approved',
+  Commented = 'Commented',
+  ChangesRequested = 'ChangesRequested',
+  Dismissed = 'Dismissed',
   Custom = 'Custom',
 }

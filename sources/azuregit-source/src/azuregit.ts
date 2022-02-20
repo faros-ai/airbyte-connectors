@@ -132,7 +132,7 @@ export class AzureGit {
 
   async *getPullRequests(): AsyncGenerator<PullRequest> {
     const res = await this.httpClient.get<PullRequestResponse>(
-      'git/pullrequests'
+      'git/pullrequests?searchCriteria.status=all'
     );
     for (const item of res.data.value) {
       const commitResponse =

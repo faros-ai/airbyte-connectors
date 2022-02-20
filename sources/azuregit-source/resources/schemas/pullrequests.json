@@ -84,6 +84,9 @@
     "creationDate": {
       "type": "string"
     },
+    "closedDate": {
+      "type": ["string","null"]
+    },
     "title": {
       "type": "string"
     },

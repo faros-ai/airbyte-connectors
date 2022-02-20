@@ -19,6 +19,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
     const source = this.streamName.source;
     const pullRequestItem = record.record.data as PullRequest;
     const pullRequest = {number: String(pullRequestItem.pullRequestId)};
+    const repository = {uid: pullRequestItem.repository.id};
     const res: DestinationRecord[] = [];
 
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
@@ -43,17 +44,20 @@ export class AzuregitPullRequests extends AzuregitConverter {
       record: {
         uid: String(pullRequestItem.pullRequestId),
         title: pullRequestItem.title,
-        state: null,
+        state: this.convertPullRequestState(pullRequestItem.status),
         htmlUrl: pullRequestItem.url,
         createdAt: Utils.toDate(pullRequestItem.creationDate),
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
-        mergedAt: null,
+        mergedAt: Utils.toDate(pullRequestItem.closedDate),
         commitCount: pullRequestItem.commits.length,
         commentCount: pullRequestItem.threads.length,
         diffStats,
         author: {uid: pullRequestItem.createdBy.id, source},
-        mergeCommit: null,
-        repository: {uid: pullRequestItem.repository.id},
+        mergeCommit: {
+          sha: pullRequestItem.lastMergeCommit.commitId,
+          repository,
+        },
+        repository,
       },
     });
 
@@ -63,6 +67,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
         record: {
           number: reviewer.id,
           htmlUrl: reviewer.url,
+          state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
           reviewer: {uid: reviewer.id, source},
           pullRequest,
