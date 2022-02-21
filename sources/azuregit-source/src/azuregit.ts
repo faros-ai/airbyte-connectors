@@ -8,6 +8,8 @@ import {
   PullRequestCommit,
   PullRequestThreadResponse,
   TagCommit,
+  User,
+  UserResponse,
 } from './models';
 import {
   Branch,
@@ -23,12 +25,14 @@ import {
 } from './models';
 
 const DEFAULT_API_VERSION = '6.0';
+const DEFAULT_GRAPH_VERSION = '4.1-preview.1';
 
 export interface AzureGitConfig {
   readonly access_token: string;
   readonly organization: string;
   readonly project: string;
   readonly api_version?: string;
+  readonly graph_version?: string;
 }
 
 export class AzureGit {
@@ -36,6 +40,7 @@ export class AzureGit {
 
   constructor(
     private readonly httpClient: AxiosInstance,
+    private readonly graphClient: AxiosInstance,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -69,7 +74,20 @@ export class AzureGit {
         Authorization: `Basic ${config.access_token}`,
       },
     });
-    AzureGit.azureGit = new AzureGit(httpClient, logger);
+    const graphVersion = config.graph_version ?? DEFAULT_GRAPH_VERSION;
+    const graphClient = axios.create({
+      baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
+      timeout: 10000, // default is `0` (no timeout)
+      maxContentLength: Infinity, //default is 2000 bytes
+      params: {
+        'api-version': graphVersion,
+      },
+      headers: {
+        Authorization: `Basic ${config.access_token}`,
+      },
+    });
+
+    AzureGit.azureGit = new AzureGit(httpClient, graphClient, logger);
     return AzureGit.azureGit;
   }
 
@@ -166,6 +184,13 @@ export class AzureGit {
       if (threadResponse.status === 200) {
         item.threads = threadResponse.data.value;
       }
+      yield item;
+    }
+  }
+
+  async *getUsers(): AsyncGenerator<User> {
+    const res = await this.graphClient.get<UserResponse>('users');
+    for (const item of res.data.value) {
       yield item;
     }
   }

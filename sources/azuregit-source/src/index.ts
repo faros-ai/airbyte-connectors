@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {AzureGit, AzureGitConfig} from './azuregit';
-import {PullRequests, Repositories} from './streams';
+import {PullRequests, Repositories, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -35,6 +35,7 @@ export class AzureGitSource extends AirbyteSourceBase {
     return [
       new Repositories(config, this.logger),
       new PullRequests(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

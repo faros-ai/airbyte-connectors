@@ -207,3 +207,20 @@ export interface CommitResponse {
   count: number;
   value: Commit[];
 }
+
+export interface User {
+  subjectKind: string;
+  domain: string;
+  principalName: string;
+  mailAddress: string;
+  origin: string;
+  originId: string;
+  displayName: string;
+  url: string;
+  descriptor: string;
+}
+
+export interface UserResponse {
+  count: number;
+  value: User[];
+}

@@ -8,7 +8,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {AzureGit, AzureGitConfig} from '../azuregit';
 
-export class Repositories extends AirbyteStreamBase {
+export class Users extends AirbyteStreamBase {
   constructor(
     private readonly config: AzureGitConfig,
     protected readonly logger: AirbyteLogger
@@ -17,10 +17,10 @@ export class Repositories extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/repositories.json');
+    return require('../../resources/schemas/users.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return 'originId';
   }
 
   async *readRecords(
@@ -29,6 +29,6 @@ export class Repositories extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const azureGit = await AzureGit.instance(this.config, this.logger);
-    yield* azureGit.getRepositories();
+    yield* azureGit.getUsers();
   }
 }

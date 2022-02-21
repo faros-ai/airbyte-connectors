@@ -169,6 +169,18 @@ export interface Commit {
   remoteUrl: string;
 }
 
+export interface User {
+  subjectKind: string;
+  domain: string;
+  principalName: string;
+  mailAddress: string;
+  origin: string;
+  originId: string;
+  displayName: string;
+  url: string;
+  descriptor: string;
+}
+
 export interface OrgType {
   category: OrgTypeCategory;
   detail: string;
@@ -203,5 +215,17 @@ export enum PullRequestReviewStateCategory {
   Commented = 'Commented',
   ChangesRequested = 'ChangesRequested',
   Dismissed = 'Dismissed',
+  Custom = 'Custom',
+}
+
+export interface UserType {
+  category: UserTypeCategory;
+  detail: string;
+}
+
+export enum UserTypeCategory {
+  Bot = 'Bot',
+  Organization = 'Organization',
+  User = 'User',
   Custom = 'Custom',
 }

@@ -1,3 +1,4 @@
 import {PullRequests} from './pulllrequests';
 import {Repositories} from './repositories';
-export {Repositories, PullRequests};
+import {Users} from './users';
+export {Repositories, PullRequests, Users};

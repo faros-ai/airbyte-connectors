@@ -28,6 +28,11 @@
         "type": "string",
         "title": "api version",
         "default": "6.0"
+      },
+      "graph_version": {
+        "type": "string",
+        "title": "graph api version",
+        "default": "4.1-preview.1"
       }
     }
   }

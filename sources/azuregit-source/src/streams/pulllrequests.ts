@@ -17,7 +17,7 @@ export class PullRequests extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/pullrequest.json');
+    return require('../../resources/schemas/pullrequests.json');
   }
   get primaryKey(): StreamKey {
     return 'id';
@@ -31,10 +31,7 @@ export class PullRequests extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const azureActiveDirectory = await AzureGit.instance(
-      this.config,
-      this.logger
-    );
-    yield* azureActiveDirectory.getPullRequests();
+    const azureGit = await AzureGit.instance(this.config, this.logger);
+    yield* azureGit.getPullRequests();
   }
 }
