@@ -169,6 +169,18 @@ export interface Commit {
   remoteUrl: string;
 }
 
+interface Href {
+  href: string;
+}
+
+interface UserLink {
+  self: Href;
+  memberships: Href;
+  membershipState: Href;
+  storageKey: Href;
+  avatar: Href;
+}
+
 export interface User {
   subjectKind: string;
   domain: string;
@@ -179,6 +191,7 @@ export interface User {
   displayName: string;
   url: string;
   descriptor: string;
+  _link: UserLink;
 }
 
 export interface OrgType {
