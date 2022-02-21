@@ -28,10 +28,10 @@ export class Pipelines extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const azureActiveDirectory = await AzurePipeline.instance(
+    const azurePipeline = await AzurePipeline.instance(
       this.config,
       this.logger
     );
-    yield* azureActiveDirectory.getPipelines();
+    yield* azurePipeline.getPipelines();
   }
 }
