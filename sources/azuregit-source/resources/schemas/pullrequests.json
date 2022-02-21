@@ -223,6 +223,20 @@
                 "type": "number"
               }
             }
+          },
+          "changeCounts":{
+            "type": "object",
+            "properties": {
+              "Edit": {
+                "type": ["number","null"]
+              },
+              "Add": {
+                "type": ["number","null"]
+              },
+              "Delete": {
+                "type": ["number","null"]
+              }
+            }
           }
         }
       }

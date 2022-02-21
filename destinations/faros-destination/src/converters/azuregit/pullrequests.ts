@@ -24,6 +24,12 @@ export class AzuregitPullRequests extends AzuregitConverter {
 
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
 
+    for (const commit of pullRequestItem.commits) {
+      diffStats.linesAdded += commit.changeCounts.Add ?? 0;
+      diffStats.linesDeleted += commit.changeCounts.Delete ?? 0;
+      diffStats.filesChanged += commit.changeCounts.Edit ?? 0;
+    }
+
     for (const thread of pullRequestItem.threads) {
       for (const comment of thread.comments) {
         res.push({
@@ -39,6 +45,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
         });
       }
     }
+
     res.push({
       model: 'vcs_PullRequest',
       record: {

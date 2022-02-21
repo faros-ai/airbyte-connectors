@@ -96,12 +96,19 @@ export interface PullRequestRepository {
   project: Project;
 }
 
+export interface PullRequestCommitChangeCounts {
+  Edit?: number;
+  Add?: number;
+  Delete?: number;
+}
+
 export interface PullRequestCommit {
   commitId: string;
   author: CommitAuthor;
   committer: CommitAuthor;
   comment: string;
   url: string;
+  changeCounts: PullRequestCommitChangeCounts;
 }
 
 export interface PullRequestReviewer {

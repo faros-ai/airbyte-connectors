@@ -3,7 +3,12 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {PullRequestThreadResponse, TagCommit} from './models';
+import {
+  CommitChangeCountsResponse,
+  PullRequestCommit,
+  PullRequestThreadResponse,
+  TagCommit,
+} from './models';
 import {
   Branch,
   BranchResponse,
@@ -140,7 +145,19 @@ export class AzureGit {
           `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
         );
       if (commitResponse.status === 200) {
-        item.commits = commitResponse.data.value;
+        const commits: PullRequestCommit[] = [];
+
+        for (const commit of commitResponse.data.value) {
+          const commitChangeCountsResponse =
+            await this.httpClient.get<CommitChangeCountsResponse>(
+              `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
+            );
+          if (commitChangeCountsResponse.status === 200) {
+            commit.changeCounts = commitChangeCountsResponse.data.changeCounts;
+          }
+          commits.push(commit);
+        }
+        item.commits = commits;
       }
       const threadResponse =
         await this.httpClient.get<PullRequestThreadResponse>(
