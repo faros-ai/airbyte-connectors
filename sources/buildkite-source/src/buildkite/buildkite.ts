@@ -8,8 +8,10 @@ import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_JOBS_PER_BUILD = 500;
-const REST_API_URL = 'https://api.buildkite.com/v2';
-const GRAPHQL_API_URL = 'https://graphql.buildkite.com/v1';
+const DEFAULT_REST_VERSION = 'v2';
+const DEFAULT_GRAPHQL_VERSION = 'v1';
+const REST_API_URL = 'https://api.buildkite.com/';
+const GRAPHQL_API_URL = 'https://graphql.buildkite.com/';
 
 const PIPELINES_QUERY = fs.readFileSync(
   path.join(__dirname, '../..', 'resources_gql', 'pipelines-query.gql'),
@@ -120,6 +122,8 @@ export interface BuildkiteConfig {
   readonly page_size?: number;
   readonly max_jobs_per_build?: number;
   readonly organization?: string;
+  readonly rest_api_version?: string;
+  readonly graphql_version?: string;
 }
 
 interface PaginateResponse<T> {
@@ -151,11 +155,17 @@ export class Buildkite {
     }
     const auth = `Bearer ${config.token}`;
 
-    const graphClient = new GraphQLClient(`${GRAPHQL_API_URL}`, {
-      headers: {authorization: auth},
-    });
+    const graphqlVersion = config.graphql_version ?? DEFAULT_GRAPHQL_VERSION;
+    const graphClient = new GraphQLClient(
+      `${GRAPHQL_API_URL}${graphqlVersion}`,
+      {
+        headers: {authorization: auth},
+      }
+    );
+
+    const restApiVersion = config.rest_api_version ?? DEFAULT_REST_VERSION;
     const restClient = makeAxiosInstanceWithRetry({
-      baseURL: `${REST_API_URL}`,
+      baseURL: `${REST_API_URL}${restApiVersion}`,
       headers: {authorization: auth},
     });
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
