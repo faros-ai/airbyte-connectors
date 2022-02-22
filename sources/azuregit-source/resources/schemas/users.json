@@ -18,7 +18,7 @@
       "type": "string"
     },
     "originId": {
-      "type": "string"
+      "type": ["string","null"]
     },
     "displayName": {
       "type": "string"

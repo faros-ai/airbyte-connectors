@@ -194,7 +194,7 @@
             "type": "string"
           },
           "url": {
-            "type": "number"
+            "type": "string"
           },
           "author": {
             "type": "object",
@@ -206,7 +206,7 @@
                 "type": "string"
               },
               "date": {
-                "type": "number"
+                "type": "string"
               }
             }
           },
@@ -220,7 +220,7 @@
                 "type": "string"
               },
               "date": {
-                "type": "number"
+                "type": "string"
               }
             }
           },

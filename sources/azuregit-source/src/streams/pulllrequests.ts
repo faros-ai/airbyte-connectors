@@ -20,7 +20,7 @@ export class PullRequests extends AirbyteStreamBase {
     return require('../../resources/schemas/pullrequests.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return 'pullRequestId';
   }
   get cursorField(): string | string[] {
     return 'creationDate';

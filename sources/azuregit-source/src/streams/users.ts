@@ -20,7 +20,7 @@ export class Users extends AirbyteStreamBase {
     return require('../../resources/schemas/users.json');
   }
   get primaryKey(): StreamKey {
-    return 'originId';
+    return 'principalName';
   }
 
   async *readRecords(
