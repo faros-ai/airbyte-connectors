@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__azuregit__repositories"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__azuregit__pull_requests"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__azuregit__users"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzuregitConverter} from './common';
@@ -19,7 +18,7 @@ export class AzuregitUsers extends AzuregitConverter {
     const userItem = record.record.data as User;
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(
-      userItem._link.self.href
+      userItem._links.self.href
     );
     const organization = {uid: organizationName, source};
     const type: UserType = {

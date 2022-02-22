@@ -230,7 +230,7 @@ export interface User {
   displayName: string;
   url: string;
   descriptor: string;
-  _link: UserLink;
+  _links: UserLink;
 }
 
 export interface UserResponse {
