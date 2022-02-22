@@ -29,14 +29,14 @@ export class AzuregitUsers extends AzuregitConverter {
       model: 'vcs_Membership',
       record: {
         organization,
-        user: {uid: userItem.originId, source},
+        user: {uid: userItem.principalName, source},
       },
     });
 
     res.push({
       model: 'vcs_User',
       record: {
-        uid: userItem.originId,
+        uid: userItem.principalName,
         name: userItem.displayName,
         type,
         htmlUrl: userItem.url,

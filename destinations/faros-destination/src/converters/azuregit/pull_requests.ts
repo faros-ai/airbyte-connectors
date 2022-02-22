@@ -39,7 +39,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
             comment: comment.content,
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
-            author: {uid: comment.author.id, source},
+            author: {uid: comment.author.uniqueName, source},
             pullRequest,
           },
         });
@@ -59,7 +59,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
         commitCount: pullRequestItem.commits.length,
         commentCount: pullRequestItem.threads.length,
         diffStats,
-        author: {uid: pullRequestItem.createdBy.id, source},
+        author: {uid: pullRequestItem.createdBy.uniqueName, source},
         mergeCommit: {
           sha: pullRequestItem.lastMergeCommit.commitId,
           repository,
@@ -76,7 +76,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
-          reviewer: {uid: reviewer.id, source},
+          reviewer: {uid: reviewer.uniqueName, source},
           pullRequest,
         },
       });
