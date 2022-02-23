@@ -9,7 +9,7 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 
 Component | Code | Installation | Version
 ----------|-----------|------|--------
-Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` |[![npm package](https://img.shields.io/npm/v/faros-airbyte-cdk?color=blue&label=npm)](https://www.npmjs.com/package/faros-airbyte-cdk/tags)
+Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` |[![npm package](https://img.shields.io/npm/v/faros-airbyte-cdk?color=blue&label=npm)](https://www.npmjs.com/package/faros-airbyte-cdk)
 Bitbucket Source | [sources/bitbucket-source](sources/bitbucket-source) | `docker pull farosai/airbyte-bitbucket-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-bitbucket-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-bitbucket-source/tags)
 Customer.IO Source | [sources/customer-io-source](sources/customer-io-source) | `docker pull farosai/airbyte-customer-io-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-customer-io-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-customer-io-source/tags)
 Faros Destination | [destinations/faros-destination](destinations/faros-destination) | `docker pull farosai/airbyte-faros-destination` | [![](https://img.shields.io/docker/v/farosai/airbyte-faros-destination?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-faros-destination/tags)
