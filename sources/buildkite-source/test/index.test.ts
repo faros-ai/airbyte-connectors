@@ -64,7 +64,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        "Please verify your token are correct. Error: Cannot read properties of null (reading 'get')"
+        "Please verify your token are correct. Error: Cannot read property 'get' of null"
       ),
     ]);
   });
