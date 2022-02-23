@@ -30,7 +30,7 @@ export class GithubPullRequests extends GithubConverter {
     };
 
     const mergeCommit = pr.merge_commit_sha
-      ? {repository, sha: pr.merge_commit_sha}
+      ? {repository, sha: pr.merge_commit_sha, uid: pr.merge_commit_sha}
       : null;
 
     let author: DestinationRecord | undefined = undefined;

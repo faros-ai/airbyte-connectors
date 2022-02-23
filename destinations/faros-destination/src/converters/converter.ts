@@ -7,7 +7,7 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
-  private stream: StreamName;
+  protected stream: StreamName;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {
@@ -36,6 +36,23 @@ export abstract class Converter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>>;
+}
+
+// Helper function for reading object type configurations that
+// may be inputted as proper JSON via API or stringified JSON via Airbyte UI
+export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
+  if (!obj) return undefined;
+  if (typeof obj === 'object') return obj;
+  if (typeof obj === 'string') {
+    try {
+      return JSON.parse(obj);
+    } catch (e) {
+      throw new VError(
+        `Could not parse JSON object from ${name} ${obj}. Error: ${e}`
+      );
+    }
+  }
+  throw new VError(`${name} must be a JSON object or stringified JSON object`);
 }
 
 /** Stream context to store records by stream and other helpers */
@@ -84,7 +101,7 @@ export class StreamContext {
   }
 }
 
-const StreamNameSeparator = '__';
+export const StreamNameSeparator = '__';
 
 /**
  * Stream name with source prefix, e.g
