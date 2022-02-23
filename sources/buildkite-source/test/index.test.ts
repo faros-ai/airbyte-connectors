@@ -51,6 +51,24 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
+
+  test('check connection - incorrect config', async () => {
+    Buildkite.instance = jest.fn().mockImplementation(() => {
+      return new Buildkite(null, null);
+    });
+    const source = new sut.BuildkiteSource(logger);
+    await expect(
+      source.checkConnection({
+        token: 'token',
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "Please verify your token are correct. Error: Cannot read properties of null (reading 'get')"
+      ),
+    ]);
+  });
+
   test('streams - organizations, use full_refresh sync mode', async () => {
     const fnOrganizationsList = jest.fn();
     Buildkite.instance = jest.fn().mockImplementation(() => {

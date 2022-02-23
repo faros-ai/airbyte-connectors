@@ -4,15 +4,6 @@ import parseGitUrl from 'git-url-parse';
 
 import {Converter} from '../converter';
 
-export type ApplicationMapping = Record<
-  string,
-  {name: string; platform?: string}
->;
-
-interface BuildkiteConfig {
-  application_mapping?: ApplicationMapping;
-}
-
 export interface Organization {
   readonly id: string;
   readonly slug: string;
