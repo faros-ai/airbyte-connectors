@@ -99,13 +99,8 @@ describe('index', () => {
       const cli = await CLI.runWith(['check', '--config', configPath]);
 
       expect(await read(cli.stderr)).toBe('');
-      expect(await read(cli.stdout)).toBe(
-        JSON.stringify(
-          new AirbyteConnectionStatusMessage({
-            status: AirbyteConnectionStatus.FAILED,
-            message: 'Segment User Id badid is not a valid UUID.',
-          })
-        ) + os.EOL
+      expect(await read(cli.stdout)).toContain(
+        'Segment User Id badid is not a valid UUID.'
       );
       expect(await cli.wait()).toBe(0);
     } finally {

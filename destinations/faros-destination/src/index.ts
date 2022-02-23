@@ -25,7 +25,7 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
-import {validate} from 'uuid';
+import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
 import {WriteStats} from './common/write-stats';
@@ -145,7 +145,7 @@ class FarosDestination extends AirbyteDestination {
     if (segmentUserId) {
       if (!validate(segmentUserId)) {
         throw new VError(
-          `Segment User Id ${segmentUserId} is not a valid UUID.`
+          `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
         );
       }
       // Only create the client if there's a user id specified
