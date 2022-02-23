@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -44,6 +44,30 @@ describe('index', () => {
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readTestResourceFile('spec.json'))
     );
+  });
+
+  test('check connection', async () => {
+    AzureGit.instance = jest.fn().mockImplementation(() => {
+      const repositoriesResource: any[] =
+        readTestResourceFile('repositories.json');
+      return new AzureGit(
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {value: repositoriesResource},
+          }),
+        } as any,
+        null,
+        null
+      );
+    });
+    const source = new sut.AzureGitSource(logger);
+    await expect(
+      source.checkConnection({
+        access_token: '',
+        organization: 'organization',
+        project: 'project',
+      } as any)
+    ).resolves.toStrictEqual([true, undefined]);
   });
 
   test('check connection - no access token', async () => {
