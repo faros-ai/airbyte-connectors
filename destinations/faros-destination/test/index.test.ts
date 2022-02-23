@@ -58,12 +58,14 @@ describe('index', () => {
   });
 
   test('check community edition config', async () => {
+    await mockttp.forGet('/healthz').once().thenReply(200, JSON.stringify({}));
+
     let configPath: string;
     try {
       configPath = await tempCustomConfig({
         edition_configs: {
           edition: Edition.COMMUNITY,
-          hasura_url: 'http://localhost:8080',
+          hasura_url: mockttp.url,
         },
       });
       const cli = await CLI.runWith(['check', '--config', configPath]);
@@ -83,12 +85,14 @@ describe('index', () => {
   });
 
   test('fail check on invalid segment user id', async () => {
+    await mockttp.forGet('/healthz').once().thenReply(200, JSON.stringify({}));
+
     let configPath: string;
     try {
       configPath = await tempCustomConfig({
         edition_configs: {
           edition: Edition.COMMUNITY,
-          hasura_url: 'http://localhost:8080',
+          hasura_url: mockttp.url,
           segment_user_id: 'badid',
         },
       });
