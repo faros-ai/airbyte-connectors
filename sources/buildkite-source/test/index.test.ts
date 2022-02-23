@@ -47,7 +47,7 @@ describe('index', () => {
     const source = new sut.BuildkiteSource(logger);
     await expect(
       source.checkConnection({
-        token: 'token',
+        token: '',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -59,7 +59,7 @@ describe('index', () => {
     const source = new sut.BuildkiteSource(logger);
     await expect(
       source.checkConnection({
-        token: 'token',
+        token: '',
       })
     ).resolves.toStrictEqual([
       false,
