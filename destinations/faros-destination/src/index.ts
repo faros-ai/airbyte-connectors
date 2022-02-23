@@ -25,6 +25,7 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
 import {WriteStats} from './common/write-stats';
@@ -140,7 +141,13 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
 
-    if (config.edition_configs.segment_user_id) {
+    const segmentUserId = config.edition_configs.segment_user_id;
+    if (segmentUserId) {
+      if (!validate(segmentUserId)) {
+        throw new VError(
+          `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
+        );
+      }
       // Only create the client if there's a user id specified
       this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
     }
