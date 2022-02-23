@@ -19,8 +19,8 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     const build = record.record.data as Build;
 
     const pipeline = {
-      uid: build.pipeline?.slug,
-      organization: {uid: build.pipeline?.organization?.slug, source},
+      uid: build.pipeline.slug,
+      organization: {uid: build.pipeline.organization.slug, source},
     };
     const createdAt = Utils.toDate(build.createdAt);
     const startedAt = Utils.toDate(build.startedAt);

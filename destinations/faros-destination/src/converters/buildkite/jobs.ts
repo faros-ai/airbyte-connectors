@@ -18,8 +18,8 @@ export class BuildkiteJobs extends BuildkiteConverter {
     const build = {
       uid: job.build?.uuid,
       pipeline: {
-        uid: job.build?.pipeline?.slug,
-        organization: {uid: job.build?.pipeline?.organization?.slug, source},
+        uid: job.build.pipeline.slug,
+        organization: {uid: job.build.pipeline.organization.slug, source},
       },
     };
     const createdAt = Utils.toDate(job.createdAt);
