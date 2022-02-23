@@ -3,7 +3,7 @@
 
 [![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) 
 
-This repository contains [Airbyte](https://airbyte.io/) CDK for JavaScript / TypeScript as well as connectors used in [Faros Platform](https://github.com/faros-ai/faros-community-edition).
+This repository contains [Airbyte](https://airbyte.io/) connectors used in [Faros](https://www.faros.ai) and [Faros Community Edition](https://github.com/faros-ai/faros-community-edition) platforms as well as Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript.
 
 See the READMEs inside `destinations/` and `sources/` subfolders for more information on each connector.
 
