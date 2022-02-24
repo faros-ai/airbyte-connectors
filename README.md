@@ -22,7 +22,7 @@ Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | 
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-squadcast-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-squadcast-source/tags)
 StatusPage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-statuspage-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-statuspage-source/tags)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-victorops-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-victorops-source/tags)
-
+Shortcut Source | [sources/shortcut-source](sources/shortcut-source) | `docker pull farosai/airbyte-shortcut-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-shortcut-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-shortcut-source/tags)
 
 # Development
 
