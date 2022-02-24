@@ -483,6 +483,12 @@ class FarosDestination extends AirbyteDestination {
             stats.incrementProcessedByStream(stream);
 
             const converter = this.getConverter(stream);
+            // No need to fail on records we don't have a converter yet
+            if (!converter) {
+              stats.recordsSkipped++;
+              return;
+            }
+
             const writeRecord = async (
               context: StreamContext
             ): Promise<void> => {
@@ -545,8 +551,12 @@ class FarosDestination extends AirbyteDestination {
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`
       );
-      if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
-        throw e;
+      switch (this.invalidRecordStrategy) {
+        case InvalidRecordStrategy.SKIP:
+          stats.recordsSkipped++;
+          break;
+        case InvalidRecordStrategy.FAIL:
+          throw e;
       }
     }
   }
@@ -626,14 +636,11 @@ class FarosDestination extends AirbyteDestination {
   private getConverter(
     stream: string,
     onLoadError?: (err: Error) => void
-  ): Converter {
+  ): Converter | undefined {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
       onLoadError
     );
-    if (!converter && !this.jsonataConverter) {
-      throw new VError(`Undefined converter for stream ${stream}`);
-    }
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
       ? this.jsonataConverter ?? converter
       : converter ?? this.jsonataConverter;
@@ -649,8 +656,9 @@ class FarosDestination extends AirbyteDestination {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
 
-    if (!Array.isArray(results))
+    if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
+    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream

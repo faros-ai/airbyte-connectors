@@ -7,7 +7,7 @@ import fs from 'fs';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {Edition, InvalidRecordStrategy} from '../src';
+import {Edition} from '../src';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig, tempCustomConfig} from './testing-tools';
 
