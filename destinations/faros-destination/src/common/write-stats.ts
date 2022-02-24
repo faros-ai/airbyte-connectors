@@ -34,18 +34,17 @@ export class WriteStats {
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
     logger.info(`Processed records by stream: ${JSON.stringify(processed)}`);
-    logger.info(`${writeMsg} ${this.recordsWritten} records`);
 
+    logger.info(`${writeMsg} ${this.recordsWritten} records`);
     const written = _(this.writtenByModel)
       .toPairs()
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
     logger.info(`${writeMsg} records by model: ${JSON.stringify(written)}`);
-    logger.info(`Errored ${this.recordsErrored} records`);
+
     logger.info(`Skipped ${this.recordsSkipped} records`);
+    logger.info(`Errored ${this.recordsErrored} records`);
   }
 }
