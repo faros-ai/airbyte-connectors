@@ -19,11 +19,9 @@ export class Users extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
-
   get primaryKey(): StreamKey {
     return 'id';
   }
-
   get cursorField(): string | string[] {
     return 'lastUpdated';
   }
@@ -33,7 +31,8 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const okta = (await Okta.instance()) || (await Okta.init(this.config));
+    // TODO: add support for incremental sync
+    const okta = await Okta.instance(this.config, this.logger);
     yield* okta.getUsers();
   }
 }
