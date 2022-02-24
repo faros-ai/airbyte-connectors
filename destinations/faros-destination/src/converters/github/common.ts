@@ -3,7 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamName} from '../converter';
 
 /** Common functions shares across GitHub converters */
 export class GithubCommon {
@@ -156,6 +156,12 @@ export abstract class GithubConverter extends Converter {
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  get streamName(): StreamName {
+    if (this.stream) return this.stream;
+    this.stream = new StreamName('GitHub', super.streamName.name);
+    return this.stream;
   }
 }
 

@@ -22,6 +22,10 @@ export async function tempFile(
   return file.path;
 }
 
+export async function tempCustomConfig(conf: any): Promise<string> {
+  return tempFile(JSON.stringify(conf), {suffix: '.json'});
+}
+
 /**
  * Creates a temporary file with testing configuration
  * @return path to the temporary config file
@@ -50,7 +54,7 @@ export async function tempConfig(
     }`,
     source_specific_configs,
   };
-  return tempFile(JSON.stringify(conf), {suffix: '.json'});
+  return tempCustomConfig(conf);
 }
 
 export async function initMockttp(mockttp: Mockttp): Promise<void> {
