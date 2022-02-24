@@ -41,6 +41,7 @@
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
     "toposort": "^2.0.2",
+    "traverse": "^0.6.6",
     "turndown": "^7.1.1",
     "uuid": "^8.3.2",
     "verror": "^1.10.1"

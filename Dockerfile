@@ -6,7 +6,7 @@ RUN npm install -g npm@7 lerna tsc
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/eslint\|husky\|jest\|lint-staged\|mockttp\|prettier/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
-COPY ./sources ./sources
+#COPY ./sources ./sources
 COPY ./destinations ./destinations
 RUN lerna bootstrap --hoist
 

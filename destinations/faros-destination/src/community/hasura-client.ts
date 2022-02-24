@@ -6,6 +6,7 @@ import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {difference, find, intersection} from 'lodash';
 import path from 'path';
 import toposort from 'toposort';
+import traverse from 'traverse';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -362,7 +363,16 @@ export class HasuraClient {
       this.logger.debug(`Could not find type of ${field} in ${model}`);
       return undefined;
     }
-    return type === 'timestamptz' ? timestamptz(value) : value;
+    if (type === 'timestamptz') {
+      return timestamptz(value);
+    } else if (typeof value === 'object' || Array.isArray(value)) {
+      return traverse(value).map(function (this, val) {
+        if (val instanceof Date) {
+          this.update(val.getTime());
+        }
+      });
+    }
+    return value;
   }
 
   private createConflictClause(
