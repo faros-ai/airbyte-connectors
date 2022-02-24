@@ -9,6 +9,7 @@ export class WriteStats {
     public recordsProcessed: number = 0,
     public recordsWritten: number = 0,
     public recordsErrored: number = 0,
+    public recordsSkipped: number = 0,
     public processedByStream: Dictionary<number> = {},
     public writtenByModel: Dictionary<number> = {}
   ) {}
@@ -45,5 +46,6 @@ export class WriteStats {
 
     logger.info(`${writeMsg} records by model: ${JSON.stringify(written)}`);
     logger.info(`Errored ${this.recordsErrored} records`);
+    logger.info(`Skipped ${this.recordsSkipped} records`);
   }
 }
