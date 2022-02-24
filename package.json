@@ -23,6 +23,7 @@
     "@types/pino": "^7.0.5",
     "@types/temp": "^0.9.1",
     "@types/toposort": "^2.0.3",
+    "@types/traverse": "^0.6.32",
     "@types/turndown": "^5.0.1",
     "@types/uuid": "^8.3.4",
     "@types/verror": "^1.10.5",
