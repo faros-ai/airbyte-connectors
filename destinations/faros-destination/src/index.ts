@@ -418,7 +418,7 @@ class FarosDestination extends AirbyteDestination {
         this.analytics.track({
           event: 'Write Stats',
           userId: config.edition_configs.segment_user_id,
-          stats,
+          properties: stats,
         });
       }
 
