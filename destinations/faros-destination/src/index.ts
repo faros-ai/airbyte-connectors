@@ -148,8 +148,12 @@ class FarosDestination extends AirbyteDestination {
           `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
         );
       }
+      // Segment host is used for testing purposes only
+      const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
-      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+        host,
+      });
     }
   }
 
@@ -418,7 +422,7 @@ class FarosDestination extends AirbyteDestination {
         this.analytics.track({
           event: 'Write Stats',
           userId: config.edition_configs.segment_user_id,
-          stats,
+          properties: stats,
         });
       }
 

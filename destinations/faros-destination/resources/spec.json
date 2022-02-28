@@ -176,7 +176,7 @@
                     "title": "Configuration",
                     "properties": {
                       "max_description_length": {
-                        "type": "number",
+                        "type": "integer",
                         "title": "Max Description Length",
                         "description": "Value to cut description to specific length",
                         "default": 1000
@@ -232,7 +232,7 @@
                         "default": false
                       },
                       "truncate_limit": {
-                        "type": "number",
+                        "type": "integer",
                         "title": "Truncate Limit",
                         "description": "Truncate the descriptions of projects, tasks, and epics.",
                         "default": 10000
@@ -247,7 +247,7 @@
                         "default": []
                       },
                       "additional_fields_array_limit": {
-                        "type": "number",
+                        "type": "integer",
                         "title": "Additional Fields Array Limit",
                         "description": "Truncates an additional field's array value to the given length.",
                         "default": 50

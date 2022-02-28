@@ -10,7 +10,7 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 import pino from 'pino';
 
-import {InvalidRecordStrategy} from '../../src';
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {jiraAllStreamsLog} from './data';
@@ -28,12 +28,18 @@ describe('jira', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.SKIP, {
-      jira: {
-        use_board_ownership: false,
-        truncate_limit: 1000,
-      },
-    });
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {
+        jira: {
+          use_board_ownership: false,
+          truncate_limit: 1000,
+        },
+      }
+    );
   });
 
   afterEach(async () => {
