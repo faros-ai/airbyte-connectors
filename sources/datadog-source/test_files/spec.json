@@ -2,29 +2,22 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Jenkins Spec",
+    "title": "Datadog Spec",
     "type": "object",
     "required": [
-      "server_url",
-      "user",
-      "token"
+      "api_key",
+      "application_key"
     ],
     "additionalProperties": false,
     "properties": {
-      "server_url": {
+      "apiKey": {
         "type": "string",
-        "title": "Jenkins Server URL",
-        "examples": [
-          "https://my-jenkins-server.example.com"
-        ]
+        "title": "DataDog API Key",
+        "airbyte_secret": true
       },
-      "user": {
+      "applicationKey": {
         "type": "string",
-        "title": "Jenkins User"
-      },
-      "token": {
-        "type": "string",
-        "title": "Jenkins Token",
+        "title": "DataDog Application Key",
         "airbyte_secret": true
       }
     }

@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {DataDog, DataDogConfig} from './datadog';
-import {Incidents} from './streams';
+import {Incidents, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -20,13 +20,13 @@ export function mainCommand(): Command {
 }
 
 /** Example source implementation. */
-class DataDogSource extends AirbyteSourceBase {
+export class DataDogSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const datadog = new DataDog(config as DataDogConfig, this.logger);
+      const datadog = DataDog.instance(config as DataDogConfig, this.logger);
       await datadog.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -34,7 +34,10 @@ class DataDogSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    const datadog = new DataDog(config as DataDogConfig, this.logger);
-    return [new Incidents(datadog, this.logger)];
+    const datadog = DataDog.instance(config as DataDogConfig, this.logger);
+    return [
+      new Incidents(datadog, this.logger),
+      new Users(datadog, this.logger),
+    ];
   }
 }

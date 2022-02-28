@@ -47,8 +47,8 @@ export class Incidents extends AirbyteStreamBase {
 
   async *readRecords(
     syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
+    _cursorField?: string[],
+    _streamSlice?: Dictionary<any, string>,
     streamState?: IncidentsState
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;

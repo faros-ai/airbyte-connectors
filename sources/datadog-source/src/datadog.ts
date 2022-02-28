@@ -5,12 +5,18 @@ import VError from 'verror';
 const DEFAULT_PAGE_SIZE = 100;
 
 interface PagedResult<T> {
-  data: T[];
+  data?: Array<T>;
   meta?: {
+    // Pagination for: Issues
     pagination?: {
       nextOffset?: number;
       offset?: number;
       size?: number;
+    };
+    // Pagination for: Users
+    page?: {
+      totalCount?: number;
+      totalFilteredCount?: number;
     };
   };
 }
@@ -21,14 +27,19 @@ export interface DataDogConfig {
   readonly pageSize?: number;
 }
 
-interface DataDogClient {
+export interface DataDogClient {
   incidents: v2.IncidentsApi;
+  users: v2.UsersApi;
 }
 
 export class DataDog {
-  private readonly client: DataDogClient;
-  private readonly cfg: DataDogConfig;
-  constructor(readonly config: DataDogConfig, readonly logger: AirbyteLogger) {
+  constructor(
+    readonly client: DataDogClient,
+    readonly config: DataDogConfig,
+    readonly logger: AirbyteLogger
+  ) {}
+
+  static instance(config: DataDogConfig, logger: AirbyteLogger): DataDog {
     const v2Config = v2.createConfiguration({
       authMethods: {
         apiKeyAuth: config.apiKey,
@@ -39,18 +50,29 @@ export class DataDog {
     // Beta endpoints are unstable and need to be explicitly enabled
     v2Config.unstableOperations['listIncidents'] = true;
 
-    this.cfg = {
-      ...config,
-      pageSize: config.pageSize ?? DEFAULT_PAGE_SIZE,
-    };
-    this.client = {
+    const client = {
       incidents: new v2.IncidentsApi(v2Config),
+      users: new v2.UsersApi(v2Config),
     };
+
+    return new DataDog(client, config, logger);
   }
 
+  async checkConnection(): Promise<void> {
+    try {
+      // Retrieve a single incident to verify API key and Application key
+      await this.client.incidents.listIncidents({pageOffset: 0, pageSize: 1});
+    } catch (err: any) {
+      throw new VError(err.message ?? JSON.stringify(err));
+    }
+  }
+
+  // Retrieve incidents that have been modified since lastModified
+  // or retrieve all incidents if lastModified not set.
+  // Note: This is an unstable endpoint
   async *getIncidents(
     lastModified?: Date,
-    pageSize = this.cfg.pageSize
+    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.IncidentResponseData, any, any> {
     yield* this.paginate<v2.IncidentResponseData>(
       pageSize,
@@ -77,41 +99,61 @@ export class DataDog {
     );
   }
 
-  async checkConnection(): Promise<void> {
-    try {
-      // Retrieve a single incident to verify API key and Application key
-      await this.client.incidents.listIncidents({pageOffset: 0, pageSize: 1});
-    } catch (err: any) {
-      throw new VError(err.message ?? JSON.stringify(err));
-    }
+  // Retrieve all users
+  async *getUsers(
+    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
+  ): AsyncGenerator<v2.User, any, any> {
+    yield* this.paginate<v2.User>(
+      pageSize,
+      async (offset) => {
+        return this.client.users.listUsers({
+          pageNumber: offset,
+          pageSize,
+        });
+      },
+      async (data) => data
+    );
   }
 
   private async *paginate<T>(
     pageSize: number,
-    fetch: (pageOffset?: number) => Promise<PagedResult<T>>,
-    process: (data: T[]) => Promise<T[]>,
-    earlyTermination = true
+    fetch: (offset: number) => Promise<PagedResult<T>>,
+    process: (data: T[]) => Promise<T[]>
   ): AsyncGenerator<T, any, any> {
-    let pageOffset = 0;
+    let offset = 0;
     let res: PagedResult<T> | undefined;
     do {
       try {
-        res = await fetch(pageOffset);
+        res = await fetch(offset);
       } catch (err: any) {
         throw new VError(err.message ?? JSON.stringify(err));
       }
 
-      let count = 0;
       const processed = await process(res?.data ?? []);
       for (const item of processed) {
         if (item) {
-          count++;
           yield item;
         }
       }
 
-      if (earlyTermination && count < pageSize) return;
-      pageOffset = res?.meta?.pagination?.nextOffset;
-    } while (pageOffset);
+      const size = res?.meta?.pagination?.size;
+      const nextOffset = res?.meta?.pagination?.nextOffset;
+      const totalCount = res?.meta?.page?.totalCount;
+      if (size && nextOffset) {
+        // Paginate using res.meta.pagination
+        if (size < pageSize || offset === nextOffset) {
+          return;
+        }
+        offset = nextOffset;
+      } else if (totalCount) {
+        // Paginate using res.meta.page
+        if (pageSize * (offset + 1) >= totalCount) {
+          return;
+        }
+        offset++;
+      } else {
+        throw new VError('Response could not be paginated');
+      }
+    } while (offset);
   }
 }

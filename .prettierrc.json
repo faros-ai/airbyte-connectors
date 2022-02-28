@@ -2,5 +2,6 @@
   "bracketSpacing": false,
   "parser": "typescript",
   "trailingComma": "es5",
-  "singleQuote": true
+  "singleQuote": true,
+  "tabWidth": 2
 }
