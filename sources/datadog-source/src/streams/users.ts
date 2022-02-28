@@ -1,3 +1,4 @@
+import {v2} from '@datadog/datadog-api-client';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -7,6 +8,10 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {DataDog} from '../datadog';
+
+export interface UsersState {
+  lastModifiedAt: Date;
+}
 
 export class Users extends AirbyteStreamBase {
   constructor(
@@ -23,15 +28,30 @@ export class Users extends AirbyteStreamBase {
     return ['id'];
   }
   get cursorField(): string | string[] {
-    return ['attributes', 'modified'];
+    return ['modifiedAt'];
+  }
+  getUpdatedState(
+    currentStreamState: UsersState,
+    latestRecord: v2.User
+  ): UsersState {
+    const latestModifiedAt = currentStreamState?.lastModifiedAt
+      ? new Date(currentStreamState.lastModifiedAt).getTime()
+      : 0;
+    const recordModifiedAt = latestRecord?.attributes?.modifiedAt
+      ? new Date(latestRecord.attributes.modifiedAt).getTime()
+      : 0;
+    return {
+      lastModifiedAt: new Date(Math.max(latestModifiedAt, recordModifiedAt)),
+    };
   }
 
   async *readRecords(
-    _syncMode: SyncMode,
+    syncMode: SyncMode,
     _cursorField?: string[],
     _streamSlice?: Dictionary<any, string>,
-    _streamState?: Dictionary<any, any>
+    streamState?: UsersState
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    yield* this.dataDog.getUsers();
+    const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
+    yield* this.dataDog.getUsers(state?.lastModifiedAt);
   }
 }

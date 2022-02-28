@@ -28,7 +28,7 @@ export class Incidents extends AirbyteStreamBase {
     return ['id'];
   }
   get cursorField(): string | string[] {
-    return ['attributes', 'modified'];
+    return ['modified'];
   }
   getUpdatedState(
     currentStreamState: IncidentsState,

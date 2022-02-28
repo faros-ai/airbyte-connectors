@@ -5,8 +5,8 @@
     "title": "Datadog Spec",
     "type": "object",
     "required": [
-      "api_key",
-      "application_key"
+      "apiKey",
+      "applicationKey"
     ],
     "additionalProperties": false,
     "properties": {
@@ -19,6 +19,10 @@
         "type": "string",
         "title": "DataDog Application Key",
         "airbyte_secret": true
+      },
+      "pageSize": {
+        "type": "number",
+        "title": "Page size to be used when retrieving paginated data from DataDog"
       }
     }
   }

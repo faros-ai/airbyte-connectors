@@ -7,7 +7,7 @@ const DEFAULT_PAGE_SIZE = 100;
 interface PagedResult<T> {
   data?: Array<T>;
   meta?: {
-    // Pagination for: Issues
+    // Pagination for: Incidents
     pagination?: {
       nextOffset?: number;
       offset?: number;
@@ -68,7 +68,7 @@ export class DataDog {
   }
 
   // Retrieve incidents that have been modified since lastModified
-  // or retrieve all incidents if lastModified not set.
+  // or retrieve all incidents if lastModified not set
   // Note: This is an unstable endpoint
   async *getIncidents(
     lastModified?: Date,
@@ -99,19 +99,35 @@ export class DataDog {
     );
   }
 
-  // Retrieve all users
+  // Retrieve users that have been modified since lastModifiedAt
+  // or retrieve all users if lastModifiedAt not set
   async *getUsers(
+    lastModifiedAt?: Date,
     pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.User, any, any> {
     yield* this.paginate<v2.User>(
       pageSize,
-      async (offset) => {
+      async (pageNumber) => {
         return this.client.users.listUsers({
-          pageNumber: offset,
+          pageNumber,
           pageSize,
         });
       },
-      async (data) => data
+      async (data) => {
+        const issues = [];
+        for (const issue of data) {
+          const modifiedAt = issue?.attributes?.modifiedAt;
+          if (
+            !lastModifiedAt ||
+            (modifiedAt &&
+              new Date(modifiedAt).getTime() >
+                new Date(lastModifiedAt).getTime())
+          ) {
+            issues.push(issue);
+          }
+        }
+        return issues;
+      }
     );
   }
 
@@ -144,13 +160,14 @@ export class DataDog {
         if (size < pageSize || offset === nextOffset) {
           return;
         }
-        offset = nextOffset;
+        offset = nextOffset; // represents item offset
       } else if (totalCount) {
         // Paginate using res.meta.page
+        // Calculate if totalCount has been reached across retrieved pages
         if (pageSize * (offset + 1) >= totalCount) {
           return;
         }
-        offset++;
+        offset++; // represents page number
       } else {
         throw new VError('Response could not be paginated');
       }

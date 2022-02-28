@@ -1,10 +1,5 @@
 import {v2} from '@datadog/datadog-api-client';
-import {
-  AirbyteLogger,
-  AirbyteLogLevel,
-  AirbyteSpec,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteLogLevel, SyncMode} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
@@ -22,13 +17,6 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
-
-  test('spec', async () => {
-    const source = new sut.DataDogSource(logger);
-    await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
-    );
-  });
 
   test('check connection bad token', async () => {
     const source = new sut.DataDogSource(logger);
@@ -91,7 +79,7 @@ describe('index', () => {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
         } as DataDogClient,
-        {pageSize: 10} as DataDogConfig,
+        {} as DataDogConfig,
         logger
       )
     );
@@ -124,7 +112,7 @@ describe('index', () => {
             listUsers: jest.fn().mockReturnValue(users),
           } as unknown as v2.UsersApi,
         } as DataDogClient,
-        {pageSize: 10} as DataDogConfig,
+        {} as DataDogConfig,
         logger
       )
     );
@@ -141,5 +129,38 @@ describe('index', () => {
       items.push(item);
     }
     expect(items).toStrictEqual(users.data);
+  });
+
+  test('streams - users, use incremental sync mode', async () => {
+    const users = readTestResourceFile('users.json');
+    DataDog.instance = jest.fn().mockReturnValue(
+      new DataDog(
+        {
+          users: {
+            listUsers: jest.fn().mockReturnValue(users),
+          } as unknown as v2.UsersApi,
+        } as DataDogClient,
+        {} as DataDogConfig,
+        logger
+      )
+    );
+
+    const source = new sut.DataDogSource(logger);
+    const streams = source.streams({
+      apiKey: '',
+      applicationKey: '',
+    });
+    const stream = streams[1];
+    const itemIter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {lastModifiedAt: '2022-02-27T21:00:44.706Z'}
+    );
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual([users.data[1]]);
   });
 });

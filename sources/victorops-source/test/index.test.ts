@@ -33,13 +33,6 @@ describe('index', () => {
     jest.restoreAllMocks();
   });
 
-  test('spec', async () => {
-    const source = new sut.VictoropsSource(logger);
-    await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
-    );
-  });
-
   test('check connection - if config params are not provided', async () => {
     const source = new sut.VictoropsSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([

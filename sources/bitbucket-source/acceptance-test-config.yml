@@ -1,7 +1,7 @@
 connector_image: bitbucket-source
 tests:
   spec:
-    - spec_path: "test_files/spec.json"
+    - spec_path: "resources/spec.json"
   connection:
     - config_path: "secrets/config.json"
       status: "succeed"
