@@ -13,6 +13,10 @@ import {Victorops} from '../src/victorops';
 
 jest.mock('axios-retry');
 
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
@@ -31,6 +35,13 @@ describe('index', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  test('spec', async () => {
+    const source = new sut.VictoropsSource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
+      new AirbyteSpec(readResourceFile('spec.json'))
+    );
   });
 
   test('check connection - if config params are not provided', async () => {

@@ -1,10 +1,19 @@
 import {v2} from '@datadog/datadog-api-client';
-import {AirbyteLogger, AirbyteLogLevel, SyncMode} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteSpec,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {DataDog, DataDogClient, DataDogConfig} from '../src/datadog';
 import * as sut from '../src/index';
+
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
@@ -17,6 +26,13 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
+
+  test('spec', async () => {
+    const source = new sut.DataDogSource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
+      new AirbyteSpec(readResourceFile('spec.json'))
+    );
+  });
 
   test('check connection bad token', async () => {
     const source = new sut.DataDogSource(logger);
