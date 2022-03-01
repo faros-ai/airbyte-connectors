@@ -23,25 +23,27 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
     const source = this.streamName.source;
     const build = record.record.data as Build;
     const uid = String(build.id);
-    const buildUid = {uid, source};
+
     const organizationName = this.getOrganizationFromUrl(build.url);
     const organization = {uid: organizationName, source};
     const pipeline = {
       uid: String(build.definition?.id),
       organization: {uid: organizationName, source},
     };
+    const buildUid = {uid, pipeline};
     const createdAt = Utils.toDate(build.queueTime);
     const startedAt = Utils.toDate(build.startTime);
     const endedAt = Utils.toDate(build.finishTime);
     const status = this.convertBuildState(build.result);
     const res: DestinationRecord[] = [];
 
+    const number = Number(build.buildNumber.replace('.', ''));
     res.push({
       model: 'cicd_Build',
       record: {
         uid: uid,
         name: build.buildNumber,
-        number: build.buildNumber,
+        number,
         createdAt,
         startedAt,
         endedAt,
@@ -106,7 +108,7 @@ export class AzurepipelineBuilds extends AzurepipelineConverter {
           createdAt,
           tags,
           build: buildUid,
-          repository: {uid: repo.id, source},
+          repository: {uid: repo.id, organization},
         },
       });
     }

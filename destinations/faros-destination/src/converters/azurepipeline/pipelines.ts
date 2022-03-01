@@ -50,7 +50,10 @@ export class AzurepipelinePipelines extends AzurepipelineConverter {
         record: {
           uid: String(runItem.id),
           application,
-          build: {uid: String(runItem.id), source},
+          build: {
+            uid: String(runItem.id),
+            pipeline: {uid: String(pipeline.id), organization},
+          },
           startedAt,
           endedAt,
           env: null,
