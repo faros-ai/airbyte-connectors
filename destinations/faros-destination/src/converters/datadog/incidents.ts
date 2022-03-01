@@ -37,39 +37,40 @@ export class DatadogIncidents extends DatadogConverter {
         }
       : null;
 
-    return [
-      {
-        model: 'ims_Incident',
-        record: {
-          ...incidentKey,
-          title: incident.attributes?.title,
-          description: incident.attributes?.fields?.summary?.value,
-          url: null,
-          severity:
-            this.getSeverity(incident.attributes?.severity) ?? defaultSeverity,
-          priority: null,
-          status: this.getStatus(incident.attributes?.state) ?? null,
-          createdAt:
-            Utils.toDate(incident.attributes?.created)?.getTime() ?? null,
-          updatedAt:
-            Utils.toDate(incident.attributes?.modified)?.getTime() ?? null,
-          acknowledgedAt:
-            Utils.toDate(incident.attributes?.detected)?.getTime() ?? null,
-          resolvedAt:
-            Utils.toDate(incident.attributes?.resolved)?.getTime() ?? null,
-        },
+    const res = [];
+    res.push({
+      model: 'ims_Incident',
+      record: {
+        ...incidentKey,
+        title: incident.attributes?.title,
+        description: incident.attributes?.fields?.summary?.value,
+        url: null,
+        severity:
+          this.getSeverity(incident.attributes?.severity) ?? defaultSeverity,
+        priority: null,
+        status: this.getStatus(incident.attributes?.state) ?? null,
+        createdAt: Utils.toDate(incident.attributes?.created) ?? null,
+        updatedAt: Utils.toDate(incident.attributes?.modified) ?? null,
+        acknowledgedAt: Utils.toDate(incident.attributes?.detected) ?? null,
+        resolvedAt: Utils.toDate(incident.attributes?.resolved) ?? null,
       },
-      {
+    });
+
+    const assigneeUid = incident.relationships?.commanderUser?.data?.id;
+    if (assigneeUid) {
+      res.push({
         model: 'ims_IncidentAssignment',
         record: {
           incident: incidentKey,
           assignee: {
-            uid: incident.relationships?.commanderUser,
+            uid: assigneeUid,
             source,
           },
         },
-      },
-    ];
+      });
+    }
+
+    return res;
   }
 
   private getSeverity(
