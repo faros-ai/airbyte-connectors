@@ -419,11 +419,13 @@ class FarosDestination extends AirbyteDestination {
 
       if (this.analytics) {
         this.logger.info('Sending write stats to Segment.');
-        this.analytics.track({
-          event: 'Write Stats',
-          userId: config.edition_configs.segment_user_id,
-          properties: stats,
-        });
+        this.analytics
+          .track({
+            event: 'Write Stats',
+            userId: config.edition_configs.segment_user_id,
+            properties: stats,
+          })
+          .flush();
       }
 
       // Since we are writing all records in a single revision,
