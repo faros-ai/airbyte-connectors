@@ -22,7 +22,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/incident.json');
+    return require('../../resources/schemas/user.json');
   }
   get primaryKey(): StreamKey {
     return ['id'];
