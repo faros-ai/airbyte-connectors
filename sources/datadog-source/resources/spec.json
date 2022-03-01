@@ -11,18 +11,24 @@
     "additionalProperties": false,
     "properties": {
       "apiKey": {
+        "order": 0,
         "type": "string",
         "title": "DataDog API Key",
         "airbyte_secret": true
       },
       "applicationKey": {
+        "order": 1,
         "type": "string",
         "title": "DataDog Application Key",
+        "description": "requires incident_read authorization scope",
         "airbyte_secret": true
       },
       "pageSize": {
-        "type": "number",
-        "title": "Page size to be used when retrieving paginated data from DataDog"
+        "order": 2,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "used when retrieving paginated data from DataDog",
+        "default": 100
       }
     }
   }
