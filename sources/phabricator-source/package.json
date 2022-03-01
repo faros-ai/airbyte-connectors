@@ -1,6 +1,6 @@
 {
   "name": "phabricator-source",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "Phabricator Airbyte source",
   "keywords": [
     "airbyte",
