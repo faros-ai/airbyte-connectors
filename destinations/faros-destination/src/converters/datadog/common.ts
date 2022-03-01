@@ -13,19 +13,19 @@ export enum IncidentSeverityCategory {
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
-interface DataDogConfig {
+interface DatadogConfig {
   application_mapping?: ApplicationMapping;
   default_severity?: IncidentSeverityCategory;
 }
 
 /** DataDog converter base */
-export abstract class DataDogConverter extends Converter {
+export abstract class DatadogConverter extends Converter {
   /** Almost every DataDog record has an id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
-  protected config(ctx: StreamContext): DataDogConfig {
+  protected config(ctx: StreamContext): DatadogConfig {
     return ctx.config.source_specific_configs?.datadog ?? {};
   }
 }

@@ -7,7 +7,7 @@ import pino from 'pino';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {oktaAllStreamsLog} from './data';
+import {datadogAllStreamsLog} from './data';
 
 describe('datadog', () => {
   const logger = pino({
@@ -51,14 +51,14 @@ describe('datadog', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(oktaAllStreamsLog, 'utf8');
+    cli.stdin.end(datadogAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      groups: 2,
-      users: 1,
+      incidents: 2,
+      users: 14,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -67,9 +67,9 @@ describe('datadog', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      ims_Incident: 1,
-      ims_IncidentAssignment: 1,
-      ims_User: 1,
+      ims_Incident: 2,
+      ims_IncidentAssignment: 2,
+      ims_User: 14,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -108,11 +108,11 @@ describe('datadog', () => {
           event: 'Write Stats',
           messageId: expect.anything(),
           properties: {
-            messagesRead: 3,
+            messagesRead: 16,
             processedByStream: processed,
             recordsErrored: 0,
             recordsProcessed: processedTotal,
-            recordsRead: 3,
+            recordsRead: 16,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
             writtenByModel,

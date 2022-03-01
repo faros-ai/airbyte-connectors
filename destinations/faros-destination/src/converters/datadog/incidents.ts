@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {DataDogConverter, IncidentSeverityCategory} from './common';
+import {DatadogConverter, IncidentSeverityCategory} from './common';
 
 enum IncidentStatusCategory {
   Created = 'Created',
@@ -12,7 +12,7 @@ enum IncidentStatusCategory {
   Custom = 'Custom',
 }
 
-export class DataDogUsers extends DataDogConverter {
+export class DatadogIncidents extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_Incident',
     'ims_IncidentAssignment',
