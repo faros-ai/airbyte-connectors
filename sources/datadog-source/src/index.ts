@@ -12,14 +12,12 @@ import VError from 'verror';
 import {DataDog, DataDogConfig} from './datadog';
 import {Incidents, Users} from './streams';
 
-/** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
   const source = new DataDogSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** Example source implementation. */
 export class DataDogSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
