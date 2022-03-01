@@ -52,24 +52,6 @@ jobs:
       - name: Test
         run: lerna run test-cov
 
-      - name: Run Jenkins server
-        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
-        run: |
-          mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
-          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
-          echo "Waiting until Jenkins is up"
-          waiting=0
-          until curl -s -I -X GET http://127.0.0.1:8080; do
-            docker ps -a
-            let waiting+=3
-            sleep 3
-            if [ $waiting -eq 120 ]; then
-              echo "Jenkins server did not respond within 120 seconds"
-              exit 42
-            fi
-          done
-          sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
-
       - name: Source Acceptance Test
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         env:
@@ -94,9 +76,3 @@ jobs:
                 ;;
             esac
           done
-
-      - name: Stop Jenkins server
-        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
-        run: |
-          docker stop jenkins
-          docker rm jenkins
