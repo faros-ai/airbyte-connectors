@@ -49,9 +49,6 @@ jobs:
       - name: Install dependencies
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
-      - name: Test
-        run: lerna run test-cov
-
       - name: Source Acceptance Test
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         env:
