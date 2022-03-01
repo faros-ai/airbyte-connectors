@@ -45,8 +45,12 @@ export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
       record: {
         uid,
         fullName: `${user.givenName} ${user.surname}`,
+        lastName: user.surname,
+        photoUrl: null,
         primaryEmail: user.mail,
-        emails: user.mail,
+        emails: [user.mail],
+        createdAt: null,
+        updatedAt: null,
       },
     });
 
@@ -55,10 +59,10 @@ export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
       record: {
         uid,
         title: user.displayName,
-        level: user.jobTitle,
+        level: 0,
         joinedAt,
         terminatedAt: null,
-        department: user.department,
+        department: {uid: user.department},
         identity: {uid: user.mail, source},
         manager,
         reportingChain: null,
