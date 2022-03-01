@@ -5,6 +5,7 @@ import {
   IssueType,
   SprintState,
   TaskCategory,
+  TaskStatus,
   TaskStatusCategory,
   TaskType,
   VersionMilestone,
@@ -32,15 +33,15 @@ export class BacklogCommon {
     }
   }
 
-  static getTaskStatus(issueName: string): string {
+  static getTaskStatus(issueName: string): TaskStatus {
     switch (issueName) {
       case 'Resolved':
       case 'Closed':
-        return TaskStatusCategory.Done;
+        return {category: TaskStatusCategory.Done, detail: issueName};
       case 'Open':
-        return TaskStatusCategory.Todo;
+        return {category: TaskStatusCategory.Todo, detail: issueName};
       default:
-        return TaskStatusCategory.InProgress;
+        return {category: TaskStatusCategory.InProgress, detail: issueName};
     }
   }
 

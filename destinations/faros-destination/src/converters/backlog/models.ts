@@ -153,8 +153,13 @@ export enum TaskStatusCategory {
   Todo = 'Todo',
 }
 
+export interface TaskStatus {
+  category: TaskStatusCategory;
+  detail: string;
+}
+
 export interface TaskStatusChange {
-  status: string;
+  status: TaskStatus;
   changedAt: Date;
 }
 

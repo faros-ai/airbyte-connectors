@@ -67,6 +67,7 @@ export class BacklogIssues extends BacklogConverter {
         value: additionalField.value,
       });
     }
+    const status = BacklogCommon.getTaskStatus(issue.status.name);
     res.push({
       model: 'tms_Task',
       record: {
@@ -75,9 +76,7 @@ export class BacklogIssues extends BacklogConverter {
         description: issue.description?.substring(0, maxDescriptionLength),
         priority: issue.priority?.name,
         type: BacklogCommon.getTaskType(issue.issueType),
-        status: {
-          category: BacklogCommon.getTaskStatus(issue.status.name),
-        },
+        status,
         additionalFields,
         createdAt: Utils.toDate(issue.created),
         updatedAt: Utils.toDate(issue.updated),
