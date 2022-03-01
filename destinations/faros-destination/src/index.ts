@@ -1,3 +1,4 @@
+import Analytics from 'analytics-node';
 import {Command} from 'commander';
 import {
   AirbyteConfig,
@@ -20,15 +21,23 @@ import {
   FarosClient,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import _, {intersection, keyBy, sortBy, uniq} from 'lodash';
+import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
+import {WriteStats} from './common/write-stats';
 import {HasuraClient} from './community/hasura-client';
-import {Operation, TimestampedRecord} from './community/types';
-import {Converter, StreamContext, StreamName} from './converters/converter';
+import {HasuraWriter} from './community/hasura-writer';
+import {
+  Converter,
+  parseObjectConfig,
+  StreamContext,
+  StreamName,
+  StreamNameSeparator,
+} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
@@ -67,16 +76,6 @@ export enum Edition {
   CLOUD = 'cloud',
 }
 
-interface WriteStats {
-  messagesRead: number;
-  recordsRead: number;
-  recordsProcessed: number;
-  recordsWritten: number;
-  recordsErrored: number;
-  processedByStream: Dictionary<number>;
-  writtenByModel: Dictionary<number>;
-}
-
 interface FarosDestinationState {
   readonly lastSynced: string;
 }
@@ -90,7 +89,8 @@ class FarosDestination extends AirbyteDestination {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-    private hasuraClient: HasuraClient = undefined
+    private hasuraClient: HasuraClient = undefined,
+    private analytics: Analytics = undefined
   ) {
     super();
   }
@@ -134,9 +134,26 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
     try {
-      await this.getHasuraClient().healthCheck();
+      if (config.dry_run !== true) {
+        await this.getHasuraClient().healthCheck();
+      }
     } catch (e) {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
+    }
+
+    const segmentUserId = config.edition_configs.segment_user_id;
+    if (segmentUserId) {
+      if (!validate(segmentUserId)) {
+        throw new VError(
+          `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
+        );
+      }
+      // Segment host is used for testing purposes only
+      const host = config.edition_configs?.segment_test_host;
+      // Only create the client if there's a user id specified
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+        host,
+      });
     }
   }
 
@@ -156,7 +173,9 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
     try {
-      await this.getFarosClient().tenant();
+      if (config.dry_run !== true) {
+        await this.getFarosClient().tenant();
+      }
     } catch (e) {
       throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
     }
@@ -234,12 +253,23 @@ class FarosDestination extends AirbyteDestination {
         'Jira Additional Fields Array Limit must be a non-negative number'
       );
     }
+
+    const objectTypeConfigKeys: [string, string][] = [
+      ['bitbucket', 'application_mapping'],
+      ['pagerduty', 'application_mapping'],
+      ['squadcast', 'application_mapping'],
+      ['statuspage', 'application_mapping'],
+      ['victorops', 'application_mapping'],
+    ];
+    objectTypeConfigKeys.forEach((k) =>
+      parseObjectConfig(
+        config.source_specific_configs?.[k[0]]?.[k[1]],
+        k.join('.')
+      )
+    );
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
-    if (!config.origin) {
-      throw new VError('Faros origin is not set');
-    }
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -258,6 +288,30 @@ class FarosDestination extends AirbyteDestination {
     this.initGlobal(config);
   }
 
+  private getOrigin(
+    config: AirbyteConfig,
+    catalog: AirbyteConfiguredCatalog
+  ): string {
+    if (config.origin) {
+      this.logger.info(`Using origin ${config.origin} found in config`);
+      return config.origin;
+    }
+
+    // Determine origin from stream prefixes
+    const origins = uniq(
+      catalog.streams.map((s) => s.stream.name.split(StreamNameSeparator, 1)[0])
+    );
+    if (origins.length === 0) {
+      throw new VError('Could not determine origin from catalog');
+    } else if (origins.length > 1) {
+      throw new VError(
+        `Found multiple possible origins from catalog: ${origins.join(',')}`
+      );
+    }
+    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
+    return origins[0];
+  }
+
   async *write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
@@ -266,79 +320,122 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     await this.init(config);
 
+    const origin = this.getOrigin(config, catalog);
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
     const stateMessages: AirbyteStateMessage[] = [];
+    const stats = new WriteStats();
 
-    if (this.edition === Edition.COMMUNITY) {
-      await this.getHasuraClient().loadSchema();
-    }
+    const dryRunEnabled = config.dry_run === true || dryRun;
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
-    const dryRunEnabled = config.dry_run === true || dryRun;
-    if (dryRunEnabled || this.edition === Edition.COMMUNITY) {
+    try {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
-      }
-      await this.writeEntries(
-        config,
-        stdin,
-        streams,
-        stateMessages,
-        converterDependencies
-      );
-    } else {
-      // Log all models to be deleted (if any)
-      if (deleteModelEntries.length > 0) {
-        const modelsToDelete = sortBy(deleteModelEntries).join(',');
+
+        await this.writeEntries(
+          config,
+          stdin,
+          streams,
+          stateMessages,
+          converterDependencies,
+          stats
+        );
+      } else if (this.edition === Edition.COMMUNITY) {
+        const hasura = this.getHasuraClient();
+        await hasura.loadSchema();
+        await hasura.resetData(origin, deleteModelEntries);
+
+        const writer = new HasuraWriter(
+          hasura,
+          origin,
+          stats,
+          this.handleRecordProcessingError
+        );
+
+        await this.writeEntries(
+          config,
+          stdin,
+          streams,
+          stateMessages,
+          converterDependencies,
+          stats,
+          writer
+        );
+      } else {
         this.logger.info(
-          `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
+          `Opening a new revision on graph ${config.edition_configs.graph} ` +
+            `with expiration of ${config.edition_configs.expiration}`
+        );
+
+        // Log all models to be deleted (if any)
+        if (deleteModelEntries.length > 0) {
+          const modelsToDelete = sortBy(deleteModelEntries).join(',');
+          this.logger.info(
+            `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
+          );
+        }
+        // Create an entry uploader for the destination graph
+        const entryUploaderConfig: EntryUploaderConfig = {
+          name: origin,
+          url: config.edition_configs.api_url,
+          authHeader: config.edition_configs.api_key,
+          expiration: config.edition_configs.expiration,
+          graphName: config.edition_configs.graph,
+          deleteModelEntries,
+          logger: this.logger.asPino('debug'),
+        };
+        await withEntryUploader<FarosDestinationState>(
+          entryUploaderConfig,
+          async (writer, state) => {
+            try {
+              // Log last synced time
+              const lastSynced = state?.lastSynced
+                ? `last synced at ${state.lastSynced}`
+                : 'not synced yet';
+              this.logger.info(
+                `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
+              );
+              // Process input and write entries
+              await this.writeEntries(
+                config,
+                stdin,
+                streams,
+                stateMessages,
+                converterDependencies,
+                stats,
+                writer
+              );
+              // Return the current time
+              return {lastSynced: new Date().toISOString()};
+            } finally {
+              // Don't forget to close the writer
+              if (!writer.writableEnded) writer.end();
+            }
+          }
         );
       }
-      // Create an entry uploader for the destination graph
-      const entryUploaderConfig: EntryUploaderConfig = {
-        name: config.origin,
-        url: config.edition_configs.api_url,
-        authHeader: config.edition_configs.api_key,
-        expiration: config.edition_configs.expiration,
-        graphName: config.edition_configs.graph,
-        deleteModelEntries,
-        logger: this.logger.asPino('debug'),
-      };
-      await withEntryUploader<FarosDestinationState>(
-        entryUploaderConfig,
-        async (writer, state) => {
-          try {
-            // Log last synced time
-            const lastSynced = state?.lastSynced
-              ? `last synced at ${state.lastSynced}`
-              : 'not synced yet';
-            this.logger.info(
-              `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
-            );
-            // Process input and write entries
-            await this.writeEntries(
-              config,
-              stdin,
-              streams,
-              stateMessages,
-              converterDependencies,
-              writer
-            );
-            // Return the current time
-            return {lastSynced: new Date().toISOString()};
-          } finally {
-            // Don't forget to close the writer
-            writer.end();
-          }
-        }
-      );
+
+      if (this.analytics) {
+        this.logger.info('Sending write stats to Segment.');
+        this.analytics
+          .track({
+            event: 'Write Stats',
+            userId: config.edition_configs.segment_user_id,
+            properties: stats,
+          })
+          .flush();
+      }
+
+      // Since we are writing all records in a single revision,
+      // we should be ok to return all the state messages at the end,
+      // once the revision has been closed.
+      for (const state of stateMessages) yield state;
+    } finally {
+      // Log collected statistics
+      stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
     }
-    // Since we are writing all records in a single revision,
-    // we should be ok to return all the state messages at the end,
-    // once the revision has been closed.
-    for (const state of stateMessages) yield state;
   }
 
   private async writeEntries(
@@ -347,25 +444,15 @@ class FarosDestination extends AirbyteDestination {
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
     converterDependencies: Set<string>,
-    writer?: Writable
+    stats: WriteStats,
+    writer?: Writable | HasuraWriter
   ): Promise<void> {
-    const stats = {
-      messagesRead: 0,
-      recordsRead: 0,
-      recordsProcessed: 0,
-      recordsWritten: 0,
-      recordsErrored: 0,
-      processedByStream: {},
-      writtenByModel: {},
-    };
-
     const ctx = new StreamContext(
       config,
       this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
     );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
-    const timestampedRecords: TimestampedRecord[] = [];
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -379,6 +466,7 @@ class FarosDestination extends AirbyteDestination {
       for await (const line of input) {
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
+
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             stateMessages.push(msg as AirbyteStateMessage);
@@ -398,19 +486,23 @@ class FarosDestination extends AirbyteDestination {
               throw new VError('Empty unpacked record');
             }
             const stream = unpacked.record.stream;
-            const count = stats.processedByStream[stream];
-            stats.processedByStream[stream] = count ? count + 1 : 1;
+            stats.incrementProcessedByStream(stream);
 
             const converter = this.getConverter(stream);
+            // No need to fail on records we don't have a converter yet
+            if (!converter) {
+              stats.recordsSkipped++;
+              return;
+            }
+
             const writeRecord = async (
               context: StreamContext
             ): Promise<void> => {
               stats.recordsWritten += await this.writeRecord(
                 converter,
                 unpacked,
-                stats.writtenByModel,
+                stats,
                 context,
-                timestampedRecords,
                 writer
               );
               stats.recordsProcessed++;
@@ -447,49 +539,11 @@ class FarosDestination extends AirbyteDestination {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
-
-      if (this.edition === Edition.COMMUNITY) {
-        for (const record of sortBy(timestampedRecords, (r) => r.at)) {
-          await this.handleRecordProcessingError(stats, async () => {
-            await this.getHasuraClient().writeTimestampedRecord(record);
-            stats.recordsWritten++;
-            this.updateModelWriteStats(
-              stats.writtenByModel,
-              `${record.model}__${record.operation}`
-            );
-          });
-        }
-      }
+      // Don't forget to close the writer
+      await writer?.end();
     } finally {
-      this.logWriteStats(stats, writer);
       input.close();
     }
-  }
-
-  private logWriteStats(stats: WriteStats, writer?: Writable): void {
-    this.logger.info(`Read ${stats.messagesRead} messages`);
-    this.logger.info(`Read ${stats.recordsRead} records`);
-    this.logger.info(`Processed ${stats.recordsProcessed} records`);
-    const processed = _(stats.processedByStream)
-      .toPairs()
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-    this.logger.info(
-      `Processed records by stream: ${JSON.stringify(processed)}`
-    );
-    const writeMsg =
-      writer || this.edition === Edition.COMMUNITY ? 'Wrote' : 'Would write';
-    this.logger.info(`${writeMsg} ${stats.recordsWritten} records`);
-    const written = _(stats.writtenByModel)
-      .toPairs()
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-    this.logger.info(
-      `${writeMsg} records by model: ${JSON.stringify(written)}`
-    );
-    this.logger.info(`Errored ${stats.recordsErrored} records`);
   }
 
   private async handleRecordProcessingError(
@@ -503,8 +557,12 @@ class FarosDestination extends AirbyteDestination {
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`
       );
-      if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
-        throw e;
+      switch (this.invalidRecordStrategy) {
+        case InvalidRecordStrategy.SKIP:
+          stats.recordsSkipped++;
+          break;
+        case InvalidRecordStrategy.FAIL:
+          throw e;
       }
     }
   }
@@ -584,14 +642,11 @@ class FarosDestination extends AirbyteDestination {
   private getConverter(
     stream: string,
     onLoadError?: (err: Error) => void
-  ): Converter {
+  ): Converter | undefined {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
       onLoadError
     );
-    if (!converter && !this.jsonataConverter) {
-      throw new VError(`Undefined converter for stream ${stream}`);
-    }
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
       ? this.jsonataConverter ?? converter
       : converter ?? this.jsonataConverter;
@@ -600,16 +655,16 @@ class FarosDestination extends AirbyteDestination {
   private async writeRecord(
     converter: Converter,
     recordMessage: AirbyteRecord,
-    writtenByModel: Dictionary<number>,
+    stats: WriteStats,
     ctx: StreamContext,
-    timestampedRecords: TimestampedRecord[],
-    writer?: Writable
+    writer?: Writable | HasuraWriter
   ): Promise<number> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
 
-    if (!Array.isArray(results))
+    if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
+    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream
@@ -623,44 +678,23 @@ class FarosDestination extends AirbyteDestination {
       if (!result.record['source']) {
         result.record['source'] = converter.streamName.source;
       }
-      const obj: Dictionary<any> = {};
-      obj[result.model] = result.record;
-      let isTimestamped = false;
-      if (this.edition === Edition.COMMUNITY) {
-        const hasura = this.getHasuraClient();
-        const [baseModel, operation] = result.model.split('__', 2);
-        if (!operation) {
-          await hasura.writeRecord(result.model, result.record);
-        } else if (Object.values(Operation).includes(operation as Operation)) {
-          timestampedRecords.push({
-            model: baseModel,
-            operation,
-            ...result.record,
-          } as TimestampedRecord);
-          isTimestamped = true;
-        } else {
-          throw new VError(
-            `Unuspported model operation ${operation} for ${result.model}: ${result.record}`
-          );
-        }
-      } else {
-        writer?.write(obj);
-      }
 
+      let isTimestamped = false;
+      if (writer) {
+        if (writer instanceof HasuraWriter) {
+          isTimestamped = await writer.write(result);
+        } else {
+          const obj: Dictionary<any> = {};
+          obj[result.model] = result.record;
+          writer.write(obj);
+        }
+      }
       if (!isTimestamped) {
         recordsWritten++;
-        this.updateModelWriteStats(writtenByModel, result.model);
+        stats.incrementWrittenByModel(result.model);
       }
     }
 
     return recordsWritten;
-  }
-
-  private updateModelWriteStats(
-    writtenByModel: Dictionary<number>,
-    model: string
-  ): void {
-    const count = writtenByModel[model];
-    writtenByModel[model] = count ? count + 1 : 1;
   }
 }

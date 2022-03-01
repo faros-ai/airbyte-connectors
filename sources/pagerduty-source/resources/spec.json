@@ -15,7 +15,7 @@
         "airbyte_secret": true
       },
       "pageSize": {
-        "type": "number",
+        "type": "integer",
         "minimum": 1,
         "maximum": 25,
         "default": 25,
@@ -23,7 +23,7 @@
         "description": "page size to use when querying PagerDuty API"
       },
       "cutoffDays": {
-        "type": "number",
+        "type": "integer",
         "minimum": 1,
         "default": 90,
         "title": "Cutoff Days",
@@ -35,7 +35,6 @@
         "description": "If true, will return a subset of log entries that show only the most important changes to the incident.",
         "default": true
       },
-
       "defaultSeverity": {
         "type": "string",
         "title": "Severity category",

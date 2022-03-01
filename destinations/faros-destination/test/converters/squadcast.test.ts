@@ -71,6 +71,7 @@ describe('squadcast', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(
