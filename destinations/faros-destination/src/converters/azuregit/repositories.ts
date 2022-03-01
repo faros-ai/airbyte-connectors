@@ -23,17 +23,16 @@ export class AzuregitRepositories extends AzuregitConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repositoryItem = record.record.data as Repository;
-    const repository = {uid: repositoryItem.id};
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(repositoryItem.url);
     const organization = {uid: organizationName, source};
-
+    const repository = {name: repositoryItem.name, organization};
     if (!this.seenOrganizations.has(organizationName)) {
       this.seenOrganizations.add(organizationName);
       res.push({
         model: 'vcs_Organization',
         record: {
-          uid: repositoryItem.id,
+          uid: organizationName,
           name: organizationName,
           htmlUrl: `https://dev.azure.com/${organizationName}`,
           type: {category: OrgTypeCategory.Organization, organizationName},
@@ -53,7 +52,27 @@ export class AzuregitRepositories extends AzuregitConverter {
         createdAt = Utils.toDate(
           branch.commits[branch.commits.length - 1].committer.date
         );
+        break;
       }
+    }
+    res.push({
+      model: 'vcs_Repository',
+      record: {
+        name: repositoryItem.name,
+        fullName: repositoryItem.name,
+        description: repositoryItem.name,
+        private: repositoryItem.project.visibility == 'private',
+        language: null,
+        size: repositoryItem.size,
+        mainBranch: repositoryItem.defaultBranch,
+        htmlUrl: repositoryItem.webUrl,
+        createdAt,
+        updatedAt: null,
+        organization,
+      },
+    });
+
+    for (const branch of repositoryItem.branches) {
       res.push({
         model: 'vcs_Branch',
         record: {
@@ -77,29 +96,11 @@ export class AzuregitRepositories extends AzuregitConverter {
           model: 'vcs_BranchCommitAssociation',
           record: {
             commit: {sha: commit.commitId, repository},
-            branch: {name: branch.name},
+            branch: {name: branch.name, repository},
           },
         });
       }
     }
-
-    res.push({
-      model: 'vcs_Repository',
-      record: {
-        uid: repositoryItem.id,
-        name: repositoryItem.name,
-        fullName: repositoryItem.name,
-        description: repositoryItem.name,
-        private: repositoryItem.project.visibility == 'private',
-        language: null,
-        size: repositoryItem.size,
-        mainBranch: repositoryItem.defaultBranch,
-        htmlUrl: repositoryItem.webUrl,
-        createdAt,
-        updatedAt: null,
-        organization,
-      },
-    });
 
     for (const tag of repositoryItem.tags) {
       res.push({
@@ -107,7 +108,7 @@ export class AzuregitRepositories extends AzuregitConverter {
         record: {
           name: tag.name,
           message: tag.commit.message,
-          commit: {sha: tag.commit.taggedObject.objectId},
+          commit: {sha: tag.commit.taggedObject.objectId, repository},
           repository,
         },
       });

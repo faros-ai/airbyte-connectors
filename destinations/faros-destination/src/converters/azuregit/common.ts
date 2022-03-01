@@ -28,6 +28,11 @@ export abstract class AzuregitConverter extends Converter {
     return url.split('/')[3];
   }
 
+  convertStringToNumber(str: string): number {
+    const lastString = str.split('-')[str.split('-').length - 1];
+    const onlyNumbers = lastString.replace(/[^\d.-]/g, '');
+    return Number(onlyNumbers);
+  }
   //https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-requests?view=azure-devops-rest-4.1#pullrequeststatus
   convertPullRequestState(status: string): PullRequestState {
     switch (status) {

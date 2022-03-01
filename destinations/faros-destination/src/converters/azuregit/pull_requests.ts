@@ -17,9 +17,15 @@ export class AzuregitPullRequests extends AzuregitConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
+
     const pullRequestItem = record.record.data as PullRequest;
-    const pullRequest = {number: String(pullRequestItem.pullRequestId)};
-    const repository = {uid: pullRequestItem.repository.id};
+    const organizationName = this.getOrganizationFromUrl(
+      pullRequestItem.repository.url
+    );
+    const organization = {uid: organizationName, source};
+    const repository = {name: pullRequestItem.repository.name, organization};
+    const pullRequest = {number: pullRequestItem.pullRequestId, repository};
+
     const res: DestinationRecord[] = [];
 
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
@@ -35,7 +41,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
         res.push({
           model: 'vcs_PullRequestComment',
           record: {
-            number: String(comment.id),
+            number: comment.id,
             comment: comment.content,
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
@@ -49,7 +55,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
     res.push({
       model: 'vcs_PullRequest',
       record: {
-        uid: String(pullRequestItem.pullRequestId),
+        number: pullRequestItem.pullRequestId,
         title: pullRequestItem.title,
         state: this.convertPullRequestState(pullRequestItem.status),
         htmlUrl: pullRequestItem.url,
@@ -72,7 +78,7 @@ export class AzuregitPullRequests extends AzuregitConverter {
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
-          number: reviewer.id,
+          number: this.convertStringToNumber(reviewer.id),
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
