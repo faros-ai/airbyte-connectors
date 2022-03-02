@@ -46,9 +46,11 @@ export class DatadogIncidents extends DatadogConverter {
         description: incident.attributes?.fields?.summary?.value,
         url: null,
         severity:
-          this.getSeverity(incident.attributes?.severity) ?? defaultSeverity,
+          this.getSeverity(incident.attributes?.fields?.severity?.value) ??
+          defaultSeverity,
         priority: null,
-        status: this.getStatus(incident.attributes?.state) ?? null,
+        status:
+          this.getStatus(incident.attributes?.fields?.state?.value) ?? null,
         createdAt: Utils.toDate(incident.attributes?.created) ?? null,
         updatedAt: Utils.toDate(incident.attributes?.modified) ?? null,
         acknowledgedAt: Utils.toDate(incident.attributes?.detected) ?? null,
