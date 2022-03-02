@@ -8,7 +8,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {DataDog, DataDogClient, DataDogConfig} from '../src/datadog';
+import {Datadog, DatadogClient, DatadogConfig} from '../src/datadog';
 import * as sut from '../src/index';
 
 function readResourceFile(fileName: string): any {
@@ -28,16 +28,16 @@ describe('index', () => {
   );
 
   test('spec', async () => {
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
   test('check connection bad token', async () => {
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     const expectedError = new VError('Bad Connection');
-    DataDog.instance = jest.fn().mockReturnValue({
+    Datadog.instance = jest.fn().mockReturnValue({
       checkConnection: jest.fn().mockRejectedValue(expectedError),
     });
     await expect(
@@ -49,8 +49,8 @@ describe('index', () => {
   });
 
   test('check connection good token', async () => {
-    const source = new sut.DataDogSource(logger);
-    DataDog.instance = jest.fn().mockReturnValue({
+    const source = new sut.DatadogSource(logger);
+    Datadog.instance = jest.fn().mockReturnValue({
       checkConnection: jest.fn().mockResolvedValue({}),
     });
     await expect(
@@ -60,19 +60,19 @@ describe('index', () => {
 
   test('streams - incidents, use full_refresh sync mode', async () => {
     const incidents = readTestResourceFile('incidents.json');
-    DataDog.instance = jest.fn().mockReturnValue(
-      new DataDog(
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
         {
           incidents: {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
-        } as DataDogClient,
-        {pageSize: 10} as DataDogConfig,
+        } as DatadogClient,
+        {pageSize: 10} as DatadogConfig,
         logger
       )
     );
 
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     const streams = source.streams({
       apiKey: '',
       applicationKey: '',
@@ -88,19 +88,19 @@ describe('index', () => {
 
   test('streams - incidents, use incremental sync mode', async () => {
     const incidents = readTestResourceFile('incidents.json');
-    DataDog.instance = jest.fn().mockReturnValue(
-      new DataDog(
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
         {
           incidents: {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
-        } as DataDogClient,
-        {} as DataDogConfig,
+        } as DatadogClient,
+        {} as DatadogConfig,
         logger
       )
     );
 
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     const streams = source.streams({
       apiKey: '',
       applicationKey: '',
@@ -121,19 +121,19 @@ describe('index', () => {
 
   test('streams - users, use full_refresh sync mode', async () => {
     const users = readTestResourceFile('users.json');
-    DataDog.instance = jest.fn().mockReturnValue(
-      new DataDog(
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
         {
           users: {
             listUsers: jest.fn().mockReturnValue(users),
           } as unknown as v2.UsersApi,
-        } as DataDogClient,
-        {} as DataDogConfig,
+        } as DatadogClient,
+        {} as DatadogConfig,
         logger
       )
     );
 
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     const streams = source.streams({
       apiKey: '',
       applicationKey: '',
@@ -149,19 +149,19 @@ describe('index', () => {
 
   test('streams - users, use incremental sync mode', async () => {
     const users = readTestResourceFile('users.json');
-    DataDog.instance = jest.fn().mockReturnValue(
-      new DataDog(
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
         {
           users: {
             listUsers: jest.fn().mockReturnValue(users),
           } as unknown as v2.UsersApi,
-        } as DataDogClient,
-        {} as DataDogConfig,
+        } as DatadogClient,
+        {} as DatadogConfig,
         logger
       )
     );
 
-    const source = new sut.DataDogSource(logger);
+    const source = new sut.DatadogSource(logger);
     const streams = source.streams({
       apiKey: '',
       applicationKey: '',

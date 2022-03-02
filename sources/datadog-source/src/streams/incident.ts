@@ -7,7 +7,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {DataDog} from '../datadog';
+import {Datadog} from '../datadog';
 
 export interface IncidentsState {
   lastModified: Date;
@@ -15,7 +15,7 @@ export interface IncidentsState {
 
 export class Incidents extends AirbyteStreamBase {
   constructor(
-    private readonly dataDog: DataDog,
+    private readonly datadog: Datadog,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -52,6 +52,6 @@ export class Incidents extends AirbyteStreamBase {
     streamState?: IncidentsState
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
-    yield* this.dataDog.getIncidents(state?.lastModified);
+    yield* this.datadog.getIncidents(state?.lastModified);
   }
 }

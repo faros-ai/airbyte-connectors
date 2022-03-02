@@ -1,7 +1,7 @@
 {
   "name": "datadog-source",
-  "version": "0.1.36",
-  "description": "DataDog Airbyte source",
+  "version": "0.1.37",
+  "description": "Datadog Airbyte source",
   "keywords": [
     "airbyte",
     "source",

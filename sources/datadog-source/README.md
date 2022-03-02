@@ -1,6 +1,6 @@
-# DataDog Source
+# Datadog Source
 
-This source streams data from the [DataDog APIs](https://docs.datadoghq.com/api/latest/) using the [DataDog Node.js API client](https://www.npmjs.com/package/@datadog/datadog-api-client).
+This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/latest/) using the [Datadog Node.js API client](https://www.npmjs.com/package/@datadog/datadog-api-client).
 
 ## Streams
 
@@ -11,7 +11,7 @@ This source streams data from the [DataDog APIs](https://docs.datadoghq.com/api/
 
 ## Testing
 
-From the DataDog source directory execute:
+From the Datadog source directory execute:
 
 ```sh
 $ npm t
