@@ -25,6 +25,7 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
@@ -419,11 +420,25 @@ class FarosDestination extends AirbyteDestination {
 
       if (this.analytics) {
         this.logger.info('Sending write stats to Segment.');
-        this.analytics.track({
-          event: 'Write Stats',
-          userId: config.edition_configs.segment_user_id,
-          properties: stats,
-        });
+        const fn = (callback: ((err: Error) => void) | undefined): void => {
+          this.analytics
+            .track(
+              {
+                event: 'Write Stats',
+                userId: config.edition_configs.segment_user_id,
+                properties: stats,
+              },
+              callback
+            )
+            .flush(callback);
+        };
+        await util
+          .promisify(fn)()
+          .catch((err) =>
+            this.logger.error(
+              `Failed to send write stats to Segment: ${err.message}`
+            )
+          );
       }
 
       // Since we are writing all records in a single revision,
