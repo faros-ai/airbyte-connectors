@@ -21,25 +21,25 @@ interface PagedResult<T> {
   };
 }
 
-export interface DataDogConfig {
+export interface DatadogConfig {
   readonly apiKey: string;
   readonly applicationKey: string;
   readonly pageSize?: number;
 }
 
-export interface DataDogClient {
+export interface DatadogClient {
   incidents: v2.IncidentsApi;
   users: v2.UsersApi;
 }
 
-export class DataDog {
+export class Datadog {
   constructor(
-    readonly client: DataDogClient,
-    readonly config: DataDogConfig,
+    readonly client: DatadogClient,
+    readonly config: DatadogConfig,
     readonly logger: AirbyteLogger
   ) {}
 
-  static instance(config: DataDogConfig, logger: AirbyteLogger): DataDog {
+  static instance(config: DatadogConfig, logger: AirbyteLogger): Datadog {
     const v2Config = v2.createConfiguration({
       authMethods: {
         apiKeyAuth: config.apiKey,
@@ -55,7 +55,7 @@ export class DataDog {
       users: new v2.UsersApi(v2Config),
     };
 
-    return new DataDog(client, config, logger);
+    return new Datadog(client, config, logger);
   }
 
   async checkConnection(): Promise<void> {

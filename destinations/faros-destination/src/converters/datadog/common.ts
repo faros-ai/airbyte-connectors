@@ -18,9 +18,9 @@ interface DatadogConfig {
   default_severity?: IncidentSeverityCategory;
 }
 
-/** DataDog converter base */
+/** Datadog converter base */
 export abstract class DatadogConverter extends Converter {
-  /** Almost every DataDog record has an id property */
+  /** Almost every Datadog record has an id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }

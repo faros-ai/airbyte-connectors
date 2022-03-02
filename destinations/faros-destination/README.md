@@ -25,7 +25,7 @@ docker run farosai/airbyte-faros-destination
 
 ### Developing
 
-When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the faros-destination. The entire converter name must be considered one word when camel casing your classes. For example: `DataDog` becomes `DatadogConverter` and the user converter would be `DatadogUser`.
+When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the faros-destination. The entire converter name must be considered one word when camel casing your classes. For example: `Datadog` becomes `DatadogConverter` and the user converter would be `DatadogUser`.
 
 ### Testing
 

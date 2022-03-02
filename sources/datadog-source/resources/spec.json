@@ -5,21 +5,21 @@
     "title": "Datadog Spec",
     "type": "object",
     "required": [
-      "apiKey",
-      "applicationKey"
+      "api_key",
+      "application_key"
     ],
     "additionalProperties": false,
     "properties": {
-      "apiKey": {
+      "api_key": {
         "order": 0,
         "type": "string",
-        "title": "DataDog API Key",
+        "title": "Datadog API Key",
         "airbyte_secret": true
       },
-      "applicationKey": {
+      "application_key": {
         "order": 1,
         "type": "string",
-        "title": "DataDog Application Key",
+        "title": "Datadog Application Key",
         "description": "requires incident_read authorization scope",
         "airbyte_secret": true
       },
@@ -27,7 +27,7 @@
         "order": 2,
         "type": "integer",
         "title": "Page Size",
-        "description": "used when retrieving paginated data from DataDog",
+        "description": "used when retrieving paginated data from Datadog",
         "default": 100
       }
     }
