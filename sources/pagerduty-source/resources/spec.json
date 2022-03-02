@@ -15,13 +15,13 @@
         "airbyte_secret": true
       },
       "cutoff_days": {
-        "type": "number",
+        "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
-        "description": "Only fetch deployments updated after cutoff"
+        "description": "Fetch pipelines updated in the last number of days"
       },
       "page_size": {
-        "type": "number",
+        "type": "integer",
         "minimum": 1,
         "maximum": 25,
         "default": 25,
