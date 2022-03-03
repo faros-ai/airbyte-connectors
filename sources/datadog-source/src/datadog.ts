@@ -22,9 +22,9 @@ interface PagedResult<T> {
 }
 
 export interface DatadogConfig {
-  readonly apiKey: string;
-  readonly applicationKey: string;
-  readonly pageSize?: number;
+  readonly api_key: string;
+  readonly application_key: string;
+  readonly page_size?: number;
 }
 
 export interface DatadogClient {
@@ -42,8 +42,8 @@ export class Datadog {
   static instance(config: DatadogConfig, logger: AirbyteLogger): Datadog {
     const v2Config = v2.createConfiguration({
       authMethods: {
-        apiKeyAuth: config.apiKey,
-        appKeyAuth: config.applicationKey,
+        apiKeyAuth: config.api_key,
+        appKeyAuth: config.application_key,
       },
     });
 
@@ -72,7 +72,7 @@ export class Datadog {
   // Note: This is an unstable endpoint
   async *getIncidents(
     lastModified?: Date,
-    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
+    pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.IncidentResponseData, any, any> {
     yield* this.paginate<v2.IncidentResponseData>(
       pageSize,
@@ -103,7 +103,7 @@ export class Datadog {
   // or retrieve all users if lastModifiedAt not set
   async *getUsers(
     lastModifiedAt?: Date,
-    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
+    pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.User, any, any> {
     yield* this.paginate<v2.User>(
       pageSize,
