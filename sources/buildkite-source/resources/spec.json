@@ -26,18 +26,18 @@
       },
       "organization": {
         "type": "string",
-        "title": "organization slug", 
-        "description": "If set it will pull all pipelines from only this organization, If no it pull all pipelines from all organizations"
+        "title": "Organization Slug",
+        "description": "Only pull pipelines from the specified organization. If not set, all pipelines from all organizations will be pulled."
       },
       "rest_api_version": {
         "type": "string",
-        "title": "rest api version", 
-        "default":"v2"
+        "title": "Rest API Version",
+        "default": "v2"
       },
       "graphql_version": {
         "type": "string",
-        "title": "graphql version", 
-        "default":"v1"
+        "title": "GraphQL Version",
+        "default": "v1"
       }
     }
   }

@@ -14,17 +14,17 @@ const REST_API_URL = 'https://api.buildkite.com/';
 const GRAPHQL_API_URL = 'https://graphql.buildkite.com/';
 
 const PIPELINES_QUERY = fs.readFileSync(
-  path.join(__dirname, '../..', 'resources_gql', 'pipelines-query.gql'),
+  path.join(__dirname, '..', '..', 'resources', 'gql', 'pipelines-query.gql'),
   'utf8'
 );
 
 const BUILDS_QUERY = fs.readFileSync(
-  path.join(__dirname, '../..', 'resources_gql', 'builds-query.gql'),
+  path.join(__dirname, '..', '..', 'resources', 'gql', 'builds-query.gql'),
   'utf8'
 );
 
 const JOBS_QUERY = fs.readFileSync(
-  path.join(__dirname, '../..', 'resources_gql', 'jobs-query.gql'),
+  path.join(__dirname, '..', '..', 'resources', 'gql', 'jobs-query.gql'),
   'utf8'
 );
 
@@ -187,7 +187,7 @@ export class Buildkite {
     try {
       await this.restClient.get(`/organizations`);
     } catch (err: any) {
-      let errorMessage = 'Please verify your token are correct. Error: ';
+      let errorMessage = 'Please verify your token is correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);

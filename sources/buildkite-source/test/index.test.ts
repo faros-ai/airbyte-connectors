@@ -11,6 +11,10 @@ import {VError} from 'verror';
 import {Buildkite} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
 
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
@@ -34,7 +38,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.BuildkiteSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
+      new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
   test('check connection', async () => {
@@ -64,7 +68,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        "Please verify your token are correct. Error: Cannot read property 'get' of null"
+        "Please verify your token is correct. Error: Cannot read properties of null (reading 'get')"
       ),
     ]);
   });
