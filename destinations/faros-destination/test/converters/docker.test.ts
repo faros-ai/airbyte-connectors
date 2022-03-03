@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {dockerAllStreamsLog} from './data';
@@ -21,9 +22,15 @@ describe('docker', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url, undefined, {
-      docker: {organization: 'test-org'},
-    });
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      {
+        docker: {organization: 'test-org'},
+      }
+    );
   });
 
   afterEach(async () => {

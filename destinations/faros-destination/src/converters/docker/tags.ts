@@ -67,8 +67,8 @@ export class DockerTags extends DockerConverter {
       tag.imageManifest?.schemaVersion !==
       DockerCommon.ALLOWED_MANIFEST_SCHEMA_VERSION
     ) {
-      this.logger.debug(
-        `Image schema version is not supported ${tag.imageManifest.schemaVersion} != expected ${DockerCommon.ALLOWED_MANIFEST_SCHEMA_VERSION} ${imageInfo}`
+      this.logger.info(
+        `Image schema version is not supported: ${tag.imageManifest.schemaVersion} != expected ${DockerCommon.ALLOWED_MANIFEST_SCHEMA_VERSION} ${imageInfo}`
       );
       return res;
     }
