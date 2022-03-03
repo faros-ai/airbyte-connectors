@@ -15,6 +15,9 @@ export class BuildkiteJobs extends BuildkiteConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
+
+    if (!job.build?.pipeline) return [];
+
     const build = {
       uid: job.build?.uuid,
       pipeline: {

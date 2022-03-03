@@ -18,6 +18,8 @@ export class BuildkiteBuilds extends BuildkiteConverter {
     const source = this.streamName.source;
     const build = record.record.data as Build;
 
+    if (!build.pipeline) return [];
+
     const pipeline = {
       uid: build.pipeline.slug,
       organization: {uid: build.pipeline.organization.slug, source},
