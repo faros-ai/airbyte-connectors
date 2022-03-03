@@ -23,7 +23,7 @@
         "description": "requires incident_read authorization scope",
         "airbyte_secret": true
       },
-      "pageSize": {
+      "page_size": {
         "order": 2,
         "type": "integer",
         "title": "Page Size",
