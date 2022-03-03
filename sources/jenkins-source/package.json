@@ -1,6 +1,6 @@
 {
   "name": "jenkins-source",
-  "version": "0.1.32",
+  "version": "0.1.47",
   "description": "Jenkins Airbyte source",
   "keywords": [
     "airbyte",
@@ -31,13 +31,10 @@
   },
   "dependencies": {
     "axios": "^0.25.0",
-    "faros-airbyte-cdk": "^0.1.32",
+    "faros-airbyte-cdk": "^0.1.47",
     "jenkins": "^0.28.1",
     "typescript-memoize": "^1.0.1",
-    "verror": "^1.10.0"
-  },
-  "devDependencies": {
-    "@types/jenkins": "^0.23.2"
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

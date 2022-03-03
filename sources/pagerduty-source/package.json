@@ -1,6 +1,6 @@
 {
   "name": "pagerduty-source",
-  "version": "0.1.32",
+  "version": "0.1.47",
   "description": "PagerDuty Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,10 +33,10 @@
     "@pagerduty/pdjs": "^2.2.3",
     "axios": "^0.25.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.32",
+    "faros-airbyte-cdk": "^0.1.47",
     "faros-feeds-sdk": "^0.9.7",
     "luxon": "^2.0.2",
-    "verror": "^1.10.0"
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -56,8 +56,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "devDependencies": {
-    "@types/luxon": "^2.0.5"
   }
 }

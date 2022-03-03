@@ -1,6 +1,6 @@
 {
   "name": "harness-source",
-  "version": "0.1.32",
+  "version": "0.1.47",
   "description": "Harness Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,13 +32,10 @@
   "dependencies": {
     "axios": "^0.25.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.32",
+    "faros-airbyte-cdk": "^0.1.47",
     "graphql-request": "^4.0.0",
     "luxon": "^2.0.2",
-    "verror": "^1.10.0"
-  },
-  "devDependencies": {
-    "@types/luxon": "^2.0.5"
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

@@ -14,7 +14,9 @@
       "serverUrl": {
         "type": "string",
         "description": "Bitbucket server URL",
-        "examples": ["https://api.bitbucket.org/2.0"],
+        "examples": [
+          "https://api.bitbucket.org/2.0"
+        ],
         "default": "https://api.bitbucket.org/2.0"
       },
       "username": {
@@ -37,7 +39,7 @@
       },
       "repository": {
         "type": "array",
-        "title": "Bitbucket Workspace's Repository", 
+        "title": "Bitbucket Workspace's Repository",
         "description": "List of Bitbucket repositories",
         "items": {
           "type": "string"
@@ -55,7 +57,7 @@
         "default": []
       },
       "pagelen": {
-        "type": "number",
+        "type": "integer",
         "description": "Bitbucket Page Length",
         "default": 100
       }

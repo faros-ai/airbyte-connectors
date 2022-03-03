@@ -1,23 +1,30 @@
-import {Converter, StreamContext} from '../converter';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 const DEFAULT_APPLICATION_FIELD = 'service';
 
-type applicationMapping = Record<string, {name: string; platform?: string}>;
+type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 interface VictoropsConfig {
-  readonly application_mapping?: applicationMapping;
+  readonly application_mapping?: ApplicationMapping;
   readonly application_field?: string;
 }
 
 export abstract class VictoropsConverter extends Converter {
-  protected jiraConfig(ctx: StreamContext): VictoropsConfig {
+  protected victoropsConfig(ctx: StreamContext): VictoropsConfig {
     return ctx.config.source_specific_configs?.victorops ?? {};
   }
 
-  protected applicationMapping(ctx: StreamContext): applicationMapping {
-    return this.jiraConfig(ctx).application_mapping ?? {};
+  protected applicationMapping(ctx: StreamContext): ApplicationMapping {
+    return (
+      parseObjectConfig(
+        this.victoropsConfig(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
   protected applicationField(ctx: StreamContext): string {
-    return this.jiraConfig(ctx).application_field ?? DEFAULT_APPLICATION_FIELD;
+    return (
+      this.victoropsConfig(ctx).application_field ?? DEFAULT_APPLICATION_FIELD
+    );
   }
 }

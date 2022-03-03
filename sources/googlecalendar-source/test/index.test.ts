@@ -10,6 +10,10 @@ import {VError} from 'verror';
 import {Event, Googlecalendar} from '../src/googlecalendar';
 import * as sut from '../src/index';
 
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
@@ -33,7 +37,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.GooglecalendarSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
+      new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
