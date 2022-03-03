@@ -8,6 +8,7 @@ export enum Operation {
 
 export interface TimestampedRecord {
   model: string;
+  origin: string;
   at: number;
   operation: Operation;
 }

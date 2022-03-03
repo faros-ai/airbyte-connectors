@@ -11,8 +11,8 @@ import {VError} from 'verror';
 
 import {CustomerIOSource} from '../src';
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
 describe('index', () => {
@@ -36,7 +36,7 @@ describe('index', () => {
   describe('spec', () => {
     it('matches the spec', async () => {
       await expect(source.spec()).resolves.toStrictEqual(
-        new AirbyteSpec(readTestResourceFile('spec.json'))
+        new AirbyteSpec(readResourceFile('spec.json'))
       );
     });
   });

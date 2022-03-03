@@ -10,6 +10,10 @@ import {VError} from 'verror';
 import * as sut from '../src/index';
 import {Pagerduty} from '../src/pagerduty';
 
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
@@ -33,7 +37,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.PagerdutySource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
+      new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
@@ -64,7 +68,9 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('Please verify your token are correct. Error: err must be an Error'),
+      new VError(
+        'Please verify your token are correct. Error: err must be an Error'
+      ),
     ]);
   });
 
@@ -74,14 +80,16 @@ describe('index', () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnIncidentLogEntriesList.mockImplementation(async (path: string) => {
-            const isPathMatch = path.match(/^\/log_entries/);
-            if (isPathMatch) {
-              return {
-                resource: readTestResourceFile('incidentLogEntries.json'),
-              };
+          get: fnIncidentLogEntriesList.mockImplementation(
+            async (path: string) => {
+              const isPathMatch = path.match(/^\/log_entries/);
+              if (isPathMatch) {
+                return {
+                  resource: readTestResourceFile('incidentLogEntries.json'),
+                };
+              }
             }
-          }),
+          ),
         },
         logger
       );
@@ -145,17 +153,19 @@ describe('index', () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnPrioritiesResourceList.mockImplementation(async (path: string) => {
-            const isPathMatch = path.match(/^\/priorities/);
-            if (isPathMatch) {
-              return {
-                resource: readTestResourceFile('prioritiesResource.json'),
-                response: {
-                  ok: true
-                }
-              };
+          get: fnPrioritiesResourceList.mockImplementation(
+            async (path: string) => {
+              const isPathMatch = path.match(/^\/priorities/);
+              if (isPathMatch) {
+                return {
+                  resource: readTestResourceFile('prioritiesResource.json'),
+                  response: {
+                    ok: true,
+                  },
+                };
+              }
             }
-          }),
+          ),
         },
         logger
       );

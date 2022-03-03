@@ -125,11 +125,7 @@ as a Github Repository Secret with the environment variable name
 The `acceptance-test-config.yml` points to several other json files that enable
 the tests for each of the source commands. See the [Source Acceptance Tests
 Reference](https://docs.airbyte.io/connector-development/testing-connectors/source-acceptance-tests-reference)
-for how those files are used. These files should be committed to the repo. If
-your test file of expected records for the "basic_read" test contains sensitive
-values because they are supposed to be written by the source, remove them from
-the test file and set the `expect_records.extra_fields` option to true in the
-yaml file. See the aforementioned test documentation for details on that option.
+for how those files are used. These files should be committed to the repo.
 
 Run the tests with the provided script from the
 root repo folder `./scripts/source-acceptance-test.sh <source>`, where
