@@ -44,7 +44,6 @@ export class DockerTags extends DockerConverter {
       record: {
         ...organizationKey,
         name: org,
-        url: undefined,
       },
     });
     const [repoName] = tag.projectName.toLowerCase().split('/').slice(-1);
