@@ -278,7 +278,7 @@
                       "organization": {
                         "type": "string",
                         "title": "Organization",
-                        "description": "Organization using to fetch from registry",
+                        "description": "Organization name to associate with image tags",
                         "default": "unknown-org"
                       }
                     }

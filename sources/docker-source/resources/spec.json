@@ -19,7 +19,7 @@
       "password": {
         "type": "string",
         "title": "Password",
-        "description": "DockerHub Password",
+        "description": "DockerHub Password. This should be a personal access token, not your login password. See https://docs.docker.com/docker-hub/access-tokens/",
         "airbyte_secret": true
       },
       "repositories": {
@@ -39,7 +39,7 @@
       "bearerAuthorization": {
         "type": "boolean",
         "title": "Bearer Authorization",
-        "description": "If true, use bearer access token. Otherwise, authorize using user/password auth."
+        "description": "If true, authorize using generated access token. Otherwise, authorize using user/password auth."
       },
       "registryBase": {
         "type": "string",
