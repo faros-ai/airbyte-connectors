@@ -21,13 +21,13 @@
         "airbyte_secret": true
       },
       "maxContentLength": {
-        "type": "number",
+        "type": "integer",
         "title": "VictorOps Content Length",
         "description": "VictorOps API response content length limit, try increasing if 'RequestError' is encountered.",
         "default": 500000
       },
       "pageLimit": {
-        "type": "number",
+        "type": "integer",
         "title": "VictorOps Page Limit",
         "default": 100
       },

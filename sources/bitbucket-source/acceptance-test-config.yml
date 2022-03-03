@@ -1,7 +1,7 @@
 connector_image: bitbucket-source
 tests:
   spec:
-    - spec_path: "test_files/spec.json"
+    - spec_path: "resources/spec.json"
   connection:
     - config_path: "secrets/config.json"
       status: "succeed"
@@ -14,8 +14,6 @@ tests:
       configured_catalog_path: "test_files/full_configured_catalog.json"
       empty_streams:
         - bitbucket_branches
-      expect_records:
-        path: "test_files/expected_records.txt"
   full_refresh:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"
