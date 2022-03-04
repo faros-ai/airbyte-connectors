@@ -1,6 +1,6 @@
 {
   "name": "victorops-source",
-  "version": "0.1.47",
+  "version": "0.1.48",
   "description": "VictorOps Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios-retry": "^3.2.4",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.47",
+    "faros-airbyte-cdk": "^0.1.48",
     "luxon": "^2.0.2",
     "verror": "^1.10.1",
     "victorops-api-client": "^1.0.2"
