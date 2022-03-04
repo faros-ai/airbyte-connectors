@@ -23,6 +23,7 @@ export class DatadogIncidents extends DatadogConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const config = this.config(ctx);
     const source = this.streamName.source;
     const incident = record.record.data;
     const incidentKey = {
@@ -30,7 +31,6 @@ export class DatadogIncidents extends DatadogConverter {
       source,
     };
 
-    const config = this.config(ctx);
     const defaultSeverityCategory = config.default_severity;
     const defaultSeverity = defaultSeverityCategory
       ? {
