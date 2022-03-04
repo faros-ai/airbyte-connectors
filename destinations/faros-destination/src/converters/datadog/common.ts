@@ -11,10 +11,8 @@ export enum IncidentSeverityCategory {
   Custom = 'Custom',
 }
 
-type ApplicationMapping = Record<string, {name: string; platform?: string}>;
-
 interface DatadogConfig {
-  application_mapping?: ApplicationMapping;
+  application_mapping?: string;
   default_severity?: IncidentSeverityCategory;
 }
 

@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import VError from 'verror';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {DatadogConverter, IncidentSeverityCategory} from './common';
@@ -29,7 +30,8 @@ export class DatadogIncidents extends DatadogConverter {
       source,
     };
 
-    const defaultSeverityCategory = this.config(ctx).default_severity;
+    const config = this.config(ctx);
+    const defaultSeverityCategory = config.default_severity;
     const defaultSeverity = defaultSeverityCategory
       ? {
           category: defaultSeverityCategory,
@@ -70,6 +72,34 @@ export class DatadogIncidents extends DatadogConverter {
           },
         },
       });
+    }
+
+    let applicationMapping;
+    try {
+      applicationMapping = JSON.parse(config.application_mapping);
+    } catch (err: any) {
+      throw new VError('Could not parse application mapping');
+    }
+
+    const services: string[] = incident.attributes?.fields?.services?.value;
+    if (services) {
+      for (const service of services) {
+        if (applicationMapping?.[service]?.name) {
+          const mappedApp = applicationMapping[service];
+          const application = {
+            name: mappedApp.name,
+            platform: mappedApp.platform ?? '',
+          };
+          res.push({model: 'compute_Application', record: application});
+          res.push({
+            model: 'ims_IncidentApplicationImpact',
+            record: {
+              incident: incidentKey,
+              application,
+            },
+          });
+        }
+      }
     }
 
     return res;
