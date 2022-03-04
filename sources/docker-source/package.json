@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@snyk/docker-registry-v2-client": "^2.6.1",
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.48",
     "typescript-memoize": "^1.1.0",
