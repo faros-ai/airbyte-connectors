@@ -33,7 +33,14 @@ describe('datadog', () => {
     configPath = await tempConfig(
       mockttp.url,
       InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY
+      Edition.COMMUNITY,
+      undefined,
+      {
+        datadog: {
+          application_mapping:
+            '{"service1": {"name": "Service 1","platform":"test"}}',
+        },
+      }
     );
   });
 
@@ -67,7 +74,9 @@ describe('datadog', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
+      compute_Application: 2,
       ims_Incident: 2,
+      ims_IncidentApplicationImpact: 2,
       ims_IncidentAssignment: 2,
       ims_User: 14,
     };

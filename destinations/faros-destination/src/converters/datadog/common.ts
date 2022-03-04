@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 export enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
@@ -11,18 +11,27 @@ export enum IncidentSeverityCategory {
   Custom = 'Custom',
 }
 
-type ApplicationMapping = Record<string, {name: string; platform?: string}>;
-
 interface DatadogConfig {
   application_mapping?: ApplicationMapping;
   default_severity?: IncidentSeverityCategory;
 }
+
+type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 /** Datadog converter base */
 export abstract class DatadogConverter extends Converter {
   /** Almost every Datadog record has an id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected applicationMapping(ctx: StreamContext): ApplicationMapping {
+    return (
+      parseObjectConfig(
+        this.config(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
 
   protected config(ctx: StreamContext): DatadogConfig {
