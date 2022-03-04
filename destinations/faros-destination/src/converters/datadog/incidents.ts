@@ -74,13 +74,7 @@ export class DatadogIncidents extends DatadogConverter {
       });
     }
 
-    let applicationMapping;
-    try {
-      applicationMapping = JSON.parse(config.application_mapping);
-    } catch (err: any) {
-      throw new VError('Could not parse application mapping');
-    }
-
+    const applicationMapping = this.applicationMapping(ctx);
     const services: string[] = incident.attributes?.fields?.services?.value;
     if (services) {
       for (const service of services) {
