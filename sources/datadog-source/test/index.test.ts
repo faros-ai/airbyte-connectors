@@ -67,7 +67,7 @@ describe('index', () => {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
         } as DatadogClient,
-        {pageSize: 10} as DatadogConfig,
+        {page_size: 10} as DatadogConfig,
         logger
       )
     );

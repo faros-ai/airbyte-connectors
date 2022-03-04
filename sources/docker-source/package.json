@@ -1,15 +1,12 @@
 {
-  "name": "googlecalendar-source",
+  "name": "docker-source",
   "version": "0.1.48",
-  "description": "GoogleCalendar Airbyte source",
+  "description": "Docker Airbyte source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "google",
-    "calendar",
-    "googlecalendar",
-    "gcal"
+    "docker"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
@@ -33,10 +30,11 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "@snyk/docker-registry-v2-client": "^2.6.1",
+    "axios": "^0.25.0",
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.48",
-    "faros-feeds-sdk": "^0.9.7",
-    "googleapis": "^95.0.0",
+    "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },
   "jest": {
