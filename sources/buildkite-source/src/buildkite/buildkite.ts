@@ -310,7 +310,7 @@ export class Buildkite {
         data: data.viewer.jobs.edges.map((e) => {
           return e.node;
         }),
-        pageInfo: data.viewer.job.pageInfo,
+        pageInfo: data.viewer.job?.pageInfo,
       };
     };
     yield* this.paginate(func);
