@@ -71,6 +71,9 @@
                     }
                 }
             }
+        },
+        "cursor": {
+            "type": ["string","null"]
         }
     }
 }

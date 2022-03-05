@@ -140,13 +140,19 @@ describe('index', () => {
         {
           request: fnBuildsList.mockResolvedValue({
             viewer: {
-              builds: {
-                edges: readTestResourceFile('builds_input.json'),
+              pipeline: {
+                builds: {
+                  edges: readTestResourceFile('builds_input.json'),
+                },
               },
             },
           }),
         } as any,
-        {get: jest.fn().mockResolvedValue({})} as unknown as AxiosInstance
+        {
+          get: fnBuildsList.mockResolvedValue({
+            data: readTestResourceFile('pipelines_all.json'),
+          }),
+        } as any
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -158,7 +164,7 @@ describe('index', () => {
     for await (const build of buildsIter) {
       builds.push(build);
     }
-    expect(fnBuildsList).toHaveBeenCalledTimes(1);
+    expect(fnBuildsList).toHaveBeenCalledTimes(2);
     expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
   test('streams - jobs, use full_refresh sync mode', async () => {

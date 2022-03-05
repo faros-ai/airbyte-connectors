@@ -8,6 +8,9 @@ import {Dictionary} from 'ts-essentials';
 
 import {Buildkite, BuildkiteConfig, Pipeline} from '../buildkite/buildkite';
 
+interface PipelineState {
+  lastCursor?: string;
+}
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     private readonly config: BuildkiteConfig,
@@ -22,13 +25,27 @@ export class Pipelines extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'uuid';
   }
+  get cursorField(): string | string[] {
+    return 'cursor';
+  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
+    streamState?: PipelineState
   ): AsyncGenerator<Pipeline> {
+    const lastCursor =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.lastCursor : undefined;
     const buildkite = Buildkite.instance(this.config, this.logger);
-    yield* buildkite.getPipelines();
+    yield* buildkite.getPipelines(lastCursor);
+  }
+
+  getUpdatedState(
+    currentStreamState: PipelineState,
+    latestRecord: Pipeline
+  ): PipelineState {
+    return {
+      lastCursor: latestRecord.cursor,
+    };
   }
 }

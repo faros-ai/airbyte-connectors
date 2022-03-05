@@ -1,0 +1,79 @@
+[
+    {
+        "id": "5f0afc50-8a71-4235-a147-4ff8be9e3868",
+        "graphql_id": "UGlwZWxpbmUtLS01ZjBhZmM1MC04YTcxLTQyMzUtYTE0Ny00ZmY4YmU5ZTM4Njg=",
+        "url": "https://api.buildkite.com/v2/organizations/devcube/pipelines/kelvin-test",
+        "web_url": "https://buildkite.com/devcube/kelvin-test",
+        "name": "Kelvin test",
+        "description": null,
+        "slug": "kelvin-test",
+        "repository": "git@github.com:huongtn/ECHTMen.git",
+        "cluster_id": null,
+        "branch_configuration": null,
+        "default_branch": "master",
+        "skip_queued_branch_builds": false,
+        "skip_queued_branch_builds_filter": null,
+        "cancel_running_branch_builds": false,
+        "cancel_running_branch_builds_filter": null,
+        "allow_rebuilds": true,
+        "provider": {
+            "id": "github",
+            "settings": {
+                "trigger_mode": "code",
+                "build_pull_requests": true,
+                "pull_request_branch_filter_enabled": false,
+                "skip_builds_for_existing_commits": false,
+                "skip_pull_request_builds_for_existing_commits": true,
+                "build_pull_request_ready_for_review": false,
+                "build_pull_request_labels_changed": false,
+                "build_pull_request_forks": false,
+                "prefix_pull_request_fork_branch_names": true,
+                "build_branches": true,
+                "build_tags": false,
+                "cancel_deleted_branch_builds": false,
+                "publish_commit_status": true,
+                "publish_commit_status_per_step": false,
+                "separate_pull_request_statuses": false,
+                "publish_blocked_as_pending": false,
+                "use_step_key_as_commit_status": false,
+                "filter_enabled": false,
+                "repository": "huongtn/ECHTMen"
+            },
+            "webhook_url": "https://webhook.buildkite.com/deliver/de9ea961c39cdd4fd6f1c17dded46b1925b87199b41c6bf996"
+        },
+        "builds_url": "https://api.buildkite.com/v2/organizations/devcube/pipelines/kelvin-test/builds",
+        "badge_url": "https://badge.buildkite.com/b70d0db8d02edcd06a2af0d9fc054e7f0725d130f4d71ab9a5.svg",
+        "created_by": {
+            "id": "cc8d552f-fa62-41a9-a8d7-3f7027fba6a8",
+            "graphql_id": "VXNlci0tLWNjOGQ1NTJmLWZhNjItNDFhOS1hOGQ3LTNmNzAyN2ZiYTZhOA==",
+            "name": "Kelvin Tran",
+            "email": "huongkstn@gmail.com",
+            "avatar_url": "https://www.gravatar.com/avatar/f98c99e3cd53ece58face0377bc238f0",
+            "created_at": "2021-12-19T00:24:48.054Z"
+        },
+        "created_at": "2021-12-20T03:21:28.048Z",
+        "archived_at": null,
+        "env": {},
+        "scheduled_builds_count": 2,
+        "running_builds_count": 0,
+        "scheduled_jobs_count": 2,
+        "running_jobs_count": 0,
+        "waiting_jobs_count": 0,
+        "visibility": "private",
+        "tags": null,
+        "steps": [
+            {
+                "type": "script",
+                "name": "",
+                "command": "",
+                "artifact_paths": "",
+                "branch_configuration": "",
+                "env": {},
+                "timeout_in_minutes": null,
+                "agent_query_rules": [],
+                "concurrency": null,
+                "parallelism": null
+            }
+        ]
+    }
+]

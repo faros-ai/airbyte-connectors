@@ -23,6 +23,18 @@ const BUILDS_QUERY = fs.readFileSync(
   'utf8'
 );
 
+const PIPELINES_BUILDS_QUERY = fs.readFileSync(
+  path.join(
+    __dirname,
+    '..',
+    '..',
+    'resources',
+    'gql',
+    'pipeline-builds-query.gql'
+  ),
+  'utf8'
+);
+
 const JOBS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'jobs-query.gql'),
   'utf8'
@@ -35,6 +47,10 @@ export interface Organization {
   readonly web_url: string;
 }
 
+export interface PipelineSlug {
+  readonly slug: string;
+}
+
 export interface Build {
   readonly uuid: string;
   readonly number: number;
@@ -45,7 +61,6 @@ export interface Build {
   readonly state: string;
   readonly url: string;
   readonly commit: string;
-  readonly jobs: Array<Job>;
 
   readonly pipeline?: {
     slug?: string;
@@ -53,6 +68,7 @@ export interface Build {
       slug?: string;
     };
   };
+  cursor?: string;
 }
 
 export interface Job {
@@ -85,6 +101,7 @@ export interface Job {
       };
     };
   };
+  cursor?: string;
 }
 
 export interface Pipeline {
@@ -99,6 +116,7 @@ export interface Pipeline {
   readonly organization?: {
     slug?: string;
   };
+  cursor?: string;
 }
 
 export enum RepoSource {
@@ -251,19 +269,9 @@ export class Buildkite {
     }
   }
 
-  async *getPipelines(): AsyncGenerator<Pipeline> {
-    if (this.organization) {
-      yield* this.fetchOrganizationPipelines(this.organization);
-    } else {
-      const iterOrganizationItems = this.getOrganizations();
-      for await (const organizationItem of iterOrganizationItems) {
-        yield* this.fetchOrganizationPipelines(organizationItem.slug);
-      }
-    }
-  }
-
   async *fetchOrganizationPipelines(
-    organizationItemSlug: string
+    organizationItemSlug: string,
+    cursor?: string
   ): AsyncGenerator<Pipeline> {
     const func = async (
       pageInfo?: PageInfo
@@ -271,12 +279,14 @@ export class Buildkite {
       const variables = {
         slug: organizationItemSlug,
         pageSize: this.pageSize,
-        after: pageInfo?.endCursor,
+        after: pageInfo ? pageInfo.endCursor : cursor,
       };
       const data = await this.graphClient.request(PIPELINES_QUERY, variables);
 
       return {
         data: data.organization.pipelines?.edges.map((e) => {
+          if (data.organization.pipelines?.cursor)
+            e.node.cursor = data.organization.pipelines?.cursor;
           return e.node;
         }),
         pageInfo: data.organization.pipelines.pageInfo,
@@ -285,29 +295,104 @@ export class Buildkite {
     yield* this.paginate(func);
   }
 
-  async *getBuilds(): AsyncGenerator<Build> {
-    const variables = {
-      maxBuilds: this.pageSize,
+  async *fetchOrganizationPipelineBuilds(
+    organizationItemSlug: string,
+    pipelineItemSlug: string,
+    cursor?: string,
+    createdAtFrom?: Date
+  ): AsyncGenerator<Build> {
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<Build>> => {
+      const variables = {
+        slug: `${organizationItemSlug}/${pipelineItemSlug}`,
+        pageSize: this.pageSize,
+        after: pageInfo ? pageInfo.endCursor : cursor,
+        createdAtFrom,
+      };
+      const data = await this.graphClient.request(
+        PIPELINES_BUILDS_QUERY,
+        variables
+      );
+
+      return {
+        data: data.pipeline.builds?.edges.map((e) => {
+          if (data.pipeline.builds?.edges.cursor)
+            e.node.cursor = data.pipeline.builds?.edges.cursor;
+          return e.node;
+        }),
+        pageInfo: data.pipeline.builds.pageInfo,
+      };
     };
-    const data = await this.graphClient.request(BUILDS_QUERY, variables);
-    for (const item of data.viewer.builds.edges) {
-      yield item.node;
+    yield* this.paginate(func);
+  }
+
+  async *getPipelines(cursor?: string): AsyncGenerator<Pipeline> {
+    if (this.organization) {
+      yield* this.fetchOrganizationPipelines(this.organization, cursor);
+    } else {
+      const iterOrganizationItems = this.getOrganizations();
+      for await (const organizationItem of iterOrganizationItems) {
+        yield* this.fetchOrganizationPipelines(organizationItem.slug, cursor);
+      }
     }
   }
 
-  async *getJobs(): AsyncGenerator<Job> {
+  async *fetchOrganizationBuilds(
+    organization: string,
+    cursor?: string,
+    createdAtFrom?: Date
+  ): AsyncGenerator<Build> {
+    const res = await this.restClient.get<PipelineSlug[]>(
+      `organizations/${organization}/pipelines`
+    );
+    if (res.status === 200) {
+      for (const item of res.data) {
+        yield* this.fetchOrganizationPipelineBuilds(
+          organization,
+          item.slug,
+          cursor,
+          createdAtFrom
+        );
+      }
+    }
+  }
+  async *getBuilds(
+    cursor?: string,
+    createdAtFrom?: Date
+  ): AsyncGenerator<Build> {
+    if (this.organization) {
+      yield* this.fetchOrganizationBuilds(
+        this.organization,
+        cursor,
+        createdAtFrom
+      );
+    } else {
+      const iterOrganizationItems = this.getOrganizations();
+      for await (const organizationItem of iterOrganizationItems) {
+        yield* this.fetchOrganizationBuilds(
+          organizationItem.slug,
+          cursor,
+          createdAtFrom
+        );
+      }
+    }
+  }
+  async *getJobs(cursor?: string): AsyncGenerator<Job> {
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Job>> => {
       const variables = {
         pageSize: this.pageSize,
         maxJobsPerBuild: this.maxJobsPerBuild,
-        after: pageInfo?.endCursor,
+        after: pageInfo ? pageInfo.endCursor : cursor,
       };
       const data = await this.graphClient.request(JOBS_QUERY, variables);
 
       return {
         data: data.viewer.jobs.edges.map((e) => {
+          if (data.viewer.jobs.edges.cursor)
+            e.node.cursor = data.viewer.jobs.edges.cursor;
           return e.node;
         }),
         pageInfo: data.viewer.job?.pageInfo,

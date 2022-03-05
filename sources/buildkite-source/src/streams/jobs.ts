@@ -7,7 +7,9 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Buildkite, BuildkiteConfig, Job} from '../buildkite/buildkite';
-
+interface JobState {
+  lastCursor?: string;
+}
 export class Jobs extends AirbyteStreamBase {
   constructor(
     private readonly config: BuildkiteConfig,
@@ -22,15 +24,24 @@ export class Jobs extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'uuid';
   }
-
+  get cursorField(): string | string[] {
+    return 'cursor';
+  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
+    streamState?: JobState
   ): AsyncGenerator<Job> {
+    const lastCursor =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.lastCursor : undefined;
     const buildkite = Buildkite.instance(this.config, this.logger);
+    yield* buildkite.getJobs(lastCursor);
+  }
 
-    yield* buildkite.getJobs();
+  getUpdatedState(currentStreamState: JobState, latestRecord: Job): JobState {
+    return {
+      lastCursor: latestRecord.cursor,
+    };
   }
 }

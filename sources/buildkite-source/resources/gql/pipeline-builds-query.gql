@@ -1,0 +1,39 @@
+query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime, $after: String) {
+  pipeline(slug: $slug) { 
+      builds(first: $pageSize, createdAtFrom: $createdAtFrom, after: $after) {
+        edges {
+          node {
+             id
+            uuid
+            pipeline()
+            {
+              slug
+              repository {
+                url
+                provider {
+                  name
+                } 
+              }
+              organization()
+              {
+                slug
+              }
+            }
+            message
+            number
+            createdAt
+            startedAt
+            finishedAt
+            state
+            url
+            commit
+          }
+          cursor
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+}

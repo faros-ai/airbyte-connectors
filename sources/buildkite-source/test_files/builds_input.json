@@ -9,21 +9,7 @@
             "finishedAt": null,
             "state": "SCHEDULED",
             "url": "https://buildkite.com/devcube/kelvin-test/builds/2",
-            "commit": "HEAD",
-            "jobs": [
-                {
-                    "__typename": "JobTypeCommand",
-                    "uuid": "443f71ef-e264-4051-a062-e6f2b4e91170",
-                    "label": "",
-                    "state": "SCHEDULED",
-                    "type": "JobTypeCommand",
-                    "createdAt": "2021-12-20T03:37:40.885Z",
-                    "finishedAt": null,
-                    "startedAt": null,
-                    "url": "https://buildkite.com/devcube/kelvin-test/builds/2#443f71ef-e264-4051-a062-e6f2b4e91170",
-                    "command": ""
-                }
-            ]
+            "commit": "HEAD"
         }
     },
     {
@@ -36,21 +22,7 @@
             "finishedAt": null,
             "state": "SCHEDULED",
             "url": "https://buildkite.com/devcube/kelvin-test/builds/1",
-            "commit": "HEAD",
-            "jobs": [
-                {
-                    "__typename": "JobTypeCommand",
-                    "uuid": "109382d0-4ef0-498c-8d56-cd58478b464e",
-                    "label": "",
-                    "state": "SCHEDULED",
-                    "type": "JobTypeCommand",
-                    "createdAt": "2021-12-20T03:28:25.054Z",
-                    "finishedAt": null,
-                    "startedAt": null,
-                    "url": "https://buildkite.com/devcube/kelvin-test/builds/1#109382d0-4ef0-498c-8d56-cd58478b464e",
-                    "command": ""
-                }
-            ]
+            "commit": "HEAD"
         }
     }
 ]
