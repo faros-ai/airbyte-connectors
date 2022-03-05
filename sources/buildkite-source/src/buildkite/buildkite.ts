@@ -296,13 +296,23 @@ export class Buildkite {
   }
 
   async *getJobs(): AsyncGenerator<Job> {
-    const variables = {
-      pageSize: this.pageSize,
-      maxJobsPerBuild: this.maxJobsPerBuild,
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<Job>> => {
+      const variables = {
+        pageSize: this.pageSize,
+        maxJobsPerBuild: this.maxJobsPerBuild,
+        after: pageInfo?.endCursor,
+      };
+      const data = await this.graphClient.request(JOBS_QUERY, variables);
+
+      return {
+        data: data.viewer.jobs.edges.map((e) => {
+          return e.node;
+        }),
+        pageInfo: data.viewer.job.pageInfo,
+      };
     };
-    const data = await this.graphClient.request(JOBS_QUERY, variables);
-    for (const item of data.viewer.jobs.edges) {
-      yield item.node;
-    }
+    yield* this.paginate(func);
   }
 }
