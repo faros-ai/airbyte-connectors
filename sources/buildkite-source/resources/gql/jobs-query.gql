@@ -1,6 +1,6 @@
-query jobsQuery($maxJobsPerBuild: Int,$after: String) {
+query jobsQuery($pageSize: Int,$after: String) {
   viewer {
-    jobs(first: $maxJobsPerBuild,after: $after) { 
+    jobs(first: $pageSize,after: $after) { 
        edges{
         node
         { 

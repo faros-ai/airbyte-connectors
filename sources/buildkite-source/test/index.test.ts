@@ -103,7 +103,6 @@ describe('index', () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {
       return new Buildkite(
         {
-          //data.organization.pipelines?.edges
           request: fnPipelinesList.mockResolvedValue({
             organization: {
               pipelines: {
@@ -116,7 +115,6 @@ describe('index', () => {
           }),
         } as any,
         null,
-        1000,
         1000,
         'devcube'
       );
@@ -139,10 +137,11 @@ describe('index', () => {
       return new Buildkite(
         {
           request: fnBuildsList.mockResolvedValue({
-            viewer: {
-              pipeline: {
-                builds: {
-                  edges: readTestResourceFile('builds_input.json'),
+            pipeline: {
+              builds: {
+                edges: readTestResourceFile('builds_input.json'),
+                pageInfo: {
+                  endCursor: undefined,
                 },
               },
             },
@@ -152,7 +151,9 @@ describe('index', () => {
           get: fnBuildsList.mockResolvedValue({
             data: readTestResourceFile('pipelines_all.json'),
           }),
-        } as any
+        } as any,
+        1000,
+        'devcube'
       );
     });
     const source = new sut.BuildkiteSource(logger);
@@ -164,7 +165,7 @@ describe('index', () => {
     for await (const build of buildsIter) {
       builds.push(build);
     }
-    expect(fnBuildsList).toHaveBeenCalledTimes(2);
+    expect(fnBuildsList).toHaveBeenCalledTimes(1);
     expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
   test('streams - jobs, use full_refresh sync mode', async () => {

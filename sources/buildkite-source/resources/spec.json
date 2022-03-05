@@ -20,10 +20,6 @@
         "title": "Page Size",
         "description": "number of pipelines to fetch per call"
       },
-      "max_jobs_per_build": {
-        "type": "number",
-        "title": "Max Jobs Per Build"
-      },
       "organization": {
         "type": "string",
         "title": "Organization Slug",

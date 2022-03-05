@@ -7,7 +7,6 @@ import path from 'path';
 import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_MAX_JOBS_PER_BUILD = 500;
 const DEFAULT_REST_VERSION = 'v2';
 const DEFAULT_GRAPHQL_VERSION = 'v1';
 const REST_API_URL = 'https://api.buildkite.com/';
@@ -138,7 +137,6 @@ export interface Provider {
 export interface BuildkiteConfig {
   readonly token: string;
   readonly page_size?: number;
-  readonly max_jobs_per_build?: number;
   readonly organization?: string;
   readonly rest_api_version?: string;
   readonly graphql_version?: string;
@@ -161,7 +159,6 @@ export class Buildkite {
     private readonly graphClient: GraphQLClient,
     private readonly restClient: AxiosInstance,
     private readonly pageSize?: number,
-    private readonly maxJobsPerBuild?: number,
     private readonly organization?: string
   ) {}
 
@@ -187,14 +184,11 @@ export class Buildkite {
       headers: {authorization: auth},
     });
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
-    const maxJobsPerBuild =
-      config.max_jobs_per_build ?? DEFAULT_MAX_JOBS_PER_BUILD;
 
     Buildkite.buildkite = new Buildkite(
       graphClient,
       restClient,
       pageSize,
-      maxJobsPerBuild,
       config.organization
     );
     logger.debug('Created Buildkite instance');
@@ -248,6 +242,7 @@ export class Buildkite {
         func(fetchNextFunc)
       );
       if (response?.pageInfo?.hasNextPage) fetchNextFunc = response?.pageInfo;
+      else fetchNextFunc = null;
 
       for (const item of response?.data ?? []) {
         yield item;
@@ -314,7 +309,6 @@ export class Buildkite {
         PIPELINES_BUILDS_QUERY,
         variables
       );
-
       return {
         data: data.pipeline.builds?.edges.map((e) => {
           if (data.pipeline.builds?.edges.cursor)
@@ -346,15 +340,13 @@ export class Buildkite {
     const res = await this.restClient.get<PipelineSlug[]>(
       `organizations/${organization}/pipelines`
     );
-    if (res.status === 200) {
-      for (const item of res.data) {
-        yield* this.fetchOrganizationPipelineBuilds(
-          organization,
-          item.slug,
-          cursor,
-          createdAtFrom
-        );
-      }
+    for (const item of res.data) {
+      yield* this.fetchOrganizationPipelineBuilds(
+        organization,
+        item.slug,
+        cursor,
+        createdAtFrom
+      );
     }
   }
   async *getBuilds(
@@ -384,7 +376,6 @@ export class Buildkite {
     ): Promise<PaginateResponse<Job>> => {
       const variables = {
         pageSize: this.pageSize,
-        maxJobsPerBuild: this.maxJobsPerBuild,
         after: pageInfo ? pageInfo.endCursor : cursor,
       };
       const data = await this.graphClient.request(JOBS_QUERY, variables);
@@ -395,7 +386,7 @@ export class Buildkite {
             e.node.cursor = data.viewer.jobs.edges.cursor;
           return e.node;
         }),
-        pageInfo: data.viewer.job?.pageInfo,
+        pageInfo: data.viewer.jobs?.pageInfo,
       };
     };
     yield* this.paginate(func);
