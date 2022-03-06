@@ -276,7 +276,7 @@ export class Buildkite {
       return {
         data: data.organization.pipelines?.edges.map((e) => {
           const pipeline = e.node;
-          pipeline.cursor = e.cursor;
+          if (e.cursor) pipeline.cursor = e.cursor;
           return pipeline;
         }),
         pageInfo: data.organization.pipelines.pageInfo,
@@ -307,7 +307,7 @@ export class Buildkite {
       return {
         data: data.pipeline?.builds?.edges.map((e) => {
           const build = e.node;
-          build.cursor = e.cursor;
+          if (e.cursor) build.cursor = e.cursor;
           return build;
         }),
         pageInfo: data.pipeline?.builds.pageInfo,
@@ -378,7 +378,7 @@ export class Buildkite {
       return {
         data: data.viewer.jobs.edges.map((e) => {
           const job = e.node;
-          job.cursor = e.cursor;
+          if (e.cursor) job.cursor = e.cursor;
           return job;
         }),
         pageInfo: data.viewer.jobs?.pageInfo,
