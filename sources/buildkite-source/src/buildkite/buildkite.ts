@@ -245,6 +245,11 @@ export class Buildkite {
     } while (fetchNextFunc);
   }
 
+  private setCursor(e): any {
+    const node = e.node;
+    if (e.cursor) node.cursor = e.cursor;
+    return node;
+  }
   async *getOrganizations(): AsyncGenerator<Organization> {
     if (this.organization) {
       const res = await this.restClient.get(
@@ -275,9 +280,7 @@ export class Buildkite {
 
       return {
         data: data.organization.pipelines?.edges.map((e) => {
-          const pipeline = e.node;
-          if (e.cursor) pipeline.cursor = e.cursor;
-          return pipeline;
+          return this.setCursor(e);
         }),
         pageInfo: data.organization.pipelines.pageInfo,
       };
@@ -306,9 +309,7 @@ export class Buildkite {
       );
       return {
         data: data.pipeline?.builds?.edges.map((e) => {
-          const build = e.node;
-          if (e.cursor) build.cursor = e.cursor;
-          return build;
+          return this.setCursor(e);
         }),
         pageInfo: data.pipeline?.builds.pageInfo,
       };
@@ -377,9 +378,7 @@ export class Buildkite {
 
       return {
         data: data.viewer.jobs.edges.map((e) => {
-          const job = e.node;
-          if (e.cursor) job.cursor = e.cursor;
-          return job;
+          return this.setCursor(e);
         }),
         pageInfo: data.viewer.jobs?.pageInfo,
       };
