@@ -9,6 +9,7 @@ export class WriteStats {
     public recordsProcessed: number = 0,
     public recordsWritten: number = 0,
     public recordsErrored: number = 0,
+    public recordsSkipped: number = 0,
     public processedByStream: Dictionary<number> = {},
     public writtenByModel: Dictionary<number> = {}
   ) {}
@@ -33,17 +34,17 @@ export class WriteStats {
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
     logger.info(`Processed records by stream: ${JSON.stringify(processed)}`);
-    logger.info(`${writeMsg} ${this.recordsWritten} records`);
 
+    logger.info(`${writeMsg} ${this.recordsWritten} records`);
     const written = _(this.writtenByModel)
       .toPairs()
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
     logger.info(`${writeMsg} records by model: ${JSON.stringify(written)}`);
+
+    logger.info(`Skipped ${this.recordsSkipped} records`);
     logger.info(`Errored ${this.recordsErrored} records`);
   }
 }

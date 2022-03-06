@@ -25,6 +25,7 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
@@ -148,8 +149,12 @@ class FarosDestination extends AirbyteDestination {
           `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
         );
       }
+      // Segment host is used for testing purposes only
+      const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
-      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+        host,
+      });
     }
   }
 
@@ -415,11 +420,25 @@ class FarosDestination extends AirbyteDestination {
 
       if (this.analytics) {
         this.logger.info('Sending write stats to Segment.');
-        this.analytics.track({
-          event: 'Write Stats',
-          userId: config.edition_configs.segment_user_id,
-          stats,
-        });
+        const fn = (callback: ((err: Error) => void) | undefined): void => {
+          this.analytics
+            .track(
+              {
+                event: 'Write Stats',
+                userId: config.edition_configs.segment_user_id,
+                properties: stats,
+              },
+              callback
+            )
+            .flush(callback);
+        };
+        await util
+          .promisify(fn)()
+          .catch((err) =>
+            this.logger.error(
+              `Failed to send write stats to Segment: ${err.message}`
+            )
+          );
       }
 
       // Since we are writing all records in a single revision,
@@ -483,6 +502,12 @@ class FarosDestination extends AirbyteDestination {
             stats.incrementProcessedByStream(stream);
 
             const converter = this.getConverter(stream);
+            // No need to fail on records we don't have a converter yet
+            if (!converter) {
+              stats.recordsSkipped++;
+              return;
+            }
+
             const writeRecord = async (
               context: StreamContext
             ): Promise<void> => {
@@ -545,8 +570,12 @@ class FarosDestination extends AirbyteDestination {
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`
       );
-      if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
-        throw e;
+      switch (this.invalidRecordStrategy) {
+        case InvalidRecordStrategy.SKIP:
+          stats.recordsSkipped++;
+          break;
+        case InvalidRecordStrategy.FAIL:
+          throw e;
       }
     }
   }
@@ -626,14 +655,11 @@ class FarosDestination extends AirbyteDestination {
   private getConverter(
     stream: string,
     onLoadError?: (err: Error) => void
-  ): Converter {
+  ): Converter | undefined {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
       onLoadError
     );
-    if (!converter && !this.jsonataConverter) {
-      throw new VError(`Undefined converter for stream ${stream}`);
-    }
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
       ? this.jsonataConverter ?? converter
       : converter ?? this.jsonataConverter;
@@ -649,8 +675,9 @@ class FarosDestination extends AirbyteDestination {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
 
-    if (!Array.isArray(results))
+    if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
+    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream

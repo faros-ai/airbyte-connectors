@@ -11,6 +11,7 @@ on:
       - main
     paths-ignore:
       - '**.md'
+  workflow_dispatch:
 
 jobs:
   test:
@@ -41,7 +42,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
@@ -52,7 +53,7 @@ jobs:
         run: lerna run test-cov
 
       - name: Run Jenkins server
-        if: github.ref == 'refs/heads/main' # Skip PRs
+        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         run: |
           mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
           docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
@@ -70,11 +71,12 @@ jobs:
           sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
 
       - name: Source Acceptance Test
-        if: github.ref == 'refs/heads/main' # Skip PRs
+        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         env:
           AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
+          DOCKER_SOURCE_TEST_CONFIG: ${{ secrets.DOCKER_SOURCE_TEST_CONFIG }}
           GOOGLECALENDAR_SOURCE_TEST_CONFIG: ${{ secrets.GOOGLECALENDAR_SOURCE_TEST_CONFIG }}
           HARNESS_SOURCE_TEST_CONFIG: ${{ secrets.HARNESS_SOURCE_TEST_CONFIG }}
           PAGERDUTY_SOURCE_TEST_CONFIG: ${{ secrets.PAGERDUTY_SOURCE_TEST_CONFIG }}
@@ -85,7 +87,7 @@ jobs:
           do
             source=$(echo $i | cut -f2 -d'/')
             case "$source" in
-              phabricator-source|victorops-source|jenkins-source|pagerduty-source|harness-source|okta-source|squadcast-source)
+              datadog-source|harness-source|jenkins-source|okta-source|phabricator-source|victorops-source)
                 echo "Skipping $source acceptance tests"
                 ;;
               *)
@@ -95,7 +97,7 @@ jobs:
           done
 
       - name: Stop Jenkins server
-        if: github.ref == 'refs/heads/main' # Skip PRs
+        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         run: |
           docker stop jenkins
           docker rm jenkins
