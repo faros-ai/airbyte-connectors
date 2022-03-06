@@ -11,7 +11,6 @@ import {Build, Buildkite, BuildkiteConfig} from '../buildkite/buildkite';
 
 interface BuildState {
   lastCursor?: string;
-  lastCreatedAt?: Date;
 }
 
 export class Builds extends AirbyteStreamBase {
@@ -29,7 +28,7 @@ export class Builds extends AirbyteStreamBase {
     return 'uuid';
   }
   get cursorField(): string | string[] {
-    return ['cursor', 'createdAt'];
+    return ['cursor'];
   }
   async *readRecords(
     syncMode: SyncMode,
@@ -39,12 +38,9 @@ export class Builds extends AirbyteStreamBase {
   ): AsyncGenerator<Build> {
     const lastCursor =
       syncMode === SyncMode.INCREMENTAL ? streamState?.lastCursor : undefined;
-    const lastCreatedAt =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCreatedAt
-        : undefined;
+
     const buildkite = Buildkite.instance(this.config, this.logger);
-    yield* buildkite.getBuilds(lastCursor, lastCreatedAt);
+    yield* buildkite.getBuilds(lastCursor);
   }
   getUpdatedState(
     currentStreamState: BuildState,
@@ -52,7 +48,7 @@ export class Builds extends AirbyteStreamBase {
   ): BuildState {
     return {
       lastCursor: latestRecord.cursor,
-      lastCreatedAt: Utils.toDate(latestRecord.createdAt),
+      //lastCreatedAt: Utils.toDate(latestRecord.createdAt),
     };
   }
 }

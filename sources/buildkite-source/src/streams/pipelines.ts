@@ -23,7 +23,7 @@ export class Pipelines extends AirbyteStreamBase {
     return require('../../resources/schemas/pipelines.json');
   }
   get primaryKey(): StreamKey {
-    return 'uuid';
+    return 'id';
   }
   get cursorField(): string | string[] {
     return 'cursor';

@@ -275,9 +275,9 @@ export class Buildkite {
 
       return {
         data: data.organization.pipelines?.edges.map((e) => {
-          if (data.organization.pipelines?.cursor)
-            e.node.cursor = data.organization.pipelines?.cursor;
-          return e.node;
+          const pipeline = e.node;
+          pipeline.cursor = e.cursor;
+          return pipeline;
         }),
         pageInfo: data.organization.pipelines.pageInfo,
       };
@@ -306,9 +306,9 @@ export class Buildkite {
       );
       return {
         data: data.pipeline?.builds?.edges.map((e) => {
-          if (data.pipeline?.builds?.edges.cursor)
-            e.node.cursor = data.pipeline.builds?.edges.cursor;
-          return e.node;
+          const build = e.node;
+          build.cursor = e.cursor;
+          return build;
         }),
         pageInfo: data.pipeline?.builds.pageInfo,
       };
@@ -377,9 +377,9 @@ export class Buildkite {
 
       return {
         data: data.viewer.jobs.edges.map((e) => {
-          if (data.viewer.jobs.edges.cursor)
-            e.node.cursor = data.viewer.jobs.edges.cursor;
-          return e.node;
+          const job = e.node;
+          job.cursor = e.cursor;
+          return job;
         }),
         pageInfo: data.viewer.jobs?.pageInfo,
       };
