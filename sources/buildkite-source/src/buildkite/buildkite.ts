@@ -17,11 +17,6 @@ const PIPELINES_QUERY = fs.readFileSync(
   'utf8'
 );
 
-const BUILDS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', '..', 'resources', 'gql', 'builds-query.gql'),
-  'utf8'
-);
-
 const PIPELINES_BUILDS_QUERY = fs.readFileSync(
   path.join(
     __dirname,
