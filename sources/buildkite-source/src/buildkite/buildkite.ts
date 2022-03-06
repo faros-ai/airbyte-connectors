@@ -310,12 +310,12 @@ export class Buildkite {
         variables
       );
       return {
-        data: data.pipeline.builds?.edges.map((e) => {
-          if (data.pipeline.builds?.edges.cursor)
+        data: data.pipeline?.builds?.edges.map((e) => {
+          if (data.pipeline?.builds?.edges.cursor)
             e.node.cursor = data.pipeline.builds?.edges.cursor;
           return e.node;
         }),
-        pageInfo: data.pipeline.builds.pageInfo,
+        pageInfo: data.pipeline?.builds.pageInfo,
       };
     };
     yield* this.paginate(func);

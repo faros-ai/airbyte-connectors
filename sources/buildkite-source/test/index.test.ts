@@ -165,7 +165,7 @@ describe('index', () => {
     for await (const build of buildsIter) {
       builds.push(build);
     }
-    expect(fnBuildsList).toHaveBeenCalledTimes(1);
+    expect(fnBuildsList).toHaveBeenCalledTimes(2);
     expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
   test('streams - jobs, use full_refresh sync mode', async () => {
