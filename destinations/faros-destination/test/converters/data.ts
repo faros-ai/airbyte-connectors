@@ -34,6 +34,9 @@ export const phabricatorAllStreamsLog = readTestResourceFile(
 export const bitbucketAllStreamsLog = readTestResourceFile(
   'bitbucket/all-streams.log'
 );
+export const dockerAllStreamsLog = readTestResourceFile(
+  'docker/all-streams.log'
+);
 export const statuspageAllStreamsLog = readTestResourceFile(
   'statuspage/all-streams.log'
 );
@@ -64,4 +67,8 @@ export const oktaAllStreamsLog = readTestResourceFile('okta/all-streams.log');
 
 export const agileacceleratorAllStreamsLog = readTestResourceFile(
   'agileaccelerator/all-streams.log'
+);
+
+export const datadogAllStreamsLog = readTestResourceFile(
+  'datadog/all-streams.log'
 );

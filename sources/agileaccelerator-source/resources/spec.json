@@ -17,7 +17,9 @@
       "server_url": {
         "type": "string",
         "title": "Server URL",
-        "example": ["https://test.my.salesforce.com"]
+        "example": [
+          "https://test.my.salesforce.com"
+        ]
       },
       "client_id": {
         "type": "string",
@@ -51,7 +53,7 @@
         "default": "v53.0"
       },
       "page_size": {
-        "type": "number",
+        "type": "integer",
         "title": "Page Size"
       }
     }
