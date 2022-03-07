@@ -48,7 +48,7 @@ describe('shortcut', () => {
       iterations: 2,
       members: 1,
       projects: 3,
-      stories: 1,
+      stories: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -59,13 +59,16 @@ describe('shortcut', () => {
 
     const writtenByModel = {
       tms_Epic: 1,
+      tms_Label: 1,
       tms_Project: 3,
       tms_Sprint: 2,
-      tms_Task: 1,
+      tms_Task: 4,
       tms_TaskBoard: 3,
       tms_TaskBoardProjectRelationship: 3,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskProjectRelationship: 1,
+      tms_TaskBoardRelationship: 2,
+      tms_TaskDependency: 2,
+      tms_TaskProjectRelationship: 2,
+      tms_TaskTag: 1,
       tms_User: 1,
     };
 
