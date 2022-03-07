@@ -7,6 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Backlog, BacklogConfig} from '../backlog';
+import {Project} from '../models';
 
 export class Projects extends AirbyteStreamBase {
   constructor(
@@ -28,7 +29,7 @@ export class Projects extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<Project, any, unknown> {
     const backlog = await Backlog.instance(this.config, this.logger);
     yield* backlog.getProjects();
   }

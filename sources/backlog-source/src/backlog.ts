@@ -7,7 +7,7 @@ import {VError} from 'verror';
 import {Comment, Issue, Project, User, VersionMilestone} from './models';
 
 const DEFAULT_VERSION = 'v2';
-const DEFAULT_UNIX = -8640000000000000;
+const DEFAULT_MEMOIZE_START_TIME = 0;
 
 export interface BacklogConfig {
   readonly apiKey: string;
@@ -79,7 +79,10 @@ export class Backlog {
     }
   }
 
-  @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
+  @Memoize(
+    (lastUpdatedAt?: string) =>
+      new Date(lastUpdatedAt ?? DEFAULT_MEMOIZE_START_TIME)
+  )
   async *getIssues(lastUpdatedAt?: string): AsyncGenerator<Issue> {
     const startTime = new Date(lastUpdatedAt ?? 0);
     const config = this.cfg.project_id
@@ -108,7 +111,7 @@ export class Backlog {
     }
   }
 
-  formatDate(d): string {
+  formatDate(d: Date): string {
     let month = '' + (d.getMonth() + 1);
     let day = '' + d.getDate();
     const year = d.getFullYear();

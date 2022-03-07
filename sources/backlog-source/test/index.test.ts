@@ -35,6 +35,10 @@ describe('index', () => {
     Backlog.instance = backlogInstance;
   });
 
+  function readResourceFile(fileName: string): any {
+    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+  }
+
   function readTestResourceFile(fileName: string): any {
     return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
   }
@@ -42,7 +46,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.BacklogSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
+      new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 

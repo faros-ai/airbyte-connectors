@@ -88,10 +88,9 @@ export class BacklogIssues extends BacklogConverter {
         creator: issue.createdUser
           ? {uid: String(issue.createdUser.id), source}
           : undefined,
-        sprint:
-          issue.milestone.length > 0
-            ? {uid: String(issue.milestone[0].id), source}
-            : undefined,
+        sprint: issue.milestone.length
+          ? {uid: String(issue.milestone[0].id), source}
+          : undefined,
       },
     });
     const projectRef = {uid: String(issue.projectId), source};

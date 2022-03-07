@@ -21,12 +21,15 @@ export class BacklogProjects extends BacklogConverter {
     const project = record.record.data as Project;
     const uid = String(project.id);
     const res: DestinationRecord[] = [];
+
+    const maxDescriptionLength = this.maxDescriptionLength(ctx);
+
     res.push({
       model: 'tms_Project',
       record: {
         uid,
         name: project.name,
-        description: project.name,
+        description: null,
         source,
       },
     });
@@ -51,7 +54,10 @@ export class BacklogProjects extends BacklogConverter {
         record: {
           uid: String(versionMilestone.id),
           name: versionMilestone.name,
-          description: versionMilestone.description,
+          description: versionMilestone.description?.substring(
+            0,
+            maxDescriptionLength
+          ),
           startedAt: Utils.toDate(versionMilestone.startDate),
           endedAt: Utils.toDate(versionMilestone.releaseDueDate),
           state: BacklogCommon.getSprintState(versionMilestone),
@@ -64,7 +70,10 @@ export class BacklogProjects extends BacklogConverter {
           record: {
             uid: String(versionMilestone.id),
             name: versionMilestone.name,
-            description: versionMilestone.description,
+            description: versionMilestone.description?.substring(
+              0,
+              maxDescriptionLength
+            ),
             startedAt: Utils.toDate(versionMilestone.startDate),
             releasedAt: Utils.toDate(versionMilestone.releaseDueDate),
             source,

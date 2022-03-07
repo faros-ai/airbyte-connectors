@@ -32,7 +32,7 @@
           "number",
           "null"
         ],
-        "title": "project ID",
+        "title": "Project ID",
         "description": "If set it will pull all issues from only this project. If no it pull all issues from all projects"
       }
     }

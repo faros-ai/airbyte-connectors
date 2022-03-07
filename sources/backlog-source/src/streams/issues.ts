@@ -37,8 +37,8 @@ export class Issues extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+    streamState?: IssueState
+  ): AsyncGenerator<Issue, any, unknown> {
     const lastUpdatedAt =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.lastUpdatedAt
