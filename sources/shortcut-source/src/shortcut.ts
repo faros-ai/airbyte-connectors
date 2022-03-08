@@ -22,8 +22,8 @@ export interface ShortcutConfig {
 export interface ExtendStory extends Story {
   readonly story_links: Array<StoryLink>;
 }
-const DEFAULT_UNIX = -8640000000000000;
-const DEFAULT_STORIES_START_DATE = new Date(DEFAULT_UNIX);
+const DEFAULT_MEMOIZE_START_TIME = 0;
+const DEFAULT_STORIES_START_DATE = new Date(DEFAULT_MEMOIZE_START_TIME);
 const DEFAULT_STORIES_END_DATE = new Date();
 const DEFAULT_BASE_URL = 'https://api.app.shortcut.com';
 const DEFAULT_VERSION = 'v3';
@@ -44,7 +44,7 @@ export class Shortcut {
     if (Shortcut.shortcut) return Shortcut.shortcut;
 
     if (!config.token) {
-      throw new VError('token must be a not empty string');
+      throw new VError('Token must not be empty');
     }
     Shortcut.shortcut = new Shortcut(config, Client.create(config.token));
     return Shortcut.shortcut;
@@ -54,7 +54,7 @@ export class Shortcut {
     try {
       await this.client.listProjects();
     } catch (err: any) {
-      let errorMessage = 'Please verify your token are correct. Error: ';
+      let errorMessage = 'Please verify your token is correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);
@@ -75,7 +75,10 @@ export class Shortcut {
     }
   }
 
-  @Memoize((lastUpdatedAt?: string) => new Date(lastUpdatedAt ?? DEFAULT_UNIX))
+  @Memoize(
+    (lastUpdatedAt?: string) =>
+      new Date(lastUpdatedAt ?? DEFAULT_MEMOIZE_START_TIME)
+  )
   async *getIterations(lastUpdatedAt?: string): AsyncGenerator<Iteration> {
     const startTime = new Date(lastUpdatedAt ?? 0);
     const list = await this.client.listIterations();
@@ -112,9 +115,8 @@ export class Shortcut {
       updateRangeUndefined = false;
       updateRange = [DEFAULT_STORIES_START_DATE, DEFAULT_STORIES_END_DATE];
     }
-    const [from, to] = updateRange;
     if (this.cfg.project_public_id) {
-      yield* this.getStorieByProjectId(
+      yield* this.getStoriesByProjectId(
         this.cfg.project_public_id,
         updateRangeUndefined,
         updateRange
@@ -122,7 +124,7 @@ export class Shortcut {
     } else {
       const iterProjects = this.getProjects();
       for await (const item of iterProjects) {
-        yield* this.getStorieByProjectId(
+        yield* this.getStoriesByProjectId(
           item.id,
           updateRangeUndefined,
           updateRange
@@ -131,7 +133,7 @@ export class Shortcut {
     }
   }
 
-  async *getStorieByProjectId(
+  async *getStoriesByProjectId(
     projectPublicId: number,
     updateRangeUndefined: boolean,
     updateRange?: [Date, Date]
