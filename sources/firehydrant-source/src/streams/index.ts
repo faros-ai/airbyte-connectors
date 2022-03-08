@@ -1,2 +1,3 @@
 import {Incidents} from './incidents';
-export {Incidents};
+import {Users} from './users';
+export {Incidents, Users};

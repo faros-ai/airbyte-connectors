@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {FireHydrant, FireHydrantConfig} from './firehydrant/firehydrant';
-import {Incidents} from './streams';
+import {Incidents, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -37,6 +37,9 @@ export class FireHydrantSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new Incidents(config as FireHydrantConfig, this.logger)];
+    return [
+      new Incidents(config as FireHydrantConfig, this.logger),
+      new Users(config as FireHydrantConfig, this.logger),
+    ];
   }
 }

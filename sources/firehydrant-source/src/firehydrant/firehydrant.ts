@@ -3,7 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Incident, PageInfo, PaginateResponse} from './models';
+import {Incident, PageInfo, PaginateResponse, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_REST_VERSION = 'v1';
@@ -100,7 +100,12 @@ export class FireHydrant {
       }
     } while (fetchNextFunc);
   }
-
+  getResponse<T>(data): PaginateResponse<T> {
+    return {
+      data: data.data,
+      pagination: data.pagination,
+    };
+  }
   async *getIncidents(endDateFrom?: Date): AsyncGenerator<Incident> {
     const func = async (
       pageInfo?: PageInfo
@@ -110,12 +115,20 @@ export class FireHydrant {
         `incidents?per_page=${this.pageSize}&page=${page}` +
           (endDateFrom ? `&end_date=${endDateFrom}` : '')
       );
-      return {
-        data: response.data?.data?.map((e) => {
-          return e;
-        }),
-        pagination: response.data.pagination,
-      };
+      return this.getResponse<Incident>(response.data);
+    };
+    yield* this.paginate(func);
+  }
+
+  async *getUsers(): AsyncGenerator<User> {
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<User>> => {
+      const page = pageInfo ? pageInfo?.page + 1 : 1;
+      const response = await this.restClient.get<PaginateResponse<User>>(
+        `users?per_page=${this.pageSize}&page=${page}`
+      );
+      return this.getResponse<User>(response.data);
     };
     yield* this.paginate(func);
   }

@@ -94,4 +94,25 @@ describe('index', () => {
     expect(fnIncidentsList).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
+  test('streams - users, use full_refresh sync mode', async () => {
+    const fnUsersList = jest.fn();
+    FireHydrant.instance = jest.fn().mockImplementation(() => {
+      return new FireHydrant({
+        get: fnUsersList.mockResolvedValue({
+          data: readTestResourceFile('users_input.json'),
+        }),
+      } as any);
+    });
+    const source = new sut.FireHydrantSource(logger);
+    const streams = source.streams({});
+
+    const usersStream = streams[1];
+    const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of usersIter) {
+      users.push(user);
+    }
+    expect(fnUsersList).toHaveBeenCalledTimes(1);
+    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+  });
 });

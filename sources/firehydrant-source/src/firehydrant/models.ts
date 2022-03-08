@@ -29,7 +29,7 @@ interface IncidentRole2 {
   tasks: [any];
 }
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
