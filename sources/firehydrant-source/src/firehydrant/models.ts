@@ -80,6 +80,32 @@ export interface IncidentTicket {
   attachments: [any];
 }
 
+interface IncidentDataChangedAttributes {
+  id: string;
+  type: string;
+  state: string;
+  summary: string;
+  assignees: [User];
+  created_by: User;
+  description: string;
+}
+
+export interface IncidentData {
+  id: string;
+  operation: string;
+  changed_attributes: IncidentDataChangedAttributes;
+}
+
+export interface IncidentEvent {
+  id: string;
+  incident_id: string;
+  occurred_at: string;
+  type: string;
+  visibility: string;
+  author: User;
+  data: IncidentData;
+}
+
 export interface Incident extends ObjectBase {
   created_at: string;
   started_at: string;
@@ -126,6 +152,7 @@ export interface Incident extends ObjectBase {
   context_object?: any;
   restricted: boolean;
   explicit_organization_user_ids: [any];
+  events: [IncidentEvent];
 }
 
 interface TeamMember {

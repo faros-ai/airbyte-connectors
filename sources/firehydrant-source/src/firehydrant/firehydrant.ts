@@ -3,7 +3,14 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
-import {Incident, PageInfo, PaginateResponse, Team, User} from './models';
+import {
+  Incident,
+  IncidentEvent,
+  PageInfo,
+  PaginateResponse,
+  Team,
+  User,
+} from './models';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_REST_VERSION = 'v1';
@@ -115,6 +122,12 @@ export class FireHydrant {
         `incidents?per_page=${this.pageSize}&page=${page}` +
           (endDateFrom ? `&end_date=${endDateFrom}` : '')
       );
+      for (const incident of response?.data.data ?? []) {
+        const incidentEvent = await this.restClient.get<
+          PaginateResponse<IncidentEvent>
+        >(`incidents/${incident.id}`);
+      }
+
       return this.getResponse<Incident>(response.data);
     };
     yield* this.paginate(func);
