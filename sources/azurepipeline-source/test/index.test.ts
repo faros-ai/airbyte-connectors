@@ -35,14 +35,17 @@ describe('index', () => {
     AzurePipeline.instance = azureActivePipeline;
   });
 
+  function readResourceFile(fileName: string): any {
+    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+  }
+
   function readTestResourceFile(fileName: string): any {
     return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
   }
-
   test('spec', async () => {
     const source = new sut.AzurePipelineSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readTestResourceFile('spec.json'))
+      new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
