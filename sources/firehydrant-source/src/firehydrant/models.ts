@@ -31,7 +31,7 @@ interface IncidentRole2 extends ObjectBase {
 }
 
 export interface User extends ObjectBase {
-  email: string;
+  email?: string;
   created_at: string;
   updated_at: string;
   slack_linked?: boolean;
@@ -152,7 +152,7 @@ export interface Incident extends ObjectBase {
   context_object?: any;
   restricted: boolean;
   explicit_organization_user_ids: [any];
-  events: [IncidentEvent];
+  events: IncidentEvent[];
 }
 
 interface TeamMember {

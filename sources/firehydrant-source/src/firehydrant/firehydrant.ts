@@ -122,13 +122,20 @@ export class FireHydrant {
         `incidents?per_page=${this.pageSize}&page=${page}` +
           (endDateFrom ? `&end_date=${endDateFrom}` : '')
       );
+      const incidentPaginate = {
+        pagination: response.data.pagination,
+        data: [],
+      };
       for (const incident of response?.data.data ?? []) {
-        const incidentEvent = await this.restClient.get<
+        const eventResponse = await this.restClient.get<
           PaginateResponse<IncidentEvent>
-        >(`incidents/${incident.id}`);
+        >(`incidents/${incident.id}/events`);
+        const incidentItem = incident;
+        if (eventResponse.status === 200)
+          incidentItem.events = eventResponse.data.data;
+        incidentPaginate.data.push(incidentItem);
       }
-
-      return this.getResponse<Incident>(response.data);
+      return this.getResponse<Incident>(incidentPaginate);
     };
     yield* this.paginate(func);
   }

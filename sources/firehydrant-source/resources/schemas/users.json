@@ -9,7 +9,7 @@
             "type": "string"
         },
         "email": {
-            "type": "string"
+            "type": ["string","null"]
         },
         "created_at": {
             "type": "string"
