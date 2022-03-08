@@ -12,20 +12,15 @@
     "properties": {
       "space": {
         "type": "string",
-        "title": "Each account have some spaces",
+        "title": "Space ID",
         "examples": [
           "devcube"
         ]
       },
       "apiKey": {
         "type": "string",
-        "title": "Backlog Apikey",
+        "title": "API Key",
         "airbyte_secret": true
-      },
-      "version": {
-        "type": "string",
-        "title": "version",
-        "default": "v2"
       },
       "project_id": {
         "type": [
@@ -33,7 +28,7 @@
           "null"
         ],
         "title": "Project ID",
-        "description": "If set it will pull all issues from only this project. If no it pull all issues from all projects"
+        "description": "Only pull issues from this project. If not set, all issues from all projects will be pulled."
       }
     }
   }

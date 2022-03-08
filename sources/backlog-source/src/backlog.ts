@@ -6,7 +6,6 @@ import {VError} from 'verror';
 
 import {Comment, Issue, Project, User, VersionMilestone} from './models';
 
-const DEFAULT_VERSION = 'v2';
 const DEFAULT_MEMOIZE_START_TIME = 0;
 
 export interface BacklogConfig {
@@ -29,12 +28,11 @@ export class Backlog {
     if (Backlog.backlog) return Backlog.backlog;
 
     if (!config.apiKey) {
-      throw new VError('apiKey must be a not empty string');
+      throw new VError('No API key provided');
     }
 
-    const version = config.version ? config.version : DEFAULT_VERSION;
     const httpClient = axios.create({
-      baseURL: `https://${config.space}.backlog.com/api/${version}`,
+      baseURL: `https://${config.space}.backlog.com/api/v2`,
       timeout: 5000,
       params: {
         apiKey: config.apiKey,
@@ -51,7 +49,7 @@ export class Backlog {
       const iter = this.getProjects();
       await iter.next();
     } catch (err: any) {
-      let errorMessage = 'Please verify your apiKey are correct. Error: ';
+      let errorMessage = 'Could not verify API key. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);

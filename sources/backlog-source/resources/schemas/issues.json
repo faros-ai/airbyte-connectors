@@ -171,19 +171,28 @@
                     "displayOrder": {
                         "type": "number"
                     },
-                    "projectId":{
+                    "projectId": {
                         "type": "number"
                     },
-                    "description":{
-                        "type": ["string","null"]
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "startDate":{
-                        "type": ["string","null"]
+                    "startDate": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "releaseDueDate":{
-                        "type": ["string","null"]
+                    "releaseDueDate": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "archived":{
+                    "archived": {
                         "type": "boolean"
                     }
                 }
@@ -203,19 +212,28 @@
                     "displayOrder": {
                         "type": "number"
                     },
-                    "projectId":{
+                    "projectId": {
                         "type": "number"
                     },
-                    "description":{
-                        "type": ["string","null"]
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "startDate":{
-                        "type": ["string","null"]
+                    "startDate": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "releaseDueDate":{
-                        "type": ["string","null"]
+                    "releaseDueDate": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
-                    "archived":{
+                    "archived": {
                         "type": "boolean"
                     }
                 }

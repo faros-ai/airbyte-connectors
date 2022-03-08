@@ -1,6 +1,6 @@
 {
   "name": "backlog-source",
-  "version": "0.1.28",
+  "version": "0.1.48",
   "description": "Backlog Airbyte source",
   "keywords": [
     "airbyte",
@@ -29,10 +29,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.28",
-    "verror": "^1.10.0"
+    "axios": "^0.26.0",
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.48",
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

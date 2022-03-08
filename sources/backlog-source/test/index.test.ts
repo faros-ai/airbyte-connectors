@@ -58,10 +58,7 @@ describe('index', () => {
         space: 'space',
         project_id: null,
       } as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('apiKey must be a not empty string'),
-    ]);
+    ).resolves.toStrictEqual([false, new VError('No API key provided')]);
   });
 
   test('streams - issues, use full_refresh sync mode', async () => {
