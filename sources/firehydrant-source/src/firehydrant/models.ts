@@ -136,7 +136,7 @@ export interface Incident extends ObjectBase {
   last_update: string;
   last_note: LastNote;
   report_id?: any;
-  services: [any];
+  services: ObjectBase[];
   environments: ObjectBase[];
   functionalities: ObjectBase[];
   channel_name?: any;

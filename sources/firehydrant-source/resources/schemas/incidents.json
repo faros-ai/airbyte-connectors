@@ -307,7 +307,17 @@
         },
         "services": {
             "type": "array",
-            "items": {}
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
         },
         "environments": {
             "type": "array",
