@@ -24,7 +24,7 @@
       },
       "project_id": {
         "type": [
-          "number",
+          "integer",
           "null"
         ],
         "title": "Project ID",
