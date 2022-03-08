@@ -605,23 +605,25 @@ class FarosDestination extends AirbyteDestination {
           this.logger.error(err.message);
         }
       });
-      this.logger.info(
-        `Using ${converter.constructor.name} converter to convert ${stream} stream records`
-      );
+      if (converter) {
+        this.logger.info(
+          `Using ${converter.constructor.name} converter to convert ${stream} stream records`
+        );
 
-      // Collect all converter dependencies
-      if (converter.dependencies.length > 0) {
-        const streamName = converter.streamName.asString;
-        if (!dependenciesByStream[streamName]) {
-          dependenciesByStream[streamName] = new Set<string>();
+        // Collect all converter dependencies
+        if (converter.dependencies.length > 0) {
+          const streamName = converter.streamName.asString;
+          if (!dependenciesByStream[streamName]) {
+            dependenciesByStream[streamName] = new Set<string>();
+          }
+          const deps = dependenciesByStream[streamName];
+          converter.dependencies.forEach((d) => deps.add(d.asString));
         }
-        const deps = dependenciesByStream[streamName];
-        converter.dependencies.forEach((d) => deps.add(d.asString));
-      }
 
-      // Prepare destination models to delete if any
-      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(...converter.destinationModels);
+        // Prepare destination models to delete if any
+        if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
+          deleteModelEntries.push(...converter.destinationModels);
+        }
       }
     }
     // Check for circular dependencies and error early if any
