@@ -200,7 +200,7 @@
                     "title": "Configuration",
                     "properties": {
                       "max_description_length": {
-                        "type": "number",
+                        "type": "integer",
                         "title": "Max Description Length",
                         "description": "Value to cut description to specific length",
                         "default": 1000
