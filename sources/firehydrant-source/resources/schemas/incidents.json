@@ -18,7 +18,7 @@
             "type": "string"
         },
         "customer_impact_summary": {
-            "type": "string"
+            "type": ["string","null"]
         },
         "description": {
             "type": "string"
@@ -59,95 +59,68 @@
         },
         "incident_roles": {
             "type": "array",
-            "items": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "summary": {
-                            "type": "string"
-                        },
-                        "description": {
-                            "type": "string"
-                        },
-                        "created_at": {
-                            "type": "string"
-                        },
-                        "updated_at": {
-                            "type": "string"
-                        },
-                        "discarded_at": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "tasks": {
-                            "type": "array",
-                            "items": {}
-                        }
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "summary": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "discarded_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tasks": {
+                        "type": "array",
+                        "items": {}
                     }
                 }
-            ]
+            }
         },
         "milestones": {
             "type": "array",
-            "items": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "created_at": {
-                            "type": "string"
-                        },
-                        "updated_at": {
-                            "type": "string"
-                        },
-                        "type": {
-                            "type": "string"
-                        },
-                        "occurred_at": {
-                            "type": "string"
-                        },
-                        "duration": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "created_at": {
-                            "type": "string"
-                        },
-                        "updated_at": {
-                            "type": "string"
-                        },
-                        "type": {
-                            "type": "string"
-                        },
-                        "occurred_at": {
-                            "type": "string"
-                        },
-                        "duration": {
-                            "type": "string"
-                        }
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "occurred_at": {
+                        "type": "string"
+                    },
+                    "duration": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
-            ]
+            }
         },
         "active": {
             "type": "boolean"
@@ -499,28 +472,26 @@
                                     },
                                     "assignees": {
                                         "type": "array",
-                                        "items": [
-                                            {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "email": {
-                                                        "type": [
-                                                            "string",
-                                                            "null"
-                                                        ]
-                                                    },
-                                                    "source": {
-                                                        "type": "string"
-                                                    }
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "source": {
+                                                    "type": "string"
                                                 }
                                             }
-                                        ]
+                                        }
                                     },
                                     "created_by": {
                                         "type": "object",
