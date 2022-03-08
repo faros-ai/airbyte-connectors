@@ -22,10 +22,10 @@ Jenkins Source | [sources/jenkins-source](sources/jenkins-source) | `docker pull
 Okta Source | [sources/okta-source](sources/okta-source) | `docker pull farosai/airbyte-okta-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-okta-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-okta-source/tags)
 PagerDuty Source | [sources/pagerduty-source](sources/pagerduty-source) | `docker pull farosai/airbyte-pagerduty-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-pagerduty-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-pagerduty-source/tags)
 Phabricator Source | [sources/phabricator-source](sources/phabricator-source) | `docker pull farosai/airbyte-phabricator-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-phabricator-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-phabricator-source/tags)
+Shortcut Source | [sources/shortcut-source](sources/shortcut-source) | `docker pull farosai/airbyte-shortcut-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-shortcut-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-shortcut-source/tags)
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-squadcast-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-squadcast-source/tags)
 StatusPage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-statuspage-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-statuspage-source/tags)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-victorops-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-victorops-source/tags)
-Shortcut Source | [sources/shortcut-source](sources/shortcut-source) | `docker pull farosai/airbyte-shortcut-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-shortcut-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-shortcut-source/tags)
 
 # Development
 

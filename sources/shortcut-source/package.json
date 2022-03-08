@@ -1,7 +1,7 @@
 {
   "name": "shortcut-source",
-  "version": "0.1.26",
-  "description": "Example Airbyte source",
+  "version": "0.1.50",
+  "description": "Shortcut Airbyte source",
   "keywords": [
     "airbyte",
     "source",
@@ -29,11 +29,11 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.26.0",
     "clubhouse-lib": "^0.13.0",
-    "commander": "^8.2.0",
-    "faros-airbyte-cdk": "^0.1.26",
-    "verror": "^1.10.0"
+    "commander": "^9.0.0",
+    "faros-airbyte-cdk": "^0.1.50",
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
