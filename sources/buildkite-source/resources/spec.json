@@ -18,7 +18,7 @@
       "page_size": {
         "type": "number",
         "title": "Page Size",
-        "description": "number of pipelines to fetch per call"
+        "description": "number of pipelines, builds, jobs to fetch per call"
       },
       "organization": {
         "type": "string",
