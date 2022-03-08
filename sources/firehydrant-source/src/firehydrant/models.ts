@@ -1,6 +1,9 @@
-interface IncidentRole {
+interface ObjectBase {
   id: string;
   name: string;
+}
+
+interface IncidentRole extends ObjectBase {
   summary: string;
   description: string;
   created_at: string;
@@ -18,9 +21,7 @@ interface Milestone {
   duration: string;
 }
 
-interface IncidentRole2 {
-  id: string;
-  name: string;
+interface IncidentRole2 extends ObjectBase {
   summary: string;
   description: string;
   created_at: string;
@@ -29,9 +30,7 @@ interface IncidentRole2 {
   tasks: [any];
 }
 
-export interface User {
-  id: string;
-  name: string;
+export interface User extends ObjectBase {
   email: string;
   created_at: string;
   updated_at: string;
@@ -48,48 +47,24 @@ interface RoleAssignment {
   tasks: [any];
 }
 
-interface Organization {
-  name: string;
-  id: string;
-}
-
 interface LastNote {
   id: string;
   body: string;
   created_at: string;
 }
 
-interface Environment {
-  id: string;
-  name: string;
-}
-
-interface Functionality {
-  id: string;
-  name: string;
-}
-
-interface Impact2 {
-  id: string;
-  name: string;
-}
-
-interface Condition {
-  id: string;
-  name: string;
+interface Condition extends ObjectBase {
   position: number;
 }
 
 interface Impact {
   id: string;
   type: string;
-  impact: Impact2;
+  impact: ObjectBase;
   condition: Condition;
 }
 
-interface CreatedBy {
-  id: string;
-  name: string;
+interface CreatedBy extends ObjectBase {
   source: string;
   email: string;
 }
@@ -105,9 +80,7 @@ export interface IncidentTicket {
   attachments: [any];
 }
 
-export interface Incident {
-  id: string;
-  name: string;
+export interface Incident extends ObjectBase {
   created_at: string;
   started_at: string;
   summary: string;
@@ -130,7 +103,7 @@ export interface Incident {
   status_pages: [any];
   incident_url: string;
   private_status_page_url: string;
-  organization: Organization;
+  organization: ObjectBase;
   customers_impacted: number;
   monetary_impact?: any;
   monetary_impact_cents?: any;
@@ -138,8 +111,8 @@ export interface Incident {
   last_note: LastNote;
   report_id?: any;
   services: [any];
-  environments: Environment[];
-  functionalities: Functionality[];
+  environments: ObjectBase[];
+  functionalities: ObjectBase[];
   channel_name?: any;
   channel_reference?: any;
   channel_id?: any;
@@ -153,6 +126,19 @@ export interface Incident {
   context_object?: any;
   restricted: boolean;
   explicit_organization_user_ids: [any];
+}
+
+interface TeamMember {
+  user: User;
+  default_incident_role: IncidentRole2;
+}
+
+export interface Team extends ObjectBase {
+  description?: string;
+  slug?: string;
+  created_at: string;
+  updated_at: string;
+  memberships: [TeamMember];
 }
 
 export interface PageInfo {

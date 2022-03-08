@@ -94,6 +94,29 @@ describe('index', () => {
     expect(fnIncidentsList).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
+
+  test('streams - teams, use full_refresh sync mode', async () => {
+    const fnTeamsList = jest.fn();
+    FireHydrant.instance = jest.fn().mockImplementation(() => {
+      return new FireHydrant({
+        get: fnTeamsList.mockResolvedValue({
+          data: readTestResourceFile('teams_input.json'),
+        }),
+      } as any);
+    });
+    const source = new sut.FireHydrantSource(logger);
+    const streams = source.streams({});
+
+    const teamsStream = streams[1];
+    const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
+    const teams = [];
+    for await (const team of teamsIter) {
+      teams.push(team);
+    }
+    expect(fnTeamsList).toHaveBeenCalledTimes(1);
+    expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersList = jest.fn();
     FireHydrant.instance = jest.fn().mockImplementation(() => {
@@ -106,7 +129,7 @@ describe('index', () => {
     const source = new sut.FireHydrantSource(logger);
     const streams = source.streams({});
 
-    const usersStream = streams[1];
+    const usersStream = streams[2];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of usersIter) {
