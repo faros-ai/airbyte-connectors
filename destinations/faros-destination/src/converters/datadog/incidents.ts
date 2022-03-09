@@ -55,7 +55,6 @@ export class DatadogIncidents extends DatadogConverter {
           this.getStatus(incident.attributes?.fields?.state?.value) ?? null,
         createdAt: Utils.toDate(incident.attributes?.created) ?? null,
         updatedAt: Utils.toDate(incident.attributes?.modified) ?? null,
-        acknowledgedAt: Utils.toDate(incident.attributes?.detected) ?? null,
         resolvedAt: Utils.toDate(incident.attributes?.resolved) ?? null,
       },
     });
