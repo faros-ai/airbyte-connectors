@@ -143,17 +143,76 @@ export interface Team extends ObjectBase {
   memberships: [TeamMember];
 }
 
-export interface PageInfo {
-  count: number;
-  page: number;
-  items: number;
-  pages: number;
-  last: number;
-  prev?: number;
-  next?: number;
+export enum IncidentEventTypeCategory {
+  Created = 'Created',
+  Acknowledged = 'Acknowledged',
+  Resolved = 'Resolved',
+  Custom = 'Custom',
 }
 
-export interface PaginateResponse<T> {
-  data: T[];
-  pagination: PageInfo;
+export interface IncidentEventType {
+  category: IncidentEventTypeCategory;
+  detail: string;
+}
+
+export enum FirehydrantIncidentPriority {
+  P1 = 'P1',
+  P2 = 'P2',
+  P3 = 'P3',
+  P4 = 'P4',
+}
+
+export enum FirehydrantIncidentMilestone {
+  started = 'started',
+  detected = 'detected',
+  acknowledged = 'acknowledged',
+  firstaction = 'firstaction',
+  mitigated = 'mitigated',
+  resolved = 'resolved',
+}
+
+export enum FirehydrantIncidentSeverity {
+  SEV1 = 'SEV1',
+  SEV2 = 'SEV2',
+  SEV3 = 'SEV3',
+  SEV4 = 'SEV4',
+  SEV5 = 'SEV5',
+  GAMEDAY = 'GAMEDAY',
+  MAINTENANCE = 'MAINTENANCE',
+  UNSET = 'UNSET',
+}
+
+export enum IncidentStatusCategory {
+  Identified = 'Identified',
+  Investigating = 'Investigating',
+  Monitoring = 'Monitoring',
+  Resolved = 'Resolved',
+  Custom = 'Custom',
+}
+
+export interface IncidentPriority {
+  category: IncidentPriorityCategory;
+  detail: string;
+}
+
+export enum IncidentPriorityCategory {
+  Critical = 'Critical',
+  High = 'High',
+  Medium = 'Medium',
+  Low = 'Low',
+  Custom = 'Custom',
+}
+
+export enum IncidentSeverityCategory {
+  Sev1 = 'Sev1',
+  Sev2 = 'Sev2',
+  Sev3 = 'Sev3',
+  Sev4 = 'Sev4',
+  Sev5 = 'Sev5',
+  Custom = 'Custom',
+}
+
+export interface IncidentSeverity {
+  category: IncidentSeverityCategory;
+  detail: string;
 }
