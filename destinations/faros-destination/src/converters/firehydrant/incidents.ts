@@ -49,9 +49,9 @@ export class FirehydrantIncidents extends FirehydrantConverter {
     const applicationMapping = this.applicationMapping(ctx);
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
-    const updatedAt =
-      incident.events ??
-      Utils.toDate(incident.events[incident.events.length - 1].occurred_at);
+    const updatedAt = incident.events
+      ? Utils.toDate(incident.events[incident.events.length - 1].occurred_at)
+      : createdAt;
 
     let acknowledgedAt: Date = undefined;
     let resolvedAt: Date = undefined;
@@ -83,7 +83,7 @@ export class FirehydrantIncidents extends FirehydrantConverter {
         record: {
           uid: event.id,
           type: eventType,
-          ...incidentRef,
+          incident: incidentRef,
           detail: JSON.stringify(event.data),
           createdAt: occurredAt,
         },
@@ -169,7 +169,7 @@ export class FirehydrantIncidents extends FirehydrantConverter {
         res.push({
           model: 'ims_Label',
           record: {
-            label: {name: tag},
+            name: tag,
           },
         });
       }
@@ -207,7 +207,7 @@ export class FirehydrantIncidents extends FirehydrantConverter {
         points: 0,
         additionalFields: [],
         createdAt: occurredAt,
-        updatedAt: '',
+        updatedAt: occurredAt,
         statusChangedAt: undefined,
         statusChangelog: undefined,
         parent: undefined,
