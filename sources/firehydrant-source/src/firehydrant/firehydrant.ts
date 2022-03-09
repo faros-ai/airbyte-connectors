@@ -113,14 +113,14 @@ export class FireHydrant {
       pagination: data.pagination,
     };
   }
-  async *getIncidents(endDateFrom?: Date): AsyncGenerator<Incident> {
+  async *getIncidents(startDate?: Date): AsyncGenerator<Incident> {
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Incident>> => {
       const page = pageInfo ? pageInfo?.page + 1 : 1;
       const response = await this.restClient.get<PaginateResponse<Incident>>(
         `incidents?per_page=${this.pageSize}&page=${page}` +
-          (endDateFrom ? `&end_date=${endDateFrom}` : '')
+          (startDate ? `&start_date=${startDate}` : '')
       );
       const incidentPaginate = {
         pagination: response.data.pagination,
