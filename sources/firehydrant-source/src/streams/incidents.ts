@@ -10,7 +10,7 @@ import {Dictionary} from 'ts-essentials';
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';
 import {Incident} from '../firehydrant/models';
 interface IncidentState {
-  lastStartDate?: Date;
+  lastCreatedAt?: Date;
 }
 export class Incidents extends AirbyteStreamBase {
   constructor(
@@ -35,12 +35,12 @@ export class Incidents extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: IncidentState
   ): AsyncGenerator<Incident> {
-    const lastStartDate =
+    const lastCreatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastStartDate)
+        ? Utils.toDate(streamState?.lastCreatedAt)
         : undefined;
     const buildkite = FireHydrant.instance(this.config, this.logger);
-    yield* buildkite.getIncidents(lastStartDate);
+    yield* buildkite.getIncidents(lastCreatedAt);
   }
 
   getUpdatedState(
@@ -49,11 +49,11 @@ export class Incidents extends AirbyteStreamBase {
   ): IncidentState {
     const lastCreatedAt = new Date(latestRecord.created_at);
     return {
-      lastStartDate:
+      lastCreatedAt:
         new Date(lastCreatedAt) >
-        new Date(currentStreamState?.lastStartDate ?? 0)
+        new Date(currentStreamState?.lastCreatedAt ?? 0)
           ? lastCreatedAt
-          : currentStreamState?.lastStartDate,
+          : currentStreamState?.lastCreatedAt,
     };
   }
 }
