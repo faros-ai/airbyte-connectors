@@ -15,6 +15,9 @@ import {
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
+  IncidentTicketState,
+  TaskStatus,
+  TaskStatusCategory,
 } from './models';
 
 export class FirehydrantIncidents extends FirehydrantConverter {
@@ -145,6 +148,23 @@ export class FirehydrantIncidents extends FirehydrantConverter {
           name: ticket.summary,
           description: ticket.description?.substring(0, maxDescriptionLength),
           source,
+          url: undefined,
+          type: {
+            detail: ticket.type,
+            category: 'Task',
+          },
+          priority: undefined,
+          status: this.getTaskStatus(ticket.state),
+          points: 0,
+          additionalFields: [],
+          createdAt: '',
+          updatedAt: '',
+          statusChangedAt: undefined,
+          statusChangelog: undefined,
+          parent: undefined,
+          creator: {uid: ticket.created_by.id, source},
+          epic: undefined,
+          sprint: undefined,
         },
       });
       const task = {uid: ticket.id, source};
@@ -229,6 +249,20 @@ export class FirehydrantIncidents extends FirehydrantConverter {
         return {category: IncidentStatusCategory.Resolved, detail};
       default:
         return {category: IncidentStatusCategory.Custom, detail};
+    }
+  }
+
+  private getTaskStatus(status: string): TaskStatus {
+    const detail: string = status;
+    switch (status) {
+      case IncidentTicketState.open:
+        return {category: TaskStatusCategory.Todo, detail};
+      case IncidentTicketState.in_progress:
+        return {category: TaskStatusCategory.InProgress, detail};
+      case IncidentTicketState.done:
+        return {category: TaskStatusCategory.Done, detail};
+      default:
+        return {category: TaskStatusCategory.Custom, detail};
     }
   }
 }

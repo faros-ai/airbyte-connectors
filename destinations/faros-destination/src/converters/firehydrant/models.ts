@@ -216,3 +216,22 @@ export interface IncidentSeverity {
   category: IncidentSeverityCategory;
   detail: string;
 }
+
+export enum IncidentTicketState {
+  open = 'open',
+  in_progress = 'in_progress',
+  cancelled = 'cancelled',
+  done = 'done',
+}
+
+export interface TaskStatus {
+  category: TaskStatusCategory;
+  detail: string;
+}
+
+export enum TaskStatusCategory {
+  Custom = 'Custom',
+  Done = 'Done',
+  InProgress = 'InProgress',
+  Todo = 'Todo',
+}

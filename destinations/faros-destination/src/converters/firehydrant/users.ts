@@ -5,7 +5,10 @@ import {FirehydrantConverter} from './common';
 import {User} from './models';
 
 export class FirehydrantUsers extends FirehydrantConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'ims_User',
+    'tms_User',
+  ];
 
   async convert(
     record: AirbyteRecord,
@@ -20,6 +23,15 @@ export class FirehydrantUsers extends FirehydrantConverter {
         record: {
           uid: user.id,
           email: user.email,
+          name: user.name,
+          source,
+        },
+      },
+      {
+        model: 'tms_User',
+        record: {
+          uid: user.id,
+          emailAddress: user.email,
           name: user.name,
           source,
         },
