@@ -1,8 +1,8 @@
 {
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "FireHydrant Spec",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "fireHydrant Spec",
     "type": "object",
     "required": [
       "token"
@@ -11,19 +11,25 @@
     "properties": {
       "token": {
         "type": "string",
-        "title": "Token",
-        "description": "To create token go to https://app.firehydrant.io/organizations/bots",
+        "title": "API Token",
+        "description": "In order to create token, go to https://app.firehydrant.io/organizations/bots",
         "airbyte_secret": true
       },
       "page_size": {
-        "type": "number",
+        "type": [
+          "integer",
+          "null"
+        ],
         "title": "Page Size",
-        "description": "number of data to fetch per call"
+        "description": "Number of data to fetch per call"
       },
-      "rest_api_version": {
+      "version": {
         "type": "string",
-        "title": "Rest API Version",
-        "default": "v1"
+        "title": "API Version",
+        "default": "v1",
+        "examples": [
+          "v1"
+        ]
       }
     }
   }

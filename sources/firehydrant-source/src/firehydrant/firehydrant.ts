@@ -13,13 +13,13 @@ import {
 } from './models';
 
 const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_REST_VERSION = 'v1';
-const REST_API_URL = 'https://api.firehydrant.io/';
+const DEFAULT_VERSION = 'v1';
+const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
 
 export interface FireHydrantConfig {
   readonly token: string;
   readonly page_size?: number;
-  readonly rest_api_version?: string;
+  readonly version?: string;
 }
 
 export class FireHydrant {
@@ -41,9 +41,9 @@ export class FireHydrant {
     }
     const auth = `Bearer ${config.token}`;
 
-    const restApiVersion = config.rest_api_version ?? DEFAULT_REST_VERSION;
+    const version = config.version ?? DEFAULT_VERSION;
     const restClient = makeAxiosInstanceWithRetry({
-      baseURL: `${REST_API_URL}${restApiVersion}`,
+      baseURL: `${DEFAULT_BASE_URL}${version}`,
       headers: {authorization: auth},
     });
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -107,7 +107,7 @@ export class FireHydrant {
       }
     } while (fetchNextFunc);
   }
-  getResponse<T>(data): PaginateResponse<T> {
+  private getPaginateResponse<T>(data): PaginateResponse<T> {
     return {
       data: data.data,
       pagination: data.pagination,
@@ -135,7 +135,7 @@ export class FireHydrant {
           incidentItem.events = eventResponse.data.data;
         incidentPaginate.data.push(incidentItem);
       }
-      return this.getResponse<Incident>(incidentPaginate);
+      return this.getPaginateResponse<Incident>(incidentPaginate);
     };
     yield* this.paginate(func);
   }
@@ -148,7 +148,7 @@ export class FireHydrant {
       const response = await this.restClient.get<PaginateResponse<User>>(
         `users?per_page=${this.pageSize}&page=${page}`
       );
-      return this.getResponse<User>(response.data);
+      return this.getPaginateResponse<User>(response.data);
     };
     yield* this.paginate(func);
   }
@@ -161,7 +161,7 @@ export class FireHydrant {
       const response = await this.restClient.get<PaginateResponse<Team>>(
         `teams?per_page=${this.pageSize}&page=${page}`
       );
-      return this.getResponse<Team>(response.data);
+      return this.getPaginateResponse<Team>(response.data);
     };
     yield* this.paginate(func);
   }

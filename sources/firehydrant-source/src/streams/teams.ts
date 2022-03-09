@@ -23,9 +23,7 @@ export class Teams extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'created_at';
-  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
