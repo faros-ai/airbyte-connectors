@@ -186,9 +186,9 @@ export class FirehydrantIncidents extends FirehydrantConverter {
 
   private getTaskDestinationRecord(
     ticket: IncidentTicket,
-    source,
-    maxDescriptionLength,
-    occurredAt
+    source: string,
+    maxDescriptionLength: number,
+    occurredAt: Date
   ): DestinationRecord {
     return {
       model: 'tms_Task',
