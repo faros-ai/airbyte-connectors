@@ -10,8 +10,6 @@ interface FirehydrantConfig {
   // Max length for free-form description text fields such as incident description
   max_description_length?: number;
 }
-
-export class FirehydrantCommon {}
 /** Firehydrant converter base */
 export abstract class FirehydrantConverter extends Converter {
   /** Almost every Firehydrant record have id property */
@@ -19,20 +17,21 @@ export abstract class FirehydrantConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected backlogConfig(ctx: StreamContext): FirehydrantConfig {
-    return ctx.config.source_specific_configs?.backlog ?? {};
+  protected firehydrantConfig(ctx: StreamContext): FirehydrantConfig {
+    return ctx.config.source_specific_configs?.firehydrant ?? {};
   }
 
   protected maxDescriptionLength(ctx: StreamContext): number {
     return (
-      this.backlogConfig(ctx).max_description_length ?? MAX_DESCRIPTION_LENGTH
+      this.firehydrantConfig(ctx).max_description_length ??
+      MAX_DESCRIPTION_LENGTH
     );
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
     return (
       parseObjectConfig(
-        this.backlogConfig(ctx)?.application_mapping,
+        this.firehydrantConfig(ctx)?.application_mapping,
         'Application Mapping'
       ) ?? {}
     );

@@ -68,3 +68,7 @@ export const agileacceleratorAllStreamsLog = readTestResourceFile(
 export const datadogAllStreamsLog = readTestResourceFile(
   'datadog/all-streams.log'
 );
+
+export const firehydrantAllStreamsLog = readTestResourceFile(
+  'firehydrant/all-streams.log'
+);
