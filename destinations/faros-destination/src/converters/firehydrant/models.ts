@@ -93,7 +93,7 @@ export interface Incident extends ObjectBase {
   severity: string;
   severity_impact?: any;
   severity_condition?: any;
-  tag_list: [any];
+  tag_list: [string];
   private_id: string;
   organization_id: string;
   incident_roles: [IncidentRole];

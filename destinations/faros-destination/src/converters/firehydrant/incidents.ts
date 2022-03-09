@@ -3,6 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FirehydrantConverter} from './common';
+import {IncidentTicket} from './models';
 import {
   FirehydrantIncidentMilestone,
   FirehydrantIncidentPriority,
@@ -32,6 +33,8 @@ export class FirehydrantIncidents extends FirehydrantConverter {
     'ims_IncidentTag',
     'ims_Label',
   ];
+
+  private seenTags = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -85,6 +88,27 @@ export class FirehydrantIncidents extends FirehydrantConverter {
           createdAt: occurredAt,
         },
       });
+
+      if (event.data.operation === 'created' && event.data.ticket) {
+        const ticket = event.data.ticket as IncidentTicket;
+        // TODO
+        res.push(
+          this.getTaskDestinationRecord(
+            ticket,
+            source,
+            maxDescriptionLength,
+            occurredAt
+          )
+        );
+        const task = {uid: ticket.id, source};
+        res.push({
+          model: 'ims_IncidentTasks',
+          record: {
+            task,
+            incident: incidentRef,
+          },
+        });
+      }
     }
 
     res.push({
@@ -139,63 +163,60 @@ export class FirehydrantIncidents extends FirehydrantConverter {
       });
     }
 
-    for (const ticket of incident.incident_tickets) {
-      // TODO
-      res.push({
-        model: 'tms_Task',
-        record: {
-          uid: ticket.id,
-          name: ticket.summary,
-          description: ticket.description?.substring(0, maxDescriptionLength),
-          source,
-          url: undefined,
-          type: {
-            detail: ticket.type,
-            category: 'Task',
+    for (const tag of incident.tag_list) {
+      if (!this.seenTags.has(tag)) {
+        this.seenTags.add(tag);
+        res.push({
+          model: 'ims_Label',
+          record: {
+            label: {name: tag},
           },
-          priority: undefined,
-          status: this.getTaskStatus(ticket.state),
-          points: 0,
-          additionalFields: [],
-          createdAt: '',
-          updatedAt: '',
-          statusChangedAt: undefined,
-          statusChangelog: undefined,
-          parent: undefined,
-          creator: {uid: ticket.created_by.id, source},
-          epic: undefined,
-          sprint: undefined,
-        },
-      });
-      const task = {uid: ticket.id, source};
+        });
+      }
       res.push({
-        model: 'ims_IncidentTasks',
+        model: 'ims_IncidentTag',
         record: {
-          task,
+          label: {name: tag},
           incident: incidentRef,
         },
       });
     }
-    Object.entries(incident.labels).forEach(([key, value]) => {
-      res.push({
-        model: 'ims_Label',
-        record: {
-          label: {name: key},
-        },
-      });
-
-      res.push({
-        model: 'ims_IncidentTag',
-        record: {
-          label: {name: key},
-          incident: incidentRef,
-        },
-      });
-    });
-
     return res;
   }
 
+  private getTaskDestinationRecord(
+    ticket: IncidentTicket,
+    source,
+    maxDescriptionLength,
+    occurredAt
+  ): DestinationRecord {
+    return {
+      model: 'tms_Task',
+      record: {
+        uid: ticket.id,
+        name: ticket.summary,
+        description: ticket.description?.substring(0, maxDescriptionLength),
+        source,
+        url: undefined,
+        type: {
+          detail: ticket.type,
+          category: 'Task',
+        },
+        priority: undefined,
+        status: this.getTaskStatus(ticket.state),
+        points: 0,
+        additionalFields: [],
+        createdAt: occurredAt,
+        updatedAt: '',
+        statusChangedAt: undefined,
+        statusChangelog: undefined,
+        parent: undefined,
+        creator: {uid: ticket.created_by.id, source},
+        epic: undefined,
+        sprint: undefined,
+      },
+    };
+  }
   private getPriority(priority: string): IncidentPriority {
     const detail: string = priority;
     switch (priority) {

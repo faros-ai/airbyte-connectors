@@ -18,7 +18,10 @@
             "type": "string"
         },
         "customer_impact_summary": {
-            "type": ["string","null"]
+            "type": [
+                "string",
+                "null"
+            ]
         },
         "description": {
             "type": "string"
@@ -49,7 +52,9 @@
         },
         "tag_list": {
             "type": "array",
-            "items": {}
+            "items": {
+                "type": "string"
+            }
         },
         "private_id": {
             "type": "string"
