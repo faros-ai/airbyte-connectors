@@ -55,7 +55,7 @@ export class FireHydrant {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.restClient.get(`/incidents`);
+      await this.restClient.get(`/incidents?per_page=1&page=1`);
     } catch (err: any) {
       let errorMessage = 'Please verify your token is correct. Error: ';
       if (err.error_code || err.error_info) {
