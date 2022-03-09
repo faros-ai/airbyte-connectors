@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
+import {makeAxiosInstanceWithRetry, Utils, wrapApiError} from 'faros-feeds-sdk';
 import {VError} from 'verror';
 
 import {
@@ -119,21 +119,22 @@ export class FireHydrant {
     ): Promise<PaginateResponse<Incident>> => {
       const page = pageInfo ? pageInfo?.page + 1 : 1;
       const response = await this.restClient.get<PaginateResponse<Incident>>(
-        `incidents?per_page=${this.pageSize}&page=${page}` +
-          (startDate ? `&start_date=${startDate}` : '')
+        `incidents?per_page=${this.pageSize}&page=${page}`
       );
       const incidentPaginate = {
         pagination: response.data.pagination,
         data: [],
       };
       for (const incident of response?.data.data ?? []) {
-        const eventResponse = await this.restClient.get<
-          PaginateResponse<IncidentEvent>
-        >(`incidents/${incident.id}/events`);
-        const incidentItem = incident;
-        if (eventResponse.status === 200)
-          incidentItem.events = eventResponse.data.data;
-        incidentPaginate.data.push(incidentItem);
+        if (!startDate || Utils.toDate(incident.created_at) >= startDate) {
+          const eventResponse = await this.restClient.get<
+            PaginateResponse<IncidentEvent>
+          >(`incidents/${incident.id}/events`);
+          const incidentItem = incident;
+          if (eventResponse.status === 200)
+            incidentItem.events = eventResponse.data.data;
+          incidentPaginate.data.push(incidentItem);
+        }
       }
       return this.getPaginateResponse<Incident>(incidentPaginate);
     };
