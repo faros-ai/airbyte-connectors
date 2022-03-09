@@ -26,12 +26,12 @@ export class FirehydrantIncidents extends FirehydrantConverter {
     'compute_Application',
     'ims_Incident',
     'ims_IncidentApplicationImpact',
-    'ims_IncidentEvent',
     'ims_IncidentAssignment',
-    'ims_IncidentTasks',
-    'tms_Task',
+    'ims_IncidentEvent',
     'ims_IncidentTag',
+    'ims_IncidentTasks',
     'ims_Label',
+    'tms_Task',
   ];
 
   private seenTags = new Set<string>();
