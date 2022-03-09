@@ -78,7 +78,12 @@ describe('index', () => {
     FireHydrant.instance = jest.fn().mockImplementation(() => {
       return new FireHydrant({
         get: fnIncidentsList.mockResolvedValue({
-          data: readTestResourceFile('incidents_input.json'),
+          data: {
+            data: readTestResourceFile('incidents.json'),
+            pagination: {
+              next: null,
+            },
+          },
         }),
       } as any);
     });
@@ -100,7 +105,12 @@ describe('index', () => {
     FireHydrant.instance = jest.fn().mockImplementation(() => {
       return new FireHydrant({
         get: fnTeamsList.mockResolvedValue({
-          data: readTestResourceFile('teams_input.json'),
+          data: {
+            data: readTestResourceFile('teams.json'),
+            pagination: {
+              next: null,
+            },
+          },
         }),
       } as any);
     });
@@ -122,7 +132,12 @@ describe('index', () => {
     FireHydrant.instance = jest.fn().mockImplementation(() => {
       return new FireHydrant({
         get: fnUsersList.mockResolvedValue({
-          data: readTestResourceFile('users_input.json'),
+          data: {
+            data: readTestResourceFile('users.json'),
+            pagination: {
+              next: null,
+            },
+          },
         }),
       } as any);
     });
