@@ -6,14 +6,15 @@
     "type": "object",
     "required": [
       "workspace",
-      "repository",
+      "repositories",
       "pipeline"
     ],
     "additionalProperties": false,
     "properties": {
       "serverUrl": {
         "type": "string",
-        "description": "Bitbucket server URL",
+        "title": "API URL",
+        "description": "The API URL for fetching data from Bitbucket",
         "examples": [
           "https://api.bitbucket.org/2.0"
         ],
@@ -30,35 +31,50 @@
       },
       "token": {
         "type": "string",
-        "description": "Bitbucket token",
+        "title": "Access Token",
+        "description": "Personal Access Token for Bitbucket API authentication. See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html for information on how to generate this token.",
         "airbyte_secret": true
       },
       "workspace": {
         "type": "string",
-        "title": "Bitbucket Workspace"
+        "title": "Workspace",
+        "description": "Name of your Bitbucket workspace",
+        "examples": [
+          "blaze-lib"
+        ]
       },
-      "repository": {
+      "repositories": {
         "type": "array",
-        "title": "Bitbucket Workspace's Repository",
-        "description": "List of Bitbucket repositories",
         "items": {
           "type": "string"
-        }
+        },
+        "title": "Repositories",
+        "description": "List of repositories in your Bitbucket workspace",
+        "examples": [
+          "blaze"
+        ]
       },
       "pipeline": {
         "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Bitbucket Workspace Repository's Pipeline",
         "description": "List of Bitbucket pipelines"
       },
       "pull_request_id": {
         "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Bitbucket Workspace Repository's Pull Request ID",
         "description": "List of Bitbucket Pull Request's IDs. ID is using to pull PullRequest's Activities",
         "default": []
       },
       "pagelen": {
         "type": "integer",
-        "description": "Bitbucket Page Length",
+        "title": "Page Size",
+        "description": "Page size to use when requesting records from Bitbucket API",
         "default": 100
       }
     }

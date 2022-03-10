@@ -108,7 +108,7 @@ export class Bitbucket {
     if (!config.workspace) {
       return [false, 'No workspace provided'];
     }
-    if (!config.repository) {
+    if (!config.repositories) {
       return [false, 'No repository provided'];
     }
     if (!config.pipeline) {
