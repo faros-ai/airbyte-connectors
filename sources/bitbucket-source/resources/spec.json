@@ -6,8 +6,7 @@
     "type": "object",
     "required": [
       "workspace",
-      "repositories",
-      "pipeline"
+      "repositories"
     ],
     "additionalProperties": false,
     "properties": {
@@ -53,14 +52,6 @@
         "examples": [
           "blaze"
         ]
-      },
-      "pipeline": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Bitbucket Workspace Repository's Pipeline",
-        "description": "List of Bitbucket pipelines"
       },
       "pull_request_id": {
         "type": "array",

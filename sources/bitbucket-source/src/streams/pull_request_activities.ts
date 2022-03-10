@@ -8,6 +8,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, PRActivity} from '../bitbucket/types';
+import {PullRequests} from './pull_requests';
 
 type StreamSlice = {repository?: string; pullRequestId?: string} | undefined;
 
@@ -16,6 +17,7 @@ export class PullRequestActivities extends AirbyteStreamBase {
     readonly config: BitbucketConfig,
     readonly repositories: string[],
     readonly pullRequestIds: string[],
+    readonly pullRequests: PullRequests,
     readonly logger: AirbyteLogger
   ) {
     super(logger);

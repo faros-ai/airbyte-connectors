@@ -55,7 +55,6 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         workspace: 'workspace',
-        repositories: ['repository'],
         pipeline: ['pipeline'],
         pull_request_id: ['1'],
       })

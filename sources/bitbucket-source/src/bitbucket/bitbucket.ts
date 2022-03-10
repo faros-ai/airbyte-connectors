@@ -5,6 +5,7 @@ import Bottleneck from 'bottleneck';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils, wrapApiError} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
 
 import {
@@ -110,9 +111,6 @@ export class Bitbucket {
     }
     if (!config.repositories) {
       return [false, 'No repository provided'];
-    }
-    if (!config.pipeline) {
-      return [false, 'No pipeline provided'];
     }
 
     try {
@@ -270,7 +268,9 @@ export class Bitbucket {
     }
   }
 
-  async *getPipelines(repoSlug: string): AsyncGenerator<Pipeline> {
+  @Memoize((repoSlug: string): string => repoSlug)
+  async getPipelines(repoSlug: string): Promise<Pipeline[]> {
+    const results: Pipeline[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Pipeline>> =>
         this.limiter.schedule(() =>
@@ -282,7 +282,13 @@ export class Bitbucket {
           })
         ) as any;
 
-      yield* this.paginate<Pipeline>(func, (data) => this.buildPipeline(data));
+      const pipelines = this.paginate<Pipeline>(func, (data) =>
+        this.buildPipeline(data)
+      );
+      for await (const pipeline of pipelines) {
+        results.push(pipeline);
+      }
+      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),

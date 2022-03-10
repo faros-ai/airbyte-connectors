@@ -46,6 +46,8 @@ export class Pipelines extends AirbyteStreamBase {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     const repoSlug = streamSlice.repository;
-    yield* bitbucket.getPipelines(repoSlug);
+    for (const pipeline of await bitbucket.getPipelines(repoSlug)) {
+      yield pipeline;
+    }
   }
 }
