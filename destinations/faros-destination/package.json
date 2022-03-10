@@ -1,7 +1,6 @@
 {
   "name": "faros-destination",
-  "version": "0.1.31",
-  "private": true,
+  "version": "0.1.50",
   "description": "Faros Destination for Airbyte",
   "keywords": [
     "airbyte",
@@ -13,7 +12,8 @@
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
   "files": [
-    "lib/"
+    "lib/",
+    "resources/"
   ],
   "engines": {
     "node": ">=14.5"
@@ -30,17 +30,21 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.25.0",
+    "analytics-node": "^6.0.0",
+    "axios": "^0.26.0",
     "date-format": "^4.0.3",
-    "faros-airbyte-cdk": "^0.1.31",
+    "faros-airbyte-cdk": "^0.1.50",
     "faros-feeds-sdk": "^0.9.7",
     "fs-extra": "^10.0.0",
     "git-url-parse": "^11.6.0",
     "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
+    "toposort": "^2.0.2",
+    "traverse": "^0.6.6",
     "turndown": "^7.1.1",
-    "verror": "^1.10.0"
+    "uuid": "^8.3.2",
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -60,9 +64,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "devDependencies": {
-    "@types/fs-extra": "^9.0.13",
-    "@types/turndown": "^5.0.1"
   }
 }

@@ -88,6 +88,7 @@ describe('asana', () => {
     expect(stdout).toMatch('Processed 11 records');
     expect(stdout).toMatch('Wrote 14 records');
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
     expect(entriesSize).toBeGreaterThan(0);
@@ -111,6 +112,7 @@ describe('asana', () => {
     expect(stdout).toMatch('Processed 11 records');
     expect(stdout).toMatch('Would write 14 records');
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
@@ -131,11 +133,12 @@ describe('asana', () => {
     expect(stdout).toMatch('Processed 11 records');
     expect(stdout).toMatch('Would write 14 records');
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
 
-  test('skip to process bad records when strategy is skip', async () => {
+  test('skip to process bad records when strategy is SKIP', async () => {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -162,11 +165,12 @@ describe('asana', () => {
     expect(stdout).toMatch('Processed 1 records');
     expect(stdout).toMatch('Would write 1 records');
     expect(stdout).toMatch('Errored 1 records');
+    expect(stdout).toMatch('Skipped 1 records');
     expect(await read(cli.stderr)).toMatch('');
     expect(await cli.wait()).toBe(0);
   });
 
-  test('fail to process bad records when strategy is fail', async () => {
+  test('fail to process bad records when strategy is FAIL', async () => {
     fs.unlinkSync(configPath);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
     const cli = await CLI.runWith([
@@ -188,6 +192,7 @@ describe('asana', () => {
     expect(stdout).toMatch('Processed 0 records');
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch('Errored 1 records');
+    expect(stdout).toMatch('Skipped 0 records');
     const stderr = await read(cli.stderr);
     expect(stderr).toMatch('Undefined stream mytestsource__asana__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
@@ -234,6 +239,7 @@ describe('asana', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(

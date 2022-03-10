@@ -6,7 +6,6 @@ import {
   isPlainObject,
   isString,
   keyBy,
-  last,
   mapValues,
   pick,
   toLower,
@@ -38,6 +37,11 @@ const statusCategories: ReadonlyMap<string, string> = new Map(
 const typeCategories: ReadonlyMap<string, string> = new Map(
   ['Bug', 'Story', 'Task'].map((t) => [JiraCommon.normalize(t), t])
 );
+
+interface StatusChange {
+  readonly status: Status;
+  readonly changedAt: Date;
+}
 
 export class JiraIssues extends JiraConverter {
   private logger = new AirbyteLogger();
@@ -197,12 +201,12 @@ export class JiraIssues extends JiraConverter {
     changelog: ReadonlyArray<any>,
     currentStatus: string,
     created: Date
-  ): ReadonlyArray<[Status, Date]> {
-    const statusChangelog: Array<[Status, Date]> = [];
+  ): ReadonlyArray<StatusChange> {
+    const statusChangelog: Array<StatusChange> = [];
 
-    const pushStatusChange = (statusName: string, date: Date) => {
+    const pushStatusChange = (statusName: string, date: Date): void => {
       const status = this.statusByName[statusName];
-      if (status) statusChangelog.push([status, date]);
+      if (status) statusChangelog.push({status, changedAt: date});
     };
 
     const statusChanges = JiraIssues.fieldChangelog(changelog, 'status');
@@ -532,7 +536,7 @@ export class JiraIssues extends JiraConverter {
           model: 'tms_TaskReleaseRelationship__Upsert',
           record: {
             at: change.changed.getTime(),
-            where: {
+            data: {
               task: {uid: issue.key, source},
               release: {uid: change.value, source},
             },
@@ -545,7 +549,7 @@ export class JiraIssues extends JiraConverter {
         model: 'tms_TaskReleaseRelationship__Upsert',
         record: {
           at: record.record.emitted_at,
-          where: {
+          data: {
             task: {uid: issue.key, source},
             release: {uid: fixVersion.id, source},
           },
@@ -561,7 +565,7 @@ export class JiraIssues extends JiraConverter {
     // Timestamp of most recent status change
     let statusChanged: Date | undefined;
     if (statusChangelog.length) {
-      statusChanged = statusChangelog[statusChangelog.length - 1][1];
+      statusChanged = statusChangelog[statusChangelog.length - 1].changedAt;
     }
 
     for (const link of issue.fields.issuelinks ?? []) {
