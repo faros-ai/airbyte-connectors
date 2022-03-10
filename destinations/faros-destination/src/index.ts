@@ -25,6 +25,8 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import util from 'util';
+import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
 import {WriteStats} from './common/write-stats';
@@ -35,6 +37,7 @@ import {
   parseObjectConfig,
   StreamContext,
   StreamName,
+  StreamNameSeparator,
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
@@ -139,9 +142,19 @@ class FarosDestination extends AirbyteDestination {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
 
-    if (config.edition_configs.segment_user_id) {
+    const segmentUserId = config.edition_configs.segment_user_id;
+    if (segmentUserId) {
+      if (!validate(segmentUserId)) {
+        throw new VError(
+          `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
+        );
+      }
+      // Segment host is used for testing purposes only
+      const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
-      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn');
+      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+        host,
+      });
     }
   }
 
@@ -258,9 +271,6 @@ class FarosDestination extends AirbyteDestination {
   }
 
   private async init(config: AirbyteConfig): Promise<void> {
-    if (!config.origin) {
-      throw new VError('Faros origin is not set');
-    }
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -279,6 +289,30 @@ class FarosDestination extends AirbyteDestination {
     this.initGlobal(config);
   }
 
+  private getOrigin(
+    config: AirbyteConfig,
+    catalog: AirbyteConfiguredCatalog
+  ): string {
+    if (config.origin) {
+      this.logger.info(`Using origin ${config.origin} found in config`);
+      return config.origin;
+    }
+
+    // Determine origin from stream prefixes
+    const origins = uniq(
+      catalog.streams.map((s) => s.stream.name.split(StreamNameSeparator, 1)[0])
+    );
+    if (origins.length === 0) {
+      throw new VError('Could not determine origin from catalog');
+    } else if (origins.length > 1) {
+      throw new VError(
+        `Found multiple possible origins from catalog: ${origins.join(',')}`
+      );
+    }
+    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
+    return origins[0];
+  }
+
   async *write(
     config: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
@@ -287,6 +321,7 @@ class FarosDestination extends AirbyteDestination {
   ): AsyncGenerator<AirbyteStateMessage> {
     await this.init(config);
 
+    const origin = this.getOrigin(config, catalog);
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
@@ -309,10 +344,13 @@ class FarosDestination extends AirbyteDestination {
           stats
         );
       } else if (this.edition === Edition.COMMUNITY) {
-        await this.getHasuraClient().loadSchema();
+        const hasura = this.getHasuraClient();
+        await hasura.loadSchema();
+        await hasura.resetData(origin, deleteModelEntries);
 
         const writer = new HasuraWriter(
-          this.getHasuraClient(),
+          hasura,
+          origin,
           stats,
           this.handleRecordProcessingError
         );
@@ -341,7 +379,7 @@ class FarosDestination extends AirbyteDestination {
         }
         // Create an entry uploader for the destination graph
         const entryUploaderConfig: EntryUploaderConfig = {
-          name: config.origin,
+          name: origin,
           url: config.edition_configs.api_url,
           authHeader: config.edition_configs.api_key,
           expiration: config.edition_configs.expiration,
@@ -382,11 +420,25 @@ class FarosDestination extends AirbyteDestination {
 
       if (this.analytics) {
         this.logger.info('Sending write stats to Segment.');
-        this.analytics.track({
-          event: 'Write Stats',
-          userId: config.edition_configs.segment_user_id,
-          stats,
-        });
+        const fn = (callback: ((err: Error) => void) | undefined): void => {
+          this.analytics
+            .track(
+              {
+                event: 'Write Stats',
+                userId: config.edition_configs.segment_user_id,
+                properties: stats,
+              },
+              callback
+            )
+            .flush(callback);
+        };
+        await util
+          .promisify(fn)()
+          .catch((err) =>
+            this.logger.error(
+              `Failed to send write stats to Segment: ${err.message}`
+            )
+          );
       }
 
       // Since we are writing all records in a single revision,
@@ -450,6 +502,12 @@ class FarosDestination extends AirbyteDestination {
             stats.incrementProcessedByStream(stream);
 
             const converter = this.getConverter(stream);
+            // No need to fail on records we don't have a converter yet
+            if (!converter) {
+              stats.recordsSkipped++;
+              return;
+            }
+
             const writeRecord = async (
               context: StreamContext
             ): Promise<void> => {
@@ -512,8 +570,12 @@ class FarosDestination extends AirbyteDestination {
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`
       );
-      if (this.invalidRecordStrategy === InvalidRecordStrategy.FAIL) {
-        throw e;
+      switch (this.invalidRecordStrategy) {
+        case InvalidRecordStrategy.SKIP:
+          stats.recordsSkipped++;
+          break;
+        case InvalidRecordStrategy.FAIL:
+          throw e;
       }
     }
   }
@@ -543,23 +605,25 @@ class FarosDestination extends AirbyteDestination {
           this.logger.error(err.message);
         }
       });
-      this.logger.info(
-        `Using ${converter.constructor.name} converter to convert ${stream} stream records`
-      );
+      if (converter) {
+        this.logger.info(
+          `Using ${converter.constructor.name} converter to convert ${stream} stream records`
+        );
 
-      // Collect all converter dependencies
-      if (converter.dependencies.length > 0) {
-        const streamName = converter.streamName.asString;
-        if (!dependenciesByStream[streamName]) {
-          dependenciesByStream[streamName] = new Set<string>();
+        // Collect all converter dependencies
+        if (converter.dependencies.length > 0) {
+          const streamName = converter.streamName.asString;
+          if (!dependenciesByStream[streamName]) {
+            dependenciesByStream[streamName] = new Set<string>();
+          }
+          const deps = dependenciesByStream[streamName];
+          converter.dependencies.forEach((d) => deps.add(d.asString));
         }
-        const deps = dependenciesByStream[streamName];
-        converter.dependencies.forEach((d) => deps.add(d.asString));
-      }
 
-      // Prepare destination models to delete if any
-      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(...converter.destinationModels);
+        // Prepare destination models to delete if any
+        if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
+          deleteModelEntries.push(...converter.destinationModels);
+        }
       }
     }
     // Check for circular dependencies and error early if any
@@ -593,14 +657,11 @@ class FarosDestination extends AirbyteDestination {
   private getConverter(
     stream: string,
     onLoadError?: (err: Error) => void
-  ): Converter {
+  ): Converter | undefined {
     const converter = ConverterRegistry.getConverter(
       StreamName.fromString(stream),
       onLoadError
     );
-    if (!converter && !this.jsonataConverter) {
-      throw new VError(`Undefined converter for stream ${stream}`);
-    }
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
       ? this.jsonataConverter ?? converter
       : converter ?? this.jsonataConverter;
@@ -616,8 +677,9 @@ class FarosDestination extends AirbyteDestination {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
 
-    if (!Array.isArray(results))
+    if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
+    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream

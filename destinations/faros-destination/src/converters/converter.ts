@@ -7,7 +7,7 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
-  private stream: StreamName;
+  protected stream: StreamName;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {
@@ -101,7 +101,7 @@ export class StreamContext {
   }
 }
 
-const StreamNameSeparator = '__';
+export const StreamNameSeparator = '__';
 
 /**
  * Stream name with source prefix, e.g
