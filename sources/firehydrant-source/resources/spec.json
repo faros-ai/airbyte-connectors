@@ -16,12 +16,9 @@
         "airbyte_secret": true
       },
       "page_size": {
-        "type": [
-          "integer",
-          "null"
-        ],
-        "title": "Page Size",
-        "description": "Number of data to fetch per call"
+        "type": "number",
+        "title": "Page size",
+        "default": 10
       },
       "version": {
         "type": "string",
