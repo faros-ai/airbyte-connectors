@@ -82,6 +82,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Publish connector images
+        env:
+          DOCKER_BUILDKIT: 1
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
           do
