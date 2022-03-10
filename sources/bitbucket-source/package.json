@@ -1,6 +1,6 @@
 {
   "name": "bitbucket-source",
-  "version": "0.1.34",
+  "version": "0.1.50",
   "description": "Bitbucket Airbyte source",
   "keywords": [
     "airbyte",
@@ -29,10 +29,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "bitbucket": "^2.7.0",
     "bottleneck": "^2.19.5",
-    "faros-airbyte-cdk": "^0.1.34",
+    "faros-airbyte-cdk": "^0.1.50",
     "faros-feeds-sdk": "^0.9.7",
     "verror": "^1.10.1"
   },

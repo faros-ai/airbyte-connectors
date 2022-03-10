@@ -25,6 +25,7 @@ import {intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
@@ -419,13 +420,25 @@ class FarosDestination extends AirbyteDestination {
 
       if (this.analytics) {
         this.logger.info('Sending write stats to Segment.');
-        this.analytics
-          .track({
-            event: 'Write Stats',
-            userId: config.edition_configs.segment_user_id,
-            properties: stats,
-          })
-          .flush();
+        const fn = (callback: ((err: Error) => void) | undefined): void => {
+          this.analytics
+            .track(
+              {
+                event: 'Write Stats',
+                userId: config.edition_configs.segment_user_id,
+                properties: stats,
+              },
+              callback
+            )
+            .flush(callback);
+        };
+        await util
+          .promisify(fn)()
+          .catch((err) =>
+            this.logger.error(
+              `Failed to send write stats to Segment: ${err.message}`
+            )
+          );
       }
 
       // Since we are writing all records in a single revision,
@@ -592,23 +605,25 @@ class FarosDestination extends AirbyteDestination {
           this.logger.error(err.message);
         }
       });
-      this.logger.info(
-        `Using ${converter.constructor.name} converter to convert ${stream} stream records`
-      );
+      if (converter) {
+        this.logger.info(
+          `Using ${converter.constructor.name} converter to convert ${stream} stream records`
+        );
 
-      // Collect all converter dependencies
-      if (converter.dependencies.length > 0) {
-        const streamName = converter.streamName.asString;
-        if (!dependenciesByStream[streamName]) {
-          dependenciesByStream[streamName] = new Set<string>();
+        // Collect all converter dependencies
+        if (converter.dependencies.length > 0) {
+          const streamName = converter.streamName.asString;
+          if (!dependenciesByStream[streamName]) {
+            dependenciesByStream[streamName] = new Set<string>();
+          }
+          const deps = dependenciesByStream[streamName];
+          converter.dependencies.forEach((d) => deps.add(d.asString));
         }
-        const deps = dependenciesByStream[streamName];
-        converter.dependencies.forEach((d) => deps.add(d.asString));
-      }
 
-      // Prepare destination models to delete if any
-      if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
-        deleteModelEntries.push(...converter.destinationModels);
+        // Prepare destination models to delete if any
+        if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
+          deleteModelEntries.push(...converter.destinationModels);
+        }
       }
     }
     // Check for circular dependencies and error early if any
