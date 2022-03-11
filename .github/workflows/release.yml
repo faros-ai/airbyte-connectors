@@ -87,3 +87,66 @@ jobs:
           do
             ./scripts/publish-connector.sh $connector_path
           done
+
+
+  publish-destination:
+    # Can probably combine with publish CDK after testing internal package
+    name: Publish Destination
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FORCE_COLOR: true
+      HUSKY_SKIP_INSTALL: 1
+      HUSKY_SKIP_HOOKS: 1
+      HUSKY: 0
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2.4.0
+        with:
+          fetch-depth: 0 # Fetch tags for check below.
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com
+          scope: '@faros-ai'
+
+      - name: Extract version
+        id: extract-version
+        run: |
+          DESTINATION_VERSION="$(jq -r '.version' < lerna.json)"
+          echo "DESTINATION_VERSION=$DESTINATION_VERSION" >> $GITHUB_ENV
+
+      - name: Check tag exists
+        uses: mukunku/tag-exists-action@v1.0.0
+        id: check-tag
+        with:
+          tag: v${{ env.DESTINATION_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        if: steps.check-tag.outputs.exists == 'false'
+        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+
+      - name: Publish package
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          echo "Publishing package"
+          cd destinations/faros-destination && \
+          npm i && \
+          Publishing restricted for testing
+          npm publish --access restricted --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create tag
+        if: steps.check-tag.outputs.exists == 'false'
+        uses: pkgdeps/git-tag-action@v2.0.1
+        with:
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: v
+          github_repo: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.DESTINATION_VERSION }}

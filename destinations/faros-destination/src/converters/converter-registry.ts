@@ -57,4 +57,12 @@ export class ConverterRegistry {
       return undefined;
     }
   }
+
+  /**
+   * Add a convertor to the registory.
+   */
+  static addConverter(source: string, converter: Converter): void {
+    const name = converter.streamName.asString;
+    ConverterRegistry.convertersByStream[name] = converter;
+  }
 }
