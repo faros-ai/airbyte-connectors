@@ -96,6 +96,8 @@ export interface IncidentSeverity {
 
 /** StatusPage converter base */
 export abstract class StatuspageConverter extends Converter {
+  source = 'StatusPage';
+
   /** Every StatusPage record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

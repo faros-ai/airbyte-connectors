@@ -12,7 +12,7 @@ import {
   Tag,
 } from './common';
 
-export class DockerTags extends DockerConverter {
+export class Tags extends DockerConverter {
   readonly logger = new AirbyteLogger();
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Artifact',

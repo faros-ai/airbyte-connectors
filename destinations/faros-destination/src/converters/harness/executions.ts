@@ -20,7 +20,7 @@ const DEFAULT_EXECUTION_TAG_ARTIFACT_ORG = 'faros_artifact_org';
 const DEFAULT_EXECUTION_TAG_ARTIFACT_SOURCE = 'faros_artifact_source';
 const DEFAULT_EXECUTION_TAG_ARTIFACT_REPO = 'faros_artifact_repo';
 
-export class HarnessExecutions extends HarnessConverter {
+export class Executions extends HarnessConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

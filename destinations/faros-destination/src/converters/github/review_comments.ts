@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubReviewComments extends GithubConverter {
+export class ReviewComments extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestComment',
   ];

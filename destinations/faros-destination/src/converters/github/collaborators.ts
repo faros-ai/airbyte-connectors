@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubCollaborators extends GithubConverter {
+export class Collaborators extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',

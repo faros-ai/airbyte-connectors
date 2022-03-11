@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubPullRequestStats extends GithubConverter {
+export class PullRequestStats extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
   ];

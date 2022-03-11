@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
 
-export class GitlabProjectLabels extends GitlabConverter {
+export class ProjectLabels extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
   async convert(

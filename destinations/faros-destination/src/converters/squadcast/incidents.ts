@@ -13,7 +13,7 @@ import {
   SquadcastConverter,
 } from './common';
 
-export class SquadcastIncidents extends SquadcastConverter {
+export class Incidents extends SquadcastConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',

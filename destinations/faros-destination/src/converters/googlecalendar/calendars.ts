@@ -7,7 +7,7 @@ import {
   GooglecalendarConverter,
 } from './common';
 
-export class GooglecalendarCalendars extends GooglecalendarConverter {
+export class Calendars extends GooglecalendarConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cal_Calendar',
   ];

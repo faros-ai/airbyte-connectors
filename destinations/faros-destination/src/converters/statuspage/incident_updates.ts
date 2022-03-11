@@ -9,7 +9,7 @@ import {
   StatuspageIncidentStatus,
 } from './common';
 
-export class StatuspageIncidentUpdates extends StatuspageConverter {
+export class IncidentUpdates extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_IncidentEvent',
   ];

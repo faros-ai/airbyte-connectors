@@ -9,7 +9,7 @@ import {GithubConverter} from './common';
 // Github PR states
 const prStates = ['closed', 'merged', 'open'];
 
-export class GithubPullRequests extends GithubConverter {
+export class PullRequests extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_User',

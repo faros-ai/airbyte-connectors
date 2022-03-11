@@ -25,7 +25,7 @@ interface Priority extends PagerdutyObject {
   readonly updated_at: string; // date-time
 }
 
-export class PagerdutyPrioritiesResource extends PagerdutyConverter {
+export class PrioritiesResource extends PagerdutyConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

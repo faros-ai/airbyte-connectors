@@ -8,7 +8,7 @@ import {GithubConverter} from './common';
 // Github org types
 const orgTypes = ['organization', 'workspace', 'group'];
 
-export class GithubOrganizations extends GithubConverter {
+export class Organizations extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
   ];

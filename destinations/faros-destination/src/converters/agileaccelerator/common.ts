@@ -179,6 +179,8 @@ export class AgileAcceleratorCommon {
 
 /** AgileAccelerator converter base */
 export abstract class AgileacceleratorConverter extends Converter {
+  source = 'AgileAccelerator';
+
   /** Almost every AgileAccelerator record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.Id;

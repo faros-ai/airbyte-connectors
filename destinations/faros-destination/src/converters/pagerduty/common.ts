@@ -28,6 +28,8 @@ interface PagerdutyConfig {
 
 /** PagerDuty converter base */
 export abstract class PagerdutyConverter extends Converter {
+  source = 'PagerDuty';
+
   /** Almost every Pagerduty record have id property. Function will be
    * override if record doesn't have id property.
    */

@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubCommits extends GithubConverter {
+export class Commits extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_BranchCommitAssociation',
     'vcs_Commit',

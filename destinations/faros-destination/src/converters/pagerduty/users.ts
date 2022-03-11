@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PagerdutyConverter} from './common';
 
-export class PagerdutyUsers extends PagerdutyConverter {
+export class Users extends PagerdutyConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   async convert(

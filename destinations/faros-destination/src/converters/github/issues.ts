@@ -9,7 +9,7 @@ import {
 } from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubIssues extends GithubConverter {
+export class Issues extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
     'tms_Task',

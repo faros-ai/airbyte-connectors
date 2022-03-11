@@ -14,7 +14,7 @@ import {
   StatuspageIncidentStatus,
 } from './common';
 
-export class StatuspageIncidents extends StatuspageConverter {
+export class Incidents extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',

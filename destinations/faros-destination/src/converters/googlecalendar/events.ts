@@ -4,7 +4,7 @@ import {Location, Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Event, GooglecalendarCommon, GooglecalendarConverter} from './common';
 
-export class GooglecalendarEvents extends GooglecalendarConverter {
+export class Events extends GooglecalendarConverter {
   // Locations cache to avoid querying the API for the same location
   private locationsCache = new Map<string, Location>();
 

@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {StatuspageConverter} from './common';
 
-export class StatuspageUsers extends StatuspageConverter {
+export class Users extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   async convert(

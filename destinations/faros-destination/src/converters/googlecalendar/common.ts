@@ -131,6 +131,8 @@ export class GooglecalendarCommon {
 
 /** GoogleCalendar converter base */
 export abstract class GooglecalendarConverter extends Converter {
+  source = 'GoogleCalendar';
+
   /** Every GoogleCalendar record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

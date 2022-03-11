@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {WorkspaceUser} from './types';
 
-export class BitbucketWorkspaceUsers extends BitbucketConverter {
+export class WorkspaceUsers extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_User',
     'vcs_Membership',

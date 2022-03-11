@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ShortcutCommon, ShortcutConverter} from './common';
 import {Story} from './models';
 
-export class ShortcutStories extends ShortcutConverter {
+export class Stories extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskTag',
     'tms_Label',

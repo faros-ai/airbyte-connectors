@@ -13,7 +13,7 @@ enum PullRequestReviewStateCategory {
   CUSTOM = 'Custom',
 }
 
-export class BitbucketPullRequestActivities extends BitbucketConverter {
+export class PullRequestActivities extends BitbucketConverter {
   readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

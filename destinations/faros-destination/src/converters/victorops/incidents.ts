@@ -41,7 +41,7 @@ type IncidentPhase =
   | 'acknowledged'
   | 'resolved';
 
-export class VictoropsIncidents extends VictoropsConverter {
+export class Incidents extends VictoropsConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

@@ -1,6 +1,6 @@
 import {URL} from 'url';
 
-import {DestinationRecord} from '../converter';
+import {Converter, DestinationRecord} from '../converter';
 
 interface JenkinsUrl {
   hostname: string;
@@ -65,4 +65,8 @@ export class JenkinsCommon {
       return undefined;
     }
   }
+}
+
+export abstract class JenkinsConverter extends Converter {
+  source = 'Jenkins';
 }

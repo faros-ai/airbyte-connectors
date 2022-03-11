@@ -20,6 +20,8 @@ type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 /** Datadog converter base */
 export abstract class DatadogConverter extends Converter {
+  source = 'Datadog';
+
   /** Almost every Datadog record has an id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

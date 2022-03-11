@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubRepositories extends GithubConverter {
+export class Repositories extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',
     'tms_TaskBoard',

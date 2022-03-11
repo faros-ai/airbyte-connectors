@@ -16,7 +16,7 @@ enum IncidentEventTypeCategory {
   Custom = 'Custom',
 }
 
-export class PagerdutyIncidentLogEntries extends PagerdutyConverter {
+export class IncidentLogEntries extends PagerdutyConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_IncidentEvent',
   ];

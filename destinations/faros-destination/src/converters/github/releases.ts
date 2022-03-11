@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GithubCommon, GithubConverter} from './common';
 
-export class GithubReleases extends GithubConverter {
+export class Releases extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
     'cicd_ReleaseTagAssociation',

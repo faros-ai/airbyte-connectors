@@ -13,7 +13,7 @@ const ReviewStates = [
   'dismissed',
 ];
 
-export class GithubReviews extends GithubConverter {
+export class Reviews extends GithubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestReview',
     'vcs_User',

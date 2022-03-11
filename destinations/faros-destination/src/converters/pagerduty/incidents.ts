@@ -20,7 +20,7 @@ interface Acknowledgement {
   acknowledger: PagerdutyObject;
 }
 
-export class PagerdutyIncidents extends PagerdutyConverter {
+export class Incidents extends PagerdutyConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

@@ -8,7 +8,7 @@ import {
   TaskField,
 } from './common';
 
-export class AgileacceleratorWorks extends AgileacceleratorConverter {
+export class Works extends AgileacceleratorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Epic',
     'tms_Project',

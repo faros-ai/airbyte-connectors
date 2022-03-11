@@ -9,7 +9,7 @@ import {
 } from '../converter';
 import {JiraConverter} from './common';
 
-export class JiraProjectVersions extends JiraConverter {
+export class ProjectVersions extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Release',
     'tms_ProjectReleaseRelationship',
@@ -18,7 +18,7 @@ export class JiraProjectVersions extends JiraConverter {
   private static readonly projectsStream = new StreamName('jira', 'projects');
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [JiraProjectVersions.projectsStream];
+    return [ProjectVersions.projectsStream];
   }
 
   async convert(
@@ -41,7 +41,7 @@ export class JiraProjectVersions extends JiraConverter {
       },
     ];
     const project = ctx.get(
-      JiraProjectVersions.projectsStream.asString,
+      ProjectVersions.projectsStream.asString,
       String(projectVersion.projectId)
     );
     if (project) {

@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaConverter} from './common';
 
-export class AsanaTags extends AsanaConverter {
+export class Tags extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
   async convert(

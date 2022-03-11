@@ -4,7 +4,7 @@ import TurndownService from 'turndown';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
-export class JiraEpics extends JiraConverter {
+export class Epics extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   private turndown = new TurndownService();

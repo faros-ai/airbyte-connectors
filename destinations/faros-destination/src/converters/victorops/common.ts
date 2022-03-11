@@ -10,6 +10,8 @@ interface VictoropsConfig {
 }
 
 export abstract class VictoropsConverter extends Converter {
+  source = 'VictorOps';
+
   protected victoropsConfig(ctx: StreamContext): VictoropsConfig {
     return ctx.config.source_specific_configs?.victorops ?? {};
   }
