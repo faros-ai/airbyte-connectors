@@ -3,7 +3,7 @@ import {Mockttp} from 'mockttp';
 import {AffixOptions, open, track} from 'temp';
 import {Dictionary} from 'ts-essentials';
 
-import {Edition, InvalidRecordStrategy} from '../src';
+import {Edition, InvalidRecordStrategy} from '../src/destination';
 
 // Automatically track and cleanup temp files at exit
 // TODO: this does not seem to work - figure out what's wrong

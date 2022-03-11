@@ -18,7 +18,7 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner {
 
   registerConverters(
     source: string,
-    converters: ReadonlyArray<Converter>
+    ...converters: ReadonlyArray<Converter>
   ): void {
     converters.forEach((c) => ConverterRegistry.addConverter(source, c));
   }

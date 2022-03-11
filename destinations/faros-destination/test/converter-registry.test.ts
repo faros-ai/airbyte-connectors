@@ -1,7 +1,14 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk/lib';
 import fs from 'fs';
 import path from 'path';
 
-import {StreamName} from '../src/converters/converter';
+import {
+  Converter,
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../src/converters/converter';
 import {ConverterRegistry as sut} from '../src/converters/converter-registry';
 
 describe('converter registry', () => {
@@ -61,5 +68,38 @@ describe('converter registry', () => {
     expect(error.message).toBe(
       `Failed loading converter for stream foo__bar: Cannot find module './foo/bar' from 'src/converters/converter-registry.ts'`
     );
+  });
+
+  test('add a custom converter class and load it', () => {
+    class CustomConverter extends Converter {
+      readonly destinationModels: ReadonlyArray<DestinationModel> = [
+        'test_Model',
+      ];
+
+      id(record: AirbyteRecord): string {
+        return record.record.data.id;
+      }
+      async convert(
+        record: AirbyteRecord,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        ctx: StreamContext
+      ): Promise<ReadonlyArray<DestinationRecord>> {
+        const data = record.record.data;
+        return [
+          {
+            model: 'test_Model',
+            record: {
+              uid: String(data.id),
+              source: this.stream.source,
+            },
+          },
+        ];
+      }
+    }
+    const converter = new CustomConverter();
+    sut.addConverter('CustomSource', new CustomConverter());
+    const res = sut.getConverter(converter.streamName);
+    expect(res).toBeDefined();
+    expect(res.destinationModels).toStrictEqual(['test_Model']);
   });
 });
