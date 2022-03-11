@@ -5,7 +5,8 @@
     "title": "Bamboo Spec",
     "type": "object",
     "required": [
-      "token"
+      "token",
+      "baseUrl"
     ],
     "additionalProperties": false,
     "properties": {
@@ -24,15 +25,14 @@
       },
       "cutoffDays": {
         "type": "number",
-        "title": "pageSize"
+        "title": "cutoffDays"
       },
-      "buildTimeout": {
-        "type": "number",
-        "title": "pageSize"
-      },
-      "deploymentTimeout": {
-        "type": "number",
-        "title": "pageSize"
+      "projectNames": {
+        "type": "array",
+        "item": {
+          "type": "string"
+        },
+        "title": "projectNames"
       }
     }
   }

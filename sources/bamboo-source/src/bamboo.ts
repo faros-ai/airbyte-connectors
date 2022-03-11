@@ -17,13 +17,15 @@ import {
   SearchResult,
 } from './models';
 
+const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_CUTOFF_DAYS = 90;
+
 export interface BambooConfig {
   readonly token: string;
   readonly baseUrl: string;
-  readonly pageSize: number;
-  readonly cutoffDays: number;
-  readonly buildTimeout: number;
-  readonly deploymentTimeout: number;
+  readonly pageSize?: number;
+  readonly cutoffDays?: number;
+  readonly projectNames?: [string];
 }
 
 export class Bamboo {
@@ -75,10 +77,30 @@ export class Bamboo {
     }
   }
 
-  async *getPlans(projectNames: ReadonlyArray<string>): AsyncGenerator<Plan> {
+  async *getPlans(projectNames?: [string]): AsyncGenerator<Plan> {
     const res = await this.httpClient.get<SearchResult<Plan>>('search/plans');
     for (const item of res.data.searchResults) {
-      if (projectNames.includes(item.searchEntity.projectName)) yield item;
+      if (!projectNames || projectNames.includes(item.searchEntity.projectName))
+        yield item;
+    }
+  }
+
+  // eslint-disable-next-line require-yield
+  async *getBuilds(
+    projectNames?: [string],
+    lastBuildStartedTime?: Date
+  ): AsyncGenerator<Build> {
+    const res = await this.httpClient.get<SearchResult<Plan>>('search/plans');
+    for (const item of res.data.searchResults) {
+      if (
+        !projectNames ||
+        projectNames.includes(item.searchEntity.projectName)
+      ) {
+        return this.getBuildsByPlanKey(
+          item.searchEntity.key,
+          lastBuildStartedTime
+        );
+      }
     }
   }
 
@@ -93,14 +115,16 @@ export class Bamboo {
     we assume that 25 records (max) have been added and start iterating, checking on every step that
     the build number is more than 15 (we don't need those records with the build number 15 and less, they are already synced)*/
   // eslint-disable-next-line require-yield
-  async *getBuilds(
+  async *getBuildsByPlanKey(
     planKey: string,
     lastBuildStartedTime?: Date
   ): AsyncGenerator<Build> {
     return iterate(
       (startIndex) =>
         this.httpClient.get(
-          `result/${planKey}?max-results=${this.cfg.pageSize}&start-index=${startIndex}&expand=results.result.vcsRevisions&includeAllStates=true`
+          `result/${planKey}?max-results=${
+            this.cfg.pageSize ?? DEFAULT_PAGE_SIZE
+          }&start-index=${startIndex}&expand=results.result.vcsRevisions&includeAllStates=true`
         ),
       (data) => data.results.result,
       //pagination check - check build started time
@@ -127,13 +151,32 @@ export class Bamboo {
 
   // eslint-disable-next-line require-yield
   async *getDeployments(
+    lastDeploymentStartedDate?: Date
+  ): AsyncGenerator<Deployment> {
+    const res = await this.httpClient.get<SearchResult<DeploymentProject>>(
+      'deploy/project/all'
+    );
+    for (const item of res.data.searchResults) {
+      for (const environment of item.environments) {
+        return this.getDeploymentsByEnvironmentId(
+          environment.id,
+          lastDeploymentStartedDate
+        );
+      }
+    }
+  }
+
+  // eslint-disable-next-line require-yield
+  async *getDeploymentsByEnvironmentId(
     environmentId: number,
     lastDeploymentStartedDate?: Date
   ): AsyncGenerator<Deployment> {
     return iterate(
       (startIndex) =>
         this.httpClient.get(
-          `deploy/environment/${environmentId}/results?max-results=${this.cfg.pageSize}&start-index=${startIndex}`
+          `deploy/environment/${environmentId}/results?max-results=${
+            this.cfg.pageSize ?? DEFAULT_PAGE_SIZE
+          }&start-index=${startIndex}`
         ),
       (data) => data.results,
       //pagination check - check deployment started date
@@ -154,7 +197,9 @@ export class Bamboo {
   ): boolean {
     const since = lastEndedTime
       ? lastEndedTime
-      : DateTime.now().minus({days: this.cfg.cutoffDays}).toJSDate();
+      : DateTime.now()
+          .minus({days: this.cfg.cutoffDays ?? DEFAULT_CUTOFF_DAYS})
+          .toJSDate();
 
     const startedAt = Utils.toDate(startedTime);
     const completedAt = Utils.toDate(completedTime);

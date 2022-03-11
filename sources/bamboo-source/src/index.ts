@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Bamboo, BambooConfig} from './bamboo';
-import {Builds} from './streams/build';
+import {Builds, Deployments, Environments, Plans} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -33,6 +33,11 @@ export class BambooSource extends AirbyteSourceBase {
   }
 
   streams(config: BambooConfig): AirbyteStreamBase[] {
-    return [new Builds(config, this.logger)];
+    return [
+      new Builds(config, this.logger, config.projectNames),
+      new Deployments(config, this.logger),
+      new Environments(config, this.logger),
+      new Plans(config, this.logger, config.projectNames),
+    ];
   }
 }

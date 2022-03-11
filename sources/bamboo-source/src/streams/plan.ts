@@ -4,17 +4,12 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Bamboo, BambooConfig} from '../bamboo';
-import {Build} from '../models';
+import {Plan} from '../models';
 
-interface BuildState {
-  lastUpdatedAt: string;
-}
-
-export class Builds extends AirbyteStreamBase {
+export class Plans extends AirbyteStreamBase {
   constructor(
     private readonly config: BambooConfig,
     protected readonly logger: AirbyteLogger,
@@ -22,30 +17,20 @@ export class Builds extends AirbyteStreamBase {
   ) {
     super(logger);
   }
-
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/builds.json');
+    return require('../../resources/schemas/plans.json');
   }
 
   get primaryKey(): StreamKey {
     return 'id';
   }
-
-  get cursorField(): string | string[] {
-    return 'buildStartedTime';
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: BuildState
-  ): AsyncGenerator<Build, any, unknown> {
-    const lastUpdatedAt =
-      syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastUpdatedAt)
-        : undefined;
+    streamState?: Dictionary<any>
+  ): AsyncGenerator<Plan, any, unknown> {
     const bamboo = await Bamboo.instance(this.config, this.logger);
-    yield* bamboo.getBuilds(this.projectNames, lastUpdatedAt);
+    yield* bamboo.getPlans(this.projectNames);
   }
 }

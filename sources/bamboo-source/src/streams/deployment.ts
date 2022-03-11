@@ -8,23 +8,22 @@ import {Utils} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Bamboo, BambooConfig} from '../bamboo';
-import {Build} from '../models';
+import {Build, Deployment} from '../models';
 
 interface BuildState {
-  lastUpdatedAt: string;
+  lastDeploymentStartedDate: string;
 }
 
-export class Builds extends AirbyteStreamBase {
+export class Deployments extends AirbyteStreamBase {
   constructor(
     private readonly config: BambooConfig,
-    protected readonly logger: AirbyteLogger,
-    protected readonly projectNames?: [string]
+    protected readonly logger: AirbyteLogger
   ) {
     super(logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/builds.json');
+    return require('../../resources/schemas/deployments.json');
   }
 
   get primaryKey(): StreamKey {
@@ -32,7 +31,7 @@ export class Builds extends AirbyteStreamBase {
   }
 
   get cursorField(): string | string[] {
-    return 'buildStartedTime';
+    return 'startedDate';
   }
 
   async *readRecords(
@@ -40,12 +39,12 @@ export class Builds extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: BuildState
-  ): AsyncGenerator<Build, any, unknown> {
-    const lastUpdatedAt =
+  ): AsyncGenerator<Deployment, any, unknown> {
+    const lastDeploymentStartedDate =
       syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastUpdatedAt)
+        ? Utils.toDate(streamState?.lastDeploymentStartedDate)
         : undefined;
     const bamboo = await Bamboo.instance(this.config, this.logger);
-    yield* bamboo.getBuilds(this.projectNames, lastUpdatedAt);
+    yield* bamboo.getDeployments(lastDeploymentStartedDate);
   }
 }

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "deploymentVersionName": {
+      "type": "string"
+    },
+    "id": {
+      "type": "number"
+    },
+    "deploymentState": {
+      "type": "string"
+    },
+    "startedDate": {
+      "type": "number"
+    },
+    "finishedDate": {
+      "type": "number"
+    },
+    "deploymentVersion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "items": {
+          "type": "array",
+          "item": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "planResultKey": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "resultNumber": {
+                    "type": "number"
+                  },
+                  "entityKey": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
