@@ -269,7 +269,7 @@ export class Bitbucket {
   }
 
   @Memoize((repoSlug: string): string => repoSlug)
-  async getPipelines(repoSlug: string): Promise<Pipeline[]> {
+  async getPipelines(repoSlug: string): Promise<ReadonlyArray<Pipeline>> {
     const results: Pipeline[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Pipeline>> =>
@@ -333,7 +333,7 @@ export class Bitbucket {
   async getPullRequests(
     repoSlug: string,
     lastUpdated?: string
-  ): Promise<PullRequest[]> {
+  ): Promise<ReadonlyArray<PullRequest>> {
     try {
       const results: PullRequest[] = [];
       /**

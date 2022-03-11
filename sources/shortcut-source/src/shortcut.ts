@@ -79,19 +79,23 @@ export class Shortcut {
     (lastUpdatedAt?: string) =>
       new Date(lastUpdatedAt ?? DEFAULT_MEMOIZE_START_TIME)
   )
-  async *getIterations(lastUpdatedAt?: string): AsyncGenerator<Iteration> {
+  async getIterations(
+    lastUpdatedAt?: string
+  ): Promise<ReadonlyArray<Iteration>> {
+    const results: Iteration[] = [];
     const startTime = new Date(lastUpdatedAt ?? 0);
     const list = await this.client.listIterations();
     for (const item of list) {
       if (!lastUpdatedAt) {
-        yield item;
+        results.push(item);
       } else {
         const updatedAt = new Date(item.updated_at);
         if (updatedAt >= startTime) {
-          yield item;
+          results.push(item);
         }
       }
     }
+    return results;
   }
 
   async *getEpics(projectId: number): AsyncGenerator<Epic> {
