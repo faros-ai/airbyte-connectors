@@ -1,4 +1,4 @@
-import {camelCase, find, findKey} from 'lodash';
+import {camelCase, upperFirst} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -39,12 +39,7 @@ export class ConverterRegistry {
       const mod = require(`./${streamName.source}/${streamName.name}`);
 
       // Create converter instance by name
-      const className =
-        find(
-          Object.keys(mod),
-          (c: string) =>
-            c.toLowerCase() === camelCase(streamName.name).toLowerCase()
-        ) ?? findKey(mod, (f: any) => typeof f === 'function');
+      const className = upperFirst(camelCase(streamName.name));
       if (!className) {
         throw new VError(
           `Could not find converter from module for stream ${name}`
