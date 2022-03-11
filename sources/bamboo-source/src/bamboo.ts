@@ -63,7 +63,7 @@ export class Bamboo {
       const iter = this.getPlans();
       await iter.next();
     } catch (err: any) {
-      let errorMessage = 'Could not verify API key. Error: ';
+      let errorMessage = 'Could not verify token. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);
