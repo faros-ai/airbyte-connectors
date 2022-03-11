@@ -86,12 +86,11 @@ describe('index', () => {
   test('streams - tags, use full_refresh sync mode', async () => {
     const fnTagsFunc = jest.fn();
 
-    let tagIndex = 0;
     Docker.instance = jest.fn().mockImplementation(() => {
       return {
         ...new Docker('registry-base', 100, 5, {headers: {}}, undefined),
-        getTags: fnTagsFunc.mockImplementation(async function* () {
-          yield readTestResourceFile('tags.json')[tagIndex++];
+        getTags: fnTagsFunc.mockImplementation(async function () {
+          return readTestResourceFile('tags.json');
         }),
       };
     });

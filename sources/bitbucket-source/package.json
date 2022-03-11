@@ -34,6 +34,7 @@
     "bottleneck": "^2.19.5",
     "faros-airbyte-cdk": "^0.1.51",
     "faros-feeds-sdk": "^0.9.7",
+    "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },
   "jest": {

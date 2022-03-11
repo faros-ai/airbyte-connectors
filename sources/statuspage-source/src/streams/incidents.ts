@@ -40,7 +40,9 @@ export class Incidents extends AirbyteStreamBase {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const cutoff: Date = state?.cutoff ? new Date(state?.cutoff) : undefined;
 
-    yield* statuspage.getIncidents(cutoff);
+    for (const incident of await statuspage.getIncidents(cutoff)) {
+      yield incident;
+    }
   }
 
   getUpdatedState(

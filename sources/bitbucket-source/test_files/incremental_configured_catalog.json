@@ -44,7 +44,7 @@
     },
     {
       "stream": {
-        "name": "pipeline_steps",
+        "name": "pull_request_activities",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
@@ -52,12 +52,7 @@
         ],
         "source_defined_cursor": true,
         "default_cursor_field": [
-          "completedOn"
-        ],
-        "source_defined_primary_key": [
-          [
-            "uuid"
-          ]
+          "pullRequestUpdatedOn"
         ]
       },
       "sync_mode": "incremental",
