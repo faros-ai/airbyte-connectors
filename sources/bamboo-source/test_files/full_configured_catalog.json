@@ -1,0 +1,62 @@
+{
+    "streams": [
+        {
+            "stream": {
+                "name": "builds",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": [
+                    "buildStartedTime"
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "deployments",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": [
+                    "startedDate"
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "environments",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": []
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "plans",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": []
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        }
+    ]
+}

@@ -60,7 +60,7 @@ export class Bamboo {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getPlans([]);
+      const iter = this.getPlans();
       await iter.next();
     } catch (err: any) {
       let errorMessage = 'Could not verify API key. Error: ';
