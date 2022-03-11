@@ -26,5 +26,6 @@ tests:
         commits: [ "cutoff" ]
         issues: [ "cutoff" ]
         pipeline_step: [ "cutoff" ]
+        pull_request_activities: [ "cutoff" ]
         pull_requests: [ "cutoff" ]
         repositories: [ "cutoff" ]
