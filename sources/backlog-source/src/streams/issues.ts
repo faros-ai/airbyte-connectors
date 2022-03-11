@@ -44,7 +44,9 @@ export class Issues extends AirbyteStreamBase {
         ? streamState?.lastUpdatedAt
         : undefined;
     const backlog = await Backlog.instance(this.config, this.logger);
-    yield* backlog.getIssues(lastUpdatedAt);
+    for (const issue of await backlog.getIssues(lastUpdatedAt)) {
+      yield issue;
+    }
   }
 
   getUpdatedState(

@@ -140,7 +140,8 @@ export class Docker {
   }
 
   @Memoize((repo: string): string => repo)
-  async *getTags(repo: string): AsyncGenerator<Tag> {
+  async getTags(repo: string): Promise<ReadonlyArray<Tag>> {
+    const results: Tag[] = [];
     const res = await dockerRegistry.getTags(
       this.registryBase,
       repo,
@@ -157,13 +158,14 @@ export class Docker {
         repo,
         imageManifest.config.digest
       );
-      yield {
+      results.push({
         name: item,
         projectName: repo,
         imageConfig,
         imageManifest,
-      };
+      });
     }
+    return results;
   }
 
   @Memoize((repo: string, digest: string): string => repo.concat(digest))

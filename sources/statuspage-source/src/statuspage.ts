@@ -93,8 +93,7 @@ export class Statuspage {
   }
 
   async *getIncidentUpdates(cutoff?: Date): AsyncGenerator<IncidentUpdate> {
-    const iter = this.getIncidents(cutoff);
-    for await (const incident of iter) {
+    for (const incident of await this.getIncidents(cutoff)) {
       for (const update of incident.incident_updates) {
         const eventTime = new Date(update.created_at);
         const eventUpdateTime = new Date(update.updated_at);
@@ -106,7 +105,8 @@ export class Statuspage {
   }
 
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
-  async *getIncidents(cutoff?: Date): AsyncGenerator<Incident> {
+  async getIncidents(cutoff?: Date): Promise<ReadonlyArray<Incident>> {
+    const results: Incident[] = [];
     const incidents = await this.clientV2.api.incidents.getAll();
     if (!incidents.incidents) {
       throw new VError('Incorrect incidents');
@@ -115,9 +115,10 @@ export class Statuspage {
       const resolvedAt = new Date(incident.resolved_at ?? 0);
       const updatedAt = new Date(incident.updated_at);
       if (!cutoff || updatedAt > cutoff || resolvedAt > cutoff) {
-        yield incident;
+        results.push(incident);
       }
     }
+    return results;
   }
 
   async *getUsers(cutoff?: Date): AsyncGenerator<User> {
