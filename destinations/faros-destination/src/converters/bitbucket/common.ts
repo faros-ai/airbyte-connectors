@@ -54,6 +54,8 @@ export class BitbucketCommon {
 
 /** Bitbucket converter base */
 export abstract class BitbucketConverter extends Converter {
+  source = 'Bitbucket';
+
   /** Almost all Bitbucket records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

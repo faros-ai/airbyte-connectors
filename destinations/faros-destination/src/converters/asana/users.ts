@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter, AsanaUser} from './common';
 
-export class AsanaUsers extends AsanaConverter {
+export class Users extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   async convert(

@@ -3,13 +3,13 @@ import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, RepositoryKey} from './common';
-import {GithubConverter} from './common';
+import {GitHubCommon, RepositoryKey} from './common';
+import {GitHubConverter} from './common';
 
 // Github PR states
 const prStates = ['closed', 'merged', 'open'];
 
-export class GithubPullRequests extends GithubConverter {
+export class PullRequests extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_User',
@@ -35,7 +35,7 @@ export class GithubPullRequests extends GithubConverter {
 
     let author: DestinationRecord | undefined = undefined;
     if (pr.user) {
-      author = GithubCommon.vcs_User(pr.user, source);
+      author = GitHubCommon.vcs_User(pr.user, source);
       res.push(author);
     }
 

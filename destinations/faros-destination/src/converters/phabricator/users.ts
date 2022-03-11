@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
-export class PhabricatorUsers extends PhabricatorConverter {
+export class Users extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',

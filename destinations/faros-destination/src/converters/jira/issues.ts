@@ -43,7 +43,7 @@ interface StatusChange {
   readonly changedAt: Date;
 }
 
-export class JiraIssues extends JiraConverter {
+export class Issues extends JiraConverter {
   private logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -102,24 +102,24 @@ export class JiraIssues extends JiraConverter {
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [
-      JiraIssues.issueFieldsStream,
-      JiraIssues.pullRequestsStream,
-      JiraIssues.workflowStatusesStream,
+      Issues.issueFieldsStream,
+      Issues.pullRequestsStream,
+      Issues.workflowStatusesStream,
     ];
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString);
+    const records = ctx.getAll(Issues.issueFieldsStream.asString);
     return invertBy(mapValues(records, (r) => r.record.data.name as string));
   }
 
   private static getFieldNamesById(ctx: StreamContext): Dictionary<string> {
-    const records = ctx.getAll(JiraIssues.issueFieldsStream.asString);
+    const records = ctx.getAll(Issues.issueFieldsStream.asString);
     return mapValues(records, (r) => r.record.data.name);
   }
 
   private static getStatusesByName(ctx: StreamContext): Dictionary<Status> {
-    const records = ctx.getAll(JiraIssues.workflowStatusesStream.asString);
+    const records = ctx.getAll(Issues.workflowStatusesStream.asString);
     return keyBy(
       Object.values(records).map((r) => {
         const data = r.record.data;
@@ -171,7 +171,7 @@ export class JiraIssues extends JiraConverter {
   ): ReadonlyArray<Assignee> {
     const assigneeChangelog: Array<Assignee> = [];
 
-    const assigneeChanges = JiraIssues.fieldChangelog(
+    const assigneeChanges = Issues.fieldChangelog(
       changelog,
       'assignee',
       'from',
@@ -209,7 +209,7 @@ export class JiraIssues extends JiraConverter {
       if (status) statusChangelog.push({status, changedAt: date});
     };
 
-    const statusChanges = JiraIssues.fieldChangelog(changelog, 'status');
+    const statusChanges = Issues.fieldChangelog(changelog, 'status');
 
     if (statusChanges.length) {
       // status that was assigned at creation
@@ -393,7 +393,7 @@ export class JiraIssues extends JiraConverter {
     issueId: string
   ): ReadonlyArray<PullRequest> {
     const pulls: PullRequest[] = [];
-    const record = ctx.get(JiraIssues.pullRequestsStream.asString, issueId);
+    const record = ctx.get(Issues.pullRequestsStream.asString, issueId);
     if (!record) return pulls;
     const detail = record.record.data;
     try {
@@ -407,7 +407,7 @@ export class JiraIssues extends JiraConverter {
           continue;
         }
         pulls.push({
-          repo: JiraIssues.extractRepo(repoUrl),
+          repo: Issues.extractRepo(repoUrl),
           number: Utils.parseInteger(pull.id.replace('#', '')),
         });
       }
@@ -432,13 +432,13 @@ export class JiraIssues extends JiraConverter {
     const results: DestinationRecord[] = [];
 
     if (!this.fieldIdsByName) {
-      this.fieldIdsByName = JiraIssues.getFieldIdsByName(ctx);
+      this.fieldIdsByName = Issues.getFieldIdsByName(ctx);
     }
     if (!this.fieldNameById) {
-      this.fieldNameById = JiraIssues.getFieldNamesById(ctx);
+      this.fieldNameById = Issues.getFieldNamesById(ctx);
     }
     if (!this.statusByName) {
-      this.statusByName = JiraIssues.getStatusesByName(ctx);
+      this.statusByName = Issues.getStatusesByName(ctx);
     }
 
     results.push({
@@ -496,7 +496,7 @@ export class JiraIssues extends JiraConverter {
       const created2 = +(Utils.toDate(e2.created) || new Date(0));
       return created1 - created2;
     });
-    const assigneeChangelog = JiraIssues.assigneeChangelog(
+    const assigneeChangelog = Issues.assigneeChangelog(
       changelog,
       assignee,
       created
@@ -512,7 +512,7 @@ export class JiraIssues extends JiraConverter {
       });
     }
 
-    const fixVersionChangelog = JiraIssues.fieldChangelog(
+    const fixVersionChangelog = Issues.fieldChangelog(
       changelog,
       'Fix Version',
       'from',
@@ -589,8 +589,8 @@ export class JiraIssues extends JiraConverter {
     for (const [id, name] of Object.entries(this.fieldNameById)) {
       const value = issue.fields[id];
       if (
-        JiraIssues.standardFieldIds.includes(id) ||
-        JiraIssues.fieldsToIgnore.includes(name)
+        Issues.standardFieldIds.includes(id) ||
+        Issues.fieldsToIgnore.includes(name)
       ) {
         continue;
       } else if (name && value) {

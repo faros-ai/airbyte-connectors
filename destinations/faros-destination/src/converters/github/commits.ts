@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubCommits extends GithubConverter {
+export class Commits extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_BranchCommitAssociation',
     'vcs_Commit',
@@ -18,7 +18,7 @@ export class GithubCommits extends GithubConverter {
     const commit = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       commit.repository,
       source
     );

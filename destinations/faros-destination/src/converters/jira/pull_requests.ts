@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
 // Required as dependency by Issues converter
-export class JiraPullRequests extends JiraConverter {
+export class PullRequests extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(

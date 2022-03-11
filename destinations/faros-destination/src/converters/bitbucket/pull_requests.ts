@@ -17,7 +17,7 @@ enum PullRequestStateCategory {
   CUSTOM = 'Custom',
 }
 
-export class BitbucketPullRequests extends BitbucketConverter {
+export class PullRequests extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_User',
     'vcs_PullRequest',

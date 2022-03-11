@@ -53,6 +53,8 @@ export class BacklogCommon {
 
 /** Backlog converter base */
 export abstract class BacklogConverter extends Converter {
+  source = 'Backlog';
+
   /** Almost every Backlog record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

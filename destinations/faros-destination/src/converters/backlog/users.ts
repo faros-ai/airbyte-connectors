@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogConverter} from './common';
 import {User} from './models';
 
-export class BacklogUsers extends BacklogConverter {
+export class Users extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   async convert(

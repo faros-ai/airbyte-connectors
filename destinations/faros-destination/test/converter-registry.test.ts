@@ -40,9 +40,6 @@ describe('converter registry', () => {
       if (converter && converter.convert) {
         const streamName = converter.streamName.asString.toLowerCase();
 
-        // Skip Okta Faros converter aliases
-        if (streamName.startsWith('okta__faros')) continue;
-
         expect(streamName).toBe(stream.asString.toLowerCase());
         expect(converter.dependencies.length).toBeGreaterThanOrEqual(0);
         expect(converter.destinationModels.length).toBeGreaterThanOrEqual(0);

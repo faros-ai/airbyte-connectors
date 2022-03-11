@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabMergeRequestCommits extends GitlabConverter {
+export class MergeRequestCommits extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   async convert(

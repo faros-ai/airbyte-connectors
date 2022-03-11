@@ -9,7 +9,7 @@ import {
 } from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabMergeRequests extends GitlabConverter {
+export class MergeRequests extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
   ];

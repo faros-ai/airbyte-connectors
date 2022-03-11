@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabProjectMilestones extends GitlabConverter {
+export class ProjectMilestones extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   async convert(

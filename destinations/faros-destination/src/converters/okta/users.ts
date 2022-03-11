@@ -6,7 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OktaConverter} from './common';
 import {User} from './models';
 
-export class OktaUsers extends OktaConverter {
+export class Users extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
     'org_Department',

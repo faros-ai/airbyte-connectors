@@ -77,6 +77,8 @@ export class GitlabCommon {
 
 /** GitLab converter base */
 export abstract class GitlabConverter extends Converter {
+  source = 'GitLab';
+
   /** Almost every GitLab record have id property. Function will be
    * override if record doesn't have id property.
    */
