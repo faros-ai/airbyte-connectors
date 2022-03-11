@@ -9,6 +9,7 @@ import {VError} from 'verror';
 export abstract class Converter {
   private stream: StreamName;
 
+  /** Name of the source system that records were fetched from (e.g. GitHub) **/
   abstract readonly source: string;
 
   /** Input stream supported by converter */
