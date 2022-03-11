@@ -53,15 +53,6 @@
           "blaze"
         ]
       },
-      "pull_request_id": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Bitbucket Workspace Repository's Pull Request ID",
-        "description": "List of Bitbucket Pull Request's IDs. ID is using to pull PullRequest's Activities",
-        "default": []
-      },
       "pagelen": {
         "type": "integer",
         "title": "Page Size",

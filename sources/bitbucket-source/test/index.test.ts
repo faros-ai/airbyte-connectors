@@ -55,8 +55,6 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         workspace: 'workspace',
-        pipeline: ['pipeline'],
-        pull_request_id: ['1'],
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -113,11 +111,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const branchesStream = streams[0];
     const branchesIter = branchesStream.readRecords(
@@ -165,11 +159,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const deploymentsStream = streams[2];
     const deploymentsIter = deploymentsStream.readRecords(
@@ -207,11 +197,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const pipelinesStream = streams[4];
     const pipelinesIter = pipelinesStream.readRecords(
@@ -248,11 +234,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const pipelineStepsStream = streams[5];
     const pipelineStepsIter = pipelineStepsStream.readRecords(
@@ -289,11 +271,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const repositoriesStream = streams[8];
     const repositoriesIter = repositoriesStream.readRecords(
@@ -330,11 +308,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({
-      repository: 'repository',
-      pipeline: 'pipeline',
-      pull_request_id: '1',
-    } as any);
+    const streams = source.streams({repository: 'repository'} as any);
 
     const workspacesStream = streams[10];
     const workspacesIter = workspacesStream.readRecords(

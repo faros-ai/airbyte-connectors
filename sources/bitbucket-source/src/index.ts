@@ -51,7 +51,6 @@ export class BitbucketSource extends AirbyteSourceBase {
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
     const repositories = config.repositories;
-    const prIDs = config.pull_request_id ?? [];
     const pipelines = new Pipelines(config, repositories, this.logger);
     const pullRequests = new PullRequests(config, repositories, this.logger);
     return [
@@ -61,14 +60,13 @@ export class BitbucketSource extends AirbyteSourceBase {
       new Issues(config, repositories, this.logger),
       pipelines,
       new PipelineSteps(config, repositories, pipelines, this.logger),
+      pullRequests,
       new PullRequestActivities(
         config,
         repositories,
-        prIDs,
         pullRequests,
         this.logger
       ),
-      new PullRequests(config, repositories, this.logger),
       new Repositories(config, this.logger),
       new WorkspaceUsers(config, this.logger),
       new Workspaces(config, this.logger),

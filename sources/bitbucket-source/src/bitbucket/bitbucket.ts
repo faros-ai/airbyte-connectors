@@ -327,11 +327,15 @@ export class Bitbucket {
     }
   }
 
-  async *getPullRequests(
+  @Memoize((repoSlug: string, lastUpdated?: string): string =>
+    repoSlug.concat(lastUpdated ?? '')
+  )
+  async getPullRequests(
     repoSlug: string,
     lastUpdated?: string
-  ): AsyncGenerator<PullRequest> {
+  ): Promise<PullRequest[]> {
     try {
+      const results: PullRequest[] = [];
       /**
        * By default only open pull requests are returned by API. We use query
        * parameters to ensure we retrieve all states. Using query as substitute
@@ -393,8 +397,9 @@ export class Bitbucket {
           );
         }
         res.calculatedActivity = {commitCount: commits.size, mergedAt};
-        yield res;
+        results.push(res);
       }
+      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),

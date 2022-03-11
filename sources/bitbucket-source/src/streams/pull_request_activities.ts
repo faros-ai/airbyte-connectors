@@ -16,7 +16,6 @@ export class PullRequestActivities extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
     readonly repositories: string[],
-    readonly pullRequestIds: string[],
     readonly pullRequests: PullRequests,
     readonly logger: AirbyteLogger
   ) {
@@ -26,8 +25,9 @@ export class PullRequestActivities extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pull_request_activities.json');
   }
-  get primaryKey(): StreamKey {
-    return '';
+
+  get primaryKey(): StreamKey | undefined {
+    return undefined;
   }
 
   async *streamSlices(
@@ -36,8 +36,13 @@ export class PullRequestActivities extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<StreamSlice> {
     for (const repository of this.repositories) {
-      for (const prID of this.pullRequestIds) {
-        yield {repository, pullRequestId: prID};
+      const prs = this.pullRequests.readRecords(
+        SyncMode.FULL_REFRESH,
+        undefined,
+        {repository}
+      );
+      for await (const pr of prs) {
+        yield {repository, pullRequestId: pr.id.toString()};
       }
     }
   }
