@@ -39,13 +39,13 @@ export class ConverterRegistry {
       const mod = require(`./${streamName.source}/${streamName.name}`);
 
       // Create converter instance by name
-      const className = upperFirst(camelCase(streamName.name));
-      if (!className) {
+      const converterClass = mod[upperFirst(camelCase(streamName.name))];
+      if (!converterClass) {
         throw new VError(
           `Could not find converter from module for stream ${name}`
         );
       }
-      const converter = new mod[className]();
+      const converter = new converterClass();
 
       // Keep the converter instance in the registry
       ConverterRegistry.convertersByStream[name] = converter;
