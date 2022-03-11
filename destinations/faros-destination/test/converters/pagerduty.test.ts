@@ -5,7 +5,7 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 import pino from 'pino';
 
-import {InvalidRecordStrategy} from '../../src';
+import {InvalidRecordStrategy} from '../../src/destination';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {pagerdutyLog, readTestResourceFile} from './data';
