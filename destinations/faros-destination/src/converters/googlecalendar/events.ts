@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Location, Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {Event, GooglecalendarCommon, GooglecalendarConverter} from './common';
+import {Event, GoogleCalendarCommon, GoogleCalendarConverter} from './common';
 
-export class Events extends GooglecalendarConverter {
+export class Events extends GoogleCalendarConverter {
   // Locations cache to avoid querying the API for the same location
   private locationsCache = new Map<string, Location>();
 
@@ -40,7 +40,7 @@ export class Events extends GooglecalendarConverter {
         record: {
           event: eventRef,
           guest: attenderRef,
-          status: GooglecalendarCommon.EventGuestStatus(
+          status: GoogleCalendarCommon.EventGuestStatus(
             attender.responseStatus
           ),
         },
@@ -113,11 +113,11 @@ export class Events extends GooglecalendarConverter {
         ...eventRef,
         title: event.summary?.substring(
           0,
-          GooglecalendarCommon.MAX_DESCRIPTION_LENGTH
+          GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
         ),
         description: event.description?.substring(
           0,
-          GooglecalendarCommon.MAX_DESCRIPTION_LENGTH
+          GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
         ),
         start,
         end,
@@ -125,10 +125,10 @@ export class Events extends GooglecalendarConverter {
         url: event.htmlLink,
         location,
         organizer,
-        type: GooglecalendarCommon.EventType(event.eventType),
-        visibility: GooglecalendarCommon.EventVisibility(event.transparency),
-        privacy: GooglecalendarCommon.EventPrivacy(event.visibility),
-        status: GooglecalendarCommon.EventStatus(event.status),
+        type: GoogleCalendarCommon.EventType(event.eventType),
+        visibility: GoogleCalendarCommon.EventVisibility(event.transparency),
+        privacy: GoogleCalendarCommon.EventPrivacy(event.visibility),
+        status: GoogleCalendarCommon.EventStatus(event.status),
       },
     });
     return res;

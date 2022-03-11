@@ -4,15 +4,15 @@ const DEFAULT_APPLICATION_FIELD = 'service';
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
-interface VictoropsConfig {
+interface VictorOpsConfig {
   readonly application_mapping?: ApplicationMapping;
   readonly application_field?: string;
 }
 
-export abstract class VictoropsConverter extends Converter {
+export abstract class VictorOpsConverter extends Converter {
   source = 'VictorOps';
 
-  protected victoropsConfig(ctx: StreamContext): VictoropsConfig {
+  protected victoropsConfig(ctx: StreamContext): VictorOpsConfig {
     return ctx.config.source_specific_configs?.victorops ?? {};
   }
 

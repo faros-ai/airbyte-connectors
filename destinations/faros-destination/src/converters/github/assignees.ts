@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class Assignees extends GithubConverter {
+export class Assignees extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   async convert(
@@ -13,6 +13,6 @@ export class Assignees extends GithubConverter {
     const source = this.streamName.source;
     const user = record.record.data;
 
-    return [GithubCommon.tms_User(user, source)];
+    return [GitHubCommon.tms_User(user, source)];
   }
 }

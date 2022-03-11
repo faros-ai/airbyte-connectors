@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class Repositories extends GithubConverter {
+export class Repositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',
     'tms_TaskBoard',
@@ -20,12 +20,12 @@ export class Repositories extends GithubConverter {
     const repo = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository = GithubCommon.parseRepositoryKey(repo.full_name, source);
+    const repository = GitHubCommon.parseRepositoryKey(repo.full_name, source);
     if (!repository) return res;
 
     // Create a TMS Project/Board per repo that we sync
     res.push(
-      ...GithubCommon.tms_ProjectBoard_with_TaskBoard(
+      ...GitHubCommon.tms_ProjectBoard_with_TaskBoard(
         {uid: repo.name, source},
         repo.name,
         repo.description,

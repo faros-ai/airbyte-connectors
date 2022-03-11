@@ -9,12 +9,12 @@ import {
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
-  StatuspageConverter,
+  StatusPageConverter,
   StatuspageIncidentImpact,
   StatuspageIncidentStatus,
 } from './common';
 
-export class Incidents extends StatuspageConverter {
+export class Incidents extends StatusPageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',

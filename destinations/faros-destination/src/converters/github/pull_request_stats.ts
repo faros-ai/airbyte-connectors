@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class PullRequestStats extends GithubConverter {
+export class PullRequestStats extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
   ];
@@ -14,7 +14,7 @@ export class PullRequestStats extends GithubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prStats = record.record.data;
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       prStats.repository,
       source
     );

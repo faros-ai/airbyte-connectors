@@ -45,7 +45,7 @@ export enum EventVisibilityCategory {
 }
 
 /** Common functions shares across GoogleCalendar converters */
-export class GooglecalendarCommon {
+export class GoogleCalendarCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -130,7 +130,7 @@ export class GooglecalendarCommon {
 }
 
 /** GoogleCalendar converter base */
-export abstract class GooglecalendarConverter extends Converter {
+export abstract class GoogleCalendarConverter extends Converter {
   source = 'GoogleCalendar';
 
   /** Every GoogleCalendar record have id property */

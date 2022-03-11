@@ -4,11 +4,11 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Work} from './agileaccelerator_types';
 import {
   AgileAcceleratorCommon,
-  AgileacceleratorConverter,
+  AgileAcceleratorConverter,
   TaskField,
 } from './common';
 
-export class Works extends AgileacceleratorConverter {
+export class Works extends AgileAcceleratorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Epic',
     'tms_Project',

@@ -8,7 +8,7 @@ import {
 } from '../converter';
 import {
   IncidentSeverityCategory,
-  PagerdutyConverter,
+  PagerDutyConverter,
   PagerdutyObject,
 } from './common';
 
@@ -25,7 +25,7 @@ interface Priority extends PagerdutyObject {
   readonly updated_at: string; // date-time
 }
 
-export class PrioritiesResource extends PagerdutyConverter {
+export class PrioritiesResource extends PagerDutyConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

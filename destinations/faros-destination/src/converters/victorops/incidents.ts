@@ -2,7 +2,7 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {VictoropsConverter} from './common';
+import {VictorOpsConverter} from './common';
 
 enum IncidentStatusCategory {
   Created = 'Created',
@@ -41,7 +41,7 @@ type IncidentPhase =
   | 'acknowledged'
   | 'resolved';
 
-export class Incidents extends VictoropsConverter {
+export class Incidents extends VictorOpsConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

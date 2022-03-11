@@ -178,7 +178,7 @@ export class AgileAcceleratorCommon {
 }
 
 /** AgileAccelerator converter base */
-export abstract class AgileacceleratorConverter extends Converter {
+export abstract class AgileAcceleratorConverter extends Converter {
   source = 'AgileAccelerator';
 
   /** Almost every AgileAccelerator record have id property */

@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class Tags extends GithubConverter {
+export class Tags extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
   async convert(
@@ -12,7 +12,7 @@ export class Tags extends GithubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const tag = record.record.data;
-    const repository = GithubCommon.parseRepositoryKey(tag.repository, source);
+    const repository = GitHubCommon.parseRepositoryKey(tag.repository, source);
 
     if (!repository) return [];
 

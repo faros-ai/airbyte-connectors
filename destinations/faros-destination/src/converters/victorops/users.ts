@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {VictoropsConverter} from './common';
+import {VictorOpsConverter} from './common';
 
-export class Users extends VictoropsConverter {
+export class Users extends VictorOpsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   id(record: AirbyteRecord): any {
