@@ -21,7 +21,7 @@
       },
       "username": {
         "type": "string",
-        "description": "Bitbucket username"
+        "description": "Bitbucket username. Either username/password or Access Token must be provided."
       },
       "password": {
         "type": "string",
