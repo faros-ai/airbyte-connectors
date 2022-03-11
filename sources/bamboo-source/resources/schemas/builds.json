@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "buildNumber": {
+      "type": "number"
+    },
+    "buildResultKey": {
+      "type": "string"
+    },
+    "buildStartedTime": {
+      "type": "string"
+    },
+    "buildCompletedTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vcsRevisionKey": {
+      "type": "string"
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string"
+        }
+      }
+    },
+    "vcsRevisions": {
+      "type": "object",
+      "properties": {
+        "vcsRevision": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "repositoryId": {
+                "type": "number"
+              },
+              "repositoryName": {
+                "type": "string"
+              },
+              "vcsRevisionKey": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "properties": {
+        "shortName": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "link": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

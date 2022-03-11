@@ -1,0 +1,39 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Bamboo Spec",
+    "type": "object",
+    "required": [
+      "token"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "token": {
+        "type": "string",
+        "title": "Api token",
+        "airbyte_secret": true
+      },
+      "baseUrl": {
+        "type": "string",
+        "title": "baseUrl"
+      },
+      "pageSize": {
+        "type": "number",
+        "title": "pageSize"
+      },
+      "cutoffDays": {
+        "type": "number",
+        "title": "pageSize"
+      },
+      "buildTimeout": {
+        "type": "number",
+        "title": "pageSize"
+      },
+      "deploymentTimeout": {
+        "type": "number",
+        "title": "pageSize"
+      }
+    }
+  }
+}

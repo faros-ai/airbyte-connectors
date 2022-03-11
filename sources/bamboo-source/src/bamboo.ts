@@ -17,8 +17,6 @@ import {
   SearchResult,
 } from './models';
 
-const DEFAULT_MEMOIZE_START_TIME = 0;
-
 export interface BambooConfig {
   readonly token: string;
   readonly baseUrl: string;
@@ -26,7 +24,6 @@ export interface BambooConfig {
   readonly cutoffDays: number;
   readonly buildTimeout: number;
   readonly deploymentTimeout: number;
-  readonly logger: Logger;
 }
 
 export class Bamboo {
@@ -113,8 +110,7 @@ export class Bamboo {
           item.buildCompletedTime,
           lastBuildStartedTime
         ),
-      this.cfg.pageSize,
-      this.cfg.logger
+      this.cfg.pageSize
     );
   }
 
@@ -147,8 +143,7 @@ export class Bamboo {
           item.finishedDate,
           lastDeploymentStartedDate
         ),
-      this.cfg.pageSize,
-      this.cfg.logger
+      this.cfg.pageSize
     );
   }
 

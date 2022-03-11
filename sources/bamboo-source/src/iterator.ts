@@ -8,12 +8,12 @@ export async function* iterate<V>(
   requester: RequestMethod,
   dataExtractor: (data: any) => any,
   breaker: (item: any) => boolean,
-  pageSize: number,
-  logger: Logger
+  pageSize: number
 ): AsyncGenerator<V> {
   let startIndex = 0;
   let isContinueIteration = true;
   do {
+    // eslint-disable-next-line no-useless-catch
     try {
       const res = await requester(startIndex);
       const data = dataExtractor(res);
@@ -29,7 +29,6 @@ export async function* iterate<V>(
       }
       startIndex += pageSize;
     } catch (ex: any) {
-      logger.error(ex);
       throw ex;
     }
   } while (isContinueIteration);
