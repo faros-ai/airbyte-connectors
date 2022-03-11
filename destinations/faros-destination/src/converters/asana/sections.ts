@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
 
-export class AsanaSections extends AsanaConverter {
+export class Sections extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',

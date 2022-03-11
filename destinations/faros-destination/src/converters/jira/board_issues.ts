@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
-export class JiraBoardIssues extends JiraConverter {
+export class BoardIssues extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskBoardRelationship',
   ];

@@ -47,9 +47,6 @@ describe('converter registry', () => {
       if (converter && converter.convert) {
         const streamName = converter.streamName.asString.toLowerCase();
 
-        // Skip Okta Faros converter aliases
-        if (streamName.startsWith('okta__faros')) continue;
-
         expect(streamName).toBe(stream.asString.toLowerCase());
         expect(converter.dependencies.length).toBeGreaterThanOrEqual(0);
         expect(converter.destinationModels.length).toBeGreaterThanOrEqual(0);
@@ -72,6 +69,7 @@ describe('converter registry', () => {
 
   test('add a custom converter class and load it', () => {
     class CustomConverter extends Converter {
+      source: 'Custom';
       readonly destinationModels: ReadonlyArray<DestinationModel> = [
         'test_Model',
       ];
@@ -90,14 +88,14 @@ describe('converter registry', () => {
             model: 'test_Model',
             record: {
               uid: String(data.id),
-              source: this.stream.source,
+              source: this.source,
             },
           },
         ];
       }
     }
     const converter = new CustomConverter();
-    sut.addConverter('CustomSource', new CustomConverter());
+    sut.addConverter(new CustomConverter());
     const res = sut.getConverter(converter.streamName);
     expect(res).toBeDefined();
     expect(res.destinationModels).toStrictEqual(['test_Model']);

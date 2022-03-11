@@ -113,6 +113,8 @@ export class PhabricatorCommon {
 
 /** Phabricator converter base */
 export abstract class PhabricatorConverter extends Converter {
+  source = 'Phabricator';
+
   /** Most of Phabricator records should have phid property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.phid;

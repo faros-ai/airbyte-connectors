@@ -12,7 +12,7 @@ enum OrgTypeCategory {
   CUSTOM = 'Custom',
 }
 
-export class BitbucketWorkspaces extends BitbucketConverter {
+export class Workspaces extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'vcs_Organization',

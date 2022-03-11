@@ -29,7 +29,7 @@ enum DeploymentStatusCategory {
   SUCCESS = 'Success',
 }
 
-export class BitbucketDeployments extends BitbucketConverter {
+export class Deployments extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Deployment',
   ];

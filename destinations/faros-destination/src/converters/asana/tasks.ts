@@ -30,7 +30,7 @@ enum Tms_TaskStatusCategory {
   Todo = 'Todo',
 }
 
-export class AsanaTasks extends AsanaConverter {
+export class Tasks extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_Project',

@@ -8,7 +8,7 @@ import {
 } from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabTags extends GitlabConverter {
+export class Tags extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
   private readonly projectsStream = new StreamName('gitlab', 'projects');

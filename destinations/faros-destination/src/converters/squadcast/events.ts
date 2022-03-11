@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Event, IncidentEventTypeCategory, SquadcastConverter} from './common';
 
-export class SquadcastEvents extends SquadcastConverter {
+export class Events extends SquadcastConverter {
   id(record: AirbyteRecord): string {
     return record?.record?.data?.alert_source_id;
   }

@@ -66,6 +66,8 @@ export interface JiraConfig {
 }
 
 export abstract class JiraConverter extends Converter {
+  source = 'Jira';
+
   /** All Jira records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

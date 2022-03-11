@@ -16,10 +16,7 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner {
     this.program = destinationRunner.mainCommand();
   }
 
-  registerConverters(
-    source: string,
-    ...converters: ReadonlyArray<Converter>
-  ): void {
-    converters.forEach((c) => ConverterRegistry.addConverter(source, c));
+  registerConverters(...converters: ReadonlyArray<Converter>): void {
+    converters.forEach(ConverterRegistry.addConverter);
   }
 }

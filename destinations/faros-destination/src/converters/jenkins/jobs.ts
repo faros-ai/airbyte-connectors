@@ -1,14 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
-import {JenkinsCommon, Job} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {JenkinsCommon, JenkinsConverter, Job} from './common';
 
-export class JenkinsJobs extends Converter {
+export class Jobs extends JenkinsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'cicd_Pipeline',

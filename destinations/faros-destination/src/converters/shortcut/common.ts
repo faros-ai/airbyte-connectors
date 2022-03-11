@@ -65,6 +65,8 @@ export class ShortcutCommon {
 
 /** Shortcut converter base */
 export abstract class ShortcutConverter extends Converter {
+  source = 'Shortcut';
+
   /** Almost every Shortcut record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

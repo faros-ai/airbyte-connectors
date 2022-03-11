@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogCommon, BacklogConverter} from './common';
 import {Project} from './models';
 
-export class BacklogProjects extends BacklogConverter {
+export class Projects extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Project',
     'tms_Release',

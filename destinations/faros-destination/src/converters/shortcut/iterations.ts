@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ShortcutCommon, ShortcutConverter} from './common';
 import {Iteration} from './models';
-export class ShortcutIterations extends ShortcutConverter {
+export class Iterations extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   async convert(

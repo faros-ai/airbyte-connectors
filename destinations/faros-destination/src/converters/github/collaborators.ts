@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubCollaborators extends GithubConverter {
+export class Collaborators extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',
@@ -16,6 +16,6 @@ export class GithubCollaborators extends GithubConverter {
     const source = this.streamName.source;
     const user = record.record.data;
 
-    return GithubCommon.vcs_User_with_Membership(user, source);
+    return GitHubCommon.vcs_User_with_Membership(user, source);
   }
 }
