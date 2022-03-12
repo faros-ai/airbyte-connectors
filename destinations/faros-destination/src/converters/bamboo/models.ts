@@ -1,4 +1,3 @@
-import {Environments} from './streams/environment';
 export interface Plan {
   readonly id: string;
   readonly type: string;
@@ -82,12 +81,61 @@ export interface Deployment {
   environmentName: string;
 }
 
-export interface SearchResult<T> {
-  readonly size: number;
-  readonly searchResults: ReadonlyArray<T>;
+export enum BuildStatusCategory {
+  Canceled = 'Canceled',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  Success = 'Success',
+  Unknown = 'Unknown',
+  Custom = 'Custom',
 }
 
-export interface Result<T> {
-  readonly size: number;
-  readonly results: ReadonlyArray<T>;
+export enum DeploymentStatusCategory {
+  Canceled = 'Canceled',
+  Custom = 'Custom',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  RolledBack = 'RolledBack',
+  Success = 'Success',
+}
+
+export enum EnvironmentCategory {
+  Prod = 'Prod',
+  Staging = 'Staging',
+  QA = 'QA',
+  Dev = 'Dev',
+  Sandbox = 'Sandbox',
+  Custom = 'Custom',
+}
+
+export interface BuildStatus {
+  category: BuildStatusCategory;
+  detail: string;
+}
+
+export interface DeploymentStatus {
+  category: DeploymentStatusCategory;
+  detail: string;
+}
+
+export interface Environment {
+  category: EnvironmentCategory;
+  detail: string;
+}
+
+export interface OrganizationKey {
+  uid: string;
+  source: string;
+}
+
+export interface PipelineKey {
+  uid: string;
+  organization: OrganizationKey;
+}
+
+export interface BuildKey {
+  uid: string;
+  pipeline: PipelineKey;
 }

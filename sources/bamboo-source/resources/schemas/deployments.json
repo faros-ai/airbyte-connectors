@@ -57,6 +57,9 @@
           }
         }
       }
+    },
+    "environmentName":{
+      "type": "string"
     }
   }
 }

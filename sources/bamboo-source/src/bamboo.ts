@@ -95,12 +95,12 @@ export class Bamboo {
         !projectNames ||
         projectNames.includes(item.searchEntity.projectName)
       ) {
-        const builds = await this.getBuildsByPlanKey(
+        const buildItems = await this.getBuildsByPlanKey(
           item.searchEntity.key,
           lastBuildStartedTime
         );
-        for (const build of builds) {
-          yield build;
+        for (const buildItem of buildItems) {
+          yield buildItem;
         }
       }
     }
@@ -162,7 +162,11 @@ export class Bamboo {
           environment.id,
           lastDeploymentStartedDate
         );
-        for (const deploymentItem of deploymentItems) yield deploymentItem;
+        for (const deploymentItem of deploymentItems) {
+          const deployment = deploymentItem;
+          deployment.environmentName = environment.name;
+          yield deployment;
+        }
       }
     }
   }
