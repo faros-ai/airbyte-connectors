@@ -60,12 +60,13 @@ describe('index', () => {
     ).resolves.toStrictEqual([false, new VError('No token provided')]);
   });
 
-  test('streams - environemts, use full_refresh sync mode', async () => {
+  test('streams - environments, use full_refresh sync mode', async () => {
     const fnEnvironmentsFunc = jest.fn();
 
     Bamboo.instance = jest.fn().mockImplementation(() => {
-      const environmentsResource: any[] =
-        readTestResourceFile('environments.json');
+      const environmentsResource: any[] = readTestResourceFile(
+        'environments_input.json'
+      );
       return new Bamboo(
         {
           get: fnEnvironmentsFunc.mockResolvedValue({
@@ -78,7 +79,7 @@ describe('index', () => {
     const source = new sut.BambooSource(logger);
     const streams = source.streams({} as any);
 
-    const environmentsStream = streams[0];
+    const environmentsStream = streams[2];
     const environmentIter = environmentsStream.readRecords(
       SyncMode.FULL_REFRESH
     );
@@ -87,9 +88,37 @@ describe('index', () => {
       environments.push(environment);
     }
 
-    expect(fnEnvironmentsFunc).toHaveBeenCalledTimes(4);
+    expect(fnEnvironmentsFunc).toHaveBeenCalledTimes(1);
     expect(environments).toStrictEqual(
       readTestResourceFile('environments.json')
     );
+  });
+
+  test('streams - plans, use full_refresh sync mode', async () => {
+    const fnPlansFunc = jest.fn();
+
+    Bamboo.instance = jest.fn().mockImplementation(() => {
+      const plansResource: any[] = readTestResourceFile('plans_input.json');
+      return new Bamboo(
+        {
+          get: fnPlansFunc.mockResolvedValue({
+            data: plansResource,
+          }),
+        } as any,
+        {} as BambooConfig
+      );
+    });
+    const source = new sut.BambooSource(logger);
+    const streams = source.streams({} as any);
+
+    const plansStream = streams[3];
+    const planIter = plansStream.readRecords(SyncMode.FULL_REFRESH);
+    const plans = [];
+    for await (const plan of planIter) {
+      plans.push(plan);
+    }
+
+    expect(fnPlansFunc).toHaveBeenCalledTimes(1);
+    expect(plans).toStrictEqual(readTestResourceFile('plans.json'));
   });
 });

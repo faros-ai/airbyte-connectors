@@ -1,0 +1,916 @@
+[
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-6",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-6",
+        "lifeCycleState": "Finished",
+        "id": 1572889,
+        "buildCompletedTime": "2022-03-12T09:42:55.492+07:00",
+        "buildCompletedDate": "2022-03-12T09:42:55.492+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:42 AM",
+        "buildDurationInSeconds": 0,
+        "buildDuration": 0,
+        "buildDurationDescription": "global.unknown",
+        "buildRelativeTime": "5 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": false,
+        "notRunYet": false,
+        "finished": true,
+        "successful": true,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-6",
+        "planResultKey": {
+            "key": "DF-PLAN1-6",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 6
+        },
+        "state": "Successful",
+        "buildState": "Successful",
+        "number": 6,
+        "buildNumber": 6
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-5",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-5",
+        "lifeCycleState": "Finished",
+        "id": 1572886,
+        "buildStartedTime": "2022-03-12T09:41:56.139+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:41 AM",
+        "buildCompletedTime": "2022-03-12T09:41:56.421+07:00",
+        "buildCompletedDate": "2022-03-12T09:41:56.421+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:41 AM",
+        "buildDurationInSeconds": 0,
+        "buildDuration": 282,
+        "buildDurationDescription": "< 1 second",
+        "buildRelativeTime": "6 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-5",
+        "planResultKey": {
+            "key": "DF-PLAN1-5",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 5
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 5,
+        "buildNumber": 5
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-4",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-4",
+        "lifeCycleState": "Finished",
+        "id": 1572871,
+        "buildStartedTime": "2022-03-12T09:20:36.941+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:20 AM",
+        "buildCompletedTime": "2022-03-12T09:20:37.246+07:00",
+        "buildCompletedDate": "2022-03-12T09:20:37.246+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:20 AM",
+        "buildDurationInSeconds": 1,
+        "buildDuration": 1236,
+        "buildDurationDescription": "1 second",
+        "buildRelativeTime": "28 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "restartCount": 3,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-4",
+        "planResultKey": {
+            "key": "DF-PLAN1-4",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 4
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 4,
+        "buildNumber": 4
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-3",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-3",
+        "lifeCycleState": "Finished",
+        "id": 1572868,
+        "buildStartedTime": "2022-03-12T09:17:56.458+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:17 AM",
+        "buildCompletedTime": "2022-03-12T09:17:56.835+07:00",
+        "buildCompletedDate": "2022-03-12T09:17:56.835+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:17 AM",
+        "buildDurationInSeconds": 0,
+        "buildDuration": 723,
+        "buildDurationDescription": "< 1 second",
+        "buildRelativeTime": "30 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "restartCount": 1,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-3",
+        "planResultKey": {
+            "key": "DF-PLAN1-3",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 3
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 3,
+        "buildNumber": 3
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-2",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-2",
+        "lifeCycleState": "Finished",
+        "id": 1572865,
+        "buildStartedTime": "2022-03-12T09:10:40.219+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:10 AM",
+        "buildCompletedTime": "2022-03-12T09:10:41.719+07:00",
+        "buildCompletedDate": "2022-03-12T09:10:41.719+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:10 AM",
+        "buildDurationInSeconds": 1,
+        "buildDuration": 1500,
+        "buildDurationDescription": "1 second",
+        "buildRelativeTime": "38 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-2",
+        "planResultKey": {
+            "key": "DF-PLAN1-2",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 2
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 2,
+        "buildNumber": 2
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN1-1",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 1",
+            "shortKey": "PLAN1",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN1",
+                "rel": "self"
+            },
+            "key": "DF-PLAN1",
+            "name": "devcube faros - plan 1",
+            "planKey": {
+                "key": "DF-PLAN1"
+            }
+        },
+        "planName": "plan 1",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN1-1",
+        "lifeCycleState": "Finished",
+        "id": 1277953,
+        "buildStartedTime": "2022-03-11T23:24:27.336+07:00",
+        "prettyBuildStartedTime": "Fri, 11 Mar, 11:24 PM",
+        "buildCompletedTime": "2022-03-11T23:24:28.585+07:00",
+        "buildCompletedDate": "2022-03-11T23:24:28.585+07:00",
+        "prettyBuildCompletedTime": "Fri, 11 Mar, 11:24 PM",
+        "buildDurationInSeconds": 1,
+        "buildDuration": 1249,
+        "buildDurationDescription": "1 second",
+        "buildRelativeTime": "10 hours ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN1-1",
+        "planResultKey": {
+            "key": "DF-PLAN1-1",
+            "entityKey": {
+                "key": "DF-PLAN1"
+            },
+            "resultNumber": 1
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 1,
+        "buildNumber": 1
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN2-1",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 2",
+            "shortKey": "PLAN2",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN2",
+                "rel": "self"
+            },
+            "key": "DF-PLAN2",
+            "name": "devcube faros - plan 2",
+            "planKey": {
+                "key": "DF-PLAN2"
+            }
+        },
+        "planName": "plan 2",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN2-1",
+        "lifeCycleState": "NotBuilt",
+        "id": 1572874,
+        "buildStartedTime": "2022-03-12T09:28:24.214+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:28 AM",
+        "buildDurationInSeconds": 10,
+        "buildDuration": 10523,
+        "buildDurationDescription": "10 seconds",
+        "buildRelativeTime": "20 minutes ago",
+        "restartCount": 1,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": false,
+        "successful": false,
+        "buildReason": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN2-1",
+        "planResultKey": {
+            "key": "DF-PLAN2-1",
+            "entityKey": {
+                "key": "DF-PLAN2"
+            },
+            "resultNumber": 1
+        },
+        "state": "Unknown",
+        "buildState": "Unknown",
+        "number": 1,
+        "buildNumber": 1
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN3-3",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 3",
+            "shortKey": "PLAN3",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN3",
+                "rel": "self"
+            },
+            "key": "DF-PLAN3",
+            "name": "devcube faros - plan 3",
+            "planKey": {
+                "key": "DF-PLAN3"
+            }
+        },
+        "planName": "plan 3",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN3-3",
+        "lifeCycleState": "Finished",
+        "id": 1572883,
+        "buildStartedTime": "2022-03-12T09:39:06.838+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:39 AM",
+        "buildCompletedTime": "2022-03-12T09:39:15.172+07:00",
+        "buildCompletedDate": "2022-03-12T09:39:15.172+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:39 AM",
+        "buildDurationInSeconds": 8,
+        "buildDuration": 8334,
+        "buildDurationDescription": "8 seconds",
+        "buildRelativeTime": "9 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN3-3",
+        "planResultKey": {
+            "key": "DF-PLAN3-3",
+            "entityKey": {
+                "key": "DF-PLAN3"
+            },
+            "resultNumber": 3
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 3,
+        "buildNumber": 3
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN3-2",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 3",
+            "shortKey": "PLAN3",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN3",
+                "rel": "self"
+            },
+            "key": "DF-PLAN3",
+            "name": "devcube faros - plan 3",
+            "planKey": {
+                "key": "DF-PLAN3"
+            }
+        },
+        "planName": "plan 3",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN3-2",
+        "lifeCycleState": "Finished",
+        "id": 1572880,
+        "buildStartedTime": "2022-03-12T09:38:30.096+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:38 AM",
+        "buildCompletedTime": "2022-03-12T09:38:39.441+07:00",
+        "buildCompletedDate": "2022-03-12T09:38:39.441+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:38 AM",
+        "buildDurationInSeconds": 17,
+        "buildDuration": 17649,
+        "buildDurationDescription": "17 seconds",
+        "buildRelativeTime": "10 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "restartCount": 1,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Rebuilt     by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN3-2",
+        "planResultKey": {
+            "key": "DF-PLAN3-2",
+            "entityKey": {
+                "key": "DF-PLAN3"
+            },
+            "resultNumber": 2
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 2,
+        "buildNumber": 2
+    },
+    {
+        "expand": "plan,artifacts,comments,labels,jiraIssues,variables,stages",
+        "link": {
+            "href": "http://localhost:8085/rest/api/latest/result/DF-PLAN3-1",
+            "rel": "self"
+        },
+        "plan": {
+            "shortName": "plan 3",
+            "shortKey": "PLAN3",
+            "type": "chain",
+            "enabled": true,
+            "link": {
+                "href": "http://localhost:8085/rest/api/latest/plan/DF-PLAN3",
+                "rel": "self"
+            },
+            "key": "DF-PLAN3",
+            "name": "devcube faros - plan 3",
+            "planKey": {
+                "key": "DF-PLAN3"
+            }
+        },
+        "planName": "plan 3",
+        "projectName": "devcube faros",
+        "buildResultKey": "DF-PLAN3-1",
+        "lifeCycleState": "Finished",
+        "id": 1572877,
+        "buildStartedTime": "2022-03-12T09:37:12.117+07:00",
+        "prettyBuildStartedTime": "Sat, 12 Mar, 09:37 AM",
+        "buildCompletedTime": "2022-03-12T09:37:18.920+07:00",
+        "buildCompletedDate": "2022-03-12T09:37:18.920+07:00",
+        "prettyBuildCompletedTime": "Sat, 12 Mar, 09:37 AM",
+        "buildDurationInSeconds": 6,
+        "buildDuration": 6803,
+        "buildDurationDescription": "6 seconds",
+        "buildRelativeTime": "11 minutes ago",
+        "buildTestSummary": "No tests found",
+        "successfulTestCount": 0,
+        "failedTestCount": 0,
+        "quarantinedTestCount": 0,
+        "skippedTestCount": 0,
+        "continuable": false,
+        "onceOff": false,
+        "restartable": true,
+        "notRunYet": false,
+        "finished": true,
+        "successful": false,
+        "buildReason": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "reasonSummary": "Manual run by <a href=\"http://127.0.0.1:8085/browse/user/kelvintran\">Kelvin</a>",
+        "specsResult": false,
+        "artifacts": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "comments": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "labels": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "jiraIssues": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "variables": {
+            "size": 0,
+            "start-index": 0,
+            "max-result": 0
+        },
+        "stages": {
+            "size": 1,
+            "start-index": 0,
+            "max-result": 1
+        },
+        "key": "DF-PLAN3-1",
+        "planResultKey": {
+            "key": "DF-PLAN3-1",
+            "entityKey": {
+                "key": "DF-PLAN3"
+            },
+            "resultNumber": 1
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 1,
+        "buildNumber": 1
+    }
+]

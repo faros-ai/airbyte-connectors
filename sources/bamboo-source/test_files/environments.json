@@ -1,0 +1,44 @@
+[
+    {
+        "id": 884737,
+        "key": {
+            "key": "819201-884737"
+        },
+        "name": "environment 1",
+        "description": "environment 1 desc",
+        "deploymentProjectId": 819201,
+        "operations": {
+            "canView": true,
+            "canViewConfiguration": false,
+            "canEdit": false,
+            "canDelete": false,
+            "allowedToExecute": false,
+            "canExecute": false,
+            "allowedToCreateVersion": false,
+            "allowedToSetVersionStatus": false
+        },
+        "position": 0,
+        "configurationState": "DETAILED"
+    },
+    {
+        "id": 1867777,
+        "key": {
+            "key": "1736705-1867777"
+        },
+        "name": "evr4",
+        "description": "evr4 dd",
+        "deploymentProjectId": 1736705,
+        "operations": {
+            "canView": true,
+            "canViewConfiguration": false,
+            "canEdit": false,
+            "canDelete": false,
+            "allowedToExecute": false,
+            "canExecute": false,
+            "allowedToCreateVersion": false,
+            "allowedToSetVersionStatus": false
+        },
+        "position": 0,
+        "configurationState": "TASKED"
+    }
+]
