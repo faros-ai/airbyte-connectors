@@ -7,12 +7,10 @@ import {
   EnvironmentCategory,
 } from './models';
 
-const MAX_DESCRIPTION_LENGTH = 1000;
+const BASE_URL_DEFAULT = 'http://localhost:8085';
 
 interface BambooConfig {
-  // Max length for free-form description text fields such as task description
-  max_description_length?: number;
-  baseUrl: string;
+  base_url?: string;
 }
 
 export class BambooCommon {
@@ -111,14 +109,7 @@ export abstract class BambooConverter extends Converter {
   protected bambooConfig(ctx: StreamContext): BambooConfig {
     return ctx.config.source_specific_configs?.bamboo ?? {};
   }
-
-  protected maxDescriptionLength(ctx: StreamContext): number {
-    return (
-      this.bambooConfig(ctx).max_description_length ?? MAX_DESCRIPTION_LENGTH
-    );
-  }
-
   protected baseUrl(ctx: StreamContext): string | undefined {
-    return this.bambooConfig(ctx).baseUrl;
+    return this.bambooConfig(ctx).base_url ?? BASE_URL_DEFAULT;
   }
 }

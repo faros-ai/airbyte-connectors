@@ -1,0 +1,22 @@
+{
+    "streams": [
+      {
+        "stream": {
+          "name": "mytestsource__bamboo__builds"
+        },
+        "destination_sync_mode": "append"
+      },
+      {
+        "stream": {
+          "name": "mytestsource__bamboo__deployments"
+        },
+        "destination_sync_mode": "append"
+      },
+      {
+        "stream": {
+          "name": "mytestsource__bamboo__plans"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
+  } 
