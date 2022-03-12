@@ -76,3 +76,7 @@ export const agileacceleratorAllStreamsLog = readTestResourceFile(
 export const datadogAllStreamsLog = readTestResourceFile(
   'datadog/all-streams.log'
 );
+
+export const bambooAllStreamsLog = readTestResourceFile(
+  'bamboo/all-streams.log'
+);
