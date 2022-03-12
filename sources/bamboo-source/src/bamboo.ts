@@ -139,17 +139,6 @@ export class Bamboo {
     );
   }
 
-  async *getEnvironments(): AsyncGenerator<Environment> {
-    const res = await this.httpClient.get<DeploymentProject[]>(
-      'deploy/project/all'
-    );
-    for (const item of res.data) {
-      for (const environment of item.environments) {
-        yield environment;
-      }
-    }
-  }
-
   async *getDeployments(
     lastDeploymentStartedDate?: Date
   ): AsyncGenerator<Deployment> {

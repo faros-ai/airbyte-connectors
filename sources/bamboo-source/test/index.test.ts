@@ -59,41 +59,6 @@ describe('index', () => {
       } as any)
     ).resolves.toStrictEqual([false, new VError('No token provided')]);
   });
-
-  test('streams - environments, use full_refresh sync mode', async () => {
-    const fnEnvironmentsFunc = jest.fn();
-
-    Bamboo.instance = jest.fn().mockImplementation(() => {
-      const environmentsResource: any[] = readTestResourceFile(
-        'environments_input.json'
-      );
-      return new Bamboo(
-        {
-          get: fnEnvironmentsFunc.mockResolvedValue({
-            data: environmentsResource,
-          }),
-        } as any,
-        {} as BambooConfig
-      );
-    });
-    const source = new sut.BambooSource(logger);
-    const streams = source.streams({} as any);
-
-    const environmentsStream = streams[2];
-    const environmentIter = environmentsStream.readRecords(
-      SyncMode.FULL_REFRESH
-    );
-    const environments = [];
-    for await (const environment of environmentIter) {
-      environments.push(environment);
-    }
-
-    expect(fnEnvironmentsFunc).toHaveBeenCalledTimes(1);
-    expect(environments).toStrictEqual(
-      readTestResourceFile('environments.json')
-    );
-  });
-
   test('streams - plans, use full_refresh sync mode', async () => {
     const fnPlansFunc = jest.fn();
 
@@ -111,7 +76,7 @@ describe('index', () => {
     const source = new sut.BambooSource(logger);
     const streams = source.streams({} as any);
 
-    const plansStream = streams[3];
+    const plansStream = streams[2];
     const planIter = plansStream.readRecords(SyncMode.FULL_REFRESH);
     const plans = [];
     for await (const plan of planIter) {
