@@ -38,8 +38,4 @@ export class FirehydrantUsers extends FirehydrantConverter {
       },
     ];
   }
-
-  source() {
-    throw new Error('Method not implemented.');
-  }
 }

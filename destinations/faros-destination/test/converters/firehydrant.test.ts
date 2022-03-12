@@ -68,7 +68,9 @@ describe('firehydrant', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
+      compute_Application: 1,
       ims_Incident: 4,
+      ims_IncidentApplicationImpact: 1,
       ims_IncidentAssignment: 5,
       ims_IncidentEvent: 62,
       ims_IncidentTag: 1,

@@ -129,24 +129,28 @@ export class FirehydrantIncidents extends FirehydrantConverter {
     });
 
     for (const service of incident.services) {
+      let application = {
+        name: service.name,
+        platform: '',
+      };
       if (
         service.name in applicationMapping &&
         applicationMapping[service.name].name
       ) {
         const mappedApp = applicationMapping[service.name];
-        const application = {
+        application = {
           name: mappedApp.name,
-          platform: mappedApp.platform ?? '',
+          platform: mappedApp.platform ?? application.platform,
         };
-        res.push({model: 'compute_Application', record: application});
-        res.push({
-          model: 'ims_IncidentApplicationImpact',
-          record: {
-            incident: incidentRef,
-            application,
-          },
-        });
       }
+      res.push({model: 'compute_Application', record: application});
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {
+          incident: incidentRef,
+          application,
+        },
+      });
     }
 
     for (const assignment of incident.role_assignments) {
@@ -282,9 +286,5 @@ export class FirehydrantIncidents extends FirehydrantConverter {
       default:
         return {category: TaskStatusCategory.Custom, detail};
     }
-  }
-
-  source() {
-    throw new Error('Method not implemented.');
   }
 }

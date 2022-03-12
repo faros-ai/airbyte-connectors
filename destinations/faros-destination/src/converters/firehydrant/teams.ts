@@ -26,8 +26,4 @@ export class FirehydrantTeams extends FirehydrantConverter {
       },
     ];
   }
-
-  source() {
-    throw new Error('Method not implemented.');
-  }
 }
