@@ -85,7 +85,6 @@ export class Bamboo {
     }
   }
 
-  // eslint-disable-next-line require-yield
   async *getBuilds(
     projectNames?: [string],
     lastBuildStartedTime?: Date
@@ -96,10 +95,13 @@ export class Bamboo {
         !projectNames ||
         projectNames.includes(item.searchEntity.projectName)
       ) {
-        return this.getBuildsByPlanKey(
+        const builds = await this.getBuildsByPlanKey(
           item.searchEntity.key,
           lastBuildStartedTime
         );
+        for (const build of builds) {
+          yield build;
+        }
       }
     }
   }
@@ -114,19 +116,18 @@ export class Bamboo {
     and request with 'start-index=15' won't work. we fetch the latest build, it has build number = 40,
     we assume that 25 records (max) have been added and start iterating, checking on every step that
     the build number is more than 15 (we don't need those records with the build number 15 and less, they are already synced)*/
-  // eslint-disable-next-line require-yield
-  async *getBuildsByPlanKey(
+
+  async getBuildsByPlanKey(
     planKey: string,
     lastBuildStartedTime?: Date
-  ): AsyncGenerator<Build> {
-    return iterate(
+  ): Promise<Build[]> {
+    const pageSize = this.cfg.pageSize ?? DEFAULT_PAGE_SIZE;
+    return await iterate<Build>(
       (startIndex) =>
         this.httpClient.get(
-          `result/${planKey}?max-results=${
-            this.cfg.pageSize ?? DEFAULT_PAGE_SIZE
-          }&start-index=${startIndex}&expand=results.result.vcsRevisions&includeAllStates=true`
+          `result/${planKey}?max-results=${pageSize}&start-index=${startIndex}&expand=results.result.vcsRevisions&includeAllStates=true`
         ),
-      (data) => data.results.result,
+      (data) => data.data.results.result,
       //pagination check - check build started time
       (item: Build) =>
         this.breaker(
@@ -134,15 +135,15 @@ export class Bamboo {
           item.buildCompletedTime,
           lastBuildStartedTime
         ),
-      this.cfg.pageSize
+      pageSize
     );
   }
 
   async *getEnvironments(): AsyncGenerator<Environment> {
-    const res = await this.httpClient.get<SearchResult<DeploymentProject>>(
+    const res = await this.httpClient.get<DeploymentProject[]>(
       'deploy/project/all'
     );
-    for (const item of res.data.searchResults) {
+    for (const item of res.data) {
       for (const environment of item.environments) {
         yield environment;
       }
@@ -153,10 +154,10 @@ export class Bamboo {
   async *getDeployments(
     lastDeploymentStartedDate?: Date
   ): AsyncGenerator<Deployment> {
-    const res = await this.httpClient.get<SearchResult<DeploymentProject>>(
+    const res = await this.httpClient.get<[DeploymentProject]>(
       'deploy/project/all'
     );
-    for (const item of res.data.searchResults) {
+    for (const item of res.data) {
       for (const environment of item.environments) {
         return this.getDeploymentsByEnvironmentId(
           environment.id,
@@ -166,19 +167,17 @@ export class Bamboo {
     }
   }
 
-  // eslint-disable-next-line require-yield
   async *getDeploymentsByEnvironmentId(
     environmentId: number,
     lastDeploymentStartedDate?: Date
   ): AsyncGenerator<Deployment> {
-    return iterate(
+    const pageSize = this.cfg.pageSize ?? DEFAULT_PAGE_SIZE;
+    const items = await iterate<Deployment>(
       (startIndex) =>
         this.httpClient.get(
-          `deploy/environment/${environmentId}/results?max-results=${
-            this.cfg.pageSize ?? DEFAULT_PAGE_SIZE
-          }&start-index=${startIndex}`
+          `deploy/environment/${environmentId}/results?max-results=${pageSize}&start-index=${startIndex}`
         ),
-      (data) => data.results,
+      (data) => data.data.results,
       //pagination check - check deployment started date
       (item: Deployment) =>
         this.breaker(
@@ -186,8 +185,11 @@ export class Bamboo {
           item.finishedDate,
           lastDeploymentStartedDate
         ),
-      this.cfg.pageSize
+      pageSize
     );
+    for (const item of items) {
+      yield item;
+    }
   }
 
   private breaker(
