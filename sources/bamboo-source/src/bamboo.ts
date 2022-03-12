@@ -150,7 +150,6 @@ export class Bamboo {
     }
   }
 
-  // eslint-disable-next-line require-yield
   async *getDeployments(
     lastDeploymentStartedDate?: Date
   ): AsyncGenerator<Deployment> {
@@ -159,20 +158,21 @@ export class Bamboo {
     );
     for (const item of res.data) {
       for (const environment of item.environments) {
-        return this.getDeploymentsByEnvironmentId(
+        const deploymentItems = await this.getDeploymentsByEnvironmentId(
           environment.id,
           lastDeploymentStartedDate
         );
+        for (const deploymentItem of deploymentItems) yield deploymentItem;
       }
     }
   }
 
-  async *getDeploymentsByEnvironmentId(
+  async getDeploymentsByEnvironmentId(
     environmentId: number,
     lastDeploymentStartedDate?: Date
-  ): AsyncGenerator<Deployment> {
+  ): Promise<Deployment[]> {
     const pageSize = this.cfg.pageSize ?? DEFAULT_PAGE_SIZE;
-    const items = await iterate<Deployment>(
+    return await iterate<Deployment>(
       (startIndex) =>
         this.httpClient.get(
           `deploy/environment/${environmentId}/results?max-results=${pageSize}&start-index=${startIndex}`
@@ -187,9 +187,6 @@ export class Bamboo {
         ),
       pageSize
     );
-    for (const item of items) {
-      yield item;
-    }
   }
 
   private breaker(
