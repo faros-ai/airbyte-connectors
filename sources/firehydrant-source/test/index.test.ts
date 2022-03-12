@@ -56,22 +56,22 @@ describe('index', () => {
     ).resolves.toStrictEqual([true, undefined]);
   });
 
-  // test('check connection - incorrect config', async () => {
-  //   FireHydrant.instance = jest.fn().mockImplementation(() => {
-  //     return new FireHydrant(null, null);
-  //   });
-  //   const source = new sut.FireHydrantSource(logger);
-  //   await expect(
-  //     source.checkConnection({
-  //       token: '',
-  //     })
-  //   ).resolves.toStrictEqual([
-  //     false,
-  //     new VError(
-  //       "Please verify your token is correct. Error: Cannot read property 'get' of null"
-  //     ),
-  //   ]);
-  // });
+  test('check connection - incorrect config', async () => {
+    FireHydrant.instance = jest.fn().mockImplementation(() => {
+      return new FireHydrant(null, null);
+    });
+    const source = new sut.FireHydrantSource(logger);
+    await expect(
+      source.checkConnection({
+        token: '',
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "Please verify your token is correct. Error: Cannot read property 'get' of null"
+      ),
+    ]);
+  });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
     const fnIncidentsList = jest.fn();
