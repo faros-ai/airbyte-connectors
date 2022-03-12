@@ -11,7 +11,7 @@ import {Bamboo, BambooConfig} from '../bamboo';
 import {Build} from '../models';
 
 interface BuildState {
-  lastUpdatedAt: string;
+  lastBuildStartedTime: string;
 }
 
 export class Builds extends AirbyteStreamBase {
@@ -43,9 +43,23 @@ export class Builds extends AirbyteStreamBase {
   ): AsyncGenerator<Build, any, unknown> {
     const lastUpdatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastUpdatedAt)
+        ? Utils.toDate(streamState?.lastBuildStartedTime)
         : undefined;
     const bamboo = await Bamboo.instance(this.config, this.logger);
     yield* bamboo.getBuilds(this.projectNames, lastUpdatedAt);
+  }
+
+  getUpdatedState(
+    currentStreamState: BuildState,
+    latestRecord: Build
+  ): BuildState {
+    const lastBuildStartedTime: Date = new Date(latestRecord.buildStartedTime);
+    return {
+      lastBuildStartedTime:
+        lastBuildStartedTime >=
+        new Date(currentStreamState?.lastBuildStartedTime || 0)
+          ? latestRecord.buildStartedTime
+          : currentStreamState.lastBuildStartedTime,
+    };
   }
 }

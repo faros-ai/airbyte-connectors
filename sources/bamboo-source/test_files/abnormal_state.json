@@ -1,8 +1,8 @@
 {
   "builds": {
-    "buildStartedTime": "2025-01-01T00:00:00Z"
+    "lastBuildStartedTime": "2025-01-01T00:00:00Z"
   },
   "deployments": {
-    "startedDate": "2025-01-01T00:00:00Z"
+    "lastStartedDate": 1947052993392
   }
 }
