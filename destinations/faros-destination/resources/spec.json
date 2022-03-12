@@ -449,6 +449,12 @@
                     "type": "object",
                     "title": "Configuration",
                     "properties": {
+                      "max_description_length": {
+                        "type": "integer",
+                        "title": "Max Description Length",
+                        "description": "Value to cut description to specific length",
+                        "default": 1000
+                      },
                       "application_mapping": {
                         "type": "string",
                         "title": "Application Mapping",
