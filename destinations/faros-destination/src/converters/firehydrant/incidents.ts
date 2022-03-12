@@ -129,27 +129,24 @@ export class FirehydrantIncidents extends FirehydrantConverter {
     });
 
     for (const service of incident.services) {
-      let application = {name: service.name, platform: ''};
-
       if (
         service.name in applicationMapping &&
         applicationMapping[service.name].name
       ) {
         const mappedApp = applicationMapping[service.name];
-        application = {
+        const application = {
           name: mappedApp.name,
-          platform: mappedApp.platform ?? application.platform,
+          platform: mappedApp.platform ?? '',
         };
+        res.push({model: 'compute_Application', record: application});
+        res.push({
+          model: 'ims_IncidentApplicationImpact',
+          record: {
+            incident: incidentRef,
+            application,
+          },
+        });
       }
-      res.push({model: 'compute_Application', record: application});
-
-      res.push({
-        model: 'ims_IncidentApplicationImpact',
-        record: {
-          incident: incidentRef,
-          application,
-        },
-      });
     }
 
     for (const assignment of incident.role_assignments) {
