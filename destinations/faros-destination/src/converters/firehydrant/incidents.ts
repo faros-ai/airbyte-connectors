@@ -23,9 +23,7 @@ import {
 
 export class FirehydrantIncidents extends FirehydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_Application',
     'ims_Incident',
-    'ims_IncidentApplicationImpact',
     'ims_IncidentAssignment',
     'ims_IncidentEvent',
     'ims_IncidentTag',
