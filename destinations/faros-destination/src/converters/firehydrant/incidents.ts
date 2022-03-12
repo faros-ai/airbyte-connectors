@@ -283,4 +283,8 @@ export class FirehydrantIncidents extends FirehydrantConverter {
         return {category: TaskStatusCategory.Custom, detail};
     }
   }
+
+  source() {
+    throw new Error('Method not implemented.');
+  }
 }
