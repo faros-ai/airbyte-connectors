@@ -57,7 +57,9 @@ describe('bamboo', () => {
 
     const writtenByModel = {
       cicd_Build: 10,
-      generic_Record: 4,
+      cicd_Deployment: 1,
+      cicd_Organization: 1,
+      cicd_Pipeline: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();
