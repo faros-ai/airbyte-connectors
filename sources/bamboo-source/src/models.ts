@@ -90,3 +90,23 @@ export interface Result<T> {
   readonly size: number;
   readonly results: ReadonlyArray<T>;
 }
+
+export enum DeploymentStatusCategory {
+  Canceled = 'Canceled',
+  Custom = 'Custom',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  RolledBack = 'RolledBack',
+  Success = 'Success',
+}
+
+export enum BuildStatusCategory {
+  Canceled = 'Canceled',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  Success = 'Success',
+  Unknown = 'Unknown',
+  Custom = 'Custom',
+}

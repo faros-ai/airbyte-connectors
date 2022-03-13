@@ -12,13 +12,14 @@ import {
   Build,
   Deployment,
   DeploymentProject,
-  Environment,
   Plan,
   SearchResult,
 } from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_BUILD_TIMEOUT = 24;
+export const DEFAULT_DEPLOYMENT_TIMEOUT = 24;
 
 export interface BambooConfig {
   readonly token: string;
@@ -26,8 +27,32 @@ export interface BambooConfig {
   readonly pageSize?: number;
   readonly cutoffDays?: number;
   readonly projectNames?: [string];
+  readonly buildTimeout?: number;
+  readonly deploymentTimeout?: number;
 }
 
+export function isNewer(
+  state: string,
+  runningStates: string[],
+  timeout: number,
+  lastStartedDate?: Date,
+  startedDate?: Date
+): boolean {
+  const isRunning = runningStates.find((s) => s === state);
+  if (startedDate && isRunning) {
+    // Return positive hours from started date till now
+    const hoursFromStart = -Math.ceil(
+      DateTime.fromJSDate(startedDate).diffNow('hours').hours
+    );
+    const isHoursAcceptable = hoursFromStart >= 0 && hoursFromStart <= timeout;
+    const isNew = !lastStartedDate || lastStartedDate < startedDate;
+    if (isHoursAcceptable && isNew) {
+      return true;
+    }
+  }
+
+  return false;
+}
 export class Bamboo {
   private static backlog: Bamboo = null;
   private readonly cfg: BambooConfig;

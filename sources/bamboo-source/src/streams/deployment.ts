@@ -5,13 +5,19 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {Bamboo, BambooConfig} from '../bamboo';
-import {Deployment} from '../models';
+import {
+  Bamboo,
+  BambooConfig,
+  DEFAULT_DEPLOYMENT_TIMEOUT,
+  isNewer,
+} from '../bamboo';
+import {Deployment, DeploymentStatusCategory} from '../models';
 
 interface DeploymentState {
-  lastStartedDate: number;
+  lastStartedDate?: Date;
 }
 
 export class Deployments extends AirbyteStreamBase {
@@ -21,7 +27,6 @@ export class Deployments extends AirbyteStreamBase {
   ) {
     super(logger);
   }
-
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/deployments.json');
   }
@@ -52,12 +57,52 @@ export class Deployments extends AirbyteStreamBase {
     currentStreamState: DeploymentState,
     latestRecord: Deployment
   ): DeploymentState {
-    const lastStartedDate: Date = new Date(latestRecord.startedDate);
+    const lastStartedDate: Date = currentStreamState.lastStartedDate;
+
+    const startedDate = Utils.toDate(latestRecord.startedDate);
+    const deploymentStatus = this.convertDeploymentStatus(
+      latestRecord.deploymentState
+    );
+    const runningStartedDate = isNewer(
+      deploymentStatus.category,
+      [DeploymentStatusCategory.Running, DeploymentStatusCategory.Queued],
+      this.config.deploymentTimeout ?? DEFAULT_DEPLOYMENT_TIMEOUT,
+      lastStartedDate,
+      startedDate
+    );
+
     return {
       lastStartedDate:
-        lastStartedDate >= new Date(currentStreamState?.lastStartedDate || 0)
-          ? latestRecord.startedDate
+        !lastStartedDate || runningStartedDate
+          ? startedDate
           : currentStreamState.lastStartedDate,
     };
+  }
+
+  convertDeploymentStatus(status: string | undefined): {
+    category: DeploymentStatusCategory;
+    detail: string;
+  } {
+    if (!status) {
+      return {category: DeploymentStatusCategory.Custom, detail: 'undefined'};
+    }
+    const detail = status.toLowerCase();
+
+    switch (detail) {
+      case 'success':
+        return {category: DeploymentStatusCategory.Success, detail};
+      case 'failed':
+        return {category: DeploymentStatusCategory.Failed, detail};
+      case 'pending':
+        return {category: DeploymentStatusCategory.Queued, detail};
+      case 'in_progress':
+        return {category: DeploymentStatusCategory.Running, detail};
+      case 'cancelled':
+        return {category: DeploymentStatusCategory.Canceled, detail};
+      case 'rolled_back':
+        return {category: DeploymentStatusCategory.RolledBack, detail};
+      default:
+        return {category: DeploymentStatusCategory.Custom, detail};
+    }
   }
 }
