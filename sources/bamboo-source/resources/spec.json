@@ -27,6 +27,14 @@
         "type": "number",
         "title": "cutoffDays"
       },
+      "buildTimeout": {
+        "type": "number",
+        "title": "buildTimeout"
+      },
+      "deploymentTimeout": {
+        "type": "number",
+        "title": "deploymentTimeout"
+      },
       "projectNames": {
         "type": "array",
         "item": {
