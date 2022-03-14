@@ -31,4 +31,5 @@ export {
   DestinationModel,
   StreamContext,
 } from './converters/converter';
+export {Edition, InvalidRecordStrategy} from './destination';
 export {FarosDestinationRunner} from './destination-runner';
