@@ -12,6 +12,7 @@ interface FirehydrantConfig {
 }
 /** Firehydrant converter base */
 export abstract class FirehydrantConverter extends Converter {
+  source = 'FireHydrant';
   /** Almost every Firehydrant record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
