@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {SquadcastConverter, User} from './common';
 
-export class SquadcastUsers extends SquadcastConverter {
+export class Users extends SquadcastConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   async convert(

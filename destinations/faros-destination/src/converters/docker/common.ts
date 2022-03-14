@@ -138,6 +138,8 @@ export class DockerCommon {
 
 /** Docker converter base */
 export abstract class DockerConverter extends Converter {
+  source = 'Docker';
+
   /** Every Docker record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

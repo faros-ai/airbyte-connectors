@@ -8,14 +8,20 @@ import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, PRActivity} from '../bitbucket/types';
+import {PullRequests} from './pull_requests';
 
-type StreamSlice = {repository?: string; pullRequestId?: string} | undefined;
+type StreamSlice = {repository: string; prID: string; updatedOn: string};
+type PRActivityState = {cutoff?: string};
+
+interface TimestampedPRActivity extends PRActivity {
+  pullRequestUpdatedOn: string;
+}
 
 export class PullRequestActivities extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
     readonly repositories: string[],
-    readonly pullRequestIds: string[],
+    readonly pullRequests: PullRequests,
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -24,8 +30,13 @@ export class PullRequestActivities extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pull_request_activities.json');
   }
-  get primaryKey(): StreamKey {
-    return '';
+
+  get primaryKey(): StreamKey | undefined {
+    return undefined;
+  }
+
+  get cursorField(): string | string[] {
+    return 'pullRequestUpdatedOn';
   }
 
   async *streamSlices(
@@ -34,8 +45,18 @@ export class PullRequestActivities extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<StreamSlice> {
     for (const repository of this.repositories) {
-      for (const prID of this.pullRequestIds) {
-        yield {repository, pullRequestId: prID};
+      const prs = this.pullRequests.readRecords(
+        SyncMode.INCREMENTAL,
+        undefined,
+        {repository},
+        streamState
+      );
+      for await (const pr of prs) {
+        yield {
+          repository,
+          prID: pr.id.toString(),
+          updatedOn: pr.updatedOn,
+        };
       }
     }
   }
@@ -45,11 +66,27 @@ export class PullRequestActivities extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice,
     streamState?: Dictionary<any, string>
-  ): AsyncGenerator<PRActivity> {
+  ): AsyncGenerator<TimestampedPRActivity> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     const repoSlug = streamSlice.repository;
-    const prID = streamSlice.pullRequestId;
-    yield* bitbucket.getPRActivities(repoSlug, prID);
+    const prID = streamSlice.prID;
+    const activities = bitbucket.getPRActivities(repoSlug, prID);
+    for await (const activity of activities) {
+      yield {...activity, pullRequestUpdatedOn: streamSlice.updatedOn};
+    }
+  }
+
+  getUpdatedState(
+    currentStreamState: PRActivityState,
+    latestRecord: TimestampedPRActivity
+  ): PRActivityState {
+    return {
+      cutoff:
+        new Date(latestRecord.pullRequestUpdatedOn) >
+        new Date(currentStreamState?.cutoff ?? 0)
+          ? latestRecord.pullRequestUpdatedOn
+          : currentStreamState.cutoff,
+    };
   }
 }

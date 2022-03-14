@@ -11,6 +11,8 @@ import {
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter extends Converter {
+  source = 'JSONata';
+
   constructor(
     private readonly jsonataExpr: jsonata.Expression,
     readonly destinationModels: ReadonlyArray<DestinationModel>

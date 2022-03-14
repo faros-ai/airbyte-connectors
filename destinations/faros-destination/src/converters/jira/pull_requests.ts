@@ -4,14 +4,13 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
 // Required as dependency by Issues converter
-export class JiraPullRequests extends JiraConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = []; // TODO: set destination model
+export class PullRequests extends JiraConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    // TODO: convert records
     return [];
   }
 }

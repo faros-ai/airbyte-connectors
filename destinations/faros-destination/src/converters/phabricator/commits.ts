@@ -1,15 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
-import {PhabricatorCommon} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {PhabricatorCommon, PhabricatorConverter} from './common';
 
-export class PhabricatorCommits extends Converter {
+export class Commits extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_BranchCommitAssociation',
     'vcs_Commit',

@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {DatadogConverter} from './common';
 
-export class DatadogUsers extends DatadogConverter {
+export class Users extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
   async convert(

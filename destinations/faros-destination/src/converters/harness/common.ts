@@ -114,6 +114,8 @@ export interface ExecutionPipeline {
 
 /** Harness converter base */
 export abstract class HarnessConverter extends Converter {
+  source = 'Harness';
+
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }

@@ -15,7 +15,7 @@ enum BuildStatusCategory {
   CUSTOM = 'Custom',
 }
 
-export class BitbucketPipelines extends BitbucketConverter {
+export class Pipelines extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
     'cicd_BuildCommitAssociation',

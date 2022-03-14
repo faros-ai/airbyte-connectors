@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubReleases extends GithubConverter {
+export class Releases extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
     'cicd_ReleaseTagAssociation',
@@ -18,7 +18,7 @@ export class GithubReleases extends GithubConverter {
     const release = record.record.data;
     const res: DestinationRecord[] = [];
     const uid = `${release.id}`;
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       release.repository,
       source
     );

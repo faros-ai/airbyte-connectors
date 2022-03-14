@@ -9,7 +9,7 @@ import {
 } from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabIssues extends GitlabConverter {
+export class Issues extends GitlabConverter {
   private readonly logger: AirbyteLogger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubIssueMilestones extends GithubConverter {
+export class IssueMilestones extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   async convert(
@@ -13,7 +13,7 @@ export class GithubIssueMilestones extends GithubConverter {
     const source = this.streamName.source;
     const milestone = record.record.data;
 
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       milestone.repository,
       source
     );
@@ -27,7 +27,7 @@ export class GithubIssueMilestones extends GithubConverter {
           name: milestone.title,
           description: milestone.description?.substring(
             0,
-            GithubCommon.MAX_DESCRIPTION_LENGTH
+            GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           project: {uid: repository.name, source},
           status: this.epicStatus(milestone.state),

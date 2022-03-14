@@ -47,6 +47,8 @@ export class Tags extends AirbyteStreamBase {
       projectName: repo,
     };
     const docker = await Docker.instance(config, this.logger);
-    yield* docker.getTags(repo);
+    for (const tag of await docker.getTags(repo)) {
+      yield tag;
+    }
   }
 }

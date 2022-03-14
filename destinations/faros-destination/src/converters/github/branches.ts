@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubBranches extends GithubConverter {
+export class Branches extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Branch'];
 
   async convert(
@@ -13,7 +13,7 @@ export class GithubBranches extends GithubConverter {
     const source = this.streamName.source;
     const branch = record.record.data;
 
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       branch.repository,
       source
     );

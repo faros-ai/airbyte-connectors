@@ -20,7 +20,7 @@ enum BuildStatusCategory {
   CUSTOM = 'Custom',
 }
 
-export class BitbucketPipelineSteps extends BitbucketConverter {
+export class PipelineSteps extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_BuildStep',
   ];

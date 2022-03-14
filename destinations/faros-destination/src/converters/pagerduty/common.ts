@@ -21,13 +21,15 @@ export enum IncidentSeverityCategory {
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
-interface PagerdutyConfig {
+interface PagerDutyConfig {
   application_mapping?: ApplicationMapping;
   default_severity?: IncidentSeverityCategory;
 }
 
 /** PagerDuty converter base */
-export abstract class PagerdutyConverter extends Converter {
+export abstract class PagerDutyConverter extends Converter {
+  source = 'PagerDuty';
+
   /** Almost every Pagerduty record have id property. Function will be
    * override if record doesn't have id property.
    */
@@ -35,7 +37,7 @@ export abstract class PagerdutyConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected pagerdutyConfig(ctx: StreamContext): PagerdutyConfig {
+  protected pagerdutyConfig(ctx: StreamContext): PagerDutyConfig {
     return ctx.config.source_specific_configs?.pagerduty ?? {};
   }
 

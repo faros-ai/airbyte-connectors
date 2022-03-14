@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
-export class PhabricatorRevisions extends PhabricatorConverter {
+export class Revisions extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestReview',

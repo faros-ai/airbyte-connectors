@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubConverter} from './common';
+import {GitHubConverter} from './common';
 
-export class GithubIssueLabels extends GithubConverter {
+export class IssueLabels extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
   async convert(

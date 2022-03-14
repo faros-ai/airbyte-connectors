@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
 
-export class GitlabUsers extends GitlabConverter {
+export class Users extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_User'];
 
   async convert(
