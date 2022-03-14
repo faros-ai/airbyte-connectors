@@ -11,9 +11,8 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner {
   constructor() {
     const logger = new AirbyteLogger();
     const destination = new FarosDestination(logger);
-    const destinationRunner = new AirbyteDestinationRunner(logger, destination);
     super(logger, destination);
-    this.program = destinationRunner.mainCommand();
+    this.program = super.mainCommand();
   }
 
   registerConverters(...converters: ReadonlyArray<Converter>): void {

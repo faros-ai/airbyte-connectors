@@ -19,6 +19,9 @@
     "node": ">=14.5"
   },
   "main": "./lib",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",

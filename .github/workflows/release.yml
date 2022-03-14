@@ -9,7 +9,7 @@ on:
 
 jobs:
   publish-cdk:
-    name: Publish CDK
+    name: Publish CDK and Faros Destination
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -56,15 +56,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish destination package
+      # Publishing restricted to private registry
+      - name: Publish Faros Destination package
         if: steps.check-tag.outputs.exists == 'false'
         run: |
           cd destinations/faros-destination && \
           npm i && \
-          # Publishing restricted for testing
-          npm publish --access restricted --tag latest
+          npm publish --tag latest
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create tag
         if: steps.check-tag.outputs.exists == 'false'
