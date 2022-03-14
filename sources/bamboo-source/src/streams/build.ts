@@ -5,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Bamboo, BambooConfig, DEFAULT_BUILD_TIMEOUT, isNewer} from '../bamboo';

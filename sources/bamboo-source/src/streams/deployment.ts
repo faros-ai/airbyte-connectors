@@ -17,7 +17,7 @@ import {
 import {Deployment, DeploymentStatusCategory} from '../models';
 
 interface DeploymentState {
-  lastStartedDate?: Date;
+  lastStartedDate?: number;
 }
 
 export class Deployments extends AirbyteStreamBase {
@@ -57,7 +57,7 @@ export class Deployments extends AirbyteStreamBase {
     currentStreamState: DeploymentState,
     latestRecord: Deployment
   ): DeploymentState {
-    const lastStartedDate: Date = currentStreamState.lastStartedDate;
+    const lastStartedDate: number = currentStreamState.lastStartedDate;
 
     const startedDate = Utils.toDate(latestRecord.startedDate);
     const deploymentStatus = this.convertDeploymentStatus(
@@ -67,14 +67,14 @@ export class Deployments extends AirbyteStreamBase {
       deploymentStatus.category,
       [DeploymentStatusCategory.Running, DeploymentStatusCategory.Queued],
       this.config.deploymentTimeout ?? DEFAULT_DEPLOYMENT_TIMEOUT,
-      lastStartedDate,
+      Utils.toDate(lastStartedDate),
       startedDate
     );
 
     return {
       lastStartedDate:
         !lastStartedDate || runningStartedDate
-          ? startedDate
+          ? startedDate.getTime()
           : currentStreamState.lastStartedDate,
     };
   }
