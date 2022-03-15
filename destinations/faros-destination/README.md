@@ -4,7 +4,7 @@ Faros Destination is a universal destination to import data from any Airbyte sou
 
 Each source stream is handled by an appropriate [Converter](src/converters/converter.ts) implementation. Here are all the [supported sources](src/converters).
 
-Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](src/converters/jsonata.ts) or by implementing converters for the streams (read `Adding Support for Additional Sources` below).
+Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](src/converters/jsonata.ts) or by implementing converters for the streams ([read more below](#adding-support-for-additional-sources)).
 
 ## Usage
 
@@ -35,9 +35,11 @@ Faros Destination is built to be easily extensible to support additional sources
 For well-known sources you can simply open a PR against this repository and add any new stream converters.
 We are always happy for you to contribute them to the community.
 
-When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the Faros Destination. The converter class name must be the PascalCase (or UpperCamelCase) version of the stream name, e.g. [PullRequestStats](src/converters/github/pull_request_stats.ts).
+When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the Faros Destination. The converter class name must be the PascalCase (or UpperCamelCase) version of the stream name, e.g. [PullRequestStats](src/converters/github/pull_request_stats.ts) for GitHub.
 
-When creating the `all-streams.log` file, make sure that no real data is included. Also, ensure that the stream names are prefixed with the stream prefix specified in the test file. For example: `mytestsource__datadog__`.
+For testing, create the `all-streams.log` file and make sure that no real data is included. Also, ensure that the stream names are prefixed with the stream prefix specified in the test file. For example: `mytestsource__github__`.
+
+We have implemented [a lot of converters](src/converters) already so you have plenty examples to follow.
 
 ### Custom Sources
 
