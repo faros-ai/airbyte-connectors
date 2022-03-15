@@ -1,10 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {DateTime} from 'luxon';
-import {Logger} from 'pino';
-import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {iterate} from './iterator';
@@ -218,8 +214,8 @@ export class Bamboo {
           .minus({days: this.cfg.cutoffDays ?? DEFAULT_CUTOFF_DAYS})
           .toJSDate();
 
-    const startedAt = Utils.toDate(startedTime);
-    const completedAt = Utils.toDate(completedTime);
+    const startedAt = new Date(startedTime);
+    const completedAt = new Date(completedTime);
     if (!completedAt && startedAt && since >= startedAt) {
       return true;
     }

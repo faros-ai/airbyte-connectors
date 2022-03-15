@@ -4,8 +4,6 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
-import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -47,7 +45,7 @@ export class Deployments extends AirbyteStreamBase {
   ): AsyncGenerator<Deployment, any, unknown> {
     const lastStartedDate =
       syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastStartedDate)
+        ? new Date(streamState?.lastStartedDate)
         : undefined;
     const bamboo = await Bamboo.instance(this.config, this.logger);
     yield* bamboo.getDeployments(lastStartedDate);
@@ -59,7 +57,7 @@ export class Deployments extends AirbyteStreamBase {
   ): DeploymentState {
     const lastStartedDate: number = currentStreamState.lastStartedDate;
 
-    const startedDate = Utils.toDate(latestRecord.startedDate);
+    const startedDate = new Date(latestRecord.startedDate);
     const deploymentStatus = this.convertDeploymentStatus(
       latestRecord.deploymentState
     );
@@ -67,7 +65,7 @@ export class Deployments extends AirbyteStreamBase {
       deploymentStatus.category,
       [DeploymentStatusCategory.Running, DeploymentStatusCategory.Queued],
       this.config.deploymentTimeout ?? DEFAULT_DEPLOYMENT_TIMEOUT,
-      Utils.toDate(lastStartedDate),
+      new Date(lastStartedDate),
       startedDate
     );
 

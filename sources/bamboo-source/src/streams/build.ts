@@ -4,7 +4,6 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Bamboo, BambooConfig, DEFAULT_BUILD_TIMEOUT, isNewer} from '../bamboo';
@@ -53,11 +52,11 @@ export class Builds extends AirbyteStreamBase {
     currentStreamState: BuildState,
     latestRecord: Build
   ): BuildState {
-    const lastBuildStartedTime = Utils.toDate(
+    const lastBuildStartedTime = new Date(
       currentStreamState.lastBuildStartedTime
     );
 
-    const buildStartedTime = Utils.toDate(latestRecord.buildStartedTime);
+    const buildStartedTime = new Date(latestRecord.buildStartedTime);
     const buildStatus = this.convertBuildStatus(latestRecord.state);
     const runningStartedTime = isNewer(
       buildStatus.category,
