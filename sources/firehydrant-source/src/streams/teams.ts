@@ -4,7 +4,6 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
 
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';

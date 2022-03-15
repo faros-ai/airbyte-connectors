@@ -4,7 +4,6 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 import {Dictionary} from 'ts-essentials';
 
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';
@@ -37,7 +36,7 @@ export class Incidents extends AirbyteStreamBase {
   ): AsyncGenerator<Incident> {
     const lastCreatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? Utils.toDate(streamState?.lastCreatedAt)
+        ? new Date(streamState?.lastCreatedAt)
         : undefined;
     const buildkite = FireHydrant.instance(this.config, this.logger);
     yield* buildkite.getIncidents(lastCreatedAt);

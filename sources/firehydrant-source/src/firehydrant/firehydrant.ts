@@ -1,6 +1,5 @@
-import {AxiosInstance} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, Utils, wrapApiError} from 'faros-feeds-sdk';
+import axios, {AxiosInstance} from 'axios';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {
@@ -42,13 +41,15 @@ export class FireHydrant {
     const auth = `Bearer ${config.token}`;
 
     const version = config.version ?? DEFAULT_VERSION;
-    const restClient = makeAxiosInstanceWithRetry({
+    const httpClient = axios.create({
       baseURL: `${DEFAULT_BASE_URL}${version}`,
+      timeout: 5000,
       headers: {authorization: auth},
     });
+
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
-    FireHydrant.fireHydrant = new FireHydrant(restClient, pageSize);
+    FireHydrant.fireHydrant = new FireHydrant(httpClient, pageSize);
     logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }
