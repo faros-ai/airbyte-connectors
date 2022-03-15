@@ -40,14 +40,14 @@ VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docke
 
 👉 Follow our guide on how to develop a new source [here](https://github.com/faros-ai/airbyte-connectors/tree/main/sources#developing-an-airbyte-source).
 
-## Other useful commands
+## Other Useful Commands
 
 1. Audit fix `npm audit fix`
 2. Clean your project `lerna run clean` (sometimes you also wanna `rm -rf ./node_modules`)
 
 Read more about `lerna` here - https://github.com/lerna/lerna
 
-# Build Docker images
+# Build Docker Images
 
 In order to build a Docker image for a connector run the `docker build` command and set `path` argument.
 For example for Faros Destination connector run:
@@ -63,17 +63,11 @@ docker run faros-destination
 
 # Releasing
 
-## Publish CDK to NPM
+We use GitHub Actions to automatically create a corresponding tag, publish the packages to [NPM](https://www.npmjs.com) and push Docker images to [Docker Hub](https://hub.docker.com/u/farosai).
 
-To publish the CDK package to [NPM](https://www.npmjs.com), run `npm run bump` from the root of the
-repository. You will be prompted with a list of version increments to choose
-from (patch, minor, major, etc). Choose the desired increment, then commit and
-push the changed files. GitHub will automatically create a corresponding tag and
-publish the CDK to NPM once the changed files are merged to the main branch.
+1. Run `npm run bump` from the root of the repository. You will be prompted with a list of version increments to choose
+from (patch, minor, major, etc). Choose the desired increment.
+2. Commit and push the changed files into a branch, then open a PR into the main branch.
+3. Once the PR is approved and merged, [the release workflow](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) is triggered.
 
-## Publish Connector Docker images
-
-Connector Docker images are automatically published to Docker Hub after updates
-to the main branch. They are tagged by the version listed in the connector's
-`package.json`. If the connector is updated without incrementing the version,
-GitHub will **NOT** overwrite the existing image in Docker Hub.
+**Note:** If a connector is updated without incrementing the version, the release workflow will **NOT** overwrite the existing package/image.
