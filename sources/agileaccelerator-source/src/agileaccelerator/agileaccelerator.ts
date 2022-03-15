@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {Query} from './query';

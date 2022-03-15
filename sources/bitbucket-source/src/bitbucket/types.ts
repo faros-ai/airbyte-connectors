@@ -11,9 +11,6 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly password?: string;
   readonly token?: string;
   readonly workspace: string;
-  readonly repository: string[];
-  readonly pipeline: string[];
-  readonly pull_request_id?: string[];
   readonly pagelen?: number;
 }
 

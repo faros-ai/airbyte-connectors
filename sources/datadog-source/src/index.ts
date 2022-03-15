@@ -9,22 +9,22 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {DataDog, DataDogConfig} from './datadog';
+import {Datadog, DatadogConfig} from './datadog';
 import {Incidents, Users} from './streams';
 
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new DataDogSource(logger);
+  const source = new DatadogSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class DataDogSource extends AirbyteSourceBase {
+export class DatadogSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const datadog = DataDog.instance(config as DataDogConfig, this.logger);
+      const datadog = Datadog.instance(config as DatadogConfig, this.logger);
       await datadog.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -32,7 +32,7 @@ export class DataDogSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    const datadog = DataDog.instance(config as DataDogConfig, this.logger);
+    const datadog = Datadog.instance(config as DatadogConfig, this.logger);
     return [
       new Incidents(datadog, this.logger),
       new Users(datadog, this.logger),

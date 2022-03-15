@@ -141,7 +141,7 @@ export class Jenkins {
   async syncJobs(
     jenkinsCfg: JenkinsConfig,
     streamSlice: Job | null
-  ): Promise<Job[]> {
+  ): Promise<ReadonlyArray<Job>> {
     const pageSize = jenkinsCfg.pageSize || DEFAULT_PAGE_SIZE;
     const last100Builds = jenkinsCfg.last100Builds ?? false;
     const depth = jenkinsCfg.depth ?? (await this.calculateMaxJobsDepth());

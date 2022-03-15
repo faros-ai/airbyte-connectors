@@ -95,12 +95,7 @@
         "name": "pipeline_steps",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
-        "source_defined_cursor": true,
-        "default_cursor_field": [
-          "completedOn"
+          "full_refresh"
         ],
         "source_defined_primary_key": [
           [
@@ -116,7 +111,12 @@
         "name": "pull_request_activities",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh"
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "pullRequestUpdatedOn"
         ]
       },
       "sync_mode": "full_refresh",

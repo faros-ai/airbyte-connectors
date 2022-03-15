@@ -1,6 +1,6 @@
 {
   "name": "okta-source",
-  "version": "0.1.36",
+  "version": "0.1.55",
   "description": "Okta Airbyte source",
   "keywords": [
     "airbyte",
@@ -29,9 +29,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.36",
+    "faros-airbyte-cdk": "^0.1.55",
     "parse-link-header": "2.0.0",
     "verror": "^1.10.1"
   },

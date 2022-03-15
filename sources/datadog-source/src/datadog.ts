@@ -1,5 +1,5 @@
 import {v2} from '@datadog/datadog-api-client';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -21,29 +21,29 @@ interface PagedResult<T> {
   };
 }
 
-export interface DataDogConfig {
-  readonly apiKey: string;
-  readonly applicationKey: string;
-  readonly pageSize?: number;
+export interface DatadogConfig {
+  readonly api_key: string;
+  readonly application_key: string;
+  readonly page_size?: number;
 }
 
-export interface DataDogClient {
+export interface DatadogClient {
   incidents: v2.IncidentsApi;
   users: v2.UsersApi;
 }
 
-export class DataDog {
+export class Datadog {
   constructor(
-    readonly client: DataDogClient,
-    readonly config: DataDogConfig,
+    readonly client: DatadogClient,
+    readonly config: DatadogConfig,
     readonly logger: AirbyteLogger
   ) {}
 
-  static instance(config: DataDogConfig, logger: AirbyteLogger): DataDog {
+  static instance(config: DatadogConfig, logger: AirbyteLogger): Datadog {
     const v2Config = v2.createConfiguration({
       authMethods: {
-        apiKeyAuth: config.apiKey,
-        appKeyAuth: config.applicationKey,
+        apiKeyAuth: config.api_key,
+        appKeyAuth: config.application_key,
       },
     });
 
@@ -55,7 +55,7 @@ export class DataDog {
       users: new v2.UsersApi(v2Config),
     };
 
-    return new DataDog(client, config, logger);
+    return new Datadog(client, config, logger);
   }
 
   async checkConnection(): Promise<void> {
@@ -72,7 +72,7 @@ export class DataDog {
   // Note: This is an unstable endpoint
   async *getIncidents(
     lastModified?: Date,
-    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
+    pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.IncidentResponseData, any, any> {
     yield* this.paginate<v2.IncidentResponseData>(
       pageSize,
@@ -103,7 +103,7 @@ export class DataDog {
   // or retrieve all users if lastModifiedAt not set
   async *getUsers(
     lastModifiedAt?: Date,
-    pageSize = this.config.pageSize ?? DEFAULT_PAGE_SIZE
+    pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<v2.User, any, any> {
     yield* this.paginate<v2.User>(
       pageSize,

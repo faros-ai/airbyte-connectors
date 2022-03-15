@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -75,8 +74,8 @@ export class Squadcast {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getIncidents();
-      await iter.next();
+      const tenSecondsAgo = new Date(new Date().getTime() - 20000);
+      await this.getIncidents(tenSecondsAgo.toISOString());
     } catch (err: any) {
       let errorMessage = 'Please verify your token are correct. Error: ';
       if (err.error_code || err.error_info) {
@@ -141,7 +140,8 @@ export class Squadcast {
     (lastUpdatedAt?: string) =>
       new Date(lastUpdatedAt ?? DEFAULT_INCIDENTS_START_DATE)
   )
-  async *getIncidents(lastUpdatedAt?: string): AsyncGenerator<Incident> {
+  async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
+    const incidents: Incident[] = [];
     const startTime =
       new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
         ? lastUpdatedAt
@@ -161,14 +161,13 @@ export class Squadcast {
       }
     );
     for (const item of res.data.incidents) {
-      yield item;
+      incidents.push(item);
     }
+    return incidents;
   }
 
   async *getEvents(): AsyncGenerator<Event> {
-    const iterIncidents = this.getIncidents();
-
-    for await (const incident of iterIncidents) {
+    for (const incident of await this.getIncidents()) {
       if (this.eventIncidentId && incident.id === this.eventIncidentId) {
         yield* this.fetchIncidentsEvents(incident);
         break;
