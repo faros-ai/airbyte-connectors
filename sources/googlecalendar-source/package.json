@@ -1,6 +1,6 @@
 {
   "name": "googlecalendar-source",
-  "version": "0.1.55",
+  "version": "0.1.56",
   "description": "GoogleCalendar Airbyte source",
   "keywords": [
     "airbyte",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.55",
+    "faros-airbyte-cdk": "^0.1.56",
     "googleapis": "^95.0.0",
     "verror": "^1.10.1"
   },
