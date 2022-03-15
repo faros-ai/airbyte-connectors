@@ -2,9 +2,9 @@
 
 Faros Destination is a universal destination to import data from any Airbyte source into Faros.
 
-Each source stream is handled by an appropriate [Converter](src/converters/converter.ts) implementation. Here are all the [supported sources](src/converters).
+Each source stream is handled by an appropriate [Converter](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters/converter.ts) implementation. Here are all the [supported sources](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters).
 
-Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](src/converters/jsonata.ts) or by implementing converters for the streams ([read more below](#adding-support-for-additional-sources)).
+Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters/jsonata.ts) or by implementing converters for the streams ([read more below](#adding-support-for-additional-sources)).
 
 ## Usage
 
@@ -17,7 +17,7 @@ Any additional source streams can be handled by providing a JSONata expression f
 5. Set the desired version `x.y.z`, e.g the latest [![](https://img.shields.io/docker/v/farosai/airbyte-faros-destination?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-faros-destination/tags)
 6. Click Add
 
-More details on how to add a custom connector can be found in the official Airbyte [guide](https://docs.airbyte.com/integrations/custom-connectors).
+More details on how to add a custom connector can be found in the [official Airbyte guide](https://docs.airbyte.com/integrations/custom-connectors).
 
 ### Run from Terminal
 
@@ -35,11 +35,11 @@ Faros Destination is built to be easily extensible to support additional sources
 For well-known sources you can simply open a PR against this repository and add any new stream converters.
 We are always happy for you to contribute them to the community.
 
-When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the Faros Destination. The converter class name must be the PascalCase (or UpperCamelCase) version of the stream name, e.g. [PullRequestStats](src/converters/github/pull_request_stats.ts) for GitHub.
+When developing a converter, there is a specific naming convention that must be followed to ensure that the converter is correctly picked up by the Faros Destination. The converter class name must be the PascalCase (or UpperCamelCase) version of the stream name, e.g. [PullRequestStats](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters/github/pull_request_stats.ts) for GitHub.
 
 For testing, create the `all-streams.log` file and make sure that no real data is included. Also, ensure that the stream names are prefixed with the stream prefix specified in the test file. For example: `mytestsource__github__`.
 
-We have implemented [a lot of converters](src/converters) already so you have plenty examples to follow.
+We have implemented [a lot of converters](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters) already so you have plenty examples to follow.
 
 ### Custom Sources
 
@@ -135,7 +135,7 @@ Example `config.json`
   "origin": "mydatasource"
 }
 ```
-See [spec.json](resources/spec.json) for more properties for the `config.json`
+See [spec.json](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/resources/spec.json) for more properties for the `config.json`
 
 Example `catalog.json`
 ```json
