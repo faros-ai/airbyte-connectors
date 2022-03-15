@@ -4,23 +4,48 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {statuspageAllStreamsLog} from './data';
+import {googlecalendarAllStreamsLog} from './data';
 
-describe('statuspage', () => {
+describe('googlecalendar', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/statuspage/catalog.json';
+  const catalogPath = 'test/resources/googlecalendar/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__statuspage__';
+  const streamNamePrefix = 'mytestsource__googlecalendar__';
 
   beforeEach(async () => {
+    const locationsRes = [
+      {
+        uid: '419 University Ave, Palo Alto, CA 94301',
+        raw: '419 University Ave, Palo Alto, CA 94301',
+        address: {
+          // eslint-disable-next-line max-len
+          uid: 'EjI0MjAgVW5pdmVyc2l0eSBBdmUgIzMzM2EsIFBhbG8gQWx0bywgQ0EgOTQzMDEsIFVTQSIgGh4KFgoUChIJJy30Azm7j4ARbLmzlBtnYb8SBDMzM2E',
+          fullAddress: '420 University Ave #333a, Palo Alto, CA 94301, USA',
+          street: 'University Avenue',
+          houseNumber: '420',
+          unit: '333a',
+          postalCode: '94301',
+          city: 'Palo Alto',
+          state: 'California',
+          stateCode: 'CA',
+          country: 'United States',
+          countryCode: 'US',
+        },
+        coordinates: {lat: 37.4471709, lon: -122.1599896},
+      },
+    ];
+
     await initMockttp(mockttp);
+    mockttp
+      .forPost('/geocoding/lookup')
+      .thenReply(200, JSON.stringify({locations: locationsRes}));
     configPath = await tempConfig(mockttp.url);
   });
 
@@ -38,16 +63,12 @@ describe('statuspage', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(statuspageAllStreamsLog, 'utf8');
+    cli.stdin.end(googlecalendarAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
-    const processedByStream = {
-      incidents: 3,
-      incident_updates: 10,
-      users: 3,
-    };
+    const processedByStream = {calendars: 1, events: 3};
     const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
@@ -56,11 +77,13 @@ describe('statuspage', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 5,
-      ims_Incident: 3,
-      ims_IncidentApplicationImpact: 5,
-      ims_IncidentEvent: 10,
-      ims_User: 3,
+      cal_Calendar: 1,
+      cal_Event: 3,
+      cal_EventGuestAssociation: 2,
+      cal_User: 5,
+      geo_Address: 2,
+      geo_Coordinates: 2,
+      geo_Location: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

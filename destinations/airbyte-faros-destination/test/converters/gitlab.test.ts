@@ -6,28 +6,28 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src/destination';
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
 import {
-  githubAllStreamsLog,
-  githubLog,
-  githubPGRawLog,
+  gitlabAllStreamsLog,
+  gitlabLog,
+  gitlabPGRawLog,
   readTestResourceFile,
 } from './data';
 
-describe('github', () => {
+describe('gitlab', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/github/catalog.json';
-  const catalogRawPath = 'test/resources/github/catalog-raw.json';
+  const catalogPath = 'test/resources/gitlab/catalog.json';
+  const catalogRawPath = 'test/resources/gitlab/catalog-raw.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
-  const streamNamePrefix = 'mytestsource__github__';
+  const streamNamePrefix = 'mytestsource__gitlab__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -78,15 +78,15 @@ describe('github', () => {
       '--catalog',
       catalogPath,
     ]);
-    cli.stdin.end(githubLog, 'utf8');
+    cli.stdin.end(gitlabLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 110 messages');
-    expect(stdout).toMatch('Read 96 records');
-    expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Wrote 58 records');
+    expect(stdout).toMatch('Read 55 messages');
+    expect(stdout).toMatch('Read 55 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Wrote 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -103,14 +103,14 @@ describe('github', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(githubLog, 'utf8');
+    cli.stdin.end(gitlabLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 110 messages');
-    expect(stdout).toMatch('Read 96 records');
-    expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Would write 58 records');
+    expect(stdout).toMatch('Read 55 messages');
+    expect(stdout).toMatch('Read 55 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Would write 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -126,12 +126,12 @@ describe('github', () => {
       catalogRawPath,
       '--dry-run',
     ]);
-    cli.stdin.end(githubPGRawLog, 'utf8');
+    cli.stdin.end(gitlabPGRawLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Processed 111 records');
-    expect(stdout).toMatch('Would write 146 records');
+    expect(stdout).toMatch('Processed 55 records');
+    expect(stdout).toMatch('Would write 68 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -149,11 +149,11 @@ describe('github', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__github__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__gitlab__bad', {bad: 'dummy'})
       ) +
         os.EOL +
         JSON.stringify(
-          AirbyteRecord.make('mytestsource__github__something_else', {
+          AirbyteRecord.make('mytestsource__gitlab__something_else', {
             foo: 'bar',
           })
         ) +
@@ -183,7 +183,7 @@ describe('github', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__github__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__gitlab__bad', {bad: 'dummy'})
       ) + os.EOL,
       'utf8'
     );
@@ -194,7 +194,7 @@ describe('github', () => {
     expect(stdout).toMatch('Errored 1 records');
     expect(stdout).toMatch('Skipped 0 records');
     const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__github__bad');
+    expect(stderr).toMatch('Undefined stream mytestsource__gitlab__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 
@@ -207,35 +207,28 @@ describe('github', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(githubAllStreamsLog, 'utf8');
+    cli.stdin.end(gitlabAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      assignees: 12,
-      branches: 4,
-      collaborators: 12,
-      comments: 17,
-      commit_comments: 1,
-      commits: 77,
-      events: 300,
-      issue_events: 210,
-      issue_labels: 24,
-      issue_milestones: 1,
-      issues: 39,
-      organizations: 1,
+      branches: 7,
+      commits: 2,
+      group_labels: 2,
+      group_milestones: 1,
+      groups: 1,
+      issues: 2,
+      jobs: 8,
+      merge_request_commits: 6,
+      merge_requests: 6,
+      pipelines: 2,
+      project_labels: 12,
+      project_milestones: 2,
       projects: 1,
-      pull_request_stats: 38,
-      pull_requests: 38,
       releases: 1,
-      repositories: 49,
-      review_comments: 87,
-      reviews: 121,
-      stargazers: 2,
-      tags: 2,
-      teams: 1,
-      users: 24,
+      tags: 1,
+      users: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -245,31 +238,25 @@ describe('github', () => {
       .value();
 
     const writtenByModel = {
+      cicd_Build: 2,
+      cicd_BuildStep: 8,
+      cicd_Organization: 1,
+      cicd_Pipeline: 1,
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
-      generic_Record: 531,
-      tms_Epic: 1,
-      tms_Label: 24,
-      tms_Project: 50,
-      tms_Task: 1,
+      tms_Epic: 3,
+      tms_Label: 15,
+      tms_Task: 2,
       tms_TaskAssignment: 1,
-      tms_TaskBoard: 50,
-      tms_TaskBoardProjectRelationship: 50,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 14,
-      vcs_Branch: 4,
-      vcs_BranchCommitAssociation: 1,
-      vcs_Commit: 77,
-      vcs_Membership: 12,
+      tms_TaskTag: 1,
+      vcs_Branch: 7,
+      vcs_BranchCommitAssociation: 7,
+      vcs_Commit: 8,
       vcs_Organization: 1,
-      vcs_PullRequestComment: 87,
-      vcs_PullRequestReview: 121,
-      vcs_PullRequest__Update: 38,
-      vcs_PullRequest__Upsert: 38,
-      vcs_Repository: 49,
-      vcs_Tag: 2,
-      vcs_User: 195,
+      vcs_PullRequest: 6,
+      vcs_Repository: 1,
+      vcs_Tag: 1,
+      vcs_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

@@ -4,20 +4,20 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {shortcutAllStreamsLog} from './data';
+import {statuspageAllStreamsLog} from './data';
 
-describe('shortcut', () => {
+describe('statuspage', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/shortcut/catalog.json';
+  const catalogPath = 'test/resources/statuspage/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__shortcut__';
+  const streamNamePrefix = 'mytestsource__statuspage__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -38,17 +38,15 @@ describe('shortcut', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(shortcutAllStreamsLog, 'utf8');
+    cli.stdin.end(statuspageAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      epics: 1,
-      iterations: 2,
-      members: 1,
-      projects: 3,
-      stories: 2,
+      incidents: 3,
+      incident_updates: 10,
+      users: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -58,18 +56,11 @@ describe('shortcut', () => {
       .value();
 
     const writtenByModel = {
-      tms_Epic: 1,
-      tms_Label: 1,
-      tms_Project: 3,
-      tms_Sprint: 2,
-      tms_Task: 4,
-      tms_TaskBoard: 3,
-      tms_TaskBoardProjectRelationship: 3,
-      tms_TaskBoardRelationship: 2,
-      tms_TaskDependency: 2,
-      tms_TaskProjectRelationship: 2,
-      tms_TaskTag: 1,
-      tms_User: 1,
+      compute_Application: 5,
+      ims_Incident: 3,
+      ims_IncidentApplicationImpact: 5,
+      ims_IncidentEvent: 10,
+      ims_User: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -77,6 +68,7 @@ describe('shortcut', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(

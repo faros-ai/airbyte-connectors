@@ -4,33 +4,24 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
-import {Edition, InvalidRecordStrategy} from '../../src/destination';
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {dockerAllStreamsLog} from './data';
+import {backlogAllStreamsLog} from './data';
 
-describe('docker', () => {
+describe('backlog', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/docker/catalog.json';
+  const catalogPath = 'test/resources/backlog/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__docker__';
+  const streamNamePrefix = 'mytestsource__backlog__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      undefined,
-      {
-        docker: {organization: 'test-org'},
-      }
-    );
+    configPath = await tempConfig(mockttp.url);
   });
 
   afterEach(async () => {
@@ -47,12 +38,16 @@ describe('docker', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(dockerAllStreamsLog, 'utf8');
+    cli.stdin.end(backlogAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
-    const processedByStream = {tags: 1};
+    const processedByStream = {
+      issues: 3,
+      projects: 1,
+      users: 2,
+    };
     const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
@@ -61,10 +56,16 @@ describe('docker', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Artifact: 1,
-      cicd_ArtifactCommitAssociation: 1,
-      cicd_Organization: 1,
-      cicd_Repository: 1,
+      tms_Project: 1,
+      tms_Release: 1,
+      tms_Sprint: 2,
+      tms_Task: 3,
+      tms_TaskAssignment: 1,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskBoardRelationship: 3,
+      tms_TaskProjectRelationship: 3,
+      tms_User: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

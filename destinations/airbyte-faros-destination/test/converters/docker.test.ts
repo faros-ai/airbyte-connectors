@@ -4,24 +4,33 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {Edition, InvalidRecordStrategy} from '../../src/destination';
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {phabricatorAllStreamsLog} from './data';
+import {dockerAllStreamsLog} from './data';
 
-describe('phabricator', () => {
+describe('docker', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/phabricator/catalog.json';
+  const catalogPath = 'test/resources/docker/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__phabricator__';
+  const streamNamePrefix = 'mytestsource__docker__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      {
+        docker: {organization: 'test-org'},
+      }
+    );
   });
 
   afterEach(async () => {
@@ -38,18 +47,12 @@ describe('phabricator', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(phabricatorAllStreamsLog, 'utf8');
+    cli.stdin.end(dockerAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
-    const processedByStream = {
-      commits: 6,
-      projects: 4,
-      repositories: 2,
-      revisions: 3,
-      users: 4,
-    };
+    const processedByStream = {tags: 1};
     const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
@@ -58,16 +61,10 @@ describe('phabricator', () => {
       .value();
 
     const writtenByModel = {
-      generic_Record: 4,
-      vcs_BranchCommitAssociation: 6,
-      vcs_Commit: 6,
-      vcs_Membership: 4,
-      vcs_Organization: 2,
-      vcs_PullRequestReview: 3,
-      vcs_PullRequest__Update: 2,
-      vcs_PullRequest__Upsert: 3,
-      vcs_Repository: 2,
-      vcs_User: 4,
+      cicd_Artifact: 1,
+      cicd_ArtifactCommitAssociation: 1,
+      cicd_Organization: 1,
+      cicd_Repository: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -75,7 +72,6 @@ describe('phabricator', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(

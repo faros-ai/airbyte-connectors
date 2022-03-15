@@ -32,3 +32,16 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   const redact = fastRedact({paths, censor: 'REDACTED'});
   return `${redact(config)}`;
 }
+
+/** Convert a value to Date */
+export function toDate(
+  val: Date | string | number | undefined
+): Date | undefined {
+  if (typeof val === 'number') {
+    return new Date(val);
+  }
+  if (!val) {
+    return undefined;
+  }
+  return new Date(val);
+}

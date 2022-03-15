@@ -59,7 +59,7 @@ jobs:
       - name: Publish Faros Destination package
         if: steps.check-tag.outputs.exists == 'false'
         run: |
-          cd destinations/faros-destination && \
+          cd destinations/airbyte-faros-destination && \
           npm i && \
           npm publish --access public --tag latest
         env:

@@ -4,20 +4,20 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {victoropsAllStreamsLog} from './data';
+import {phabricatorAllStreamsLog} from './data';
 
-describe('victorops', () => {
+describe('phabricator', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/victorops/catalog.json';
+  const catalogPath = 'test/resources/phabricator/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__victorops__';
+  const streamNamePrefix = 'mytestsource__phabricator__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -38,15 +38,17 @@ describe('victorops', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(victoropsAllStreamsLog, 'utf8');
+    cli.stdin.end(phabricatorAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      incidents: 2,
-      teams: 2,
-      users: 1,
+      commits: 6,
+      projects: 4,
+      repositories: 2,
+      revisions: 3,
+      users: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -56,12 +58,16 @@ describe('victorops', () => {
       .value();
 
     const writtenByModel = {
-      ims_Incident: 2,
-      ims_IncidentAssignment: 2,
-      ims_IncidentEvent: 4,
-      ims_Team: 2,
-      ims_TeamIncidentAssociation: 2,
-      ims_User: 1,
+      generic_Record: 4,
+      vcs_BranchCommitAssociation: 6,
+      vcs_Commit: 6,
+      vcs_Membership: 4,
+      vcs_Organization: 2,
+      vcs_PullRequestReview: 3,
+      vcs_PullRequest__Update: 2,
+      vcs_PullRequest__Upsert: 3,
+      vcs_Repository: 2,
+      vcs_User: 4,
     };
 
     const processedTotal = _(processedByStream).values().sum();

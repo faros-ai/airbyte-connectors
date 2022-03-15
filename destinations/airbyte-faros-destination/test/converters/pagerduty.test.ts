@@ -6,28 +6,22 @@ import os from 'os';
 import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src/destination';
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {
-  gitlabAllStreamsLog,
-  gitlabLog,
-  gitlabPGRawLog,
-  readTestResourceFile,
-} from './data';
+import {pagerdutyLog, readTestResourceFile} from './data';
 
-describe('gitlab', () => {
+describe('pagerduty', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/gitlab/catalog.json';
-  const catalogRawPath = 'test/resources/gitlab/catalog-raw.json';
+  const catalogPath = 'test/resources/pagerduty/catalog.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
-  const streamNamePrefix = 'mytestsource__gitlab__';
+  const streamNamePrefix = 'mytestsource__pagerduty__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -78,15 +72,15 @@ describe('gitlab', () => {
       '--catalog',
       catalogPath,
     ]);
-    cli.stdin.end(gitlabLog, 'utf8');
+    cli.stdin.end(pagerdutyLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 55 messages');
-    expect(stdout).toMatch('Read 55 records');
-    expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Wrote 68 records');
+    expect(stdout).toMatch('Read 7 messages');
+    expect(stdout).toMatch('Read 7 records');
+    expect(stdout).toMatch('Processed 7 records');
+    expect(stdout).toMatch('Wrote 16 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -103,35 +97,14 @@ describe('gitlab', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(gitlabLog, 'utf8');
+    cli.stdin.end(pagerdutyLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 55 messages');
-    expect(stdout).toMatch('Read 55 records');
-    expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-  });
-
-  test('process raw records', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogRawPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(gitlabPGRawLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
+    expect(stdout).toMatch('Read 7 messages');
+    expect(stdout).toMatch('Read 7 records');
+    expect(stdout).toMatch('Processed 7 records');
+    expect(stdout).toMatch('Would write 16 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -149,11 +122,11 @@ describe('gitlab', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__gitlab__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__pagerduty__bad', {bad: 'dummy'})
       ) +
         os.EOL +
         JSON.stringify(
-          AirbyteRecord.make('mytestsource__gitlab__something_else', {
+          AirbyteRecord.make('mytestsource__pagerduty__something_else', {
             foo: 'bar',
           })
         ) +
@@ -183,7 +156,7 @@ describe('gitlab', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__gitlab__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__pagerduty__bad', {bad: 'dummy'})
       ) + os.EOL,
       'utf8'
     );
@@ -194,7 +167,7 @@ describe('gitlab', () => {
     expect(stdout).toMatch('Errored 1 records');
     expect(stdout).toMatch('Skipped 0 records');
     const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__gitlab__bad');
+    expect(stderr).toMatch('Undefined stream mytestsource__pagerduty__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 
@@ -207,27 +180,14 @@ describe('gitlab', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(gitlabAllStreamsLog, 'utf8');
+    cli.stdin.end(pagerdutyLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      branches: 7,
-      commits: 2,
-      group_labels: 2,
-      group_milestones: 1,
-      groups: 1,
-      issues: 2,
-      jobs: 8,
-      merge_request_commits: 6,
-      merge_requests: 6,
-      pipelines: 2,
-      project_labels: 12,
-      project_milestones: 2,
-      projects: 1,
-      releases: 1,
-      tags: 1,
+      incident_log_entries: 3,
+      incidents: 3,
       users: 1,
     };
     const processed = _(processedByStream)
@@ -238,25 +198,12 @@ describe('gitlab', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Build: 2,
-      cicd_BuildStep: 8,
-      cicd_Organization: 1,
-      cicd_Pipeline: 1,
-      cicd_Release: 1,
-      cicd_ReleaseTagAssociation: 1,
-      tms_Epic: 3,
-      tms_Label: 15,
-      tms_Task: 2,
-      tms_TaskAssignment: 1,
-      tms_TaskTag: 1,
-      vcs_Branch: 7,
-      vcs_BranchCommitAssociation: 7,
-      vcs_Commit: 8,
-      vcs_Organization: 1,
-      vcs_PullRequest: 6,
-      vcs_Repository: 1,
-      vcs_Tag: 1,
-      vcs_User: 1,
+      compute_Application: 3,
+      ims_IncidentApplicationImpact: 3,
+      ims_IncidentAssignment: 3,
+      ims_IncidentEvent: 3,
+      ims_Incident__Upsert: 3,
+      ims_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

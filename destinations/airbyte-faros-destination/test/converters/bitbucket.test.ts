@@ -4,20 +4,20 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {squadcastAllStreamsLog} from './data';
+import {bitbucketAllStreamsLog} from './data';
 
-describe('squadcast', () => {
+describe('bitbucket', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/squadcast/catalog.json';
+  const catalogPath = 'test/resources/bitbucket/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__squadcast__';
+  const streamNamePrefix = 'mytestsource__bitbucket__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -38,16 +38,23 @@ describe('squadcast', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(squadcastAllStreamsLog, 'utf8');
+    cli.stdin.end(bitbucketAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      events: 3,
-      incidents: 4,
-      services: 1,
-      users: 1,
+      branches: 2,
+      commits: 25,
+      deployments: 14,
+      issues: 1,
+      pipeline_steps: 5,
+      pipelines: 7,
+      pull_request_activities: 4,
+      pull_requests: 2,
+      repositories: 6,
+      workspace_users: 5,
+      workspaces: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -57,13 +64,19 @@ describe('squadcast', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 1,
-      ims_Incident: 4,
-      ims_IncidentApplicationImpact: 4,
-      ims_IncidentEvent: 3,
-      ims_IncidentTag: 3,
-      ims_Label: 3,
-      ims_User: 1,
+      cicd_Build: 7,
+      cicd_BuildCommitAssociation: 7,
+      cicd_Deployment: 14,
+      cicd_Organization: 3,
+      tms_Task: 1,
+      tms_TaskAssignment: 1,
+      tms_User: 2,
+      vcs_Branch: 2,
+      vcs_Commit: 25,
+      vcs_Membership: 5,
+      vcs_Organization: 3,
+      vcs_PullRequest: 2,
+      vcs_User: 29,
     };
 
     const processedTotal = _(processedByStream).values().sum();

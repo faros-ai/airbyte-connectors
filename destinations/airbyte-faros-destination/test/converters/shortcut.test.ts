@@ -4,20 +4,20 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
-import {agileacceleratorAllStreamsLog} from './data';
+import {shortcutAllStreamsLog} from './data';
 
-describe('agileaccelerator', () => {
+describe('shortcut', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/agileaccelerator/catalog.json';
+  const catalogPath = 'test/resources/shortcut/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__agileaccelerator__';
+  const streamNamePrefix = 'mytestsource__shortcut__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -38,13 +38,17 @@ describe('agileaccelerator', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(agileacceleratorAllStreamsLog, 'utf8');
+    cli.stdin.end(shortcutAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
     const processedByStream = {
-      works: 11,
+      epics: 1,
+      iterations: 2,
+      members: 1,
+      projects: 3,
+      stories: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -54,10 +58,17 @@ describe('agileaccelerator', () => {
       .value();
 
     const writtenByModel = {
-      tms_Epic: 9,
-      tms_Project: 9,
-      tms_Sprint: 6,
-      tms_Task: 11,
+      tms_Epic: 1,
+      tms_Label: 1,
+      tms_Project: 3,
+      tms_Sprint: 2,
+      tms_Task: 4,
+      tms_TaskBoard: 3,
+      tms_TaskBoardProjectRelationship: 3,
+      tms_TaskBoardRelationship: 2,
+      tms_TaskDependency: 2,
+      tms_TaskProjectRelationship: 2,
+      tms_TaskTag: 1,
       tms_User: 1,
     };
 
@@ -66,7 +77,6 @@ describe('agileaccelerator', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(
