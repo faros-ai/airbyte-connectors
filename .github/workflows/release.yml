@@ -8,8 +8,8 @@ on:
       - '**.md'
 
 jobs:
-  publish-cdk:
-    name: Publish CDK
+  publish-packages:
+    name: Publish packages
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -47,10 +47,19 @@ jobs:
         if: steps.check-tag.outputs.exists == 'false'
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
-      - name: Publish packages
+      - name: Publish CDK package
         if: steps.check-tag.outputs.exists == 'false'
         run: |
           cd faros-airbyte-cdk && \
+          npm i && \
+          npm publish --access public --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish Faros Destination package
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          cd destinations/faros-destination && \
           npm i && \
           npm publish --access public --tag latest
         env:
@@ -65,7 +74,6 @@ jobs:
           github_repo: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.CDK_VERSION }}
-
 
   publish-connectors:
     name: Publish Connectors

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
 import pino from 'pino';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
+import {Edition, InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {datadogAllStreamsLog} from './data';

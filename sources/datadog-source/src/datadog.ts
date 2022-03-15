@@ -1,5 +1,5 @@
 import {v2} from '@datadog/datadog-api-client';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 const DEFAULT_PAGE_SIZE = 100;

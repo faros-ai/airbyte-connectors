@@ -5,7 +5,7 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 import pino from 'pino';
 
-import {InvalidRecordStrategy} from '../../src';
+import {InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {jenkinsAllStreamsLog, jenkinsLog, readTestResourceFile} from './data';

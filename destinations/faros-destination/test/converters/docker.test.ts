@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
+import {Edition, InvalidRecordStrategy} from '../../src/destination';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {dockerAllStreamsLog} from './data';

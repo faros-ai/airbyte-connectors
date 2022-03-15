@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
+import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
