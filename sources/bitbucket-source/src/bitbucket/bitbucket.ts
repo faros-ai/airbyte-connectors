@@ -2,8 +2,7 @@ import {Bitbucket as BitbucketClient} from 'bitbucket';
 import {APIClient} from 'bitbucket/src/client/types';
 import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Utils, wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
@@ -382,7 +381,7 @@ export class Bitbucket {
               activity?.approval ??
               activity?.changesRequested;
 
-            const date = Utils.toDate(
+            const date = toDate(
               change?.date ?? change?.updatedOn ?? change?.createdOn
             );
             if (activity?.update?.state === 'MERGED' && date) {
