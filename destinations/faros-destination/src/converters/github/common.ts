@@ -3,10 +3,10 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {Converter, DestinationRecord, StreamName} from '../converter';
+import {Converter, DestinationRecord} from '../converter';
 
 /** Common functions shares across GitHub converters */
-export class GithubCommon {
+export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -14,12 +14,12 @@ export class GithubCommon {
     user: Dictionary<any>,
     source: string
   ): DestinationRecord[] {
-    const vcsUser = GithubCommon.vcs_User(user, source);
-    const repository = GithubCommon.parseRepositoryKey(user.repository, source);
+    const vcsUser = GitHubCommon.vcs_User(user, source);
+    const repository = GitHubCommon.parseRepositoryKey(user.repository, source);
 
     if (!repository) return [vcsUser];
 
-    const vcsMembership = GithubCommon.vcs_Membership(
+    const vcsMembership = GitHubCommon.vcs_Membership(
       vcsUser.record.uid,
       repository.organization.uid,
       repository.organization.source
@@ -51,7 +51,7 @@ export class GithubCommon {
   }
 
   static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
-    const type = GithubCommon.vcs_UserType(user);
+    const type = GitHubCommon.vcs_UserType(user);
     return {
       model: 'vcs_User',
       record: {
@@ -104,7 +104,7 @@ export class GithubCommon {
           name: name,
           description: description?.substring(
             0,
-            GithubCommon.MAX_DESCRIPTION_LENGTH
+            GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(createdAt),
           updatedAt: Utils.toDate(updatedAt),
@@ -152,16 +152,12 @@ export class GithubCommon {
 }
 
 /** Github converter base */
-export abstract class GithubConverter extends Converter {
+export abstract class GitHubConverter extends Converter {
+  source = 'GitHub';
+
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  get streamName(): StreamName {
-    if (this.stream) return this.stream;
-    this.stream = new StreamName('GitHub', super.streamName.name);
-    return this.stream;
   }
 }
 

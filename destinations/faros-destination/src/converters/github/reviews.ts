@@ -3,7 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {camelCase, upperFirst} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 // GitHub Review States
 const ReviewStates = [
@@ -13,7 +13,7 @@ const ReviewStates = [
   'dismissed',
 ];
 
-export class GithubReviews extends GithubConverter {
+export class Reviews extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestReview',
     'vcs_User',
@@ -26,7 +26,7 @@ export class GithubReviews extends GithubConverter {
     const source = this.streamName.source;
     const review = record.record.data;
     const res: DestinationRecord[] = [];
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       review.repository,
       source
     );
@@ -35,12 +35,12 @@ export class GithubReviews extends GithubConverter {
 
     let author: DestinationRecord | undefined = undefined;
     if (review.user) {
-      author = GithubCommon.vcs_User(review.user, source);
+      author = GitHubCommon.vcs_User(review.user, source);
       res.push(author);
     }
 
     // Parse the PR number from the pull request url
-    const prNum = GithubCommon.parsePRnumber(review.pull_request_url);
+    const prNum = GitHubCommon.parsePRnumber(review.pull_request_url);
     const pullRequest = {repository, number: prNum, uid: prNum.toString()};
 
     const state = ReviewStates.includes(review.state.toLowerCase())

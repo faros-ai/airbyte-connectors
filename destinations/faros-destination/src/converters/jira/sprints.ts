@@ -18,7 +18,7 @@ import {
 } from '../converter';
 import {JiraCommon, JiraConverter, SprintIssue} from './common';
 
-export class JiraSprints extends JiraConverter {
+export class Sprints extends JiraConverter {
   private logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
@@ -36,11 +36,11 @@ export class JiraSprints extends JiraConverter {
   private sprintIssueRecords?: Dictionary<SprintIssue[], number>;
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [JiraSprints.issueFieldsStream, JiraSprints.sprintIssuesStream];
+    return [Sprints.issueFieldsStream, Sprints.sprintIssuesStream];
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
-    const records = ctx.getAll(JiraSprints.issueFieldsStream.asString);
+    const records = ctx.getAll(Sprints.issueFieldsStream.asString);
     return invertBy(
       pickBy(
         mapValues(records, (r) => r.record.data.name as string),
@@ -52,7 +52,7 @@ export class JiraSprints extends JiraConverter {
   private static getSprintIssueRecords(
     ctx: StreamContext
   ): Dictionary<SprintIssue[], number> {
-    const records = ctx.getAll(JiraSprints.sprintIssuesStream.asString);
+    const records = ctx.getAll(Sprints.sprintIssuesStream.asString);
     return groupBy(
       Object.values(records).map((r) => r.record.data as SprintIssue),
       (si) => si.sprintId
@@ -85,10 +85,10 @@ export class JiraSprints extends JiraConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprint = record.record.data;
     if (!this.pointsFieldIdsByName) {
-      this.pointsFieldIdsByName = JiraSprints.getFieldIdsByName(ctx);
+      this.pointsFieldIdsByName = Sprints.getFieldIdsByName(ctx);
     }
     if (!this.sprintIssueRecords) {
-      this.sprintIssueRecords = JiraSprints.getSprintIssueRecords(ctx);
+      this.sprintIssueRecords = Sprints.getSprintIssueRecords(ctx);
     }
 
     let completedPoints = 0;

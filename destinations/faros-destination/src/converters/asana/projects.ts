@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
 
-export class AsanaProjects extends AsanaConverter {
+export class Projects extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
 
   async convert(

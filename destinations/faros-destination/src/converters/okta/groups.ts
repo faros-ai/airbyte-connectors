@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OktaConverter} from './common';
 import {Group} from './models';
 
-export class OktaGroups extends OktaConverter {
+export class Groups extends OktaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'org_Team',
     'org_TeamMembership',

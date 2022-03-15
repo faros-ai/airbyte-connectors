@@ -2,7 +2,7 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {PagerdutyConverter, PagerdutyObject} from './common';
+import {PagerDutyConverter, PagerdutyObject} from './common';
 
 enum IncidentStatusCategory {
   Created = 'Created',
@@ -20,7 +20,7 @@ interface Acknowledgement {
   acknowledger: PagerdutyObject;
 }
 
-export class PagerdutyIncidents extends PagerdutyConverter {
+export class Incidents extends PagerDutyConverter {
   private readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

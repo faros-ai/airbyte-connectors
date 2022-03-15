@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {PagerdutyConverter} from './common';
+import {PagerDutyConverter} from './common';
 
 interface IncidentEventType {
   category: IncidentEventTypeCategory;
@@ -16,7 +16,7 @@ enum IncidentEventTypeCategory {
   Custom = 'Custom',
 }
 
-export class PagerdutyIncidentLogEntries extends PagerdutyConverter {
+export class IncidentLogEntries extends PagerDutyConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_IncidentEvent',
   ];

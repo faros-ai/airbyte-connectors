@@ -7,9 +7,9 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubIssues extends GithubConverter {
+export class Issues extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
     'tms_Task',
@@ -43,12 +43,12 @@ export class GithubIssues extends GithubConverter {
 
     let user: DestinationRecord | undefined;
     if (issue.user) {
-      user = GithubCommon.tms_User(issue.user, source);
+      user = GitHubCommon.tms_User(issue.user, source);
       res.push(user);
     }
 
     issue.assignees?.forEach((a) => {
-      const assignee = GithubCommon.tms_User(a, source);
+      const assignee = GitHubCommon.tms_User(a, source);
       res.push(assignee);
       res.push({
         model: 'tms_TaskAssignment',
@@ -79,7 +79,7 @@ export class GithubIssues extends GithubConverter {
         name: issue.title,
         description: issue.body?.substring(
           0,
-          GithubCommon.MAX_DESCRIPTION_LENGTH
+          GitHubCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
         createdAt: Utils.toDate(issue.created_at),
@@ -89,7 +89,7 @@ export class GithubIssues extends GithubConverter {
       },
     });
 
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       issue.repository,
       source
     );

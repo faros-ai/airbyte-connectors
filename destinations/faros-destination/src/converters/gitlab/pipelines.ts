@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class GitlabPipelines extends GitlabConverter {
+export class Pipelines extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
 
   async convert(

@@ -7,13 +7,16 @@ import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
 export abstract class Converter {
-  protected stream: StreamName;
+  private stream: StreamName;
+
+  /** Name of the source system that records were fetched from (e.g. GitHub) **/
+  abstract readonly source: string;
 
   /** Input stream supported by converter */
   get streamName(): StreamName {
     if (this.stream) return this.stream;
     this.stream = StreamName.fromString(
-      snakeCase(this.constructor.name).replace('_', StreamNameSeparator)
+      `${this.source}${StreamNameSeparator}${snakeCase(this.constructor.name)}`
     );
     return this.stream;
   }

@@ -78,6 +78,8 @@ export class AsanaCommon {
 
 /** Asana converter base */
 export abstract class AsanaConverter extends Converter {
+  source = 'Asana';
+
   /** All Asana records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.gid;

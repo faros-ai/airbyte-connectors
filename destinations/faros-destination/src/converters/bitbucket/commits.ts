@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {Commit} from './types';
 
-export class BitbucketCommits extends BitbucketConverter {
+export class Commits extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Commit',
     'vcs_User',

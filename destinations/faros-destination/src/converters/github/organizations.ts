@@ -3,12 +3,12 @@ import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubConverter} from './common';
+import {GitHubConverter} from './common';
 
 // Github org types
 const orgTypes = ['organization', 'workspace', 'group'];
 
-export class GithubOrganizations extends GithubConverter {
+export class Organizations extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
   ];

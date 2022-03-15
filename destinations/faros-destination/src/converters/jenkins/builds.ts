@@ -1,15 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
-import {JenkinsCommon} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {JenkinsCommon, JenkinsConverter} from './common';
 
-export class JenkinsBuilds extends Converter {
+export class Builds extends JenkinsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'cicd_Pipeline',

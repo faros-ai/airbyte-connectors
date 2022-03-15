@@ -24,7 +24,7 @@ enum TaskStatusCategory {
   TODO = 'Todo',
 }
 
-export class BitbucketIssues extends BitbucketConverter {
+export class Issues extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',

@@ -179,6 +179,8 @@ export class SquadcastCommon {
 
 /** SquadCast converter base */
 export abstract class SquadcastConverter extends Converter {
+  source = 'SquadCast';
+
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

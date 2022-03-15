@@ -52,7 +52,9 @@ export class PullRequests extends AirbyteStreamBase {
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
     const repoSlug = streamSlice.repository;
-    yield* bitbucket.getPullRequests(repoSlug, lastUpdated);
+    for (const pr of await bitbucket.getPullRequests(repoSlug, lastUpdated)) {
+      yield pr;
+    }
   }
 
   getUpdatedState(

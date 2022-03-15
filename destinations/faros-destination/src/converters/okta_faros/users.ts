@@ -1,18 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
-import {OktaUsers} from '../okta/users';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {Users as OktaUsers} from '../okta/users';
+import {OktaFarosConverter} from './common';
 
 /**
  * This converter is identical to OktaUsers for Okta community source.
  * It is here to support the Okta source we developed at Faros.
  */
-export class OktaFarosUsers extends Converter {
+export class Users extends OktaFarosConverter {
   private alias = new OktaUsers();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> =

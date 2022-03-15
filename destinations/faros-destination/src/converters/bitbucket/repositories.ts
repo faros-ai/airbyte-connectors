@@ -9,7 +9,7 @@ import {
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {Repository, Workspace} from './types';
 
-export class BitbucketRepositories extends BitbucketConverter {
+export class Repositories extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Repository',
   ];

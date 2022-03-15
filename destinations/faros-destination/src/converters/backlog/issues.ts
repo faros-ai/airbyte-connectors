@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BacklogCommon, BacklogConverter} from './common';
 import {Issue, TaskField, TaskStatusChange} from './models';
 
-export class BacklogIssues extends BacklogConverter {
+export class Issues extends BacklogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
     'tms_Task',

@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import VError from 'verror';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {DatadogConverter, IncidentSeverityCategory} from './common';
@@ -13,7 +12,7 @@ enum IncidentStatusCategory {
   Custom = 'Custom',
 }
 
-export class DatadogIncidents extends DatadogConverter {
+export class Incidents extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_Incident',
     'ims_IncidentAssignment',
@@ -55,7 +54,6 @@ export class DatadogIncidents extends DatadogConverter {
           this.getStatus(incident.attributes?.fields?.state?.value) ?? null,
         createdAt: Utils.toDate(incident.attributes?.created) ?? null,
         updatedAt: Utils.toDate(incident.attributes?.modified) ?? null,
-        acknowledgedAt: Utils.toDate(incident.attributes?.detected) ?? null,
         resolvedAt: Utils.toDate(incident.attributes?.resolved) ?? null,
       },
     });

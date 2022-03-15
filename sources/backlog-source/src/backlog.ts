@@ -81,7 +81,8 @@ export class Backlog {
     (lastUpdatedAt?: string) =>
       new Date(lastUpdatedAt ?? DEFAULT_MEMOIZE_START_TIME)
   )
-  async *getIssues(lastUpdatedAt?: string): AsyncGenerator<Issue> {
+  async getIssues(lastUpdatedAt?: string): Promise<ReadonlyArray<Issue>> {
+    const results: Issue[] = [];
     const startTime = new Date(lastUpdatedAt ?? 0);
     const config = this.cfg.project_id
       ? {
@@ -104,9 +105,10 @@ export class Backlog {
 
         if (comment.status === 200) item.comments = comment.data;
 
-        yield item;
+        results.push(item);
       }
     }
+    return results;
   }
 
   formatDate(d: Date): string {

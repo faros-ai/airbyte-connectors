@@ -2,9 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GithubCommon, GithubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
-export class GithubReviewComments extends GithubConverter {
+export class ReviewComments extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestComment',
   ];
@@ -16,7 +16,7 @@ export class GithubReviewComments extends GithubConverter {
     const source = this.streamName.source;
     const comment = record.record.data;
 
-    const repository = GithubCommon.parseRepositoryKey(
+    const repository = GitHubCommon.parseRepositoryKey(
       comment.repository,
       source
     );
@@ -24,7 +24,7 @@ export class GithubReviewComments extends GithubConverter {
     if (!repository) return [];
 
     // Parse the PR number from the pull request url
-    const prNum = GithubCommon.parsePRnumber(comment.pull_request_url);
+    const prNum = GitHubCommon.parsePRnumber(comment.pull_request_url);
     const pullRequest = {repository, number: prNum, uid: prNum.toString()};
 
     const author = comment.user ? {uid: comment.user.login, source} : null;
