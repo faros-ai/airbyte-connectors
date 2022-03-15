@@ -4,8 +4,8 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {CLI, read} from './../cli';
 import {victoropsAllStreamsLog} from './data';
 
 describe('victorops', () => {
