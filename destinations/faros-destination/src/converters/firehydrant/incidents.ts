@@ -21,7 +21,7 @@ import {
   TaskStatusCategory,
 } from './models';
 
-export class FirehydrantIncidents extends FirehydrantConverter {
+export class Incidents extends FirehydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',

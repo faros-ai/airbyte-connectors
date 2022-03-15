@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FirehydrantConverter} from './common';
 import {User} from './models';
 
-export class FirehydrantUsers extends FirehydrantConverter {
+export class Users extends FirehydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_User',
     'tms_User',

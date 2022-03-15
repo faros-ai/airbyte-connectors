@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FirehydrantConverter} from './common';
 import {Team} from './models';
 
-export class FirehydrantTeams extends FirehydrantConverter {
+export class Teams extends FirehydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_Team'];
 
   async convert(
