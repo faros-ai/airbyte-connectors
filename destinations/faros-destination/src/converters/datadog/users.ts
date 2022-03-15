@@ -8,7 +8,7 @@ export class Users extends DatadogConverter {
 
   async convert(
     record: AirbyteRecord,
-    _ctx: StreamContext
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data;

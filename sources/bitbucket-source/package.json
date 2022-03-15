@@ -50,17 +50,5 @@
         "tsconfig": "test/tsconfig.json"
       }
     }
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  },
-  "prettier": {
-    "bracketSpacing": false,
-    "parser": "typescript",
-    "trailingComma": "es5",
-    "singleQuote": true
   }
 }
