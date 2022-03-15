@@ -101,6 +101,7 @@ export class BambooCommon {
 
 /** Bamboo converter base */
 export abstract class BambooConverter extends Converter {
+  source = 'Bamboo';
   /** Almost every Bamboo record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

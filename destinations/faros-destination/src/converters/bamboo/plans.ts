@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooConverter} from './common';
 import {Plan} from './models';
 
-export class BambooPlans extends BambooConverter {
+export class Plans extends BambooConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Pipeline',
   ];

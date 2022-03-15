@@ -6,7 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooCommon, BambooConverter} from './common';
 import {Build, PipelineKey} from './models';
 
-export class BambooBuilds extends BambooConverter {
+export class Builds extends BambooConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
 
   async convert(
