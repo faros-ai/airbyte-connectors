@@ -12,7 +12,6 @@ export async function iterate<V>(
   let startIndex = 0;
   let isContinueIteration = true;
   do {
-    // eslint-disable-next-line no-useless-catch
     try {
       const res = await requester(startIndex);
       const data = dataExtractor(res);
