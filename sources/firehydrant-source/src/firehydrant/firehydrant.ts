@@ -127,7 +127,7 @@ export class FireHydrant {
         data: [],
       };
       for (const incident of response?.data.data ?? []) {
-        if (!createdAt || Utils.toDate(incident.created_at) >= createdAt) {
+        if (!createdAt || new Date(incident.created_at) >= createdAt) {
           const eventResponse = await this.restClient.get<
             PaginateResponse<IncidentEvent>
           >(`incidents/${incident.id}/events`);
