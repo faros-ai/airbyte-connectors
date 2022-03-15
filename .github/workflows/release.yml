@@ -8,8 +8,8 @@ on:
       - '**.md'
 
 jobs:
-  publish-cdk:
-    name: Publish CDK and Faros Destination
+  publish-packages:
+    name: Publish packages
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
