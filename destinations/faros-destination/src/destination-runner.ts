@@ -8,6 +8,7 @@ import {FarosDestination} from './destination';
 /** Faros destination runner. */
 export class FarosDestinationRunner extends AirbyteDestinationRunner {
   readonly program: Command;
+
   constructor() {
     const logger = new AirbyteLogger();
     const destination = new FarosDestination(logger);
@@ -15,6 +16,9 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner {
     this.program = super.mainCommand();
   }
 
+  /**
+   * Register converters for custom streams
+   */
   registerConverters(...converters: ReadonlyArray<Converter>): void {
     converters.forEach(ConverterRegistry.addConverter);
   }

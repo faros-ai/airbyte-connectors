@@ -3,7 +3,7 @@ import {Command} from 'commander';
 import {FarosDestinationRunner} from './destination-runner';
 
 /**
- * The main entry point.
+ * The main entry point
  *
  * You can optionally provide options `exitOverride` and `configureOutput` to
  * override default behavior of the CLI when it detects an error and where it
@@ -37,6 +37,8 @@ export {
   DestinationRecord,
   DestinationModel,
   StreamContext,
+  StreamName,
+  StreamNameSeparator,
 } from './converters/converter';
 export {Edition, InvalidRecordStrategy} from './destination';
 export {FarosDestinationRunner} from './destination-runner';

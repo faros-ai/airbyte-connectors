@@ -3,7 +3,9 @@
 Use this as a universal destination to import data from an Airbyte source into Faros.
 Here are all the [supported sources](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/faros-destination/src/converters).
 
-## Add to Airbyte
+## Usage
+
+### Run from Airbyte
 
 1. Open Airbyte UI
 2. Go to Settings -> Destinations -> New Connector
@@ -21,7 +23,7 @@ docker pull farosai/airbyte-faros-destination
 docker run farosai/airbyte-faros-destination
 ```
 
-## Converters
+## Adding Converters
 
 ### Developing
 
@@ -41,20 +43,20 @@ This library allows developers to extend Faros Destination with new converters w
 ### Installation
 
 ```
-npm install @faros-ai/faros-destination
+npm i airbyte-faros-destination
 ```
 
 ### Usage
-The library currently provides a main class FarosDestinationRunner which
+The library currently provides a main class `FarosDestinationRunner` which
 allows you to register the custom converters you created. Additionally,
 use the program property to get a default CLI app that provides the basic
 commands needed to write records to Faros.
 
-Example `index.ts`
+Example `index.ts`:
 ```typescript
-import {Command} from "commander";
-import { AirbyteRecord } from "faros-airbyte-cdk/lib";
-import {Converter, DestinationModel, DestinationRecord, FarosDestinationRunner, StreamContext} from 'faros-destination'
+import {Command} from 'commander';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Converter, DestinationModel, DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
 
 class Builds extends Converter {
   source: string = 'CustomSource'
@@ -84,7 +86,7 @@ class Builds extends Converter {
   }
 }
 class Pipelines extends Converter {
-  // see example above
+  // similar to the Builds in the example above
   ...
 }
 
@@ -92,18 +94,20 @@ class Pipelines extends Converter {
 export function mainCommand(): Command {
   const destinationRunner = new FarosDestinationRunner();
 
-  // Register your custom converter
+  // Register your custom converter(s)
   destinationRunner.registerConverters(
-    new CustomBuildsConverter(),
-    new CustomPipelinesConverter()
+    new Builds(),
+    new Pipelines()
   );
+
   return destinationRunner.program;
 }
 ```
 
-Example shell script to run file bin/main
+Example shell script to run file `bin/main`:
 ```shell
 #!/usr/bin/env node
+
 const {mainCommand} = require('../lib');
 
 mainCommand().parseAsync(process.argv).catch((err) => {
@@ -127,7 +131,7 @@ Example `config.json`
   "edition_configs": {
     "edition": "cloud",
     "api_url": "https://prod.api.faros.ai",
-    "api_key": "apiKey",
+    "api_key": "<my_faros_api_key>",
     "graph": "default"
   },
   "origin": "mydatasource"
@@ -140,22 +144,16 @@ Example `catalog.json`
 {
   "streams": [
     {
-    "stream": {
-      "name": "mydatasource__CustomSource__builds"
-    },
-    "destination_sync_mode": "append"
-    },
-    {
-    "stream": {
-      "name": "mydatasource__CustomSource__pipelines"
-    },
-    "destination_sync_mode": "append"
+      "stream": {
+        "name": "mydatasource__CustomSource__builds"
+      },
+      "destination_sync_mode": "append"
     },
     {
-    "stream": {
-      "name": "mydatasource_github__pull_requests"
-    },
-    "destination_sync_mode": "append"
+      "stream": {
+        "name": "mydatasource__CustomSource__pipelines"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

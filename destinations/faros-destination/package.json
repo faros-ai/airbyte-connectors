@@ -1,5 +1,5 @@
 {
-  "name": "faros-destination",
+  "name": "airbyte-faros-destination",
   "version": "0.1.52",
   "description": "Faros Destination for Airbyte",
   "keywords": [
@@ -8,19 +8,19 @@
     "faros"
   ],
   "homepage": "https://www.faros.ai",
-  "repository": "https://github.com/faros-ai/airbyte-connectors",
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
+  "repository": "https://github.com/faros-ai/airbyte-connectors",
+  "bugs": {
+    "url": "https://github.com/faros-ai/airbyte-connectors/issues"
+  },
   "files": [
     "lib/",
     "resources/"
   ],
+  "main": "./lib",
   "engines": {
     "node": ">=14.5"
-  },
-  "main": "./lib",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "tsc -p src",

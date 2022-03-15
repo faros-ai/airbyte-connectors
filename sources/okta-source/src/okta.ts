@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {wrapApiError} from 'faros-feeds-sdk';
 import parseLinkHeader from 'parse-link-header';
 import {VError} from 'verror';

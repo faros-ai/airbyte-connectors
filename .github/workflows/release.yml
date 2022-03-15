@@ -56,15 +56,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Publishing restricted to private registry
       - name: Publish Faros Destination package
         if: steps.check-tag.outputs.exists == 'false'
         run: |
           cd destinations/faros-destination && \
           npm i && \
-          npm publish --tag latest
+          npm publish --access public --tag latest
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create tag
         if: steps.check-tag.outputs.exists == 'false'
@@ -75,7 +74,6 @@ jobs:
           github_repo: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.CDK_VERSION }}
-
 
   publish-connectors:
     name: Publish Connectors
