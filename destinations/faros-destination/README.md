@@ -113,7 +113,7 @@ mainCommand().parseAsync(process.argv).catch((err) => {
 ```
 
 ### Writing Records into Faros
-```
+```shell
 ./bin/main write --config config.json --catalog catalog.json
 ```
 
@@ -122,7 +122,7 @@ details of the Faros destination to write to, and `catalog.json` to
 document source streams to write records for.
 
 Example `config.json`
-```
+```json
 {
   "edition_configs": {
     "edition": "cloud",
@@ -136,7 +136,7 @@ Example `config.json`
 See [spec.json](resources/spec.json) for more properties for the `config.json`
 
 Example `catalog.json`
-```
+```json
 {
   "streams": [
     {
