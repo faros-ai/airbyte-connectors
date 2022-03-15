@@ -9,7 +9,7 @@ import Client, {
   StoryLink,
 } from 'clubhouse-lib';
 export {Epic, Iteration, Member, Project, Repository};
-import {Utils, wrapApiError} from 'faros-feeds-sdk';
+import {toDate, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 export interface ShortcutConfig {
@@ -163,7 +163,7 @@ export class Shortcut {
               yield storyItem;
             }
           } else {
-            const updatedAt = Utils.toDate(storyItem.updated_at);
+            const updatedAt = toDate(storyItem.updated_at);
             if (updatedAt && updatedAt >= from && updatedAt < to) {
               yield storyItem;
             }
