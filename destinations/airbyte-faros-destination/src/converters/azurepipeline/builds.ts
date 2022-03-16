@@ -6,7 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurepipelineConverter} from './common';
 import {Build, Tag} from './models';
 
-export class AzurepipelineBuilds extends AzurepipelineConverter {
+export class Builds extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Artifact',
     'cicd_Build',

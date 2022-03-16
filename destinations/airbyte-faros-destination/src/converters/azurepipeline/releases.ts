@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurepipelineConverter} from './common';
 import {Release, UserTypeCategory} from './models';
 
-export class AzurepipelineReleases extends AzurepipelineConverter {
+export class Releases extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Release',
     'vcs_User',

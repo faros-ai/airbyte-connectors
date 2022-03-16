@@ -3,9 +3,9 @@ import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurepipelineConverter} from './common';
-import {ComputeApplication, Pipeline} from './models';
+import {Pipeline} from './models';
 
-export class AzurepipelinePipelines extends AzurepipelineConverter {
+export class Pipelines extends AzurepipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Deployment',
     'cicd_Organization',
