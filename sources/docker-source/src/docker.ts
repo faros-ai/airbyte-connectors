@@ -1,6 +1,5 @@
 import * as dockerRegistry from '@snyk/docker-registry-v2-client';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -140,7 +139,8 @@ export class Docker {
   }
 
   @Memoize((repo: string): string => repo)
-  async *getTags(repo: string): AsyncGenerator<Tag> {
+  async getTags(repo: string): Promise<ReadonlyArray<Tag>> {
+    const results: Tag[] = [];
     const res = await dockerRegistry.getTags(
       this.registryBase,
       repo,
@@ -157,13 +157,14 @@ export class Docker {
         repo,
         imageManifest.config.digest
       );
-      yield {
+      results.push({
         name: item,
         projectName: repo,
         imageConfig,
         imageManifest,
-      };
+      });
     }
+    return results;
   }
 
   @Memoize((repo: string, digest: string): string => repo.concat(digest))
