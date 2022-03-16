@@ -19,6 +19,7 @@ interface AzuregitConfig {
 
 /** Azuregit converter base */
 export abstract class AzuregitConverter extends Converter {
+  source = 'AzureGit';
   /** Almost every Azuregit record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

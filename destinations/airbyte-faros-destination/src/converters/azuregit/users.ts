@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzuregitConverter} from './common';
 import {User, UserType, UserTypeCategory} from './models';
 
-export class AzuregitUsers extends AzuregitConverter {
+export class Users extends AzuregitConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',

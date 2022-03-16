@@ -3,9 +3,9 @@ import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzuregitConverter} from './common';
-import {OrgTypeCategory, PullRequest} from './models';
+import {PullRequest} from './models';
 
-export class AzuregitPullRequests extends AzuregitConverter {
+export class PullRequests extends AzuregitConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestReview',
