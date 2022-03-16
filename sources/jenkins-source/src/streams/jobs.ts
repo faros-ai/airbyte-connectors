@@ -53,8 +53,7 @@ export class Jobs extends AirbyteStreamBase {
     const state =
       syncMode === SyncMode.INCREMENTAL ? streamSlice || null : null;
 
-    const jobs: Job[] = await jenkins.syncJobs(this.config, state);
-    for (const job of jobs) {
+    for (const job of await jenkins.syncJobs(this.config, state)) {
       yield job;
     }
   }

@@ -8,6 +8,9 @@
   "pipeline_steps": {
     "cutoff": "2025-01-01T00:00:00.000Z"
   },
+  "pull_request_activities": {
+    "cutoff": "2025-01-01T00:00:00.000Z"
+  },
   "pull_requests": {
     "cutoff": "2025-01-01T00:00:00.000Z"
   },

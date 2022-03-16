@@ -1,5 +1,4 @@
-import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {calendar_v3, google} from 'googleapis';
 import {VError} from 'verror';
 
