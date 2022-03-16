@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import parseGitUrl from 'git-url-parse';
 
 import {Converter, StreamContext} from '../converter';
 import {
