@@ -1,7 +1,8 @@
 connector_image: bitbucket-source
 tests:
   spec:
-    - spec_path: "resources/spec.json"
+    - config_path: "secrets/config.json"
+      spec_path: "resources/spec.json"
   connection:
     - config_path: "secrets/config.json"
       status: "succeed"
@@ -25,5 +26,6 @@ tests:
         commits: [ "cutoff" ]
         issues: [ "cutoff" ]
         pipeline_step: [ "cutoff" ]
+        pull_request_activities: [ "cutoff" ]
         pull_requests: [ "cutoff" ]
         repositories: [ "cutoff" ]

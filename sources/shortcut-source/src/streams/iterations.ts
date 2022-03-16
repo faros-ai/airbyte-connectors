@@ -40,7 +40,9 @@ export class Iterations extends AirbyteStreamBase {
         ? streamState?.lastUpdatedAt
         : undefined;
     const shortcut = await Shortcut.instance(this.config);
-    yield* shortcut.getIterations(lastUpdatedAt);
+    for (const iteration of await shortcut.getIterations(lastUpdatedAt)) {
+      yield iteration;
+    }
   }
 
   getUpdatedState(

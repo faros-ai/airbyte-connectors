@@ -5,7 +5,7 @@ import {
   AirbyteLogLevel,
   AirbyteSpec,
   SyncMode,
-} from 'faros-airbyte-cdk/lib';
+} from 'faros-airbyte-cdk';
 import fs from 'fs';
 import {VError} from 'verror';
 

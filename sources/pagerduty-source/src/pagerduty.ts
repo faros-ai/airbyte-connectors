@@ -1,6 +1,5 @@
 import {api} from '@pagerduty/pdjs';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {wrapApiError} from 'faros-feeds-sdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
