@@ -409,6 +409,9 @@
           }
         }
       }
+    },
+    "pullRequestUpdatedOn": {
+      "type": "string"
     }
   }
 }

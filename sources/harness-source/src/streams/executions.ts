@@ -4,7 +4,7 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {DateTime, Duration, Interval} from 'luxon';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {DEFAULT_CUTOFF_DAYS, Harness} from '../harness';
