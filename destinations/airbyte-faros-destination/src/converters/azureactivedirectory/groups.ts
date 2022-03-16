@@ -4,7 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureactivedirectoryConverter} from './common';
 import {Group} from './models';
 
-export class AzureactivedirectoryGroups extends AzureactivedirectoryConverter {
+export class Groups extends AzureactivedirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'org_Team',
     'org_TeamMembership',

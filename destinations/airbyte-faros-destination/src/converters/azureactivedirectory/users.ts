@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureactivedirectoryConverter} from './common';
 import {User} from './models';
 
-export class AzureactivedirectoryUsers extends AzureactivedirectoryConverter {
+export class Users extends AzureactivedirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
     'org_Department',
