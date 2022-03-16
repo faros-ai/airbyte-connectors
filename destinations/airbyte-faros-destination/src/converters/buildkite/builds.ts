@@ -5,7 +5,7 @@ import {toLower} from 'lodash';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Build, BuildkiteConverter} from './common';
 
-export class BuildkiteBuilds extends BuildkiteConverter {
+export class Builds extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
     'cicd_BuildCommitAssociation',

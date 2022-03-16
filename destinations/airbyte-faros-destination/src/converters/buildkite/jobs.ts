@@ -4,7 +4,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BuildkiteConverter, Job} from './common';
 
-export class BuildkiteJobs extends BuildkiteConverter {
+export class Jobs extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_BuildStep',
   ];

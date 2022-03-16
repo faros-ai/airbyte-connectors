@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BuildkiteConverter, Pipeline} from './common';
 
-export class BuildkitePipelines extends BuildkiteConverter {
+export class Pipelines extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Pipeline',
   ];

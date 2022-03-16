@@ -130,6 +130,7 @@ export interface Provider {
 }
 /** Buildkite converter base */
 export abstract class BuildkiteConverter extends Converter {
+  source = 'Buildkite';
   /** Almost every Buildkite record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
