@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
+import request from 'request';
 import {VError} from 'verror';
 
 import {
@@ -72,8 +73,6 @@ export class AzureActiveDirectory {
   ): Promise<string> {
     const version = config.auth_version ?? DEFAULT_AUTH_VERSION;
     return new Promise(function (resolve, reject) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const request = require('request');
       request(
         {
           method: 'POST',
@@ -138,7 +137,7 @@ export class AzureActiveDirectory {
           item.manager = managerItem.data.id;
         }
       } catch (error) {
-        console.error(error);
+        this.logger.error(error.toString());
       }
       yield item;
     }
@@ -152,8 +151,8 @@ export class AzureActiveDirectory {
       );
       if (memberItems.status === 200) {
         const members: string[] = [];
-        for (const item of memberItems.data.value) {
-          members.push(item.id);
+        for (const memberItem of memberItems.data.value) {
+          members.push(memberItem.id);
         }
         item.members = members;
       }
@@ -162,8 +161,8 @@ export class AzureActiveDirectory {
       );
       if (ownerItems.status === 200) {
         const owners: string[] = [];
-        for (const item of ownerItems.data.value) {
-          owners.push(item.id);
+        for (const ownerItem of ownerItems.data.value) {
+          owners.push(ownerItem.id);
         }
         item.owners = owners;
       }

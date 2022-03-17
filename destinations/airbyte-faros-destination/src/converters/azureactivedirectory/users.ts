@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureactivedirectoryConverter} from './common';
+import {AzureActiveDirectoryConverter} from './common';
 import {User} from './models';
 
-export class Users extends AzureactivedirectoryConverter {
+export class Users extends AzureActiveDirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'identity_Identity',
     'org_Department',
@@ -21,10 +21,8 @@ export class Users extends AzureactivedirectoryConverter {
     const source = this.streamName.source;
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.createdDateTime);
-    const manager = {
-      uid: user.manager ?? '',
-      source,
-    };
+    const manager =
+      user.manager.length >= 1 ? {uid: user.manager[0], source} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
 
@@ -35,7 +33,6 @@ export class Users extends AzureactivedirectoryConverter {
         record: {
           uid: user.department,
           name: user.department,
-          description: null,
         },
       });
     }
@@ -46,14 +43,12 @@ export class Users extends AzureactivedirectoryConverter {
         uid,
         fullName: `${user.givenName} ${user.surname}`,
         lastName: user.surname,
-        photoUrl: null,
         primaryEmail: user.mail,
         emails: [user.mail],
-        createdAt: null,
-        updatedAt: null,
       },
     });
 
+    const location = {uid: user.streetAddress, source};
     res.push({
       model: 'org_Employee',
       record: {
@@ -61,12 +56,10 @@ export class Users extends AzureactivedirectoryConverter {
         title: user.displayName,
         level: 0,
         joinedAt,
-        terminatedAt: null,
         department: {uid: user.department},
-        identity: {uid: user.mail, source},
+        identity: {uid, source},
         manager,
-        reportingChain: null,
-        location: {uid: user.streetAddress, source},
+        location,
         source,
       },
     });
