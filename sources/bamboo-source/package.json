@@ -5,7 +5,8 @@
   "keywords": [
     "airbyte",
     "source",
-    "faros"
+    "faros",
+    "bamboo"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
