@@ -21,8 +21,7 @@ export class Users extends AzureActiveDirectoryConverter {
     const source = this.streamName.source;
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.createdDateTime);
-    const manager =
-      user.manager.length >= 1 ? {uid: user.manager[0], source} : undefined;
+    const manager = user.manager ? {uid: user.manager, source} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
 
