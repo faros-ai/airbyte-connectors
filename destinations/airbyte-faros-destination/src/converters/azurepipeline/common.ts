@@ -18,7 +18,7 @@ export type ApplicationMapping = Record<
   {name: string; platform?: string}
 >;
 
-interface AzurepipelineConfig {
+interface AzurePipelineConfig {
   application_mapping?: ApplicationMapping;
 }
 
@@ -34,7 +34,7 @@ export abstract class AzurePipelineConverter extends Converter {
     return url.split('/')[3];
   }
 
-  protected azurepipleConfig(ctx: StreamContext): AzurepipelineConfig {
+  protected azurepipleConfig(ctx: StreamContext): AzurePipelineConfig {
     return ctx.config?.source_specific_configs?.azurepipeline;
   }
 
