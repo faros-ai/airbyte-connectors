@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzuregitConverter} from './common';
+import {AzureGitConverter} from './common';
 import {OrgTypeCategory, Repository} from './models';
 
-export class Repositories extends AzuregitConverter {
+export class Repositories extends AzureGitConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
     'vcs_Commit',

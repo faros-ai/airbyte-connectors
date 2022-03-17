@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzuregitConverter} from './common';
+import {AzureGitConverter} from './common';
 import {User, UserType, UserTypeCategory} from './models';
 
-export class Users extends AzuregitConverter {
+export class Users extends AzureGitConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',

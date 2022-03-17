@@ -7,6 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {AzureGit, AzureGitConfig} from '../azuregit';
+import {User} from '../models';
 
 export class Users extends AirbyteStreamBase {
   constructor(
@@ -27,7 +28,7 @@ export class Users extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<User> {
     const azureGit = await AzureGit.instance(this.config, this.logger);
     yield* azureGit.getUsers();
   }

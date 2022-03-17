@@ -7,6 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {AzureGit, AzureGitConfig} from '../azuregit';
+import {PullRequest} from '../models';
 
 export class PullRequests extends AirbyteStreamBase {
   constructor(
@@ -30,7 +31,7 @@ export class PullRequests extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<PullRequest> {
     const azureGit = await AzureGit.instance(this.config, this.logger);
     yield* azureGit.getPullRequests();
   }
