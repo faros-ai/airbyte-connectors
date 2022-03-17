@@ -55,9 +55,9 @@ describe('azureactivedirectory', () => {
       .value();
 
     const writtenByModel = {
-      identity_Identity: 2,
+      identity_Identity: 1,
       org_Department: 1,
-      org_Employee: 2,
+      org_Employee: 1,
       org_Team: 1,
       org_TeamMembership: 2,
     };
