@@ -15,14 +15,6 @@ const bambooInstance = Bamboo.instance;
 
 jest.mock('axios');
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-describe('index', () => {
-  test('ok?', async () => {
-    expect('OK').toEqual('OK');
-  });
-});
-
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
