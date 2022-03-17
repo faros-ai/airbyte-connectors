@@ -1,6 +1,5 @@
-import {AxiosInstance} from 'axios';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-feeds-sdk';
+import axios, {AxiosInstance} from 'axios';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {GraphQLClient} from 'graphql-request';
 import path from 'path';
@@ -174,15 +173,17 @@ export class Buildkite {
     );
 
     const restApiVersion = config.rest_api_version ?? DEFAULT_REST_VERSION;
-    const restClient = makeAxiosInstanceWithRetry({
+    const httpClient = axios.create({
       baseURL: `${REST_API_URL}${restApiVersion}`,
+      timeout: 5000,
       headers: {authorization: auth},
     });
+
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
     Buildkite.buildkite = new Buildkite(
       graphClient,
-      restClient,
+      httpClient,
       pageSize,
       config.organization
     );
