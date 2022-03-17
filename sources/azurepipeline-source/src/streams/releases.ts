@@ -7,6 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
+import {Release} from '../models';
 
 export class Releases extends AirbyteStreamBase {
   constructor(
@@ -30,7 +31,7 @@ export class Releases extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<Release> {
     const azurePipeline = await AzurePipeline.instance(
       this.config,
       this.logger

@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzurepipelineConverter} from './common';
+import {AzurePipelineConverter} from './common';
 import {Pipeline} from './models';
 
-export class Pipelines extends AzurepipelineConverter {
+export class Pipelines extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Deployment',
     'cicd_Organization',
@@ -31,8 +31,6 @@ export class Pipelines extends AzurepipelineConverter {
         record: {
           uid: organizationName,
           name: organizationName,
-          description: null,
-          url: null,
           source,
         },
       });
@@ -56,7 +54,6 @@ export class Pipelines extends AzurepipelineConverter {
           },
           startedAt,
           endedAt,
-          env: null,
           status,
           source,
         },

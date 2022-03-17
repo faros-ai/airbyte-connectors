@@ -23,7 +23,7 @@ interface AzurepipelineConfig {
 }
 
 /** Azurepipeline converter base */
-export abstract class AzurepipelineConverter extends Converter {
+export abstract class AzurePipelineConverter extends Converter {
   source = 'AzurePipeline';
   /** Almost every Azurepipeline record have id property */
   id(record: AirbyteRecord): any {

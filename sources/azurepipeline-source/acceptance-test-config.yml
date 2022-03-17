@@ -2,7 +2,7 @@ connector_image: azurepipeline-source
 tests:
   spec:
     - config_path: "secrets/config.json"
-      spec_path: "secrets/spec.json"
+      spec_path: "resources/spec.json"
   connection:
     - config_path: "secrets/config.json"
       status: "succeed"
