@@ -5,7 +5,9 @@
   "keywords": [
     "airbyte",
     "source",
-    "faros"
+    "faros",
+    "azure",
+    "azurepipeline"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
