@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {FirehydrantConverter} from './common';
+import {FireHydrantConverter} from './common';
 import {Team} from './models';
 
-export class Teams extends FirehydrantConverter {
+export class Teams extends FireHydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_Team'];
 
   async convert(

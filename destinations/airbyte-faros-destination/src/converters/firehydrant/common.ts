@@ -5,20 +5,20 @@ import {Converter, parseObjectConfig, StreamContext} from '../converter';
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 const MAX_DESCRIPTION_LENGTH = 1000;
-interface FirehydrantConfig {
+interface FirehHydrantConfig {
   application_mapping?: ApplicationMapping;
   // Max length for free-form description text fields such as incident description
   max_description_length?: number;
 }
 /** Firehydrant converter base */
-export abstract class FirehydrantConverter extends Converter {
+export abstract class FireHydrantConverter extends Converter {
   source = 'FireHydrant';
   /** Almost every Firehydrant record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
-  protected firehydrantConfig(ctx: StreamContext): FirehydrantConfig {
+  protected firehydrantConfig(ctx: StreamContext): FirehHydrantConfig {
     return ctx.config.source_specific_configs?.firehydrant ?? {};
   }
 

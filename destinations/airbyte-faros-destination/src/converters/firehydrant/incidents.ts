@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {FirehydrantConverter} from './common';
+import {FireHydrantConverter} from './common';
 import {IncidentTicket} from './models';
 import {
   FirehydrantIncidentMilestone,
@@ -21,7 +21,7 @@ import {
   TaskStatusCategory,
 } from './models';
 
-export class Incidents extends FirehydrantConverter {
+export class Incidents extends FireHydrantConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',
