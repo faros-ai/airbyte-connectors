@@ -157,5 +157,10 @@ Example `catalog.json`
 }
 ```
 
+**Tip**: you can even pipe data directly from your custom source into your custom destination without Airbyte server:
+```shell
+<my-source-command> | jq -c -R 'fromjson? | select(.type == "RECORD") | .record.stream = "mydatasource__CustomSource__\(.record.stream)"' | <my-destination-command>
+```
+
 ### Additional Commands
 Run `./bin/main --help` for detailed information on available commands.
