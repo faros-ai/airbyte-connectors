@@ -10,6 +10,7 @@ import {
   AzureActiveDirectory,
   AzureActiveDirectoryConfig,
 } from '../azureactivedirectory';
+import {User} from '../models';
 
 export class Users extends AirbyteStreamBase {
   constructor(
@@ -25,15 +26,12 @@ export class Users extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'createdDateTime';
-  }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<User> {
     const azureActiveDirectory = await AzureActiveDirectory.instance(
       this.config,
       this.logger

@@ -10,6 +10,7 @@ import {
   AzureActiveDirectory,
   AzureActiveDirectoryConfig,
 } from '../azureactivedirectory';
+import {Group} from '../models';
 
 export class Groups extends AirbyteStreamBase {
   constructor(
@@ -26,14 +27,14 @@ export class Groups extends AirbyteStreamBase {
     return 'id';
   }
   get cursorField(): string | string[] {
-    return 'createdDateTime';
+    return 'renewedDateTime';
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<Group> {
     const azureActiveDirectory = await AzureActiveDirectory.instance(
       this.config,
       this.logger
