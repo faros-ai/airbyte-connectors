@@ -23,9 +23,6 @@ export class Builds extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'startTime';
-  }
 
   async *readRecords(
     syncMode: SyncMode,

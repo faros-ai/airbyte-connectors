@@ -23,9 +23,6 @@ export class Releases extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'createdOn';
-  }
 
   async *readRecords(
     syncMode: SyncMode,
