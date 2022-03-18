@@ -103,7 +103,10 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError('Community Edition Hasura URL is not set');
     }
     try {
-      this.hasuraClient = new HasuraClient(config.edition_configs.hasura_url);
+      this.hasuraClient = new HasuraClient(
+        config.edition_configs.hasura_url,
+        config.edition_configs.hasura_admin_secret
+      );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
