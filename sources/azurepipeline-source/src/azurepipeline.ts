@@ -31,7 +31,7 @@ export class AzurePipeline {
     private readonly httpVSRMClient: AxiosInstance
   ) {}
 
-  static async instance(config: AzurePipelineConfig): Promise<AzurePipeline> {
+  static instance(config: AzurePipelineConfig): AzurePipeline {
     if (AzurePipeline.azurePipeline) return AzurePipeline.azurePipeline;
 
     if (!config.access_token) {

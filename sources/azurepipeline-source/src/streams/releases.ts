@@ -29,7 +29,7 @@ export class Releases extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Release> {
-    const azurePipeline = await AzurePipeline.instance(this.config);
+    const azurePipeline = AzurePipeline.instance(this.config);
     yield* azurePipeline.getReleases();
   }
 }
