@@ -29,7 +29,7 @@ export class Repositories extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<Repository> {
-    const azureGit = await AzureGit.instance(this.config, this.logger);
+    const azureGit = await AzureGit.instance(this.config);
     yield* azureGit.getRepositories();
   }
 }

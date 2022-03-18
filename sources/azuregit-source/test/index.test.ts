@@ -1,4 +1,3 @@
-import axios, {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -52,7 +51,6 @@ describe('index', () => {
             data: {value: repositoriesResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -92,7 +90,6 @@ describe('index', () => {
             data: {value: repositoriesResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -124,7 +121,6 @@ describe('index', () => {
             data: {value: pullrequestsResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -150,15 +146,11 @@ describe('index', () => {
 
     AzureGit.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
-      return new AzureGit(
-        null,
-        {
-          get: fnUsersFunc.mockResolvedValue({
-            data: {value: usersResource},
-          }),
-        } as any,
-        null
-      );
+      return new AzureGit(null, {
+        get: fnUsersFunc.mockResolvedValue({
+          data: {value: usersResource},
+        }),
+      } as any);
     });
     const source = new sut.AzureGitSource(logger);
     const streams = source.streams({} as any);

@@ -39,14 +39,10 @@ export class AzureGit {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly graphClient: AxiosInstance,
-    private readonly logger: AirbyteLogger
+    private readonly graphClient: AxiosInstance
   ) {}
 
-  static async instance(
-    config: AzureGitConfig,
-    logger: AirbyteLogger
-  ): Promise<AzureGit> {
+  static async instance(config: AzureGitConfig): Promise<AzureGit> {
     if (AzureGit.azureGit) return AzureGit.azureGit;
 
     if (!config.access_token) {
@@ -86,7 +82,7 @@ export class AzureGit {
       },
     });
 
-    AzureGit.azureGit = new AzureGit(httpClient, graphClient, logger);
+    AzureGit.azureGit = new AzureGit(httpClient, graphClient);
     return AzureGit.azureGit;
   }
 

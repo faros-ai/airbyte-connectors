@@ -29,7 +29,7 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<User> {
-    const azureGit = await AzureGit.instance(this.config, this.logger);
+    const azureGit = await AzureGit.instance(this.config);
     yield* azureGit.getUsers();
   }
 }

@@ -32,7 +32,7 @@ export class PullRequests extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>
   ): AsyncGenerator<PullRequest> {
-    const azureGit = await AzureGit.instance(this.config, this.logger);
+    const azureGit = await AzureGit.instance(this.config);
     yield* azureGit.getPullRequests();
   }
 }
