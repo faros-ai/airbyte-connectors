@@ -24,7 +24,7 @@ export class AzureGitSource extends AirbyteSourceBase {
   }
   async checkConnection(config: AzureGitConfig): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = await AzureGit.instance(config, this.logger);
+      const azureActiveDirectory = await AzureGit.instance(config);
       await azureActiveDirectory.checkConnection();
     } catch (err: any) {
       return [false, err];
