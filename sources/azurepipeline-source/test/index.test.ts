@@ -65,7 +65,6 @@ describe('index', () => {
             data: {value: pipelinesResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -94,7 +93,6 @@ describe('index', () => {
             data: {value: buildsResource},
           }),
         } as any,
-        null,
         null
       );
     });
@@ -123,7 +121,6 @@ describe('index', () => {
             data: {value: releasesResource},
           }),
         } as any,
-        null,
         null
       );
     });

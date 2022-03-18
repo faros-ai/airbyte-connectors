@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
+import {wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
 import {
@@ -28,14 +28,10 @@ export class AzurePipeline {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly httpVSRMClient: AxiosInstance,
-    private readonly logger: AirbyteLogger
+    private readonly httpVSRMClient: AxiosInstance
   ) {}
 
-  static async instance(
-    config: AzurePipelineConfig,
-    logger: AirbyteLogger
-  ): Promise<AzurePipeline> {
+  static async instance(config: AzurePipelineConfig): Promise<AzurePipeline> {
     if (AzurePipeline.azurePipeline) return AzurePipeline.azurePipeline;
 
     if (!config.access_token) {
@@ -74,11 +70,7 @@ export class AzurePipeline {
       },
     });
 
-    AzurePipeline.azurePipeline = new AzurePipeline(
-      httpClient,
-      httpVSRMClient,
-      logger
-    );
+    AzurePipeline.azurePipeline = new AzurePipeline(httpClient, httpVSRMClient);
     return AzurePipeline.azurePipeline;
   }
 

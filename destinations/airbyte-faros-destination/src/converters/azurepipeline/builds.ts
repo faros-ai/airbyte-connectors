@@ -40,7 +40,7 @@ export class Builds extends AzurePipelineConverter {
     res.push({
       model: 'cicd_Build',
       record: {
-        uid: uid,
+        uid,
         name: build.buildNumber,
         number,
         createdAt,
@@ -68,11 +68,11 @@ export class Builds extends AzurePipelineConverter {
     }
 
     for (const job of build.jobs) {
-      const createdAt = Utils.toDate(job.startTime);
-      const startedAt = Utils.toDate(job.startTime);
-      const endedAt = Utils.toDate(job.finishTime);
-      const status = this.convertBuildStepState(job.result);
-      const type = this.convertBuildStepType(job.type);
+      const jobCreatedAt = Utils.toDate(job.startTime);
+      const jobStartedAt = Utils.toDate(job.startTime);
+      const jobEndedAt = Utils.toDate(job.finishTime);
+      const jobStatus = this.convertBuildStepState(job.result);
+      const jobType = this.convertBuildStepType(job.type);
 
       res.push({
         model: 'cicd_BuildStep',
@@ -80,11 +80,11 @@ export class Builds extends AzurePipelineConverter {
           uid: String(job.id),
           name: job.name,
           command: job.name,
-          type,
-          createdAt,
-          startedAt,
-          endedAt,
-          status,
+          type: jobType,
+          createdAt: jobCreatedAt,
+          startedAt: jobStartedAt,
+          endedAt: jobEndedAt,
+          status: jobStatus,
           url: job.url,
           build: buildUid,
         },
@@ -92,7 +92,7 @@ export class Builds extends AzurePipelineConverter {
     }
 
     for (const artifact of build.artifacts) {
-      const createdAt = Utils.toDate(build.startTime);
+      const artifactCreatedAt = Utils.toDate(build.startTime);
       const tags: Tag[] = [];
       for (const [key, value] of Object.entries(artifact.resource.properties)) {
         tags.push({name: key, value: String(value)});
@@ -104,7 +104,7 @@ export class Builds extends AzurePipelineConverter {
           name: artifact.name,
           url: artifact.resource.url,
           type: artifact.resource.type,
-          createdAt,
+          createdAt: artifactCreatedAt,
           tags,
           build: buildUid,
           repository: {uid: repo.id, organization},
