@@ -11,6 +11,7 @@
         "default_cursor_field": [
           "created_at"
         ],
+        "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
             "id"

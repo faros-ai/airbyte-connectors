@@ -36,7 +36,7 @@ export class Incidents extends AirbyteStreamBase {
   ): AsyncGenerator<Incident> {
     const lastCreatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? new Date(streamState?.lastCreatedAt)
+        ? new Date(streamState?.lastCreatedAt ?? 0)
         : undefined;
     const buildkite = FireHydrant.instance(this.config, this.logger);
     yield* buildkite.getIncidents(lastCreatedAt);
