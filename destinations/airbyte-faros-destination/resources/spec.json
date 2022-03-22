@@ -36,6 +36,11 @@
                 "description": "Community Edition",
                 "const": "community"
               },
+              "hasura_admin_secret": {
+                "type": "string",
+                "title": "Hasura Admin Secret",
+                "description": "The Hasura Admin Secret."
+              },
               "hasura_url": {
                 "type": "string",
                 "title": "Hasura URL",

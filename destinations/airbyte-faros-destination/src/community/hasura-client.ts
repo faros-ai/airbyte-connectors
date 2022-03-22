@@ -72,10 +72,13 @@ export class HasuraClient {
   private readonly backReferences: Dictionary<Reference[]> = {};
   private sortedModelDependencies: ReadonlyArray<string>;
 
-  constructor(url: string) {
+  constructor(url: string, adminSecret?: string) {
     this.api = axios.create({
       baseURL: url,
-      headers: {'X-Hasura-Role': 'admin'},
+      headers: {
+        'X-Hasura-Role': 'admin',
+        ...(adminSecret && {'X-Hasura-Admin-Secret': adminSecret}),
+      },
     });
   }
 
