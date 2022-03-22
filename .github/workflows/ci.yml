@@ -89,7 +89,7 @@ jobs:
           do
             source=$(echo $i | cut -f2 -d'/')
             case "$source" in
-              datadog-source|harness-source|jenkins-source|okta-source|phabricator-source|squadcast-source|victorops-source)
+              datadog-source|jenkins-source|okta-source|phabricator-source|squadcast-source|victorops-source)
                 echo "Skipping $source acceptance tests"
                 ;;
               *)
