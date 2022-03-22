@@ -1,0 +1,510 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "created_at": {
+            "type": "string"
+        },
+        "started_at": {
+            "type": "string"
+        },
+        "summary": {
+            "type": "string"
+        },
+        "customer_impact_summary": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "description": {
+            "type": "string"
+        },
+        "current_milestone": {
+            "type": "string"
+        },
+        "number": {
+            "type": "number"
+        },
+        "priority": {
+            "type": "string"
+        },
+        "severity": {
+            "type": "string"
+        },
+        "severity_impact": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "severity_condition": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "tag_list": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "private_id": {
+            "type": "string"
+        },
+        "organization_id": {
+            "type": "string"
+        },
+        "incident_roles": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "summary": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "discarded_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tasks": {
+                        "type": "array",
+                        "items": {}
+                    }
+                }
+            }
+        },
+        "milestones": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "occurred_at": {
+                        "type": "string"
+                    },
+                    "duration": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            }
+        },
+        "active": {
+            "type": "boolean"
+        },
+        "labels": {
+            "type": "object",
+            "properties": {
+                "speed": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "role_assignments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "incident_role": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "summary": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "updated_at": {
+                                "type": "string"
+                            },
+                            "discarded_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "tasks": {
+                                "type": "array",
+                                "items": {}
+                            }
+                        }
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "updated_at": {
+                                "type": "string"
+                            },
+                            "slack_linked?": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "tasks": {
+                        "type": "array",
+                        "items": {}
+                    }
+                }
+            }
+        },
+        "status_pages": {
+            "type": "array",
+            "items": {}
+        },
+        "incident_url": {
+            "type": "string"
+        },
+        "private_status_page_url": {
+            "type": "string"
+        },
+        "organization": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "customers_impacted": {
+            "type": "number"
+        },
+        "monetary_impact": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "monetary_impact_cents": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "last_update": {
+            "type": "string"
+        },
+        "last_note": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "report_id": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "services": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "environments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "functionalities": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "channel_name": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "channel_reference": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "channel_id": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "channel_status": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "incident_tickets": {
+            "type": "array",
+            "items": {}
+        },
+        "impacts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "impact": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "condition": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "position": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "conference_bridges": {
+            "type": "array",
+            "items": {}
+        },
+        "incident_channels": {
+            "type": "array",
+            "items": {}
+        },
+        "retro_exports": {
+            "type": "array",
+            "items": {}
+        },
+        "created_by": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "context_object": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "restricted": {
+            "type": "boolean"
+        },
+        "explicit_organization_user_ids": {
+            "type": "array",
+            "items": {}
+        },
+        "events": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "incident_id": {
+                        "type": "string"
+                    },
+                    "occurred_at": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "object"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "visibility": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        }
+                    },
+                    "votes": {
+                        "type": "object",
+                        "properties": {
+                            "voted": {
+                                "type": "boolean"
+                            },
+                            "liked": {
+                                "type": "boolean"
+                            },
+                            "disliked": {
+                                "type": "boolean"
+                            },
+                            "likes": {
+                                "type": "number"
+                            },
+                            "dislikes": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "context": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
