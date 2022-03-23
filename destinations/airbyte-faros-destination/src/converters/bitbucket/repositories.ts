@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-feeds-sdk/lib/utils';
 
 import {
   DestinationModel,
@@ -12,6 +13,7 @@ import {Repository, Workspace} from './types';
 export class Repositories extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Repository',
+    'vcs_Repository',
   ];
 
   private readonly workspacesStream = new StreamName('bitbucket', 'workspace');
@@ -48,6 +50,22 @@ export class Repositories extends BitbucketConverter {
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           url: repository.links.htmlUrl,
+          organization: {uid: workspace?.uuid, source},
+        },
+      },
+      {
+        model: 'vcs_Repository',
+        record: {
+          name: repository.slug.toLowerCase(),
+          fullName: repository.fullName,
+          description: repository.description,
+          private: repository.isPrivate,
+          language: repository.language ?? null,
+          size: BigInt(repository.size),
+          htmlUrl: repository?.links?.htmlUrl,
+          createdAt: Utils.toDate(repository.createdOn),
+          updatedAt: Utils.toDate(repository.updatedOn),
+          mainBranch: repository.mainBranch?.name,
           organization: {uid: workspace?.uuid, source},
         },
       },
