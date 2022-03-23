@@ -19,6 +19,7 @@ export interface AgileacceleratorConfig extends AirbyteConfig {
   readonly password: string;
   readonly api_token: string;
   readonly api_version?: string;
+  readonly start_date: string;
   readonly page_size?: number;
 }
 
@@ -201,12 +202,9 @@ export class Agileaccelerator {
   }
 
   getWorks(lastModifiedDate?: string): AsyncGenerator<Work> {
-    const lastModifiedDateMax = new Date(
-      Math.max(
-        new Date(lastModifiedDate ?? 0).getTime(),
-        this.startDate.toDate().getTime()
-      )
-    );
+    const startTime = new Date(lastModifiedDate ?? 0);
+    const lastModifiedDateMax =
+      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
     /** To exclude gaps in records pagination will fetch using WHERE clause */
     const offset = 0;
 

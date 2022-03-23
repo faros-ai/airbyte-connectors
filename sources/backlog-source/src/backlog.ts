@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -10,6 +11,7 @@ const DEFAULT_MEMOIZE_START_TIME = 0;
 export interface BacklogConfig {
   readonly apiKey: string;
   readonly space: string;
+  readonly start_date: string;
   readonly version?: string;
   readonly project_id: number | null;
 }
@@ -17,7 +19,12 @@ export interface BacklogConfig {
 export class Backlog {
   private static backlog: Backlog = null;
   private readonly cfg: BacklogConfig;
-  constructor(private readonly httpClient: AxiosInstance, cfg: BacklogConfig) {
+
+  constructor(
+    private readonly httpClient: AxiosInstance,
+    cfg: BacklogConfig,
+    readonly startDate: Moment
+  ) {
     this.cfg = cfg;
   }
   static async instance(
@@ -29,7 +36,13 @@ export class Backlog {
     if (!config.apiKey) {
       throw new VError('No API key provided');
     }
-
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
     const httpClient = axios.create({
       baseURL: `https://${config.space}.backlog.com/api/v2`,
       timeout: 5000,
@@ -38,7 +51,7 @@ export class Backlog {
       },
     });
 
-    Backlog.backlog = new Backlog(httpClient, config);
+    Backlog.backlog = new Backlog(httpClient, config, startDate);
     logger.debug('Created Backlog instance');
     return Backlog.backlog;
   }
@@ -83,21 +96,23 @@ export class Backlog {
   async getIssues(lastUpdatedAt?: string): Promise<ReadonlyArray<Issue>> {
     const results: Issue[] = [];
     const startTime = new Date(lastUpdatedAt ?? 0);
+    const startTimeMax =
+      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
     const config = this.cfg.project_id
       ? {
           params: {
             'projectId[]': this.cfg.project_id,
-            updatedSince: lastUpdatedAt ? this.formatDate(startTime) : '',
+            updatedSince: lastUpdatedAt ? this.formatDate(startTimeMax) : '',
           },
         }
       : {
           params: {
-            updatedSince: lastUpdatedAt ? this.formatDate(startTime) : '',
+            updatedSince: lastUpdatedAt ? this.formatDate(startTimeMax) : '',
           },
         };
     const res = await this.httpClient.get<Issue[]>('issues', config);
     for (const item of res.data) {
-      if (!lastUpdatedAt || new Date(item.updated) >= startTime) {
+      if (!lastUpdatedAt || new Date(item.updated) >= startTimeMax) {
         const comment = await this.httpClient.get<Comment[]>(
           `issues/${item.id}/comments`
         );

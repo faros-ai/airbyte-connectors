@@ -6,6 +6,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import {Backlog, BacklogConfig} from '../src/backlog';
@@ -14,8 +15,6 @@ import * as sut from '../src/index';
 const backlogInstance = Backlog.instance;
 
 jest.mock('axios');
-
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('index', () => {
   test('ok?', async () => {
@@ -72,7 +71,8 @@ describe('index', () => {
             data: issuesResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -100,7 +100,8 @@ describe('index', () => {
             data: projecjtsResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -128,7 +129,8 @@ describe('index', () => {
             data: usersResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BacklogSource(logger);
