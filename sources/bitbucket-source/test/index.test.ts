@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket/bitbucket';
@@ -45,7 +46,8 @@ describe('index', () => {
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
 
@@ -55,6 +57,7 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         workspace: 'workspace',
+        start_date: 'start_date',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -69,7 +72,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -107,7 +111,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -155,7 +160,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -193,7 +199,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -230,7 +237,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -267,7 +275,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -304,7 +313,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.BitbucketSource(logger);
