@@ -202,7 +202,10 @@ export class Agileaccelerator {
 
   getWorks(lastModifiedDate?: string): AsyncGenerator<Work> {
     const lastModifiedDateMax = new Date(
-      Math.max(new Date(lastModifiedDate ?? 0).getTime(), this.startDate.unix())
+      Math.max(
+        new Date(lastModifiedDate ?? 0).getTime(),
+        this.startDate.toDate().getTime()
+      )
     );
     /** To exclude gaps in records pagination will fetch using WHERE clause */
     const offset = 0;
