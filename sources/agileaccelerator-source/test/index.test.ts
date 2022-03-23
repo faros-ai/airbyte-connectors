@@ -6,6 +6,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import {Agileaccelerator} from '../src/agileaccelerator/agileaccelerator';
@@ -52,7 +53,8 @@ describe('index', () => {
       return new Agileaccelerator(
         {get: jest.fn().mockResolvedValue({})} as any,
         'baseUrl',
-        100
+        100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
 
@@ -72,7 +74,12 @@ describe('index', () => {
   test('check connection - incorrect credentials', async () => {
     mockedAxios.post.mockRejectedValue(new Error('some error'));
     Agileaccelerator.instance = jest.fn().mockImplementation(() => {
-      return new Agileaccelerator({} as any, 'baseUrl', 100);
+      return new Agileaccelerator(
+        {} as any,
+        'baseUrl',
+        100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
     const source = new sut.AgileacceleratorSource(logger);
     await expect(
@@ -117,7 +124,8 @@ describe('index', () => {
           }),
         } as any,
         'baseUrl',
-        100
+        100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.AgileacceleratorSource(logger);

@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {Query} from './query';
@@ -50,7 +51,8 @@ export class Agileaccelerator {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly baseUrl: string,
-    private readonly pageSize: number
+    private readonly pageSize: number,
+    readonly startDate: Moment
   ) {}
 
   static async instance(
@@ -78,7 +80,13 @@ export class Agileaccelerator {
     if (!config.api_token) {
       throw new VError('api_token must be a not empty string');
     }
-
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
     const authParams = await Agileaccelerator.authorize(config);
     const apiVersion = config.api_version || DEFAULT_API_VERSION;
 
@@ -95,7 +103,8 @@ export class Agileaccelerator {
     Agileaccelerator.agileaccelerator = new Agileaccelerator(
       httpClient,
       config.server_url,
-      pageSize
+      pageSize,
+      startDate
     );
     logger.debug('Created Agileaccelerator instance');
 
@@ -170,12 +179,8 @@ export class Agileaccelerator {
   private async *paginate<T>(
     func: (date?: Date) => Promise<AxiosResponse<GraphQLRes<T>>>,
     getUpdatedAt: (item: T) => Date,
-    lastModifiedDate?: string
+    modifiedDate: Date
   ): AsyncGenerator<T> {
-    let modifiedDate: Date = lastModifiedDate
-      ? new Date(lastModifiedDate)
-      : undefined;
-
     do {
       const {data} = await this.errorWrapper<AxiosResponse<GraphQLRes<T>>>(() =>
         func(modifiedDate)
@@ -196,6 +201,9 @@ export class Agileaccelerator {
   }
 
   getWorks(lastModifiedDate?: string): AsyncGenerator<Work> {
+    const lastModifiedDateMax = new Date(
+      Math.max(new Date(lastModifiedDate ?? 0).getTime(), this.startDate.unix())
+    );
     /** To exclude gaps in records pagination will fetch using WHERE clause */
     const offset = 0;
 
@@ -214,6 +222,6 @@ export class Agileaccelerator {
     };
     const getUpdatedAt = (item: Work): Date => new Date(item.LastModifiedDate);
 
-    return this.paginate<Work>(func, getUpdatedAt, lastModifiedDate);
+    return this.paginate<Work>(func, getUpdatedAt, lastModifiedDateMax);
   }
 }
