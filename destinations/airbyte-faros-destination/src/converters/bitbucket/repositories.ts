@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib/utils';
+import {Utils} from 'faros-feeds-sdk';
 
 import {
   DestinationModel,
@@ -39,17 +39,18 @@ export class Repositories extends BitbucketConverter {
       return [];
     }
 
+    const description = repository.description?.substring(
+      0,
+      BitbucketCommon.MAX_DESCRIPTION_LENGTH
+    );
     return [
       {
         model: 'cicd_Repository',
         record: {
           uid: repository.slug.toLowerCase(),
           name: repository.name,
-          description: repository.description?.substring(
-            0,
-            BitbucketCommon.MAX_DESCRIPTION_LENGTH
-          ),
-          url: repository.links.htmlUrl,
+          description,
+          url: repository?.links?.htmlUrl,
           organization: {uid: workspace?.uuid, source},
         },
       },
@@ -57,8 +58,8 @@ export class Repositories extends BitbucketConverter {
         model: 'vcs_Repository',
         record: {
           name: repository.slug.toLowerCase(),
-          fullName: repository.fullName,
-          description: repository.description,
+          fullName: repository.name,
+          description,
           private: repository.isPrivate,
           language: repository.language ?? null,
           size: BigInt(repository.size),
