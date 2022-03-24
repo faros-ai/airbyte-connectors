@@ -93,7 +93,7 @@ class Pipelines extends Converter {
 export function mainCommand(): Command {
   const destinationRunner = new FarosDestinationRunner();
 
-// Register your custom converter(s)
+  // Register your custom converter(s)
   destinationRunner.registerConverters(
     new Builds(),
     new Pipelines()
