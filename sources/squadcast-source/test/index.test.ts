@@ -45,6 +45,7 @@ describe('index', () => {
       return new Squadcast(
         {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
         moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        '6129ac15518568defa92794b',
         'incidentId'
       );
     });
@@ -103,7 +104,8 @@ describe('index', () => {
             return {data: {data: {events: []}}};
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        '6129ac15518568defa92794b'
       );
     });
     const source = new sut.SquadcastSource(logger);
@@ -136,6 +138,7 @@ describe('index', () => {
           }),
         } as any,
         moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        '6129ac15518568defa92794b',
         'incidentId-123'
       );
     });
@@ -164,6 +167,7 @@ describe('index', () => {
           }),
         } as any,
         moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        '6129ac15518568defa92794b',
         'incidentId'
       );
     });
@@ -192,6 +196,7 @@ describe('index', () => {
           }),
         } as any,
         moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        '6129ac15518568defa92794b',
         'incidentId'
       );
     });

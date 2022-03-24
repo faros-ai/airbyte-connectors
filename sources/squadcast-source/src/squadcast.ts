@@ -26,6 +26,7 @@ const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
 export interface SquadcastConfig {
   readonly token: string;
   readonly start_date: string;
+  readonly owner_id: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
 }
@@ -41,6 +42,7 @@ export class Squadcast {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly startDate: Moment,
+    private readonly ownerId: string,
     private readonly eventIncidentId?: string,
     private readonly eventDeduped?: boolean
   ) {}
@@ -53,6 +55,9 @@ export class Squadcast {
 
     if (!config.token) {
       throw new VError('token must be a not empty string');
+    }
+    if (!config.owner_id) {
+      throw new VError('owner_id is null or empty');
     }
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
@@ -75,6 +80,7 @@ export class Squadcast {
     Squadcast.squadcast = new Squadcast(
       httpClient,
       startDate,
+      config.owner_id,
       config.event_incident_id,
       config.event_deduped
     );
@@ -178,6 +184,7 @@ export class Squadcast {
           type: 'json',
           start_time: startTime,
           end_time: endTime,
+          owner_id: this.ownerId,
         },
       }
     );
