@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import {Harness} from '../src/harness';
@@ -66,6 +67,7 @@ describe('index', () => {
           request: jest.fn().mockResolvedValue({}),
         } as any,
         100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -85,6 +87,7 @@ describe('index', () => {
           request: jest.fn().mockRejectedValue({}),
         } as any,
         100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -117,6 +120,7 @@ describe('index', () => {
           }),
         } as any,
         100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -152,6 +156,7 @@ describe('index', () => {
           }),
         } as any,
         100,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
