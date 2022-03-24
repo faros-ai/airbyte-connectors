@@ -57,8 +57,8 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Converter, DestinationModel, DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
 
 class Builds extends Converter {
-  source: string = 'CustomSource'
-  destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
+  source = 'CustomSource'
+  destinationModels = ['cicd_Build'];
 
   id(record: AirbyteRecord): string {
     return record.record.data.id;
@@ -66,7 +66,7 @@ class Builds extends Converter {
 
   async convert(
     record: AirbyteRecord,
-    _ctx: StreamContext
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const build = record.record.data
     return [
@@ -83,21 +83,21 @@ class Builds extends Converter {
     ];
   }
 }
+
 class Pipelines extends Converter {
   // similar to the Builds in the example above
   ...
 }
 
-// main entry point
+// Main entry point
 export function mainCommand(): Command {
   const destinationRunner = new FarosDestinationRunner();
 
-  // Register your custom converter(s)
+// Register your custom converter(s)
   destinationRunner.registerConverters(
     new Builds(),
     new Pipelines()
   );
-
   return destinationRunner.program;
 }
 ```
