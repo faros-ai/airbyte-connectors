@@ -77,6 +77,10 @@ export const datadogAllStreamsLog = readTestResourceFile(
   'datadog/all-streams.log'
 );
 
+export const firehydrantAllStreamsLog = readTestResourceFile(
+  'firehydrant/all-streams.log'
+);
+
 export const azurepipelineAllStreamsLog = readTestResourceFile(
   'azurepipeline/all-streams.log'
 );
