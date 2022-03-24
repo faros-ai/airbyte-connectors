@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -43,6 +44,7 @@ describe('index', () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
         {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'incidentId'
       );
     });
@@ -59,6 +61,7 @@ describe('index', () => {
         {
           get: jest.fn().mockRejectedValue(new Error('some error')),
         } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'incidentId'
       );
     });
@@ -81,24 +84,27 @@ describe('index', () => {
     const fnEventsFunc = jest.fn();
 
     Squadcast.instance = jest.fn().mockImplementation(() => {
-      return new Squadcast({
-        get: fnEventsFunc.mockImplementation(async (path: string) => {
-          const isPathMatchEvents =
-            /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
-          const isPathMatchIncidents = /^incidents\/export/.test(path);
-          if (isPathMatchEvents) {
-            return {
-              data: {data: {events: readTestResourceFile('events.json')}},
-            };
-          }
-          if (isPathMatchIncidents) {
-            return {
-              data: {incidents: readTestResourceFile('incidents.json')},
-            };
-          }
-          return {data: {data: {events: []}}};
-        }),
-      } as any);
+      return new Squadcast(
+        {
+          get: fnEventsFunc.mockImplementation(async (path: string) => {
+            const isPathMatchEvents =
+              /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
+            const isPathMatchIncidents = /^incidents\/export/.test(path);
+            if (isPathMatchEvents) {
+              return {
+                data: {data: {events: readTestResourceFile('events.json')}},
+              };
+            }
+            if (isPathMatchIncidents) {
+              return {
+                data: {incidents: readTestResourceFile('incidents.json')},
+              };
+            }
+            return {data: {data: {events: []}}};
+          }),
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
     const source = new sut.SquadcastSource(logger);
     const streams = source.streams({});
@@ -129,6 +135,7 @@ describe('index', () => {
             }
           }),
         } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'incidentId-123'
       );
     });
@@ -156,6 +163,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('services.json')},
           }),
         } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'incidentId'
       );
     });
@@ -183,6 +191,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('users.json')},
           }),
         } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'incidentId'
       );
     });

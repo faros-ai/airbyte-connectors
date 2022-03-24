@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -24,6 +25,7 @@ const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
 
 export interface SquadcastConfig {
   readonly token: string;
+  readonly start_date: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
 }
@@ -38,6 +40,7 @@ export class Squadcast {
 
   constructor(
     private readonly httpClient: AxiosInstance,
+    private readonly startDate: Moment,
     private readonly eventIncidentId?: string,
     private readonly eventDeduped?: boolean
   ) {}
@@ -50,6 +53,13 @@ export class Squadcast {
 
     if (!config.token) {
       throw new VError('token must be a not empty string');
+    }
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
     }
 
     const accessToken = await this.getAccessToken(config.token);
@@ -64,6 +74,7 @@ export class Squadcast {
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
+      startDate,
       config.event_incident_id,
       config.event_deduped
     );
@@ -142,12 +153,22 @@ export class Squadcast {
   )
   async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
     const incidents: Incident[] = [];
-    const startTime =
-      new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
-        ? lastUpdatedAt
-        : DEFAULT_INCIDENTS_START_DATE;
+    //   const startTime =
+    //   new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
+    //     ? lastUpdatedAt
+    //     : DEFAULT_INCIDENTS_START_DATE;
+    // const endTime =
+    //   new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
+    //     ? startTime
+    //     : DEFAULT_INCIDENTS_END_DATE;
+    //   console.log(startTime);
+    const dates = [];
+    dates.push(new Date(lastUpdatedAt ?? 0));
+    dates.push(new Date(DEFAULT_INCIDENTS_START_DATE));
+    dates.push(this.startDate.toDate());
+    const startTime = new Date(Math.max.apply(null, dates));
     const endTime =
-      new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
+      startTime > new Date(DEFAULT_INCIDENTS_END_DATE)
         ? startTime
         : DEFAULT_INCIDENTS_END_DATE;
     const res = await this.httpClient.get<IncidentsResponse>(
