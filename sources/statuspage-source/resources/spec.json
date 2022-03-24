@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "page_id",
-      "api_key"
+      "api_key",
+      "start_date"
     ],
     "additionalProperties": false,
     "properties": {

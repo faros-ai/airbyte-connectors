@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -57,30 +58,38 @@ describe('index', () => {
 
   test('check connection', async () => {
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        users: {getUsers: jest.fn().mockResolvedValue({})},
-      } as any);
+      return new Victorops(
+        {
+          users: {getUsers: jest.fn().mockResolvedValue({})},
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
     const source = new sut.VictoropsSource(logger);
     await expect(
       source.checkConnection({
         apiId: 'apiId',
         apiKey: 'apiKey',
+        start_date: 'start_date',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
 
   test('check connection - incorrect config parameters', async () => {
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        users: {getUsers: jest.fn().mockRejectedValue({})},
-      } as any);
+      return new Victorops(
+        {
+          users: {getUsers: jest.fn().mockRejectedValue({})},
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
     const source = new sut.VictoropsSource(logger);
     await expect(
       source.checkConnection({
         apiId: 'apiId',
         apiKey: 'apiKey',
+        start_date: 'start_date',
       })
     ).resolves.toStrictEqual([
       false,
@@ -92,19 +101,23 @@ describe('index', () => {
     const fnIncidentsList = jest.fn();
 
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        reporting: {
-          getIncidentHistory: fnIncidentsList.mockResolvedValue({
-            incidents: readTestResourceFile('incidents.json'),
-          }),
-        },
-      } as any);
+      return new Victorops(
+        {
+          reporting: {
+            getIncidentHistory: fnIncidentsList.mockResolvedValue({
+              incidents: readTestResourceFile('incidents.json'),
+            }),
+          },
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
 
     const source = new sut.VictoropsSource(logger);
     const [incidentsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
+      start_date: 'start_date',
     });
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
     const incidents = [];
@@ -119,28 +132,32 @@ describe('index', () => {
     const fnIncidentsList = jest.fn();
 
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        reporting: {
-          getIncidentHistory: fnIncidentsList.mockImplementation(
-            ({startedAfter}: {startedAfter: Date}) => {
-              const incidentsFile: Incident[] =
-                readTestResourceFile('incidents.json');
+      return new Victorops(
+        {
+          reporting: {
+            getIncidentHistory: fnIncidentsList.mockImplementation(
+              ({startedAfter}: {startedAfter: Date}) => {
+                const incidentsFile: Incident[] =
+                  readTestResourceFile('incidents.json');
 
-              return {
-                incidents: incidentsFile.filter(
-                  (i) => new Date(i.startTime) > startedAfter
-                ),
-              };
-            }
-          ),
-        },
-      } as any);
+                return {
+                  incidents: incidentsFile.filter(
+                    (i) => new Date(i.startTime) > startedAfter
+                  ),
+                };
+              }
+            ),
+          },
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
 
     const source = new sut.VictoropsSource(logger);
     const [incidentsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
+      start_date: 'start_date',
     });
     const incidentsIter = incidentsStream.readRecords(
       SyncMode.INCREMENTAL,
@@ -160,19 +177,23 @@ describe('index', () => {
     const fnTeamsList = jest.fn();
 
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        teams: {
-          getTeams: fnTeamsList.mockResolvedValue(
-            readTestResourceFile('teams.json')
-          ),
-        },
-      } as any);
+      return new Victorops(
+        {
+          teams: {
+            getTeams: fnTeamsList.mockResolvedValue(
+              readTestResourceFile('teams.json')
+            ),
+          },
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
 
     const source = new sut.VictoropsSource(logger);
     const [, teamsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
+      start_date: 'start_date',
     });
     const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
     const teams = [];
@@ -187,19 +208,23 @@ describe('index', () => {
     const fnUsersList = jest.fn();
 
     Victorops.instance = jest.fn().mockImplementation(() => {
-      return new Victorops({
-        users: {
-          getUsers: fnUsersList.mockResolvedValue({
-            users: {flat: () => readTestResourceFile('users.json')},
-          }),
-        },
-      } as any);
+      return new Victorops(
+        {
+          users: {
+            getUsers: fnUsersList.mockResolvedValue({
+              users: {flat: () => readTestResourceFile('users.json')},
+            }),
+          },
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+      );
     });
 
     const source = new sut.VictoropsSource(logger);
     const [, , usersStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
+      start_date: 'start_date',
     });
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];

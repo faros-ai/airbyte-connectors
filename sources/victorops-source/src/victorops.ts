@@ -3,6 +3,7 @@ import axiosRetry, {
   isNetworkOrIdempotentRequestError,
 } from 'axios-retry';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 import VictorOpsApiClient from 'victorops-api-client';
 
@@ -14,6 +15,7 @@ const DEFAULT_CURRENT_PHASE = 'triggered,acknowledged,resolved';
 export interface VictoropsConfig {
   readonly apiId: string;
   readonly apiKey: string;
+  readonly start_date: string;
   readonly maxContentLength?: number;
   readonly cutoffDays?: number;
 }
@@ -100,7 +102,10 @@ interface IncidentReportingResult {
 export class Victorops {
   private static victorops: Victorops;
 
-  constructor(private readonly client: VictorOpsApiClient) {}
+  constructor(
+    private readonly client: VictorOpsApiClient,
+    readonly startDate: Moment
+  ) {}
 
   static instance(config: VictoropsConfig, logger: AirbyteLogger): Victorops {
     if (Victorops.victorops) return Victorops.victorops;
@@ -111,7 +116,13 @@ export class Victorops {
     if (!config.apiKey) {
       throw new VError('API key must be not an empty string');
     }
-
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
     const client = new VictorOpsApiClient({
       apiId: config.apiId,
       apiKey: config.apiKey,
@@ -137,7 +148,7 @@ export class Victorops {
 
     axiosRetry(client._axiosInstance, retryConfig);
 
-    Victorops.victorops = new Victorops(client);
+    Victorops.victorops = new Victorops(client, startDate);
     logger.debug('Created VictorOps instance');
 
     return Victorops.victorops;
@@ -174,6 +185,10 @@ export class Victorops {
     limit = DEFAULT_PAGE_LIMIT,
     currentPhase = DEFAULT_CURRENT_PHASE
   ): AsyncGenerator<Incident> {
+    const startedAfterMax =
+      startedAfter > this.startDate.toDate()
+        ? startedAfter
+        : this.startDate.toDate();
     let offset = 0;
     let incidentCount = 0;
     let incidentTotal = 0;
@@ -182,7 +197,7 @@ export class Victorops {
         offset,
         limit,
         currentPhase,
-        startedAfter,
+        startedAfterMax,
       };
       const res = (await this.client.reporting.getIncidentHistory(
         query
