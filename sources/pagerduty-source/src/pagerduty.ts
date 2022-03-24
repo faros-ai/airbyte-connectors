@@ -1,5 +1,6 @@
 import {api} from '@pagerduty/pdjs';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -29,6 +30,7 @@ interface Assignment {
 
 export interface PagerdutyConfig {
   readonly token: string;
+  readonly start_date: string;
   readonly pageSize?: number;
   readonly cutoffDays?: number;
   readonly defaultSeverity?: IncidentSeverityCategory;
@@ -86,6 +88,7 @@ export class Pagerduty {
 
   constructor(
     private readonly client: any,
+    private readonly startDate: Moment,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -105,7 +108,13 @@ export class Pagerduty {
     if (!config.token) {
       throw new VError('token must be not an empty string');
     }
-
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
     const pageSize = this.validateInteger(config.pageSize);
     if (pageSize) {
       throw new VError(pageSize);
@@ -116,7 +125,7 @@ export class Pagerduty {
     }
     const client = api({token: config.token});
 
-    Pagerduty.pagerduty = new Pagerduty(client, logger);
+    Pagerduty.pagerduty = new Pagerduty(client, startDate, logger);
     logger.debug('Created Pagerduty instance');
 
     return Pagerduty.pagerduty;
@@ -203,14 +212,15 @@ export class Pagerduty {
     since: string | null,
     limit: number = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
-    let until: Date;
-    let timeRange = '&date_range=all';
+    const startTime = new Date(since ?? 0);
+    const startTimeMax =
+      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
+    const until: Date = new Date(startTimeMax);
+    let timeRange = `&since=${startTimeMax}`;
     if (since) {
-      until = new Date(since);
-      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
+      until.setMonth(new Date(startTimeMax).getMonth() + 5); //default time window is 1 month, setting to max
       until.setHours(0, 0, 0); //rounding down to whole day
-
-      timeRange = `&since=${since}&until=${until.toISOString()}`;
+      timeRange = `&since=${startTimeMax}&until=${until.toISOString()}`;
     }
     const limitParam = `&limit=${limit.toFixed()}`;
     const incidentsResource = `/incidents?time_zone=UTC${timeRange}${limitParam}`;

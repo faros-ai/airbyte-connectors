@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -43,7 +44,11 @@ describe('index', () => {
 
   test('check connection', async () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
-      return new Pagerduty({get: jest.fn().mockResolvedValue({})}, logger);
+      return new Pagerduty(
+        {get: jest.fn().mockResolvedValue({})},
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        logger
+      );
     });
 
     const source = new sut.PagerdutySource(logger);
@@ -58,6 +63,7 @@ describe('index', () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {get: jest.fn().mockRejectedValue('some text')},
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -91,6 +97,7 @@ describe('index', () => {
             }
           ),
         },
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -128,6 +135,7 @@ describe('index', () => {
             }
           }),
         },
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -167,6 +175,7 @@ describe('index', () => {
             }
           ),
         },
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
@@ -205,6 +214,7 @@ describe('index', () => {
             }
           }),
         },
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         logger
       );
     });
