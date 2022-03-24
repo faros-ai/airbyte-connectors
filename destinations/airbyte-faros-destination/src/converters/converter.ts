@@ -1,4 +1,4 @@
-import {AirbyteConfig, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-feeds-sdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
@@ -61,6 +61,7 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
   constructor(
+    readonly logger: AirbyteLogger,
     readonly config: AirbyteConfig,
     readonly farosClient?: FarosClient
   ) {}
