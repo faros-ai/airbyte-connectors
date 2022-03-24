@@ -483,16 +483,28 @@
             "type": "string"
           },
           "startTime": {
-            "type": "null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "finishTime": {
-            "type": "null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "currentOperation": {
-            "type": "null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "percentComplete": {
-            "type": "null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "state": {
             "type": "string"
@@ -501,7 +513,10 @@
             "type": "string"
           },
           "resultCode": {
-            "type": "null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "changeId": {
             "type": "number"
@@ -541,7 +556,7 @@
           },
           "log": {
             "type": [
-              "string",
+              "object",
               "null"
             ]
           },
@@ -559,24 +574,23 @@
           },
           "issues": {
             "type": "array",
-            "items":
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "category": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "message": {
-                    "type": "string"
-                  }
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "message": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
