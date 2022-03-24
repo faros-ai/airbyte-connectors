@@ -48,7 +48,7 @@ export class Repositories extends BitbucketConverter {
         model: 'cicd_Repository',
         record: {
           uid: repository.slug.toLowerCase(),
-          name: repository.name,
+          name: repository.fullName,
           description,
           url: repository?.links?.htmlUrl,
           organization: {uid: workspace?.uuid, source},
@@ -58,7 +58,7 @@ export class Repositories extends BitbucketConverter {
         model: 'vcs_Repository',
         record: {
           name: repository.slug.toLowerCase(),
-          fullName: repository.name,
+          fullName: repository.fullName,
           description,
           private: repository.isPrivate,
           language: repository.language ?? null,
