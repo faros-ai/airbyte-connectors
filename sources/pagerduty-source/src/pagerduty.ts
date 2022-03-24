@@ -239,7 +239,11 @@ export class Pagerduty {
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW
   ): AsyncGenerator<LogEntry> {
-    const sinceParam = since ? `&since=${since}` : '';
+    const startTime = new Date(since ?? 0);
+    const startTimeMax =
+      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
+
+    const sinceParam = `&since=${startTimeMax}`;
     const untilParam = until ? `&until=${until.toISOString()}` : '';
     const limitParam = `&limit=${limit.toFixed()}`;
     const isOverviewParam = `&is_overview=${isOverview}`;
