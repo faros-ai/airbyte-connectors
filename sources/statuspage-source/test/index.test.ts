@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -43,7 +44,8 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {api: {incidents: {getAll: jest.fn().mockResolvedValue({})}}} as any,
-        {get: jest.fn().mockResolvedValue({})} as any
+        {get: jest.fn().mockResolvedValue({})} as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
 
@@ -52,6 +54,7 @@ describe('index', () => {
       source.checkConnection({
         api_key: 'api_key',
         page_id: 'page_id',
+        start_date: 'start_date',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -66,7 +69,8 @@ describe('index', () => {
             },
           },
         } as any,
-        {get: jest.fn().mockResolvedValue({})} as any
+        {get: jest.fn().mockResolvedValue({})} as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -100,7 +104,8 @@ describe('index', () => {
         } as any,
         {
           get: jest.fn().mockResolvedValue({}),
-        } as any
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -133,7 +138,8 @@ describe('index', () => {
         } as any,
         {
           get: jest.fn().mockResolvedValue({}),
-        } as any
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -176,7 +182,8 @@ describe('index', () => {
         } as any,
         {
           get: jest.fn().mockResolvedValue({}),
-        } as any
+        } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -210,6 +217,7 @@ describe('index', () => {
             }
           }),
         } as any,
+        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
         'orgid'
       );
     });
