@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {
@@ -17,6 +18,7 @@ const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
 
 export interface FireHydrantConfig {
   readonly token: string;
+  readonly start_date: string;
   readonly page_size?: number;
   readonly version?: string;
 }
@@ -26,6 +28,7 @@ export class FireHydrant {
 
   constructor(
     private readonly restClient: AxiosInstance,
+    private readonly startDate: Moment,
     private readonly pageSize?: number
   ) {}
 
@@ -38,6 +41,14 @@ export class FireHydrant {
     if (!config.token) {
       throw new VError('API Access token has to be provided');
     }
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
+    if (`${startDate.toDate()}` === 'Invalid Date') {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
+
     const auth = `Bearer ${config.token}`;
 
     const version = config.version ?? DEFAULT_VERSION;
@@ -49,7 +60,7 @@ export class FireHydrant {
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
-    FireHydrant.fireHydrant = new FireHydrant(httpClient, pageSize);
+    FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
     logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }
@@ -115,6 +126,8 @@ export class FireHydrant {
     };
   }
   async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
+    const createdAtMax =
+      createdAt > this.startDate.toDate() ? createdAt : this.startDate.toDate();
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Incident>> => {
@@ -127,7 +140,7 @@ export class FireHydrant {
         data: [],
       };
       for (const incident of response?.data.data ?? []) {
-        if (!createdAt || new Date(incident.created_at) >= createdAt) {
+        if (new Date(incident.created_at) >= createdAtMax) {
           const eventResponse = await this.restClient.get<
             PaginateResponse<IncidentEvent>
           >(`incidents/${incident.id}/events`);
