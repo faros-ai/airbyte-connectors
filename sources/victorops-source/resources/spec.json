@@ -24,7 +24,7 @@
       "start_date": {
         "type": "string",
         "title": "Start Date",
-        "description": "The date from which you'd like to replicate data for Victorops in the ISO 8601 format, i.e YYYY-MM-DDTmm:HH:ssZ. All data generated after this date will be replicated.",
+        "description": "The date from which you'd like to replicate data for VictorOps in the ISO 8601 format, i.e YYYY-MM-DDTmm:HH:ssZ. All data generated after this date will be replicated.",
         "examples": [
           "2010-03-27T14:03:51-0800"
         ],
