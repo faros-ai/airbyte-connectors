@@ -7,6 +7,7 @@ import {User} from './models';
 
 export class Users extends AzureActiveDirectoryConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'geo_Address',
     'geo_Location',
     'identity_Identity',
     'org_Department',
@@ -53,11 +54,20 @@ export class Users extends AzureActiveDirectoryConverter {
       : undefined;
 
     if (user.streetAddress) {
+      res.push({
+        model: 'geo_Address',
+        record: {
+          uid: user.streetAddress,
+          fullAddress: user.streetAddress,
+          street: user.streetAddress,
+          postalCode: user.postalCode,
+        },
+      });
       const geo_Location = {
         uid: user.streetAddress,
         name: user.streetAddress,
         raw: user.streetAddress,
-        address: user.streetAddress,
+        address: {uid: user.streetAddress},
       };
       res.push({model: 'geo_Location', record: geo_Location});
     }

@@ -26,9 +26,6 @@ export class Groups extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'renewedDateTime';
-  }
 
   async *readRecords(
     syncMode: SyncMode,
