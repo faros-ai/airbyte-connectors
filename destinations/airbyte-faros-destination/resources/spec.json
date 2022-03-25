@@ -37,6 +37,7 @@
                 "const": "community"
               },
               "hasura_admin_secret": {
+                "airbyte_secret": true,
                 "type": "string",
                 "title": "Hasura Admin Secret",
                 "description": "The Hasura Admin Secret."
