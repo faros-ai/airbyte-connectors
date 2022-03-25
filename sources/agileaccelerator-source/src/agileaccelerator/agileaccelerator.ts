@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {Query} from './query';
@@ -53,7 +52,7 @@ export class Agileaccelerator {
     private readonly httpClient: AxiosInstance,
     private readonly baseUrl: string,
     private readonly pageSize: number,
-    readonly startDate: Moment
+    readonly startDate: Date
   ) {}
 
   static async instance(
@@ -84,8 +83,9 @@ export class Agileaccelerator {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const authParams = await Agileaccelerator.authorize(config);
@@ -105,7 +105,7 @@ export class Agileaccelerator {
       httpClient,
       config.server_url,
       pageSize,
-      startDate
+      new Date(config.start_date)
     );
     logger.debug('Created Agileaccelerator instance');
 
@@ -204,7 +204,7 @@ export class Agileaccelerator {
   getWorks(lastModifiedDate?: string): AsyncGenerator<Work> {
     const startTime = new Date(lastModifiedDate ?? 0);
     const lastModifiedDateMax =
-      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
+      startTime > this.startDate ? startTime : this.startDate;
     /** To exclude gaps in records pagination will fetch using WHERE clause */
     const offset = 0;
 
