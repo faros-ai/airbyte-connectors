@@ -1,6 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {ClientError, GraphQLClient} from 'graphql-request';
-import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 import {

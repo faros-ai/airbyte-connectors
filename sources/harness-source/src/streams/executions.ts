@@ -39,15 +39,14 @@ export class Executions extends AirbyteStreamBase {
 
     let since: number = null;
     if (syncMode === SyncMode.INCREMENTAL) {
+      const lastEndedAt = streamState?.lastEndedAt;
       const defaultCutoffDate: number = DateTime.now()
         .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
         .toMillis();
       /** If we have already synced this execution, ignore cutoffDays
         and get everything since last sync to avoid gaps in data. Instead
         of sync execution from cutoff days*/
-      since = streamState?.lastEndedAt
-        ? streamState.lastEndedAt
-        : defaultCutoffDate;
+      since = lastEndedAt ? lastEndedAt : defaultCutoffDate;
     }
 
     yield* harness.getExecutions(since);
@@ -57,10 +56,12 @@ export class Executions extends AirbyteStreamBase {
     currentStreamState: ExecutionState,
     latestRecord: ExecutionNode
   ): ExecutionState {
+    console.log({});
+
     const deploymentStatus = this.toDeploymentStatus(latestRecord.status);
     const isRunning = ['Running', 'Queued'].includes(deploymentStatus.category);
-    const lastEndedAt = currentStreamState.lastEndedAt;
-    const startedAt = latestRecord.startedAt;
+    const lastEndedAt = currentStreamState?.lastEndedAt ?? 0;
+    const startedAt = latestRecord?.startedAt ?? 0;
 
     if (startedAt && isRunning) {
       const startedAtDate = DateTime.fromMillis(startedAt);
@@ -76,7 +77,7 @@ export class Executions extends AirbyteStreamBase {
     }
 
     return {
-      lastEndedAt: Math.max(lastEndedAt ?? 0, latestRecord.endedAt || 0),
+      lastEndedAt: Math.max(lastEndedAt, latestRecord.endedAt),
     };
   }
 

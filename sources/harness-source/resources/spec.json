@@ -12,16 +12,16 @@
     "properties": {
       "api_key": {
         "type": "string",
-        "title": "Harness API key",
+        "title": "API key",
         "airbyte_secret": true
       },
       "account_id": {
         "type": "string",
-        "title": "Harness account ID"
+        "title": "Account ID"
       },
       "api_url": {
         "type": "string",
-        "title": "Harness API URL",
+        "title": "API URL",
         "default": "https://app.harness.io",
         "examples": [
           "https://my-harness-server.example.com"
@@ -29,19 +29,19 @@
       },
       "cutoff_days": {
         "type": "integer",
-        "title": "Harness Cutoff Days",
+        "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch deployments updated after cutoff"
       },
       "page_size": {
         "type": "integer",
-        "title": "Harness Page Size",
+        "title": "Page Size",
         "default": 100,
         "description": "number of pipelines (builds) to fetch per call"
       },
       "deployment_timeout": {
         "type": "integer",
-        "title": "Harness Deployment Timeout",
+        "title": "Deployment Timeout",
         "default": 24,
         "description": "Max number of hours to consider for a deployment to be running/queued before giving up on syncing it"
       }

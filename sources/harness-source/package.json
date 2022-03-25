@@ -34,7 +34,7 @@
     "commander": "^9.0.0",
     "faros-airbyte-cdk": "^0.1.58",
     "graphql-request": "^4.0.0",
-    "luxon": "^2.0.2",
+    "luxon": "^2.3.0",
     "verror": "^1.10.1"
   },
   "jest": {
