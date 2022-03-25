@@ -86,7 +86,7 @@ describe('gitlab', () => {
     expect(stdout).toMatch('Read 55 messages');
     expect(stdout).toMatch('Read 55 records');
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Wrote 68 records');
+    expect(stdout).toMatch('Wrote 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -110,7 +110,7 @@ describe('gitlab', () => {
     expect(stdout).toMatch('Read 55 messages');
     expect(stdout).toMatch('Read 55 records');
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
+    expect(stdout).toMatch('Would write 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -131,7 +131,7 @@ describe('gitlab', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
+    expect(stdout).toMatch('Would write 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
