@@ -21,6 +21,8 @@ const AUTH_URL = 'https://auth.squadcast.com/';
 const AUTH_HEADER_NAME = 'X-Refresh-Token';
 const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface SquadcastConfig {
   readonly token: string;
@@ -61,9 +63,7 @@ export class Squadcast {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
 

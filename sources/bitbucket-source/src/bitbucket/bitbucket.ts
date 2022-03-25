@@ -28,6 +28,8 @@ import {
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGELEN = 100;
 export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
@@ -65,9 +67,7 @@ export class Bitbucket {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     Bitbucket.bitbucket = new Bitbucket(

@@ -26,6 +26,8 @@ export interface Incident extends ClientIncident {
 }
 
 export const BASE_URL = 'https://api.statuspage.io/v1/';
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface StatuspageConfig {
   readonly api_key: string;
@@ -56,9 +58,7 @@ export class Statuspage {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const clientV2 = new StatuspageClient(config.page_id);

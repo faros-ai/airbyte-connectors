@@ -9,6 +9,8 @@ const DEFAULT_API_VERSION = 'v53.0';
 /** The maximum batch size is 2,000 records, but this number is only a suggestion.
  * To maximize performance, the requested batch size isn’t necessarily the actual batch size */
 const DEFAULT_PAGE_SIZE = 2000;
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface AgileacceleratorConfig extends AirbyteConfig {
   readonly server_url: string;
@@ -83,9 +85,7 @@ export class Agileaccelerator {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const authParams = await Agileaccelerator.authorize(config);

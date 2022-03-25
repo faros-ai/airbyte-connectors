@@ -13,6 +13,8 @@ import {getQueryExecution, getQueryToCheckConnection} from './resources';
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_HARNESS_API_URL = 'https://app.harness.io';
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 /** These 4 params need to attach environments and services to each execution.
   Then find a valid one in each lists */
@@ -47,9 +49,7 @@ export class Harness {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;

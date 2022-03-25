@@ -14,6 +14,8 @@ import {
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_VERSION = 'v1';
 const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface FireHydrantConfig {
   readonly token: string;
@@ -43,9 +45,7 @@ export class FireHydrant {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
 

@@ -6,6 +6,8 @@ import {VError} from 'verror';
 import {Comment, Issue, Project, User, VersionMilestone} from './models';
 
 const DEFAULT_MEMOIZE_START_TIME = 0;
+const REG_EXP_ISO_8601_FULL =
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface BacklogConfig {
   readonly apiKey: string;
@@ -38,9 +40,7 @@ export class Backlog {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const ISO_8601_FULL =
-      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
-    if (!ISO_8601_FULL.test(config.start_date)) {
+    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const httpClient = axios.create({
