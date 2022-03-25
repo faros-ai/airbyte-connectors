@@ -3,7 +3,6 @@ import {APIClient} from 'bitbucket/src/client/types';
 import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
 import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
@@ -43,7 +42,7 @@ export class Bitbucket {
     private readonly workspace: string,
     private readonly pagelen: number,
     private readonly logger: AirbyteLogger,
-    readonly startDate: Moment
+    readonly startDate: Date
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -63,8 +62,9 @@ export class Bitbucket {
     const client = new BitbucketClient({baseUrl, auth});
     const pagelen = config.pagelen || DEFAULT_PAGELEN;
 
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     Bitbucket.bitbucket = new Bitbucket(
@@ -72,7 +72,7 @@ export class Bitbucket {
       config.workspace,
       pagelen,
       logger,
-      startDate
+      new Date(config.start_date)
     );
     logger.debug('Created Bitbucket instance');
 
@@ -132,9 +132,7 @@ export class Bitbucket {
 
   private getStartDateMax(lastUpdatedAt?: string) {
     const startTime = new Date(lastUpdatedAt ?? 0);
-    return startTime > this.startDate.toDate()
-      ? startTime
-      : this.startDate.toDate();
+    return startTime > this.startDate ? startTime : this.startDate;
   }
 
   async *getBranches(repoSlug: string): AsyncGenerator<Branch> {
