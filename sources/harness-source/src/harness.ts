@@ -1,7 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {ClientError, GraphQLClient} from 'graphql-request';
-import {DateTime} from 'luxon';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {
@@ -29,7 +27,6 @@ export class Harness {
   constructor(
     readonly client: GraphQLClient,
     readonly pageSize: number,
-    readonly startDate: Moment,
     readonly logger: AirbyteLogger
   ) {}
 
@@ -46,13 +43,7 @@ export class Harness {
         'Missing authentication information. Please provide a Harness apiKey'
       );
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
     const client = new GraphQLClient(
@@ -60,7 +51,7 @@ export class Harness {
       {headers: {'x-api-key': config.api_key}}
     );
 
-    Harness.harness = new Harness(client, pageSize, startDate, logger);
+    Harness.harness = new Harness(client, pageSize, logger);
     logger.debug('Created Harness instance');
 
     return Harness.harness;
@@ -94,7 +85,6 @@ export class Harness {
     since: number,
     logger: AirbyteLogger
   ): AsyncGenerator<ExecutionNode> {
-    const sinceMax = Math.max(since, this.startDate.unix());
     let offset = 0;
     let hasMore = true;
     do {
@@ -106,15 +96,15 @@ export class Harness {
 
           // We get deployments sorted by desc order. Harness API however returns
           // deployments without ended times
-          if (!endedAt && startedAt && sinceMax >= startedAt) {
+          if (!endedAt && startedAt && since >= startedAt) {
             logger.info(
               `Skipping deployment: ${item.application.id} with no finished time but has started time: ${item.startedAt}, which is before current cutoff: ${since}`
             );
             continue;
           }
-          if (endedAt && sinceMax >= endedAt) {
+          if (endedAt && since >= endedAt) {
             logger.info(
-              `Skipping execution ${item.id}, ended ${item.endedAt} before cutoff ${sinceMax}`
+              `Skipping execution ${item.id}, ended ${item.endedAt} before cutoff ${since}`
             );
             return null;
           }
@@ -131,8 +121,7 @@ export class Harness {
   }
 
   getExecutions(since?: number): AsyncGenerator<ExecutionNode> {
-    const sinceMax = Math.max(since ?? 0, this.startDate.unix());
-    const query = getQueryExecution();
+    const query = getQueryExecution(since);
 
     const func = (
       options: RequestOptionsExecutions
@@ -148,7 +137,7 @@ export class Harness {
       appServiceOffset: APP_SERVICE_OFFSET,
       offset: 0,
       limit: this.pageSize,
-      endedAt: sinceMax,
+      endedAt: since,
     };
 
     return this.getIteratorExecution(func, funcOptions, since, this.logger);

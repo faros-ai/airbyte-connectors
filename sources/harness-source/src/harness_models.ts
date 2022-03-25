@@ -23,7 +23,7 @@ export type RequestOptionsExecutions = {
   appServiceOffset: number;
   limit: number;
   offset: number;
-  endedAt: number;
+  endedAt?: number;
 };
 
 interface Service {

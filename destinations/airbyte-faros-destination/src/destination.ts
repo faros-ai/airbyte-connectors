@@ -437,6 +437,7 @@ export class FarosDestination extends AirbyteDestination {
     writer?: Writable | HasuraWriter
   ): Promise<void> {
     const ctx = new StreamContext(
+      this.logger,
       config,
       this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
     );

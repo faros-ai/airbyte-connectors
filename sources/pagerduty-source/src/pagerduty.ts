@@ -1,6 +1,5 @@
 import {api} from '@pagerduty/pdjs';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -30,11 +29,10 @@ interface Assignment {
 
 export interface PagerdutyConfig {
   readonly token: string;
-  readonly start_date: string;
-  readonly pageSize?: number;
-  readonly cutoffDays?: number;
-  readonly defaultSeverity?: IncidentSeverityCategory;
-  readonly incidentLogEntriesOverview?: boolean;
+  readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly default_severity?: IncidentSeverityCategory;
+  readonly incident_log_entries_overview?: boolean;
 }
 
 interface PagerdutyResponse<Type> {
@@ -88,19 +86,8 @@ export class Pagerduty {
 
   constructor(
     private readonly client: any,
-    private readonly startDate: Moment,
     private readonly logger: AirbyteLogger
   ) {}
-
-  private static validateInteger(value: number): string | undefined {
-    if (value) {
-      if (typeof value === 'number' && value > 0) {
-        return undefined;
-      }
-      return `${value} must be a valid positive number`;
-    }
-    return undefined;
-  }
 
   static instance(config: PagerdutyConfig, logger: AirbyteLogger): Pagerduty {
     if (Pagerduty.pagerduty) return Pagerduty.pagerduty;
@@ -108,24 +95,10 @@ export class Pagerduty {
     if (!config.token) {
       throw new VError('token must be not an empty string');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
-    const pageSize = this.validateInteger(config.pageSize);
-    if (pageSize) {
-      throw new VError(pageSize);
-    }
-    const cutoffDays = this.validateInteger(config.cutoffDays);
-    if (cutoffDays) {
-      throw new VError(cutoffDays);
-    }
+
     const client = api({token: config.token});
 
-    Pagerduty.pagerduty = new Pagerduty(client, startDate, logger);
+    Pagerduty.pagerduty = new Pagerduty(client, logger);
     logger.debug('Created Pagerduty instance');
 
     return Pagerduty.pagerduty;
@@ -209,18 +182,17 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since: string | null,
-    limit: number = DEFAULT_PAGE_SIZE
+    since?: string,
+    limit = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
-    const startTime = new Date(since ?? 0);
-    const startTimeMax =
-      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
-    const until: Date = new Date(startTimeMax);
-    let timeRange = `&since=${startTimeMax}`;
+    let until: Date;
+    let timeRange = '&date_range=all';
     if (since) {
-      until.setMonth(new Date(startTimeMax).getMonth() + 5); //default time window is 1 month, setting to max
+      until = new Date(since);
+      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
       until.setHours(0, 0, 0); //rounding down to whole day
-      timeRange = `&since=${startTimeMax}&until=${until.toISOString()}`;
+
+      timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
     const limitParam = `&limit=${limit.toFixed()}`;
     const incidentsResource = `/incidents?time_zone=UTC${timeRange}${limitParam}`;
@@ -234,16 +206,12 @@ export class Pagerduty {
   }
 
   async *getIncidentLogEntries(
-    since: string | null,
+    since?: string,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW
   ): AsyncGenerator<LogEntry> {
-    const startTime = new Date(since ?? 0);
-    const startTimeMax =
-      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
-
-    const sinceParam = `&since=${startTimeMax}`;
+    const sinceParam = since ? `&since=${since}` : '';
     const untilParam = until ? `&until=${until.toISOString()}` : '';
     const limitParam = `&limit=${limit.toFixed()}`;
     const isOverviewParam = `&is_overview=${isOverview}`;
