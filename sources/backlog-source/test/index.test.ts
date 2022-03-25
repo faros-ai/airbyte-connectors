@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -6,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import moment from 'moment';
 import {VError} from 'verror';
 
 import {Backlog, BacklogConfig} from '../src/backlog';
@@ -72,7 +70,7 @@ describe('index', () => {
           }),
         } as any,
         {} as BacklogConfig,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -101,7 +99,7 @@ describe('index', () => {
           }),
         } as any,
         {} as BacklogConfig,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -130,7 +128,7 @@ describe('index', () => {
           }),
         } as any,
         {} as BacklogConfig,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);

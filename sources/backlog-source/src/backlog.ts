@@ -1,6 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -23,7 +22,7 @@ export class Backlog {
   constructor(
     private readonly httpClient: AxiosInstance,
     cfg: BacklogConfig,
-    readonly startDate: Moment
+    readonly startDate: Date
   ) {
     this.cfg = cfg;
   }
@@ -36,11 +35,9 @@ export class Backlog {
     if (!config.apiKey) {
       throw new VError('No API key provided');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const httpClient = axios.create({
@@ -51,7 +48,11 @@ export class Backlog {
       },
     });
 
-    Backlog.backlog = new Backlog(httpClient, config, startDate);
+    Backlog.backlog = new Backlog(
+      httpClient,
+      config,
+      new Date(config.start_date)
+    );
     logger.debug('Created Backlog instance');
     return Backlog.backlog;
   }
@@ -97,7 +98,7 @@ export class Backlog {
     const results: Issue[] = [];
     const startTime = new Date(lastUpdatedAt ?? 0);
     const startTimeMax =
-      startTime > this.startDate.toDate() ? startTime : this.startDate.toDate();
+      startTime > this.startDate ? startTime : this.startDate;
     const config = this.cfg.project_id
       ? {
           params: {
