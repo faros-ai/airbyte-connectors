@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {
   Component,
   Incident as ClientIncident,
@@ -41,7 +40,7 @@ export class Statuspage {
   constructor(
     private readonly clientV2: StatuspageClient,
     private readonly httpClient: AxiosInstance,
-    private readonly startDate: Moment,
+    private readonly startDate: Date,
     private readonly orgId?: string
   ) {}
 
@@ -57,8 +56,9 @@ export class Statuspage {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const clientV2 = new StatuspageClient(config.page_id);
@@ -74,7 +74,7 @@ export class Statuspage {
     Statuspage.statuspage = new Statuspage(
       clientV2,
       httpClient,
-      startDate,
+      new Date(config.start_date),
       config.org_id
     );
     logger.debug('Created Statuspage instance');
@@ -106,8 +106,7 @@ export class Statuspage {
   }
 
   async *getIncidentUpdates(cutoff?: Date): AsyncGenerator<IncidentUpdate> {
-    const startTime =
-      cutoff > this.startDate.toDate() ? cutoff : this.startDate.toDate();
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     for (const incident of await this.getIncidents(cutoff)) {
       for (const update of incident.incident_updates) {
         const eventTime = new Date(update.created_at);
@@ -121,8 +120,7 @@ export class Statuspage {
 
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
   async getIncidents(cutoff?: Date): Promise<ReadonlyArray<Incident>> {
-    const startTime =
-      cutoff > this.startDate.toDate() ? cutoff : this.startDate.toDate();
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     const results: Incident[] = [];
     const incidents = await this.clientV2.api.incidents.getAll();
     if (!incidents.incidents) {
@@ -139,8 +137,7 @@ export class Statuspage {
   }
 
   async *getUsers(cutoff?: Date): AsyncGenerator<User> {
-    const startTime =
-      cutoff > this.startDate.toDate() ? cutoff : this.startDate.toDate();
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     const usersResource = `/organizations/${this.orgId}/users`;
 
     if (this.orgId) {

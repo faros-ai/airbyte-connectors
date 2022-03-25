@@ -1,5 +1,4 @@
 import axios, {AxiosError, AxiosInstance} from 'axios';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {
@@ -21,7 +20,7 @@ export interface CustomerIOConfig {
 export class CustomerIO {
   private constructor(
     readonly axios: AxiosInstance,
-    readonly startDate: Moment
+    readonly startDate: Date
   ) {}
 
   static instance(
@@ -31,8 +30,9 @@ export class CustomerIO {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     return new CustomerIO(
@@ -43,7 +43,7 @@ export class CustomerIO {
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},
         }),
-      startDate
+      new Date(config.start_date)
     );
   }
 
@@ -69,7 +69,7 @@ export class CustomerIO {
   async *getCampaigns(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaign, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.unix());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const response = await this.axios.get<CustomerIOListCampaignsResponse>(
       '/campaigns'
     );
@@ -84,7 +84,7 @@ export class CustomerIO {
   async *getCampaignActions(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaignAction, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.unix());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const campaignsResponse =
       await this.axios.get<CustomerIOListCampaignsResponse>('/campaigns');
 
@@ -114,7 +114,7 @@ export class CustomerIO {
   async *getNewsletters(
     updated = 0
   ): AsyncGenerator<CustomerIONewsletter, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.unix());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const response = await this.axios.get<CustomerIOListNewsletterResponse>(
       '/newsletters'
     );

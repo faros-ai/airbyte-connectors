@@ -1,6 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 
 import {
@@ -28,7 +27,7 @@ export class FireHydrant {
 
   constructor(
     private readonly restClient: AxiosInstance,
-    private readonly startDate: Moment,
+    private readonly startDate: Date,
     private readonly pageSize?: number
   ) {}
 
@@ -44,8 +43,9 @@ export class FireHydrant {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
 
@@ -60,7 +60,11 @@ export class FireHydrant {
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
-    FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
+    FireHydrant.fireHydrant = new FireHydrant(
+      httpClient,
+      new Date(config.start_date),
+      pageSize
+    );
     logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }
@@ -127,7 +131,7 @@ export class FireHydrant {
   }
   async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
     const createdAtMax =
-      createdAt > this.startDate.toDate() ? createdAt : this.startDate.toDate();
+      createdAt > this.startDate ? createdAt : this.startDate;
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Incident>> => {

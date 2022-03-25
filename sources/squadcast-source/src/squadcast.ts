@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -41,7 +40,7 @@ export class Squadcast {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly startDate: Moment,
+    private readonly startDate: Date,
     private readonly ownerId: string,
     private readonly eventIncidentId?: string,
     private readonly eventDeduped?: boolean
@@ -62,8 +61,9 @@ export class Squadcast {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
 
@@ -79,7 +79,7 @@ export class Squadcast {
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
-      startDate,
+      new Date(config.start_date),
       config.owner_id,
       config.event_incident_id,
       config.event_deduped
@@ -159,19 +159,10 @@ export class Squadcast {
   )
   async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
     const incidents: Incident[] = [];
-    //   const startTime =
-    //   new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
-    //     ? lastUpdatedAt
-    //     : DEFAULT_INCIDENTS_START_DATE;
-    // const endTime =
-    //   new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
-    //     ? startTime
-    //     : DEFAULT_INCIDENTS_END_DATE;
-    //   console.log(startTime);
     const dates = [];
     dates.push(new Date(lastUpdatedAt ?? 0));
     dates.push(new Date(DEFAULT_INCIDENTS_START_DATE));
-    dates.push(this.startDate.toDate());
+    dates.push(this.startDate);
     const startTime = new Date(Math.max.apply(null, dates));
     const endTime =
       startTime > new Date(DEFAULT_INCIDENTS_END_DATE)

@@ -35,6 +35,9 @@ export class Backlog {
     if (!config.apiKey) {
       throw new VError('No API key provided');
     }
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
     const ISO_8601_FULL =
       /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
     if (!ISO_8601_FULL.test(config.start_date)) {

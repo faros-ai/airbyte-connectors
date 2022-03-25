@@ -5,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -45,7 +44,7 @@ describe('index', () => {
       return new Statuspage(
         {api: {incidents: {getAll: jest.fn().mockResolvedValue({})}}} as any,
         {get: jest.fn().mockResolvedValue({})} as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
 
@@ -70,7 +69,7 @@ describe('index', () => {
           },
         } as any,
         {get: jest.fn().mockResolvedValue({})} as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -105,7 +104,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -139,7 +138,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -183,7 +182,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc()
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -217,7 +216,7 @@ describe('index', () => {
             }
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         'orgid'
       );
     });

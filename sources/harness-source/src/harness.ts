@@ -27,6 +27,7 @@ export class Harness {
   constructor(
     readonly client: GraphQLClient,
     readonly pageSize: number,
+    readonly startDate: Date,
     readonly logger: AirbyteLogger
   ) {}
 
@@ -43,7 +44,14 @@ export class Harness {
         'Missing authentication information. Please provide a Harness apiKey'
       );
     }
-
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
+      throw new VError('start_date is invalid: %s', config.start_date);
+    }
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
     const client = new GraphQLClient(
@@ -51,7 +59,12 @@ export class Harness {
       {headers: {'x-api-key': config.api_key}}
     );
 
-    Harness.harness = new Harness(client, pageSize, logger);
+    Harness.harness = new Harness(
+      client,
+      pageSize,
+      new Date(config.start_date),
+      logger
+    );
     logger.debug('Created Harness instance');
 
     return Harness.harness;
@@ -121,7 +134,9 @@ export class Harness {
   }
 
   getExecutions(since?: number): AsyncGenerator<ExecutionNode> {
-    const query = getQueryExecution(since);
+    const sinceMax =
+      since > this.startDate.getTime() ? since : this.startDate.getTime();
+    const query = getQueryExecution();
 
     const func = (
       options: RequestOptionsExecutions
@@ -140,6 +155,6 @@ export class Harness {
       endedAt: since,
     };
 
-    return this.getIteratorExecution(func, funcOptions, since, this.logger);
+    return this.getIteratorExecution(func, funcOptions, sinceMax, this.logger);
   }
 }

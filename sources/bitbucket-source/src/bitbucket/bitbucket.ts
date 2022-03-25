@@ -62,6 +62,9 @@ export class Bitbucket {
     const client = new BitbucketClient({baseUrl, auth});
     const pagelen = config.pagelen || DEFAULT_PAGELEN;
 
+    if (!config.start_date) {
+      throw new VError('start_date is null or empty');
+    }
     const ISO_8601_FULL =
       /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
     if (!ISO_8601_FULL.test(config.start_date)) {

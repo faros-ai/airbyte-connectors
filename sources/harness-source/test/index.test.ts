@@ -5,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import moment from 'moment';
 import {VError} from 'verror';
 
 import {Harness} from '../src/harness';
@@ -67,7 +66,7 @@ describe('index', () => {
           request: jest.fn().mockResolvedValue({}),
         } as any,
         100,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -76,6 +75,7 @@ describe('index', () => {
       source.checkConnection({
         account_id: 'account_id',
         api_key: 'api_key',
+        start_date: 'start_date',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -87,7 +87,7 @@ describe('index', () => {
           request: jest.fn().mockRejectedValue({}),
         } as any,
         100,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -120,7 +120,7 @@ describe('index', () => {
           }),
         } as any,
         100,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -129,6 +129,7 @@ describe('index', () => {
     const [executionsStream] = source.streams({
       account_id: 'account_id',
       api_key: 'api_key',
+      start_date: 'start_date',
     });
     const executionsIter = executionsStream.readRecords(SyncMode.FULL_REFRESH);
     const executions = [];
@@ -156,7 +157,7 @@ describe('index', () => {
           }),
         } as any,
         100,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -165,6 +166,7 @@ describe('index', () => {
     const [executionsStream] = source.streams({
       account_id: 'account_id',
       api_key: 'api_key',
+      start_date: 'start_date',
     });
     const executionsIter = executionsStream.readRecords(
       SyncMode.INCREMENTAL,

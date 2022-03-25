@@ -5,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import moment from 'moment';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -44,7 +43,7 @@ describe('index', () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
         {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         '6129ac15518568defa92794b',
         'incidentId'
       );
@@ -62,7 +61,7 @@ describe('index', () => {
         {
           get: jest.fn().mockRejectedValue(new Error('some error')),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId'
       );
     });
@@ -104,7 +103,7 @@ describe('index', () => {
             return {data: {data: {events: []}}};
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         '6129ac15518568defa92794b'
       );
     });
@@ -137,7 +136,7 @@ describe('index', () => {
             }
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         '6129ac15518568defa92794b',
         'incidentId-123'
       );
@@ -166,7 +165,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('services.json')},
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         '6129ac15518568defa92794b',
         'incidentId'
       );
@@ -195,7 +194,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('users.json')},
           }),
         } as any,
-        moment('2010-03-27T14:03:51-0800', moment.ISO_8601, true).utc(),
+        new Date('2010-03-27T14:03:51-0800'),
         '6129ac15518568defa92794b',
         'incidentId'
       );

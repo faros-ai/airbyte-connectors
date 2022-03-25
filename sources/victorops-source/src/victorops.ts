@@ -3,7 +3,6 @@ import axiosRetry, {
   isNetworkOrIdempotentRequestError,
 } from 'axios-retry';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import moment, {Moment} from 'moment';
 import {VError} from 'verror';
 import VictorOpsApiClient from 'victorops-api-client';
 
@@ -104,7 +103,7 @@ export class Victorops {
 
   constructor(
     private readonly client: VictorOpsApiClient,
-    readonly startDate: Moment
+    readonly startDate: Date
   ) {}
 
   static instance(config: VictoropsConfig, logger: AirbyteLogger): Victorops {
@@ -119,8 +118,9 @@ export class Victorops {
     if (!config.start_date) {
       throw new VError('start_date is null or empty');
     }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
+    const ISO_8601_FULL =
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
+    if (!ISO_8601_FULL.test(config.start_date)) {
       throw new VError('start_date is invalid: %s', config.start_date);
     }
     const client = new VictorOpsApiClient({
@@ -148,7 +148,7 @@ export class Victorops {
 
     axiosRetry(client._axiosInstance, retryConfig);
 
-    Victorops.victorops = new Victorops(client, startDate);
+    Victorops.victorops = new Victorops(client, new Date(config.start_date));
     logger.debug('Created VictorOps instance');
 
     return Victorops.victorops;
@@ -186,9 +186,7 @@ export class Victorops {
     currentPhase = DEFAULT_CURRENT_PHASE
   ): AsyncGenerator<Incident> {
     const startedAfterMax =
-      startedAfter > this.startDate.toDate()
-        ? startedAfter
-        : this.startDate.toDate();
+      startedAfter > this.startDate ? startedAfter : this.startDate;
     let offset = 0;
     let incidentCount = 0;
     let incidentTotal = 0;
