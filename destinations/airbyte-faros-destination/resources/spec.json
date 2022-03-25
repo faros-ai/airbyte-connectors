@@ -39,7 +39,8 @@
               "hasura_admin_secret": {
                 "type": "string",
                 "title": "Hasura Admin Secret",
-                "description": "The Hasura Admin Secret."
+                "description": "The Hasura Admin Secret.",
+                "airbyte_secret": true
               },
               "hasura_url": {
                 "type": "string",
