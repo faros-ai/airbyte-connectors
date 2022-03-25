@@ -23,6 +23,7 @@ export enum RepoSource {
   GITHUB = 'GitHub',
   GITLAB = 'GitLab',
   VCS = 'VCS',
+  repoSourceFallback = 'repoSourceFallback',
 }
 
 /** Common functions shares across Jenkins converters */

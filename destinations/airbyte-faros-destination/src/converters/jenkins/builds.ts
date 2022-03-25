@@ -59,7 +59,7 @@ export class Builds extends JenkinsConverter {
       ?.filter((a) => a?._class === this.BUILD_DATA_CLASS)
       ?.forEach((a) => {
         const remoteUrls = a?.remoteUrls?.filter((u) => u !== null) ?? [];
-        const repos = this.reposFromUrls(remoteUrls, '');
+        const repos = this.reposFromUrls(remoteUrls);
         const sha = a?.lastBuiltRevision?.SHA1;
         if (repos.length && sha) {
           for (const repo of repos) {
@@ -79,10 +79,7 @@ export class Builds extends JenkinsConverter {
       });
   }
 
-  private reposFromUrls(
-    urls: ReadonlyArray<string>,
-    repoSourceFallback: string
-  ): ReadonlyArray<any> {
+  private reposFromUrls(urls: ReadonlyArray<string>): ReadonlyArray<any> {
     const repos: any[] = [];
     for (const gitUrl of new Set(urls)) {
       const realGitUrl = parseGitUrl(gitUrl);
@@ -91,7 +88,7 @@ export class Builds extends JenkinsConverter {
       if (sourceToLower?.includes('bitbucket')) source = RepoSource.BITBUCKET;
       else if (sourceToLower?.includes('gitlab')) source = RepoSource.GITLAB;
       else if (sourceToLower?.includes('github')) source = RepoSource.GITHUB;
-      else source = repoSourceFallback;
+      else source = RepoSource.repoSourceFallback;
       repos.push({
         source: source,
         org: realGitUrl.organization,
