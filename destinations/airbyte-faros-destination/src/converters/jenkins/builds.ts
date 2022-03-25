@@ -12,6 +12,7 @@ export class Builds extends JenkinsConverter {
     'cicd_Pipeline',
     'cicd_Build',
     'cicd_BuildCommitAssociation',
+    'vcs_Commit',
   ];
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
@@ -67,6 +68,7 @@ export class Builds extends JenkinsConverter {
               organization: {uid: toLower(repo.org), source: repo.source},
               name: toLower(repo.name),
             };
+
             res.push({
               model: 'cicd_BuildCommitAssociation',
               record: {
@@ -74,9 +76,22 @@ export class Builds extends JenkinsConverter {
                 commit: {repository: repoKey, sha},
               },
             });
+
+            res.push({
+              model: 'vcs_Commit',
+              record: {
+                sha,
+                repository: repoKey,
+                uid: sha,
+                message: sha,
+                htmlUrl: repo.org,
+              },
+            });
           }
         }
       });
+
+    return res;
   }
 
   private reposFromUrls(urls: ReadonlyArray<string>): ReadonlyArray<any> {
