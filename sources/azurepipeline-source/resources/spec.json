@@ -7,7 +7,8 @@
     "required": [
       "access_token",
       "organization",
-      "project"
+      "project",
+      "start_date"
     ],
     "additionalProperties": false,
     "properties": {
@@ -24,6 +25,15 @@
         "type": "string",
         "title": "project of microsoft azure"
       }, 
+      "start_date": {
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which you'd like to replicate data for Backlog in the ISO 8601 format, i.e YYYY-MM-DDTmm:HH:ssZ. All data generated after this date will be replicated.",
+        "examples": [
+          "2010-03-27T14:03:51-0800"
+        ],
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+      },
       "api_version": {
         "type": "string",
         "title": "api version",

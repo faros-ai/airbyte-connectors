@@ -65,7 +65,8 @@ describe('index', () => {
             data: {value: pipelinesResource},
           }),
         } as any,
-        null
+        null,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.AzurePipelineSource(logger);
@@ -93,7 +94,8 @@ describe('index', () => {
             data: {value: buildsResource},
           }),
         } as any,
-        null
+        null,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.AzurePipelineSource(logger);
@@ -121,7 +123,8 @@ describe('index', () => {
             data: {value: releasesResource},
           }),
         } as any,
-        null
+        null,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.AzurePipelineSource(logger);

@@ -9,6 +9,10 @@ import {Dictionary} from 'ts-essentials';
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
 import {Build} from '../models';
 
+interface BuildState {
+  lastQueueTime: string;
+}
+
 export class Builds extends AirbyteStreamBase {
   constructor(
     private readonly config: AzurePipelineConfig,
@@ -23,13 +27,32 @@ export class Builds extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-
+  get cursorField(): string | string[] {
+    return 'queueTime';
+  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>
+    streamSlice?: Dictionary<any>,
+    streamState?: BuildState
   ): AsyncGenerator<Build> {
+    const lastQueueTime =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.lastQueueTime
+        : undefined;
     const azurePipeline = AzurePipeline.instance(this.config);
-    yield* azurePipeline.getBuilds();
+    yield* azurePipeline.getBuilds(lastQueueTime);
+  }
+  getUpdatedState(
+    currentStreamState: BuildState,
+    latestRecord: Build
+  ): BuildState {
+    const lastQueueTime: Date = new Date(latestRecord.queueTime);
+    return {
+      lastQueueTime:
+        lastQueueTime >= new Date(currentStreamState?.lastQueueTime || 0)
+          ? latestRecord.queueTime
+          : currentStreamState.lastQueueTime,
+    };
   }
 }
