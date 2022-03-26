@@ -58,7 +58,7 @@ describe('index', () => {
 
       await expect(
         source.checkConnection({
-          app_api_key: 'invalid',
+          app_api_key: 'testkey',
           start_date: '1970-01-01T00:00:00-0000',
         })
       ).resolves.toStrictEqual([
