@@ -66,7 +66,7 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         api_token: 'api_token',
-        start_date: 'start_date',
+        start_date: '2010-03-27T14:03:51-0800',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });

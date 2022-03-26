@@ -67,6 +67,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
+        start_date: '2010-03-27T14:03:51-0800',
       })
     ).resolves.toStrictEqual([
       false,

@@ -51,7 +51,10 @@ describe('index', () => {
 
     const source = new sut.SquadcastSource(logger);
     await expect(
-      source.checkConnection({token: 'token'})
+      source.checkConnection({
+        token: 'token',
+        start_date: '2010-03-27T14:03:51-0800',
+      })
     ).resolves.toStrictEqual([true, undefined]);
   });
 

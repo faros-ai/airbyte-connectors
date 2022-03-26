@@ -53,7 +53,7 @@ describe('index', () => {
       source.checkConnection({
         api_key: '',
         page_id: 'page_id',
-        start_date: 'start_date',
+        start_date: '2010-03-27T14:03:51-0800',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -104,7 +104,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('1970-01-01T00:00:00-0000')
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -216,7 +216,7 @@ describe('index', () => {
             }
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800'),
+        new Date('1970-01-01T00:00:00-0000'),
         'orgid'
       );
     });

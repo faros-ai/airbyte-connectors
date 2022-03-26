@@ -48,6 +48,7 @@ describe('index', () => {
       await expect(
         source.checkConnection({
           app_api_key: 'testkey',
+          start_date: '1970-01-01T00:00:00-0000',
         })
       ).resolves.toStrictEqual([true, undefined]);
     });
@@ -58,6 +59,7 @@ describe('index', () => {
       await expect(
         source.checkConnection({
           app_api_key: 'invalid',
+          start_date: '1970-01-01T00:00:00-0000',
         })
       ).resolves.toStrictEqual([
         false,
@@ -86,6 +88,7 @@ describe('index', () => {
 
         const [campaignsStream] = source.streams({
           app_api_key: 'testkey',
+          start_date: '1970-01-01T00:00:00-0000',
         });
 
         const campaignsIterator = campaignsStream.readRecords(
@@ -188,6 +191,7 @@ describe('index', () => {
 
         const [, campaignActionsStream] = source.streams({
           app_api_key: 'testkey',
+          start_date: '1970-01-01T00:00:00-0000',
         });
 
         const campaignActionsIterator = campaignActionsStream.readRecords(
@@ -229,6 +233,7 @@ describe('index', () => {
 
         const [, , newslettersStream] = source.streams({
           app_api_key: 'testkey',
+          start_date: '1970-01-01T00:00:00-0000',
         });
 
         const newslettersIterator = newslettersStream.readRecords(
