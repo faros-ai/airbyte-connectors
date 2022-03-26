@@ -51,7 +51,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     await expect(
       source.checkConnection({
-        api_key: 'api_key',
+        api_key: '',
         page_id: 'page_id',
         start_date: 'start_date',
       })
