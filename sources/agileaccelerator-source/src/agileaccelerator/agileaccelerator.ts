@@ -195,7 +195,7 @@ export class Agileaccelerator {
         const newDate = getUpdatedAt(item);
         if (newDate > modifiedDate) {
           modifiedDate = newDate;
-        }
+        } else modifiedDate = undefined;
         yield {...item, baseUrl: this.baseUrl} as T;
       }
     } while (modifiedDate);
