@@ -1,6 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
-import request from 'request';
 import {VError} from 'verror';
 
 import {
@@ -73,25 +72,21 @@ export class AzureActiveDirectory {
   ): Promise<string> {
     const version = config.auth_version ?? DEFAULT_AUTH_VERSION;
     return new Promise(function (resolve, reject) {
-      request(
-        {
-          method: 'POST',
-          url: `${AUTH_URL}/${config.tenant_id}/oauth2/${version}/token`,
-          formData: {
-            client_id: config.client_id,
-            scope: 'https://graph.microsoft.com/.default',
-            client_secret: config.client_secret,
-            grant_type: 'client_credentials',
-          },
-        },
-        function (error, res, body) {
-          if (!error && res.statusCode == 200) {
-            resolve(JSON.parse(body).access_token);
-          } else {
-            reject(error);
-          }
-        }
-      );
+      const data = new URLSearchParams({
+        client_id: config.client_id,
+        scope: 'https://graph.microsoft.com/.default',
+        client_secret: config.client_secret,
+        grant_type: 'client_credentials',
+      });
+
+      axios
+        .post(`${AUTH_URL}/${config.tenant_id}/oauth2/${version}/token`, data)
+        .then((response) => {
+          resolve(response.data.access_token);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
