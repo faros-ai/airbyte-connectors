@@ -70,24 +70,18 @@ export class AzureActiveDirectory {
   private static async getAccessToken(
     config: AzureActiveDirectoryConfig
   ): Promise<string> {
-    const version = config.auth_version ?? DEFAULT_AUTH_VERSION;
-    return new Promise(function (resolve, reject) {
-      const data = new URLSearchParams({
-        client_id: config.client_id,
-        scope: 'https://graph.microsoft.com/.default',
-        client_secret: config.client_secret,
-        grant_type: 'client_credentials',
-      });
-
-      axios
-        .post(`${AUTH_URL}/${config.tenant_id}/oauth2/${version}/token`, data)
-        .then((response) => {
-          resolve(response.data.access_token);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+    const data = new URLSearchParams({
+      client_id: config.client_id,
+      scope: 'https://graph.microsoft.com/.default',
+      client_secret: config.client_secret,
+      grant_type: 'client_credentials',
     });
+    const version = config.auth_version ?? DEFAULT_AUTH_VERSION;
+    const res = await axios.post(
+      `${AUTH_URL}/${config.tenant_id}/oauth2/${version}/token`,
+      data
+    );
+    return res.data.access_token;
   }
 
   async checkConnection(): Promise<void> {
