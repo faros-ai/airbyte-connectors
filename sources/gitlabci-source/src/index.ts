@@ -9,6 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
+import {Gitlab, GitlabConfig} from './gitlab';
 import {Builds} from './streams';
 
 /** The main entry point. */
@@ -23,11 +24,14 @@ class GitlabCiSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
-    if (config.user === 'chris') {
-      return [true, undefined];
+  async checkConnection(config: GitlabConfig): Promise<[boolean, VError]> {
+    try {
+      const gitlab = Gitlab.instance(config, this.logger);
+      await gitlab.checkConnection();
+    } catch (error: any) {
+      return [false, error];
     }
-    return [false, new VError('User is not chris')];
+    return [true, undefined];
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [new Builds(this.logger)];

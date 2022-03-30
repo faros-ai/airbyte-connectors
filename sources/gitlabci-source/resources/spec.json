@@ -11,7 +11,7 @@
     ],
     "additionalProperties": false,
     "properties": {
-      "server_url": {
+      "api_url": {
         "type": "string",
         "title": "Gitlab API URL",
         "examples": [
