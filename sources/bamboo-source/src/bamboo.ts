@@ -191,7 +191,7 @@ export class Bamboo {
         this.httpClient.get(
           `deploy/environment/${environmentId}/results?max-results=${pageSize}&start-index=${startIndex}`
         ),
-      (data) => data.data.results,
+      (data) => data.data.results ?? [],
       //pagination check - check deployment started date
       (item: Deployment) =>
         this.breaker(

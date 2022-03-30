@@ -78,4 +78,61 @@ describe('index', () => {
     expect(fnPlansFunc).toHaveBeenCalledTimes(1);
     expect(plans).toStrictEqual(readTestResourceFile('plans.json'));
   });
+
+  test('streams - builds, use full_refresh sync mode', async () => {
+    const fnBuildsFunc = jest.fn();
+
+    Bamboo.instance = jest.fn().mockImplementation(() => {
+      const buildsResource: any[] = readTestResourceFile('builds_input.json');
+      return new Bamboo(
+        {
+          get: fnBuildsFunc.mockResolvedValue({
+            data: buildsResource,
+          }),
+        } as any,
+        {} as BambooConfig
+      );
+    });
+    const source = new sut.BambooSource(logger);
+    const streams = source.streams({} as any);
+
+    const buildsStream = streams[0];
+    const buildIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);
+    const builds = [];
+    for await (const build of buildIter) {
+      builds.push(build);
+    }
+
+    expect(fnBuildsFunc).toHaveBeenCalledTimes(2);
+    expect(builds).toStrictEqual([]);
+  });
+
+  test('streams - deployment, use full_refresh sync mode', async () => {
+    const fnDeploymentsFunc = jest.fn();
+
+    Bamboo.instance = jest.fn().mockImplementation(() => {
+      const deploymentsResource: any[] =
+        readTestResourceFile('deployments.json');
+      return new Bamboo(
+        {
+          get: fnDeploymentsFunc.mockResolvedValue({
+            data: deploymentsResource,
+          }),
+        } as any,
+        {} as BambooConfig
+      );
+    });
+    const source = new sut.BambooSource(logger);
+    const streams = source.streams({} as any);
+
+    const deploymentsStream = streams[1];
+    const deploymentIter = deploymentsStream.readRecords(SyncMode.FULL_REFRESH);
+    const deployments = [];
+    for await (const deployment of deploymentIter) {
+      deployments.push(deployment);
+    }
+
+    expect(fnDeploymentsFunc).toHaveBeenCalledTimes(3);
+    expect(deployments).toStrictEqual([]);
+  });
 });
