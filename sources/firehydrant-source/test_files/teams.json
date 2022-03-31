@@ -1,0 +1,37 @@
+[
+    {
+        "id": "322ebbdf-4a9b-4d48-ab52-cbd19ada768a",
+        "name": "Backend Team",
+        "description": "Responsibility for Api, service",
+        "slug": "backend-team",
+        "created_at": "2022-03-07T15:07:58.459Z",
+        "updated_at": "2022-03-07T15:07:58.459Z",
+        "memberships": [
+            {
+                "user": {
+                    "id": "608c2d17-4009-49e5-9491-b93168a7d0c7",
+                    "name": "Kelvin Tran",
+                    "email": "huongkstn@gmail.com",
+                    "created_at": "2022-03-07T15:00:29.757Z",
+                    "updated_at": "2022-03-07T15:00:29.757Z",
+                    "slack_linked?": true
+                },
+                "schedule": null,
+                "default_incident_role": {
+                    "id": "e7f67648-e4b2-47d8-a324-a480714f658a",
+                    "name": "Commander",
+                    "summary": "The incident commander holds the high-level state about the incident",
+                    "description": "",
+                    "created_at": "2022-03-07T15:00:28.291Z",
+                    "updated_at": "2022-03-07T15:00:28.291Z",
+                    "discarded_at": null,
+                    "tasks": []
+                }
+            }
+        ],
+        "owned_checklist_templates": [],
+        "owned_services": [],
+        "responding_services": [],
+        "services": []
+    }
+]

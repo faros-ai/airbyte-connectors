@@ -4,15 +4,9 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  DEFAULT_CUTOFF_DAYS,
-  Incident,
-  Pagerduty,
-  PagerdutyConfig,
-} from '../pagerduty';
+import {Incident, Pagerduty, PagerdutyConfig} from '../pagerduty';
 
 interface IncidentState {
   lastSynced: string;
@@ -40,20 +34,11 @@ export class Incidents extends AirbyteStreamBase {
     streamState?: IncidentState
   ): AsyncGenerator<Incident> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-    const state = syncMode === SyncMode.INCREMENTAL ? streamState : null;
 
-    let since = null;
-    if (syncMode === SyncMode.INCREMENTAL) {
-      const cutoffTimestamp = DateTime.now()
-        .minus({days: this.config.cutoffDays || DEFAULT_CUTOFF_DAYS})
-        .toJSDate();
-      since =
-        state?.lastSynced !== undefined
-          ? new Date(state.lastSynced)
-          : cutoffTimestamp;
-    }
+    const since =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.lastSynced : undefined;
 
-    yield* pagerduty.getIncidents(since, this.config.pageSize);
+    yield* pagerduty.getIncidents(since, this.config.page_size);
   }
 
   getUpdatedState(

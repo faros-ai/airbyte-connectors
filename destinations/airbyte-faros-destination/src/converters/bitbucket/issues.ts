@@ -28,6 +28,8 @@ export class Issues extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskProjectRelationship',
+    'tms_TaskBoardRelationship',
     'tms_User',
   ];
 
@@ -61,6 +63,21 @@ export class Issues extends BitbucketConverter {
         },
       });
     }
+    const projectRef = {uid: String(issue.repository.name), source};
+    res.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: taskRef,
+        project: projectRef,
+      },
+    });
+    res.push({
+      model: 'tms_TaskBoardRelationship',
+      record: {
+        task: taskRef,
+        board: projectRef,
+      },
+    });
 
     res.push({
       model: 'tms_Task',

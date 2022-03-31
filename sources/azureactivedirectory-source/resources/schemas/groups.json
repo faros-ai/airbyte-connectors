@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "deletedDateTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "classification": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "creationOptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "createdDateTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "expirationDateTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "groupTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mailEnabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "mailNickname": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "membershipRule": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "membershipRuleProcessingState": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "members": {
+      "type": "array",
+      "item": {
+        "type": "string"
+      }
+    },
+    "owners": {
+      "type": "array",
+      "item": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import {AirbyteConfig, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-feeds-sdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
@@ -6,7 +6,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 /** Airbyte -> Faros record converter */
-export abstract class Converter {
+export abstract class ConverterTyped<R> {
   private stream: StreamName;
 
   /** Name of the source system that records were fetched from (e.g. GitHub) **/
@@ -38,8 +38,9 @@ export abstract class Converter {
   abstract convert(
     record: AirbyteRecord,
     ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>>;
+  ): Promise<ReadonlyArray<DestinationRecordTyped<R>>>;
 }
+export abstract class Converter extends ConverterTyped<Dictionary<any>> {}
 
 // Helper function for reading object type configurations that
 // may be inputted as proper JSON via API or stringified JSON via Airbyte UI
@@ -61,6 +62,7 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
   constructor(
+    readonly logger: AirbyteLogger,
     readonly config: AirbyteConfig,
     readonly farosClient?: FarosClient
   ) {}
@@ -149,10 +151,11 @@ export class StreamName {
  *   }
  * }
  */
-export type DestinationRecord = {
+export type DestinationRecordTyped<R extends Dictionary<any>> = {
   readonly model: DestinationModel;
-  readonly record: Dictionary<any>;
+  readonly record: R;
 };
+export type DestinationRecord = DestinationRecordTyped<Dictionary<any>>;
 
 /** Faros destination model name, e.g identity_Identity, vcs_Commit */
 export type DestinationModel = string;
