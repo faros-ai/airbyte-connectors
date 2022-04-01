@@ -4,27 +4,22 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Gitlab CI Spec",
     "type": "object",
-    "required": [
-      "server_url",
-      "user",
-      "token"
-    ],
+    "required": ["token", "groupName", "projects"],
     "additionalProperties": false,
     "properties": {
-      "api_url": {
-        "type": "string",
-        "title": "Gitlab API URL",
-        "examples": [
-          "https://gitlab.example.com/api/v4/projects"
-        ]
-      },
-      "user": {
-        "type": "string",
-        "title": "Gitlab User"
-      },
       "token": {
         "type": "string",
         "title": "Access Token",
+        "airbyte_secret": true
+      },
+      "groupName": {
+        "type": "string",
+        "title": "Group Name",
+        "airbyte_secret": true
+      },
+      "projects": {
+        "type": "array",
+        "title": "Project Names",
         "airbyte_secret": true
       }
     }

@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -10,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Gitlab, GitlabConfig} from './gitlab';
-import {Builds} from './streams';
+import {Group, Jobs, Pipelines, Projects} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,7 +32,11 @@ class GitlabCiSource extends AirbyteSourceBase {
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new Builds(this.logger)];
+  streams(config: GitlabConfig): AirbyteStreamBase[] {
+    const group = new Group(config, this.logger);
+    const projects = new Projects(config, group, this.logger);
+    const pipelines = new Pipelines(config, projects, this.logger);
+    const jobs = new Jobs(config, projects, pipelines, this.logger);
+    return [group, projects, pipelines, jobs];
   }
 }
