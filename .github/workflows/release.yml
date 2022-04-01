@@ -19,7 +19,7 @@ jobs:
       HUSKY: 0
     steps:
       - name: Check out
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch tags for check below.
 
@@ -81,7 +81,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Docker login
         uses: docker/login-action@v1.14.0
