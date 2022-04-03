@@ -115,14 +115,8 @@ export class Gitlab {
           if (maxCount && count >= maxCount) {
             return;
           }
-          const builtPipeline = buildPipeline(pipeline);
-          const isNew =
-            !lastUpdated ||
-            new Date(pipeline.updatedAt) > new Date(lastUpdated);
-          if (isNew) {
-            yield builtPipeline;
-            count++;
-          }
+          yield buildPipeline(pipeline);
+          count++;
         }
         page = paginationInfo?.next;
       } catch (error: any) {
