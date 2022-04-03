@@ -46,7 +46,26 @@ export class Pipelines extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Pipeline> {
     const gitlab = Gitlab.instance(this.config, this.logger);
+    const lastUpdated =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    yield* gitlab.getPipelines(streamSlice.projectPath);
+    yield* gitlab.getPipelines(
+      streamSlice.projectPath,
+      this.config,
+      lastUpdated
+    );
+  }
+
+  getUpdatedState(
+    currentStreamState: Dictionary<any>,
+    latestRecord: Pipeline
+  ): Dictionary<any> {
+    return {
+      cutoff:
+        new Date(latestRecord.updatedAt) >
+        new Date(currentStreamState?.cutoff ?? 0)
+          ? latestRecord.updatedAt
+          : currentStreamState.cutoff,
+    };
   }
 }

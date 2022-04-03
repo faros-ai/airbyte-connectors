@@ -1,9 +1,13 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk/lib';
 
 export interface GitlabConfig extends AirbyteConfig {
+  readonly apiUrl: string;
+  readonly apiVersion: number;
   readonly token: string;
   readonly groupName: string;
   readonly projects: string[];
+  readonly pageSize: number;
+  readonly maxPipelinesPerProject: number;
 }
 
 export interface Group {
@@ -52,3 +56,8 @@ export interface Project {
   readonly visibility: string;
   readonly webUrl: string;
 }
+
+export type RequestOptions = {
+  perPage?: number;
+  [key: string]: any;
+};

@@ -7,6 +7,16 @@
     "required": ["token", "groupName", "projects"],
     "additionalProperties": false,
     "properties": {
+      "apiUrl": {
+        "type": "string",
+        "title": "API URL",
+        "airbyte_secret": true
+      },
+      "apiVersion": {
+        "type": "number",
+        "title": "API Version",
+        "airbyte_secret": true
+      },
       "token": {
         "type": "string",
         "title": "Access Token",
@@ -20,6 +30,18 @@
       "projects": {
         "type": "array",
         "title": "Project Names",
+        "airbyte_secret": true
+      },
+      "pageSize": {
+        "type": "number",
+        "title": "Page Size",
+        "description": "Pipelines count per request.",
+        "airbyte_secret": true
+      },
+      "maxPipelinesPerProject": {
+        "type": "number",
+        "title": "Max Pipelines",
+        "description": "Maximum pipelines count per project.",
         "airbyte_secret": true
       }
     }
