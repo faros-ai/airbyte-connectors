@@ -46,8 +46,12 @@ export class Pipelines extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Pipeline> {
     const gitlab = Gitlab.instance(this.config, this.logger);
-    const lastUpdated =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
+    const cutoff = streamState?.cutoff;
+    if (cutoff > Date.now()) {
+      this.logger.info(`Last cutoff ${cutoff} is greater than current time`);
+      return;
+    }
+    const lastUpdated = syncMode === SyncMode.INCREMENTAL ? cutoff : undefined;
 
     yield* gitlab.getPipelines(
       streamSlice.projectPath,

@@ -1,4 +1,4 @@
-import {Gitlab as GitlabClient, Types} from '@gitbeaker/node';
+import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
@@ -83,6 +83,7 @@ export class Gitlab {
       for (const projectName of projects) {
         const projectPath = `${groupPath}/${projectName}`;
         const project = await this.client.Projects.show(projectPath);
+        console.log({projectName, project});
         yield buildProject(project);
       }
     } catch (error: any) {
@@ -95,7 +96,7 @@ export class Gitlab {
     config: GitlabConfig,
     lastUpdated?: string
   ): AsyncGenerator<Pipeline> {
-    const options: Types.BasePaginationRequestOptions | Types.ShowExpanded = {
+    const options: RequestOptions = {
       perPage: config.pageSize || DEFAULT_PER_PAGE,
       updatedAfter: lastUpdated,
       orderBy: 'updated_at',

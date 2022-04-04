@@ -8,7 +8,6 @@
           "full_refresh",
           "incremental"
         ],
-        "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
             "id"
@@ -26,7 +25,6 @@
           "full_refresh",
           "incremental"
         ],
-        "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
             "id"
@@ -45,13 +43,16 @@
           "incremental"
         ],
         "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updatedAt"
+        ],
         "source_defined_primary_key": [
           [
             "id"
           ]
         ]
       },
-      "sync_mode": "incremental",
+      "sync_mode": "full_refresh",
       "destination_sync_mode": "append"
     },
     {
@@ -62,14 +63,13 @@
           "full_refresh",
           "incremental"
         ],
-        "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
             "id"
           ]
         ]
       },
-      "sync_mode": "incremental",
+      "sync_mode": "full_refresh",
       "destination_sync_mode": "append"
     }
   ]

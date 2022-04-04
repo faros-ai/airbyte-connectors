@@ -9,7 +9,7 @@
       "type": "string"
     },
     "projectId": {
-      "type": "string"
+      "type": "number"
     },
     "status": {
       "type": "string"

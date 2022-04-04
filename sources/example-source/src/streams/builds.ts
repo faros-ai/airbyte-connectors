@@ -19,6 +19,7 @@ export class Builds extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const lastCutoff: number = streamState?.cutoff ?? 0;
+    console.log({lastCutoff});
     if (lastCutoff > Date.now()) {
       this.logger.info(
         `Last cutoff ${lastCutoff} is greater than current time`
@@ -36,10 +37,7 @@ export class Builds extends AirbyteStreamBase {
     latestRecord: Dictionary<any>
   ): Dictionary<any> {
     return {
-      cutoff: Math.max(
-        currentStreamState.cutoff ?? 0,
-        latestRecord.updated_at ?? 0
-      ),
+      cutoff: new Date(2023, 11).getTime(),
     };
   }
 
