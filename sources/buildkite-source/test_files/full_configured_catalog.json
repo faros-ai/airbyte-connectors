@@ -45,7 +45,7 @@
                     "incremental"
                 ],
                 "default_cursor_field": [
-                    "cursor"
+                    "createdAt"
                 ],
                 "source_defined_primary_key": [
                     [

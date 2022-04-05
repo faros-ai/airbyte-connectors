@@ -22,5 +22,5 @@ tests:
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
         pipelines: ["lastCursor"]
-        builds: ["lastCursor"]
+        builds: ["lastCreatedAt"]
         jobs: ["lastCursor"]
