@@ -86,7 +86,7 @@ describe('gitlab', () => {
     expect(stdout).toMatch('Read 55 messages');
     expect(stdout).toMatch('Read 55 records');
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Wrote 68 records');
+    expect(stdout).toMatch('Wrote 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -110,7 +110,7 @@ describe('gitlab', () => {
     expect(stdout).toMatch('Read 55 messages');
     expect(stdout).toMatch('Read 55 records');
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
+    expect(stdout).toMatch('Would write 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -131,7 +131,7 @@ describe('gitlab', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('Processed 55 records');
-    expect(stdout).toMatch('Would write 68 records');
+    expect(stdout).toMatch('Would write 75 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -246,8 +246,13 @@ describe('gitlab', () => {
       cicd_ReleaseTagAssociation: 1,
       tms_Epic: 3,
       tms_Label: 15,
+      tms_Project: 1,
       tms_Task: 2,
       tms_TaskAssignment: 1,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskBoardRelationship: 2,
+      tms_TaskProjectRelationship: 2,
       tms_TaskTag: 1,
       vcs_Branch: 7,
       vcs_BranchCommitAssociation: 7,

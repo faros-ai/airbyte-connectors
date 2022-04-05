@@ -1,0 +1,43 @@
+[
+    {
+        "id": "ce3745e7-6338-42dc-8e51-2bd52fb17e00",
+        "deletedDateTime": null,
+        "classification": null,
+        "createdDateTime": "2022-01-29T22:31:35Z",
+        "creationOptions": [],
+        "description": "tester team",
+        "displayName": "tester team",
+        "expirationDateTime": null,
+        "groupTypes": [],
+        "isAssignableToRole": null,
+        "mail": null,
+        "mailEnabled": false,
+        "mailNickname": "ce60643f-b",
+        "membershipRule": null,
+        "membershipRuleProcessingState": null,
+        "onPremisesDomainName": null,
+        "onPremisesLastSyncDateTime": null,
+        "onPremisesNetBiosName": null,
+        "onPremisesSamAccountName": null,
+        "onPremisesSecurityIdentifier": null,
+        "onPremisesSyncEnabled": null,
+        "preferredDataLocation": null,
+        "preferredLanguage": null,
+        "proxyAddresses": [],
+        "renewedDateTime": "2022-01-29T22:31:35Z",
+        "resourceBehaviorOptions": [],
+        "resourceProvisioningOptions": [],
+        "securityEnabled": true,
+        "securityIdentifier": "S-1-12-1-3459728871-1121739576-3576385934-8302895",
+        "theme": null,
+        "visibility": null,
+        "onPremisesProvisioningErrors": [],
+        "members": [
+            "441362ab-404d-437e-ad65-619df92a5515",
+            "192f576b-6f3c-4229-bc9b-98efdbff7504"
+        ],
+        "owners": [
+            "441362ab-404d-437e-ad65-619df92a5515"
+        ]
+    }
+]
