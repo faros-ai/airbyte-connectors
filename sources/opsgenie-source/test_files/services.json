@@ -1,0 +1,26 @@
+[
+    {
+        "id": "f6183bae-bd13-48d5-af55-1ca1bdce6ec4",
+        "name": "service1",
+        "description": "service description",
+        "teamId": "26f9e160-0aac-40d9-ae19-c1c3fe2000be",
+        "tags": [],
+        "links": {
+            "web": "https://huongtn.app.opsgenie.com/service/f6183bae-bd13-48d5-af55-1ca1bdce6ec4/status",
+            "api": "https://api.opsgenie.com/v1/services/f6183bae-bd13-48d5-af55-1ca1bdce6ec4"
+        },
+        "isExternal": false
+    },
+    {
+        "id": "cf85d7d6-a1e4-404d-818a-50e6c27b4c7d",
+        "name": "service 2",
+        "description": "this is service2",
+        "teamId": "26f9e160-0aac-40d9-ae19-c1c3fe2000be",
+        "tags": [],
+        "links": {
+            "web": "https://huongtn.app.opsgenie.com/service/cf85d7d6-a1e4-404d-818a-50e6c27b4c7d/status",
+            "api": "https://api.opsgenie.com/v1/services/cf85d7d6-a1e4-404d-818a-50e6c27b4c7d"
+        },
+        "isExternal": false
+    }
+]

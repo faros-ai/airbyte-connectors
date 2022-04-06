@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "teamId": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "tags": {
+            "type": "array",
+            "items": {}
+        },
+        "links": {
+            "type": "object",
+            "properties": {
+                "web": {
+                    "type": "string"
+                },
+                "api": {
+                    "type": "string"
+                }
+            }
+        },
+        "isExternal": {
+            "type": "boolean"
+        }
+    }
+}

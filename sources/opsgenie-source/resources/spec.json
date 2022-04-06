@@ -1,0 +1,26 @@
+{
+    "documentationUrl": "https://docs.faros.ai",
+    "connectionSpecification": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "opsGenie Spec",
+        "type": "object",
+        "required": [
+            "api_key"
+        ],
+        "additionalProperties": false,
+        "properties": {
+            "api_key": {
+                "type": "string",
+                "title": "API key",
+                "description": "In order to create key, go to https://.xxx.app.opsgenie.com/settings/api-key-management",
+                "airbyte_secret": true
+            },
+            "page_size": {
+                "type": "number",
+                "title": "Page size",
+                "default": 10,
+                "description": "used when retrieving paginated data from OpsGenie"
+            }
+        }
+    }
+}
