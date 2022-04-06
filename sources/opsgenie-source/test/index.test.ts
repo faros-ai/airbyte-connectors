@@ -73,31 +73,32 @@ describe('index', () => {
         ]);
     });
 
-    // test('streams - incidents, use full_refresh sync mode', async () => {
-    //     const fnIncidentsList = jest.fn();
-    //     OpsGenie.instance = jest.fn().mockImplementation(() => {
-    //         return new OpsGenie({
-    //             get: fnIncidentsList.mockResolvedValue({
-    //                 data: {
-    //                     data: readTestResourceFile('incidents.json')
-    //                 },
-    //             }),
-    //         } as any);
-    //     });
-    //     const source = new sut.OpsGenieSource(logger);
-    //     const streams = source.streams({});
+    test('streams - incidents, use full_refresh sync mode', async () => {
+        const fnIncidentsList = jest.fn();
+        OpsGenie.instance = jest.fn().mockImplementation(() => {
+            return new OpsGenie({
+                get: fnIncidentsList.mockResolvedValue({
+                    data: {
+                        data: readTestResourceFile('incidents.json'),
+                        totalCount: 3,
+                    },
+                }),
+            } as any);
+        });
+        const source = new sut.OpsGenieSource(logger);
+        const streams = source.streams({});
 
-    //     const incidentsStream = streams[0];
-    //     const incidentsIter = incidentsStream.readRecords(
-    //         SyncMode.FULL_REFRESH
-    //     );
-    //     const incidents = [];
-    //     for await (const incident of incidentsIter) {
-    //         incidents.push(incident);
-    //     }
-    //     expect(fnIncidentsList).toHaveBeenCalledTimes(4);
-    //     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
-    // });
+        const incidentsStream = streams[0];
+        const incidentsIter = incidentsStream.readRecords(
+            SyncMode.FULL_REFRESH
+        );
+        const incidents = [];
+        for await (const incident of incidentsIter) {
+            incidents.push(incident);
+        }
+        expect(fnIncidentsList).toHaveBeenCalledTimes(4);
+        expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    });
 
     test('streams - teams, use full_refresh sync mode', async () => {
         const fnTeamsList = jest.fn();

@@ -98,13 +98,13 @@
     {
         "id": "ad22c0c7-e703-4f5c-9549-1eb20a8c234d",
         "description": "Create incident data",
-        "impactedServices": [],
         "tinyId": "2",
         "message": "Adding data to test",
         "status": "closed",
         "tags": [
             "tag1"
         ],
+        "impactedServices": [],
         "createdAt": "2022-04-05T15:37:31.62Z",
         "updatedAt": "2022-04-05T15:43:40.347Z",
         "priority": "P3",
@@ -321,9 +321,7 @@
     {
         "id": "0fae7159-be96-4e18-bcc2-27fb925c720c",
         "description": "test impact service summary",
-        "impactedServices": [
-            "f6183bae-bd13-48d5-af55-1ca1bdce6ec4"
-        ],
+        "impactedServices": [],
         "tinyId": "3",
         "message": "test impact service",
         "status": "open",

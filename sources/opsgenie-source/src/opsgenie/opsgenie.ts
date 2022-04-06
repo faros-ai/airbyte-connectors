@@ -74,8 +74,6 @@ export class OpsGenie {
             >(
                 `v1/incidents?sort=createdAt&order=asc&limit=${this.pageSize}&offset=${offset}`
             );
-            if (response?.data.data.length > 0) offset += this.pageSize;
-            else break;
             for (const incident of response?.data?.data ?? []) {
                 if (!createdAt || new Date(incident.createdAt) >= createdAt) {
                     const incidentItem = incident;
@@ -97,6 +95,9 @@ export class OpsGenie {
                     yield incidentItem;
                 }
             }
+            if (response?.data.totalCount > offset + this.pageSize)
+                offset += this.pageSize;
+            else break;
         } while (true);
     }
 
