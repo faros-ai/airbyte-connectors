@@ -124,30 +124,6 @@ describe('index', () => {
     });
 
     test('streams - users, use full_refresh sync mode', async () => {
-        const fnServicesList = jest.fn();
-        OpsGenie.instance = jest.fn().mockImplementation(() => {
-            return new OpsGenie({
-                get: fnServicesList.mockResolvedValue({
-                    data: {
-                        data: readTestResourceFile('services.json'),
-                    },
-                }),
-            } as any);
-        });
-        const source = new sut.OpsGenieSource(logger);
-        const streams = source.streams({});
-
-        const servicesStream = streams[2];
-        const servicesIter = servicesStream.readRecords(SyncMode.FULL_REFRESH);
-        const services = [];
-        for await (const service of servicesIter) {
-            services.push(service);
-        }
-        expect(fnServicesList).toHaveBeenCalledTimes(1);
-        expect(services).toStrictEqual(readTestResourceFile('services.json'));
-    });
-
-    test('streams - users, use full_refresh sync mode', async () => {
         const fnUsersList = jest.fn();
         OpsGenie.instance = jest.fn().mockImplementation(() => {
             return new OpsGenie({
@@ -161,7 +137,7 @@ describe('index', () => {
         const source = new sut.OpsGenieSource(logger);
         const streams = source.streams({});
 
-        const usersStream = streams[3];
+        const usersStream = streams[2];
         const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
         const users = [];
         for await (const user of usersIter) {

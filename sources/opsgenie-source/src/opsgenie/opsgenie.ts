@@ -86,6 +86,14 @@ export class OpsGenie {
                     if (timeLineResponse.status === 200)
                         incidentItem.timelines =
                             timeLineResponse.data.data.entries;
+                    const serviceNames: string[] = [];
+                    for (const serviceId of incident.impactedServices ?? []) {
+                        const serviceResponse = await this.restClient.get<any>(
+                            `v1/services/${serviceId}`
+                        );
+                        serviceNames.push(serviceResponse.data.data.name);
+                    }
+                    incidentItem.impactedServices = serviceNames;
                     yield incidentItem;
                 }
             }

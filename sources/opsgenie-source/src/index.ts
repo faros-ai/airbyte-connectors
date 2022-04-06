@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {OpsGenie, OpsGenieConfig} from './opsgenie/opsgenie';
-import {Incidents, Services, Teams, Users} from './streams';
+import {Incidents, Teams, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -40,7 +40,6 @@ export class OpsGenieSource extends AirbyteSourceBase {
         return [
             new Incidents(config as OpsGenieConfig, this.logger),
             new Teams(config as OpsGenieConfig, this.logger),
-            new Services(config as OpsGenieConfig, this.logger),
             new Users(config as OpsGenieConfig, this.logger),
         ];
     }

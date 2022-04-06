@@ -9,7 +9,7 @@
           "incremental"
         ],
         "default_cursor_field": [
-          "created_at"
+          "createdAt"
         ],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
