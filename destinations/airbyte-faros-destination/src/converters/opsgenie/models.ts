@@ -100,7 +100,7 @@ export interface IncidentEventType {
   detail: string;
 }
 
-export enum FirehydrantIncidentPriority {
+export enum OpshenieIncidentPriority {
   P1 = 'P1',
   P2 = 'P2',
   P3 = 'P3',
