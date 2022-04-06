@@ -41,7 +41,7 @@ export class Incidents extends OpsGenieConverter {
     const applicationMapping = this.applicationMapping(ctx);
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.createdAt);
-    const updatedAt = incident.updatedAt;
+    const updatedAt = Utils.toDate(incident.updatedAt);
 
     let acknowledgedAt: Date = undefined;
     let resolvedAt: Date = undefined;
@@ -67,7 +67,7 @@ export class Incidents extends OpsGenieConverter {
           uid: event.id,
           type: eventType,
           incident: incidentRef,
-          detail: event.title,
+          detail: event.title.content,
           createdAt: occurredAt,
         },
       });

@@ -83,3 +83,6 @@ export const firehydrantAllStreamsLog = readTestResourceFile(
 export const azureactivedirectoryAllStreamsLog = readTestResourceFile(
   'azureactivedirectory/all-streams.log'
 );
+export const opsgenieAllStreamsLog = readTestResourceFile(
+  'opsgenie/all-streams.log'
+);
