@@ -54,7 +54,7 @@ export class AzureActiveDirectory {
     const httpClient = axios.create({
       baseURL: `https://graph.microsoft.com/${version}`,
       timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 50000, //default is 2000 bytes
+      maxContentLength: 500000, //default is 2000 bytes
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -104,20 +104,10 @@ export class AzureActiveDirectory {
   }
 
   async *getUsers(): AsyncGenerator<User> {
-    const res = await this.httpClient.get<UserResponse>('users');
+    const res = await this.httpClient.get<UserResponse>(
+      'users/?$select=Department,postalCode,createdDateTime,identities,streetAddress&$top=999'
+    );
     for (const item of res.data.value) {
-      const extraUserInfo = await this.httpClient.get<UserExtraInfo>(
-        `users/${item.id}?$select=Department,postalCode,createdDateTime,identities,streetAddress`
-      );
-
-      if (extraUserInfo.status === 200) {
-        item.department = extraUserInfo.data.department;
-        item.postalCode = extraUserInfo.data.postalCode;
-        item.createdDateTime = extraUserInfo.data.createdDateTime;
-        item.streetAddress = extraUserInfo.data.streetAddress;
-        item.identities = extraUserInfo.data.identities;
-      }
-
       try {
         const managerItem = await this.httpClient.get<User>(
           `users/${item.id}/manager`
@@ -128,12 +118,13 @@ export class AzureActiveDirectory {
       } catch (error) {
         this.logger.error(error.toString());
       }
+      console.log(item);
       yield item;
     }
   }
 
   async *getGroups(): AsyncGenerator<Group> {
-    const res = await this.httpClient.get<GroupResponse>('groups');
+    const res = await this.httpClient.get<GroupResponse>('groups/?$top=999');
     for (const item of res.data.value) {
       const memberItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/members`
