@@ -83,7 +83,6 @@ export class Gitlab {
       for (const projectName of projects) {
         const projectPath = `${groupPath}/${projectName}`;
         const project = await this.client.Projects.show(projectPath);
-        console.log({projectName, project});
         yield buildProject(project);
       }
     } catch (error: any) {
