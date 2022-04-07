@@ -21,9 +21,9 @@ export abstract class ConverterTyped<R> {
     return this.stream;
   }
 
-  // Dependencies on other streams (if any).
-  // !!! Use with caution !!! Will result in increased memory usage
-  // due to accumulation of records in StreamContext (ctx)
+  /** Dependencies on other streams (if any).
+   * !!! USE WITH CAUTION !!! Will result in increased memory usage
+   * due to accumulation of records in StreamContext (ctx) */
   get dependencies(): ReadonlyArray<StreamName> {
     return [];
   }
@@ -34,11 +34,20 @@ export abstract class ConverterTyped<R> {
   /** All the record models produced by converter */
   abstract get destinationModels(): ReadonlyArray<DestinationModel>;
 
-  /** Function converts an input Airbyte record to Faros destination canonical record */
+  /** Function to convert an input Airbyte record to Faros Destination canonical record(s) */
   abstract convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecordTyped<R>>>;
+
+  /** On processing complete handler called by the Faros Destination
+   * after the input processing is complete.
+   * Use this to release any resources or produce any additional records if necessary. */
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecordTyped<R>>> {
+    return [];
+  }
 }
 export abstract class Converter extends ConverterTyped<Dictionary<any>> {}
 

@@ -7,13 +7,8 @@ import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../testing-tools';
-import {
-  gitlabAllStreamsLog,
-  gitlabLog,
-  gitlabPGRawLog,
-  readTestResourceFile,
-} from './data';
+import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {gitlabAllStreamsLog, gitlabLog, gitlabPGRawLog} from './data';
 
 describe('gitlab', () => {
   const logger = pino({
