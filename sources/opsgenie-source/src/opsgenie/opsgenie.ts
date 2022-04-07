@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
@@ -73,17 +73,18 @@ export class OpsGenie {
         new Promise((resolve) =>
             setTimeout(resolve, DEFAULT_MILLISECONDS_TO_RETRY_API)
         );
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    async retryApi<T>(pathUrl: string) {
-        const response = await this.restClient.get<T>(pathUrl);
+    async retryApi<T>(pathUrl: string): Promise<AxiosResponse> {
+        let response: AxiosResponse;
         let count = 0;
         while (count < DEFAULT_RETRY_COUNT) {
+            response = await this.restClient.get<T>(pathUrl);
             // retry when got rate limiting
             if (response.status === 429) {
+                count++;
                 await this.delay();
                 continue;
             }
-            count++;
+            return response;
         }
         return response;
     }
