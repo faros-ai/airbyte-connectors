@@ -74,10 +74,12 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         env:
           AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
+          AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG: ${{ secrets.AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
           DOCKER_SOURCE_TEST_CONFIG: ${{ secrets.DOCKER_SOURCE_TEST_CONFIG }}
+          FIREHYDRANT_SOURCE_TEST_CONFIG: ${{ secrets.FIREHYDRANT_SOURCE_TEST_CONFIG }}
           GOOGLECALENDAR_SOURCE_TEST_CONFIG: ${{ secrets.GOOGLECALENDAR_SOURCE_TEST_CONFIG }}
           HARNESS_SOURCE_TEST_CONFIG: ${{ secrets.HARNESS_SOURCE_TEST_CONFIG }}
           PAGERDUTY_SOURCE_TEST_CONFIG: ${{ secrets.PAGERDUTY_SOURCE_TEST_CONFIG }}
@@ -89,7 +91,7 @@ jobs:
           do
             source=$(echo $i | cut -f2 -d'/')
             case "$source" in
-              datadog-source|harness-source|jenkins-source|okta-source|phabricator-source|victorops-source)
+              datadog-source|jenkins-source|okta-source|phabricator-source|squadcast-source|victorops-source)
                 echo "Skipping $source acceptance tests"
                 ;;
               *)
