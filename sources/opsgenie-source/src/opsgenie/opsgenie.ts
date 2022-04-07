@@ -13,6 +13,8 @@ import {
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_BASE_URL = 'https://api.opsgenie.com/';
+const DEFAULT_MILLISECONDS_TO_RETRY_API = 100;
+const DEFAULT__RETRY_COUNT = 10;
 
 export interface OpsGenieConfig {
     readonly api_key: string;
@@ -50,7 +52,7 @@ export class OpsGenie {
 
     async checkConnection(): Promise<void> {
         try {
-            await this.restClient.get('v2/users');
+            await this.retryApi<any>('v2/users');
         } catch (err: any) {
             let errorMessage = 'Please verify your api key is correct. Error: ';
             if (err.error_code || err.error_info) {
@@ -66,12 +68,29 @@ export class OpsGenie {
             throw new VError(errorMessage);
         }
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    delay = () =>
+        new Promise((resolve) =>
+            setTimeout(resolve, DEFAULT_MILLISECONDS_TO_RETRY_API)
+        );
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    async retryApi<T>(pathUrl: string) {
+        const response = await this.restClient.get<T>(pathUrl);
+        let count = 0;
+        while (count < DEFAULT__RETRY_COUNT) {
+            // retry when got rate limiting
+            if (response.status === 429) {
+                await this.delay();
+                continue;
+            }
+            count++;
+        }
+        return response;
+    }
     async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
         let offset = 0;
         do {
-            const response = await this.restClient.get<
-                PaginateResponse<Incident>
-            >(
+            const response = await this.retryApi<PaginateResponse<Incident>>(
                 `v1/incidents?sort=createdAt&order=asc&limit=${this.pageSize}&offset=${offset}`
             );
             for (const incident of response?.data?.data ?? []) {
@@ -86,7 +105,7 @@ export class OpsGenie {
                             timeLineResponse.data.data.entries;
                     const serviceNames: string[] = [];
                     for (const serviceId of incident.impactedServices ?? []) {
-                        const serviceResponse = await this.restClient.get<any>(
+                        const serviceResponse = await this.retryApi<any>(
                             `v1/services/${serviceId}`
                         );
                         serviceNames.push(serviceResponse.data.data.name);
@@ -102,7 +121,7 @@ export class OpsGenie {
     }
 
     async *getUsers(): AsyncGenerator<User> {
-        const response = await this.restClient.get<PaginateResponse<User>>(
+        const response = await this.retryApi<PaginateResponse<User>>(
             'v2/users'
         );
         for (const user of response.data.data) {
@@ -111,7 +130,7 @@ export class OpsGenie {
     }
 
     async *getTeams(): AsyncGenerator<Team> {
-        const response = await this.restClient.get<PaginateResponse<Team>>(
+        const response = await this.retryApi<PaginateResponse<Team>>(
             'v2/teams'
         );
         for (const team of response.data.data) {
@@ -119,7 +138,7 @@ export class OpsGenie {
         }
     }
     async *getServices(): AsyncGenerator<Service> {
-        const response = await this.restClient.get<PaginateResponse<Service>>(
+        const response = await this.retryApi<PaginateResponse<Service>>(
             'v1/services'
         );
         for (const service of response.data.data) {
