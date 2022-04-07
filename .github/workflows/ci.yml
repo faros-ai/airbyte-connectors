@@ -74,6 +74,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
         env:
           AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
+          AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG: ${{ secrets.AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}

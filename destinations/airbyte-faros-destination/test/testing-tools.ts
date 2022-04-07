@@ -10,6 +10,13 @@ import {Edition, InvalidRecordStrategy} from '../src/destination';
 track();
 
 /**
+ * Read a test resource by name
+ */
+export function readTestResourceFile(fileName: string): string {
+  return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
+}
+
+/**
  * Creates a temporary file
  * @return path to the temporary file
  */

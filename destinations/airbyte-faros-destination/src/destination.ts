@@ -32,6 +32,7 @@ import {HasuraClient} from './community/hasura-client';
 import {HasuraWriter} from './community/hasura-writer';
 import {
   Converter,
+  DestinationRecordTyped,
   parseObjectConfig,
   StreamContext,
   StreamName,
@@ -270,7 +271,7 @@ export class FarosDestination extends AirbyteDestination {
     catalog: AirbyteConfiguredCatalog
   ): string {
     if (config.origin) {
-      this.logger.info(`Using origin ${config.origin} found in config`);
+      this.logger.info(`Using origin '${config.origin}' found in config`);
       return config.origin;
     }
 
@@ -285,8 +286,9 @@ export class FarosDestination extends AirbyteDestination {
         `Found multiple possible origins from catalog: ${origins.join(',')}`
       );
     }
-    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
-    return origins[0];
+    const origin = origins[0];
+    this.logger.info(`Determined origin '${origin}' from stream prefixes`);
+    return origin;
   }
 
   async *write(
@@ -308,11 +310,17 @@ export class FarosDestination extends AirbyteDestination {
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
+      const streamContext = new StreamContext(
+        this.logger,
+        config,
+        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
+      );
+
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
         await this.writeEntries(
-          config,
+          streamContext,
           stdin,
           streams,
           stateMessages,
@@ -332,7 +340,7 @@ export class FarosDestination extends AirbyteDestination {
         );
 
         await this.writeEntries(
-          config,
+          streamContext,
           stdin,
           streams,
           stateMessages,
@@ -376,7 +384,7 @@ export class FarosDestination extends AirbyteDestination {
               );
               // Process input and write entries
               await this.writeEntries(
-                config,
+                streamContext,
                 stdin,
                 streams,
                 stateMessages,
@@ -428,7 +436,7 @@ export class FarosDestination extends AirbyteDestination {
   }
 
   private async writeEntries(
-    config: AirbyteConfig,
+    ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     stateMessages: AirbyteStateMessage[],
@@ -436,13 +444,9 @@ export class FarosDestination extends AirbyteDestination {
     stats: WriteStats,
     writer?: Writable | HasuraWriter
   ): Promise<void> {
-    const ctx = new StreamContext(
-      this.logger,
-      config,
-      this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
-    );
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
+    const convertersUsed: Map<string, Converter> = new Map();
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -484,6 +488,10 @@ export class FarosDestination extends AirbyteDestination {
               stats.recordsSkipped++;
               return;
             }
+            // Collect all the used converters
+            if (!convertersUsed.has(stream)) {
+              convertersUsed.set(stream, converter);
+            }
 
             const writeRecord = async (
               context: StreamContext
@@ -506,7 +514,7 @@ export class FarosDestination extends AirbyteDestination {
               ctx.set(streamName, String(recordId), unpacked);
               // Print stream context stats every so often
               if (stats.recordsProcessed % 1000 == 0) {
-                this.logger.info(`Stream context stats: ${ctx.stats(false)}`);
+                this.logger.info(`Stream context stats: ${ctx.stats()}`);
               }
             }
             // Process the record immediately if converter has no dependencies,
@@ -524,11 +532,23 @@ export class FarosDestination extends AirbyteDestination {
         this.logger.info(
           `Stdin processing completed, but still have ${recordsToBeProcessedLast.length} records to process`
         );
-        this.logger.info(`Stream context stats: ${ctx.stats(true)}`);
+        this.logger.info(`Stream context stats: ${ctx.stats()}`);
         for await (const process of recordsToBeProcessedLast) {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
+
+      // Invoke on processing complete handler on all the active converters
+      for (const converter of convertersUsed.values()) {
+        const results = await converter.onProcessingComplete(ctx);
+        stats.recordsWritten += await this.writeConvertedRecords(
+          converter,
+          results,
+          stats,
+          writer
+        );
+      }
+
       // Don't forget to close the writer
       await writer?.end();
     } finally {
@@ -653,7 +673,16 @@ export class FarosDestination extends AirbyteDestination {
   ): Promise<number> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
+    // Write the converted records
+    return this.writeConvertedRecords(converter, results, stats, writer);
+  }
 
+  private async writeConvertedRecords<R>(
+    converter: Converter,
+    results: ReadonlyArray<DestinationRecordTyped<R>>,
+    stats: WriteStats,
+    writer?: Writable | HasuraWriter
+  ): Promise<number> {
     if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
     }
