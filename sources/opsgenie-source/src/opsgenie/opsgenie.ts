@@ -14,7 +14,7 @@ import {
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_BASE_URL = 'https://api.opsgenie.com/';
 const DEFAULT_MILLISECONDS_TO_RETRY_API = 100;
-const DEFAULT__RETRY_COUNT = 10;
+const DEFAULT_RETRY_COUNT = 10;
 
 export interface OpsGenieConfig {
     readonly api_key: string;
@@ -77,7 +77,7 @@ export class OpsGenie {
     async retryApi<T>(pathUrl: string) {
         const response = await this.restClient.get<T>(pathUrl);
         let count = 0;
-        while (count < DEFAULT__RETRY_COUNT) {
+        while (count < DEFAULT_RETRY_COUNT) {
             // retry when got rate limiting
             if (response.status === 429) {
                 await this.delay();
