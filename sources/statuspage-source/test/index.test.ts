@@ -53,7 +53,7 @@ describe('index', () => {
       source.checkConnection({
         api_key: '',
         page_id: 'page_id',
-        start_date: '2010-03-27T14:03:51-0800',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });

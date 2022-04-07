@@ -69,7 +69,7 @@ describe('index', () => {
       source.checkConnection({
         apiId: 'apiId',
         apiKey: 'apiKey',
-        start_date: 'start_date',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -88,7 +88,7 @@ describe('index', () => {
       source.checkConnection({
         apiId: 'apiId',
         apiKey: 'apiKey',
-        start_date: 'start_date',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,
@@ -116,7 +116,7 @@ describe('index', () => {
     const [incidentsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
-      start_date: 'start_date',
+      cutoff_days: 90,
     });
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
     const incidents = [];
@@ -156,7 +156,7 @@ describe('index', () => {
     const [incidentsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
-      start_date: 'start_date',
+      cutoff_days: 90,
     });
     const incidentsIter = incidentsStream.readRecords(
       SyncMode.INCREMENTAL,
@@ -192,7 +192,7 @@ describe('index', () => {
     const [, teamsStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
-      start_date: 'start_date',
+      cutoff_days: 90,
     });
     const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
     const teams = [];
@@ -223,7 +223,7 @@ describe('index', () => {
     const [, , usersStream] = source.streams({
       apiId: 'apiId',
       apiKey: 'apiKey',
-      start_date: 'start_date',
+      cutoff_days: 90,
     });
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];

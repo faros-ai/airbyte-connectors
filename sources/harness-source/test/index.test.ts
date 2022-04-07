@@ -75,7 +75,7 @@ describe('index', () => {
       source.checkConnection({
         account_id: 'account_id',
         api_key: 'api_key',
-        start_date: '2010-03-27T14:03:51-0800',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -96,7 +96,7 @@ describe('index', () => {
       source.checkConnection({
         account_id: 'account_id',
         api_key: 'api_key',
-        start_date: '2010-03-27T14:03:51-0800',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,

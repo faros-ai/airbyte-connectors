@@ -55,6 +55,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -67,7 +68,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        start_date: '2010-03-27T14:03:51-0800',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,

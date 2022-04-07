@@ -54,7 +54,7 @@ describe('index', () => {
         apiKey: '',
         space: 'space',
         project_id: null,
-        start_date: '2010-03-27T14:03:51-0800',
+        cutoff_days: 90,
       } as any)
     ).resolves.toStrictEqual([false, new VError('No API key provided')]);
   });

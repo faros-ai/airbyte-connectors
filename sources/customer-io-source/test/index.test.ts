@@ -48,7 +48,7 @@ describe('index', () => {
       await expect(
         source.checkConnection({
           app_api_key: 'testkey',
-          start_date: '1970-01-01T00:00:00-0000',
+          cutoff_days: 90,
         })
       ).resolves.toStrictEqual([true, undefined]);
     });
@@ -59,7 +59,7 @@ describe('index', () => {
       await expect(
         source.checkConnection({
           app_api_key: 'testkey',
-          start_date: '1970-01-01T00:00:00-0000',
+          cutoff_days: 90,
         })
       ).resolves.toStrictEqual([
         false,
