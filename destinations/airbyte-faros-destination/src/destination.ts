@@ -303,7 +303,7 @@ export class FarosDestination extends AirbyteDestination {
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
-    const stateMessages: AirbyteStateMessage[] = [];
+    let stateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
 
     const dryRunEnabled = config.dry_run === true || dryRun;
@@ -319,11 +319,10 @@ export class FarosDestination extends AirbyteDestination {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
-        await this.writeEntries(
+        stateMessage = await this.writeEntries(
           streamContext,
           stdin,
           streams,
-          stateMessages,
           converterDependencies,
           stats
         );
@@ -339,11 +338,10 @@ export class FarosDestination extends AirbyteDestination {
           this.handleRecordProcessingError
         );
 
-        await this.writeEntries(
+        stateMessage = await this.writeEntries(
           streamContext,
           stdin,
           streams,
-          stateMessages,
           converterDependencies,
           stats,
           writer
@@ -383,11 +381,10 @@ export class FarosDestination extends AirbyteDestination {
                 `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
               );
               // Process input and write entries
-              await this.writeEntries(
+              stateMessage = await this.writeEntries(
                 streamContext,
                 stdin,
                 streams,
-                stateMessages,
                 converterDependencies,
                 stats,
                 writer
@@ -425,10 +422,13 @@ export class FarosDestination extends AirbyteDestination {
           );
       }
 
-      // Since we are writing all records in a single revision,
-      // we should be ok to return all the state messages at the end,
-      // once the revision has been closed.
-      for (const state of stateMessages) yield state;
+      // Airbyte updates connection state whenever the destination emits a state
+      // message, indicating that prior records have been processed.  Since we
+      // are writing all records in a single revision, only return the final
+      // state message at the end, once the revision has been closed.
+      if (stateMessage) {
+        yield stateMessage;
+      }
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
@@ -439,14 +439,14 @@ export class FarosDestination extends AirbyteDestination {
     ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
-    stateMessages: AirbyteStateMessage[],
     converterDependencies: Set<string>,
     stats: WriteStats,
     writer?: Writable | HasuraWriter
-  ): Promise<void> {
+  ): Promise<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
     const convertersUsed: Map<string, Converter> = new Map();
+    let stateMessage: AirbyteStateMessage = undefined;
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -463,7 +463,7 @@ export class FarosDestination extends AirbyteDestination {
 
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
-            stateMessages.push(msg as AirbyteStateMessage);
+            stateMessage = msg as AirbyteStateMessage;
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -551,6 +551,7 @@ export class FarosDestination extends AirbyteDestination {
 
       // Don't forget to close the writer
       await writer?.end();
+      return stateMessage;
     } finally {
       input.close();
     }
