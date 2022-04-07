@@ -11,18 +11,28 @@
     "properties": {
       "token": {
         "type": "string",
-        "title": "SquadCast Token",
+        "title": "Token",
         "description": "Get API Refresh Token on https://app.squadcast.com/user/USER_ID where USER_ID is user's ID",
         "airbyte_secret": true
       },
+      "incident_owner_id": {
+        "type": "string",
+        "title": "Incident Owner ID",
+        "description": "Team ID or User ID"
+      },
+      "event_owner_id": {
+        "type": "string",
+        "title": "Event Owner ID",
+        "description": "Team ID or User ID"
+      },
       "event_deduped": {
         "type": "boolean",
-        "title": "SquadCast Events Deduped",
+        "title": "Events Deduped",
         "description": "If set to true, it will return only the deduped events. If set to false, it will return only the non-deduped event. Otherwise it will return all the events"
       },
       "event_incident_id": {
         "type": "string",
-        "title": "SquadCast Events Incident ID",
+        "title": "Events Incident ID",
         "description": "If set it will pull all events from only this Incident. If no it pull all events from all incidents"
       }
     }
