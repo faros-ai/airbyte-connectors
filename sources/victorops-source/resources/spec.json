@@ -7,7 +7,7 @@
     "required": [
       "apiId",
       "apiKey",
-      "start_date"
+      "cutoff_days"
     ],
     "additionalProperties": true,
     "properties": {
@@ -21,14 +21,11 @@
         "title": "VictorOps API key",
         "airbyte_secret": true
       },
-      "start_date": {
-        "type": "string",
-        "title": "Start Date",
-        "description": "The date from which you'd like to replicate data for VictorOps in the ISO 8601 format, i.e YYYY-MM-DDTmm:HH:ssZ. All data generated after this date will be replicated.",
-        "examples": [
-          "2010-03-27T14:03:51-0800"
-        ],
-        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "maxContentLength": {
         "type": "integer",

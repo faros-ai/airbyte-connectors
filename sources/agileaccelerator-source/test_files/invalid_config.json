@@ -5,5 +5,5 @@
   "username": "",
   "password": "",
   "api_token": "",
-  "start_date":""
+  "cutoff_days":90
 }

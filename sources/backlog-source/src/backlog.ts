@@ -6,13 +6,11 @@ import {VError} from 'verror';
 import {Comment, Issue, Project, User, VersionMilestone} from './models';
 
 const DEFAULT_MEMOIZE_START_TIME = 0;
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface BacklogConfig {
   readonly apiKey: string;
   readonly space: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly version?: string;
   readonly project_id: number | null;
 }
@@ -37,12 +35,10 @@ export class Backlog {
     if (!config.apiKey) {
       throw new VError('No API key provided');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+
     const httpClient = axios.create({
       baseURL: `https://${config.space}.backlog.com/api/v2`,
       timeout: 5000,
@@ -50,12 +46,9 @@ export class Backlog {
         apiKey: config.apiKey,
       },
     });
-
-    Backlog.backlog = new Backlog(
-      httpClient,
-      config,
-      new Date(config.start_date)
-    );
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    Backlog.backlog = new Backlog(httpClient, config, startDate);
     logger.debug('Created Backlog instance');
     return Backlog.backlog;
   }

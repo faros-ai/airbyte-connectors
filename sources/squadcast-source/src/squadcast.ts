@@ -21,12 +21,10 @@ const AUTH_URL = 'https://auth.squadcast.com/';
 const AUTH_HEADER_NAME = 'X-Refresh-Token';
 const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface SquadcastConfig {
   readonly token: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly owner_id: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
@@ -60,11 +58,8 @@ export class Squadcast {
     if (!config.owner_id) {
       throw new VError('owner_id is null or empty');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
 
     const accessToken = await this.getAccessToken(config.token);
@@ -76,10 +71,11 @@ export class Squadcast {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     Squadcast.squadcast = new Squadcast(
       httpClient,
-      new Date(config.start_date),
+      startDate,
       config.owner_id,
       config.event_incident_id,
       config.event_deduped

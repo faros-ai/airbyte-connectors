@@ -10,15 +10,12 @@ const DEFAULT_CONTENT_LENGTH = 500000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_LIMIT = 100;
 const DEFAULT_CURRENT_PHASE = 'triggered,acknowledged,resolved';
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface VictoropsConfig {
   readonly apiId: string;
   readonly apiKey: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly maxContentLength?: number;
-  readonly cutoffDays?: number;
 }
 
 export interface VictoropsState {
@@ -117,12 +114,10 @@ export class Victorops {
     if (!config.apiKey) {
       throw new VError('API key must be not an empty string');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+
     const client = new VictorOpsApiClient({
       apiId: config.apiId,
       apiKey: config.apiKey,
@@ -147,8 +142,10 @@ export class Victorops {
     };
 
     axiosRetry(client._axiosInstance, retryConfig);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
-    Victorops.victorops = new Victorops(client, new Date(config.start_date));
+    Victorops.victorops = new Victorops(client, startDate);
     logger.debug('Created VictorOps instance');
 
     return Victorops.victorops;

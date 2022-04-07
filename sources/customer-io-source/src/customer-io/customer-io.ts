@@ -11,12 +11,10 @@ import {
 } from './typings';
 
 const CUSTOMER_IO_BETA_API_URL = 'https://beta-api.customer.io/v1/api';
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface CustomerIOConfig {
   app_api_key: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
 }
 
 export class CustomerIO {
@@ -29,12 +27,11 @@ export class CustomerIO {
     config: CustomerIOConfig,
     axiosInstance?: AxiosInstance
   ): CustomerIO {
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     return new CustomerIO(
       axiosInstance ??
         axios.create({
@@ -43,7 +40,7 @@ export class CustomerIO {
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},
         }),
-      new Date(config.start_date)
+      startDate
     );
   }
 

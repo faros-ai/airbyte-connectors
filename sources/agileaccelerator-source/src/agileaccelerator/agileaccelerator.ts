@@ -9,8 +9,6 @@ const DEFAULT_API_VERSION = 'v53.0';
 /** The maximum batch size is 2,000 records, but this number is only a suggestion.
  * To maximize performance, the requested batch size isn’t necessarily the actual batch size */
 const DEFAULT_PAGE_SIZE = 2000;
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface AgileacceleratorConfig extends AirbyteConfig {
   readonly server_url: string;
@@ -19,8 +17,8 @@ export interface AgileacceleratorConfig extends AirbyteConfig {
   readonly username: string;
   readonly password: string;
   readonly api_token: string;
+  readonly cutoff_days: number;
   readonly api_version?: string;
-  readonly start_date: string;
   readonly page_size?: number;
 }
 
@@ -82,12 +80,10 @@ export class Agileaccelerator {
     if (!config.api_token) {
       throw new VError('api_token must be a not empty string');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+
     const authParams = await Agileaccelerator.authorize(config);
     const apiVersion = config.api_version || DEFAULT_API_VERSION;
 
@@ -100,12 +96,13 @@ export class Agileaccelerator {
       },
     });
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
-
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     Agileaccelerator.agileaccelerator = new Agileaccelerator(
       httpClient,
       config.server_url,
       pageSize,
-      new Date(config.start_date)
+      startDate
     );
     logger.debug('Created Agileaccelerator instance');
 

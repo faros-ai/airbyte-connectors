@@ -2,5 +2,5 @@
   "serverUrl": "url",
   "username": "bad-username",
   "password": "bad-password",
-  "start_date":""
+  "cutoff_days":90
 }

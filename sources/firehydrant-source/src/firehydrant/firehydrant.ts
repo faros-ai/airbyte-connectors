@@ -14,12 +14,10 @@ import {
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_VERSION = 'v1';
 const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface FireHydrantConfig {
   readonly token: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly page_size?: number;
   readonly version?: string;
 }
@@ -42,11 +40,8 @@ export class FireHydrant {
     if (!config.token) {
       throw new VError('API Access token has to be provided');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
 
     const auth = `Bearer ${config.token}`;
@@ -59,12 +54,10 @@ export class FireHydrant {
     });
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
-    FireHydrant.fireHydrant = new FireHydrant(
-      httpClient,
-      new Date(config.start_date),
-      pageSize
-    );
+    FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
     logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }

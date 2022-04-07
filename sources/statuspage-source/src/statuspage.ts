@@ -26,12 +26,10 @@ export interface Incident extends ClientIncident {
 }
 
 export const BASE_URL = 'https://api.statuspage.io/v1/';
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface StatuspageConfig {
   readonly api_key: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly org_id?: string;
   readonly page_id: string;
 }
@@ -55,11 +53,8 @@ export class Statuspage {
     if (!config.page_id) {
       throw new VError('page_id must be a not empty string');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
     const clientV2 = new StatuspageClient(config.page_id);
     const httpClient = axios.create({
@@ -70,11 +65,12 @@ export class Statuspage {
         Authorization: `OAuth ${config.api_key}`,
       },
     });
-
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     Statuspage.statuspage = new Statuspage(
       clientV2,
       httpClient,
-      new Date(config.start_date),
+      startDate,
       config.org_id
     );
     logger.debug('Created Statuspage instance');

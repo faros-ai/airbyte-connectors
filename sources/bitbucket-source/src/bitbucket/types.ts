@@ -12,7 +12,7 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly token?: string;
   readonly workspace: string;
   readonly pagelen?: number;
-  readonly start_date: string;
+  readonly cutoff_days: number;
 }
 
 export interface Branch {
