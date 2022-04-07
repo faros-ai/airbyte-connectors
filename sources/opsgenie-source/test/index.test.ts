@@ -43,9 +43,12 @@ describe('index', () => {
     });
     test('check connection', async () => {
         OpsGenie.instance = jest.fn().mockImplementation(() => {
-            return new OpsGenie({
-                get: jest.fn().mockResolvedValue({}),
-            } as unknown as AxiosInstance);
+            return new OpsGenie(
+                {
+                    get: jest.fn().mockResolvedValue({}),
+                } as unknown as AxiosInstance,
+                new Date('2010-03-27T14:03:51-0800')
+            );
         });
 
         const source = new sut.OpsGenieSource(logger);
@@ -64,6 +67,7 @@ describe('index', () => {
         await expect(
             source.checkConnection({
                 token: '',
+                cutoff_days: 90,
             })
         ).resolves.toStrictEqual([
             false,
@@ -76,14 +80,17 @@ describe('index', () => {
     test('streams - incidents, use full_refresh sync mode', async () => {
         const fnIncidentsList = jest.fn();
         OpsGenie.instance = jest.fn().mockImplementation(() => {
-            return new OpsGenie({
-                get: fnIncidentsList.mockResolvedValue({
-                    data: {
-                        data: readTestResourceFile('incidents.json'),
-                        totalCount: 3,
-                    },
-                }),
-            } as any);
+            return new OpsGenie(
+                {
+                    get: fnIncidentsList.mockResolvedValue({
+                        data: {
+                            data: readTestResourceFile('incidents.json'),
+                            totalCount: 3,
+                        },
+                    }),
+                } as any,
+                new Date('2010-03-27T14:03:51-0800')
+            );
         });
         const source = new sut.OpsGenieSource(logger);
         const streams = source.streams({});
@@ -103,13 +110,16 @@ describe('index', () => {
     test('streams - teams, use full_refresh sync mode', async () => {
         const fnTeamsList = jest.fn();
         OpsGenie.instance = jest.fn().mockImplementation(() => {
-            return new OpsGenie({
-                get: fnTeamsList.mockResolvedValue({
-                    data: {
-                        data: readTestResourceFile('teams.json'),
-                    },
-                }),
-            } as any);
+            return new OpsGenie(
+                {
+                    get: fnTeamsList.mockResolvedValue({
+                        data: {
+                            data: readTestResourceFile('teams.json'),
+                        },
+                    }),
+                } as any,
+                new Date('2010-03-27T14:03:51-0800')
+            );
         });
         const source = new sut.OpsGenieSource(logger);
         const streams = source.streams({});
@@ -127,13 +137,16 @@ describe('index', () => {
     test('streams - users, use full_refresh sync mode', async () => {
         const fnUsersList = jest.fn();
         OpsGenie.instance = jest.fn().mockImplementation(() => {
-            return new OpsGenie({
-                get: fnUsersList.mockResolvedValue({
-                    data: {
-                        data: readTestResourceFile('users.json'),
-                    },
-                }),
-            } as any);
+            return new OpsGenie(
+                {
+                    get: fnUsersList.mockResolvedValue({
+                        data: {
+                            data: readTestResourceFile('users.json'),
+                        },
+                    }),
+                } as any,
+                new Date('2010-03-27T14:03:51-0800')
+            );
         });
         const source = new sut.OpsGenieSource(logger);
         const streams = source.streams({});

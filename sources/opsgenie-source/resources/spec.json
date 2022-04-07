@@ -5,15 +5,22 @@
         "title": "opsGenie Spec",
         "type": "object",
         "required": [
-            "api_key"
+            "api_key",
+            "cutoff_days"
         ],
         "additionalProperties": false,
         "properties": {
             "api_key": {
                 "type": "string",
                 "title": "API key",
-                "description": "In order to create key, go to https://.xxx.app.opsgenie.com/settings/api-key-management",
+                "description": "In order to create key, go to https://.{your_acount}.app.opsgenie.com/settings/api-key-management",
                 "airbyte_secret": true
+            },
+            "cutoff_days": {
+                "type": "integer",
+                "title": "Cutoff Days",
+                "default": 90,
+                "description": "Only fetch incidents created after cutoff"
             },
             "page_size": {
                 "type": "number",

@@ -18,6 +18,7 @@ const DEFAULT_RETRY_COUNT = 10;
 
 export interface OpsGenieConfig {
     readonly api_key: string;
+    readonly cutoff_days: number;
     readonly page_size?: number;
 }
 
@@ -26,6 +27,7 @@ export class OpsGenie {
 
     constructor(
         private readonly restClient: AxiosInstance,
+        private readonly startDate: Date,
         private readonly pageSize?: number
     ) {}
 
@@ -34,6 +36,9 @@ export class OpsGenie {
 
         if (!config.api_key) {
             throw new VError('API Key has to be provided');
+        }
+        if (!config.cutoff_days) {
+            throw new VError('cutoff_days is null or empty');
         }
         const auth = `GenieKey ${config.api_key}`;
 
@@ -44,8 +49,9 @@ export class OpsGenie {
         });
 
         const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
-
-        OpsGenie.opsGenie = new OpsGenie(httpClient, pageSize);
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - config.cutoff_days);
+        OpsGenie.opsGenie = new OpsGenie(httpClient, startDate, pageSize);
         logger.debug('Created OpsGenie instance');
         return OpsGenie.opsGenie;
     }
@@ -89,13 +95,15 @@ export class OpsGenie {
         return response;
     }
     async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
+        const startTimeMax =
+            createdAt > this.startDate ? createdAt : this.startDate;
         let offset = 0;
         do {
             const response = await this.retryApi<PaginateResponse<Incident>>(
                 `v1/incidents?sort=createdAt&order=asc&limit=${this.pageSize}&offset=${offset}`
             );
             for (const incident of response?.data?.data ?? []) {
-                if (!createdAt || new Date(incident.createdAt) >= createdAt) {
+                if (new Date(incident.createdAt) >= startTimeMax) {
                     const incidentItem = incident;
                     const timeLineResponse =
                         await this.restClient.get<IncidentTimeLinePaginateResponse>(
