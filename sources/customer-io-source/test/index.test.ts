@@ -76,11 +76,11 @@ describe('index', () => {
         const apiCampaigns = [
           {
             id: 1,
-            updated: 100,
+            updated: 1649322500663,
           },
           {
             id: 2,
-            updated: 100,
+            updated: 1649322500663,
           },
         ];
 
@@ -88,7 +88,7 @@ describe('index', () => {
 
         const [campaignsStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 500000000,
+          cutoff_days: 90,
         });
 
         const campaignsIterator = campaignsStream.readRecords(
@@ -128,11 +128,11 @@ describe('index', () => {
           actions: [
             {
               id: '1',
-              updated: 1000,
+              updated: 1649322500663,
             },
             {
               id: '2',
-              updated: 1000,
+              updated: 1649322500663,
             },
           ],
         });
@@ -148,7 +148,7 @@ describe('index', () => {
             actions: [
               {
                 id: '3',
-                updated: 1000,
+                updated: 1649322500663,
               },
             ],
           });
@@ -169,11 +169,11 @@ describe('index', () => {
           actions: [
             {
               id: '4',
-              updated: 1000,
+              updated: 1649322500663,
             },
             {
               id: '5',
-              updated: 1000,
+              updated: 1649322500663,
             },
           ],
         });
@@ -191,7 +191,7 @@ describe('index', () => {
 
         const [, campaignActionsStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 500000000,
+          cutoff_days: 90,
         });
 
         const campaignActionsIterator = campaignActionsStream.readRecords(
@@ -205,11 +205,11 @@ describe('index', () => {
         }
 
         expect(campaignActions).toEqual([
-          {id: '1', updated: 1000},
-          {id: '2', updated: 1000},
-          {id: '3', updated: 1000},
-          {id: '4', updated: 1000},
-          {id: '5', updated: 1000},
+          {id: '1', updated: 1649322500663},
+          {id: '2', updated: 1649322500663},
+          {id: '3', updated: 1649322500663},
+          {id: '4', updated: 1649322500663},
+          {id: '5', updated: 1649322500663},
         ]);
       });
     });
@@ -219,11 +219,11 @@ describe('index', () => {
         const apiNewsletters = [
           {
             id: 1,
-            updated: 1000,
+            updated: 1649322500663,
           },
           {
             id: 2,
-            updated: 1000,
+            updated: 1649322500663,
           },
         ];
 
@@ -233,7 +233,7 @@ describe('index', () => {
 
         const [, , newslettersStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 500000000,
+          cutoff_days: 90,
         });
 
         const newslettersIterator = newslettersStream.readRecords(
