@@ -2,8 +2,7 @@ export interface HarnessConfig {
   readonly api_url?: string;
   readonly account_id: string;
   readonly api_key: string;
-  readonly start_date: string;
-  readonly cutoff_days?: number;
+  readonly cutoff_days: number;
   readonly deploymentTimeout?: number;
   readonly page_size?: number;
 }

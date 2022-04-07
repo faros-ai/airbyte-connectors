@@ -13,8 +13,6 @@ import {getQueryExecution, getQueryToCheckConnection} from './resources';
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_HARNESS_API_URL = 'https://app.harness.io';
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 /** These 4 params need to attach environments and services to each execution.
   Then find a valid one in each lists */
@@ -46,25 +44,19 @@ export class Harness {
         'Missing authentication information. Please provide a Harness apiKey'
       );
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
     const client = new GraphQLClient(
       `${apiUrl}/gateway/api/graphql?accountId=${config.account_id}`,
       {headers: {'x-api-key': config.api_key}}
     );
-
-    Harness.harness = new Harness(
-      client,
-      pageSize,
-      new Date(config.start_date),
-      logger
-    );
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    Harness.harness = new Harness(client, pageSize, startDate, logger);
     logger.debug('Created Harness instance');
 
     return Harness.harness;
