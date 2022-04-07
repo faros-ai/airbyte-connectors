@@ -68,10 +68,10 @@ describe('opsgenie', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      ims_Incident: 3,
       ims_IncidentAssignment: 5,
       ims_IncidentEvent: 21,
       ims_IncidentTag: 3,
+      ims_Incident__Upsert: 3,
       ims_Label: 2,
       ims_Team: 1,
       ims_TeamIncidentAssociation: 2,
