@@ -1,5 +1,5 @@
 {
-  "version": "0.1.62",
+  "version": "0.1.63",
   "packages": [
     "faros-airbyte-cdk",
     "destinations/**",
