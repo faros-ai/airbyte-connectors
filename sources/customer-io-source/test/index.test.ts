@@ -88,7 +88,7 @@ describe('index', () => {
 
         const [campaignsStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 90,
+          cutoff_days: 500000000,
         });
 
         const campaignsIterator = campaignsStream.readRecords(
@@ -191,7 +191,7 @@ describe('index', () => {
 
         const [, campaignActionsStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 90,
+          cutoff_days: 500000000,
         });
 
         const campaignActionsIterator = campaignActionsStream.readRecords(
@@ -233,7 +233,7 @@ describe('index', () => {
 
         const [, , newslettersStream] = source.streams({
           app_api_key: 'testkey',
-          cutoff_days: 90,
+          cutoff_days: 500000000,
         });
 
         const newslettersIterator = newslettersStream.readRecords(
