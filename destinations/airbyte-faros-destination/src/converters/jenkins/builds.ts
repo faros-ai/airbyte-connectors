@@ -4,7 +4,12 @@ import parseGitUrl from 'git-url-parse';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {JenkinsCommon, JenkinsConverter, RepoSource} from './common';
+import {
+  DEFAULT_REPO_SOURCE_FALL_BACK,
+  JenkinsCommon,
+  JenkinsConverter,
+  RepoSource,
+} from './common';
 
 export class Builds extends JenkinsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -103,7 +108,7 @@ export class Builds extends JenkinsConverter {
       if (sourceToLower?.includes('bitbucket')) source = RepoSource.BITBUCKET;
       else if (sourceToLower?.includes('gitlab')) source = RepoSource.GITLAB;
       else if (sourceToLower?.includes('github')) source = RepoSource.GITHUB;
-      else source = RepoSource.repoSourceFallback;
+      else source = DEFAULT_REPO_SOURCE_FALL_BACK;
       repos.push({
         source: source,
         org: realGitUrl.organization,
