@@ -118,7 +118,6 @@ export class AzureActiveDirectory {
       } catch (error) {
         this.logger.error(error.toString());
       }
-      console.log(item);
       yield item;
     }
   }
