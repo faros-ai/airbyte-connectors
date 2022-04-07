@@ -52,13 +52,13 @@ export class Incidents extends OpsGenieConverter {
         detail: event.type,
       };
 
-      const occurredAt = Utils.toDate(event.eventTime);
+      const eventTime = Utils.toDate(event.eventTime);
       if (!resolvedAt && event.type === 'IncidentResolved') {
-        resolvedAt = occurredAt;
+        resolvedAt = eventTime;
         eventType.category = IncidentEventTypeCategory.Resolved;
       }
       if (!acknowledgedAt && event.type === 'ResponderAlertAcked') {
-        acknowledgedAt = occurredAt;
+        acknowledgedAt = eventTime;
         eventType.category = IncidentEventTypeCategory.Acknowledged;
       }
       res.push({
@@ -68,28 +68,32 @@ export class Incidents extends OpsGenieConverter {
           type: eventType,
           incident: incidentRef,
           detail: event.title.content,
-          createdAt: occurredAt,
+          createdAt: eventTime,
         },
       });
     }
-
     res.push({
-      model: 'ims_Incident',
+      // We are explicitly passing __Upsert command here with at := 0,
+      // to allow updating Incident severity from prioritiesResource stream
+      // in the same revision
+      model: 'ims_Incident__Upsert',
       record: {
-        ...incidentRef,
-        title: incident.message,
-        description: incident.description?.substring(0, maxDescriptionLength),
-        url: incident.links.web,
-        createdAt,
-        updatedAt,
-        acknowledgedAt,
-        resolvedAt,
-        priority: this.getPriority(incident.priority),
-        //severity: this.getSeverity(incident.severity),
-        status: this.getIncidentStatus(incident.status),
+        at: 0,
+        data: {
+          ...incidentRef,
+          title: incident.message,
+          description: incident.description?.substring(0, maxDescriptionLength),
+          url: incident.links.web,
+          createdAt,
+          updatedAt,
+          acknowledgedAt,
+          resolvedAt,
+          priority: this.getPriority(incident.priority),
+          //severity: this.getSeverity(incident.severity),
+          status: this.getIncidentStatus(incident.status),
+        },
       },
     });
-
     for (const service of incident.impactedServices) {
       if (service in applicationMapping && applicationMapping[service].name) {
         const mappedApp = applicationMapping[service];
@@ -165,24 +169,6 @@ export class Incidents extends OpsGenieConverter {
         return {category: IncidentPriorityCategory.Custom, detail};
     }
   }
-
-  // private getSeverity(severity: string): IncidentSeverity {
-  //   const detail: string = severity;
-  //   switch (severity) {
-  //     case OpsGenieIncidentSeverity.SEV1:
-  //       return {category: IncidentSeverityCategory.Sev1, detail};
-  //     case OpsGenieIncidentSeverity.SEV2:
-  //       return {category: IncidentSeverityCategory.Sev2, detail};
-  //     case OpsGenieIncidentSeverity.SEV3:
-  //       return {category: IncidentSeverityCategory.Sev3, detail};
-  //     case OpsGenieIncidentSeverity.SEV4:
-  //       return {category: IncidentSeverityCategory.Sev4, detail};
-  //     case OpsGenieIncidentSeverity.SEV5:
-  //       return {category: IncidentSeverityCategory.Sev5, detail};
-  //     default:
-  //       return {category: IncidentSeverityCategory.Custom, detail};
-  //   }
-  // }
 
   private getIncidentStatus(status: string): {
     category: string;
