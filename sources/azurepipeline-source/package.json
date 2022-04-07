@@ -1,6 +1,6 @@
 {
   "name": "azurepipeline-source",
-  "version": "0.1.30",
+  "version": "0.1.61",
   "description": "Azure Pipeline Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
   "dependencies": {
     "axios": "^0.25.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.30",
+    "faros-airbyte-cdk": "^0.1.61",
     "verror": "^1.10.0"
   },
   "jest": {
