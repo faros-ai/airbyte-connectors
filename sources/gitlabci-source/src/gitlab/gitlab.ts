@@ -22,10 +22,10 @@ export class Gitlab {
 
   static instance(config: GitlabConfig, logger: AirbyteLogger): Gitlab {
     if (!config.token) {
-      throw new VError('token must be not an empty string');
+      throw new VError('token must not be an empty string');
     }
     if (!config.groupName) {
-      throw new VError('group name must be not an empty string');
+      throw new VError('group name must not be an empty string');
     }
     if (
       config.apiVersion &&
