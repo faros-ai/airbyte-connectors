@@ -144,7 +144,7 @@ export class Harness {
       appServiceOffset: APP_SERVICE_OFFSET,
       offset: 0,
       limit: this.pageSize,
-      endedAt: since,
+      endedAt: sinceMax,
     };
 
     return this.getIteratorExecution(func, funcOptions, sinceMax, this.logger);

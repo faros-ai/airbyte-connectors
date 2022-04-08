@@ -2,6 +2,7 @@ import {Bitbucket as BitbucketClient} from 'bitbucket';
 import {APIClient} from 'bitbucket/src/client/types';
 import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
+import dateformat from 'date-format';
 import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
@@ -117,9 +118,6 @@ export class Bitbucket {
     }
     if (!config.repositories) {
       return [false, 'No repository provided'];
-    }
-    if (!config.start_date) {
-      return [false, 'start_date is null or empty'];
     }
     try {
       config.serverUrl && new URL(config.serverUrl);
@@ -262,7 +260,7 @@ export class Bitbucket {
       repo_slug: repoSlug,
       pagelen: this.pagelen,
     };
-    params.q = `updated_on > ${lastUpdatedMax}`;
+    params.q = `updated_on > ${formatDate(lastUpdatedMax)}`;
     try {
       const func = (): Promise<BitbucketResponse<Issue>> =>
         this.limiter.schedule(() =>
@@ -356,7 +354,7 @@ export class Bitbucket {
        *  */
       const states =
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
-      const query = states + ` AND updated_on > ${lastUpdatedMax}`;
+      const query = states + ` AND updated_on > ${formatDate(lastUpdatedMax)}`;
 
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
@@ -1258,4 +1256,8 @@ export class Bitbucket {
       },
     };
   }
+}
+
+function formatDate(date: Date): string {
+  return dateformat.asString(dateformat.ISO8601_WITH_TZ_OFFSET_FORMAT, date);
 }
