@@ -76,10 +76,9 @@ export class OpsGenie {
     delay = (waitingTime) =>
         new Promise((resolve) => setTimeout(resolve, waitingTime));
     async retryApi<T>(url: string): Promise<AxiosResponse> {
-        let response: AxiosResponse;
         let attemptCount = 0;
-        while (attemptCount < MAX_NUMBER_OF_RETRIES) {
-            response = await this.restClient.get<T>(url);
+        do {
+            const response = await this.restClient.get<T>(url);
             // retry when got rate limiting
             if (response.status === 429) {
                 attemptCount++;
@@ -87,8 +86,7 @@ export class OpsGenie {
                 continue;
             }
             return response;
-        }
-        return response;
+        } while (attemptCount < MAX_NUMBER_OF_RETRIES);
     }
     async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
         const startTimeMax =
