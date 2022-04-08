@@ -24,7 +24,6 @@ export enum RepoSource {
   GITLAB = 'GitLab',
   VCS = 'VCS',
 }
-export const DEFAULT_REPO_SOURCE_FALL_BACK = 'repoSourceFallback';
 
 /** Common functions shares across Jenkins converters */
 export class JenkinsCommon {
