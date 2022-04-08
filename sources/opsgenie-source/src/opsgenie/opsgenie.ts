@@ -12,8 +12,7 @@ import {
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_BASE_URL = 'https://api.opsgenie.com/';
-const DEFAULT_MILLISECONDS_TO_RETRY_API = 100;
-const DEFAULT_RETRY_COUNT = 10;
+const MAX_NUMBER_OF_RETRIES = 10;
 
 export interface OpsGenieConfig {
     readonly api_key: string;
@@ -74,19 +73,17 @@ export class OpsGenie {
         }
     }
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    delay = () =>
-        new Promise((resolve) =>
-            setTimeout(resolve, DEFAULT_MILLISECONDS_TO_RETRY_API)
-        );
+    delay = (waitingTime) =>
+        new Promise((resolve) => setTimeout(resolve, waitingTime));
     async retryApi<T>(url: string): Promise<AxiosResponse> {
         let response: AxiosResponse;
-        let count = 0;
-        while (count < DEFAULT_RETRY_COUNT) {
+        let attemptCount = 0;
+        while (attemptCount < MAX_NUMBER_OF_RETRIES) {
             response = await this.restClient.get<T>(url);
             // retry when got rate limiting
             if (response.status === 429) {
-                count++;
-                await this.delay();
+                attemptCount++;
+                await this.delay(Math.pow(2, attemptCount) * 200);
                 continue;
             }
             return response;
