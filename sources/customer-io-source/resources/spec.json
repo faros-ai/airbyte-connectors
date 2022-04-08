@@ -5,7 +5,8 @@
     "title": "Customer.io Spec",
     "type": "object",
     "required": [
-      "app_api_key"
+      "app_api_key",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -13,6 +14,12 @@
         "type": "string",
         "title": "Customer.io App API Key",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       }
     }
   }

@@ -14,15 +14,24 @@ const CUSTOMER_IO_BETA_API_URL = 'https://beta-api.customer.io/v1/api';
 
 export interface CustomerIOConfig {
   app_api_key: string;
+  readonly cutoff_days: number;
 }
 
 export class CustomerIO {
-  private constructor(readonly axios: AxiosInstance) {}
+  private constructor(
+    readonly axios: AxiosInstance,
+    readonly startDate: Date
+  ) {}
 
   static instance(
     config: CustomerIOConfig,
     axiosInstance?: AxiosInstance
   ): CustomerIO {
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     return new CustomerIO(
       axiosInstance ??
         axios.create({
@@ -30,7 +39,8 @@ export class CustomerIO {
           timeout: 30000,
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},
-        })
+        }),
+      startDate
     );
   }
 
@@ -56,12 +66,13 @@ export class CustomerIO {
   async *getCampaigns(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaign, any, any> {
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const response = await this.axios.get<CustomerIOListCampaignsResponse>(
       '/campaigns'
     );
 
     for (const campaign of response.data.campaigns) {
-      if (campaign.updated >= updated) {
+      if (campaign.updated >= updatedMax) {
         yield campaign;
       }
     }
@@ -70,6 +81,7 @@ export class CustomerIO {
   async *getCampaignActions(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaignAction, any, any> {
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const campaignsResponse =
       await this.axios.get<CustomerIOListCampaignsResponse>('/campaigns');
 
@@ -87,7 +99,7 @@ export class CustomerIO {
           nextKey = pageResponse.data.next || undefined;
 
           for (const action of pageResponse.data.actions ?? []) {
-            if (action.updated >= updated) {
+            if (action.updated >= updatedMax) {
               yield action;
             }
           }
@@ -99,12 +111,13 @@ export class CustomerIO {
   async *getNewsletters(
     updated = 0
   ): AsyncGenerator<CustomerIONewsletter, any, any> {
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
     const response = await this.axios.get<CustomerIOListNewsletterResponse>(
       '/newsletters'
     );
 
     for (const newsletter of response.data.newsletters) {
-      if (newsletter.updated >= updated) {
+      if (newsletter.updated >= updatedMax) {
         yield newsletter;
       }
     }

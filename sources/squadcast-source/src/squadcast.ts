@@ -28,6 +28,7 @@ export interface SquadcastConfig {
   readonly event_owner_id?: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
+  readonly cutoff_days: number;
 }
 
 interface PaginateResponse<T> {
@@ -40,6 +41,7 @@ export class Squadcast {
 
   constructor(
     private readonly httpClient: AxiosInstance,
+    private readonly startDate: Date,
     private readonly incident_owner_id?: string,
     private readonly event_owner_id?: string,
     private readonly eventIncidentId?: string,
@@ -65,9 +67,12 @@ export class Squadcast {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
+      startDate,
       config.incident_owner_id,
       config.event_owner_id,
       config.event_incident_id,
@@ -171,12 +176,13 @@ export class Squadcast {
     lastUpdatedAt?: string
   ): Promise<ReadonlyArray<Incident>> {
     const incidents: Incident[] = [];
-    const startTime =
-      new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
-        ? lastUpdatedAt
-        : DEFAULT_INCIDENTS_START_DATE;
+    const dates = [];
+    dates.push(new Date(lastUpdatedAt ?? 0));
+    dates.push(new Date(DEFAULT_INCIDENTS_START_DATE));
+    dates.push(this.startDate);
+    const startTime = new Date(Math.max.apply(null, dates));
     const endTime =
-      new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
+      startTime > new Date(DEFAULT_INCIDENTS_END_DATE)
         ? startTime
         : DEFAULT_INCIDENTS_END_DATE;
 

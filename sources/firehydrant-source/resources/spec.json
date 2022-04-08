@@ -5,7 +5,8 @@
     "title": "fireHydrant Spec",
     "type": "object",
     "required": [
-      "token"
+      "token",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -14,6 +15,12 @@
         "title": "API Token",
         "description": "In order to create token, go to https://app.firehydrant.io/organizations/bots",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
         "type": "number",

@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "api_key",
-      "account_id"
+      "account_id",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {

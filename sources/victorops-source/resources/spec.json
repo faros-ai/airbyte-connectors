@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "apiId",
-      "apiKey"
+      "apiKey",
+      "cutoff_days"
     ],
     "additionalProperties": true,
     "properties": {
@@ -19,6 +20,12 @@
         "type": "string",
         "title": "VictorOps API key",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "maxContentLength": {
         "type": "integer",

@@ -1,4 +1,5 @@
 {
   "apiId":"",
-  "apiKey":""
+  "apiKey":"",
+  "cutoff_days":90
 }

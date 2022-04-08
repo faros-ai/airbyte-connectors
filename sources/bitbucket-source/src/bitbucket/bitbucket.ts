@@ -41,7 +41,8 @@ export class Bitbucket {
     private readonly client: APIClient,
     private readonly workspace: string,
     private readonly pagelen: number,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    readonly startDate: Date
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -61,11 +62,17 @@ export class Bitbucket {
     const client = new BitbucketClient({baseUrl, auth});
     const pagelen = config.pagelen || DEFAULT_PAGELEN;
 
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     Bitbucket.bitbucket = new Bitbucket(
       client,
       config.workspace,
       pagelen,
-      logger
+      logger,
+      startDate
     );
     logger.debug('Created Bitbucket instance');
 
@@ -111,7 +118,9 @@ export class Bitbucket {
     if (!config.repositories) {
       return [false, 'No repository provided'];
     }
-
+    if (!config.start_date) {
+      return [false, 'start_date is null or empty'];
+    }
     try {
       config.serverUrl && new URL(config.serverUrl);
     } catch (error) {
@@ -119,6 +128,11 @@ export class Bitbucket {
     }
 
     return [true, undefined];
+  }
+
+  private getStartDateMax(lastUpdatedAt?: string) {
+    const startTime = new Date(lastUpdatedAt ?? 0);
+    return startTime > this.startDate ? startTime : this.startDate;
   }
 
   async *getBranches(repoSlug: string): AsyncGenerator<Branch> {
@@ -148,6 +162,7 @@ export class Bitbucket {
     lastUpdated?: string
   ): AsyncGenerator<Commit> {
     try {
+      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listCommits({
@@ -156,9 +171,8 @@ export class Bitbucket {
             pagelen: this.pagelen,
           })
         ) as any;
-      const isNew = lastUpdated
-        ? (data: Commit): boolean => new Date(data.date) > new Date(lastUpdated)
-        : undefined;
+      const isNew = (data: Commit): boolean =>
+        new Date(data.date) > lastUpdatedMax;
 
       yield* this.paginate<Commit>(
         func,
@@ -242,14 +256,13 @@ export class Bitbucket {
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Issue> {
+    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     const params: any = {
       workspace: this.workspace,
       repo_slug: repoSlug,
       pagelen: this.pagelen,
     };
-    if (lastUpdated) {
-      params.q = `updated_on > ${lastUpdated}`;
-    }
+    params.q = `updated_on > ${lastUpdatedMax}`;
     try {
       const func = (): Promise<BitbucketResponse<Issue>> =>
         this.limiter.schedule(() =>
@@ -333,6 +346,7 @@ export class Bitbucket {
     repoSlug: string,
     lastUpdated?: string
   ): Promise<ReadonlyArray<PullRequest>> {
+    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     try {
       const results: PullRequest[] = [];
       /**
@@ -342,9 +356,7 @@ export class Bitbucket {
        *  */
       const states =
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
-      const query = lastUpdated
-        ? states + ` AND updated_on > ${lastUpdated}`
-        : states;
+      const query = states + ` AND updated_on > ${lastUpdatedMax}`;
 
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
@@ -476,6 +488,7 @@ export class Bitbucket {
 
   async *getRepositories(lastUpdated?: string): AsyncGenerator<Repository> {
     try {
+      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
           this.client.repositories.list({
@@ -484,10 +497,8 @@ export class Bitbucket {
             sort: '-updated_on', // sort by updated_on field in desc order
           })
         );
-      const isNew = lastUpdated
-        ? (data: Repository): boolean =>
-            new Date(data.updatedOn) > new Date(lastUpdated)
-        : undefined;
+      const isNew = (data: Repository): boolean =>
+        new Date(data.updatedOn) > lastUpdatedMax;
 
       yield* this.paginate<Repository>(
         func,

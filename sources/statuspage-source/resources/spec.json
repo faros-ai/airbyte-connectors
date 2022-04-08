@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "page_id",
-      "api_key"
+      "api_key",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -19,6 +20,12 @@
         "type": "string",
         "title": "StatusPage API key",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "org_id": {
         "type": "string",

@@ -10,7 +10,8 @@
       "client_secret",
       "username",
       "password",
-      "api_token"
+      "api_token",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -46,6 +47,12 @@
         "title": "API Token",
         "description": "To get token use URL: $SERVER_URL/lightning/settings/personal/ResetApiToken/home",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "api_version": {
         "type": "string",
