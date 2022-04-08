@@ -66,7 +66,7 @@ export class CustomerIO {
   async *getCampaigns(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaign, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime() / 1000);
     const response = await this.axios.get<CustomerIOListCampaignsResponse>(
       '/campaigns'
     );
@@ -81,7 +81,7 @@ export class CustomerIO {
   async *getCampaignActions(
     updated = 0
   ): AsyncGenerator<CustomerIOCampaignAction, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime() / 1000);
     const campaignsResponse =
       await this.axios.get<CustomerIOListCampaignsResponse>('/campaigns');
 
@@ -111,7 +111,7 @@ export class CustomerIO {
   async *getNewsletters(
     updated = 0
   ): AsyncGenerator<CustomerIONewsletter, any, any> {
-    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime());
+    const updatedMax = Math.max(updated ?? 0, this.startDate.getTime() / 1000);
     const response = await this.axios.get<CustomerIOListNewsletterResponse>(
       '/newsletters'
     );
