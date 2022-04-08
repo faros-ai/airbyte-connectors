@@ -74,6 +74,8 @@ describe('bitbucket', () => {
       tms_TaskAssignment: 1,
       tms_TaskBoard: 12,
       tms_TaskBoardProjectRelationship: 12,
+      tms_TaskBoardRelationship: 1,
+      tms_TaskProjectRelationship: 1,
       tms_User: 2,
       vcs_Branch: 2,
       vcs_Commit: 25,
