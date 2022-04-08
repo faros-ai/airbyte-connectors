@@ -27,6 +27,9 @@ export class Gitlab {
     if (!config.groupName) {
       throw new VError('group name must not be an empty string');
     }
+    if (!Array.isArray(config.projects) || config.projects.length === 0) {
+      throw new VError('projects must be a non-empty array');
+    }
     if (
       config.apiVersion &&
       config.apiVersion !== 3 &&
