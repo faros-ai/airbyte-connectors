@@ -58,7 +58,7 @@ export class OpsGenie {
 
     async checkConnection(): Promise<void> {
         try {
-            await this.retryApi<any>('v2/users');
+            await this.restClient.get<any>('v2/users');
         } catch (err: any) {
             let errorMessage = 'Please verify your api key is correct. Error: ';
             if (err.error_code || err.error_info) {
@@ -130,7 +130,7 @@ export class OpsGenie {
     }
 
     async *getUsers(): AsyncGenerator<User> {
-        const response = await this.retryApi<PaginateResponse<User>>(
+        const response = await this.restClient.get<PaginateResponse<User>>(
             'v2/users'
         );
         for (const user of response.data.data) {
@@ -139,19 +139,11 @@ export class OpsGenie {
     }
 
     async *getTeams(): AsyncGenerator<Team> {
-        const response = await this.retryApi<PaginateResponse<Team>>(
+        const response = await this.restClient.get<PaginateResponse<Team>>(
             'v2/teams'
         );
         for (const team of response.data.data) {
             yield team;
-        }
-    }
-    async *getServices(): AsyncGenerator<Service> {
-        const response = await this.retryApi<PaginateResponse<Service>>(
-            'v1/services'
-        );
-        for (const service of response.data.data) {
-            yield service;
         }
     }
 }
