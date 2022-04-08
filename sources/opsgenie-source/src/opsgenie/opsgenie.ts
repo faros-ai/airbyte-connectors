@@ -6,7 +6,6 @@ import {
     Incident,
     IncidentTimeLinePaginateResponse,
     PaginateResponse,
-    Service,
     Team,
     User,
 } from './models';

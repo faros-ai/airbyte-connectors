@@ -48,16 +48,6 @@ export interface Incident {
     timelines: IncidentTimeline[];
 }
 
-export interface Service {
-    id: string;
-    name: string;
-    description: string;
-    teamId: string;
-    tags: string[];
-    links: Links;
-    isExternal: boolean;
-}
-
 export interface Team {
     id: string;
     name: string;
