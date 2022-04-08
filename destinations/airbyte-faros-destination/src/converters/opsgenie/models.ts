@@ -100,7 +100,7 @@ export interface IncidentEventType {
   detail: string;
 }
 
-export enum OpshenieIncidentPriority {
+export enum OpsGenieIncidentPriority {
   P1 = 'P1',
   P2 = 'P2',
   P3 = 'P3',
@@ -140,9 +140,4 @@ export enum IncidentSeverityCategory {
   Sev4 = 'Sev4',
   Sev5 = 'Sev5',
   Custom = 'Custom',
-}
-
-export interface IncidentSeverity {
-  category: IncidentSeverityCategory;
-  detail: string;
 }

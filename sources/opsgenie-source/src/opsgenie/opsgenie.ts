@@ -79,11 +79,11 @@ export class OpsGenie {
         new Promise((resolve) =>
             setTimeout(resolve, DEFAULT_MILLISECONDS_TO_RETRY_API)
         );
-    async retryApi<T>(pathUrl: string): Promise<AxiosResponse> {
+    async retryApi<T>(url: string): Promise<AxiosResponse> {
         let response: AxiosResponse;
         let count = 0;
         while (count < DEFAULT_RETRY_COUNT) {
-            response = await this.restClient.get<T>(pathUrl);
+            response = await this.restClient.get<T>(url);
             // retry when got rate limiting
             if (response.status === 429) {
                 count++;

@@ -11,7 +11,7 @@ import {
   IncidentPriorityCategory,
   IncidentStatus,
   IncidentStatusCategory,
-  OpshenieIncidentPriority,
+  OpsGenieIncidentPriority,
 } from './models';
 
 export class Incidents extends OpsGenieConverter {
@@ -157,13 +157,13 @@ export class Incidents extends OpsGenieConverter {
   private getPriority(priority: string): IncidentPriority {
     const detail: string = priority;
     switch (priority) {
-      case OpshenieIncidentPriority.P1:
+      case OpsGenieIncidentPriority.P1:
         return {category: IncidentPriorityCategory.Critical, detail};
-      case OpshenieIncidentPriority.P2:
+      case OpsGenieIncidentPriority.P2:
         return {category: IncidentPriorityCategory.High, detail};
-      case OpshenieIncidentPriority.P3:
+      case OpsGenieIncidentPriority.P3:
         return {category: IncidentPriorityCategory.Medium, detail};
-      case OpshenieIncidentPriority.P4:
+      case OpsGenieIncidentPriority.P4:
         return {category: IncidentPriorityCategory.Low, detail};
       default:
         return {category: IncidentPriorityCategory.Custom, detail};

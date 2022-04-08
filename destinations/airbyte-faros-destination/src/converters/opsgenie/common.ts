@@ -5,20 +5,20 @@ import {Converter, parseObjectConfig, StreamContext} from '../converter';
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 const MAX_DESCRIPTION_LENGTH = 1000;
-interface FirehHydrantConfig {
+interface OpsGenieConfig {
   application_mapping?: ApplicationMapping;
   // Max length for free-form description text fields such as incident description
   max_description_length?: number;
 }
-/** Firehydrant converter base */
+/** Opsgenie converter base */
 export abstract class OpsGenieConverter extends Converter {
   source = 'OpsGenie';
-  /** Almost every Firehydrant record have id property */
+  /** Almost every Opsgenie record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
-  protected opsgenieConfig(ctx: StreamContext): FirehHydrantConfig {
+  protected opsgenieConfig(ctx: StreamContext): OpsGenieConfig {
     return ctx.config.source_specific_configs?.opsgenie ?? {};
   }
 
