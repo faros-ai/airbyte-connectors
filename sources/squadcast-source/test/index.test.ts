@@ -42,19 +42,19 @@ describe('index', () => {
   test('check connection', async () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
-        {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {incidents: [], data: [{id: 'test-team-id'}]},
+          }),
+        } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        '6129ac15518568defa92794b',
         'incidentId'
       );
     });
 
     const source = new sut.SquadcastSource(logger);
     await expect(
-      source.checkConnection({
-        token: 'token',
-        start_date: '2010-03-27T14:03:51-0800',
-      })
+      source.checkConnection({token: 'token'})
     ).resolves.toStrictEqual([true, undefined]);
   });
 
@@ -93,21 +93,20 @@ describe('index', () => {
             const isPathMatchEvents =
               /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
             const isPathMatchIncidents = /^incidents\/export/.test(path);
-            if (isPathMatchEvents) {
-              return {
-                data: {data: {events: readTestResourceFile('events.json')}},
-              };
-            }
-            if (isPathMatchIncidents) {
-              return {
-                data: {incidents: readTestResourceFile('incidents.json')},
-              };
-            }
-            return {data: {data: {events: []}}};
+            const isPathMatchTeams = /^teams/.test(path);
+            const res: any = {
+              data: {data: {events: []}, incidents: []},
+            };
+            if (isPathMatchEvents)
+              res.data.data.events = readTestResourceFile('events.json');
+            if (isPathMatchIncidents)
+              res.data.incidents = readTestResourceFile('incidents.json');
+            if (isPathMatchTeams) res.data.data = [{id: 'test-team-id'}];
+
+            return res;
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800'),
-        '6129ac15518568defa92794b'
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.SquadcastSource(logger);
@@ -120,7 +119,7 @@ describe('index', () => {
       events.push(event);
     }
 
-    expect(fnEventsFunc).toHaveBeenCalledTimes(5);
+    expect(fnEventsFunc).toHaveBeenCalledTimes(6);
     expect(events).toStrictEqual(readTestResourceFile('events.json'));
   });
 
@@ -140,7 +139,6 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        '6129ac15518568defa92794b',
         'incidentId-123'
       );
     });
@@ -169,7 +167,6 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        '6129ac15518568defa92794b',
         'incidentId'
       );
     });
@@ -198,7 +195,6 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        '6129ac15518568defa92794b',
         'incidentId'
       );
     });

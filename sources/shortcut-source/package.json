@@ -1,6 +1,6 @@
 {
   "name": "shortcut-source",
-  "version": "0.1.61",
+  "version": "0.1.63",
   "description": "Shortcut Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
     "axios": "^0.26.0",
     "clubhouse-lib": "^0.13.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.61",
+    "faros-airbyte-cdk": "^0.1.63",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },
