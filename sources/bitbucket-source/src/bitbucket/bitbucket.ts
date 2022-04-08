@@ -118,9 +118,6 @@ export class Bitbucket {
     if (!config.repositories) {
       return [false, 'No repository provided'];
     }
-    if (!config.start_date) {
-      return [false, 'start_date is null or empty'];
-    }
     try {
       config.serverUrl && new URL(config.serverUrl);
     } catch (error) {
