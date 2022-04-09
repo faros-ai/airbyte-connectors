@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "workspace",
-      "repositories"
+      "repositories",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -52,6 +53,12 @@
         "examples": [
           "blaze"
         ]
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "pagelen": {
         "type": "integer",

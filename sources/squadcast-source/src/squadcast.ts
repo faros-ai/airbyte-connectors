@@ -24,8 +24,11 @@ const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
 
 export interface SquadcastConfig {
   readonly token: string;
+  readonly incident_owner_id?: string;
+  readonly event_owner_id?: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
+  readonly cutoff_days: number;
 }
 
 interface PaginateResponse<T> {
@@ -38,6 +41,9 @@ export class Squadcast {
 
   constructor(
     private readonly httpClient: AxiosInstance,
+    private readonly startDate: Date,
+    private readonly incident_owner_id?: string,
+    private readonly event_owner_id?: string,
     private readonly eventIncidentId?: string,
     private readonly eventDeduped?: boolean
   ) {}
@@ -61,9 +67,14 @@ export class Squadcast {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
+      startDate,
+      config.incident_owner_id,
+      config.event_owner_id,
       config.event_incident_id,
       config.event_deduped
     );
@@ -136,20 +147,45 @@ export class Squadcast {
     } while (fetchNextFunc);
   }
 
-  @Memoize(
-    (lastUpdatedAt?: string) =>
-      new Date(lastUpdatedAt ?? DEFAULT_INCIDENTS_START_DATE)
-  )
-  async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
+  @Memoize((defaultValue: string) => defaultValue)
+  private async listOwnerID(defaultValue): Promise<string[]> {
+    if (defaultValue) {
+      return [defaultValue];
+    } else {
+      const ids: string[] = [];
+      const iterTeams = this.getTeams();
+
+      for await (const {id: teamID} of iterTeams) {
+        ids.push(teamID);
+      }
+
+      if (!ids.length) {
+        const iterUsers = this.getUsers();
+        for await (const {id: userID} of iterUsers) {
+          ids.push(userID);
+        }
+      }
+
+      return ids;
+    }
+  }
+
+  @Memoize((ownerID: string, lastUpdatedAt?: string) => ownerID + lastUpdatedAt)
+  private async fetchIncidentsWithOwnerID(
+    ownerID: string,
+    lastUpdatedAt?: string
+  ): Promise<ReadonlyArray<Incident>> {
     const incidents: Incident[] = [];
-    const startTime =
-      new Date(lastUpdatedAt ?? 0) > new Date(DEFAULT_INCIDENTS_START_DATE)
-        ? lastUpdatedAt
-        : DEFAULT_INCIDENTS_START_DATE;
+    const dates = [];
+    dates.push(new Date(lastUpdatedAt ?? 0));
+    dates.push(new Date(DEFAULT_INCIDENTS_START_DATE));
+    dates.push(this.startDate);
+    const startTime = new Date(Math.max.apply(null, dates));
     const endTime =
-      new Date(startTime) > new Date(DEFAULT_INCIDENTS_END_DATE)
+      startTime > new Date(DEFAULT_INCIDENTS_END_DATE)
         ? startTime
         : DEFAULT_INCIDENTS_END_DATE;
+
     const res = await this.httpClient.get<IncidentsResponse>(
       'incidents/export',
       {
@@ -157,6 +193,7 @@ export class Squadcast {
           type: 'json',
           start_time: startTime,
           end_time: endTime,
+          owner_id: ownerID,
         },
       }
     );
@@ -166,19 +203,41 @@ export class Squadcast {
     return incidents;
   }
 
+  async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
+    const incidents: Incident[] = [];
+
+    const ownerIDs = await this.listOwnerID(this.incident_owner_id);
+    for (const ownerID of ownerIDs) {
+      const res = await this.fetchIncidentsWithOwnerID(ownerID, lastUpdatedAt);
+      incidents.push(...res);
+    }
+
+    return incidents;
+  }
+
   async *getEvents(): AsyncGenerator<Event> {
     for (const incident of await this.getIncidents()) {
       if (this.eventIncidentId && incident.id === this.eventIncidentId) {
-        yield* this.fetchIncidentsEvents(incident);
+        yield* this.fetchOwnersEvents(incident);
         break;
       } else if (!this.eventIncidentId) {
-        yield* this.fetchIncidentsEvents(incident);
+        yield* this.fetchOwnersEvents(incident);
       }
     }
   }
 
-  async *fetchIncidentsEvents(incident: Incident): AsyncGenerator<Event> {
+  private async *fetchOwnersEvents(incident: Incident): AsyncGenerator<Event> {
+    for (const ownerID of await this.listOwnerID(this.event_owner_id)) {
+      yield* this.fetchIncidentsEvents(incident, ownerID);
+    }
+  }
+
+  private async *fetchIncidentsEvents(
+    incident: Incident,
+    ownerID: string
+  ): AsyncGenerator<Event> {
     const eventUrl = `incidents/${incident.id}/events`;
+
     const func = async (next?: string): Promise<PaginateResponse<Event>> => {
       let res: AxiosResponse<EventListResponse>;
 
@@ -188,12 +247,15 @@ export class Squadcast {
         res = await this.httpClient.get<EventListResponse>(
           `${eventUrl}${nextUrlParams}`
         );
+      } else {
+        const params: {owner_id: string; deduped?: boolean} = {
+          owner_id: ownerID,
+        };
+        if (typeof this.eventDeduped === 'boolean') {
+          params.deduped = this.eventDeduped;
+        }
+        res = await this.httpClient.get<EventListResponse>(eventUrl, {params});
       }
-      let params = undefined;
-      if (typeof this.eventDeduped === 'boolean') {
-        params = {deduped: this.eventDeduped};
-      }
-      res = await this.httpClient.get<EventListResponse>(eventUrl, {params});
 
       return {
         data: res.data.data.events.map((e) => {
@@ -218,6 +280,13 @@ export class Squadcast {
 
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<UserResponse>('users');
+    for (const item of res.data.data) {
+      yield item;
+    }
+  }
+
+  private async *getTeams(): AsyncGenerator<User> {
+    const res = await this.httpClient.get<UserResponse>('teams');
     for (const item of res.data.data) {
       yield item;
     }

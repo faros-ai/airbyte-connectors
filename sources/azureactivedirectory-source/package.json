@@ -1,6 +1,6 @@
 {
   "name": "azureactivedirectory-source",
-  "version": "0.1.60",
+  "version": "0.1.63",
   "description": "Azure Active Directory Airbyte source",
   "keywords": [
     "airbyte",
@@ -31,10 +31,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.60",
-    "verror": "^1.10.0"
+    "faros-airbyte-cdk": "^0.1.63",
+    "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

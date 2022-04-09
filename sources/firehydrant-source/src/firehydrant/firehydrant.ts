@@ -17,6 +17,7 @@ const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
 
 export interface FireHydrantConfig {
   readonly token: string;
+  readonly cutoff_days: number;
   readonly page_size?: number;
   readonly version?: string;
 }
@@ -26,6 +27,7 @@ export class FireHydrant {
 
   constructor(
     private readonly restClient: AxiosInstance,
+    private readonly startDate: Date,
     private readonly pageSize?: number
   ) {}
 
@@ -38,6 +40,10 @@ export class FireHydrant {
     if (!config.token) {
       throw new VError('API Access token has to be provided');
     }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
+
     const auth = `Bearer ${config.token}`;
 
     const version = config.version ?? DEFAULT_VERSION;
@@ -48,8 +54,10 @@ export class FireHydrant {
     });
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
-    FireHydrant.fireHydrant = new FireHydrant(httpClient, pageSize);
+    FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
     logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }
@@ -115,6 +123,8 @@ export class FireHydrant {
     };
   }
   async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
+    const createdAtMax =
+      createdAt > this.startDate ? createdAt : this.startDate;
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Incident>> => {
@@ -127,7 +137,7 @@ export class FireHydrant {
         data: [],
       };
       for (const incident of response?.data.data ?? []) {
-        if (!createdAt || new Date(incident.created_at) >= createdAt) {
+        if (new Date(incident.created_at) >= createdAtMax) {
           const eventResponse = await this.restClient.get<
             PaginateResponse<IncidentEvent>
           >(`incidents/${incident.id}/events`);

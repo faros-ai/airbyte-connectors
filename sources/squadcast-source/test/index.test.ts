@@ -42,7 +42,12 @@ describe('index', () => {
   test('check connection', async () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
-        {get: jest.fn().mockResolvedValue({data: {incidents: []}})} as any,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {incidents: [], data: [{id: 'test-team-id'}]},
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId'
       );
     });
@@ -59,6 +64,7 @@ describe('index', () => {
         {
           get: jest.fn().mockRejectedValue(new Error('some error')),
         } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId'
       );
     });
@@ -81,24 +87,27 @@ describe('index', () => {
     const fnEventsFunc = jest.fn();
 
     Squadcast.instance = jest.fn().mockImplementation(() => {
-      return new Squadcast({
-        get: fnEventsFunc.mockImplementation(async (path: string) => {
-          const isPathMatchEvents =
-            /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
-          const isPathMatchIncidents = /^incidents\/export/.test(path);
-          if (isPathMatchEvents) {
-            return {
-              data: {data: {events: readTestResourceFile('events.json')}},
+      return new Squadcast(
+        {
+          get: fnEventsFunc.mockImplementation(async (path: string) => {
+            const isPathMatchEvents =
+              /^incidents\/619cb810f88b5d9a2ab1271d\/events/.test(path);
+            const isPathMatchIncidents = /^incidents\/export/.test(path);
+            const isPathMatchTeams = /^teams/.test(path);
+            const res: any = {
+              data: {data: {events: []}, incidents: []},
             };
-          }
-          if (isPathMatchIncidents) {
-            return {
-              data: {incidents: readTestResourceFile('incidents.json')},
-            };
-          }
-          return {data: {data: {events: []}}};
-        }),
-      } as any);
+            if (isPathMatchEvents)
+              res.data.data.events = readTestResourceFile('events.json');
+            if (isPathMatchIncidents)
+              res.data.incidents = readTestResourceFile('incidents.json');
+            if (isPathMatchTeams) res.data.data = [{id: 'test-team-id'}];
+
+            return res;
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.SquadcastSource(logger);
     const streams = source.streams({});
@@ -110,7 +119,7 @@ describe('index', () => {
       events.push(event);
     }
 
-    expect(fnEventsFunc).toHaveBeenCalledTimes(5);
+    expect(fnEventsFunc).toHaveBeenCalledTimes(6);
     expect(events).toStrictEqual(readTestResourceFile('events.json'));
   });
 
@@ -129,6 +138,7 @@ describe('index', () => {
             }
           }),
         } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId-123'
       );
     });
@@ -156,6 +166,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('services.json')},
           }),
         } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId'
       );
     });
@@ -183,6 +194,7 @@ describe('index', () => {
             data: {data: readTestResourceFile('users.json')},
           }),
         } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         'incidentId'
       );
     });

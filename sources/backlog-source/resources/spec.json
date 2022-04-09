@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "apiKey",
-      "space"
+      "space",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -21,6 +22,12 @@
         "type": "string",
         "title": "API Key",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "project_id": {
         "type": [

@@ -43,15 +43,19 @@ describe('index', () => {
   });
   test('check connection', async () => {
     FireHydrant.instance = jest.fn().mockImplementation(() => {
-      return new FireHydrant({
-        get: jest.fn().mockResolvedValue({}),
-      } as unknown as AxiosInstance);
+      return new FireHydrant(
+        {
+          get: jest.fn().mockResolvedValue({}),
+        } as unknown as AxiosInstance,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
 
     const source = new sut.FireHydrantSource(logger);
     await expect(
       source.checkConnection({
         token: '',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -64,6 +68,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,
@@ -76,16 +81,19 @@ describe('index', () => {
   test('streams - incidents, use full_refresh sync mode', async () => {
     const fnIncidentsList = jest.fn();
     FireHydrant.instance = jest.fn().mockImplementation(() => {
-      return new FireHydrant({
-        get: fnIncidentsList.mockResolvedValue({
-          data: {
-            data: readTestResourceFile('incidents.json'),
-            pagination: {
-              next: null,
+      return new FireHydrant(
+        {
+          get: fnIncidentsList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('incidents.json'),
+              pagination: {
+                next: null,
+              },
             },
-          },
-        }),
-      } as any);
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.FireHydrantSource(logger);
     const streams = source.streams({});
@@ -103,16 +111,19 @@ describe('index', () => {
   test('streams - teams, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
     FireHydrant.instance = jest.fn().mockImplementation(() => {
-      return new FireHydrant({
-        get: fnTeamsList.mockResolvedValue({
-          data: {
-            data: readTestResourceFile('teams.json'),
-            pagination: {
-              next: null,
+      return new FireHydrant(
+        {
+          get: fnTeamsList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('teams.json'),
+              pagination: {
+                next: null,
+              },
             },
-          },
-        }),
-      } as any);
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.FireHydrantSource(logger);
     const streams = source.streams({});
@@ -130,16 +141,19 @@ describe('index', () => {
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersList = jest.fn();
     FireHydrant.instance = jest.fn().mockImplementation(() => {
-      return new FireHydrant({
-        get: fnUsersList.mockResolvedValue({
-          data: {
-            data: readTestResourceFile('users.json'),
-            pagination: {
-              next: null,
+      return new FireHydrant(
+        {
+          get: fnUsersList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('users.json'),
+              pagination: {
+                next: null,
+              },
             },
-          },
-        }),
-      } as any);
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.FireHydrantSource(logger);
     const streams = source.streams({});
