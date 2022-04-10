@@ -20,7 +20,8 @@
         "title": "Server URL",
         "example": [
           "https://test.my.salesforce.com"
-        ]
+        ],
+        "description": "The API URL for fetching data from AgileAccelerator"
       },
       "client_id": {
         "type": "string",
@@ -35,11 +36,13 @@
       },
       "username": {
         "type": "string",
-        "title": "Username"
+        "title": "Username",
+        "description": "AgileAccelerator username"
       },
       "password": {
         "type": "string",
         "title": "Password",
+        "description": "AgileAccelerator password",
         "airbyte_secret": true
       },
       "api_token": {
@@ -57,11 +60,13 @@
       "api_version": {
         "type": "string",
         "title": "API Version",
+        "description": "AgileAccelerator API Version",
         "default": "v53.0"
       },
       "page_size": {
         "type": "integer",
-        "title": "Page Size"
+        "title": "Page Size",
+        "description": "Page size to use when requesting records from AgileAccelerator API"
       }
     }
   }

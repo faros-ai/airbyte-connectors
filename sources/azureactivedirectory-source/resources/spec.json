@@ -13,26 +13,31 @@
     "properties": {
       "client_id": {
         "type": "string",
-        "title": "client id of azure",
+        "title": "clientID",
+        "description": "client id of microsoft azure",
         "airbyte_secret": true
       },
       "client_secret": {
         "type": "string",
         "title": "client secret",
+        "description": "client secret of microsoft azure",
         "airbyte_secret": true
       },
       "tenant_id": {
         "type": "string",
-        "title": "tenant_id of microsoft azure"
+        "title": "tenantID",
+        "description": "tenantID of microsoft azure"
       },
       "auth_version": {
         "type": "string",
         "title": "auth version",
+        "description": "auth version of microsoft azure",
         "default": "v2.0"
       },
       "version": {
         "type": "string",
         "title": "graph version",
+        "description": "graph version of microsoft azure",
         "default": "v1.0"
       }
     }
