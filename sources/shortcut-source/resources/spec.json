@@ -14,7 +14,8 @@
       "base_url": {
         "type": "string",
         "title": "Base API URL",
-        "default":"https://api.app.shortcut.com",
+        "description": "The Base API URL for fetching data from Shortcut",
+        "default": "https://api.app.shortcut.com",
         "examples": [
           "https://api.app.shortcut.com"
         ]
@@ -22,7 +23,8 @@
       "version": {
         "type": "string",
         "title": "API Version",
-        "default":"v3",
+        "description": "API Version of Shortcut",
+        "default": "v3",
         "examples": [
           "v3"
         ]
@@ -33,8 +35,11 @@
         "description": "In order to generate a Workspace specific API token, navigate to Settings > Your Account > API Tokens.",
         "airbyte_secret": true
       },
-      "project_public_id":{
-        "type": ["integer","null"],
+      "project_public_id": {
+        "type": [
+          "integer",
+          "null"
+        ],
         "title": "Project Public ID",
         "description": "Only pull stories from the specified project. If not set, all stories from all projects will be pulled."
       }

@@ -14,6 +14,7 @@
       "server_url": {
         "type": "string",
         "title": "Phabricator Conduit API URL",
+        "description": "The API URL for fetching data from Phabricator",
         "examples": [
           "https://my-phabricator-server.example.com"
         ]
@@ -21,6 +22,7 @@
       "token": {
         "type": "string",
         "title": "Conduit Token",
+        "description": "Conduit Token for Phabricator API authentication",
         "airbyte_secret": true
       },
       "cutoff_days": {

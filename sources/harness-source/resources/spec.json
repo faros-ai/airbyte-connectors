@@ -18,11 +18,13 @@
       },
       "account_id": {
         "type": "string",
-        "title": "Account ID"
+        "title": "Account ID",
+        "description": "Account ID of Harness"
       },
       "api_url": {
         "type": "string",
         "title": "API URL",
+        "description": "The API URL for fetching data from Harness",
         "default": "https://app.harness.io",
         "examples": [
           "https://my-harness-server.example.com"
