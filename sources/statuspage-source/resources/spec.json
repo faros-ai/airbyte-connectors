@@ -13,12 +13,14 @@
     "properties": {
       "page_id": {
         "type": "string",
-        "title": "StatusPage Page ID",
+        "title": "Page ID",
+        "description": "StatusPage Page ID",
         "airbyte_secret": true
       },
       "api_key": {
         "type": "string",
         "title": "StatusPage API key",
+        "description": "API key for StatusPage API authentication",
         "airbyte_secret": true
       },
       "cutoff_days": {
@@ -29,7 +31,8 @@
       },
       "org_id": {
         "type": "string",
-        "title": "StatusPage Organization ID"
+        "title": "Organization ID",
+        "description": "StatusPage Organization ID"
       }
     }
   }

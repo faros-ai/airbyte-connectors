@@ -44,16 +44,19 @@
       "registryBase": {
         "type": "string",
         "title": "Registry base",
+        "description": "DockerHub Registry Base",
         "default": "registry-1.docker.io"
       },
       "pageSize": {
         "type": "integer",
         "title": "Page size",
+        "description": "Page size to use when requesting records from DockerHub API",
         "default": 100
       },
       "maxPages": {
         "type": "integer",
         "title": "Max pages",
+        "description": "Max pages to use when requesting records from DockerHub API",
         "default": 5
       }
     }

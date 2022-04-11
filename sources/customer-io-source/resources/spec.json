@@ -12,7 +12,8 @@
     "properties": {
       "app_api_key": {
         "type": "string",
-        "title": "Customer.io App API Key",
+        "title": "App API Key",
+        "description": "App API Key for Customer.io API authentication",
         "airbyte_secret": true
       },
       "cutoff_days": {
