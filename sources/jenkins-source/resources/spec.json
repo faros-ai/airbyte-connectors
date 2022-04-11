@@ -21,12 +21,12 @@
       },
       "user": {
         "type": "string",
-        "title": "user",
+        "title": "User",
         "description": "Jenkins User"
       },
       "token": {
         "type": "string",
-        "title": "token",
+        "title": "Token",
         "description": "Jenkins Token for Jenkins API authentication",
         "airbyte_secret": true
       },

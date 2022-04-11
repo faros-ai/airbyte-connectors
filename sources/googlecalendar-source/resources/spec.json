@@ -13,7 +13,7 @@
       "client_email": {
         "type": "string",
         "title": "Client Email",
-        "description": "Client Email of Google Calendar API",
+        "description": "Google Calendar API Client Email",
         "examples": [
           "https://my-google-calendar-server.example.com"
         ]
@@ -21,7 +21,7 @@
       "private_key": {
         "type": "string",
         "title": "Private Key",
-        "description": "Private Key of Google Calendar API",
+        "description": "Private Key for accessing Google Calendar API",
         "airbyte_secret": true
       },
       "calendar_id": {

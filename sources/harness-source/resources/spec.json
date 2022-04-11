@@ -19,7 +19,7 @@
       "account_id": {
         "type": "string",
         "title": "Account ID",
-        "description": "Account ID of Harness"
+        "description": "Harness Account ID"
       },
       "api_url": {
         "type": "string",

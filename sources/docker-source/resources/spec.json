@@ -44,7 +44,7 @@
       "registryBase": {
         "type": "string",
         "title": "Registry base",
-        "description": "Registry base of DockerHub",
+        "description": "DockerHub Registry Base",
         "default": "registry-1.docker.io"
       },
       "pageSize": {

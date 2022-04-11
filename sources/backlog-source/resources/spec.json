@@ -14,7 +14,7 @@
       "space": {
         "type": "string",
         "title": "SpaceID",
-        "description": "SpaceID of Backlog",
+        "description": "Backlog SpaceID",
         "examples": [
           "devcube"
         ]
@@ -22,7 +22,7 @@
       "apiKey": {
         "type": "string",
         "title": "API Key",
-        "description": "API Key of Backlog",
+        "description": "Backlog API Key",
         "airbyte_secret": true
       },
       "cutoff_days": {

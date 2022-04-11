@@ -31,7 +31,7 @@
       "version": {
         "type": "string",
         "title": "API Version",
-        "description": "API Version of Firehydrant API",
+        "description": "Firehydrant API Version",
         "default": "v1",
         "examples": [
           "v1"

@@ -26,8 +26,8 @@
       },
       "version": {
         "type": "string",
-        "title": "version",
-        "description": "version of okta api",
+        "title": "API Version",
+        "description": "Okta API Version",
         "default": "v1"
       }
     }

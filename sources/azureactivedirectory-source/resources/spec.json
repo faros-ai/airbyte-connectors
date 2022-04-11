@@ -14,30 +14,30 @@
       "client_id": {
         "type": "string",
         "title": "clientID",
-        "description": "client id of microsoft azure",
+        "description": "Azure Active Directory Client ID",
         "airbyte_secret": true
       },
       "client_secret": {
         "type": "string",
         "title": "client secret",
-        "description": "client secret of microsoft azure",
+        "description": "Azure Active Directory Client Secret",
         "airbyte_secret": true
       },
       "tenant_id": {
         "type": "string",
         "title": "tenantID",
-        "description": "tenantID of microsoft azure"
+        "description": "Azure Active Directory TenantID"
       },
       "auth_version": {
         "type": "string",
         "title": "auth version",
-        "description": "auth version of microsoft azure",
+        "description": "Azure Active Directory Auth Version",
         "default": "v2.0"
       },
       "version": {
         "type": "string",
         "title": "graph version",
-        "description": "graph version of microsoft azure",
+        "description": "Azure Active Directory Graph Version",
         "default": "v1.0"
       }
     }
