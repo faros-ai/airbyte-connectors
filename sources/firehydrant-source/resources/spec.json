@@ -23,7 +23,7 @@
         "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
-        "type": "number",
+        "type": "integer",
         "title": "Page size",
         "default": 10
       },
