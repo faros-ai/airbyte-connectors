@@ -47,6 +47,7 @@ describe('index', () => {
         access_token: '',
         organization: 'organization',
         project: 'project',
+        cutoff_days: 365,
       } as any)
     ).resolves.toStrictEqual([
       false,

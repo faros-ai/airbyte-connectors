@@ -24,7 +24,7 @@ export interface AzurePipelineConfig {
   readonly access_token: string;
   readonly organization: string;
   readonly project: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly api_version?: string;
 }
 
@@ -51,12 +51,12 @@ export class AzurePipeline {
     if (!config.project) {
       throw new VError('project must be a not empty string');
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
-    if (!REG_EXP_ISO_8601_FULL.test(config.start_date)) {
-      throw new VError('start_date is invalid: %s', config.start_date);
-    }
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
@@ -84,7 +84,7 @@ export class AzurePipeline {
     AzurePipeline.azurePipeline = new AzurePipeline(
       httpClient,
       httpVSRMClient,
-      new Date(config.start_date)
+      startDate
     );
     return AzurePipeline.azurePipeline;
   }
