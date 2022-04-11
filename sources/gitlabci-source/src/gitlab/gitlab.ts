@@ -129,16 +129,21 @@ export class Gitlab {
   }
 
   async *getJobs(projectPath: string, pipelineId: number): AsyncGenerator<Job> {
-    try {
-      const jobs = await this.client.Jobs.showPipelineJobs(
-        projectPath,
-        pipelineId
-      );
-      for (const job of jobs) {
-        yield buildJob(job);
+    let page = 1;
+    do {
+      try {
+        const {data: jobs, paginationInfo} =
+          await this.client.Jobs.showPipelineJobs(projectPath, pipelineId, {
+            showExpanded: true,
+            page,
+          });
+        for (const job of jobs || []) {
+          yield buildJob(job);
+        }
+        page = paginationInfo?.next;
+      } catch (error: any) {
+        this.createError(error, 'Error while fetching jobs.');
       }
-    } catch (error: any) {
-      this.createError(error, 'Error while fetching jobs.');
-    }
+    } while (page);
   }
 }
