@@ -104,9 +104,19 @@ export class AzureActiveDirectory {
   }
 
   async *getUsers(): AsyncGenerator<User> {
-    const res = await this.httpClient.get<UserResponse>(
-      'users/?$select=department,postalCode,createdDateTime,identities,streetAddress&$top=999'
-    );
+    const maxResults = 999;
+    const res = await this.httpClient.get<UserResponse>('users', {
+      params: {
+        $select: [
+          'department',
+          'postalCode',
+          'createdDateTime',
+          'identities',
+          'streetAddress',
+        ],
+        $top: maxResults,
+      },
+    });
     for (const item of res.data.value) {
       try {
         const managerItem = await this.httpClient.get<User>(
@@ -123,7 +133,12 @@ export class AzureActiveDirectory {
   }
 
   async *getGroups(): AsyncGenerator<Group> {
-    const res = await this.httpClient.get<GroupResponse>('groups/?$top=999');
+    const maxResults = 999;
+    const res = await this.httpClient.get<GroupResponse>('groups', {
+      params: {
+        $top: maxResults,
+      },
+    });
     for (const item of res.data.value) {
       const memberItems = await this.httpClient.get<UserResponse>(
         `groups/${item.id}/members`
