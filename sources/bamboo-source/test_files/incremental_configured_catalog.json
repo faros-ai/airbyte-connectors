@@ -1,0 +1,46 @@
+{
+    "streams": [
+        {
+            "stream": {
+                "name": "builds",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "source_defined_cursor": true,
+                "source_defined_primary_key": [
+                    [
+                        "id"
+                    ]
+                ],
+                "cursor_field": [
+                    "buildStartedTime"
+                ]
+            },
+            "sync_mode": "incremental",
+            "destination_sync_mode": "append"
+        },
+        {
+            "stream": {
+                "name": "deployments",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "source_defined_cursor": true,
+                "source_defined_primary_key": [
+                    [
+                        "id"
+                    ]
+                ],
+                "cursor_field": [
+                    "startedDate"
+                ]
+            },
+            "sync_mode": "incremental",
+            "destination_sync_mode": "append"
+        }
+    ]
+}

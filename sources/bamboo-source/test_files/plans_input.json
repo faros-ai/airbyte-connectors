@@ -1,0 +1,46 @@
+{
+    "size": 3,
+    "searchResults": [
+        {
+            "id": "DF-PLAN1",
+            "type": "chain",
+            "searchEntity": {
+                "id": "DF-PLAN1",
+                "key": "DF-PLAN1",
+                "projectName": "devcube faros",
+                "planName": "plan 1",
+                "branchName": "Default",
+                "description": "first plan",
+                "type": "chain"
+            }
+        },
+        {
+            "id": "DF-PLAN2",
+            "type": "chain",
+            "searchEntity": {
+                "id": "DF-PLAN2",
+                "key": "DF-PLAN2",
+                "projectName": "devcube faros",
+                "planName": "plan 2",
+                "branchName": "Default",
+                "description": "plan 2 description",
+                "type": "chain"
+            }
+        },
+        {
+            "id": "DF-PLAN3",
+            "type": "chain",
+            "searchEntity": {
+                "id": "DF-PLAN3",
+                "key": "DF-PLAN3",
+                "projectName": "devcube faros",
+                "planName": "plan 3",
+                "branchName": "Default",
+                "description": "plan 3 description",
+                "type": "chain"
+            }
+        }
+    ],
+    "start-index": 0,
+    "max-result": 3
+}
