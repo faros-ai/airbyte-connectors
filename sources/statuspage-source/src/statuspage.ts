@@ -29,6 +29,7 @@ export const BASE_URL = 'https://api.statuspage.io/v1/';
 
 export interface StatuspageConfig {
   readonly api_key: string;
+  readonly cutoff_days: number;
   readonly org_id?: string;
   readonly page_id: string;
 }
@@ -39,6 +40,7 @@ export class Statuspage {
   constructor(
     private readonly clientV2: StatuspageClient,
     private readonly httpClient: AxiosInstance,
+    private readonly startDate: Date,
     private readonly orgId?: string
   ) {}
 
@@ -51,7 +53,9 @@ export class Statuspage {
     if (!config.page_id) {
       throw new VError('page_id must be a not empty string');
     }
-
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
     const clientV2 = new StatuspageClient(config.page_id);
     const httpClient = axios.create({
       baseURL: BASE_URL,
@@ -61,8 +65,14 @@ export class Statuspage {
         Authorization: `OAuth ${config.api_key}`,
       },
     });
-
-    Statuspage.statuspage = new Statuspage(clientV2, httpClient, config.org_id);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    Statuspage.statuspage = new Statuspage(
+      clientV2,
+      httpClient,
+      startDate,
+      config.org_id
+    );
     logger.debug('Created Statuspage instance');
 
     return Statuspage.statuspage;
@@ -92,11 +102,12 @@ export class Statuspage {
   }
 
   async *getIncidentUpdates(cutoff?: Date): AsyncGenerator<IncidentUpdate> {
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     for (const incident of await this.getIncidents(cutoff)) {
       for (const update of incident.incident_updates) {
         const eventTime = new Date(update.created_at);
         const eventUpdateTime = new Date(update.updated_at);
-        if (!cutoff || eventTime > cutoff || eventUpdateTime > cutoff) {
+        if (eventTime > startTime || eventUpdateTime > startTime) {
           yield update;
         }
       }
@@ -105,6 +116,7 @@ export class Statuspage {
 
   @Memoize((cutoff: Date) => cutoff ?? new Date(0))
   async getIncidents(cutoff?: Date): Promise<ReadonlyArray<Incident>> {
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     const results: Incident[] = [];
     const incidents = await this.clientV2.api.incidents.getAll();
     if (!incidents.incidents) {
@@ -113,7 +125,7 @@ export class Statuspage {
     for (const incident of incidents.incidents as Incident[]) {
       const resolvedAt = new Date(incident.resolved_at ?? 0);
       const updatedAt = new Date(incident.updated_at);
-      if (!cutoff || updatedAt > cutoff || resolvedAt > cutoff) {
+      if (updatedAt > startTime || resolvedAt > startTime) {
         results.push(incident);
       }
     }
@@ -121,12 +133,13 @@ export class Statuspage {
   }
 
   async *getUsers(cutoff?: Date): AsyncGenerator<User> {
+    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
     const usersResource = `/organizations/${this.orgId}/users`;
 
     if (this.orgId) {
       const response: AxiosResponse = await this.httpClient.get(usersResource);
       for (const user of response.data) {
-        if (!cutoff || new Date(user.updated_at) > cutoff) {
+        if (new Date(user.updated_at) > startTime) {
           yield user;
         }
       }

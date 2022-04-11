@@ -17,6 +17,7 @@ export interface AgileacceleratorConfig extends AirbyteConfig {
   readonly username: string;
   readonly password: string;
   readonly api_token: string;
+  readonly cutoff_days: number;
   readonly api_version?: string;
   readonly page_size?: number;
 }
@@ -50,7 +51,8 @@ export class Agileaccelerator {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly baseUrl: string,
-    private readonly pageSize: number
+    private readonly pageSize: number,
+    readonly startDate: Date
   ) {}
 
   static async instance(
@@ -78,6 +80,9 @@ export class Agileaccelerator {
     if (!config.api_token) {
       throw new VError('api_token must be a not empty string');
     }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
 
     const authParams = await Agileaccelerator.authorize(config);
     const apiVersion = config.api_version || DEFAULT_API_VERSION;
@@ -91,11 +96,13 @@ export class Agileaccelerator {
       },
     });
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
-
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
     Agileaccelerator.agileaccelerator = new Agileaccelerator(
       httpClient,
       config.server_url,
-      pageSize
+      pageSize,
+      startDate
     );
     logger.debug('Created Agileaccelerator instance');
 
@@ -170,12 +177,8 @@ export class Agileaccelerator {
   private async *paginate<T>(
     func: (date?: Date) => Promise<AxiosResponse<GraphQLRes<T>>>,
     getUpdatedAt: (item: T) => Date,
-    lastModifiedDate?: string
+    modifiedDate: Date
   ): AsyncGenerator<T> {
-    let modifiedDate: Date = lastModifiedDate
-      ? new Date(lastModifiedDate)
-      : undefined;
-
     do {
       const {data} = await this.errorWrapper<AxiosResponse<GraphQLRes<T>>>(() =>
         func(modifiedDate)
@@ -189,13 +192,16 @@ export class Agileaccelerator {
         const newDate = getUpdatedAt(item);
         if (newDate > modifiedDate) {
           modifiedDate = newDate;
-        }
+        } else modifiedDate = undefined;
         yield {...item, baseUrl: this.baseUrl} as T;
       }
     } while (modifiedDate);
   }
 
   getWorks(lastModifiedDate?: string): AsyncGenerator<Work> {
+    const startTime = new Date(lastModifiedDate ?? 0);
+    const lastModifiedDateMax =
+      startTime > this.startDate ? startTime : this.startDate;
     /** To exclude gaps in records pagination will fetch using WHERE clause */
     const offset = 0;
 
@@ -214,6 +220,6 @@ export class Agileaccelerator {
     };
     const getUpdatedAt = (item: Work): Date => new Date(item.LastModifiedDate);
 
-    return this.paginate<Work>(func, getUpdatedAt, lastModifiedDate);
+    return this.paginate<Work>(func, getUpdatedAt, lastModifiedDateMax);
   }
 }

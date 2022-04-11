@@ -4,5 +4,6 @@
   "client_secret": "",
   "username": "",
   "password": "",
-  "api_token": ""
+  "api_token": "",
+  "cutoff_days":90
 }
