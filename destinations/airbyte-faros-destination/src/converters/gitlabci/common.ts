@@ -24,44 +24,6 @@ export class GitlabCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  static tms_ProjectBoard_with_TaskBoard(
-    projectKey: ProjectKey,
-    name: string,
-    description: string | null,
-    createdAt: string | null | undefined,
-    updatedAt: string | null | undefined
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'tms_Project',
-        record: {
-          ...projectKey,
-          name: name,
-          description: description?.substring(
-            0,
-            GitlabCommon.MAX_DESCRIPTION_LENGTH
-          ),
-          createdAt: Utils.toDate(createdAt),
-          updatedAt: Utils.toDate(updatedAt),
-        },
-      },
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          ...projectKey,
-          name,
-        },
-      },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: projectKey,
-          project: projectKey,
-        },
-      },
-    ];
-  }
-
   static parseRepositoryKey(
     webUrl: string | undefined,
     source: string,
