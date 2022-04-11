@@ -23,13 +23,15 @@
         "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
-        "type": "number",
+        "type": "integer",
         "title": "Page size",
+        "description": "Page size to use when requesting records from Firehydrant API",
         "default": 10
       },
       "version": {
         "type": "string",
         "title": "API Version",
+        "description": "Firehydrant API Version",
         "default": "v1",
         "examples": [
           "v1"
