@@ -105,7 +105,7 @@ export class AzureActiveDirectory {
 
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.httpClient.get<UserResponse>(
-      'users/?$select=Department,postalCode,createdDateTime,identities,streetAddress&$top=999'
+      'users/?$select=department,postalCode,createdDateTime,identities,streetAddress&$top=999'
     );
     for (const item of res.data.value) {
       try {
