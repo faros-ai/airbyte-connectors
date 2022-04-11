@@ -45,7 +45,8 @@ describe('index', () => {
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
 
@@ -55,6 +56,7 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         workspace: 'workspace',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -69,7 +71,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -107,7 +110,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -155,7 +159,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -193,7 +198,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -230,7 +236,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -267,7 +274,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -304,7 +312,8 @@ describe('index', () => {
         } as any,
         'workspace',
         100,
-        logger
+        logger,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);

@@ -6,19 +6,28 @@
     "type": "object",
     "required": [
       "apiId",
-      "apiKey"
+      "apiKey",
+      "cutoff_days"
     ],
     "additionalProperties": true,
     "properties": {
       "apiId": {
         "type": "string",
-        "title": "VictorOps API ID",
+        "title": "API ID",
+        "description": "VictorOps API ID",
         "airbyte_secret": true
       },
       "apiKey": {
         "type": "string",
         "title": "VictorOps API key",
+        "description": "API key for VictorOps API authentication",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "maxContentLength": {
         "type": "integer",
@@ -28,12 +37,14 @@
       },
       "pageLimit": {
         "type": "integer",
-        "title": "VictorOps Page Limit",
+        "title": "Page Limit",
+        "description": "VictorOps Page Limit",
         "default": 100
       },
       "currentPhase": {
         "type": "string",
-        "title": "VictorOps Current Phase",
+        "title": "Current Phase",
+        "description": "VictorOps Current Phase",
         "default": "triggered,acknowledged,resolved"
       }
     }

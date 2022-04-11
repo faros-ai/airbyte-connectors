@@ -5,7 +5,8 @@
     "title": "SquadCast Spec",
     "type": "object",
     "required": [
-      "token"
+      "token",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -14,6 +15,12 @@
         "title": "Token",
         "description": "Get API Refresh Token on https://app.squadcast.com/user/USER_ID where USER_ID is user's ID",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "incident_owner_id": {
         "type": "string",
@@ -34,6 +41,12 @@
         "type": "string",
         "title": "Events Incident ID",
         "description": "If set it will pull all events from only this Incident. If no it pull all events from all incidents"
+      },
+      "max_content_length": {
+        "type": "integer",
+        "title": "Max Content Length",
+        "description": "Max size of Squadcast API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error",
+        "default": 20000
       }
     }
   }
