@@ -29,7 +29,7 @@ export class Teams extends AirbyteStreamBase {
         streamSlice?: Dictionary<any>,
         streamState?: Dictionary<any>
     ): AsyncGenerator<Team> {
-        const buildkite = OpsGenie.instance(this.config, this.logger);
-        yield* buildkite.getTeams();
+        const opsGenie = OpsGenie.instance(this.config, this.logger);
+        yield* opsGenie.getTeams();
     }
 }

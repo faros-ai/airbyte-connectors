@@ -38,8 +38,8 @@ export class Incidents extends AirbyteStreamBase {
             syncMode === SyncMode.INCREMENTAL
                 ? new Date(streamState?.lastCreatedAt ?? 0)
                 : undefined;
-        const buildkite = OpsGenie.instance(this.config, this.logger);
-        yield* buildkite.getIncidents(lastCreatedAt);
+        const opsGenie = OpsGenie.instance(this.config, this.logger);
+        yield* opsGenie.getIncidents(lastCreatedAt);
     }
 
     getUpdatedState(

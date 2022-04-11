@@ -28,7 +28,7 @@ export class Users extends AirbyteStreamBase {
         streamSlice?: Dictionary<any>,
         streamState?: Dictionary<any>
     ): AsyncGenerator<User> {
-        const buildkite = OpsGenie.instance(this.config, this.logger);
-        yield* buildkite.getUsers();
+        const opsGenie = OpsGenie.instance(this.config, this.logger);
+        yield* opsGenie.getUsers();
     }
 }
