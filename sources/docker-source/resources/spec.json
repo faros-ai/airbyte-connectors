@@ -47,12 +47,12 @@
         "default": "registry-1.docker.io"
       },
       "pageSize": {
-        "type": "number",
+        "type": "integer",
         "title": "Page size",
         "default": 100
       },
       "maxPages": {
-        "type": "number",
+        "type": "integer",
         "title": "Max pages",
         "default": 5
       }
