@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3.0.0
 
       - name: Cache Node modules
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3.0.2
         env:
           cache-name: cache-node-modules
         with:
