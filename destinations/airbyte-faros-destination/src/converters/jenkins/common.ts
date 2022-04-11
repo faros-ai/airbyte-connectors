@@ -18,6 +18,12 @@ interface OrganizationKey {
   uid: string;
   source: string;
 }
+export enum RepoSource {
+  BITBUCKET = 'Bitbucket',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  VCS = 'VCS',
+}
 
 /** Common functions shares across Jenkins converters */
 export class JenkinsCommon {
