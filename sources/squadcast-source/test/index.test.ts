@@ -71,7 +71,7 @@ describe('index', () => {
     const source = new sut.SquadcastSource(logger);
     await expect(source.checkConnection({})).resolves.toStrictEqual([
       false,
-      new VError('Please verify your token are correct. Error: some error'),
+      new VError('Please verify your token is correct. Error: some error'),
     ]);
   });
 

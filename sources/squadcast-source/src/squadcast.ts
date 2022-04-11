@@ -29,6 +29,7 @@ export interface SquadcastConfig {
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
   readonly cutoff_days: number;
+  readonly max_content_length?: number;
 }
 
 interface PaginateResponse<T> {
@@ -57,12 +58,15 @@ export class Squadcast {
     if (!config.token) {
       throw new VError('token must be a not empty string');
     }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
 
     const accessToken = await this.getAccessToken(config.token);
     const httpClient = axios.create({
       baseURL: API_URL,
       timeout: 5000, // default is `0` (no timeout)
-      maxContentLength: 20000, //default is 2000 bytes
+      maxContentLength: config.max_content_length ?? 20000, //default is 2000 bytes
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -88,7 +92,7 @@ export class Squadcast {
       const tenSecondsAgo = new Date(new Date().getTime() - 20000);
       await this.getIncidents(tenSecondsAgo.toISOString());
     } catch (err: any) {
-      let errorMessage = 'Please verify your token are correct. Error: ';
+      let errorMessage = 'Please verify your token is correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);
