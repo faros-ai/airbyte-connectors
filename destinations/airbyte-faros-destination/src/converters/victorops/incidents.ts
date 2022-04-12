@@ -164,7 +164,6 @@ export class Incidents extends VictorOpsConverter {
         : incident.service;
     let application = {name: service, platform: ''};
 
-    // if we have an app mapping specified, only then write the application and impact records
     if (service && service in appMapping && appMapping[service].name) {
       this.logger.info(
         `Incident ${incident.incidentNumber} impacted service: ${service}`
