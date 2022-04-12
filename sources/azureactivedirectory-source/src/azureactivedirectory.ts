@@ -131,8 +131,7 @@ export class AzureActiveDirectory {
     } while (after);
   }
 
-  async *getUsers(): AsyncGenerator<User> {
-    const maxResults = 999;
+  async *getUsers(maxResults = 999): AsyncGenerator<User> {
     for await (const user of this.paginate<User>('users', {
       params: {
         $select: [
@@ -159,8 +158,7 @@ export class AzureActiveDirectory {
     }
   }
 
-  async *getGroups(): AsyncGenerator<Group> {
-    const maxResults = 999;
+  async *getGroups(maxResults = 999): AsyncGenerator<Group> {
     for await (const group of this.paginate<Group>('groups', {
       params: {
         $top: maxResults,
