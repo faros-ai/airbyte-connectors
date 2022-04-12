@@ -126,6 +126,7 @@ export interface Provider {
 
 export interface BuildkiteConfig {
   readonly token: string;
+  readonly cutoff_days: number;
   readonly page_size?: number;
   readonly organization?: string;
   readonly rest_api_version?: string;
@@ -148,6 +149,7 @@ export class Buildkite {
   constructor(
     private readonly graphClient: GraphQLClient,
     private readonly restClient: AxiosInstance,
+    readonly startDate: Date,
     private readonly pageSize?: number,
     private readonly organization?: string
   ) {}
@@ -157,6 +159,9 @@ export class Buildkite {
 
     if (!config.token) {
       throw new VError('API Access token has to be provided');
+    }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
     const auth = `Bearer ${config.token}`;
 
@@ -176,10 +181,13 @@ export class Buildkite {
     });
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     Buildkite.buildkite = new Buildkite(
       graphClient,
       httpClient,
+      startDate,
       pageSize,
       config.organization
     );
@@ -352,11 +360,15 @@ export class Buildkite {
     cursor?: string,
     createdAtFrom?: Date
   ): AsyncGenerator<Build> {
+    const startTime = new Date(createdAtFrom ?? 0);
+    const createdAtFromMax =
+      startTime > this.startDate ? startTime : this.startDate;
+
     if (this.organization) {
       yield* this.fetchOrganizationBuilds(
         this.organization,
         cursor,
-        createdAtFrom
+        createdAtFromMax
       );
     } else {
       const iterOrganizationItems = this.getOrganizations();
@@ -364,7 +376,7 @@ export class Buildkite {
         yield* this.fetchOrganizationBuilds(
           organizationItem.slug,
           cursor,
-          createdAtFrom
+          createdAtFromMax
         );
       }
     }

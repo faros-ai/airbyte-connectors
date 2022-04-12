@@ -43,27 +43,33 @@ describe('index', () => {
   });
   test('check connection', async () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {
-      return new Buildkite(null, {
-        get: jest.fn().mockResolvedValue({}),
-      } as unknown as AxiosInstance);
+      return new Buildkite(
+        null,
+        {
+          get: jest.fn().mockResolvedValue({}),
+        } as unknown as AxiosInstance,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
 
     const source = new sut.BuildkiteSource(logger);
     await expect(
       source.checkConnection({
         token: '',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
 
   test('check connection - incorrect config', async () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {
-      return new Buildkite(null, null);
+      return new Buildkite(null, null, new Date('2010-03-27T14:03:51-0800'));
     });
     const source = new sut.BuildkiteSource(logger);
     await expect(
       source.checkConnection({
         token: '',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,
@@ -76,11 +82,15 @@ describe('index', () => {
   test('streams - organizations, use full_refresh sync mode', async () => {
     const fnOrganizationsList = jest.fn();
     Buildkite.instance = jest.fn().mockImplementation(() => {
-      return new Buildkite(null, {
-        get: fnOrganizationsList.mockResolvedValue({
-          data: readTestResourceFile('organizations.json'),
-        }),
-      } as any);
+      return new Buildkite(
+        null,
+        {
+          get: fnOrganizationsList.mockResolvedValue({
+            data: readTestResourceFile('organizations.json'),
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.BuildkiteSource(logger);
     const streams = source.streams({});
@@ -115,6 +125,7 @@ describe('index', () => {
           }),
         } as any,
         null,
+        new Date('2010-03-27T14:03:51-0800'),
         1000,
         'devcube'
       );
@@ -152,6 +163,7 @@ describe('index', () => {
             data: readTestResourceFile('pipelines_all.json'),
           }),
         } as any,
+        new Date('2010-03-27T14:03:51-0800'),
         1000,
         'devcube'
       );

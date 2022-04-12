@@ -5,7 +5,8 @@
     "title": "BuildKite Spec",
     "type": "object",
     "required": [
-      "token"
+      "token",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -14,6 +15,12 @@
         "title": "Token",
         "description": "To create token go to https://buildkite.com/user/api-access-tokens",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
         "type": "number",
