@@ -103,9 +103,37 @@ export class AzureActiveDirectory {
     }
   }
 
+  private async *paginate<T>(path: string, param = {}): AsyncGenerator<T> {
+    let after = null;
+    do {
+      try {
+        const res = await this.httpClient.get<T[]>(path, param);
+        const linkHeader = res.data['@odata.nextLink'];
+        if (linkHeader) {
+          after = linkHeader.split('$skiptoken=').pop();
+          param['params']['$skiptoken'] = after;
+        } else {
+          after = null;
+        }
+        const result = res.data['value'];
+        for (const item of result) {
+          yield item;
+        }
+      } catch (err: any) {
+        const errorMessage = wrapApiError(err).message;
+        this.logger.error(
+          `Failed requesting '${path}' with params ${JSON.stringify(
+            param
+          )}. Error: ${errorMessage}`
+        );
+        throw new VError(errorMessage);
+      }
+    } while (after);
+  }
+
   async *getUsers(): AsyncGenerator<User> {
     const maxResults = 999;
-    const res = await this.httpClient.get<UserResponse>('users', {
+    for await (const user of this.paginate<User>('users', {
       params: {
         $select: [
           'department',
@@ -116,51 +144,49 @@ export class AzureActiveDirectory {
         ],
         $top: maxResults,
       },
-    });
-    for (const item of res.data.value) {
+    })) {
       try {
         const managerItem = await this.httpClient.get<User>(
-          `users/${item.id}/manager`
+          `users/${user.id}/manager`
         );
         if (managerItem.status === 200) {
-          item.manager = managerItem.data.id;
+          user.manager = managerItem.data.id;
         }
       } catch (error) {
         this.logger.error(error.toString());
       }
-      yield item;
+      yield user;
     }
   }
 
   async *getGroups(): AsyncGenerator<Group> {
     const maxResults = 999;
-    const res = await this.httpClient.get<GroupResponse>('groups', {
+    for await (const group of this.paginate<Group>('groups', {
       params: {
         $top: maxResults,
       },
-    });
-    for (const item of res.data.value) {
+    })) {
       const memberItems = await this.httpClient.get<UserResponse>(
-        `groups/${item.id}/members`
+        `groups/${group.id}/members`
       );
       if (memberItems.status === 200) {
         const members: string[] = [];
         for (const memberItem of memberItems.data.value) {
           members.push(memberItem.id);
         }
-        item.members = members;
+        group.members = members;
       }
       const ownerItems = await this.httpClient.get<UserResponse>(
-        `groups/${item.id}/owners`
+        `groups/${group.id}/owners`
       );
       if (ownerItems.status === 200) {
         const owners: string[] = [];
         for (const ownerItem of ownerItems.data.value) {
           owners.push(ownerItem.id);
         }
-        item.owners = owners;
+        group.owners = owners;
       }
-      yield item;
+      yield group;
     }
   }
 }
