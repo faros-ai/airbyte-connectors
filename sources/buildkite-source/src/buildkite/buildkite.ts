@@ -369,23 +369,4 @@ export class Buildkite {
       }
     }
   }
-  async *getJobs(cursor?: string): AsyncGenerator<Job> {
-    const func = async (
-      pageInfo?: PageInfo
-    ): Promise<PaginateResponse<Job>> => {
-      const variables = {
-        pageSize: this.pageSize,
-        after: pageInfo ? pageInfo.endCursor : cursor,
-      };
-      const data = await this.graphClient.request(JOBS_QUERY, variables);
-
-      return {
-        data: data.viewer.jobs.edges.map((e) => {
-          return this.setCursor(e);
-        }),
-        pageInfo: data.viewer.jobs?.pageInfo,
-      };
-    };
-    yield* this.paginate(func);
-  }
 }
