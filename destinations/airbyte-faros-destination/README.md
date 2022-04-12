@@ -6,6 +6,8 @@ Each source stream is handled by an appropriate [Converter](https://github.com/f
 
 Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/airbyte-faros-destination/src/converters/jsonata.ts) or by implementing converters for the streams ([read more below](#adding-support-for-additional-sources)).
 
+![](img/source_destination.png)
+
 ## Usage
 
 ### Run from Airbyte

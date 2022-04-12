@@ -1,8 +1,4 @@
-import fs from 'fs-extra';
-
-export function readTestResourceFile(fileName: string): string {
-  return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
-}
+import {readTestResourceFile} from '../testing-tools';
 
 export const githubLog = readTestResourceFile('github/streams.log');
 export const githubPGRawLog = readTestResourceFile('github/pg-raw.log');
@@ -85,4 +81,10 @@ export const datadogAllStreamsLog = readTestResourceFile(
 
 export const firehydrantAllStreamsLog = readTestResourceFile(
   'firehydrant/all-streams.log'
+);
+export const azureactivedirectoryAllStreamsLog = readTestResourceFile(
+  'azureactivedirectory/all-streams.log'
+);
+export const azurepipelineAllStreamsLog = readTestResourceFile(
+  'azurepipeline/all-streams.log'
 );

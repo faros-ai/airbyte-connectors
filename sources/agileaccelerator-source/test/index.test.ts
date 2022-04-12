@@ -52,7 +52,8 @@ describe('index', () => {
       return new Agileaccelerator(
         {get: jest.fn().mockResolvedValue({})} as any,
         'baseUrl',
-        100
+        100,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
 
@@ -65,6 +66,7 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         api_token: 'api_token',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -72,7 +74,12 @@ describe('index', () => {
   test('check connection - incorrect credentials', async () => {
     mockedAxios.post.mockRejectedValue(new Error('some error'));
     Agileaccelerator.instance = jest.fn().mockImplementation(() => {
-      return new Agileaccelerator({} as any, 'baseUrl', 100);
+      return new Agileaccelerator(
+        {} as any,
+        'baseUrl',
+        100,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.AgileacceleratorSource(logger);
     await expect(
@@ -117,7 +124,8 @@ describe('index', () => {
           }),
         } as any,
         'baseUrl',
-        100
+        100,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.AgileacceleratorSource(logger);

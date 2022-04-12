@@ -1,0 +1,58 @@
+[
+    {
+        "businessPhones": [],
+        "displayName": "huong tester",
+        "givenName": "huong",
+        "jobTitle": null,
+        "mail": null,
+        "mobilePhone": null,
+        "officeLocation": null,
+        "preferredLanguage": null,
+        "surname": "tester",
+        "userPrincipalName": "huongkstn_gmail.com#EXT#@huongkstngmail.onmicrosoft.com",
+        "id": "441362ab-404d-437e-ad65-619df92a5515",
+        "department": null,
+        "postalCode": null,
+        "createdDateTime": "2019-03-12T02:15:42Z",
+        "streetAddress": null,
+        "identities": [
+            {
+                "signInType": "federated",
+                "issuer": "MicrosoftAccount",
+                "issuerAssignedId": null
+            },
+            {
+                "signInType": "userPrincipalName",
+                "issuer": "huongkstngmail.onmicrosoft.com",
+                "issuerAssignedId": "huongkstn_gmail.com#EXT#@huongkstngmail.onmicrosoft.com"
+            }
+        ]
+    },
+    {
+        "businessPhones": [
+            "0445180126"
+        ],
+        "displayName": "yen",
+        "givenName": "hoang",
+        "jobTitle": "Tester",
+        "mail": "yenhh8@gmail.com",
+        "mobilePhone": "0945180126",
+        "officeLocation": "32 dai tu, ha noi",
+        "preferredLanguage": null,
+        "surname": "hai",
+        "userPrincipalName": "yen@huongkstngmail.onmicrosoft.com",
+        "id": "192f576b-6f3c-4229-bc9b-98efdbff7504",
+        "department": "Software Department",
+        "postalCode": "10000",
+        "createdDateTime": "2022-01-29T22:31:03Z",
+        "streetAddress": "32 dai tu",
+        "identities": [
+            {
+                "signInType": "userPrincipalName",
+                "issuer": "huongkstngmail.onmicrosoft.com",
+                "issuerAssignedId": "yen@huongkstngmail.onmicrosoft.com"
+            }
+        ],
+        "manager": "441362ab-404d-437e-ad65-619df92a5515"
+    }
+]

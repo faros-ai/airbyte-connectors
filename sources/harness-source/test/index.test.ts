@@ -66,6 +66,7 @@ describe('index', () => {
           request: jest.fn().mockResolvedValue({}),
         } as any,
         100,
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -74,6 +75,7 @@ describe('index', () => {
       source.checkConnection({
         account_id: 'account_id',
         api_key: 'api_key',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -85,6 +87,7 @@ describe('index', () => {
           request: jest.fn().mockRejectedValue({}),
         } as any,
         100,
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -93,6 +96,7 @@ describe('index', () => {
       source.checkConnection({
         account_id: 'account_id',
         api_key: 'api_key',
+        cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
       false,
@@ -117,6 +121,7 @@ describe('index', () => {
           }),
         } as any,
         100,
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -125,6 +130,7 @@ describe('index', () => {
     const [executionsStream] = source.streams({
       account_id: 'account_id',
       api_key: 'api_key',
+      start_date: '2010-03-27T14:03:51-0800',
     });
     const executionsIter = executionsStream.readRecords(SyncMode.FULL_REFRESH);
     const executions = [];
@@ -152,6 +158,7 @@ describe('index', () => {
           }),
         } as any,
         100,
+        new Date('2010-03-27T14:03:51-0800'),
         logger
       );
     });
@@ -160,6 +167,7 @@ describe('index', () => {
     const [executionsStream] = source.streams({
       account_id: 'account_id',
       api_key: 'api_key',
+      start_date: '2010-03-27T14:03:51-0800',
     });
     const executionsIter = executionsStream.readRecords(
       SyncMode.INCREMENTAL,

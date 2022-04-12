@@ -14,8 +14,8 @@ const DEFAULT_CURRENT_PHASE = 'triggered,acknowledged,resolved';
 export interface VictoropsConfig {
   readonly apiId: string;
   readonly apiKey: string;
+  readonly cutoff_days: number;
   readonly maxContentLength?: number;
-  readonly cutoffDays?: number;
 }
 
 export interface VictoropsState {
@@ -100,7 +100,10 @@ interface IncidentReportingResult {
 export class Victorops {
   private static victorops: Victorops;
 
-  constructor(private readonly client: VictorOpsApiClient) {}
+  constructor(
+    private readonly client: VictorOpsApiClient,
+    readonly startDate: Date
+  ) {}
 
   static instance(config: VictoropsConfig, logger: AirbyteLogger): Victorops {
     if (Victorops.victorops) return Victorops.victorops;
@@ -110,6 +113,9 @@ export class Victorops {
     }
     if (!config.apiKey) {
       throw new VError('API key must be not an empty string');
+    }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
 
     const client = new VictorOpsApiClient({
@@ -136,8 +142,10 @@ export class Victorops {
     };
 
     axiosRetry(client._axiosInstance, retryConfig);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
 
-    Victorops.victorops = new Victorops(client);
+    Victorops.victorops = new Victorops(client, startDate);
     logger.debug('Created VictorOps instance');
 
     return Victorops.victorops;
@@ -174,6 +182,8 @@ export class Victorops {
     limit = DEFAULT_PAGE_LIMIT,
     currentPhase = DEFAULT_CURRENT_PHASE
   ): AsyncGenerator<Incident> {
+    const startedAfterMax =
+      startedAfter > this.startDate ? startedAfter : this.startDate;
     let offset = 0;
     let incidentCount = 0;
     let incidentTotal = 0;
@@ -182,7 +192,7 @@ export class Victorops {
         offset,
         limit,
         currentPhase,
-        startedAfter,
+        startedAfterMax,
       };
       const res = (await this.client.reporting.getIncidentHistory(
         query

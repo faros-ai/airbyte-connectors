@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -14,8 +13,6 @@ import * as sut from '../src/index';
 const backlogInstance = Backlog.instance;
 
 jest.mock('axios');
-
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('index', () => {
   test('ok?', async () => {
@@ -57,6 +54,7 @@ describe('index', () => {
         apiKey: '',
         space: 'space',
         project_id: null,
+        cutoff_days: 90,
       } as any)
     ).resolves.toStrictEqual([false, new VError('No API key provided')]);
   });
@@ -72,7 +70,8 @@ describe('index', () => {
             data: issuesResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -100,7 +99,8 @@ describe('index', () => {
             data: projecjtsResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);
@@ -128,7 +128,8 @@ describe('index', () => {
             data: usersResource,
           }),
         } as any,
-        {} as BacklogConfig
+        {} as BacklogConfig,
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BacklogSource(logger);
