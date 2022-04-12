@@ -216,9 +216,9 @@ describe('index', () => {
       return new Gitlab(
         {
           Jobs: {
-            showPipelineJobs: fnJobsFunc.mockResolvedValue(
-              readTestResourceFile('jobs.json')
-            ),
+            showPipelineJobs: fnJobsFunc.mockResolvedValue({
+              data: readTestResourceFile('jobs.json'),
+            }),
           },
         },
         logger
