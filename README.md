@@ -48,7 +48,7 @@ VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docke
 1. Audit fix `npm audit fix`
 2. Clean your project `lerna run clean` (sometimes you also wanna `rm -rf ./node_modules`)
 
-Read more about `lerna` here - https://github.com/lerna/lerna
+Read more about `lerna` [here](https://github.com/lerna/lerna).
 
 # Build Docker Images
 
