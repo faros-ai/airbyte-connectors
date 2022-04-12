@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Gitlab, GitlabConfig} from './gitlab';
-import {Group, Jobs, Pipelines, Projects} from './streams';
+import {Groups, Jobs, Pipelines, Projects} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,10 +33,10 @@ export class GitlabCiSource extends AirbyteSourceBase {
     return [true, undefined];
   }
   streams(config: GitlabConfig): AirbyteStreamBase[] {
-    const group = new Group(config, this.logger);
-    const projects = new Projects(config, group, this.logger);
+    const groups = new Groups(config, this.logger);
+    const projects = new Projects(config, groups, this.logger);
     const pipelines = new Pipelines(config, projects, this.logger);
     const jobs = new Jobs(config, projects, pipelines, this.logger);
-    return [group, projects, pipelines, jobs];
+    return [groups, projects, pipelines, jobs];
   }
 }

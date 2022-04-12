@@ -2,15 +2,15 @@ import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {Dictionary} from 'ts-essentials';
 
-import {Gitlab, GitlabConfig, Group as GroupType} from '../gitlab';
+import {Gitlab, GitlabConfig, Group} from '../gitlab';
 
-export class Group extends AirbyteStreamBase {
+export class Groups extends AirbyteStreamBase {
   constructor(readonly config: GitlabConfig, readonly logger: AirbyteLogger) {
     super(logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/group.json');
+    return require('../../resources/schemas/groups.json');
   }
 
   get primaryKey(): StreamKey {
@@ -22,9 +22,9 @@ export class Group extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
-  ): AsyncGenerator<GroupType> {
+  ): AsyncGenerator<Group> {
     const gitlab = Gitlab.instance(this.config, this.logger);
 
-    yield* gitlab.getGroup(this.config.groupName);
+    yield* gitlab.getGroups(this.config.groupName, this.config.projects);
   }
 }

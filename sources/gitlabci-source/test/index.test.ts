@@ -69,7 +69,7 @@ describe('index', () => {
       ),
     ]);
   });
-  test('streams - group, use full_refresh sync mode', async () => {
+  test('streams - groups, use full_refresh sync mode', async () => {
     const fnGroupFunc = jest.fn();
 
     Gitlab.instance = jest.fn().mockImplementation(() => {
@@ -77,7 +77,7 @@ describe('index', () => {
         {
           Groups: {
             show: fnGroupFunc.mockResolvedValue(
-              readTestResourceFile('group.json')
+              readTestResourceFile('groups.json')
             ),
           },
         },
@@ -89,12 +89,14 @@ describe('index', () => {
 
     const groupStream = streams[0];
     const groupIter = groupStream.readRecords(SyncMode.FULL_REFRESH);
-    const groupResult = await groupIter.next();
-    const group = groupResult.value;
+    const groups = [];
+    for await (const group of groupIter) {
+      groups.push(group);
+    }
 
     expect(fnGroupFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(group))).toStrictEqual(
-      readTestResourceFile('group-response.json')
+    expect(JSON.parse(JSON.stringify(groups))).toStrictEqual(
+      readTestResourceFile('groups-response.json')
     );
   });
   test('streams - projects, use full_refresh sync mode', async () => {
@@ -111,7 +113,7 @@ describe('index', () => {
           Groups: {
             show: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('group.json')),
+              .mockResolvedValue(readTestResourceFile('groups.json')),
           },
         },
         logger

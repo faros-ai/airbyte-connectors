@@ -62,19 +62,36 @@ export class Gitlab {
     }
   }
 
-  async *getGroup(groupNameOrId: string | number): AsyncGenerator<Group> {
+  async *getGroups(
+    groupName: string,
+    projects: string[]
+  ): AsyncGenerator<Group> {
     const options = {withProjects: false};
+    const subGroupPaths: string[] = [groupName];
     try {
-      let group = await this.client.Groups.show(groupNameOrId, options);
-      // Handle sub-groups in project path Ex: group/subGroup/project
-      // https://github.com/faros-ai/feeds/blob/2f7e2745981596b284b54e4d12d99dadba6c06ab/feeds/cicd/gitlabci-feed/src/index.ts#L200
-      const groupPathArray = group.full_path.split('/');
-      if (groupPathArray.length > 1) {
-        group = await this.client.Groups.show(group.full_path, options);
+      const group = await this.client.Groups.show(groupName, options);
+      const builtGroup = buildGroup(group);
+      yield builtGroup;
+      // Retrieve sub-groups
+      for (const projectName of projects) {
+        const projectPathWithNamespace = `${builtGroup.fullPath}/${projectName}`;
+        // Handle sub-groups in project path Ex: group/subGroup/project
+        // https://github.com/faros-ai/feeds/blob/2f7e2745981596b284b54e4d12d99dadba6c06ab/feeds/cicd/gitlabci-feed/src/index.ts#L200
+        const projectPathArray = projectPathWithNamespace.split('/');
+        if (projectPathArray.length > 2) {
+          const subGroupPath = projectPathArray.slice(0, -1).join('/');
+          if (!subGroupPaths.includes(subGroupPath)) {
+            subGroupPaths.push(subGroupPath);
+            const subGroup = await this.client.Groups.show(
+              subGroupPath,
+              options
+            );
+            yield buildGroup(subGroup);
+          }
+        }
       }
-      yield buildGroup(group);
     } catch (error: any) {
-      this.createError(error, `Error while fetching group ${groupNameOrId}.`);
+      this.createError(error, `Error while fetching groups.`);
     }
   }
 

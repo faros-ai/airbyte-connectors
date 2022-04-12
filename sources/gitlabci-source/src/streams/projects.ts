@@ -3,12 +3,12 @@ import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
 import {Dictionary} from 'ts-essentials';
 
 import {Gitlab, GitlabConfig, Project} from '../gitlab';
-import {Group} from './group';
+import {Groups} from './groups';
 
 export class Projects extends AirbyteStreamBase {
   constructor(
     readonly config: GitlabConfig,
-    readonly group: Group,
+    readonly groups: Groups,
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -29,9 +29,9 @@ export class Projects extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Project> {
     const gitlab = Gitlab.instance(this.config, this.logger);
-    const group = this.group.readRecords(SyncMode.FULL_REFRESH);
-    const groupResult = await group.next();
-    const groupPath = groupResult.value.fullPath;
+    const groups = this.groups.readRecords(SyncMode.FULL_REFRESH);
+    const mainGroupResult = await groups.next();
+    const groupPath = mainGroupResult.value.fullPath;
 
     yield* gitlab.getProjects(groupPath, this.config.projects);
   }

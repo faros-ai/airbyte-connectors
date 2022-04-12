@@ -1,6 +1,6 @@
-import {Group} from './group';
+import {Groups} from './groups';
 import {Jobs} from './jobs';
 import {Pipelines} from './pipelines';
 import {Projects} from './projects';
 
-export {Group, Projects, Pipelines, Jobs};
+export {Groups, Projects, Pipelines, Jobs};
