@@ -56,7 +56,9 @@ describe('victorops', () => {
       .value();
 
     const writtenByModel = {
+      compute_Application: 2,
       ims_Incident: 2,
+      ims_IncidentApplicationImpact: 2,
       ims_IncidentAssignment: 2,
       ims_IncidentEvent: 4,
       ims_Team: 2,
