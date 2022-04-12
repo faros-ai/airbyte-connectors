@@ -162,6 +162,7 @@ export class Incidents extends VictorOpsConverter {
       appField in incident && typeof incident[appField] === 'string'
         ? incident[appField]
         : incident.service;
+    let application = {name: service, platform: ''};
 
     // if we have an app mapping specified, only then write the application and impact records
     if (service && service in appMapping && appMapping[service].name) {
@@ -169,23 +170,23 @@ export class Incidents extends VictorOpsConverter {
         `Incident ${incident.incidentNumber} impacted service: ${service}`
       );
 
-      const application = {
+      application = {
         name: appMapping[service].name,
         platform: appMapping[service].platform ?? '',
       };
-      res.push({
-        model: 'compute_Application',
-        record: application,
-      });
-
-      res.push({
-        model: 'ims_IncidentApplicationImpact',
-        record: {
-          incident: incidentRef,
-          application,
-        },
-      });
     }
+    res.push({
+      model: 'compute_Application',
+      record: application,
+    });
+
+    res.push({
+      model: 'ims_IncidentApplicationImpact',
+      record: {
+        incident: incidentRef,
+        application,
+      },
+    });
 
     return res;
   }
