@@ -67,23 +67,23 @@ export class Gitlab {
     projects: string[]
   ): AsyncGenerator<Group> {
     const options = {withProjects: false};
-    const subGroupPaths: string[] = [groupName];
+    const subGroupPaths = new Set();
     try {
       const group = await this.client.Groups.show(groupName, options);
       const builtGroup = buildGroup(group);
       yield builtGroup;
       // Retrieve sub-groups
       for (const projectName of projects) {
-        const projectPathWithNamespace = `${builtGroup.fullPath}/${projectName}`;
         // Handle sub-groups in project path Ex: group/subGroup/project
         // https://github.com/faros-ai/feeds/blob/2f7e2745981596b284b54e4d12d99dadba6c06ab/feeds/cicd/gitlabci-feed/src/index.ts#L200
-        const projectPathArray = projectPathWithNamespace.split('/');
-        if (projectPathArray.length > 2) {
+        const projectPathArray = projectName.split('/');
+        if (projectPathArray.length > 1) {
           const subGroupPath = projectPathArray.slice(0, -1).join('/');
-          if (!subGroupPaths.includes(subGroupPath)) {
-            subGroupPaths.push(subGroupPath);
+          if (!subGroupPaths.has(subGroupPath)) {
+            subGroupPaths.add(subGroupPath);
+            const subGroupPathWithNamespace = `${builtGroup.fullPath}/${subGroupPath}`;
             const subGroup = await this.client.Groups.show(
-              subGroupPath,
+              subGroupPathWithNamespace,
               options
             );
             yield buildGroup(subGroup);
