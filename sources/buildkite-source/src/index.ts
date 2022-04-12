@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Buildkite, BuildkiteConfig} from './buildkite/buildkite';
-import {Builds, Jobs, Organizations, Pipelines} from './streams';
+import {Builds, Organizations, Pipelines} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -41,7 +41,6 @@ export class BuildkiteSource extends AirbyteSourceBase {
       new Organizations(config as BuildkiteConfig, this.logger),
       new Pipelines(config as BuildkiteConfig, this.logger),
       new Builds(config as BuildkiteConfig, this.logger),
-      new Jobs(config as BuildkiteConfig, this.logger),
     ];
   }
 }

@@ -168,32 +168,4 @@ describe('index', () => {
     expect(fnBuildsList).toHaveBeenCalledTimes(2);
     expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
-  test('streams - jobs, use full_refresh sync mode', async () => {
-    const fnJobsList = jest.fn();
-    Buildkite.instance = jest.fn().mockImplementation(() => {
-      return new Buildkite(
-        {
-          request: fnJobsList.mockResolvedValue({
-            viewer: {
-              jobs: {
-                edges: readTestResourceFile('jobs_input.json'),
-              },
-            },
-          }),
-        } as any,
-        {get: jest.fn().mockResolvedValue({})} as unknown as AxiosInstance
-      );
-    });
-    const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
-
-    const jobsStream = streams[3];
-    const jobsIter = jobsStream.readRecords(SyncMode.FULL_REFRESH);
-    const jobs = [];
-    for await (const job of jobsIter) {
-      jobs.push(job);
-    }
-    expect(fnJobsList).toHaveBeenCalledTimes(1);
-    expect(jobs).toStrictEqual(readTestResourceFile('jobs.json'));
-  });
 });

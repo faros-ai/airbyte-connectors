@@ -23,4 +23,3 @@ tests:
       cursor_paths:
         pipelines: ["lastCursor"]
         builds: ["lastCreatedAt"]
-        jobs: ["lastCursor"]

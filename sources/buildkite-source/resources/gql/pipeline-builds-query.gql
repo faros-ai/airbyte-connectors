@@ -1,4 +1,4 @@
-query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime, $after: String) {
+query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime, $after: String,$maxJobsPerBuild: Int) {
   pipeline(slug: $slug) { 
       builds(first: $pageSize, createdAtFrom: $createdAtFrom, after: $after) {
         edges {
@@ -27,6 +27,44 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime,
             state
             url
             commit
+            jobs(first: $maxJobsPerBuild) {
+              edges {
+                node {
+                  __typename
+                  ... on JobTypeCommand {
+                    uuid
+                    label
+                    state
+                    createdAt
+                    finishedAt
+                    startedAt
+                    url
+                    command
+                  }
+                  ... on JobTypeBlock {
+                    uuid
+                    state
+                    label
+                    unblockedAt
+                  }
+                  ... on JobTypeWait {
+                    uuid
+                    state
+                    label
+                  }
+                  ... on JobTypeTrigger {
+                    uuid
+                    state
+                    label
+                    triggered {
+                      startedAt
+                      createdAt
+                      finishedAt
+                    }
+                  }
+                }
+              }
+            }
           }
           cursor
         }

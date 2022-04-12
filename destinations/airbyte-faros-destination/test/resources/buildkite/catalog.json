@@ -17,12 +17,6 @@
         "name": "mytestsource__buildkite__builds"
       },
       "destination_sync_mode": "append"
-    },
-    {
-      "stream": {
-        "name": "mytestsource__buildkite__jobs"
-      },
-      "destination_sync_mode": "append"
     }
   ]
 }

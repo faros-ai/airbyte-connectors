@@ -9,6 +9,7 @@ export class Builds extends BuildkiteConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
     'cicd_BuildCommitAssociation',
+    'cicd_BuildStep',
   ];
 
   async convert(
@@ -30,6 +31,10 @@ export class Builds extends BuildkiteConverter {
     const status = this.convertBuildState(build.state);
     const res: DestinationRecord[] = [];
 
+    const buildKey = {
+      uid: build.uuid,
+      pipeline,
+    };
     res.push({
       model: 'cicd_Build',
       record: {
@@ -44,6 +49,24 @@ export class Builds extends BuildkiteConverter {
         pipeline,
       },
     });
+    for (const job of build.jobs) {
+      res.push({
+        model: 'cicd_BuildStep',
+        record: {
+          uid: job.uuid,
+          name: job.label,
+          ...this.convertBuildStepTime(job),
+          command: job.command,
+          type: this.convertBuildStepType(job.type),
+          createdAt: Utils.toDate(job.createdAt),
+          startedAt: Utils.toDate(job.startedAt),
+          endedAt: Utils.toDate(job.finishedAt),
+          status: this.convertBuildStepState(job.state),
+          url: job.url,
+          build: buildKey,
+        },
+      });
+    }
     const repo = build.pipeline?.repository;
     if (repo) {
       const repoExtract = this.extractRepo(repo.url);
@@ -55,7 +78,7 @@ export class Builds extends BuildkiteConverter {
         res.push({
           model: 'cicd_BuildCommitAssociation',
           record: {
-            build: {uid: build.uuid, pipeline},
+            build: buildKey,
             commit: {repository: repoKey, sha: build.commit},
           },
         });

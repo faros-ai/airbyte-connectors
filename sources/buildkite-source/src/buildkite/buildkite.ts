@@ -28,11 +28,6 @@ const PIPELINES_BUILDS_QUERY = fs.readFileSync(
   'utf8'
 );
 
-const JOBS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', '..', 'resources', 'gql', 'jobs-query.gql'),
-  'utf8'
-);
-
 export interface Organization {
   readonly id: string;
   readonly slug: string;
@@ -62,6 +57,7 @@ export interface Build {
     };
   };
   cursor?: string;
+  job: [Job];
 }
 
 export interface Job {
@@ -249,6 +245,7 @@ export class Buildkite {
   private setCursor(e): any {
     const node = e.node;
     if (e.cursor) node.cursor = e.cursor;
+    console.log('node => ' + node);
     return node;
   }
   async *getOrganizations(): AsyncGenerator<Organization> {
@@ -302,6 +299,7 @@ export class Buildkite {
         slug: `${organizationItemSlug}/${pipelineItemSlug}`,
         pageSize: this.pageSize,
         after: pageInfo ? pageInfo.endCursor : cursor,
+        maxJobsPerBuild: 500,
         createdAtFrom,
       };
       const data = await this.graphClient.request(
@@ -310,6 +308,10 @@ export class Buildkite {
       );
       return {
         data: data.pipeline?.builds?.edges.map((e) => {
+          const jobs = e.node.jobs?.edges.map((ee) => {
+            return ee.node;
+          });
+          e.node.jobs = jobs;
           return this.setCursor(e);
         }),
         pageInfo: data.pipeline?.builds.pageInfo,

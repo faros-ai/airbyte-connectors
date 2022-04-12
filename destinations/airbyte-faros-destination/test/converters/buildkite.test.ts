@@ -45,7 +45,6 @@ describe('buildkite', () => {
 
     const processedByStream = {
       builds: 2,
-      jobs: 2,
       organizations: 2,
       pipelines: 1,
     };
