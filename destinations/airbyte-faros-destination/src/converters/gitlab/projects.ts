@@ -7,6 +7,9 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class Projects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Pipeline',
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
   ];
 
@@ -22,6 +25,16 @@ export class Projects extends GitlabConverter {
 
     if (!repository) return [];
 
+    // Create a TMS Project/Board per repo that we sync
+    res.push(
+      ...GitlabCommon.tms_ProjectBoard_with_TaskBoard(
+        {uid: `${project.id}`, source},
+        project.name,
+        project.body,
+        project.created_at,
+        project.updated_at
+      )
+    );
     res.push({
       model: 'cicd_Pipeline',
       record: {

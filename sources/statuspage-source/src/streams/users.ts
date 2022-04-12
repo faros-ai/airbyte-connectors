@@ -49,7 +49,8 @@ export class Users extends AirbyteStreamBase {
   ): UsersState {
     return {
       cutoff:
-        new Date(latestRecord.updated_at) > new Date(currentStreamState?.cutoff ?? 0)
+        new Date(latestRecord.updated_at) >
+        new Date(currentStreamState?.cutoff ?? 0)
           ? latestRecord.updated_at
           : currentStreamState?.cutoff,
     };

@@ -4,8 +4,9 @@ import path from 'path';
 
 import {
   Converter,
-  DestinationModel,
+  ConverterTyped,
   DestinationRecord,
+  DestinationRecordTyped,
   StreamContext,
   StreamName,
 } from '../src/converters/converter';
@@ -67,19 +68,15 @@ describe('converter registry', () => {
     );
   });
 
-  test('add a custom converter class and load it', () => {
+  test('add a custom converter class and load it', async () => {
     class CustomConverter extends Converter {
-      source: 'Custom';
-      readonly destinationModels: ReadonlyArray<DestinationModel> = [
-        'test_Model',
-      ];
-
+      source = 'Custom';
+      destinationModels = ['test_Model'];
       id(record: AirbyteRecord): string {
         return record.record.data.id;
       }
       async convert(
         record: AirbyteRecord,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ctx: StreamContext
       ): Promise<ReadonlyArray<DestinationRecord>> {
         const data = record.record.data;
@@ -95,9 +92,53 @@ describe('converter registry', () => {
       }
     }
     const converter = new CustomConverter();
-    sut.addConverter(new CustomConverter());
+    sut.addConverter(converter);
     const res = sut.getConverter(converter.streamName);
+
     expect(res).toBeDefined();
     expect(res.destinationModels).toStrictEqual(['test_Model']);
+    expect(
+      await res.convert(AirbyteRecord.make('s1', {id: 'test'}), null)
+    ).toStrictEqual([
+      {model: 'test_Model', record: {source: 'Custom', uid: 'test'}},
+    ]);
+  });
+
+  test('add a custom typed converter class and load it', async () => {
+    interface FooBar {
+      foo: string;
+      bar: number;
+    }
+    class CustomConverter extends ConverterTyped<FooBar> {
+      source = 'Custom';
+      destinationModels = ['test_Model'];
+      id(record: AirbyteRecord): string {
+        return record.record.data.id;
+      }
+      async convert(
+        record: AirbyteRecord,
+        ctx: StreamContext
+      ): Promise<ReadonlyArray<DestinationRecordTyped<FooBar>>> {
+        const data = record.record.data;
+        return [
+          {
+            model: 'test_Model',
+            record: {
+              foo: String(data.id),
+              bar: 123,
+            },
+          },
+        ];
+      }
+    }
+    const converter = new CustomConverter();
+    sut.addConverter(converter);
+    const res = sut.getConverter(converter.streamName);
+
+    expect(res).toBeDefined();
+    expect(res.destinationModels).toStrictEqual(['test_Model']);
+    expect(
+      await res.convert(AirbyteRecord.make('s1', {id: 'test'}), null)
+    ).toStrictEqual([{model: 'test_Model', record: {bar: 123, foo: 'test'}}]);
   });
 });

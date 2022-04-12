@@ -32,6 +32,7 @@ import {HasuraClient} from './community/hasura-client';
 import {HasuraWriter} from './community/hasura-writer';
 import {
   Converter,
+  DestinationRecordTyped,
   parseObjectConfig,
   StreamContext,
   StreamName,
@@ -103,7 +104,10 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError('Community Edition Hasura URL is not set');
     }
     try {
-      this.hasuraClient = new HasuraClient(config.edition_configs.hasura_url);
+      this.hasuraClient = new HasuraClient(
+        config.edition_configs.hasura_url,
+        config.edition_configs.hasura_admin_secret
+      );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
@@ -267,7 +271,7 @@ export class FarosDestination extends AirbyteDestination {
     catalog: AirbyteConfiguredCatalog
   ): string {
     if (config.origin) {
-      this.logger.info(`Using origin ${config.origin} found in config`);
+      this.logger.info(`Using origin '${config.origin}' found in config`);
       return config.origin;
     }
 
@@ -282,8 +286,9 @@ export class FarosDestination extends AirbyteDestination {
         `Found multiple possible origins from catalog: ${origins.join(',')}`
       );
     }
-    this.logger.info(`Determined origin ${origins[0]} from stream prefixes`);
-    return origins[0];
+    const origin = origins[0];
+    this.logger.info(`Determined origin '${origin}' from stream prefixes`);
+    return origin;
   }
 
   async *write(
@@ -298,21 +303,26 @@ export class FarosDestination extends AirbyteDestination {
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
-    const stateMessages: AirbyteStateMessage[] = [];
+    let latestStateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
 
     const dryRunEnabled = config.dry_run === true || dryRun;
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
+      const streamContext = new StreamContext(
+        this.logger,
+        config,
+        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
+      );
+
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
-        await this.writeEntries(
-          config,
+        latestStateMessage = await this.writeEntries(
+          streamContext,
           stdin,
           streams,
-          stateMessages,
           converterDependencies,
           stats
         );
@@ -328,11 +338,10 @@ export class FarosDestination extends AirbyteDestination {
           this.handleRecordProcessingError
         );
 
-        await this.writeEntries(
-          config,
+        latestStateMessage = await this.writeEntries(
+          streamContext,
           stdin,
           streams,
-          stateMessages,
           converterDependencies,
           stats,
           writer
@@ -372,11 +381,10 @@ export class FarosDestination extends AirbyteDestination {
                 `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
               );
               // Process input and write entries
-              await this.writeEntries(
-                config,
+              latestStateMessage = await this.writeEntries(
+                streamContext,
                 stdin,
                 streams,
-                stateMessages,
                 converterDependencies,
                 stats,
                 writer
@@ -414,10 +422,13 @@ export class FarosDestination extends AirbyteDestination {
           );
       }
 
-      // Since we are writing all records in a single revision,
-      // we should be ok to return all the state messages at the end,
-      // once the revision has been closed.
-      for (const state of stateMessages) yield state;
+      // Airbyte updates connection state whenever the destination emits a state
+      // message, indicating that prior records have been processed.  Since we
+      // are writing all records in a single revision, only return the final
+      // state message at the end, once the revision has been closed.
+      if (latestStateMessage) {
+        yield latestStateMessage;
+      }
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
@@ -425,20 +436,17 @@ export class FarosDestination extends AirbyteDestination {
   }
 
   private async writeEntries(
-    config: AirbyteConfig,
+    ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
-    stateMessages: AirbyteStateMessage[],
     converterDependencies: Set<string>,
     stats: WriteStats,
     writer?: Writable | HasuraWriter
-  ): Promise<void> {
-    const ctx = new StreamContext(
-      config,
-      this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
-    );
+  ): Promise<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
+    const convertersUsed: Map<string, Converter> = new Map();
+    let stateMessage: AirbyteStateMessage = undefined;
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -455,7 +463,7 @@ export class FarosDestination extends AirbyteDestination {
 
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
-            stateMessages.push(msg as AirbyteStateMessage);
+            stateMessage = msg as AirbyteStateMessage;
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -480,6 +488,10 @@ export class FarosDestination extends AirbyteDestination {
               stats.recordsSkipped++;
               return;
             }
+            // Collect all the used converters
+            if (!convertersUsed.has(stream)) {
+              convertersUsed.set(stream, converter);
+            }
 
             const writeRecord = async (
               context: StreamContext
@@ -502,7 +514,7 @@ export class FarosDestination extends AirbyteDestination {
               ctx.set(streamName, String(recordId), unpacked);
               // Print stream context stats every so often
               if (stats.recordsProcessed % 1000 == 0) {
-                this.logger.info(`Stream context stats: ${ctx.stats(false)}`);
+                this.logger.info(`Stream context stats: ${ctx.stats()}`);
               }
             }
             // Process the record immediately if converter has no dependencies,
@@ -520,13 +532,26 @@ export class FarosDestination extends AirbyteDestination {
         this.logger.info(
           `Stdin processing completed, but still have ${recordsToBeProcessedLast.length} records to process`
         );
-        this.logger.info(`Stream context stats: ${ctx.stats(true)}`);
+        this.logger.info(`Stream context stats: ${ctx.stats()}`);
         for await (const process of recordsToBeProcessedLast) {
           await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
+
+      // Invoke on processing complete handler on all the active converters
+      for (const converter of convertersUsed.values()) {
+        const results = await converter.onProcessingComplete(ctx);
+        stats.recordsWritten += await this.writeConvertedRecords(
+          converter,
+          results,
+          stats,
+          writer
+        );
+      }
+
       // Don't forget to close the writer
       await writer?.end();
+      return stateMessage;
     } finally {
       input.close();
     }
@@ -649,7 +674,16 @@ export class FarosDestination extends AirbyteDestination {
   ): Promise<number> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
+    // Write the converted records
+    return this.writeConvertedRecords(converter, results, stats, writer);
+  }
 
+  private async writeConvertedRecords<R>(
+    converter: Converter,
+    results: ReadonlyArray<DestinationRecordTyped<R>>,
+    stats: WriteStats,
+    writer?: Writable | HasuraWriter
+  ): Promise<number> {
     if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
     }

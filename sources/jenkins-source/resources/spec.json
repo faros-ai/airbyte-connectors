@@ -14,17 +14,20 @@
       "server_url": {
         "type": "string",
         "title": "Jenkins Server URL",
+        "description": "The Server URL for fetching data from Jenkins",
         "examples": [
           "https://my-jenkins-server.example.com"
         ]
       },
       "user": {
         "type": "string",
+        "title": "User",
         "description": "Jenkins User"
       },
       "token": {
         "type": "string",
-        "title": "Jenkins Token",
+        "title": "Token",
+        "description": "Jenkins Token for Jenkins API authentication",
         "airbyte_secret": true
       },
       "depth": {

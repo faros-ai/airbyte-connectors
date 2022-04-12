@@ -16,6 +16,8 @@ export class Issues extends GitlabConverter {
     'tms_Label',
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskBoardRelationship',
+    'tms_TaskProjectRelationship',
     'tms_TaskTag',
   ];
 
@@ -35,6 +37,8 @@ export class Issues extends GitlabConverter {
     const usersStream = this.usersStream.asString;
 
     const uid = String(issue.id);
+    const taskKey = {uid, source};
+    const projectRef = {uid: String(issue.project_id), source};
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
         const assigneeUser = ctx.get(usersStream, String(assignee));
@@ -90,6 +94,20 @@ export class Issues extends GitlabConverter {
       },
     });
 
+    res.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: taskKey,
+        project: projectRef,
+      },
+    });
+    res.push({
+      model: 'tms_TaskBoardRelationship',
+      record: {
+        task: taskKey,
+        board: projectRef,
+      },
+    });
     return res;
   }
 }

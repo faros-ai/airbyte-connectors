@@ -19,7 +19,7 @@ export const PHABRICATOR_DEFAULT_LIMIT = 100;
 export interface PhabricatorConfig {
   readonly server_url: string;
   readonly token: string;
-  readonly start_date: string;
+  readonly cutoff_days: number;
   readonly repositories: string | string[];
   readonly projects: string | string[];
   readonly limit: number;
@@ -122,12 +122,8 @@ export class Phabricator {
         `server_url is invalid - ${e.message ?? JSON.stringify(e)}`
       );
     }
-    if (!config.start_date) {
-      throw new VError('start_date is null or empty');
-    }
-    const startDate = moment(config.start_date, moment.ISO_8601, true).utc();
-    if (`${startDate.toDate()}` === 'Invalid Date') {
-      throw new VError('start_date is invalid: %s', config.start_date);
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
     }
     const repositories = Phabricator.toStringArray(config.repositories);
     const projects = Phabricator.toStringArray(config.projects);
@@ -145,7 +141,8 @@ export class Phabricator {
       {},
       axios as any // TODO: figure out how to deal with Axios versions mismatch
     );
-
+    const startDate = moment();
+    startDate.subtract(config.cutoff_days, 'd');
     Phabricator.phabricator = new Phabricator(
       client,
       startDate,

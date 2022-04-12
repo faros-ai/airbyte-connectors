@@ -1,6 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {ClientError, GraphQLClient} from 'graphql-request';
-import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 import {
@@ -28,6 +27,7 @@ export class Harness {
   constructor(
     readonly client: GraphQLClient,
     readonly pageSize: number,
+    readonly startDate: Date,
     readonly logger: AirbyteLogger
   ) {}
 
@@ -44,6 +44,9 @@ export class Harness {
         'Missing authentication information. Please provide a Harness apiKey'
       );
     }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
 
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
@@ -51,8 +54,9 @@ export class Harness {
       `${apiUrl}/gateway/api/graphql?accountId=${config.account_id}`,
       {headers: {'x-api-key': config.api_key}}
     );
-
-    Harness.harness = new Harness(client, pageSize, logger);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    Harness.harness = new Harness(client, pageSize, startDate, logger);
     logger.debug('Created Harness instance');
 
     return Harness.harness;
@@ -122,7 +126,9 @@ export class Harness {
   }
 
   getExecutions(since?: number): AsyncGenerator<ExecutionNode> {
-    const query = getQueryExecution(since);
+    const sinceMax =
+      since > this.startDate.getTime() ? since : this.startDate.getTime();
+    const query = getQueryExecution();
 
     const func = (
       options: RequestOptionsExecutions
@@ -138,9 +144,9 @@ export class Harness {
       appServiceOffset: APP_SERVICE_OFFSET,
       offset: 0,
       limit: this.pageSize,
-      endedAt: since,
+      endedAt: sinceMax,
     };
 
-    return this.getIteratorExecution(func, funcOptions, since, this.logger);
+    return this.getIteratorExecution(func, funcOptions, sinceMax, this.logger);
   }
 }

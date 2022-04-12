@@ -2,7 +2,7 @@ export interface HarnessConfig {
   readonly api_url?: string;
   readonly account_id: string;
   readonly api_key: string;
-  readonly cutoff_days?: number;
+  readonly cutoff_days: number;
   readonly deploymentTimeout?: number;
   readonly page_size?: number;
 }
@@ -22,7 +22,7 @@ export type RequestOptionsExecutions = {
   appServiceOffset: number;
   limit: number;
   offset: number;
-  endedAt: number;
+  endedAt?: number;
 };
 
 interface Service {
