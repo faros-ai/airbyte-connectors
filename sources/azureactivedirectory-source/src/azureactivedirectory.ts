@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
+import formatLinkHeader from 'format-link-header';
 import {VError} from 'verror';
 
 import {
@@ -110,7 +111,7 @@ export class AzureActiveDirectory {
         const res = await this.httpClient.get<T[]>(path, param);
         const linkHeader = res.data['@odata.nextLink'];
         if (linkHeader) {
-          after = linkHeader.split('$skiptoken=').pop();
+          after = new URL(linkHeader).searchParams.get('$skiptoken');
           param['params']['$skiptoken'] = after;
         } else {
           after = null;
