@@ -78,7 +78,7 @@ jobs:
   publish-connectors:
     name: Publish Connectors
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Check out
         uses: actions/checkout@v3
