@@ -13,10 +13,10 @@ export type ApplicationMapping = Record<
   {name: string; platform?: string}
 >;
 
-/** Azuregit converter base */
-export abstract class AzureGitConverter extends Converter {
-  source = 'AzureGit';
-  /** Almost every Azuregit record have id property */
+/** Azurerepo converter base */
+export abstract class AzureRepoConverter extends Converter {
+  source = 'AzureRepo';
+  /** Almost every Azurerepo record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }

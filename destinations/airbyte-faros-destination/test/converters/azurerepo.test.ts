@@ -6,18 +6,18 @@ import pino from 'pino';
 
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {azuregitAllStreamsLog} from './data';
+import {azurerepoAllStreamsLog} from './data';
 
-describe('azuregit', () => {
+describe('azurerepo', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/azuregit/catalog.json';
+  const catalogPath = 'test/resources/azurerepo/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__azuregit__';
+  const streamNamePrefix = 'mytestsource__azurerepo__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -38,7 +38,7 @@ describe('azuregit', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(azuregitAllStreamsLog, 'utf8');
+    cli.stdin.end(azurerepoAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
