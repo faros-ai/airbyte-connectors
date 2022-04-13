@@ -12,6 +12,7 @@
       "token": {
         "type": "string",
         "title": "API key",
+        "description": "API key for PagerDuty API authentication",
         "airbyte_secret": true
       },
       "cutoff_days": {

@@ -1,6 +1,6 @@
 {
   "name": "firehydrant-source",
-  "version": "0.1.60",
+  "version": "0.1.65",
   "description": "BuildKite Airbyte source",
   "keywords": [
     "airbyte",
@@ -30,9 +30,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.60",
+    "faros-airbyte-cdk": "^0.1.65",
     "graphql-request": "^4.0.0",
     "verror": "^1.10.1"
   },

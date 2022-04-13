@@ -1,5 +1,5 @@
 {
   "server_url": "url",
   "token": "token",
-  "start_date": ""
+  "cutoff_days": 90
 }

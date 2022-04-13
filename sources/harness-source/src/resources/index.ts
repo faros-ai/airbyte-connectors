@@ -15,14 +15,12 @@ export function getQueryToCheckConnection(offset = 0, limit = 1): string {
 `;
 }
 
-export function getQueryExecution(endedAt?: number): string {
+export function getQueryExecution(): string {
   return `
-    query getExecutions($offset: Int!, $limit: Int!
-        ${endedAt ? ', $endedAt: DateTime!' : ''},
+    query getExecutions($offset: Int!, $limit: Int!, $endedAt: DateTime!,
         $appEnvLimit: Int!, $appEnvOffset: Int!,
         $appServiceLimit: Int!, $appServiceOffset: Int!) {
-      executions(offset: $offset, limit: $limit${
-        endedAt ? ',filters: {endTime: {operator: AFTER, value: $endedAt}}' : ''
+      executions(offset: $offset, limit: $limit, filters: {endTime: {operator: AFTER, value: $endedAt}
       }) {
         pageInfo {
           total

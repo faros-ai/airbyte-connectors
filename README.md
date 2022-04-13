@@ -11,6 +11,7 @@ Component | Code | Installation | Version
 ----------|-----------|------|--------
 Airbyte CDK | [faros-airbyte-cdk](faros-airbyte-cdk) | `npm i faros-airbyte-cdk` |[![npm package](https://img.shields.io/npm/v/faros-airbyte-cdk?color=blue&label=npm)](https://www.npmjs.com/package/faros-airbyte-cdk)
 Azure Active Directory Source | [sources/azureactivedirectory-source](sources/azureactivedirectory-source) | `docker pull farosai/airbyte-azureactivedirectory-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-azureactivedirectory-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-azureactivedirectory-source/tags)
+Azure Pipeline Source | [sources/azurepipeline-source](sources/azurepipeline-source) | `docker pull farosai/airbyte-azurepipeline-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-azurepipeline-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-azurepipeline-source/tags)
 Backlog Source | [sources/backlog-source](sources/backlog-source) | `docker pull farosai/airbyte-backlog-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-backlog-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-backlog-source/tags)
 Bitbucket Source | [sources/bitbucket-source](sources/bitbucket-source) | `docker pull farosai/airbyte-bitbucket-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-bitbucket-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-bitbucket-source/tags)
 Customer.IO Source | [sources/customer-io-source](sources/customer-io-source) | `docker pull farosai/airbyte-customer-io-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-customer-io-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-customer-io-source/tags)
@@ -47,7 +48,7 @@ VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docke
 1. Audit fix `npm audit fix`
 2. Clean your project `lerna run clean` (sometimes you also wanna `rm -rf ./node_modules`)
 
-Read more about `lerna` here - https://github.com/lerna/lerna
+Read more about `lerna` [here](https://github.com/lerna/lerna).
 
 # Build Docker Images
 
