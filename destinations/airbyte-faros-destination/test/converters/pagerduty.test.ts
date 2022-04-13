@@ -7,8 +7,8 @@ import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../testing-tools';
-import {pagerdutyLog, readTestResourceFile} from './data';
+import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {pagerdutyLog} from './data';
 
 describe('pagerduty', () => {
   const logger = pino({

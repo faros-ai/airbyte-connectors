@@ -6,6 +6,8 @@ Each source stream is handled by an appropriate [Converter](https://github.com/f
 
 Any additional source streams can be handled by providing a JSONata expression for the built-in [JSONataConverter](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/airbyte-faros-destination/src/converters/jsonata.ts) or by implementing converters for the streams ([read more below](#adding-support-for-additional-sources)).
 
+![](img/source_destination.png)
+
 ## Usage
 
 ### Run from Airbyte
@@ -54,11 +56,11 @@ Example `index.ts`:
 ```typescript
 import {Command} from 'commander';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Converter, DestinationModel, DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
+import {Converter,DestinationModel,DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
 
 class Builds extends Converter {
-  source: string = 'CustomSource'
-  destinationModels: ReadonlyArray<DestinationModel> = ['cicd_Build'];
+  source = 'CustomSource'
+  destinationModels = ['cicd_Build'];
 
   id(record: AirbyteRecord): string {
     return record.record.data.id;
@@ -66,7 +68,7 @@ class Builds extends Converter {
 
   async convert(
     record: AirbyteRecord,
-    _ctx: StreamContext
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const build = record.record.data
     return [
@@ -83,12 +85,13 @@ class Builds extends Converter {
     ];
   }
 }
+
 class Pipelines extends Converter {
   // similar to the Builds in the example above
   ...
 }
 
-// main entry point
+// Main entry point
 export function mainCommand(): Command {
   const destinationRunner = new FarosDestinationRunner();
 
@@ -97,7 +100,6 @@ export function mainCommand(): Command {
     new Builds(),
     new Pipelines()
   );
-
   return destinationRunner.program;
 }
 ```
@@ -155,6 +157,11 @@ Example `catalog.json`
     }
   ]
 }
+```
+
+**Tip**: you can even pipe data directly from your custom source into your custom destination without Airbyte server while prefixing your streams (as expected by Faros Destination):
+```shell
+<my-source-command> | jq -c -R 'fromjson? | select(.type == "RECORD") | .record.stream = "mydatasource__CustomSource__\(.record.stream)"' | <my-destination-command>
 ```
 
 ### Additional Commands

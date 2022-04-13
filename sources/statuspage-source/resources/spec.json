@@ -6,23 +6,33 @@
     "type": "object",
     "required": [
       "page_id",
-      "api_key"
+      "api_key",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
       "page_id": {
         "type": "string",
-        "title": "StatusPage Page ID",
+        "title": "Page ID",
+        "description": "StatusPage Page ID",
         "airbyte_secret": true
       },
       "api_key": {
         "type": "string",
         "title": "StatusPage API key",
+        "description": "API key for StatusPage API authentication",
         "airbyte_secret": true
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       },
       "org_id": {
         "type": "string",
-        "title": "StatusPage Organization ID"
+        "title": "Organization ID",
+        "description": "StatusPage Organization ID"
       }
     }
   }

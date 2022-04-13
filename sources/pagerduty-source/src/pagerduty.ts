@@ -29,10 +29,10 @@ interface Assignment {
 
 export interface PagerdutyConfig {
   readonly token: string;
-  readonly pageSize?: number;
-  readonly cutoffDays?: number;
-  readonly defaultSeverity?: IncidentSeverityCategory;
-  readonly incidentLogEntriesOverview?: boolean;
+  readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly default_severity?: IncidentSeverityCategory;
+  readonly incident_log_entries_overview?: boolean;
 }
 
 interface PagerdutyResponse<Type> {
@@ -89,16 +89,6 @@ export class Pagerduty {
     private readonly logger: AirbyteLogger
   ) {}
 
-  private static validateInteger(value: number): string | undefined {
-    if (value) {
-      if (typeof value === 'number' && value > 0) {
-        return undefined;
-      }
-      return `${value} must be a valid positive number`;
-    }
-    return undefined;
-  }
-
   static instance(config: PagerdutyConfig, logger: AirbyteLogger): Pagerduty {
     if (Pagerduty.pagerduty) return Pagerduty.pagerduty;
 
@@ -106,14 +96,6 @@ export class Pagerduty {
       throw new VError('token must be not an empty string');
     }
 
-    const pageSize = this.validateInteger(config.pageSize);
-    if (pageSize) {
-      throw new VError(pageSize);
-    }
-    const cutoffDays = this.validateInteger(config.cutoffDays);
-    if (cutoffDays) {
-      throw new VError(cutoffDays);
-    }
     const client = api({token: config.token});
 
     Pagerduty.pagerduty = new Pagerduty(client, logger);
@@ -200,8 +182,8 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since: string | null,
-    limit: number = DEFAULT_PAGE_SIZE
+    since?: string,
+    limit = DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident> {
     let until: Date;
     let timeRange = '&date_range=all';
@@ -224,7 +206,7 @@ export class Pagerduty {
   }
 
   async *getIncidentLogEntries(
-    since: string | null,
+    since?: string,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
     isOverview = DEFAUTL_OVERVIEW
