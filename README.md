@@ -14,6 +14,7 @@ Azure Active Directory Source | [sources/azureactivedirectory-source](sources/az
 Azure Pipeline Source | [sources/azurepipeline-source](sources/azurepipeline-source) | `docker pull farosai/airbyte-azurepipeline-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-azurepipeline-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-azurepipeline-source/tags)
 Backlog Source | [sources/backlog-source](sources/backlog-source) | `docker pull farosai/airbyte-backlog-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-backlog-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-backlog-source/tags)
 Bitbucket Source | [sources/bitbucket-source](sources/bitbucket-source) | `docker pull farosai/airbyte-bitbucket-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-bitbucket-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-bitbucket-source/tags)
+Buildkite Source | [sources/buildkite-source](sources/buildkite-source) | `docker pull farosai/airbyte-buildkite-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-buildkite-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-buildkite-source/tags)
 Customer.IO Source | [sources/customer-io-source](sources/customer-io-source) | `docker pull farosai/airbyte-customer-io-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-customer-io-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-customer-io-source/tags)
 Datadog Source | [sources/datadog-source](sources/datadog-source) | `docker pull farosai/airbyte-datadog-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-datadog-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-datadog-source/tags)
 Docker Source | [sources/docker-source](sources/docker-source) | `docker pull farosai/airbyte-docker-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-docker-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-docker-source/tags)
@@ -29,11 +30,6 @@ Shortcut Source | [sources/shortcut-source](sources/shortcut-source) | `docker p
 SquadCast Source | [sources/squadcast-source](sources/squadcast-source) | `docker pull farosai/airbyte-squadcast-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-squadcast-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-squadcast-source/tags)
 StatusPage Source | [sources/statuspage-source](sources/statuspage-source) | `docker pull farosai/airbyte-statuspage-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-statuspage-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-statuspage-source/tags)
 VictorOps Source | [sources/victorops-source](sources/victorops-source) | `docker pull farosai/airbyte-victorops-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-victorops-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-victorops-source/tags)
-<<<<<<< HEAD
-Buildkite Source | [sources/buildkite-source](sources/buildkite-source) | `docker pull farosai/airbyte-buildkite-source` | [![](https://img.shields.io/docker/v/farosai/airbyte-buildkite-source?color=blue&label=docker)](https://hub.docker.com/r/farosai/airbyte-buildkite-source/tags)
-=======
->>>>>>> origin/main
-
 # Development
 
 1. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating)
