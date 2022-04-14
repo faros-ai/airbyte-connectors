@@ -79,7 +79,7 @@ describe('index', () => {
       users.push(user);
     }
 
-    expect(fnUsersFunc).toHaveBeenCalledTimes(5);
+    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 
