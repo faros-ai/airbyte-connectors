@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureGitConverter} from './common';
+import {AzureRepoConverter} from './common';
 import {PullRequest} from './models';
 
-export class PullRequests extends AzureGitConverter {
+export class PullRequests extends AzureRepoConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestReview',
