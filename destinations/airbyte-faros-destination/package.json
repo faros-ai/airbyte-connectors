@@ -1,6 +1,6 @@
 {
   "name": "airbyte-faros-destination",
-  "version": "0.1.66",
+  "version": "0.1.67",
   "description": "Faros Destination for Airbyte",
   "keywords": [
     "airbyte",
@@ -36,7 +36,7 @@
     "analytics-node": "^6.0.0",
     "axios": "^0.26.0",
     "date-format": "^4.0.3",
-    "faros-airbyte-cdk": "^0.1.66",
+    "faros-airbyte-cdk": "^0.1.67",
     "faros-feeds-sdk": "^0.10.0",
     "fs-extra": "^10.0.0",
     "git-url-parse": "^11.6.0",

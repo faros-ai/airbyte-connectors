@@ -78,7 +78,7 @@ export class Users extends AzureActiveDirectoryConverter {
         title: user.displayName,
         level: 0,
         joinedAt,
-        department: {uid: user.department},
+        department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
         manager,
         location,
