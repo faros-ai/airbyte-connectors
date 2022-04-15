@@ -2,10 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureReposConverter} from './common';
+import {Azure_ReposConverter} from './common';
 import {OrgTypeCategory, Repository} from './models';
 
-export class Repositories extends AzureReposConverter {
+export class Repositories extends Azure_ReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
     'vcs_Commit',
