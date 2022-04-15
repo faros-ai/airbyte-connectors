@@ -1,4 +1,4 @@
-connector_image: gitlabci-source
+connector_image: gitlab-ci-source
 tests:
   spec:
     - config_path: "secrets/config.json"

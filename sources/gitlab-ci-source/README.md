@@ -19,7 +19,7 @@ npm run prepare
 This will install all required dependencies and build all included connectors,
 including the Gitlab CI source connector.
 
-Now you can cd into the Gitlab CI connector directory, `sources/gitlabci-source`,
+Now you can cd into the Gitlab CI connector directory, `sources/gitlab-ci-source`,
 and iterate on the Gitlab CI source connector. After making code changes, run:
 ```
 npm run build
@@ -55,17 +55,17 @@ bin/main read --config secrets/config.json --catalog test_files/full_configured_
 Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 ```
-docker build . --build-arg path=sources/gitlabci-source -t gitlabci-source
+docker build . --build-arg path=sources/gitlab-ci-source -t gitlab-ci-source
 ```
 
 #### Run
 Then return to the Gitlab CI connector directory and run any of the connector
 commands as follows:
 ```
-docker run --rm gitlabci-source spec
-docker run --rm -v $(pwd)/secrets:/secrets gitlabci-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets gitlabci-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files gitlabci-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm gitlab-ci-source spec
+docker run --rm -v $(pwd)/secrets:/secrets gitlab-ci-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets gitlab-ci-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files gitlab-ci-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
@@ -88,7 +88,7 @@ docker pull airbyte/source-acceptance-test
 
 To run the acceptance tests, from the root repository directory, run
 ```
-./scripts/source-acceptance-test.sh gitlabci-source
+./scripts/source-acceptance-test.sh gitlab-ci-source
 ```
 
 ## Dependency Management
@@ -108,4 +108,4 @@ ready to share your changes with the world. Now what?
 1. Someone from Faros AI will take a look at your PR and iterate with you to
    merge it into main.
 1. The new connector image will be published to the
-   `farosai/airbyte-gitlabci-source` Docker repository.
+   `farosai/airbyte-gitlab-ci-source` Docker repository.
