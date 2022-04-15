@@ -17,7 +17,7 @@ describe('azure-repos', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/azure-repos/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__azure-repos__';
+  const streamNamePrefix = 'mytestsource__azure_repos__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
