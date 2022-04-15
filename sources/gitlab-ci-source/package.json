@@ -1,5 +1,5 @@
 {
-  "name": "gitlabci-source",
+  "name": "gitlab-ci-source",
   "version": "0.1.59",
   "description": "Gitlab CI Airbyte source",
   "keywords": [
