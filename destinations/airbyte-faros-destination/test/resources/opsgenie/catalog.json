@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__opsgenie__incidents"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__opsgenie__teams"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__opsgenie__users"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
