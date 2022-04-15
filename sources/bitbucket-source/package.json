@@ -1,6 +1,6 @@
 {
   "name": "bitbucket-source",
-  "version": "0.1.65",
+  "version": "0.1.68",
   "description": "Bitbucket Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "bitbucket": "^2.7.0",
     "bottleneck": "^2.19.5",
     "date-format": "^4.0.6",
-    "faros-airbyte-cdk": "^0.1.65",
+    "faros-airbyte-cdk": "^0.1.68",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },

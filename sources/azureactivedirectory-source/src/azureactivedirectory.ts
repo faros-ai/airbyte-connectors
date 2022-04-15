@@ -54,7 +54,7 @@ export class AzureActiveDirectory {
     const httpClient = axios.create({
       baseURL: `https://graph.microsoft.com/${version}`,
       timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 50000, //default is 2000 bytes
+      maxContentLength: 500000, //default is 2000 bytes
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -103,59 +103,88 @@ export class AzureActiveDirectory {
     }
   }
 
-  async *getUsers(): AsyncGenerator<User> {
-    const res = await this.httpClient.get<UserResponse>('users');
-    for (const item of res.data.value) {
-      const extraUserInfo = await this.httpClient.get<UserExtraInfo>(
-        `users/${item.id}?$select=Department,postalCode,createdDateTime,identities,streetAddress`
-      );
-
-      if (extraUserInfo.status === 200) {
-        item.department = extraUserInfo.data.department;
-        item.postalCode = extraUserInfo.data.postalCode;
-        item.createdDateTime = extraUserInfo.data.createdDateTime;
-        item.streetAddress = extraUserInfo.data.streetAddress;
-        item.identities = extraUserInfo.data.identities;
+  private async *paginate<T>(path: string, param = {}): AsyncGenerator<T> {
+    let after = null;
+    do {
+      try {
+        const res = await this.httpClient.get<T[]>(path, param);
+        const linkHeader = res.data['@odata.nextLink'];
+        if (linkHeader) {
+          after = new URL(linkHeader).searchParams.get('$skiptoken');
+          param['params']['$skiptoken'] = after;
+        } else {
+          after = null;
+        }
+        const result = res.data['value'];
+        for (const item of result) {
+          yield item;
+        }
+      } catch (err: any) {
+        const errorMessage = wrapApiError(err).message;
+        this.logger.error(
+          `Failed requesting '${path}' with params ${JSON.stringify(
+            param
+          )}. Error: ${errorMessage}`
+        );
+        throw new VError(errorMessage);
       }
+    } while (after);
+  }
 
+  async *getUsers(maxResults = 999): AsyncGenerator<User> {
+    for await (const user of this.paginate<User>('users', {
+      params: {
+        $select: [
+          'department',
+          'postalCode',
+          'createdDateTime',
+          'identities',
+          'streetAddress',
+        ],
+        $top: maxResults,
+      },
+    })) {
       try {
         const managerItem = await this.httpClient.get<User>(
-          `users/${item.id}/manager`
+          `users/${user.id}/manager`
         );
         if (managerItem.status === 200) {
-          item.manager = managerItem.data.id;
+          user.manager = managerItem.data.id;
         }
       } catch (error) {
         this.logger.error(error.toString());
       }
-      yield item;
+      yield user;
     }
   }
 
-  async *getGroups(): AsyncGenerator<Group> {
-    const res = await this.httpClient.get<GroupResponse>('groups');
-    for (const item of res.data.value) {
+  async *getGroups(maxResults = 999): AsyncGenerator<Group> {
+    for await (const group of this.paginate<Group>('groups', {
+      params: {
+        $top: maxResults,
+      },
+    })) {
       const memberItems = await this.httpClient.get<UserResponse>(
-        `groups/${item.id}/members`
+        `groups/${group.id}/members`
       );
       if (memberItems.status === 200) {
         const members: string[] = [];
         for (const memberItem of memberItems.data.value) {
           members.push(memberItem.id);
         }
-        item.members = members;
+        group.members = members;
       }
       const ownerItems = await this.httpClient.get<UserResponse>(
-        `groups/${item.id}/owners`
+        `groups/${group.id}/owners`
       );
       if (ownerItems.status === 200) {
         const owners: string[] = [];
         for (const ownerItem of ownerItems.data.value) {
           owners.push(ownerItem.id);
         }
-        item.owners = owners;
+        group.owners = owners;
       }
-      yield item;
+      yield group;
     }
   }
 }
