@@ -8,16 +8,16 @@ import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {azurereposAllStreamsLog} from './data';
 
-describe('azurerepos', () => {
+describe('azure-repos', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/azurerepos/catalog.json';
+  const catalogPath = 'test/resources/azure-repos/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__azurerepos__';
+  const streamNamePrefix = 'mytestsource__azure__repos__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
