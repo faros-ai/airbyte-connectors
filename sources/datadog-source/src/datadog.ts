@@ -60,8 +60,8 @@ export class Datadog {
 
   async checkConnection(): Promise<void> {
     try {
-      // Retrieve a single incident to verify API key and Application key
-      await this.client.incidents.listIncidents({pageOffset: 0, pageSize: 1});
+      // Retrieve a single user to verify API key and Application key
+      await this.client.users.listUsers({pageSize: 1});
     } catch (err: any) {
       throw new VError(err.message ?? JSON.stringify(err));
     }
@@ -77,10 +77,22 @@ export class Datadog {
     yield* this.paginate<v2.IncidentResponseData>(
       pageSize,
       async (pageOffset) => {
-        return this.client.incidents.listIncidents({
-          pageOffset,
-          pageSize,
-        });
+        try {
+          const incidents = await this.client.incidents.listIncidents({
+            pageOffset,
+            pageSize,
+          });
+          return incidents;
+        } catch (err: any) {
+          if (err?.code === 404) {
+            this.logger.warn(
+              'Received response 404 when listing incidents. Your Datadog account may not have incidents enabled.'
+            );
+            return undefined;
+          } else {
+            throw err;
+          }
+        }
       },
       async (data) => {
         const issues = [];
@@ -133,7 +145,7 @@ export class Datadog {
 
   private async *paginate<T>(
     pageSize: number,
-    fetch: (offset: number) => Promise<PagedResult<T>>,
+    fetch: (offset: number) => Promise<PagedResult<T> | undefined>,
     process: (data: T[]) => Promise<T[]>
   ): AsyncGenerator<T, any, any> {
     let offset = 0;
@@ -145,6 +157,7 @@ export class Datadog {
         throw new VError(err.message ?? JSON.stringify(err));
       }
 
+      if (!res) return;
       const processed = await process(res?.data ?? []);
       for (const item of processed) {
         if (item) {

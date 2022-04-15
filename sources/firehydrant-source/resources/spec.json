@@ -1,11 +1,12 @@
 {
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "fireHydrant Spec",
     "type": "object",
     "required": [
-      "token"
+      "token",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -15,14 +16,22 @@
         "description": "In order to create token, go to https://app.firehydrant.io/organizations/bots",
         "airbyte_secret": true
       },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
       "page_size": {
-        "type": "number",
+        "type": "integer",
         "title": "Page size",
+        "description": "Page size to use when requesting records from Firehydrant API",
         "default": 10
       },
       "version": {
         "type": "string",
         "title": "API Version",
+        "description": "Firehydrant API Version",
         "default": "v1",
         "examples": [
           "v1"

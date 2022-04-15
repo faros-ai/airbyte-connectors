@@ -1,0 +1,599 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "web": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "sourceVersionDisplayUri": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "timeline": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "badge": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "properties": {
+      "type": "object"
+    },
+    "tags": {
+      "type": "array",
+      "items": {}
+    },
+    "validationResults": {
+      "type": "array",
+      "items": {}
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "triggerInfo": {
+      "type": "object",
+      "properties": {
+        "ci.sourceBranch": {
+          "type": "string"
+        },
+        "ci.sourceSha": {
+          "type": "string"
+        },
+        "ci.message": {
+          "type": "string"
+        }
+      }
+    },
+    "id": {
+      "type": "number"
+    },
+    "buildNumber": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "queueTime": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string"
+    },
+    "finishTime": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "definition": {
+      "type": "object",
+      "properties": {
+        "drafts": {
+          "type": "array",
+          "items": {}
+        },
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "queueStatus": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "number"
+            },
+            "visibility": {
+              "type": "string"
+            },
+            "lastUpdateTime": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "buildNumberRevision": {
+      "type": "number"
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        },
+        "visibility": {
+          "type": "string"
+        },
+        "lastUpdateTime": {
+          "type": "string"
+        }
+      }
+    },
+    "uri": {
+      "type": "string"
+    },
+    "sourceBranch": {
+      "type": "string"
+    },
+    "sourceVersion": {
+      "type": "string"
+    },
+    "queue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "pool": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "isHosted": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "priority": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "requestedFor": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "descriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "requestedBy": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "descriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "lastChangedDate": {
+      "type": "string"
+    },
+    "lastChangedBy": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "descriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "orchestrationPlan": {
+      "type": "object",
+      "properties": {
+        "planId": {
+          "type": "string"
+        }
+      }
+    },
+    "logs": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "clean": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checkoutSubmodules": {
+          "type": "boolean"
+        }
+      }
+    },
+    "keepForever": {
+      "type": "boolean"
+    },
+    "retainedByRelease": {
+      "type": "boolean"
+    },
+    "triggeredByBuild": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "resource": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "string"
+              },
+              "downloadUrl": {
+                "type": "string"
+              },
+              "properties": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "_links": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "previousAttempts": {
+            "type": "array",
+            "items": {}
+          },
+          "id": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finishTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "currentOperation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "percentComplete": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "resultCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "changeId": {
+            "type": "number"
+          },
+          "lastModified": {
+            "type": "string"
+          },
+          "workerName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "queueId": {
+            "type": "number"
+          },
+          "order": {
+            "type": "number"
+          },
+          "details": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "errorCount": {
+            "type": "number"
+          },
+          "warningCount": {
+            "type": "number"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "log": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "task": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attempt": {
+            "type": "number"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

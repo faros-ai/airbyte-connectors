@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__azureactivedirectory__groups"
+      },
+      "destination_sync_mode": "append"
+    }, 
+    {
+      "stream": {
+        "name": "mytestsource__azureactivedirectory__users"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
