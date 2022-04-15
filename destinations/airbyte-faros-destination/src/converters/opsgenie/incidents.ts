@@ -178,9 +178,9 @@ export class Incidents extends OpsGenieConverter {
     switch (status) {
       case IncidentStatus.open:
         return {category: IncidentStatusCategory.Investigating, detail};
-      case IncidentStatus.resolve:
+      case IncidentStatus.resolved:
         return {category: IncidentStatusCategory.Resolved, detail};
-      case IncidentStatus.close:
+      case IncidentStatus.closed:
       default:
         return {category: IncidentStatusCategory.Custom, detail};
     }

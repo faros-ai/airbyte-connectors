@@ -109,8 +109,8 @@ export enum OpsGenieIncidentPriority {
 
 export enum IncidentStatus {
   open = 'open',
-  resolve = 'resolve',
-  close = 'close',
+  resolved = 'resolved',
+  closed = 'closed',
 }
 export enum IncidentStatusCategory {
   Identified = 'Identified',
@@ -130,14 +130,5 @@ export enum IncidentPriorityCategory {
   High = 'High',
   Medium = 'Medium',
   Low = 'Low',
-  Custom = 'Custom',
-}
-
-export enum IncidentSeverityCategory {
-  Sev1 = 'Sev1',
-  Sev2 = 'Sev2',
-  Sev3 = 'Sev3',
-  Sev4 = 'Sev4',
-  Sev5 = 'Sev5',
   Custom = 'Custom',
 }
