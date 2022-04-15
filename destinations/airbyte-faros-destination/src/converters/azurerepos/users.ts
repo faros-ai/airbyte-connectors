@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AzureRepoConverter} from './common';
+import {AzureReposConverter} from './common';
 import {User, UserType, UserTypeCategory} from './models';
 
-export class Users extends AzureRepoConverter {
+export class Users extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Membership',
     'vcs_User',
