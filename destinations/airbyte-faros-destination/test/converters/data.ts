@@ -82,6 +82,6 @@ export const azureactivedirectoryAllStreamsLog = readTestResourceFile(
 export const azurepipelineAllStreamsLog = readTestResourceFile(
   'azurepipeline/all-streams.log'
 );
-export const azurerepoAllStreamsLog = readTestResourceFile(
-  'azurerepo/all-streams.log'
+export const azurereposAllStreamsLog = readTestResourceFile(
+  'azurerepos/all-streams.log'
 );

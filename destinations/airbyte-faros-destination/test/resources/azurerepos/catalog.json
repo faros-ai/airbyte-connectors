@@ -2,19 +2,19 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__azurerepo__repositories"
+        "name": "mytestsource__azurerepos__repositories"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__azurerepo__pull_requests"
+        "name": "mytestsource__azurerepos__pull_requests"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__azurerepo__users"
+        "name": "mytestsource__azurerepos__users"
       },
       "destination_sync_mode": "overwrite"
     }
