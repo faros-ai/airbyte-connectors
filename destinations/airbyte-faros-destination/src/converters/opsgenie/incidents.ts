@@ -89,7 +89,6 @@ export class Incidents extends OpsGenieConverter {
           acknowledgedAt,
           resolvedAt,
           priority: this.getPriority(incident.priority),
-          //severity: this.getSeverity(incident.severity),
           status: this.getIncidentStatus(incident.status),
         },
       },
