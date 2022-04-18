@@ -1,10 +1,16 @@
 [
   {
+    "sys_id": {
+      "value": "46f09e75a9fe198100f4ffd8d366d17b"
+    },
     "number": {
       "value": "INC0000025"
     },
     "short_description": {
       "value": "Need to add more memory to laptop"
+    },
+    "description": {
+      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
     },
     "severity": {
       "value": "3",
@@ -41,11 +47,17 @@
     }
   },
   {
+    "sys_id": {
+      "value": "46f09e75a9fe198100f4ffd8d366d17c"
+    },
     "number": {
       "value": "INC0000026"
     },
     "short_description": {
       "value": "Seem to have an issue with my hard drive..."
+    },
+    "description": {
+      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
     },
     "severity": {
       "value": "3",
@@ -82,11 +94,17 @@
     }
   },
   {
+    "sys_id": {
+      "value": "46f09e75a9fe198100f4ffd8d366d17d"
+    },
     "number": {
       "value": "INC0000027"
     },
     "short_description": {
       "value": "Please remove the latest hotfix from my PC"
+    },
+    "description": {
+      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
     },
     "severity": {
       "value": "3",

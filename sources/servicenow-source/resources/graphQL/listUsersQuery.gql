@@ -2,11 +2,11 @@ query listUsers($pageSize: Int! = 100, $offset: Int! = 0, $queryConditions: Stri
   GlideRecord_Query {
     sys_user(pagination: {limit: $pageSize, offset: $offset}, queryConditions: $queryConditions) {
       _results {
-        name {
+        sys_id {
           value
         }
-        sys_id {
-            value
+        name {
+          value
         }
         email {
             value
