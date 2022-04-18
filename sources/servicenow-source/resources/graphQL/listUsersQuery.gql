@@ -1,0 +1,20 @@
+query listUsers($pageSize: Int! = 100, $offset: Int! = 0, $queryConditions: String = "") {
+  GlideRecord_Query {
+    sys_user(pagination: {limit: $pageSize, offset: $offset}, queryConditions: $queryConditions) {
+      _results {
+        name {
+          value
+        }
+        sys_id {
+            value
+        }
+        email {
+            value
+        }
+        sys_updated_on {
+          value
+        }
+      }
+    }
+  }
+}

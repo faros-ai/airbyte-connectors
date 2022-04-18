@@ -1,0 +1,47 @@
+query listIncidents($pageSize: Int! = 1, $offset: Int! = 2, $queryConditions: String! = "") {
+  GlideRecord_Query {
+    incident(pagination: { limit: $pageSize, offset: $offset }, queryConditions: $queryConditions) {
+      _results {
+        number {
+          value
+        }
+        short_description {
+          value
+        }
+        severity {
+          value
+          displayValue
+        }
+        priority {
+          value
+          displayValue
+        }
+        state {
+          value
+          displayValue
+        }
+        assigned_to {
+          value
+        }
+        opened_by {
+          value
+        }
+        resolved_at {
+          value
+        }
+        opened_at {
+          value
+        }
+        closed_at {
+          value
+        }
+        active {
+          value
+        }
+        sys_updated_on {
+          value
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "name": {
+      "value": "survey user"
+    },
+    "sys_id": {
+      "value": "005d500b536073005e0addeeff7b12f4"
+    },
+    "email": {
+      "value": "survey.user@email.com"
+    },
+    "sys_updated_on": {
+      "value": "2022-04-14 17:52:55"
+    }
+  },
+  {
+    "name": {
+      "value": "Lucius Bagnoli"
+    },
+    "sys_id": {
+      "value": "02826bf03710200044e0bfc8bcbe5d3f"
+    },
+    "email": {
+      "value": "lucius.bagnoli@example.com"
+    },
+    "sys_updated_on": {
+      "value": "2022-04-14 17:52:55"
+    }
+  },
+  {
+    "name": {
+      "value": "Jimmie Barninger"
+    },
+    "sys_id": {
+      "value": "02826bf03710200044e0bfc8bcbe5d55"
+    },
+    "email": {
+      "value": "jimmie.barninger@example.com"
+    },
+    "sys_updated_on": {
+      "value": "2022-04-14 17:52:55"
+    }
+  }
+]
