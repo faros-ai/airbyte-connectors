@@ -15,6 +15,7 @@
         "order": 0,
         "type": "string",
         "title": "ServiceNow Username",
+        "description": "The users should have the roles: sn_incident_read, cmdb_query_builder_read",
         "airbyte_secret": true
       },
       "password": {
