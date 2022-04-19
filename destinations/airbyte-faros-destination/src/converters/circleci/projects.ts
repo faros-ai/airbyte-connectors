@@ -7,7 +7,7 @@ import {Project} from './models';
 
 export class Projects extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'cicdOrganization',
+    'cicd_Organization',
     'cicd_Pipeline',
   ];
   async convert(

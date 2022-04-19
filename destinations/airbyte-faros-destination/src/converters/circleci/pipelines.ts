@@ -9,7 +9,7 @@ import {Pipeline} from './models';
 export class Pipelines extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
-    'cicd_Pipeline',
+    'cicd_BuildCommitAssociation',
     'cicd_BuildStep',
   ];
   async convert(
@@ -18,7 +18,6 @@ export class Pipelines extends CircleCIConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
-    const uid = toLower(pipeline.id);
     const res: DestinationRecord[] = [];
 
     for (const workflow of pipeline.workflows) {
@@ -38,7 +37,7 @@ export class Pipelines extends CircleCIConverter {
       res.push({
         model: 'cicd_BuildCommitAssociation',
         record: {
-          ...buildKey,
+          build: buildKey,
           commit: {
             sha: pipeline.vcs?.revision,
             repository: {
