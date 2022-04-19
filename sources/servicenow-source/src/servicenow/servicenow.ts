@@ -7,7 +7,7 @@ import VError from 'verror';
 import {Incident, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
-const GRAPHQL_API = '/api/now/graphQL';
+const GRAPHQL_API = '/api/now/graphql';
 
 const listIncidentsQuery = fs.readFileSync(
   path.join(__dirname, '../../resources/graphQL/listIncidentsQuery.gql'),
@@ -137,7 +137,7 @@ export class ServiceNow {
     const httpClient = axios.create({
       baseURL: `${config.url}`,
       timeout: 5000,
-      // headers: {Authorization: auth}, TODO: figure out auth
+      auth: {username: config.username, password: config.password},
     });
 
     const client = {
@@ -157,7 +157,7 @@ export class ServiceNow {
             this.handleApiError(err);
           }
 
-          return res?.data?.GlideRecord_Query?.incident?._results;
+          return res?.data?.data?.GlideRecord_Query?.incident?._results ?? [];
         },
       },
       users: {
@@ -176,7 +176,7 @@ export class ServiceNow {
             this.handleApiError(err);
           }
 
-          return res?.data?.GlideRecord_Query?.incident?._results;
+          return res?.data?.data?.GlideRecord_Query?.sys_user?._results ?? [];
         },
       },
     };

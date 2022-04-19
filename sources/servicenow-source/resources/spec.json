@@ -5,18 +5,32 @@
     "title": "ServiceNow Spec",
     "type": "object",
     "required": [
-      "api_key"
+      "username",
+      "password",
+      "url"
     ],
     "additionalProperties": false,
     "properties": {
-      "api_key": {
+      "username": {
         "order": 0,
         "type": "string",
-        "title": "ServiceNow API Key",
+        "title": "ServiceNow Username",
         "airbyte_secret": true
       },
-      "page_size": {
+      "password": {
+        "order": 1,
+        "type": "string",
+        "title": "ServiceNow Password",
+        "airbyte_secret": true
+      },
+      "url": {
         "order": 2,
+        "type": "string",
+        "title": "ServiceNow url",
+        "description": "ServiceNow instance url"
+      },
+      "page_size": {
+        "order": 3,
         "type": "integer",
         "title": "Page Size",
         "description": "used when retrieving paginated data from ServiceNow",

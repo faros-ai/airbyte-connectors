@@ -11,7 +11,7 @@
         "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
-            "id"
+            "sys_id"
           ]
         ]
       },
@@ -29,7 +29,7 @@
         "source_defined_cursor": true,
         "source_defined_primary_key": [
           [
-            "id"
+            "sys_id"
           ]
         ]
       },
