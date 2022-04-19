@@ -63,7 +63,7 @@ export class Incidents extends ServiceNowConverter {
         status: this.getStatus(incident.state?.displayValue) ?? null,
         createdAt: Utils.toDate(incident.opened_at?.value) ?? null,
         updatedAt: Utils.toDate(incident.sys_updated_on?.value) ?? null,
-        resolvedAt: Utils.toDate(incident.resolved_at?.resolved) ?? null,
+        resolvedAt: Utils.toDate(incident.resolved_at?.value) ?? null,
       },
     });
 

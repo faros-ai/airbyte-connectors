@@ -152,7 +152,7 @@ export class ServiceNow {
               variables: {
                 pageSize: pagination.pageSize,
                 offset: pagination.offset,
-                queryConditions: queryConditions,
+                queryConditions,
               },
             });
           } catch (err: any) {
@@ -171,7 +171,7 @@ export class ServiceNow {
               variables: {
                 pageSize: pagination.pageSize,
                 offset: pagination.offset,
-                queryConditions: queryConditions,
+                queryConditions,
               },
             });
           } catch (err: any) {

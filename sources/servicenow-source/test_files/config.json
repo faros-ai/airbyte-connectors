@@ -1,5 +1,4 @@
 {
-  "apiKey": "key",
-  "applicationKey": "key",
-  "pageSize": 10
+  "username": "key",
+  "password": "key"
 }
