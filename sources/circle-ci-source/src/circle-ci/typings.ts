@@ -1,43 +1,65 @@
-export interface CircleCIConfig {
-  readonly token: string;
-  readonly url: string;
-  readonly rejectUnauthorized: boolean;
+export interface Project {
+  readonly slug: string;
+  readonly organization_name: string;
+  readonly organization_id: string;
+  readonly name: string;
+  readonly id: string;
+  readonly organization_slug: string;
 }
 
-export interface Project {
-  readonly uid: string;
-  readonly name: string;
-  readonly vcsOrgName: string;
-  readonly vcsProvider: string;
+export interface Actor {
+  login: string;
+  avatar_url: string;
+}
+
+export interface Trigger {
+  received_at: Date;
+  type: string;
+  actor: Actor;
+}
+
+export interface Vcs {
+  origin_repository_url: string;
+  target_repository_url: string;
+  revision: string;
+  provider_name: string;
+  branch: string;
 }
 
 export interface Pipeline {
-  readonly uid: string;
-  readonly projectSlug: string;
-  readonly number: number;
-  readonly state: string;
-  readonly createdAt?: string;
-  readonly updatedAt?: string;
-  readonly commitSha: string;
-  readonly vcsProvider: string;
+  id: string;
+  errors: any[];
+  project_slug: string;
+  updated_at: string;
+  number: number;
+  state: string;
+  created_at: string;
+  trigger: Trigger;
+  vcs: Vcs;
   workflows: Workflow[];
 }
 
 export interface Workflow {
-  readonly uid: string;
-  readonly name: string;
-  readonly createdAt?: string;
-  readonly stoppedAt?: string;
-  readonly status: string;
+  pipeline_id: string;
+  id: string;
+  name: string;
+  project_slug: string;
+  status: string;
+  started_by: string;
+  pipeline_number: number;
+  created_at: string;
+  stopped_at: string;
   jobs: Job[];
 }
 
 export interface Job {
-  readonly uid: string;
-  readonly name: string;
-  readonly type: string;
-  readonly startedAt?: string;
-  readonly stoppedAt?: string;
-  readonly status: string;
-  readonly number?: number;
+  dependencies: any[];
+  job_number: number;
+  id: string;
+  started_at: Date;
+  name: string;
+  project_slug: string;
+  status: string;
+  type: string;
+  stopped_at: string;
 }

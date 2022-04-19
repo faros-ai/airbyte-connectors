@@ -25,7 +25,7 @@ export class Pipelines extends AirbyteStreamBase {
   }
 
   get cursorField(): string {
-    return 'updatedAt';
+    return 'updated_at';
   }
 
   async *readRecords(
@@ -45,11 +45,11 @@ export class Pipelines extends AirbyteStreamBase {
     currentStreamState: PipelineState,
     latestRecord: Pipeline
   ): PipelineState {
-    const lastUpdatedAt: Date = new Date(latestRecord.updatedAt);
+    const lastUpdatedAt: Date = new Date(latestRecord.updated_at);
     return {
       lastUpdatedAt:
         lastUpdatedAt >= new Date(currentStreamState?.lastUpdatedAt || 0)
-          ? latestRecord.updatedAt
+          ? latestRecord.updated_at
           : currentStreamState.lastUpdatedAt,
     };
   }

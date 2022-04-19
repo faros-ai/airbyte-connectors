@@ -1,253 +1,151 @@
-import axios from 'axios';
-import AxiosMock from 'axios-mock-adapter';
+import {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs';
+import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {CustomerIOSource} from '../src';
+import {CircleCI} from '../src/circle-ci/circle-ci';
+import * as sut from '../src/index';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
+function readTestResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+}
+
 describe('index', () => {
-  let source: CustomerIOSource;
-  let axiosMock: AxiosMock;
+  const logger = new AirbyteLogger(
+    // Shush messages in tests, unless in debug
+    process.env.LOG_LEVEL === 'debug'
+      ? AirbyteLogLevel.DEBUG
+      : AirbyteLogLevel.FATAL
+  );
 
   beforeEach(() => {
-    const logger = new AirbyteLogger(
-      // Shush messages in tests, unless in debug
-      process.env.LOG_LEVEL === 'debug'
-        ? AirbyteLogLevel.DEBUG
-        : AirbyteLogLevel.FATAL
-    );
-
-    const axiosInstance = axios.create();
-
-    source = new CustomerIOSource(logger, axiosInstance);
-    axiosMock = new AxiosMock(axiosInstance);
+    jest.clearAllMocks();
   });
 
-  describe('spec', () => {
-    it('matches the spec', async () => {
-      await expect(source.spec()).resolves.toStrictEqual(
-        new AirbyteSpec(readResourceFile('spec.json'))
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('spec', async () => {
+    const source = new sut.CircleCISource(logger);
+    await expect(source.spec()).resolves.toStrictEqual(
+      new AirbyteSpec(readResourceFile('spec.json'))
+    );
+  });
+  test('check connection', async () => {
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        {
+          get: jest.fn().mockResolvedValue({}),
+        } as unknown as AxiosInstance,
+        'gh',
+        'huongtn',
+        'sample-test',
+        new Date('2010-03-27T14:03:51-0800')
       );
     });
+
+    const source = new sut.CircleCISource(logger);
+    await expect(
+      source.checkConnection({
+        token: '',
+        project_type: '',
+        org_name: '',
+        repo_name: '',
+        cutoff_days: 90,
+      })
+    ).resolves.toStrictEqual([true, undefined]);
   });
 
-  describe('checkConnection', () => {
-    it('succeeds if it can make an api call', async () => {
-      axiosMock.onGet('/campaigns').reply(200);
-
-      await expect(
-        source.checkConnection({
-          app_api_key: 'testkey',
-          cutoff_days: 90,
-        })
-      ).resolves.toStrictEqual([true, undefined]);
+  test('check connection - incorrect config', async () => {
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        null,
+        'gh',
+        'huongtn',
+        'sample-test',
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
-
-    it('fails if the token is invalid', async () => {
-      axiosMock.onGet('/campaigns').reply(401);
-
-      await expect(
-        source.checkConnection({
-          app_api_key: 'testkey',
-          cutoff_days: 90,
-        })
-      ).resolves.toStrictEqual([
-        false,
-        new VError(
-          'Customer.io authorization failed. Try changing your app api token'
-        ),
-      ]);
-    });
+    const source = new sut.CircleCISource(logger);
+    await expect(
+      source.checkConnection({
+        token: '',
+        project_type: '',
+        org_name: '',
+        repo_name: '',
+        cutoff_days: 90,
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "CircleCI api request failed: Cannot read properties of null (reading 'get')"
+      ),
+    ]);
   });
 
-  describe('streams', () => {
-    describe('campaigns', () => {
-      it('yields all campaigns', async () => {
-        const apiCampaigns = [
-          {
-            id: 1,
-            updated: 1649322500663,
-          },
-          {
-            id: 2,
-            updated: 1649322500663,
-          },
-        ];
-
-        axiosMock.onGet('/campaigns').reply(200, {campaigns: apiCampaigns});
-
-        const [campaignsStream] = source.streams({
-          app_api_key: 'testkey',
-          cutoff_days: 90,
-        });
-
-        const campaignsIterator = campaignsStream.readRecords(
-          SyncMode.FULL_REFRESH
-        );
-
-        const campaigns: any[] = [];
-
-        for await (const campaign of campaignsIterator) {
-          campaigns.push(campaign);
-        }
-
-        expect(campaigns).toEqual(apiCampaigns);
-      });
+  test('streams - projects, use full_refresh sync mode', async () => {
+    const fnProjectsList = jest.fn();
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        {
+          get: fnProjectsList.mockResolvedValue({
+            data: readTestResourceFile('projects.json'),
+          }),
+        } as any,
+        'gh',
+        'huongtn',
+        'sample-test',
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
+    const source = new sut.CircleCISource(logger);
+    const streams = source.streams({});
 
-    describe('campaign actions', () => {
-      it('yields all campaign actions', async () => {
-        axiosMock.onGet('/campaigns').replyOnce(200, {
-          campaigns: [
-            {
-              id: 1,
-            },
-            {
-              id: 2,
-              actions: [{}, {}, {}],
-            },
-            {
-              id: 3,
-              actions: [{}, {}],
-            },
-          ],
-        });
+    const projectsStream = streams[0];
+    const projectsIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
+    const projects = [];
+    for await (const project of projectsIter) {
+      projects.push(project);
+    }
+    expect(fnProjectsList).toHaveBeenCalledTimes(1);
+    expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
+  });
 
-        axiosMock.onGet('/campaigns/2/actions').replyOnce(200, {
-          next: 'abcd',
-          actions: [
-            {
-              id: '1',
-              updated: 1649322500663,
-            },
-            {
-              id: '2',
-              updated: 1649322500663,
-            },
-          ],
-        });
-
-        axiosMock
-          .onGet('/campaigns/2/actions', {
-            params: {
-              start: 'abcd',
-            },
-          })
-          .replyOnce(200, {
-            next: 'bcde',
-            actions: [
-              {
-                id: '3',
-                updated: 1649322500663,
-              },
-            ],
-          });
-
-        axiosMock
-          .onGet('/campaigns/2/actions', {
-            params: {
-              start: 'bcde',
-            },
-          })
-          .replyOnce(200, {
-            next: '',
-            actions: [],
-          });
-
-        axiosMock.onGet('/campaigns/3/actions').replyOnce(200, {
-          next: 'cdef',
-          actions: [
-            {
-              id: '4',
-              updated: 1649322500663,
-            },
-            {
-              id: '5',
-              updated: 1649322500663,
-            },
-          ],
-        });
-
-        axiosMock
-          .onGet('/campaigns/3/actions', {
-            params: {
-              start: 'cdef',
-            },
-          })
-          .replyOnce(200, {
-            next: '',
-            actions: [],
-          });
-
-        const [, campaignActionsStream] = source.streams({
-          app_api_key: 'testkey',
-          cutoff_days: 90,
-        });
-
-        const campaignActionsIterator = campaignActionsStream.readRecords(
-          SyncMode.FULL_REFRESH
-        );
-
-        const campaignActions: any[] = [];
-
-        for await (const campaign of campaignActionsIterator) {
-          campaignActions.push(campaign);
-        }
-
-        expect(campaignActions).toEqual([
-          {id: '1', updated: 1649322500663},
-          {id: '2', updated: 1649322500663},
-          {id: '3', updated: 1649322500663},
-          {id: '4', updated: 1649322500663},
-          {id: '5', updated: 1649322500663},
-        ]);
-      });
+  test('streams - pipelines, use full_refresh sync mode', async () => {
+    const fnPipelinesList = jest.fn();
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        {
+          get: fnPipelinesList.mockResolvedValue({
+            data: readTestResourceFile('pipelines.json'),
+          }),
+        } as any,
+        'gh',
+        'huongtn',
+        'sample-test',
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
+    const source = new sut.CircleCISource(logger);
+    const streams = source.streams({});
 
-    describe('newsletters', () => {
-      it('yields all newsletters', async () => {
-        const apiNewsletters = [
-          {
-            id: 1,
-            updated: 1649322500663,
-          },
-          {
-            id: 2,
-            updated: 1649322500663,
-          },
-        ];
-
-        axiosMock
-          .onGet('/newsletters')
-          .reply(200, {newsletters: apiNewsletters});
-
-        const [, , newslettersStream] = source.streams({
-          app_api_key: 'testkey',
-          cutoff_days: 90,
-        });
-
-        const newslettersIterator = newslettersStream.readRecords(
-          SyncMode.FULL_REFRESH
-        );
-
-        const newsletters: any[] = [];
-
-        for await (const newsletter of newslettersIterator) {
-          newsletters.push(newsletter);
-        }
-
-        expect(newsletters).toEqual(apiNewsletters);
-      });
-    });
+    const pipelinesStream = streams[1];
+    const pipelinesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
+    const pipelines = [];
+    for await (const pipeline of pipelinesIter) {
+      pipelines.push(pipeline);
+    }
+    expect(fnPipelinesList).toHaveBeenCalledTimes(1);
+    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
   });
 });

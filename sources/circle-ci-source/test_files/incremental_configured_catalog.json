@@ -15,7 +15,7 @@
           ]
         ],
         "default_cursor_field": [
-          "updatedAt"
+          "updated_at"
         ]
       },
       "sync_mode": "full_refresh",

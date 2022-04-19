@@ -17,7 +17,7 @@ export interface CircleCIConfig {
 }
 
 export class CircleCI {
-  private constructor(
+  constructor(
     readonly axios: AxiosInstance,
     readonly projectType: string,
     readonly orgName: string,
@@ -48,7 +48,6 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     const rejectUnauthorized = config.rejectUnauthorized ?? true;
-
     const url = config.url ?? CIRCLE_CI_BETA_API_URL;
     return new CircleCI(
       axiosInstance ??
@@ -67,7 +66,7 @@ export class CircleCI {
     );
   }
 
-  projectSlug() {
+  projectSlug(): string {
     return encodeURIComponent(
       `${this.projectType}/${this.orgName}/${this.repoName}`
     );
@@ -115,42 +114,29 @@ export class CircleCI {
     return list;
   }
   async *fetchProject(): AsyncGenerator<Project> {
-    const slug = encodeURIComponent(`${this.projectSlug()}`);
+    const slug = this.projectSlug();
     const {data} = await this.axios.get(`/project/${slug}`);
-    yield {
-      uid: data.slug,
-      name: data.name,
-      vcsOrgName: data.organization_name,
-      vcsProvider: data.vcs_info?.provider,
-    };
+    yield data;
   }
   async *fetchPipelines(since?: string): AsyncGenerator<Pipeline> {
     const startTime = new Date(since ?? 0);
     const startTimeMax =
       startTime > this.startDate ? startTime : this.startDate;
-
-    const slug = encodeURIComponent(`${this.projectSlug()}`);
+    const slug = this.projectSlug();
     const url = `/project/${slug}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
       (params) => this.axios.get(url, {params: params}),
       (item: any) => ({
-        uid: item.id,
-        state: item.state,
-        projectSlug: item.project_slug,
-        number: item.number,
-        createdAt: item.created_at,
-        updatedAt: item.updated_at,
-        commitSha: item.vcs?.revision,
-        vcsProvider: item.vcs?.provider_name,
+        ...item,
         workflows: [],
       }),
       (item: Pipeline) =>
-        item.updatedAt && startTimeMax >= new Date(item.updatedAt)
+        item.updated_at && startTimeMax >= new Date(item.updated_at)
     );
     for (const pipeline of pipelines) {
-      pipeline.workflows = await this.fetchWorkflows(pipeline.uid);
+      pipeline.workflows = await this.fetchWorkflows(pipeline.id);
       for (const workflow of pipeline.workflows) {
-        workflow.jobs = await this.fetchJobs(workflow.uid);
+        workflow.jobs = await this.fetchJobs(workflow.id);
       }
       yield pipeline;
     }
@@ -161,11 +147,7 @@ export class CircleCI {
     return this.iterate(
       (params) => this.axios.get(url, {params: params}),
       (item: any) => ({
-        uid: item.id,
-        name: item.name,
-        createdAt: item.created_at,
-        stoppedAt: item.stopped_at,
-        status: item.status,
+        ...item,
         jobs: [],
       })
     );
@@ -177,16 +159,7 @@ export class CircleCI {
         this.axios.get(`/workflow/${workflowId}/job`, {
           params: params,
         }),
-      (item: any) => ({
-        uid: item.id,
-        number: item.job_number,
-        name: item.name,
-        startedAt: item.started_at,
-        stoppedAt: item.stopped_at,
-        status: item.status,
-        type: item.type,
-        projectSlug: item.project_slug,
-      })
+      (item: any) => item
     );
   }
 }
