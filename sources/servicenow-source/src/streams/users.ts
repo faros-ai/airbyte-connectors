@@ -10,7 +10,7 @@ import {User} from '../servicenow/models';
 import {ServiceNow} from '../servicenow/servicenow';
 
 export interface UsersState {
-  sys_updated_on: Date;
+  sys_updated_on: string;
 }
 
 export class Users extends AirbyteStreamBase {
@@ -41,7 +41,9 @@ export class Users extends AirbyteStreamBase {
       ? new Date(latestRecord.sys_updated_on.value).getTime()
       : 0;
     return {
-      sys_updated_on: new Date(Math.max(latestModifiedAt, recordModifiedAt)),
+      sys_updated_on: new Date(
+        Math.max(latestModifiedAt, recordModifiedAt)
+      ).toISOString(),
     };
   }
 

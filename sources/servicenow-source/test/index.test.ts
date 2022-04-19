@@ -83,7 +83,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       undefined,
-      {sys_updated_on: new Date(sys_updated_on)}
+      {sys_updated_on}
     );
     const items = [];
     for await (const item of itemIter) {
@@ -119,7 +119,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       undefined,
-      {sys_updated_on: new Date(sys_updated_on)}
+      {sys_updated_on}
     );
     const items = [];
     for await (const item of itemIter) {

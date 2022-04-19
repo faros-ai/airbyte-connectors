@@ -68,14 +68,14 @@ export class ServiceNow {
   // Retrieve incidents that have been modified since last sys_updated_on
   // or retrieve all incidents if sys_updated_on not set
   async *getIncidents(
-    sys_updated_on?: Date,
+    sys_updated_on?: string,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident, any, any> {
     let offset = 0;
     let hasNext = false;
     let queryCondition = '';
     if (sys_updated_on) {
-      queryCondition = `sys_updated_on>=${sys_updated_on.toISOString()}`;
+      queryCondition = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
       const incidents = await this.client.incidents.list(
@@ -103,14 +103,14 @@ export class ServiceNow {
   // Retrieve users that have been modified since last sys_updated_on
   // or retrieve all users if sys_updated_on not set
   async *getUsers(
-    sys_updated_on?: Date,
+    sys_updated_on?: string,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<User, any, any> {
     let offset = 0;
     let hasNext = false;
     let queryCondition = '';
     if (sys_updated_on) {
-      queryCondition = `sys_updated_on>=${sys_updated_on.toISOString()}`;
+      queryCondition = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
       const users = await this.client.users.list(

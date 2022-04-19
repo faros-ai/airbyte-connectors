@@ -10,7 +10,7 @@ import {Incident} from '../servicenow/models';
 import {ServiceNow} from '../servicenow/servicenow';
 
 export interface IncidentsState {
-  sys_updated_on: Date;
+  sys_updated_on: string;
 }
 
 export class Incidents extends AirbyteStreamBase {
@@ -41,7 +41,9 @@ export class Incidents extends AirbyteStreamBase {
       ? new Date(latestRecord.sys_updated_on.value).getTime()
       : 0;
     return {
-      sys_updated_on: new Date(Math.max(latestModified, recordModified)),
+      sys_updated_on: new Date(
+        Math.max(latestModified, recordModified)
+      ).toISOString(),
     };
   }
 
