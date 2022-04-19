@@ -208,7 +208,7 @@ describe('gitlab-ci', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      group: 1,
+      groups: 1,
       projects: 2,
       pipelines: 3,
       jobs: 3,

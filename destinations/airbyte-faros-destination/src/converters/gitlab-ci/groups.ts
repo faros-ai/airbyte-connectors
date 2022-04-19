@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
-export class Group extends GitlabConverter {
+export class Groups extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
   ];

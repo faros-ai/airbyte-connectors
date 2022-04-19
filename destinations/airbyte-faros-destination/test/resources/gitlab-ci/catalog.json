@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__gitlab-ci__group"
+        "name": "mytestsource__gitlab-ci__groups"
       },
       "destination_sync_mode": "append"
     },
