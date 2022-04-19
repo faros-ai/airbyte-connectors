@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import {check} from 'prettier';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -30,6 +31,27 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const incidents = readTestResourceFile('incidents.json');
+  const users = readTestResourceFile('users.json');
+  const listIncidents = jest.fn().mockResolvedValue(incidents);
+  const listUsers = jest.fn().mockResolvedValue(users);
+  const checkConnection = jest.fn().mockResolvedValue({});
+  ServiceNow.instance = jest.fn().mockReturnValue(
+    new ServiceNow(
+      {
+        incidents: {
+          list: listIncidents,
+        },
+        users: {
+          list: listUsers,
+        },
+        checkConnection,
+      } as ServiceNowClient,
+      {} as ServiceNowConfig,
+      logger
+    )
+  );
+
   test('spec', async () => {
     const source = new sut.ServiceNowSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
@@ -40,49 +62,43 @@ describe('index', () => {
   test('check connection bad token', async () => {
     const source = new sut.ServiceNowSource(logger);
     const expectedError = new VError('Bad Connection');
-    ServiceNow.instance = jest.fn().mockReturnValue({
-      checkConnection: jest.fn().mockRejectedValue(expectedError),
-    });
+    checkConnection.mockRejectedValueOnce(expectedError);
     await expect(
-      source.checkConnection({
-        apiKey: 'bad',
-        applicationKey: 'bad',
-      })
+      source.checkConnection({username: 'bad', password: 'bad'})
     ).resolves.toStrictEqual([false, expectedError]);
   });
 
   test('check connection good token', async () => {
     const source = new sut.ServiceNowSource(logger);
-    ServiceNow.instance = jest.fn().mockReturnValue({
-      checkConnection: jest.fn().mockResolvedValue({}),
-    });
     await expect(
-      source.checkConnection({apiKey: 'good', applicationKey: 'good'})
+      source.checkConnection({username: 'good', password: 'good'})
     ).resolves.toStrictEqual([true, undefined]);
   });
 
-  test('streams - incidents, use full_refresh sync mode', async () => {
-    const incidents = readTestResourceFile('incidents.json');
-    ServiceNow.instance = jest.fn().mockReturnValue(
-      new ServiceNow(
-        {
-          incidents: {
-            list: jest.fn().mockResolvedValue(incidents),
-          },
-          users: {
-            list: () => Promise.resolve([]),
-          },
-        } as ServiceNowClient,
-        {} as ServiceNowConfig,
-        logger
-      )
-    );
-
+  test('streams - incidents, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams({});
+    const stream = streams[0];
+    const sys_updated_on = '2022-02-27T21:00:44.706Z';
+    const itemIter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {sys_updated_on: new Date(sys_updated_on)}
+    );
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(listIncidents.mock.calls.length).toBe(1);
+    expect(listIncidents.mock.calls[0][1]).toBe(
+      `sys_updated_on>=${sys_updated_on}`
+    );
+  });
+
+  test('streams - incidents, use full_refresh sync mode', async () => {
+    const source = new sut.ServiceNowSource(logger);
+    const streams = source.streams({});
     const stream = streams[0];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -92,64 +108,33 @@ describe('index', () => {
     expect(items).toStrictEqual(incidents);
   });
 
-  // test('streams - incidents, use incremental sync mode', async () => {
-  //   const incidents = readTestResourceFile('incidents.json');
-  //   ServiceNow.instance = jest.fn().mockReturnValue(
-  //     new ServiceNow(
-  //       {
-  //         incidents: {
-  //           list: jest.fn().mockResolvedValue(incidents),
-  //         },
-  //         users: {
-  //           list: () => Promise.resolve([]),
-  //         },
-  //       } as ServiceNowClient,
-  //       {} as ServiceNowConfig,
-  //       logger
-  //     )
-  //   );
-
-  //   const source = new sut.ServiceNowSource(logger);
-  //   const streams = source.streams({
-  //     apiKey: '',
-  //     applicationKey: '',
-  //   });
-  //   const stream = streams[0];
-  //   const itemIter = stream.readRecords(
-  //     SyncMode.INCREMENTAL,
-  //     undefined,
-  //     undefined,
-  //     {sys_updated_on: '2022-02-27T21:00:44.706Z'}
-  //   );
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual([incidents[1]]);
-  // });
-
-  test('streams - users, use full_refresh sync mode', async () => {
-    const users = readTestResourceFile('users.json');
-    ServiceNow.instance = jest.fn().mockReturnValue(
-      new ServiceNow(
-        {
-          users: {
-            list: jest.fn().mockReturnValue(users),
-          },
-          incidents: {
-            list: () => Promise.resolve([]),
-          },
-        } as ServiceNowClient,
-        {} as ServiceNowConfig,
-        logger
-      )
-    );
-
+  test('streams - users, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams({
       apiKey: '',
       applicationKey: '',
     });
+    const stream = streams[1];
+    const sys_updated_on = '2022-02-27T21:00:44.706Z';
+    const itemIter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {sys_updated_on: new Date(sys_updated_on)}
+    );
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(listUsers.mock.calls.length).toBe(1);
+    expect(listUsers.mock.calls[0][1]).toBe(
+      `sys_updated_on>=${sys_updated_on}`
+    );
+  });
+
+  test('streams - users, use full_refresh sync mode', async () => {
+    const source = new sut.ServiceNowSource(logger);
+    const streams = source.streams({});
     const stream = streams[1];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -158,40 +143,4 @@ describe('index', () => {
     }
     expect(items).toStrictEqual(users);
   });
-
-  // test('streams - users, use incremental sync mode', async () => {
-  //   const users = readTestResourceFile('users.json');
-  //   ServiceNow.instance = jest.fn().mockReturnValue(
-  //     new ServiceNow(
-  //       {
-  //         users: {
-  //           list: jest.fn().mockReturnValue(users),
-  //         },
-  //         incidents: {
-  //           list: () => Promise.resolve([]),
-  //         },
-  //       } as ServiceNowClient,
-  //       {} as ServiceNowConfig,
-  //       logger
-  //     )
-  //   );
-
-  //   const source = new sut.ServiceNowSource(logger);
-  //   const streams = source.streams({
-  //     apiKey: '',
-  //     applicationKey: '',
-  //   });
-  //   const stream = streams[1];
-  //   const itemIter = stream.readRecords(
-  //     SyncMode.INCREMENTAL,
-  //     undefined,
-  //     undefined,
-  //     {lastModifiedAt: '2022-02-27T21:00:44.706Z'}
-  //   );
-  //   const items = [];
-  //   for await (const item of itemIter) {
-  //     items.push(item);
-  //   }
-  //   expect(items).toStrictEqual([users[1]]);
-  // });
 });

@@ -35,6 +35,7 @@ export interface ServiceNowClient {
   readonly users: {
     list: (pagination: Pagination, queryConditions?: string) => Promise<User[]>;
   };
+  readonly checkConnection: () => Promise<void>;
 }
 
 export class ServiceNow {
@@ -51,20 +52,21 @@ export class ServiceNow {
 
     const client = this.makeClient(config);
 
-    return new ServiceNow(client, config, logger);
+    ServiceNow.servicenow = new ServiceNow(client, config, logger);
+    return ServiceNow.servicenow;
   }
 
   async checkConnection(): Promise<void> {
     try {
       // Retrieve a single user to verify connection
-      await this.client.users.list({pageSize: 1, offset: 0});
+      await this.client.checkConnection();
     } catch (err: any) {
       throw new VError(err.message ?? JSON.stringify(err));
     }
   }
 
-  // Retrieve incidents that have been modified since lastModified
-  // or retrieve all incidents if lastModified not set
+  // Retrieve incidents that have been modified since last sys_updated_on
+  // or retrieve all incidents if sys_updated_on not set
   async *getIncidents(
     sys_updated_on?: Date,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
@@ -98,8 +100,8 @@ export class ServiceNow {
     } while (hasNext);
   }
 
-  // Retrieve users that have been modified since lastModified
-  // or retrieve all users if lastModified not set
+  // Retrieve users that have been modified since last sys_updated_on
+  // or retrieve all users if sys_updated_on not set
   async *getUsers(
     sys_updated_on?: Date,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
@@ -178,6 +180,16 @@ export class ServiceNow {
 
           return res?.data?.data?.GlideRecord_Query?.sys_user?._results ?? [];
         },
+      },
+      checkConnection: async (): Promise<void> => {
+        try {
+          await httpClient.post(GRAPHQL_API, {
+            query: listUsersQuery,
+            variables: {pageSize: 1},
+          });
+        } catch (err: any) {
+          this.handleApiError(err);
+        }
       },
     };
 
