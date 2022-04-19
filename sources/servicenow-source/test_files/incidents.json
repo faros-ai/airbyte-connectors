@@ -9,9 +9,6 @@
     "short_description": {
       "value": "Need to add more memory to laptop"
     },
-    "description": {
-      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
-    },
     "severity": {
       "value": "3",
       "displayValue": "3 - Low"
@@ -27,9 +24,6 @@
     "assigned_to": {
       "value": "681b365ec0a80164000fb0b05854a0cd"
     },
-    "opened_by": {
-      "value": "5137153cc611227c000bbd1bd8cd2007"
-    },
     "resolved_at": {
       "value": null
     },
@@ -38,9 +32,6 @@
     },
     "closed_at": {
       "value": "2021-12-12 23:55:10"
-    },
-    "active": {
-      "value": true
     },
     "sys_updated_on": {
       "value": "2022-03-17 19:44:35"
@@ -55,9 +46,6 @@
     },
     "short_description": {
       "value": "Seem to have an issue with my hard drive..."
-    },
-    "description": {
-      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
     },
     "severity": {
       "value": "3",
@@ -74,9 +62,6 @@
     "assigned_to": {
       "value": "9ee1b13dc6112271007f9d0efdb69cd0"
     },
-    "opened_by": {
-      "value": "5137153cc611227c000bbd1bd8cd2006"
-    },
     "resolved_at": {
       "value": "2022-03-17 19:56:12"
     },
@@ -85,9 +70,6 @@
     },
     "closed_at": {
       "value": "2021-12-01 23:56:53"
-    },
-    "active": {
-      "value": false
     },
     "sys_updated_on": {
       "value": "2022-03-17 20:15:35"
@@ -102,9 +84,6 @@
     },
     "short_description": {
       "value": "Please remove the latest hotfix from my PC"
-    },
-    "description": {
-      "value": "I have a project involving video editing to complete. I've installed the editing software and the memory in my laptop is insufficient to run it effectively."
     },
     "severity": {
       "value": "3",
@@ -121,9 +100,6 @@
     "assigned_to": {
       "value": "681b365ec0a80164000fb0b05854a0cd"
     },
-    "opened_by": {
-      "value": "5137153cc611227c000bbd1bd8cd2007"
-    },
     "resolved_at": {
       "value": ""
     },
@@ -132,9 +108,6 @@
     },
     "closed_at": {
       "value": "2021-12-17 23:59:20"
-    },
-    "active": {
-      "value": true
     },
     "sys_updated_on": {
       "value": "2022-03-17 19:52:24"

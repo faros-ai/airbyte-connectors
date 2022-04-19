@@ -5,5 +5,102 @@
     "sys_id"
   ],
   "properties": {
+    "sys_id": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "number": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "short_description": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "severity": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "displayValue": {
+          "type": "string"
+        }
+      }
+    },
+    "priority": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "displayValue": {
+          "type": "string"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "displayValue": {
+          "type": "string"
+        }
+      }
+    },
+    "assigned_to": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "resolved_at": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "opened_at": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "closed_at": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "sys_updated_on": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    }
   }
 }

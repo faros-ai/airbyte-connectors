@@ -159,8 +159,6 @@ export class Incidents extends ServiceNowConverter {
             category: IncidentStatusCategory.Investigating,
             detail: state,
           };
-        case 'On Hold':
-          return {category: IncidentStatusCategory.Identified, detail: state};
         case 'Resolved':
           return {category: IncidentStatusCategory.Resolved, detail: state};
         default:

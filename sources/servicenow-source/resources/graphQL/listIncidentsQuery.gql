@@ -26,9 +26,6 @@ query listIncidents($pageSize: Int! = 1, $offset: Int! = 2, $queryConditions: St
         assigned_to {
           value
         }
-        opened_by {
-          value
-        }
         resolved_at {
           value
         }
