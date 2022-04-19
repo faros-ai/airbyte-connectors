@@ -81,29 +81,6 @@ export class Incidents extends ServiceNowConverter {
       });
     }
 
-    // const applicationMapping = this.applicationMapping(ctx);
-    // const services: string[] = incident.attributes?.fields?.services?.value;
-    // if (services) {
-    //   for (const service of services) {
-    //     let application = {name: service, platform: ''};
-    //     if (applicationMapping?.[service]?.name) {
-    //       const mappedApp = applicationMapping[service];
-    //       application = {
-    //         name: mappedApp.name,
-    //         platform: mappedApp.platform ?? '',
-    //       };
-    //     }
-    //     res.push({model: 'compute_Application', record: application});
-    //     res.push({
-    //       model: 'ims_IncidentApplicationImpact',
-    //       record: {
-    //         incident: incidentKey,
-    //         application,
-    //       },
-    //     });
-    //   }
-    // }
-
     return res;
   }
 

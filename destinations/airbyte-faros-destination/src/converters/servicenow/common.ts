@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter, parseObjectConfig, StreamContext} from '../converter';
+import {Converter, StreamContext} from '../converter';
 
 export enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
@@ -20,12 +20,9 @@ export enum IncidentPriorityCategory {
 }
 
 interface ServiceNowConfig {
-  // application_mapping?: ApplicationMapping;
   default_severity?: IncidentSeverityCategory;
   default_priority?: IncidentPriorityCategory;
 }
-
-// type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 /** ServiceNow converter base */
 export abstract class ServiceNowConverter extends Converter {
@@ -35,15 +32,6 @@ export abstract class ServiceNowConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.sys_id?.value;
   }
-
-  // protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-  //   return (
-  //     parseObjectConfig(
-  //       this.config(ctx)?.application_mapping,
-  //       'Application Mapping'
-  //     ) ?? {}
-  //   );
-  // }
 
   protected config(ctx: StreamContext): ServiceNowConfig {
     return ctx.config.source_specific_configs?.servicenow ?? {};
