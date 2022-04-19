@@ -1,4 +1,4 @@
-query listIncidents($pageSize: Int! = 1, $offset: Int! = 2, $queryConditions: String! = "") {
+query listIncidents($pageSize: Int! = 100, $offset: Int! = 0, $queryConditions: String! = "") {
   GlideRecord_Query {
     incident(pagination: {limit: $pageSize, offset: $offset}, queryConditions: $queryConditions) {
       _results {
