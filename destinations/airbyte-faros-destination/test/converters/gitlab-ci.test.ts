@@ -10,19 +10,19 @@ import {CLI, read} from '../cli';
 import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
 import {gitlabCiAllStreamsLog, gitlabCiLog, gitlabCiPGRawLog} from './data';
 
-describe('gitlabci', () => {
+describe('gitlab-ci', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/gitlabci/catalog.json';
-  const catalogRawPath = 'test/resources/gitlabci/catalog-raw.json';
+  const catalogPath = 'test/resources/gitlab-ci/catalog.json';
+  const catalogRawPath = 'test/resources/gitlab-ci/catalog-raw.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';
-  const streamNamePrefix = 'mytestsource__gitlabci__';
+  const streamNamePrefix = 'mytestsource__gitlab-ci__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -144,11 +144,11 @@ describe('gitlabci', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__gitlabci__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__gitlab-ci__bad', {bad: 'dummy'})
       ) +
         os.EOL +
         JSON.stringify(
-          AirbyteRecord.make('mytestsource__gitlabci__something_else', {
+          AirbyteRecord.make('mytestsource__gitlab-ci__something_else', {
             foo: 'bar',
           })
         ) +
@@ -178,7 +178,7 @@ describe('gitlabci', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        AirbyteRecord.make('mytestsource__gitlab__bad', {bad: 'dummy'})
+        AirbyteRecord.make('mytestsource__gitlab-ci__bad', {bad: 'dummy'})
       ) + os.EOL,
       'utf8'
     );
@@ -189,7 +189,7 @@ describe('gitlabci', () => {
     expect(stdout).toMatch('Errored 1 records');
     expect(stdout).toMatch('Skipped 0 records');
     const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__gitlab__bad');
+    expect(stderr).toMatch('Undefined stream mytestsource__gitlab-ci__bad');
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 

@@ -23,10 +23,10 @@ export const gitlabAllStreamsLog = readTestResourceFile(
   'gitlab/all-streams.log'
 );
 
-export const gitlabCiLog = readTestResourceFile('gitlabci/streams.log');
-export const gitlabCiPGRawLog = readTestResourceFile('gitlabci/pg-raw.log');
+export const gitlabCiLog = readTestResourceFile('gitlab-ci/streams.log');
+export const gitlabCiPGRawLog = readTestResourceFile('gitlab-ci/pg-raw.log');
 export const gitlabCiAllStreamsLog = readTestResourceFile(
-  'gitlabci/all-streams.log'
+  'gitlab-ci/all-streams.log'
 );
 
 export const phabricatorAllStreamsLog = readTestResourceFile(

@@ -16,7 +16,7 @@ export class Jobs extends GitlabConverter {
     'cicd_BuildStep',
   ];
 
-  private readonly pipelinesStream = new StreamName('gitlabci', 'pipelines');
+  private readonly pipelinesStream = new StreamName('gitlab-ci', 'pipelines');
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [this.pipelinesStream];

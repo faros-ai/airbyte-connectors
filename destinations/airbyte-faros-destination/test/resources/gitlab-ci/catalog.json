@@ -2,31 +2,31 @@
   "streams": [
     {
       "stream": {
-        "name": "_airbyte_raw_mytestsource__gitlabci__group"
+        "name": "mytestsource__gitlab-ci__group"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "_airbyte_raw_mytestsource__gitlabci__projects"
+        "name": "mytestsource__gitlab-ci__projects"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "_airbyte_raw_mytestsource__gitlabci__pipelines"
+        "name": "mytestsource__gitlab-ci__pipelines"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "_airbyte_raw_mytestsource__gitlabci__jobs"
+        "name": "mytestsource__gitlab-ci__jobs"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "_airbyte_raw_mytestsource__gitlabci__something_else"
+        "name": "mytestsource__gitlab-ci__something_else"
       },
       "destination_sync_mode": "append"
     }

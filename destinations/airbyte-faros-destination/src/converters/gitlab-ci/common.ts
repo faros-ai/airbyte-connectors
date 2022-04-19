@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 
-import {Converter, DestinationRecord} from '../converter';
+import {Converter} from '../converter';
 
 export interface CategoryRef {
   readonly category: string;
