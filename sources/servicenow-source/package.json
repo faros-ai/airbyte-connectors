@@ -1,12 +1,12 @@
 {
-  "name": "datadog-source",
+  "name": "servicenow-source",
   "version": "0.1.68",
-  "description": "DataDog Airbyte source",
+  "description": "ServiceNow Airbyte source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "datadog"
+    "servicenow"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",

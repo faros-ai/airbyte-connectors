@@ -1,4 +1,4 @@
-connector_image: datadog-source
+connector_image: servicenow-source
 tests:
   spec:
     - config_path: "test_files/config.json"
@@ -21,5 +21,5 @@ tests:
       configured_catalog_path: "test_files/incremental_configured_catalog.json"
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
-        incidents: [ "lastModified" ]
-        users: [ "lastModifiedAt" ]
+        incidents: [ "sys_updated_on.value" ]
+        users: [ "sys_updated_on.value" ]
