@@ -1,13 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
-import {GitlabCommon, GitlabConverter} from './common';
+import {GitlabCommon, GitlabConverter} from '../common/gitlab';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 
 export class Pipelines extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
