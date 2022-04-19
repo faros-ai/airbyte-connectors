@@ -78,10 +78,10 @@ describe('gitlab-ci', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 9 messages');
-    expect(stdout).toMatch('Read 9 records');
-    expect(stdout).toMatch('Processed 9 records');
-    expect(stdout).toMatch('Wrote 12 records');
+    expect(stdout).toMatch('Read 31 messages');
+    expect(stdout).toMatch('Read 31 records');
+    expect(stdout).toMatch('Processed 31 records');
+    expect(stdout).toMatch('Wrote 40 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -102,10 +102,10 @@ describe('gitlab-ci', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 9 messages');
-    expect(stdout).toMatch('Read 9 records');
-    expect(stdout).toMatch('Processed 9 records');
-    expect(stdout).toMatch('Would write 12 records');
+    expect(stdout).toMatch('Read 31 messages');
+    expect(stdout).toMatch('Read 31 records');
+    expect(stdout).toMatch('Processed 31 records');
+    expect(stdout).toMatch('Would write 40 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -125,8 +125,8 @@ describe('gitlab-ci', () => {
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Processed 9 records');
-    expect(stdout).toMatch('Would write 12 records');
+    expect(stdout).toMatch('Processed 31 records');
+    expect(stdout).toMatch('Would write 40 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -208,10 +208,10 @@ describe('gitlab-ci', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      groups: 1,
-      projects: 2,
-      pipelines: 3,
-      jobs: 3,
+      groups: 5,
+      projects: 8,
+      pipelines: 9,
+      jobs: 9,
     };
 
     const processed = _(processedByStream)
@@ -222,11 +222,11 @@ describe('gitlab-ci', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Build: 3,
-      cicd_BuildCommitAssociation: 3,
-      cicd_BuildStep: 3,
-      cicd_Organization: 1,
-      cicd_Pipeline: 2,
+      cicd_Build: 9,
+      cicd_BuildCommitAssociation: 9,
+      cicd_BuildStep: 9,
+      cicd_Organization: 5,
+      cicd_Pipeline: 8,
     };
 
     const processedTotal = _(processedByStream).values().sum();
