@@ -56,7 +56,7 @@ Example `index.ts`:
 ```typescript
 import {Command} from 'commander';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Converter, DestinationModel, DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
+import {Converter,DestinationModel,DestinationRecord,FarosDestinationRunner,StreamContext} from 'airbyte-faros-destination'
 
 class Builds extends Converter {
   source = 'CustomSource'

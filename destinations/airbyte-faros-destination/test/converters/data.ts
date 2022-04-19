@@ -88,3 +88,6 @@ export const azureactivedirectoryAllStreamsLog = readTestResourceFile(
 export const azurepipelineAllStreamsLog = readTestResourceFile(
   'azurepipeline/all-streams.log'
 );
+export const opsgenieAllStreamsLog = readTestResourceFile(
+  'opsgenie/all-streams.log'
+);
