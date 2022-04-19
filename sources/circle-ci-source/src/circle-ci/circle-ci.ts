@@ -1,0 +1,192 @@
+import axios, {AxiosError, AxiosInstance} from 'axios';
+import https from 'https';
+import {VError} from 'verror';
+
+import {Job, Pipeline, Project, Workflow} from './typings';
+
+const CIRCLE_CI_BETA_API_URL = 'https://circleci.com/api/v2';
+
+export interface CircleCIConfig {
+  readonly token: string;
+  readonly org_name: string;
+  readonly project_type: string;
+  readonly repo_name: string;
+  readonly rejectUnauthorized: boolean;
+  readonly cutoff_days: number;
+  readonly url?: string;
+}
+
+export class CircleCI {
+  private constructor(
+    readonly axios: AxiosInstance,
+    readonly projectType: string,
+    readonly orgName: string,
+    readonly repoName: string,
+    readonly startDate: Date
+  ) {}
+
+  static instance(
+    config: CircleCIConfig,
+    axiosInstance?: AxiosInstance
+  ): CircleCI {
+    if (!config.token) {
+      throw new VError('No token provided');
+    }
+    if (!config.project_type) {
+      throw new VError('No project_type provided');
+    }
+    if (!config.org_name) {
+      throw new VError('No org_name provided');
+    }
+    if (!config.repo_name) {
+      throw new VError('No repo_name provided');
+    }
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+
+    const rejectUnauthorized = config.rejectUnauthorized ?? true;
+
+    const url = config.url ?? CIRCLE_CI_BETA_API_URL;
+    return new CircleCI(
+      axiosInstance ??
+        axios.create({
+          baseURL: url,
+          headers: {
+            accept: 'application/json',
+            'Circle-Token': config.token,
+          },
+          httpsAgent: new https.Agent({rejectUnauthorized}),
+        }),
+      config.project_type,
+      config.org_name,
+      config.repo_name,
+      startDate
+    );
+  }
+
+  projectSlug() {
+    return encodeURIComponent(
+      `${this.projectType}/${this.orgName}/${this.repoName}`
+    );
+  }
+  async checkConnection(): Promise<void> {
+    try {
+      await this.axios.get(`/project/${this.projectSlug()}`);
+    } catch (error) {
+      if (
+        (error as AxiosError).response &&
+        (error as AxiosError).response.status === 401
+      ) {
+        throw new VError(
+          'CircleCI authorization failed. Try changing your app api token'
+        );
+      }
+
+      throw new VError(
+        `CircleCI api request failed: ${(error as Error).message}`
+      );
+    }
+  }
+  private async iterate<V>(
+    requester: (params: any | undefined) => Promise<any>,
+    deserializer: (item: any) => any,
+    stopper?: (item: any) => boolean
+  ): Promise<V[]> {
+    const list = [];
+    let pageToken = undefined;
+    let getNextPage = true;
+    do {
+      const res: any = await requester({'page-token': pageToken});
+
+      const items = Array.isArray(res) ? res : res.data.items;
+      for (const item of items) {
+        const data = deserializer(item);
+        if (stopper && stopper(data)) {
+          getNextPage = false;
+          break;
+        }
+        list.push(data);
+      }
+      pageToken = res.data.next_page_token;
+    } while (getNextPage && pageToken);
+    return list;
+  }
+  async *fetchProject(): AsyncGenerator<Project> {
+    const slug = encodeURIComponent(`${this.projectSlug()}`);
+    const {data} = await this.axios.get(`/project/${slug}`);
+    yield {
+      uid: data.slug,
+      name: data.name,
+      vcsOrgName: data.organization_name,
+      vcsProvider: data.vcs_info?.provider,
+    };
+  }
+  async *fetchPipelines(since?: string): AsyncGenerator<Pipeline> {
+    const startTime = new Date(since ?? 0);
+    const startTimeMax =
+      startTime > this.startDate ? startTime : this.startDate;
+
+    const slug = encodeURIComponent(`${this.projectSlug()}`);
+    const url = `/project/${slug}/pipeline`;
+    const pipelines = await this.iterate<Pipeline>(
+      (params) => this.axios.get(url, {params: params}),
+      (item: any) => ({
+        uid: item.id,
+        state: item.state,
+        projectSlug: item.project_slug,
+        number: item.number,
+        createdAt: item.created_at,
+        updatedAt: item.updated_at,
+        commitSha: item.vcs?.revision,
+        vcsProvider: item.vcs?.provider_name,
+        workflows: [],
+      }),
+      (item: Pipeline) =>
+        item.updatedAt && startTimeMax >= new Date(item.updatedAt)
+    );
+    for (const pipeline of pipelines) {
+      pipeline.workflows = await this.fetchWorkflows(pipeline.uid);
+      for (const workflow of pipeline.workflows) {
+        workflow.jobs = await this.fetchJobs(workflow.uid);
+      }
+      yield pipeline;
+    }
+  }
+
+  fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
+    const url = `/pipeline/${pipelineId}/workflow`;
+    return this.iterate(
+      (params) => this.axios.get(url, {params: params}),
+      (item: any) => ({
+        uid: item.id,
+        name: item.name,
+        createdAt: item.created_at,
+        stoppedAt: item.stopped_at,
+        status: item.status,
+        jobs: [],
+      })
+    );
+  }
+
+  async fetchJobs(workflowId: string): Promise<Job[]> {
+    return this.iterate(
+      (params) =>
+        this.axios.get(`/workflow/${workflowId}/job`, {
+          params: params,
+        }),
+      (item: any) => ({
+        uid: item.id,
+        number: item.job_number,
+        name: item.name,
+        startedAt: item.started_at,
+        stoppedAt: item.stopped_at,
+        status: item.status,
+        type: item.type,
+        projectSlug: item.project_slug,
+      })
+    );
+  }
+}
