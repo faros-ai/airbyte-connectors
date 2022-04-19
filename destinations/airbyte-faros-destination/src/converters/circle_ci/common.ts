@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter} from '../converter';
 import {BuildKey, Pipeline, Workflow} from './models';
 
 export class CircleCICommon {
