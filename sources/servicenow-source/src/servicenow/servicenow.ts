@@ -7,6 +7,7 @@ import VError from 'verror';
 import {Incident, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_CUTOFF_DAYS = 90;
 const GRAPHQL_API = '/api/now/graphql';
 
 const listIncidentsQuery = fs.readFileSync(
@@ -22,6 +23,7 @@ export interface ServiceNowConfig {
   readonly username: string;
   readonly password: string;
   readonly url: string;
+  readonly cutoff_days?: number;
   readonly page_size?: number;
 }
 
@@ -40,12 +42,19 @@ export interface ServiceNowClient {
 
 export class ServiceNow {
   private static servicenow: ServiceNow;
+  private cutOff: string;
 
   constructor(
     readonly client: ServiceNowClient,
     readonly config: ServiceNowConfig,
     readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    const threshold = new Date();
+    threshold.setDate(
+      threshold.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS)
+    );
+    this.cutOff = threshold.toISOString();
+  }
 
   static instance(config: ServiceNowConfig, logger: AirbyteLogger): ServiceNow {
     if (ServiceNow.servicenow) return ServiceNow.servicenow;
@@ -68,13 +77,14 @@ export class ServiceNow {
   // Retrieve incidents that have been modified since last sys_updated_on
   // or retrieve all incidents if sys_updated_on not set
   async *getIncidents(
-    sys_updated_on?: string,
+    sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident, any, any> {
     let offset = 0;
     let hasNext = false;
     let queryCondition = '';
     if (sys_updated_on) {
+      this.logger.info(`Syncing incidents updated since: ${sys_updated_on}`);
       queryCondition = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
@@ -103,13 +113,14 @@ export class ServiceNow {
   // Retrieve users that have been modified since last sys_updated_on
   // or retrieve all users if sys_updated_on not set
   async *getUsers(
-    sys_updated_on?: string,
+    sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<User, any, any> {
     let offset = 0;
     let hasNext = false;
     let queryCondition = '';
     if (sys_updated_on) {
+      this.logger.info(`Syncing users updated since: ${sys_updated_on}`);
       queryCondition = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
