@@ -69,7 +69,7 @@ export class CircleCICommon {
 
 /** CircleCI converter base */
 export abstract class CircleCIConverter extends Converter {
-  source = 'CircleCI';
+  source = 'Circle_CI';
 
   /** Almost every CircleCI record have id property */
   id(record: AirbyteRecord): any {
