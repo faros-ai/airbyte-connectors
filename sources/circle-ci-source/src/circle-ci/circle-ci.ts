@@ -4,12 +4,11 @@ import {VError} from 'verror';
 
 import {Job, Pipeline, Project, Workflow} from './typings';
 
-const CIRCLE_CI_BETA_API_URL = 'https://circleci.com/api/v2';
+const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 
 export interface CircleCIConfig {
   readonly token: string;
-  readonly org_name: string;
-  readonly project_type: string;
+  readonly org_slug: string;
   readonly repo_name: string;
   readonly rejectUnauthorized: boolean;
   readonly cutoff_days: number;
@@ -19,8 +18,7 @@ export interface CircleCIConfig {
 export class CircleCI {
   constructor(
     readonly axios: AxiosInstance,
-    readonly projectType: string,
-    readonly orgName: string,
+    readonly orgSlug: string,
     readonly repoName: string,
     readonly startDate: Date
   ) {}
@@ -32,11 +30,14 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.project_type) {
-      throw new VError('No project_type provided');
+    if (!config.org_slug) {
+      throw new VError('No org_slug provided');
     }
-    if (!config.org_name) {
-      throw new VError('No org_name provided');
+    const parts = config.org_slug.split('/').filter((p) => p);
+    if (parts.length != 2) {
+      throw new VError(`Organization slug %s does not match the expected format' +
+      ' {vcs_slug}/{org_name}, e.g gh/my-org. We will try to query the' +
+      ' CircleCI API anyways assuming organization %s`);
     }
     if (!config.repo_name) {
       throw new VError('No repo_name provided');
@@ -48,7 +49,7 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     const rejectUnauthorized = config.rejectUnauthorized ?? true;
-    const url = config.url ?? CIRCLE_CI_BETA_API_URL;
+    const url = config.url ?? DEFAULT_API_URL;
     return new CircleCI(
       axiosInstance ??
         axios.create({
@@ -59,17 +60,14 @@ export class CircleCI {
           },
           httpsAgent: new https.Agent({rejectUnauthorized}),
         }),
-      config.project_type,
-      config.org_name,
+      config.org_slug,
       config.repo_name,
       startDate
     );
   }
 
   projectSlug(): string {
-    return encodeURIComponent(
-      `${this.projectType}/${this.orgName}/${this.repoName}`
-    );
+    return encodeURIComponent(`${this.orgSlug}/${this.repoName}`);
   }
   async checkConnection(): Promise<void> {
     try {

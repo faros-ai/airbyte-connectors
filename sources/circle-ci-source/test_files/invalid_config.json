@@ -1,7 +1,6 @@
 {
   "token": "",
-  "project_type":"",
-  "org_name": "",
-  "project": "", 
+  "org_slug": "",
+  "project": "",
   "cutoff_days": 90
 }
