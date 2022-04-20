@@ -4,6 +4,8 @@ import {GitlabCommon, GitlabConverter} from '../common/gitlab';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 
 export class Groups extends GitlabConverter {
+  source = 'GitLab-CI';
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
   ];

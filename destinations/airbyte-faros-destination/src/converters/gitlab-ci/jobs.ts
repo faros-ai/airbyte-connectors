@@ -10,6 +10,8 @@ import {
 } from '../converter';
 
 export class Jobs extends GitlabConverter {
+  source = 'GitLab-CI';
+
   private readonly logger: AirbyteLogger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

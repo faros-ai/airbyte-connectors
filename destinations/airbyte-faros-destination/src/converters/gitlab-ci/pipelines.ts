@@ -5,6 +5,8 @@ import {GitlabCommon, GitlabConverter} from '../common/gitlab';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 
 export class Pipelines extends GitlabConverter {
+  source = 'GitLab-CI';
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
     'cicd_BuildCommitAssociation',
