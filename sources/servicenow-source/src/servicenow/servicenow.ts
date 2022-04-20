@@ -75,7 +75,6 @@ export class ServiceNow {
   }
 
   // Retrieve incidents that have been modified since last sys_updated_on
-  // or retrieve all incidents if sys_updated_on not set
   async *getIncidents(
     sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
@@ -111,7 +110,6 @@ export class ServiceNow {
   }
 
   // Retrieve users that have been modified since last sys_updated_on
-  // or retrieve all users if sys_updated_on not set
   async *getUsers(
     sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
