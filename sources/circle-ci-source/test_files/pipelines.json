@@ -21,6 +21,58 @@
             "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
             "provider_name": "GitHub",
             "branch": "circleci-project-setup"
-        }
+        },
+        "workflows":[
+            {
+                "id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
+                "errors": [],
+                "project_slug": "gh/huongtn/sample-test",
+                "updated_at": "2022-04-19T01:31:51.131Z",
+                "number": 1,
+                "state": "created",
+                "created_at": "2022-04-19T01:31:51.131Z",
+                "trigger": {
+                    "received_at": "2022-04-19T01:31:48.820Z",
+                    "type": "api",
+                    "actor": {
+                        "login": "huongtn",
+                        "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4"
+                    }
+                },
+                "vcs": {
+                    "origin_repository_url": "https://github.com/huongtn/sample-test",
+                    "target_repository_url": "https://github.com/huongtn/sample-test",
+                    "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
+                    "provider_name": "GitHub",
+                    "branch": "circleci-project-setup"
+                },
+                "jobs":[
+                    {
+                        "id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
+                        "errors": [],
+                        "project_slug": "gh/huongtn/sample-test",
+                        "updated_at": "2022-04-19T01:31:51.131Z",
+                        "number": 1,
+                        "state": "created",
+                        "created_at": "2022-04-19T01:31:51.131Z",
+                        "trigger": {
+                            "received_at": "2022-04-19T01:31:48.820Z",
+                            "type": "api",
+                            "actor": {
+                                "login": "huongtn",
+                                "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4"
+                            }
+                        },
+                        "vcs": {
+                            "origin_repository_url": "https://github.com/huongtn/sample-test",
+                            "target_repository_url": "https://github.com/huongtn/sample-test",
+                            "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
+                            "provider_name": "GitHub",
+                            "branch": "circleci-project-setup"
+                        }
+                    }
+                ]
+            }
+        ]
     }
 ]

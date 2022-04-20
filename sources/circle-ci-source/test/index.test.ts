@@ -128,7 +128,8 @@ describe('index', () => {
         {
           get: fnPipelinesList.mockResolvedValue({
             data: {
-              items: readTestResourceFile('pipelines.json'),
+              items: readTestResourceFile('pipelines_input.json'),
+              next_page_token: null,
             },
           }),
         } as any,
