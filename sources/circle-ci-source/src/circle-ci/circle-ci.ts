@@ -101,7 +101,7 @@ export class CircleCI {
       const res: any = await requester({'page-token': pageToken});
 
       const items = Array.isArray(res) ? res : res.data.items;
-      for (const item of items) {
+      for (const item of items ?? []) {
         const data = deserializer(item);
         if (stopper && stopper(data)) {
           getNextPage = false;

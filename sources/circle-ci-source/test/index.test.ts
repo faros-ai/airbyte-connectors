@@ -121,31 +121,33 @@ describe('index', () => {
     expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
   });
 
-  // test('streams - pipelines, use full_refresh sync mode', async () => {
-  //   const fnPipelinesList = jest.fn();
-  //   CircleCI.instance = jest.fn().mockImplementation(() => {
-  //     return new CircleCI(
-  //       {
-  //         get: fnPipelinesList.mockResolvedValue({
-  //           data: readTestResourceFile('pipelines.json'),
-  //         }),
-  //       } as any,
-  //       'gh',
-  //       'huongtn',
-  //       'sample-test',
-  //       new Date('2010-03-27T14:03:51-0800')
-  //     );
-  //   });
-  //   const source = new sut.CircleCISource(logger);
-  //   const streams = source.streams({});
+  test('streams - pipelines, use full_refresh sync mode', async () => {
+    const fnPipelinesList = jest.fn();
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        {
+          get: fnPipelinesList.mockResolvedValue({
+            data: {
+              items: readTestResourceFile('pipelines.json'),
+            },
+          }),
+        } as any,
+        'gh',
+        'huongtn',
+        'sample-test',
+        new Date('2010-03-27T14:03:51-0800')
+      );
+    });
+    const source = new sut.CircleCISource(logger);
+    const streams = source.streams({});
 
-  //   const pipelinesStream = streams[1];
-  //   const pipelinesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
-  //   const pipelines = [];
-  //   for await (const pipeline of pipelinesIter) {
-  //     pipelines.push(pipeline);
-  //   }
-  //   expect(fnPipelinesList).toHaveBeenCalledTimes(1);
-  //   expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
-  // });
+    const pipelinesStream = streams[1];
+    const pipelinesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
+    const pipelines = [];
+    for await (const pipeline of pipelinesIter) {
+      pipelines.push(pipeline);
+    }
+    expect(fnPipelinesList).toHaveBeenCalledTimes(3);
+    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+  });
 });

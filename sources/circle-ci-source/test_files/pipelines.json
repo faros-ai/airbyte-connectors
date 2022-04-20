@@ -21,32 +21,6 @@
             "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
             "provider_name": "GitHub",
             "branch": "circleci-project-setup"
-        },
-        "workflows": [
-            {
-                "pipeline_id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
-                "id": "ac658743-d425-4656-b650-60a84cd838aa",
-                "name": "say-hello-workflow",
-                "project_slug": "gh/huongtn/sample-test",
-                "status": "success",
-                "started_by": "ab819fe8-314f-413b-80d6-b9007cb47b6d",
-                "pipeline_number": 1,
-                "created_at": "2022-04-19T03:15:02Z",
-                "stopped_at": "2022-04-19T03:15:07Z",
-                "jobs": [
-                    {
-                        "dependencies": [],
-                        "job_number": 3,
-                        "id": "4ce0781d-658e-4155-9215-f26c9bbfb925",
-                        "started_at": "2022-04-19T03:15:05Z",
-                        "name": "say-hello",
-                        "project_slug": "gh/huongtn/sample-test",
-                        "status": "success",
-                        "type": "build",
-                        "stopped_at": "2022-04-19T03:15:07Z"
-                    }
-                ]
-            }
-        ]
+        }
     }
 ]
