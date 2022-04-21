@@ -10,6 +10,10 @@ import {Docker, DockerConfig, Tag} from '../docker';
 
 type StreamSlice = {repository: string} | undefined;
 
+interface TagState {
+  lastCreatedAt: string;
+}
+
 export class Tags extends AirbyteStreamBase {
   constructor(
     private readonly config: DockerConfig,
@@ -23,6 +27,9 @@ export class Tags extends AirbyteStreamBase {
   }
   get primaryKey(): StreamKey {
     return 'name';
+  }
+  get cursorField(): string | string[] {
+    return ['imageConfig', 'created'];
   }
 
   async *streamSlices(
@@ -47,8 +54,22 @@ export class Tags extends AirbyteStreamBase {
       projectName: repo,
     };
     const docker = await Docker.instance(config, this.logger);
-    for (const tag of await docker.getTags(repo)) {
+    const lastCreatedAt =
+      syncMode === SyncMode.INCREMENTAL && streamState?.lastCreatedAt
+        ? new Date(streamState.lastCreatedAt)
+        : undefined;
+    for (const tag of await docker.getTags(repo, lastCreatedAt)) {
       yield tag;
     }
+  }
+
+  getUpdatedState(currentStreamState: TagState, latestRecord: Tag): TagState {
+    const createdAt = new Date(latestRecord.imageConfig.created);
+    return {
+      lastCreatedAt:
+        createdAt > new Date(currentStreamState?.lastCreatedAt ?? 0)
+          ? createdAt.toISOString()
+          : currentStreamState?.lastCreatedAt,
+    };
   }
 }
