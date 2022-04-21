@@ -25,10 +25,10 @@ export class Incidents extends AirbyteStreamBase {
     return require('../../resources/schemas/incident.json');
   }
   get primaryKey(): StreamKey {
-    return ['number.value'];
+    return ['sys_id', 'value'];
   }
   get cursorField(): string | string[] {
-    return ['sys_updated_on.value'];
+    return ['sys_updated_on', 'value'];
   }
   getUpdatedState(
     currentStreamState: IncidentsState,

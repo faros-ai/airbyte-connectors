@@ -25,10 +25,10 @@ export class Users extends AirbyteStreamBase {
     return require('../../resources/schemas/user.json');
   }
   get primaryKey(): StreamKey {
-    return ['sys_id.value'];
+    return ['sys_id', 'value'];
   }
   get cursorField(): string | string[] {
-    return ['sys_updated_on.value'];
+    return ['sys_updated_on', 'value'];
   }
   getUpdatedState(
     currentStreamState: UsersState,
