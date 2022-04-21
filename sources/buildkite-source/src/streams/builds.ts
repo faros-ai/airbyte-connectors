@@ -36,7 +36,7 @@ export class Builds extends AirbyteStreamBase {
     streamState?: BuildState
   ): AsyncGenerator<Build> {
     const lastCreatedAt =
-      syncMode === (SyncMode.INCREMENTAL && streamState?.lastCreatedAt)
+      syncMode === SyncMode.INCREMENTAL && streamState?.lastCreatedAt
         ? new Date(streamState.lastCreatedAt)
         : undefined;
 

@@ -253,7 +253,6 @@ export class Buildkite {
   private setCursor(e): any {
     const node = e.node;
     if (e.cursor) node.cursor = e.cursor;
-    console.log('node => ' + node);
     return node;
   }
   async *getOrganizations(): AsyncGenerator<Organization> {
