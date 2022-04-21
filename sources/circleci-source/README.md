@@ -1,6 +1,6 @@
 # CircleIC Source for Airbyte
 
-📦 Docker Image: https://hub.docker.com/r/farosai/airbyte-circle-ci-source
+📦 Docker Image: https://hub.docker.com/r/farosai/airbyte-circleci-source
 
 Use this source to import [CircleIC](https://circleci) API data into Airbyte.
 
@@ -15,8 +15,8 @@ This source is useful for importing CircleIC resource metadata (such as campaign
 * `newsletters`
 
 ```shell
-docker pull farosai/airbyte-circle-ci-source
-docker run farosai/airbyte-circle-ci-source
+docker pull farosai/airbyte-circleci-source
+docker run farosai/airbyte-circleci-source
 ```
 
 ## Local development
@@ -36,7 +36,7 @@ npm run prepare
 This will install all required dependencies and build all included connectors,
 including the CircleIC source connector.
 
-Now you can cd into the CircleIC connector directory, `sources/circle-ci-source`,
+Now you can cd into the CircleIC connector directory, `sources/circleci-source`,
 and iterate on the CircleIC source connector. After making code changes, run:
 ```
 npm run build
@@ -44,7 +44,7 @@ npm run build
 
 #### Create credentials
 Follow the instructions in the
-[documentation](https://docs.airbyte.io/integrations/sources/circle-ci) to
+[documentation](https://docs.airbyte.io/integrations/sources/circleci) to
 generate the necessary credentials. Then create a file `secrets/config.json`
 conforming to the `resources/spec.json` file.  Note that any directory named
 `secrets` is gitignored across the entire `airbyte-connectors` repo, so there is
@@ -64,17 +64,17 @@ bin/main read --config secrets/config.json --catalog test_files/full_configured_
 Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 ```
-docker build . --build-arg path=sources/circle-ci-source -t circle-ci-source
+docker build . --build-arg path=sources/circleci-source -t circleci-source
 ```
 
 #### Run
 Then return to the CircleIC connector directory and run any of the connector
 commands as follows:
 ```
-docker run --rm circle-ci-source spec
-docker run --rm -v $(pwd)/secrets:/secrets circle-ci-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets circle-ci-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files circle-ci-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm circleci-source spec
+docker run --rm -v $(pwd)/secrets:/secrets circleci-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets circleci-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files circleci-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
@@ -97,7 +97,7 @@ docker pull airbyte/source-acceptance-test
 
 To run the acceptance tests, from the root repository directory, run
 ```
-./scripts/source-acceptance-test.sh circle-ci-source
+./scripts/source-acceptance-test.sh circleci-source
 ```
 
 ## Dependency Management
@@ -117,4 +117,4 @@ ready to share your changes with the world. Now what?
 1. Someone from Faros AI will take a look at your PR and iterate with you to
    merge it into main.
 1. The new connector image will be published to the
-   `farosai/airbyte-circle-ci-source` Docker repository.
+   `farosai/airbyte-circleci-source` Docker repository.

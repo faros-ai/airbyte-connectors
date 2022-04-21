@@ -2,8 +2,8 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI, CircleCIConfig} from '../circle-ci/circle-ci';
-import {Project} from '../circle-ci/typings';
+import {CircleCI, CircleCIConfig} from '../circleci/circleci';
+import {Project} from '../circleci/typings';
 
 export class Projects extends AirbyteStreamBase {
   constructor(

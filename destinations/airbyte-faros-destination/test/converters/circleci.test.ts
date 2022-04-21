@@ -8,16 +8,16 @@ import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {circleciAllStreamsLog} from './data';
 
-describe('circle-ci', () => {
+describe('circleci', () => {
   const logger = pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/circle-ci/catalog.json';
+  const catalogPath = 'test/resources/circleci/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__circle_ci__';
+  const streamNamePrefix = 'mytestsource__circleci__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);

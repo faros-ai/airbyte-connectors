@@ -8,7 +8,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {CircleCI} from '../src/circle-ci/circle-ci';
+import {CircleCI} from '../src/circleci/circleci';
 import * as sut from '../src/index';
 
 function readResourceFile(fileName: string): any {

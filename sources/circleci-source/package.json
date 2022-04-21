@@ -1,5 +1,5 @@
 {
-  "name": "circle-ci-source",
+  "name": "circleci-source",
   "version": "0.1.68",
   "description": "CircleCI Airbyte source",
   "keywords": [

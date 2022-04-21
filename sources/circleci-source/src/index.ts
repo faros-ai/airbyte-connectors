@@ -10,7 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {CircleCI, CircleCIConfig} from './circle-ci/circle-ci';
+import {CircleCI, CircleCIConfig} from './circleci/circleci';
 import {Pipelines, Projects} from './streams';
 
 /** The main entry point. */

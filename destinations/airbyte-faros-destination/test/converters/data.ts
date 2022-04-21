@@ -86,5 +86,5 @@ export const opsgenieAllStreamsLog = readTestResourceFile(
   'opsgenie/all-streams.log'
 );
 export const circleciAllStreamsLog = readTestResourceFile(
-  'circle-ci/all-streams.log'
+  'circleci/all-streams.log'
 );

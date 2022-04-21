@@ -2,8 +2,8 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI, CircleCIConfig} from '../circle-ci/circle-ci';
-import {Pipeline} from '../circle-ci/typings';
+import {CircleCI, CircleCIConfig} from '../circleci/circleci';
+import {Pipeline} from '../circleci/typings';
 
 interface PipelineState {
   lastUpdatedAt: string;

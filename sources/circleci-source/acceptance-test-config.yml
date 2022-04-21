@@ -1,4 +1,4 @@
-connector_image: circle-ci-source
+connector_image: circleci-source
 tests:
   spec:
     - config_path: "secrets/config.json"
