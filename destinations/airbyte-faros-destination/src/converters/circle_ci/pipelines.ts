@@ -27,7 +27,9 @@ export class Pipelines extends CircleCIConverter {
         record: {
           ...buildKey,
           number: pipeline.number,
-          name: `${pipeline.project_slug}_${pipeline.number}_${workflow.name}`,
+          name: `${CircleCICommon.getProject(pipeline.project_slug)}_${
+            pipeline.number
+          }_${workflow.name}`,
           createdAt: Utils.toDate(workflow.created_at),
           startedAt: Utils.toDate(workflow.created_at),
           endedAt: Utils.toDate(workflow.stopped_at),
