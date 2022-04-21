@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "uuid": {
+            "type": "string"
+        },
+        "message": {
+            "type": "string"
+        },
+        "number": {
+            "type": "number"
+        },
+        "createdAt": {
+            "type": "string"
+        },
+        "startedAt": {
+            "type": ["string","null"]
+        },
+        "finishedAt": {
+            "type": ["string","null"]
+        },
+        "state": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        },
+        "commit": {
+            "type": "string"
+        },
+        "pipeline": {
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "repository": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "provider": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "organization": {
+                    "type": "object",
+                    "properties": {
+                        "slug": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "cursor": {
+            "type": ["string","null"]
+        }
+    }
+}
