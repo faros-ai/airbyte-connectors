@@ -84,7 +84,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        "CircleCI api request failed: Cannot read properties of null (reading 'get')"
+        "CircleCI api request failed: Cannot read property 'get' of null"
       ),
     ]);
   });
