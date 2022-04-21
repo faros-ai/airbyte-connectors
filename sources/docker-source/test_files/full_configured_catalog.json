@@ -5,7 +5,12 @@
         "name": "tags",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh"
+          "full_refresh",
+          "incremental"
+        ],
+        "default_cursor_field": [
+          "imageConfig",
+          "created"
         ],
         "source_defined_primary_key": [
           [

@@ -42,7 +42,14 @@ describe('index', () => {
   test('check connection', async () => {
     Docker.instance = jest.fn().mockImplementation(() => {
       return {
-        ...new Docker('registry-base', 100, 5, {headers: {}}, undefined),
+        ...new Docker(
+          'registry-base',
+          new Date(),
+          100,
+          5,
+          {headers: {}},
+          undefined
+        ),
         checkConnection: jest.fn().mockResolvedValue({}),
       };
     });
@@ -53,6 +60,7 @@ describe('index', () => {
         username: 'username',
         password: 'password',
         repositories: 'test',
+        cutoffDays: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -60,7 +68,14 @@ describe('index', () => {
   test('check connection - no repositories', async () => {
     Docker.instance = jest.fn().mockImplementation(() => {
       return {
-        ...new Docker('registry-base', 100, 5, {headers: {}}, undefined),
+        ...new Docker(
+          'registry-base',
+          new Date(),
+          100,
+          5,
+          {headers: {}},
+          undefined
+        ),
         checkConnection: jest.fn().mockRejectedValue({}),
       };
     });
@@ -88,7 +103,14 @@ describe('index', () => {
 
     Docker.instance = jest.fn().mockImplementation(() => {
       return {
-        ...new Docker('registry-base', 100, 5, {headers: {}}, undefined),
+        ...new Docker(
+          'registry-base',
+          new Date(),
+          100,
+          5,
+          {headers: {}},
+          undefined
+        ),
         getTags: fnTagsFunc.mockImplementation(async function () {
           return readTestResourceFile('tags.json');
         }),
