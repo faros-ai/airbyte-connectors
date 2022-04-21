@@ -1,0 +1,395 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "visibility": {
+              "type": "string"
+            },
+            "lastUpdateTime": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "pullRequestId": {
+      "type": "number"
+    },
+    "codeReviewId": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdBy": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "descriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "creationDate": {
+      "type": "string"
+    },
+    "closedDate": {
+      "type": ["string","null"]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "sourceRefName": {
+      "type": "string"
+    },
+    "targetRefName": {
+      "type": "string"
+    },
+    "mergeStatus": {
+      "type": "string"
+    },
+    "isDraft": {
+      "type": "boolean"
+    },
+    "mergeId": {
+      "type": "string"
+    },
+    "lastMergeSourceCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "lastMergeTargetCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "lastMergeCommit": {
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reviewerUrl": {
+            "type": "string"
+          },
+          "vote": {
+            "type": "number"
+          },
+          "hasDeclined": {
+            "type": "boolean"
+          },
+          "isFlagged": {
+            "type": "boolean"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "uniqueName": {
+            "type": "string"
+          },
+          "supportsIterations": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    },
+    "supportsIterations": {
+      "type": "boolean"
+    },
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "commitId": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              }
+            }
+          },
+          "committer": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              }
+            }
+          },
+          "changeCounts":{
+            "type": "object",
+            "properties": {
+              "Edit": {
+                "type": ["number","null"]
+              },
+              "Add": {
+                "type": ["number","null"]
+              },
+              "Delete": {
+                "type": ["number","null"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "threads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "publishedDate": {
+            "type": "string"
+          },
+          "lastUpdatedDate": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "parentCommentId": {
+                  "type": "number"
+                },
+                "author": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "_links": {
+                      "type": "object",
+                      "properties": {
+                        "avatar": {
+                          "type": "object",
+                          "properties": {
+                            "href": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "uniqueName": {
+                      "type": "string"
+                    },
+                    "imageUrl": {
+                      "type": "string"
+                    },
+                    "descriptor": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "content": {
+                  "type": "string"
+                },
+                "publishedDate": {
+                  "type": "string"
+                },
+                "lastUpdatedDate": {
+                  "type": "string"
+                },
+                "lastContentUpdatedDate": {
+                  "type": "string"
+                },
+                "commentType": {
+                  "type": "string"
+                },
+                "usersLiked": {
+                  "type": "array",
+                  "items": {}
+                },
+                "_links": {
+                  "type": "object",
+                  "properties": {
+                    "self": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "repository": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "threads": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "pullRequests": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
+              },
+              "repository": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
