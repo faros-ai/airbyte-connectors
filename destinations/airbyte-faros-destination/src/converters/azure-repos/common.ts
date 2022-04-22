@@ -14,8 +14,8 @@ export type ApplicationMapping = Record<
 >;
 
 /** Azurerepos converter base */
-export abstract class Azure_ReposConverter extends Converter {
-  source = 'Azure_Repos';
+export abstract class AzureReposConverter extends Converter {
+  source = 'Azure-Repos';
   /** Almost every Azurerepos record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

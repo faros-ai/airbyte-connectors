@@ -2,19 +2,19 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__azure_repos__repositories"
+        "name": "mytestsource__azure-repos__repositories"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__azure_repos__pull_requests"
+        "name": "mytestsource__azure-repos__pull_requests"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__azure_repos__users"
+        "name": "mytestsource__azure-repos__users"
       },
       "destination_sync_mode": "overwrite"
     }

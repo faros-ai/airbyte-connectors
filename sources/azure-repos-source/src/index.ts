@@ -8,7 +8,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzureRepo, AzureRepoConfig} from './azure-repo';
+import {AzureRepo, AzureRepoConfig} from './azure-repos';
 import {PullRequests, Repositories, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {

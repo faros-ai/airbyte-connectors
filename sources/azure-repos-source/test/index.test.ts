@@ -7,7 +7,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {AzureRepo} from '../src/azure-repo';
+import {AzureRepo} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepo.instance;

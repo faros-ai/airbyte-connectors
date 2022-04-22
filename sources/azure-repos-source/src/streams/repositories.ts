@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepo, AzureRepoConfig} from '../azure-repo';
+import {AzureRepo, AzureRepoConfig} from '../azure-repos';
 import {Repository} from '../models';
 
 export class Repositories extends AirbyteStreamBase {

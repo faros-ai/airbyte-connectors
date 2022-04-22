@@ -1,4 +1,4 @@
-connector_image: azure-repo-source
+connector_image: azure-repos-source
 tests:
   spec:
     - config_path: "secrets/config.json"
