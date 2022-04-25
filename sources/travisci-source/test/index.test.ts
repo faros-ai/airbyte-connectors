@@ -57,8 +57,7 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        org_slug: '',
-        repo_name: '',
+        organization: '',
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
@@ -88,13 +87,13 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - projects, use full_refresh sync mode', async () => {
-    const fnProjectsList = jest.fn();
+  test('streams - builds, use full_refresh sync mode', async () => {
+    const fnBuildsList = jest.fn();
     TravisCI.instance = jest.fn().mockImplementation(() => {
       return new TravisCI(
         {
-          get: fnProjectsList.mockResolvedValue({
-            data: readTestResourceFile('projects.json'),
+          get: fnBuildsList.mockResolvedValue({
+            data: readTestResourceFile('builds.json'),
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -105,24 +104,24 @@ describe('index', () => {
     const source = new sut.TravisCISource(logger);
     const streams = source.streams({});
 
-    const projectsStream = streams[0];
-    const projectsIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
-    const projects = [];
-    for await (const project of projectsIter) {
-      projects.push(project);
+    const buildsStream = streams[0];
+    const buildsIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);
+    const builds = [];
+    for await (const build of buildsIter) {
+      builds.push(build);
     }
-    expect(fnProjectsList).toHaveBeenCalledTimes(1);
-    expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
+    expect(fnBuildsList).toHaveBeenCalledTimes(1);
+    expect(builds).toStrictEqual([readTestResourceFile('builds.json')]);
   });
 
-  test('streams - pipelines, use full_refresh sync mode', async () => {
-    const fnPipelinesList = jest.fn();
+  test('streams - repositories, use full_refresh sync mode', async () => {
+    const fnRepositoriesList = jest.fn();
     TravisCI.instance = jest.fn().mockImplementation(() => {
       return new TravisCI(
         {
-          get: fnPipelinesList.mockResolvedValue({
+          get: fnRepositoriesList.mockResolvedValue({
             data: {
-              items: readTestResourceFile('pipelines_input.json'),
+              items: readTestResourceFile('repositories.json'),
               next_page_token: null,
             },
           }),
@@ -135,13 +134,47 @@ describe('index', () => {
     const source = new sut.TravisCISource(logger);
     const streams = source.streams({});
 
-    const pipelinesStream = streams[1];
-    const pipelinesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
-    const pipelines = [];
-    for await (const pipeline of pipelinesIter) {
-      pipelines.push(pipeline);
+    const repositoriesStream = streams[1];
+    const repositoriesIter = repositoriesStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const repositories = [];
+    for await (const repository of repositoriesIter) {
+      repositories.push(repository);
     }
-    expect(fnPipelinesList).toHaveBeenCalledTimes(3);
-    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+    expect(fnRepositoriesList).toHaveBeenCalledTimes(3);
+    expect(repositories).toStrictEqual(
+      readTestResourceFile('repositories.json')
+    );
+  });
+
+  test('streams - owners, use full_refresh sync mode', async () => {
+    const fnOwnersList = jest.fn();
+    TravisCI.instance = jest.fn().mockImplementation(() => {
+      return new TravisCI(
+        {
+          get: fnOwnersList.mockResolvedValue({
+            data: {
+              items: readTestResourceFile('owners.json'),
+              next_page_token: null,
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        100,
+        'huongtn'
+      );
+    });
+    const source = new sut.TravisCISource(logger);
+    const streams = source.streams({});
+
+    const ownersStream = streams[2];
+    const ownersIter = ownersStream.readRecords(SyncMode.FULL_REFRESH);
+    const owners = [];
+    for await (const owner of ownersIter) {
+      owners.push(owner);
+    }
+    expect(fnOwnersList).toHaveBeenCalledTimes(3);
+    expect(owners).toStrictEqual(readTestResourceFile('owners.json'));
   });
 });
