@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "SpaceId": {
+      "type": "string"
+    },
+    "VariableSetId": {
+      "type": "string"
+    },
+    "DeploymentProcessId": {
+      "type": "string"
+    },
+    "ClonedFromProjectId": {
+      "type": "string"
+    },
+    "DiscreteChannelRelease": {
+      "type": "boolean"
+    },
+    "IncludedLibraryVariableSetIds": {
+      "type": "object"
+    },
+    "DefaultToSkipIfAlreadyInstalled": {
+      "type": "boolean"
+    },
+    "TenantedDeploymentMode": {
+      "type": "string"
+    },
+    "DefaultGuidedFailureMode": {
+      "type": "string"
+    },
+    "VersioningStrategy": {
+      "Template": {
+        "type": "string"
+      },
+      "DonorPackage": {
+        "type": "string"
+      } ,
+      "DonorPackageStepId": {
+        "type": "string"
+      }
+    },
+    "ReleaseCreationStrategy": {
+      "ChannelId": {
+        "type": "string"
+      },
+      "ReleaseCreationPackage": {
+        "type": "string"
+      } ,
+      "ReleaseCreationPackageStepId": {
+        "type": "string"
+      }
+    },
+    "Name": {
+      "type": "string"
+    },
+    "Slug": {
+      "type": "string"
+    },
+    "Description":{
+      "type": "string"
+    },
+    "IsDisabled":{
+      "type": "boolean"
+    },
+    "ProjectGroupId": {
+      "type": "string"
+    },
+    "LifecycleId":{
+      "type": "string"
+    },
+    "AutoCreateRelease":{
+      "type": "boolean"
+    },
+    "IsVersionControlled": {
+      "type": "boolean"
+    },
+    "PersistenceSettings": {
+      "type": "object"
+    },
+    "ProjectConnectivityPolicy": {
+      "type": "object"
+    },
+    "Link": {
+      "type": "object"
+    }
+  }
+}
