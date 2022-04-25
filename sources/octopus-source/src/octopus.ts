@@ -8,7 +8,13 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
-import {Channels, Project, ProjectResponse} from './models';
+import {
+  Channels,
+  Deployments,
+  Project,
+  ProjectResponse,
+  Releases,
+} from './models';
 
 export interface OctopusConfig {
   readonly apiKey: string;
@@ -60,7 +66,7 @@ export class Octopus {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getChannels();
+      const iter = this.getDeployments();
       iter.next();
     } catch (err: any) {
       this.createError(err, 'Please verify your token is correct.');
@@ -68,7 +74,7 @@ export class Octopus {
   }
 
   async *getProjects(): AsyncGenerator<Project> {
-    const completeList = await this.httpClient.get<Project>('/projects/all');
+    const completeList = await this.httpClient.get<Project>('/projects');
     if (completeList.status === 200) {
       console.log(completeList.data);
       yield completeList.data;
@@ -76,7 +82,23 @@ export class Octopus {
   }
 
   async *getChannels(): AsyncGenerator<Channels> {
-    const completeList = await this.httpClient.get<Channels>('/channels/all');
+    const completeList = await this.httpClient.get<Channels>('/channels');
+    if (completeList.status === 200) {
+      console.log(completeList.data);
+      yield completeList.data;
+    }
+  }
+
+  async *getDeployments(): AsyncGenerator<Deployments> {
+    const completeList = await this.httpClient.get<Deployments>('/channels');
+    if (completeList.status === 200) {
+      console.log(completeList.data);
+      yield completeList.data;
+    }
+  }
+
+  async *getReleases(): AsyncGenerator<Releases> {
+    const completeList = await this.httpClient.get<Releases>('/releases');
     if (completeList.status === 200) {
       console.log(completeList.data);
       yield completeList.data;

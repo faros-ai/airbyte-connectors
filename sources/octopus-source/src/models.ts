@@ -43,3 +43,58 @@ export interface Channels {
   readonly SpaceId: object;
   readonly Link: object;
 }
+
+export interface Releases {
+  readonly Id: number;
+  readonly ProjectId: string;
+  readonly SpaceId: string;
+  readonly ChannelId: string;
+  readonly Version: string;
+  readonly ReleaseNotes: string;
+  readonly ProjectDeploymentProcessSnapshotId: boolean;
+  readonly IgnoreChannelRules: boolean;
+  readonly BuildInformation: object;
+  readonly Assembled: boolean;
+  readonly LibraryVariableSetSnapshotIds: object;
+  readonly SelectedPackages: object;
+  readonly ProjectVariableSetSnapshotId: object;
+  readonly VersionControlReference: object;
+  readonly LastModifiedBy: object;
+  readonly LastModifiedOn: object;
+  readonly Link: object;
+}
+
+export interface Deployments {
+  readonly Changes: object;
+  readonly ChangesMarkdown: string;
+  readonly ChannelId: string;
+  readonly Comments: string;
+  readonly Created: string;
+  readonly DeployedBy: string;
+  readonly DeployedById: string;
+  readonly DeployedToMachineIds: object;
+  readonly DeploymentProcessId: string;
+  readonly EnvironmentId: string;
+  readonly ExcludedMachineIds: object;
+  readonly FailureEncountered: boolean;
+  readonly ForcePackageDownload: boolean;
+  readonly ForcePackageRedeployment: boolean;
+  readonly FormValues: object;
+  readonly Id: string;
+  readonly LastModifiedBy: string;
+  readonly LastModifiedOn: string;
+  readonly Links: object;
+  readonly ManifestVariableSetId: string;
+  readonly Name: string;
+  readonly ProjectId: string;
+  readonly QueueTime: string;
+  readonly QueueTimeExpiry: string;
+  readonly ReleaseId: string;
+  readonly SkipActions: object;
+  readonly SpaceId: string;
+  readonly SpecificMachineIds: object;
+  readonly TaskId: string;
+  readonly TenantId: string;
+  readonly TentacleRetentionPeriod: object;
+  readonly UseGuidedFailure: boolean;
+}
