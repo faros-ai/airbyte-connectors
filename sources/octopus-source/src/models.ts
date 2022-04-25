@@ -31,3 +31,15 @@ export interface Project {
   readonly ProjectConnectivityPolicy: object;
   readonly Link: object;
 }
+
+export interface Channels {
+  readonly id: number;
+  readonly Name: string;
+  readonly Description: string;
+  readonly ProjectId: string;
+  readonly LifecycleId: string;
+  readonly Rules: boolean;
+  readonly TenantTags: object;
+  readonly SpaceId: object;
+  readonly Link: object;
+}

@@ -8,7 +8,7 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
-import {Project, ProjectResponse} from './models';
+import {Channels, Project, ProjectResponse} from './models';
 
 export interface OctopusConfig {
   readonly apiKey: string;
@@ -42,8 +42,8 @@ export class Octopus {
 
     const httpClient = axios.create({
       baseURL: config.apiUri.concat('/api'),
-      timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 500000, //default is 2000 bytes
+      timeout: 0, // default is `0` (no timeout)
+      maxContentLength: 9999999999, //default is 2000 bytes
       headers: {
         'X-Octopus-ApiKey': config.apiKey,
       },
@@ -60,7 +60,7 @@ export class Octopus {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getProjects();
+      const iter = this.getChannels();
       iter.next();
     } catch (err: any) {
       this.createError(err, 'Please verify your token is correct.');
@@ -75,33 +75,11 @@ export class Octopus {
     }
   }
 
-  // async *getGroups(maxResults = 999): AsyncGenerator<Group> {
-  //   for await (const group of this.paginate<Group>('groups', {
-  //     params: {
-  //       $top: maxResults,
-  //     },
-  //   })) {
-  //     const memberItems = await this.httpClient.get<UserResponse>(
-  //       `groups/${group.id}/members`
-  //     );
-  //     if (memberItems.status === 200) {
-  //       const members: string[] = [];
-  //       for (const memberItem of memberItems.data.value) {
-  //         members.push(memberItem.id);
-  //       }
-  //       group.members = members;
-  //     }
-  //     const ownerItems = await this.httpClient.get<UserResponse>(
-  //       `groups/${group.id}/owners`
-  //     );
-  //     if (ownerItems.status === 200) {
-  //       const owners: string[] = [];
-  //       for (const ownerItem of ownerItems.data.value) {
-  //         owners.push(ownerItem.id);
-  //       }
-  //       group.owners = owners;
-  //     }
-  //     yield group;
-  //   }
-  // }
+  async *getChannels(): AsyncGenerator<Channels> {
+    const completeList = await this.httpClient.get<Channels>('/channels/all');
+    if (completeList.status === 200) {
+      console.log(completeList.data);
+      yield completeList.data;
+    }
+  }
 }
