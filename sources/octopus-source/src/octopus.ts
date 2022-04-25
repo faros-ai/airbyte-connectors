@@ -4,16 +4,11 @@ import {
   Repository,
 } from '@octopusdeploy/api-client';
 import {ProjectResource} from '@octopusdeploy/message-contracts';
+import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
-import {
-  Group,
-  GroupResponse,
-  User,
-  UserExtraInfo,
-  UserResponse,
-} from './models';
+import {Project, ProjectResponse} from './models';
 
 export interface OctopusConfig {
   readonly apiKey: string;
@@ -27,8 +22,7 @@ export class Octopus {
   private static octopus: Octopus = null;
 
   constructor(
-    private readonly client: Client,
-    private readonly repository: Repository,
+    private readonly httpClient: AxiosInstance,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -39,38 +33,24 @@ export class Octopus {
     if (Octopus.octopus) return Octopus.octopus;
 
     if (!config.apiKey) {
-      throw new VError('client_id must be a not empty string');
+      throw new VError('api key must be a not empty string');
     }
 
     if (!config.apiUri) {
-      throw new VError('client_secret must be a not empty string');
+      throw new VError('server apiUrl must be a not empty string');
     }
 
-    if (!config.projectName) {
-      throw new VError('projectName must be a not empty string');
-    }
+    const httpClient = axios.create({
+      baseURL: config.apiUri.concat('/api'),
+      timeout: 10000, // default is `0` (no timeout)
+      maxContentLength: 500000, //default is 2000 bytes
+      headers: {
+        'X-Octopus-ApiKey': config.apiKey,
+      },
+    });
 
-    const configuration: ClientConfiguration = {
-      apiKey: config.apiKey, // required
-      apiUri: config.apiUri, // required
-      autoConnect: true,
-    };
-    let client: Client | undefined;
-    let repository: Repository | undefined;
-    try {
-      client = await Client.create(configuration);
-    } catch (error) {
-      console.error('The Octopus API client could not be constructed.');
-      return;
-    }
-    try {
-      repository = new Repository(client);
-    } catch (error) {
-      console.error('The Octopus API repository could not be constructed.');
-      return;
-    }
-
-    return new Octopus(client, repository, logger);
+    Octopus.octopus = new Octopus(httpClient, logger);
+    return Octopus.octopus;
   }
 
   private createError(error: any, errorMessage: string) {
@@ -80,17 +60,19 @@ export class Octopus {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = await this.repository.projects.list();
-      // await iter.next();
+      const iter = this.getProjects();
+      iter.next();
     } catch (err: any) {
       this.createError(err, 'Please verify your token is correct.');
     }
   }
 
-  async *getProjects(): AsyncGenerator<User> {
-    const iter = await this.repository.projects.list();
-    console.log(iter);
-   // yield iter;
+  async *getProjects(): AsyncGenerator<Project> {
+    const completeList = await this.httpClient.get<Project>('/projects/all');
+    if (completeList.status === 200) {
+      console.log(completeList.data);
+      yield completeList.data;
+    }
   }
 
   // async *getGroups(maxResults = 999): AsyncGenerator<Group> {
