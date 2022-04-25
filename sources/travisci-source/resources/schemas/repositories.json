@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "href": {
+      "type": "string"
+    },
+    "id": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "github_id": {
+      "type": "number"
+    },
+    "vcs_id": {
+      "type": "string"
+    },
+    "vcs_type": {
+      "type": "string"
+    },
+    "github_language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "private": {
+      "type": "boolean"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "login": {
+          "type": "string"
+        },
+        "ro_mode": {
+          "type": "boolean"
+        }
+      }
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "vcs_name": {
+      "type": "string"
+    },
+    "default_branch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "starred": {
+      "type": "boolean"
+    },
+    "managed_by_installation": {
+      "type": "boolean"
+    },
+    "active_on_org": {
+      "type": "boolean"
+    },
+    "migration_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "history_migration_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "shared": {
+      "type": "boolean"
+    },
+    "config_validation": {
+      "type": "boolean"
+    },
+    "server_type": {
+      "type": "string"
+    }
+  }
+}

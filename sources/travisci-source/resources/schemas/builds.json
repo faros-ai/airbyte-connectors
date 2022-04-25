@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "href": {
+      "type": "string"
+    },
+    "id": {
+      "type": "number"
+    },
+    "number": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "number"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "previous_state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pull_request_title": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pull_request_number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": "string"
+    },
+    "private": {
+      "type": "boolean"
+    },
+    "priority": {
+      "type": "boolean"
+    },
+    "commit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "sha": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "compare_url": {
+          "type": "string"
+        },
+        "committed_at": {
+          "type": "string"
+        }
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "@type": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "@representation": {
+            "type": "string"
+          },
+          "@permissions": {
+            "type": "object",
+            "properties": {
+              "read": {
+                "type": "boolean"
+              },
+              "restart": {
+                "type": "boolean"
+              },
+              "prioritize": {
+                "type": "boolean"
+              },
+              "debug": {
+                "type": "boolean"
+              },
+              "delete_log": {
+                "type": "boolean"
+              },
+              "cancel": {
+                "type": "boolean"
+              }
+            }
+          },
+          "id": {
+            "type": "number"
+          },
+          "allow_failure": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "number": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string"
+          },
+          "finished_at": {
+            "type": "string"
+          },
+          "build": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "href"
+            ]
+          },
+          "queue": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              },
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              }
+            }
+          },
+          "commit": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "sha": {
+                "type": "string"
+              },
+              "ref": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "compare_url": {
+                "type": "string"
+              },
+              "committed_at": {
+                "type": "string"
+              }
+            }
+          },
+          "owner": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              },
+              "id": {
+                "type": "number"
+              },
+              "login": {
+                "type": "string"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vcs_type": {
+                "type": "string"
+              },
+              "ro_mode": {
+                "type": "boolean"
+              }
+            }
+          },
+          "stage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "private": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "created_by": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "login": {
+          "type": "string"
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string"
+    }
+  }
+}
