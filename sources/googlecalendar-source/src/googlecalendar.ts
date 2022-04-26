@@ -60,7 +60,7 @@ export class Googlecalendar {
       // Scopes can be specified either as an array or as a single, space-delimited string.
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
       credentials: {
-        private_key: config.private_key,
+        private_key: config.private_key.replace(/\\n/g, '\n'),
         client_email: config.client_email,
       },
     });
