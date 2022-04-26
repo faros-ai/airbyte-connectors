@@ -30,17 +30,19 @@ export class Pipelines extends GitlabConverter {
         ? null
         : Utils.toDate(pipeline.updatedAt);
 
-    const pipelineKey = {
-      organization: repository.organization,
-      uid: repository.name,
+    const buildKey = {
+      uid: String(pipeline.id),
+      pipeline: {
+        organization: repository.organization,
+        uid: repository.name,
+      },
     };
 
     res.push({
       model: 'cicd_Build',
       record: {
-        uid: String(pipeline.id),
+        ...buildKey,
         number: pipeline.id,
-        pipeline: pipelineKey,
         status,
         url: pipeline.webUrl,
         startedAt: Utils.toDate(pipeline.createdAt),
@@ -51,7 +53,7 @@ export class Pipelines extends GitlabConverter {
     res.push({
       model: 'cicd_BuildCommitAssociation',
       record: {
-        build: {uid: String(pipeline.id), pipeline: pipelineKey},
+        build: buildKey,
         commit: {repository, sha: pipeline.commitSha},
       },
     });
