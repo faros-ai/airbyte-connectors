@@ -1,78 +1,340 @@
-[
-    {
-        "id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
-        "errors": [],
-        "project_slug": "gh/huongtn/sample-test",
-        "updated_at": "2022-04-19T01:31:51.131Z",
-        "number": 1,
-        "state": "created",
-        "created_at": "2022-04-19T01:31:51.131Z",
-        "trigger": {
-            "received_at": "2022-04-19T01:31:48.820Z",
-            "type": "api",
-            "actor": {
-                "login": "huongtn",
-                "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4"
-            }
-        },
-        "vcs": {
-            "origin_repository_url": "https://github.com/huongtn/sample-test",
-            "target_repository_url": "https://github.com/huongtn/sample-test",
-            "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
-            "provider_name": "GitHub",
-            "branch": "circleci-project-setup"
-        },
-        "workflows":[
-            {
-                "id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
-                "errors": [],
-                "project_slug": "gh/huongtn/sample-test",
-                "updated_at": "2022-04-19T01:31:51.131Z",
-                "number": 1,
-                "state": "created",
-                "created_at": "2022-04-19T01:31:51.131Z",
-                "trigger": {
-                    "received_at": "2022-04-19T01:31:48.820Z",
-                    "type": "api",
-                    "actor": {
+    [
+        {
+            "@type": "build",
+            "href": "/build/249732561",
+            "@representation": "standard",
+            "@permissions": {
+                "read": true,
+                "restart": true,
+                "prioritize": false,
+                "cancel": true
+            },
+            "id": 249732561,
+            "number": "1",
+            "state": "failed",
+            "duration": 207,
+            "event_type": "push",
+            "previous_state": null,
+            "pull_request_title": null,
+            "pull_request_number": null,
+            "started_at": "2022-04-22T08:33:23Z",
+            "finished_at": "2022-04-22T08:36:13Z",
+            "private": false,
+            "priority": false,
+            "repository": {
+                "@type": "repository",
+                "href": "/repo/23315218",
+                "@representation": "minimal",
+                "id": 23315218,
+                "name": "sample-test",
+                "slug": "huongtn/sample-test"
+            },
+            "branch": {
+                "@type": "branch",
+                "href": "/repo/23315218/branch/main",
+                "@representation": "minimal",
+                "name": "main"
+            },
+            "tag": null,
+            "commit": {
+                "@type": "commit",
+                "@representation": "minimal",
+                "id": 715179287,
+                "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                "ref": "refs/heads/main",
+                "message": "Create .travis.yml",
+                "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a...531f35363c44",
+                "committed_at": "2022-04-22T08:32:48Z"
+            },
+            "jobs": [
+                {
+                    "@type": "job",
+                    "href": "/job/567902813",
+                    "@representation": "standard",
+                    "@permissions": {
+                        "read": true,
+                        "restart": true,
+                        "prioritize": false,
+                        "debug": true,
+                        "delete_log": true,
+                        "cancel": true
+                    },
+                    "id": 567902813,
+                    "allow_failure": null,
+                    "number": "1.1",
+                    "state": "failed",
+                    "started_at": "2022-04-22T08:33:24Z",
+                    "finished_at": "2022-04-22T08:34:01Z",
+                    "build": {
+                        "href": "/build/249732561"
+                    },
+                    "queue": "builds.gce",
+                    "repository": {
+                        "@type": "repository",
+                        "href": "/repo/23315218",
+                        "@representation": "minimal",
+                        "id": 23315218,
+                        "name": "sample-test",
+                        "slug": "huongtn/sample-test"
+                    },
+                    "commit": {
+                        "@type": "commit",
+                        "@representation": "minimal",
+                        "id": 715179287,
+                        "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "ref": "refs/heads/main",
+                        "message": "Create .travis.yml",
+                        "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a...531f35363c44",
+                        "committed_at": "2022-04-22T08:32:48Z"
+                    },
+                    "owner": {
+                        "@type": "user",
+                        "href": "/user/6121682",
+                        "@representation": "minimal",
+                        "id": 6121682,
                         "login": "huongtn",
-                        "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4"
-                    }
+                        "name": null,
+                        "vcs_type": "GithubUser",
+                        "ro_mode": false
+                    },
+                    "stage": null,
+                    "created_at": "2022-04-22T08:32:50.699Z",
+                    "updated_at": "2022-04-22T08:34:01.052Z",
+                    "private": false
                 },
-                "vcs": {
-                    "origin_repository_url": "https://github.com/huongtn/sample-test",
-                    "target_repository_url": "https://github.com/huongtn/sample-test",
-                    "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
-                    "provider_name": "GitHub",
-                    "branch": "circleci-project-setup"
+                {
+                    "@type": "job",
+                    "href": "/job/567902814",
+                    "@representation": "standard",
+                    "@permissions": {
+                        "read": true,
+                        "restart": true,
+                        "prioritize": false,
+                        "debug": true,
+                        "delete_log": true,
+                        "cancel": true
+                    },
+                    "id": 567902814,
+                    "allow_failure": null,
+                    "number": "1.2",
+                    "state": "failed",
+                    "started_at": "2022-04-22T08:33:23Z",
+                    "finished_at": "2022-04-22T08:36:13Z",
+                    "build": {
+                        "href": "/build/249732561"
+                    },
+                    "queue": "builds.gce",
+                    "repository": {
+                        "@type": "repository",
+                        "href": "/repo/23315218",
+                        "@representation": "minimal",
+                        "id": 23315218,
+                        "name": "sample-test",
+                        "slug": "huongtn/sample-test"
+                    },
+                    "commit": {
+                        "@type": "commit",
+                        "@representation": "minimal",
+                        "id": 715179287,
+                        "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "ref": "refs/heads/main",
+                        "message": "Create .travis.yml",
+                        "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a...531f35363c44",
+                        "committed_at": "2022-04-22T08:32:48Z"
+                    },
+                    "owner": {
+                        "@type": "user",
+                        "href": "/user/6121682",
+                        "@representation": "minimal",
+                        "id": 6121682,
+                        "login": "huongtn",
+                        "name": null,
+                        "vcs_type": "GithubUser",
+                        "ro_mode": false
+                    },
+                    "stage": null,
+                    "created_at": "2022-04-22T08:32:50.703Z",
+                    "updated_at": "2022-04-22T08:36:13.589Z",
+                    "private": false
+                }
+            ],
+            "stages": [],
+            "created_by": {
+                "@type": "user",
+                "href": "/user/6121682",
+                "@representation": "minimal",
+                "id": 6121682,
+                "login": "huongtn"
+            },
+            "updated_at": "2022-04-22T08:36:13.596Z"
+        },
+        {
+            "@type": "build",
+            "href": "/build/249732580",
+            "@representation": "standard",
+            "@permissions": {
+                "read": true,
+                "restart": true,
+                "prioritize": false,
+                "cancel": true
+            },
+            "id": 249732580,
+            "number": "2",
+            "state": "failed",
+            "duration": 226,
+            "event_type": "api",
+            "previous_state": null,
+            "pull_request_title": null,
+            "pull_request_number": null,
+            "started_at": "2022-04-25T10:12:37Z",
+            "finished_at": "2022-04-25T10:16:58Z",
+            "private": false,
+            "priority": false,
+            "repository": {
+                "@type": "repository",
+                "href": "/repo/23315218",
+                "@representation": "minimal",
+                "id": 23315218,
+                "name": "sample-test",
+                "slug": "huongtn/sample-test"
+            },
+            "branch": {
+                "@type": "branch",
+                "href": "/repo/23315218/branch/main",
+                "@representation": "minimal",
+                "name": "main"
+            },
+            "tag": null,
+            "commit": {
+                "@type": "commit",
+                "@representation": "minimal",
+                "id": 715179452,
+                "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                "ref": null,
+                "message": "Create .travis.yml",
+                "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a50c067793296ef48aaa33ceaa8af...531f35363c44f98a9bc7aec11fd198a5e404a475",
+                "committed_at": "2022-04-22T08:32:48Z"
+            },
+            "jobs": [
+                {
+                    "@type": "job",
+                    "href": "/job/567902862",
+                    "@representation": "standard",
+                    "@permissions": {
+                        "read": true,
+                        "restart": true,
+                        "prioritize": false,
+                        "debug": true,
+                        "delete_log": true,
+                        "cancel": true
+                    },
+                    "id": 567902862,
+                    "allow_failure": null,
+                    "number": "2.1",
+                    "state": "failed",
+                    "started_at": "2022-04-25T10:12:37Z",
+                    "finished_at": "2022-04-25T10:13:14Z",
+                    "build": {
+                        "href": "/build/249732580"
+                    },
+                    "queue": "builds.gce",
+                    "repository": {
+                        "@type": "repository",
+                        "href": "/repo/23315218",
+                        "@representation": "minimal",
+                        "id": 23315218,
+                        "name": "sample-test",
+                        "slug": "huongtn/sample-test"
+                    },
+                    "commit": {
+                        "@type": "commit",
+                        "@representation": "minimal",
+                        "id": 715179452,
+                        "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "ref": null,
+                        "message": "Create .travis.yml",
+                        "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a50c067793296ef48aaa33ceaa8af...531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "committed_at": "2022-04-22T08:32:48Z"
+                    },
+                    "owner": {
+                        "@type": "user",
+                        "href": "/user/6121682",
+                        "@representation": "minimal",
+                        "id": 6121682,
+                        "login": "huongtn",
+                        "name": null,
+                        "vcs_type": "GithubUser",
+                        "ro_mode": false
+                    },
+                    "stage": null,
+                    "created_at": "2022-04-22T08:33:11.925Z",
+                    "updated_at": "2022-04-25T10:13:14.278Z",
+                    "private": false
                 },
-                "jobs":[
-                    {
-                        "id": "2b2a3332-6b7f-47e2-a121-fdc600298175",
-                        "errors": [],
-                        "project_slug": "gh/huongtn/sample-test",
-                        "updated_at": "2022-04-19T01:31:51.131Z",
-                        "number": 1,
-                        "state": "created",
-                        "created_at": "2022-04-19T01:31:51.131Z",
-                        "trigger": {
-                            "received_at": "2022-04-19T01:31:48.820Z",
-                            "type": "api",
-                            "actor": {
-                                "login": "huongtn",
-                                "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4"
-                            }
-                        },
-                        "vcs": {
-                            "origin_repository_url": "https://github.com/huongtn/sample-test",
-                            "target_repository_url": "https://github.com/huongtn/sample-test",
-                            "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
-                            "provider_name": "GitHub",
-                            "branch": "circleci-project-setup"
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-]
+                {
+                    "@type": "job",
+                    "href": "/job/567902863",
+                    "@representation": "standard",
+                    "@permissions": {
+                        "read": true,
+                        "restart": true,
+                        "prioritize": false,
+                        "debug": true,
+                        "delete_log": true,
+                        "cancel": true
+                    },
+                    "id": 567902863,
+                    "allow_failure": null,
+                    "number": "2.2",
+                    "state": "failed",
+                    "started_at": "2022-04-25T10:13:49Z",
+                    "finished_at": "2022-04-25T10:16:58Z",
+                    "build": {
+                        "href": "/build/249732580"
+                    },
+                    "queue": "builds.gce",
+                    "repository": {
+                        "@type": "repository",
+                        "href": "/repo/23315218",
+                        "@representation": "minimal",
+                        "id": 23315218,
+                        "name": "sample-test",
+                        "slug": "huongtn/sample-test"
+                    },
+                    "commit": {
+                        "@type": "commit",
+                        "@representation": "minimal",
+                        "id": 715179452,
+                        "sha": "531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "ref": null,
+                        "message": "Create .travis.yml",
+                        "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a50c067793296ef48aaa33ceaa8af...531f35363c44f98a9bc7aec11fd198a5e404a475",
+                        "committed_at": "2022-04-22T08:32:48Z"
+                    },
+                    "owner": {
+                        "@type": "user",
+                        "href": "/user/6121682",
+                        "@representation": "minimal",
+                        "id": 6121682,
+                        "login": "huongtn",
+                        "name": null,
+                        "vcs_type": "GithubUser",
+                        "ro_mode": false
+                    },
+                    "stage": null,
+                    "created_at": "2022-04-22T08:33:11.929Z",
+                    "updated_at": "2022-04-25T10:16:58.815Z",
+                    "private": false
+                }
+            ],
+            "stages": [],
+            "created_by": {
+                "@type": "user",
+                "href": "/user/6121682",
+                "@representation": "minimal",
+                "id": 6121682,
+                "login": "huongtn"
+            },
+            "updated_at": "2022-04-25T10:16:58.823Z"
+        }
+    ]

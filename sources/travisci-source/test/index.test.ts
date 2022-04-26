@@ -82,7 +82,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        "TravisCI api request failed: Cannot read property 'get' of null"
+        "TravisCI api request failed: Cannot read properties of null (reading 'get')"
       ),
     ]);
   });
@@ -93,7 +93,7 @@ describe('index', () => {
       return new TravisCI(
         {
           get: fnBuildsList.mockResolvedValue({
-            data: readTestResourceFile('builds.json'),
+            data: readTestResourceFile('builds_input.json'),
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -111,7 +111,7 @@ describe('index', () => {
       builds.push(build);
     }
     expect(fnBuildsList).toHaveBeenCalledTimes(1);
-    expect(builds).toStrictEqual([readTestResourceFile('builds.json')]);
+    expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
   });
 
   test('streams - repositories, use full_refresh sync mode', async () => {
@@ -120,10 +120,7 @@ describe('index', () => {
       return new TravisCI(
         {
           get: fnRepositoriesList.mockResolvedValue({
-            data: {
-              items: readTestResourceFile('repositories.json'),
-              next_page_token: null,
-            },
+            data: readTestResourceFile('repositories_input.json'),
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -142,7 +139,7 @@ describe('index', () => {
     for await (const repository of repositoriesIter) {
       repositories.push(repository);
     }
-    expect(fnRepositoriesList).toHaveBeenCalledTimes(3);
+    expect(fnRepositoriesList).toHaveBeenCalledTimes(1);
     expect(repositories).toStrictEqual(
       readTestResourceFile('repositories.json')
     );
@@ -154,10 +151,7 @@ describe('index', () => {
       return new TravisCI(
         {
           get: fnOwnersList.mockResolvedValue({
-            data: {
-              items: readTestResourceFile('owners.json'),
-              next_page_token: null,
-            },
+            data: readTestResourceFile('owners_input.json'),
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -174,7 +168,7 @@ describe('index', () => {
     for await (const owner of ownersIter) {
       owners.push(owner);
     }
-    expect(fnOwnersList).toHaveBeenCalledTimes(3);
-    expect(owners).toStrictEqual(readTestResourceFile('owners.json'));
+    expect(fnOwnersList).toHaveBeenCalledTimes(1);
+    expect(owners).toStrictEqual([readTestResourceFile('owners.json')]);
   });
 });

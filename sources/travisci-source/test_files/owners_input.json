@@ -1,0 +1,30 @@
+{
+    "@type": "user",
+    "@href": "/user/6121682",
+    "@representation": "standard",
+    "@permissions": {
+        "read": true,
+        "sync": true
+    },
+    "id": 6121682,
+    "login": "huongtn",
+    "name": null,
+    "github_id": 4100100,
+    "vcs_id": "4100100",
+    "vcs_type": "GithubUser",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4100100?v=4",
+    "education": null,
+    "allow_migration": false,
+    "allowance": {
+        "@type": "allowance",
+        "@representation": "minimal",
+        "id": 6121682
+    },
+    "ro_mode": false,
+    "email": "huongkstn@gmail.com",
+    "is_syncing": false,
+    "synced_at": "2022-04-26T00:00:51Z",
+    "recently_signed_up": false,
+    "secure_user_hash": "b6bcc0483a228e82d0f7835b4ab6ba3ede8d52c33967b01d64ca48452f1c0509",
+    "confirmed_at": "2022-04-22T01:07:41Z"
+}
