@@ -75,8 +75,9 @@ export class Jobs extends GitlabConverter {
     if (!stage) {
       return {category: 'Custom', detail: 'undefined'};
     }
-    const detail = stage?.toLowerCase();
-    switch (detail) {
+    const detail = stage;
+    const lowerCaseDetail = detail.toLowerCase();
+    switch (lowerCaseDetail) {
       case 'script':
         return {category: 'Script', detail};
       case 'manual':
