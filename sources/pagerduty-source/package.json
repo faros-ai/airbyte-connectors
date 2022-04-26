@@ -1,6 +1,6 @@
 {
   "name": "pagerduty-source",
-  "version": "0.1.70",
+  "version": "0.1.71",
   "description": "PagerDuty Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "@pagerduty/pdjs": "^2.2.4",
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.70",
+    "faros-airbyte-cdk": "^0.1.71",
     "luxon": "^2.0.2",
     "verror": "^1.10.1"
   },
