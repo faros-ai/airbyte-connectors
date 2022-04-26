@@ -77,6 +77,7 @@ export class TravisCI {
   async *fetchOwner(): AsyncGenerator<Owner> {
     const {data} = await this.axios.get(`/owner/${this.organization}`);
     yield {
+      id: data.id,
       login: data.login,
       name: data.name,
       href: data['@href'],
@@ -122,7 +123,7 @@ export class TravisCI {
     const funcParams = {
       limit: this.pageSize,
       event_type: 'push', // Get builds triggered by commits not pull requests
-      sort_by: 'finished_at:desc',
+      sort_by: 'finished_at:asc',
       include: 'build.jobs',
     };
 

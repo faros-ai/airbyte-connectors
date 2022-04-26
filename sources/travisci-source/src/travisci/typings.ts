@@ -42,6 +42,7 @@ export interface Build {
 }
 
 export interface Owner {
+  readonly id: number;
   readonly login: string;
   readonly name: string | null;
   readonly href: string;

@@ -45,10 +45,10 @@ export class Builds extends AirbyteStreamBase {
     currentStreamState: BuildState,
     latestRecord: Build
   ): BuildState {
-    const lastUpdatedAt: Date = new Date(latestRecord.finished_at);
+    const lastFinishedAt: Date = new Date(latestRecord.finished_at);
     return {
       lastFinishedAt:
-        lastUpdatedAt >= new Date(currentStreamState?.lastFinishedAt || 0)
+        lastFinishedAt >= new Date(currentStreamState?.lastFinishedAt || 0)
           ? latestRecord.finished_at
           : currentStreamState.lastFinishedAt,
     };
