@@ -45,13 +45,7 @@ export class Jobs extends GitlabConverter {
       return [];
     }
 
-    const buildKey = {
-      uid: String(pipelineId),
-      pipeline: {
-        organization: repository.organization,
-        uid: repository.name,
-      },
-    };
+    const buildKey = GitlabCommon.createBuildKey(pipelineId, repository);
 
     return [
       {

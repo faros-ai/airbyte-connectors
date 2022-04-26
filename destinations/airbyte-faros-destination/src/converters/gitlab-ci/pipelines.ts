@@ -30,13 +30,7 @@ export class Pipelines extends GitlabConverter {
         ? null
         : Utils.toDate(pipeline.updatedAt);
 
-    const buildKey = {
-      uid: String(pipeline.id),
-      pipeline: {
-        organization: repository.organization,
-        uid: repository.name,
-      },
-    };
+    const buildKey = GitlabCommon.createBuildKey(pipeline.id, repository);
 
     res.push({
       model: 'cicd_Build',
