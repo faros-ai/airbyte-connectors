@@ -66,42 +66,83 @@ export class Octopus {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getDeployments();
-      iter.next();
+      const iter = this.getReleases();
+      await iter.next();
     } catch (err: any) {
       this.createError(err, 'Please verify your token is correct.');
     }
   }
 
-  async *getProjects(): AsyncGenerator<Project> {
-    const completeList = await this.httpClient.get<Project>('/projects');
-    if (completeList.status === 200) {
-      console.log(completeList.data);
-      yield completeList.data;
+  private async *paginate<T>(path: string, param = {}): AsyncGenerator<T> {
+    try {
+      const res = await this.httpClient.get<T[]>(path, param);
+      const totalPages = res.data['NumberOfPages'];
+      const data = [];
+
+      for (let totalcalls = 1; totalcalls <= totalPages; totalcalls++) {
+        console.log(param);
+        const res = await this.httpClient.get<T[]>(path, param);
+        for (const item of res.data['Items']) {
+          data.push(item);
+        }
+        param['params']['skip'] = param['params']['take'] * totalcalls;
+      }
+
+      for (const item of data) {
+        yield item;
+      }
+    } catch (err: any) {
+      const errorMessage = wrapApiError(err).message;
+      this.logger.error(
+        `Failed requesting '${path}' with params ${JSON.stringify(
+          param
+        )}. Error: ${errorMessage}`
+      );
+      throw new VError(errorMessage);
     }
   }
 
-  async *getChannels(): AsyncGenerator<Channels> {
-    const completeList = await this.httpClient.get<Channels>('/channels');
-    if (completeList.status === 200) {
-      console.log(completeList.data);
-      yield completeList.data;
+  async *getProjects(maxResults = 5): AsyncGenerator<Project> {
+    for await (const projects of this.paginate<Project>('/projects', {
+      params: {
+        take: maxResults,
+      },
+    })) {
+      console.log(projects);
+      yield projects;
     }
   }
 
-  async *getDeployments(): AsyncGenerator<Deployments> {
-    const completeList = await this.httpClient.get<Deployments>('/channels');
-    if (completeList.status === 200) {
-      console.log(completeList.data);
-      yield completeList.data;
+  async *getChannels(maxResults = 5): AsyncGenerator<Channels> {
+    for await (const channels of this.paginate<Channels>('/channels', {
+      params: {
+        take: maxResults,
+      },
+    })) {
+      console.log(channels);
+      yield channels;
     }
   }
 
-  async *getReleases(): AsyncGenerator<Releases> {
-    const completeList = await this.httpClient.get<Releases>('/releases');
-    if (completeList.status === 200) {
-      console.log(completeList.data);
-      yield completeList.data;
+  async *getDeployments(maxResults = 5): AsyncGenerator<Deployments> {
+    for await (const deployments of this.paginate<Deployments>('/deployments', {
+      params: {
+        take: maxResults,
+      },
+    })) {
+      console.log(deployments);
+      yield deployments;
+    }
+  }
+
+  async *getReleases(maxResults = 5): AsyncGenerator<Releases> {
+    for await (const release of this.paginate<Releases>('/releases', {
+      params: {
+        take: maxResults,
+      },
+    })) {
+      console.log(release);
+      yield release;
     }
   }
 }
