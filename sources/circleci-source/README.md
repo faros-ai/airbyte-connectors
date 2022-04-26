@@ -1,14 +1,14 @@
-# CircleIC Source for Airbyte
+# CircleCI Source for Airbyte
 
 📦 Docker Image: https://hub.docker.com/r/farosai/airbyte-circleci-source
 
-Use this source to import [CircleIC](https://circleci) API data into Airbyte.
+Use this source to import [CircleCI](https://circleci) API data into Airbyte.
 
 ## Recommended Usage
 
-A recommended approach if you'd like more detailed message delivery metrics is to enable the [CircleIC -> S3 data warehouse integration](https://circleci/docs/data-warehouse-sync/#s3-bucket), and then use the [S3 Airbyte source connector](https://docs.airbyte.io/integrations/sources/s3) to import the parquet files as needed.
+A recommended approach if you'd like more detailed message delivery metrics is to enable the [CircleCI -> S3 data warehouse integration](https://circleci/docs/data-warehouse-sync/#s3-bucket), and then use the [S3 Airbyte source connector](https://docs.airbyte.io/integrations/sources/s3) to import the parquet files as needed.
 
-This source is useful for importing CircleIC resource metadata (such as campaign or action names). The following CircleIC resources are currently available:
+This source is useful for importing CircleCI resource metadata (such as campaign or action names). The following CircleCI resources are currently available:
 
 * `campaigns`
 * `campaign_actions`
@@ -34,10 +34,10 @@ npm run prepare
 ```
 
 This will install all required dependencies and build all included connectors,
-including the CircleIC source connector.
+including the CircleCI source connector.
 
-Now you can cd into the CircleIC connector directory, `sources/circleci-source`,
-and iterate on the CircleIC source connector. After making code changes, run:
+Now you can cd into the CircleCI connector directory, `sources/circleci-source`,
+and iterate on the CircleCI source connector. After making code changes, run:
 ```
 npm run build
 ```
@@ -68,7 +68,7 @@ docker build . --build-arg path=sources/circleci-source -t circleci-source
 ```
 
 #### Run
-Then return to the CircleIC connector directory and run any of the connector
+Then return to the CircleCI connector directory and run any of the connector
 commands as follows:
 ```
 docker run --rm circleci-source spec
@@ -80,7 +80,7 @@ docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files circ
 ## Testing
 
 ### Unit Tests
-To run unit tests locally, from the CircleIC connector directory run:
+To run unit tests locally, from the CircleCI connector directory run:
 ```
 npm test
 ```
