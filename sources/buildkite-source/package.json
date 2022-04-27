@@ -1,6 +1,6 @@
 {
   "name": "buildkite-source",
-  "version": "0.1.71",
+  "version": "0.1.72",
   "description": "BuildKite Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.71",
+    "faros-airbyte-cdk": "^0.1.72",
     "graphql-request": "^4.0.0",
     "verror": "^1.10.1"
   },
