@@ -13,6 +13,9 @@
     },
     "href": {
       "type": "string"
+    },
+    "type": {
+      "type": "string"
     }
   }
 }

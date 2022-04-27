@@ -81,12 +81,14 @@ export class TravisCI {
       login: data.login,
       name: data.name,
       href: data['@href'],
+      type: data['@type'],
     };
   }
   async *fetchRepositories(): AsyncGenerator<Repository> {
     const {data} = await this.axios.get(`repos`);
     for (const repo of data?.repositories ?? []) {
-      yield repo;
+      repo.owner.type = repo.owner['@type'];
+      (repo.owner.href = repo.owner['@href']), yield repo;
     }
   }
   toBuild(item: Dict): Build {
@@ -110,6 +112,13 @@ export class TravisCI {
         message: item.commit.message,
         compare_url: item.commit.compare_url,
         committed_at: item.commit.committed_at,
+      },
+      repository: {
+        name: item.repository.name,
+        slug: item.repository.slug,
+      },
+      created_by: {
+        login: item.created_by.slug,
       },
     };
   }

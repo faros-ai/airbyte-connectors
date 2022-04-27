@@ -50,6 +50,17 @@
     "priority": {
       "type": "boolean"
     },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "commit": {
       "type": "object",
       "properties": {

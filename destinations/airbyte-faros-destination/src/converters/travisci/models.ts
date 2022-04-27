@@ -55,3 +55,45 @@ export interface Owner {
   readonly href: string;
   readonly type: string;
 }
+
+export interface CategoryRef {
+  readonly category: string;
+  readonly detail: string;
+}
+
+export interface VCSOrganizationKey {
+  uid: string;
+  source: string;
+}
+
+export interface VCSRepositoryKey {
+  organization: VCSOrganizationKey;
+  name: string;
+}
+
+export interface VCSCommitKey {
+  repository: VCSRepositoryKey;
+  sha: string;
+}
+
+export interface OrganizationKey {
+  uid: string;
+  source: string;
+}
+
+export interface PipelineKey {
+  organization: OrganizationKey;
+  uid: string;
+}
+
+export interface BuildKey {
+  pipeline: PipelineKey;
+  uid: string;
+}
+
+export enum RepoSource {
+  BITBUCKET = 'Bitbucket',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  VCS = 'VCS',
+}
