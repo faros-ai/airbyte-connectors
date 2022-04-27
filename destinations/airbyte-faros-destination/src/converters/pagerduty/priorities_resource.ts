@@ -62,7 +62,7 @@ export class PrioritiesResource extends PagerDutyConverter {
       {
         model: 'ims_Incident__Update',
         record: {
-          at: record.record.emitted_at,
+          at: Date.now(),
           where: {
             uid: priorityResource.id,
             source,

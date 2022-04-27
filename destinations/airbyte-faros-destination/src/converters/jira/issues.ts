@@ -523,7 +523,6 @@ export class Issues extends JiraConverter {
         results.push({
           model: 'tms_TaskReleaseRelationship__Deletion',
           record: {
-            at: change.changed.getTime(),
             where: {
               task: {uid: issue.key, source},
               release: {uid: change.from, source},
@@ -535,7 +534,6 @@ export class Issues extends JiraConverter {
         results.push({
           model: 'tms_TaskReleaseRelationship__Upsert',
           record: {
-            at: change.changed.getTime(),
             data: {
               task: {uid: issue.key, source},
               release: {uid: change.value, source},
@@ -548,7 +546,6 @@ export class Issues extends JiraConverter {
       results.push({
         model: 'tms_TaskReleaseRelationship__Upsert',
         record: {
-          at: record.record.emitted_at,
           data: {
             task: {uid: issue.key, source},
             release: {uid: fixVersion.id, source},

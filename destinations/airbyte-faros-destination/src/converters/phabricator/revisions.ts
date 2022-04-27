@@ -41,12 +41,8 @@ export class Revisions extends PhabricatorConverter {
       : null;
 
     res.push({
-      // We are explicitly passing __Upsert command here with at := 0,
-      // to allow updating PR merge commit from commits stream
-      // in the same revision
       model: 'vcs_PullRequest__Upsert',
       record: {
-        at: 0,
         data: {
           number: revision.id,
           uid: revision.id.toString(),

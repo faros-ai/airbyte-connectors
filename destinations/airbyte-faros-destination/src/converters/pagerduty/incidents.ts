@@ -59,12 +59,8 @@ export class Incidents extends PagerDutyConverter {
     }
 
     res.push({
-      // We are explicitly passing __Upsert command here with at := 0,
-      // to allow updating Incident severity from prioritiesResource stream
-      // in the same revision
       model: 'ims_Incident__Upsert',
       record: {
-        at: 0,
         data: {
           ...incidentRef,
           title: incident.title,
