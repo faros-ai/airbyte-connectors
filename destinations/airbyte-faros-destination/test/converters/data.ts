@@ -91,3 +91,6 @@ export const opsgenieAllStreamsLog = readTestResourceFile(
 export const servicenowAllStreamsLog = readTestResourceFile(
   'servicenow/all-streams.log'
 );
+export const travisciAllStreamsLog = readTestResourceFile(
+  'travisci/all-streams.log'
+);

@@ -88,7 +88,8 @@ export class TravisCI {
     const {data} = await this.axios.get(`repos`);
     for (const repo of data?.repositories ?? []) {
       repo.owner.type = repo.owner['@type'];
-      (repo.owner.href = repo.owner['@href']), yield repo;
+      repo.owner.href = repo.owner['@href'];
+      yield repo;
     }
   }
   toBuild(item: Dict): Build {
@@ -118,7 +119,7 @@ export class TravisCI {
         slug: item.repository.slug,
       },
       created_by: {
-        login: item.created_by.slug,
+        login: item.created_by.login,
       },
     };
   }

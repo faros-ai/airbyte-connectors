@@ -6,7 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {TravisCICommon, TravisCIConverter} from './common';
 import {OrganizationKey, Repository, VCSOrganizationKey} from './models';
 
-export class Repositores extends TravisCIConverter {
+export class Repositories extends TravisCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Pipeline',
     'vcs_Organization',

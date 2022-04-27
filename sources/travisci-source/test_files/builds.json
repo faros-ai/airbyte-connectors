@@ -29,6 +29,13 @@
             "message": "Create .travis.yml",
             "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a...531f35363c44",
             "committed_at": "2022-04-22T08:32:48Z"
+        },
+        "repository": { 
+            "name": "sample-test",
+            "slug": "huongtn/sample-test"
+        },
+        "created_by": { 
+            "login": "huongtn"
         }
     },
     {
@@ -61,6 +68,13 @@
             "message": "Create .travis.yml",
             "compare_url": "https://github.com/huongtn/sample-test/compare/ca9a0613a94a50c067793296ef48aaa33ceaa8af...531f35363c44f98a9bc7aec11fd198a5e404a475",
             "committed_at": "2022-04-22T08:32:48Z"
+        },
+        "repository": { 
+            "name": "sample-test",
+            "slug": "huongtn/sample-test"
+        },
+        "created_by": { 
+            "login": "huongtn"
         }
     }
 ]
