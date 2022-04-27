@@ -144,7 +144,7 @@ export class Issues extends JiraConverter {
     changed: Date;
   }> {
     const fieldChangelog = [];
-    // Changelog entries are sorted from most to least recent
+
     for (const change of changelog) {
       for (const item of change.items) {
         if (item.field === field) {
@@ -518,11 +518,13 @@ export class Issues extends JiraConverter {
       'from',
       'to'
     );
-    for (const change of fixVersionChangelog) {
+    const now = Date.now();
+    for (const [i, change] of fixVersionChangelog.entries()) {
       if (change.from) {
         results.push({
           model: 'tms_TaskReleaseRelationship__Deletion',
           record: {
+            at: now + i,
             where: {
               task: {uid: issue.key, source},
               release: {uid: change.from, source},
@@ -534,6 +536,7 @@ export class Issues extends JiraConverter {
         results.push({
           model: 'tms_TaskReleaseRelationship__Upsert',
           record: {
+            at: now + i,
             data: {
               task: {uid: issue.key, source},
               release: {uid: change.value, source},
@@ -546,6 +549,7 @@ export class Issues extends JiraConverter {
       results.push({
         model: 'tms_TaskReleaseRelationship__Upsert',
         record: {
+          at: Date.now(),
           data: {
             task: {uid: issue.key, source},
             release: {uid: fixVersion.id, source},
