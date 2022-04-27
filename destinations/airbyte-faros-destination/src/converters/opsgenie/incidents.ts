@@ -73,20 +73,18 @@ export class Incidents extends OpsGenieConverter {
       });
     }
     res.push({
-      model: 'ims_Incident__Upsert',
+      model: 'ims_Incident',
       record: {
-        data: {
-          ...incidentRef,
-          title: incident.message,
-          description: incident.description?.substring(0, maxDescriptionLength),
-          url: incident.links.web,
-          createdAt,
-          updatedAt,
-          acknowledgedAt,
-          resolvedAt,
-          priority: this.getPriority(incident.priority),
-          status: this.getIncidentStatus(incident.status),
-        },
+        ...incidentRef,
+        title: incident.message,
+        description: incident.description?.substring(0, maxDescriptionLength),
+        url: incident.links.web,
+        createdAt,
+        updatedAt,
+        acknowledgedAt,
+        resolvedAt,
+        priority: this.getPriority(incident.priority),
+        status: this.getIncidentStatus(incident.status),
       },
     });
     for (const service of incident.impactedServices) {

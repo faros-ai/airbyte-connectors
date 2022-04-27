@@ -59,20 +59,18 @@ export class Incidents extends PagerDutyConverter {
     }
 
     res.push({
-      model: 'ims_Incident__Upsert',
+      model: 'ims_Incident',
       record: {
-        data: {
-          ...incidentRef,
-          title: incident.title,
-          description: incident.description,
-          url: incident.self,
-          createdAt: Utils.toDate(incident.created_at),
-          updatedAt: resolvedAt,
-          acknowledgedAt: acknowledgedAt,
-          resolvedAt: resolvedAt,
-          priority: this.incidentPriority(incident.urgency),
-          status: this.incidentState(incident.status),
-        },
+        ...incidentRef,
+        title: incident.title,
+        description: incident.description,
+        url: incident.self,
+        createdAt: Utils.toDate(incident.created_at),
+        updatedAt: resolvedAt,
+        acknowledgedAt: acknowledgedAt,
+        resolvedAt: resolvedAt,
+        priority: this.incidentPriority(incident.urgency),
+        status: this.incidentState(incident.status),
       },
     });
 
