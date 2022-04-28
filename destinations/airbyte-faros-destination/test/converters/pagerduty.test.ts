@@ -199,10 +199,10 @@ describe('pagerduty', () => {
 
     const writtenByModel = {
       compute_Application: 3,
+      ims_Incident: 3,
       ims_IncidentApplicationImpact: 3,
       ims_IncidentAssignment: 3,
       ims_IncidentEvent: 3,
-      ims_Incident__Upsert: 3,
       ims_User: 1,
     };
 
