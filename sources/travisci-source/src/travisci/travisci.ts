@@ -123,7 +123,7 @@ export class TravisCI {
       },
     };
   }
-  //async *fetchBuilds(since?: string): AsyncGenerator<Build> {
+
   fetchBuilds(since?: string): AsyncGenerator<Build> {
     const func = async (params: RequestParams): Promise<RequestResult> => {
       const result = await this.axios.get(`builds`, {params});

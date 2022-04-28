@@ -34,12 +34,12 @@ export class Builds extends AirbyteStreamBase {
     streamSlice?: Dictionary<any, string>,
     streamState?: BuildState
   ): AsyncGenerator<Build, any, unknown> {
-    const lastUpdatedAt =
+    const lastFinishedAt =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.lastFinishedAt
         : undefined;
     const travisCI = TravisCI.instance(this.config, this.axios);
-    yield* travisCI.fetchBuilds(lastUpdatedAt);
+    yield* travisCI.fetchBuilds(lastFinishedAt);
   }
   getUpdatedState(
     currentStreamState: BuildState,

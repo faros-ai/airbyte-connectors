@@ -6,7 +6,8 @@
     "airbyte",
     "source",
     "faros",
-    "circle.ci"
+    "travis",
+    "travis.ci"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",

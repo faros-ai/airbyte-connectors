@@ -65,6 +65,7 @@ export class Builds extends TravisCIConverter {
         endedAt: Utils.toDate(build.finished_at),
       },
     });
+
     build.jobs.forEach((job) => {
       res.push({
         model: 'cicd_BuildStep',
