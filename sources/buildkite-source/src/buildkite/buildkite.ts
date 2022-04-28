@@ -176,7 +176,7 @@ export class Buildkite {
     const restApiVersion = config.rest_api_version ?? DEFAULT_REST_VERSION;
     const httpClient = axios.create({
       baseURL: `${REST_API_URL}${restApiVersion}`,
-      timeout: 5000,
+      timeout: 15000,
       headers: {authorization: auth},
     });
 

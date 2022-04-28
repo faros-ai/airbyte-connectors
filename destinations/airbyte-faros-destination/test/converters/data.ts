@@ -88,6 +88,9 @@ export const azurepipelineAllStreamsLog = readTestResourceFile(
 export const opsgenieAllStreamsLog = readTestResourceFile(
   'opsgenie/all-streams.log'
 );
+export const servicenowAllStreamsLog = readTestResourceFile(
+  'servicenow/all-streams.log'
+);
 export const circleciAllStreamsLog = readTestResourceFile(
   'circleci/all-streams.log'
 );
