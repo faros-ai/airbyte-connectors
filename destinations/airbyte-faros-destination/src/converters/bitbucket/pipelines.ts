@@ -51,6 +51,7 @@ export class Pipelines extends BitbucketConverter {
     if (pipeline.target?.commit?.hash) {
       const projectKey = {
         name: repo.toLowerCase(),
+        uid: repo.toLowerCase(),
         organization: {uid: orgKey.uid, source},
       };
       res.push({
