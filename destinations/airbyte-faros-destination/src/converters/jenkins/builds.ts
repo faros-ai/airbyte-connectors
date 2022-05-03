@@ -67,6 +67,7 @@ export class Builds extends JenkinsConverter {
             const repoKey = {
               organization: {uid: toLower(repo.org), source: repo.source},
               name: toLower(repo.name),
+              uid: toLower(repo.name),
             };
 
             res.push({

@@ -17,6 +17,7 @@ import {
 import {
   EntryUploaderConfig,
   FarosClient,
+  FarosClientConfig,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import {intersection, keyBy, sortBy, uniq} from 'lodash';
@@ -60,12 +61,16 @@ export class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
     private edition: Edition = undefined,
+    private farosClientConfig: FarosClientConfig = undefined,
     private farosClient: FarosClient = undefined,
+    private farosGraph: string = undefined,
+    private farosRevisionExpiration: string = undefined,
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
     private hasuraClient: HasuraClient = undefined,
-    private analytics: Analytics = undefined
+    private analytics: Analytics = undefined,
+    private segmentUserId: string = undefined
   ) {
     super();
   }
@@ -119,11 +124,13 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
     }
 
-    const segmentUserId = config.edition_configs.segment_user_id;
-    if (segmentUserId) {
-      if (!validate(segmentUserId)) {
+    this.segmentUserId = config.edition_configs.segment_user_id;
+    if (this.segmentUserId) {
+      if (!validate(this.segmentUserId)) {
         throw new VError(
-          `Segment User Id ${segmentUserId} is not a valid UUID. Example: ${uuidv4()}`
+          `Segment User Id ${
+            this.segmentUserId
+          } is not a valid UUID. Example: ${uuidv4()}`
         );
       }
       // Segment host is used for testing purposes only
@@ -137,16 +144,17 @@ export class FarosDestination extends AirbyteDestination {
 
   private async initCloud(config: AirbyteConfig): Promise<void> {
     if (!config.edition_configs.api_url) {
-      throw new VError('API URL is not set');
+      throw new VError('API url is not set');
     }
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
     try {
-      this.farosClient = new FarosClient({
+      this.farosClientConfig = {
         url: config.edition_configs.api_url,
         apiKey: config.edition_configs.api_key,
-      });
+      };
+      this.farosClient = new FarosClient(this.farosClientConfig);
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
@@ -157,14 +165,18 @@ export class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
     }
-    const graph = config.edition_configs.graph;
+    this.farosGraph = config.edition_configs.graph;
     try {
-      const exists = await this.getFarosClient().graphExists(graph);
+      const exists = await this.getFarosClient().graphExists(this.farosGraph);
       if (!exists) {
-        throw new VError(`Faros graph ${graph} does not exist`);
+        throw new VError(`Faros graph ${this.farosGraph} does not exist`);
       }
     } catch (e) {
-      throw new VError(`Invalid Faros graph ${graph}. Error: ${e}`);
+      throw new VError(`Invalid Faros graph ${this.farosGraph}. Error: ${e}`);
+    }
+    this.farosRevisionExpiration = config.edition_configs.expiration;
+    if (!this.farosRevisionExpiration) {
+      this.farosRevisionExpiration = '5 seconds';
     }
   }
 
@@ -348,24 +360,24 @@ export class FarosDestination extends AirbyteDestination {
         );
       } else {
         this.logger.info(
-          `Opening a new revision on graph ${config.edition_configs.graph} ` +
-            `with expiration of ${config.edition_configs.expiration}`
+          `Opening a new revision on graph ${this.farosGraph} ` +
+            `with expiration of ${this.farosRevisionExpiration}`
         );
 
         // Log all models to be deleted (if any)
         if (deleteModelEntries.length > 0) {
           const modelsToDelete = sortBy(deleteModelEntries).join(',');
           this.logger.info(
-            `Deleting records in destination graph ${config.edition_configs.graph} for models: ${modelsToDelete}`
+            `Deleting records in destination graph ${this.farosGraph} for models: ${modelsToDelete}`
           );
         }
         // Create an entry uploader for the destination graph
         const entryUploaderConfig: EntryUploaderConfig = {
           name: origin,
-          url: config.edition_configs.api_url,
-          authHeader: config.edition_configs.api_key,
-          expiration: config.edition_configs.expiration,
-          graphName: config.edition_configs.graph,
+          url: this.farosClientConfig.url,
+          authHeader: this.farosClientConfig.apiKey,
+          expiration: this.farosRevisionExpiration,
+          graphName: this.farosGraph,
           deleteModelEntries,
           logger: this.logger.asPino('debug'),
         };
@@ -378,7 +390,7 @@ export class FarosDestination extends AirbyteDestination {
                 ? `last synced at ${state.lastSynced}`
                 : 'not synced yet';
               this.logger.info(
-                `Destination graph ${config.edition_configs.graph} was ${lastSynced}`
+                `Destination graph ${this.farosGraph} was ${lastSynced}`
               );
               // Process input and write entries
               latestStateMessage = await this.writeEntries(
@@ -406,7 +418,7 @@ export class FarosDestination extends AirbyteDestination {
             .track(
               {
                 event: 'Write Stats',
-                userId: config.edition_configs.segment_user_id,
+                userId: this.segmentUserId,
                 properties: stats,
               },
               callback

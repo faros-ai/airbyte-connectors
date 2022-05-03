@@ -63,7 +63,7 @@ export class Commits extends PhabricatorConverter {
       res.push({
         model: 'vcs_PullRequest__Update',
         record: {
-          at: record.record.emitted_at,
+          at: Date.now(),
           where: {
             number: commitMessage?.revisionId,
             uid: commitMessage?.revisionId.toString(),
