@@ -2,30 +2,25 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Jenkins Spec",
+    "title": "Octopus Spec",
     "type": "object",
     "required": [
-      "server_url",
-      "user",
-      "token"
+      "apiKey",
+      "apiUri"
     ],
     "additionalProperties": false,
     "properties": {
-      "server_url": {
+      "apiKey": {
         "type": "string",
-        "title": "Jenkins Server URL",
-        "examples": [
-          "https://my-jenkins-server.example.com"
-        ]
-      },
-      "user": {
-        "type": "string",
-        "title": "Jenkins User"
-      },
-      "token": {
-        "type": "string",
-        "title": "Jenkins Token",
+        "title": "apiKey",
+        "description": "Octopus Api Key",
         "airbyte_secret": true
+      },
+      "apiUri": {
+        "type": "string",
+        "title": "apiUri",
+        "description": "Octopus Api URL",
+        "airbyte_secret": false
       }
     }
   }

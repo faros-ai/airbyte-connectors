@@ -32,7 +32,7 @@ export interface Project {
   readonly Link: object;
 }
 
-export interface Channels {
+export interface Channel {
   readonly id: number;
   readonly Name: string;
   readonly Description: string;
@@ -44,7 +44,7 @@ export interface Channels {
   readonly Link: object;
 }
 
-export interface Releases {
+export interface Release {
   readonly Id: number;
   readonly ProjectId: string;
   readonly SpaceId: string;
@@ -64,7 +64,7 @@ export interface Releases {
   readonly Link: object;
 }
 
-export interface Deployments {
+export interface Deployment {
   readonly Changes: object;
   readonly ChangesMarkdown: string;
   readonly ChannelId: string;

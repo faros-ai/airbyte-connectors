@@ -1,3 +1,3 @@
-// import {Projects} from './projects';
-//
-// export {Projects};
+import {Projects} from './projects';
+
+export {Projects};

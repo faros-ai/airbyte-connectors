@@ -8,20 +8,11 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
-import {
-  Channels,
-  Deployments,
-  Project,
-  ProjectResponse,
-  Releases,
-} from './models';
+import {Channel, Deployment, Project, ProjectResponse, Release} from './models';
 
 export interface OctopusConfig {
   readonly apiKey: string;
   readonly apiUri: string;
-  readonly autoConnect: boolean;
-  readonly space?: string;
-  readonly projectName: string;
 }
 
 export class Octopus {
@@ -69,7 +60,7 @@ export class Octopus {
       const iter = this.getReleases();
       await iter.next();
     } catch (err: any) {
-      this.createError(err, 'Please verify your token is correct.');
+      this.createError(err, 'apiKey and apiUri must be a not empty string.');
     }
   }
 
@@ -113,8 +104,8 @@ export class Octopus {
     }
   }
 
-  async *getChannels(maxResults = 5): AsyncGenerator<Channels> {
-    for await (const channels of this.paginate<Channels>('/channels', {
+  async *getChannels(maxResults = 5): AsyncGenerator<Channel> {
+    for await (const channels of this.paginate<Channel>('/channels', {
       params: {
         take: maxResults,
       },
@@ -124,8 +115,8 @@ export class Octopus {
     }
   }
 
-  async *getDeployments(maxResults = 5): AsyncGenerator<Deployments> {
-    for await (const deployments of this.paginate<Deployments>('/deployments', {
+  async *getDeployments(maxResults = 5): AsyncGenerator<Deployment> {
+    for await (const deployments of this.paginate<Deployment>('/deployments', {
       params: {
         take: maxResults,
       },
@@ -135,8 +126,8 @@ export class Octopus {
     }
   }
 
-  async *getReleases(maxResults = 5): AsyncGenerator<Releases> {
-    for await (const release of this.paginate<Releases>('/releases', {
+  async *getReleases(maxResults = 5): AsyncGenerator<Release> {
+    for await (const release of this.paginate<Release>('/releases', {
       params: {
         take: maxResults,
       },

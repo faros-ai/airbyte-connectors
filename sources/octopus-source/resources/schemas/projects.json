@@ -21,7 +21,13 @@
       "type": "boolean"
     },
     "IncludedLibraryVariableSetIds": {
-      "type": "object"
+      "type": "array"
+    },
+    "AutoDeployReleaseOverrides": {
+      "type": "array"
+    },
+    "ExtensionSettings": {
+      "type": "array"
     },
     "DefaultToSkipIfAlreadyInstalled": {
       "type": "boolean"
@@ -31,6 +37,9 @@
     },
     "DefaultGuidedFailureMode": {
       "type": "string"
+    },
+    "Templates": {
+      "type": "array"
     },
     "VersioningStrategy": {
       "Template": {

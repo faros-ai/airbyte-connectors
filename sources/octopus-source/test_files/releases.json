@@ -1,0 +1,37 @@
+[
+    {
+        "id": "releases-313",
+        "spaceid": "spaces-1",
+        "projectid": "projects-1",
+        "version": "1.0.0.14041",
+        "channelid": "channels-1",
+        "releasenotes": null,
+        "projectdeploymentprocesssnapshotid": "deploymentprocess-projects-1-s-0-m2mey",
+        "ignorechannelrules": false,
+        "buildinformation": [],
+        "assembled": "2022-04-27t06:26:45.651+00:00",
+        "libraryvariablesetsnapshotids": [],
+        "selectedpackages": [],
+        "projectvariablesetsnapshotid": "variableset-projects-1-s-0-8qk2x",
+        "versioncontrolreference": null,
+        "links": {
+            "self": "/api/spaces-1/releases/releases-31",
+            "project": "/api/spaces-1/projects/projects-1",
+            "channel": "/api/spaces-1/projects/projects-1/channels/channels-1",
+            "progression": "/api/spaces-1/releases/releases-31/progression",
+            "deployments": "/api/spaces-1/releases/releases-31/deployments{?skip,take}",
+            "deploymenttemplate": "/api/spaces-1/releases/releases-31/deployments/template",
+            "artifacts": "/api/spaces-1/artifacts?regarding=releases-31",
+            "projectvariablesnapshot": "/api/spaces-1/variables/variableset-projects-1-s-0-8qk2x",
+            "projectdeploymentprocesssnapshot": "/api/spaces-1/deploymentprocesses/deploymentprocess-projects-1-s-0-m2mey",
+            "web": "/app#/spaces-1/releases/releases-31",
+            "snapshotvariables": "/api/spaces-1/releases/releases-31/snapshot-variables",
+            "defects": "/api/spaces-1/releases/releases-31/defects",
+            "reportdefect": "/api/spaces-1/releases/releases-31/defects",
+            "resolvedefect": "/api/spaces-1/releases/releases-31/defects/resolve",
+            "deploymentpreviews": "/api/spaces-1/releases/releases-31/deployments/previews/",
+            "variables": "/api/spaces-1/projects/projects-1/releases/releases-31/variables"
+        }
+    }
+]
+

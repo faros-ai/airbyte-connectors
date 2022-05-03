@@ -1,0 +1,66 @@
+[
+  {
+    "Id": "Channels-1",
+    "Name": "Default",
+    "Description": null,
+    "ProjectId": "Projects-2",
+    "LifecycleId": null,
+    "IsDefault": true,
+    "Rules": [],
+    "TenantTags": [],
+    "SpaceId": "Spaces-1",
+    "Links": {
+      "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-2",
+      "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-2/releases{?skip,take,searchByVersion}",
+      "Project": "/api/Spaces-1/projects/Projects-1"
+    }
+  },
+  {
+    "Id": "Channels-2",
+    "Name": "Default",
+    "Description": null,
+    "ProjectId": "Projects-2",
+    "LifecycleId": null,
+    "IsDefault": true,
+    "Rules": [],
+    "TenantTags": [],
+    "SpaceId": "Spaces-1",
+    "Links": {
+      "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-2",
+      "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-2/releases{?skip,take,searchByVersion}",
+      "Project": "/api/Spaces-1/projects/Projects-1"
+    }
+  },
+  {
+    "Id": "Channels-3",
+    "Name": "Default",
+    "Description": null,
+    "ProjectId": "Projects-2",
+    "LifecycleId": null,
+    "IsDefault": true,
+    "Rules": [],
+    "TenantTags": [],
+    "SpaceId": "Spaces-1",
+    "Links": {
+      "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-2",
+      "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-2/releases{?skip,take,searchByVersion}",
+      "Project": "/api/Spaces-1/projects/Projects-1"
+    }
+  },
+  {
+    "Id": "Channels-4",
+    "Name": "Default",
+    "Description": null,
+    "ProjectId": "Projects-2",
+    "LifecycleId": null,
+    "IsDefault": true,
+    "Rules": [],
+    "TenantTags": [],
+    "SpaceId": "Spaces-1",
+    "Links": {
+      "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-2",
+      "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-2/releases{?skip,take,searchByVersion}",
+      "Project": "/api/Spaces-1/projects/Projects-1"
+    }
+  }
+]
