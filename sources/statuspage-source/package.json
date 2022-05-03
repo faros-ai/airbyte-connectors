@@ -1,7 +1,7 @@
 {
   "name": "statuspage-source",
   "version": "0.1.74",
-  "description": "StatusPage Airbyte source",
+  "description": "Statuspage Airbyte source",
   "keywords": [
     "airbyte",
     "source",
