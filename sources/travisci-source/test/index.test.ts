@@ -82,7 +82,7 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        "TravisCI api request failed: Cannot read properties of null (reading 'get')"
+        "TravisCI api request failed: Cannot read property 'get' of null"
       ),
     ]);
   });
