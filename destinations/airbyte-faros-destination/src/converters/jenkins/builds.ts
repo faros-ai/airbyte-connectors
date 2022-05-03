@@ -74,7 +74,7 @@ export class Builds extends JenkinsConverter {
               model: 'cicd_BuildCommitAssociation',
               record: {
                 build: {uid: build.id, pipeline: pipelineKey},
-                commit: {repository: repoKey, sha},
+                commit: {repository: repoKey, sha, uid: sha},
               },
             });
 
