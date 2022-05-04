@@ -1,13 +1,13 @@
 {
   "name": "azure-repos-source",
-  "version": "0.1.69",
+  "version": "0.1.76",
   "description": "Azure Repos Airbyte source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
     "azure",
-    "azure-repo"
+    "azure-repos"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
@@ -33,7 +33,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.69",
+    "faros-airbyte-cdk": "^0.1.76",
     "verror": "^1.10.1"
   },
   "jest": {

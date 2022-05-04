@@ -67,13 +67,14 @@ export class Builds extends JenkinsConverter {
             const repoKey = {
               organization: {uid: toLower(repo.org), source: repo.source},
               name: toLower(repo.name),
+              uid: toLower(repo.name),
             };
 
             res.push({
               model: 'cicd_BuildCommitAssociation',
               record: {
                 build: {uid: build.id, pipeline: pipelineKey},
-                commit: {repository: repoKey, sha},
+                commit: {repository: repoKey, sha, uid: sha},
               },
             });
 

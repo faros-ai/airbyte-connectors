@@ -41,22 +41,21 @@ export class Issues extends GitHubConverter {
       return res;
     }
 
-    let user: DestinationRecord | undefined;
-    if (issue.user) {
-      user = GitHubCommon.tms_User(issue.user, source);
-      res.push(user);
-    }
+    const user = GitHubCommon.tms_User(issue?.user, source);
+    if (user) res.push(user);
 
     issue.assignees?.forEach((a) => {
       const assignee = GitHubCommon.tms_User(a, source);
-      res.push(assignee);
-      res.push({
-        model: 'tms_TaskAssignment',
-        record: {
-          task: {uid, source},
-          assignee: {uid: assignee.record.uid, source},
-        },
-      });
+      if (assignee) {
+        res.push(assignee);
+        res.push({
+          model: 'tms_TaskAssignment',
+          record: {
+            task: {uid, source},
+            assignee: {uid: assignee.record.uid, source},
+          },
+        });
+      }
     });
 
     const issueLabelsStream = this.issueLabelsStream.asString;
