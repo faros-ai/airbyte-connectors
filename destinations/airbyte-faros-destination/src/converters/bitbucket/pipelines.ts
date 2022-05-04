@@ -58,7 +58,11 @@ export class Pipelines extends BitbucketConverter {
         model: 'cicd_BuildCommitAssociation',
         record: {
           build: {uid: pipeline.uuid, pipeline: pipelineKey},
-          commit: {repository: projectKey, sha: pipeline.target.commit.hash},
+          commit: {
+            repository: projectKey,
+            sha: pipeline.target.commit.hash,
+            uid: pipeline.target.commit.hash,
+          },
         },
       });
     }

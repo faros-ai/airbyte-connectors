@@ -80,7 +80,7 @@ export class Builds extends BuildkiteConverter {
           model: 'cicd_BuildCommitAssociation',
           record: {
             build: buildKey,
-            commit: {repository: repoKey, sha: build.commit},
+            commit: {repository: repoKey, sha: build.commit, uid: build.commit},
           },
         });
       }
