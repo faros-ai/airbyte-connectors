@@ -120,6 +120,29 @@ describe('index', () => {
     expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
   });
 
+  test('channel - groups, use full_refresh sync mode', async () => {
+    const channels = readTestResourceFile('channels.json');
+    Octopus.instance = jest.fn().mockImplementation(() => {
+      return new Octopus(
+        {get: jest.fn().mockResolvedValue({data: channels})} as any,
+        logger
+      );
+    });
+
+    const source = new sut.OctopusSource(logger);
+    const streams = source.streams({
+      apiKey: '',
+      apiUri: '',
+    });
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toStrictEqual(channels);
+  });
+
   test('streams - channel, use full_refresh sync mode', async () => {
     const fnChannelFunc = jest.fn();
 
@@ -145,7 +168,7 @@ describe('index', () => {
       channels.push(rel);
     }
 
-    expect(fnChannelFunc).toHaveBeenCalledTimes(3);
+    expect(fnChannelFunc).toHaveBeenCalledTimes(1);
     expect(channels).toStrictEqual(readTestResourceFile('channels.json'));
   });
 });
