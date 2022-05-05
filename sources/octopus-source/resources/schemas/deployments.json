@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "Changes": {
+            "type": "array"
+        },
+        "ChangesMarkdown": {
+            "type": "string"
+        },
+        "ChannelId": {
+            "type": "string"
+        },
+        "Comments": {
+            "type": "string"
+        },
+        "DeployedBy": {
+            "type": "string"
+        },
+        "DeployedById": {
+            "type": "string"
+        },
+        "DeployedToMachineIds": {
+            "type": "array"
+        },
+        "DeploymentProcessId": {
+            "type": "string"
+        },
+        "EnvironmentId": {
+            "type": "string"
+        },
+        "ExcludedMachineIds": {
+            "type": "array"
+        },
+        "FailureEncountered": {
+            "type": "string"
+        },
+        "ForcePackageRedeployment": {
+            "type": "boolean"
+        },
+        "FormValues": {
+            "type": "object"
+        },
+        "Id": {
+            "type": "string"
+        }
+    }
+}

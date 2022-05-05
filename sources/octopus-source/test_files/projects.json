@@ -67,70 +67,70 @@
     }
   },
   {
-  "Id": "Projects-2",
-  "SpaceId": "Spaces-1",
-  "VariableSetId": "variableset-Projects-2",
-  "DeploymentProcessId": "deploymentprocess-Projects-2",
-  "ClonedFromProjectId": null,
-  "DiscreteChannelRelease": false,
-  "IncludedLibraryVariableSetIds": [],
-  "DefaultToSkipIfAlreadyInstalled": false,
-  "TenantedDeploymentMode": "Untenanted",
-  "DefaultGuidedFailureMode": "EnvironmentDefault",
-  "VersioningStrategy": {
-  "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
-  "DonorPackage": null,
-  "DonorPackageStepId": null
-  },
-  "ReleaseCreationStrategy": {
-  "ChannelId": null,
-  "ReleaseCreationPackage": null,
-  "ReleaseCreationPackageStepId": null
-  },
-  "Templates": [],
-  "AutoDeployReleaseOverrides": [],
-  "ReleaseNotesTemplate": null,
-  "DeploymentChangesTemplate": null,
-  "ExtensionSettings": [],
-  "Name": "Your new Project Name",
-  "Slug": "your-new-project-name",
-  "Description": "My project created with python",
-  "IsDisabled": false,
-  "ProjectGroupId": "ProjectGroups-1",
-  "LifecycleId": "Lifecycles-1",
-  "AutoCreateRelease": false,
-  "IsVersionControlled": false,
-  "PersistenceSettings": {
-  "Type": "Database"
-  },
-  "ProjectConnectivityPolicy": {
-  "SkipMachineBehavior": "None",
-  "TargetRoles": [],
-  "AllowDeploymentsToNoTargets": false,
-  "ExcludeUnhealthyTargets": false
-  },
-  "Links": {
-  "Self": "/api/Spaces-1/projects/Projects-2",
-  "Variables": "/api/Spaces-1/variables/variableset-Projects-2",
-  "Releases": "/api/Spaces-1/projects/Projects-2/releases{/version}{?skip,take,searchByVersion}",
-  "Channels": "/api/Spaces-1/projects/Projects-2/channels{/id}{?skip,take,partialName}",
-  "Triggers": "/api/Spaces-1/projects/Projects-2/triggers{?skip,take,partialName,triggerActionType,triggerActionCategory,runbooks}",
-  "ScheduledTriggers": "/api/Spaces-1/projects/Projects-2/triggers/scheduled{?skip,take,partialName,ids}",
-  "OrderChannels": "/api/Spaces-1/projects/Projects-2/channels/order",
-  "Progression": "/api/Spaces-1/projects/Projects-2/progression{?aggregate}",
-  "RunbookTaskRunDashboardItemsTemplate": "/api/Spaces-1/progression/runbooks/taskRuns{?skip,take,ids,projectIds,runbookIds,environmentIds,tenantIds,taskIds}",
-  "DeploymentProcess": "/api/Spaces-1/projects/Projects-2/deploymentprocesses",
-  "DeploymentSettings": "/api/Spaces-1/projects/Projects-2/deploymentsettings",
-  "Web": "/app#/Spaces-1/projects/Projects-2",
-  "Logo": "/api/Spaces-1/projects/Projects-2/logo?cb=2022.2.3037-hotfix.3601",
-  "Metadata": "/api/Spaces-1/projects/Projects-2/metadata",
-  "Runbooks": "/api/Spaces-1/projects/Projects-2/runbooks{?skip,take,partialName}",
-  "RunbookSnapshots": "/api/Spaces-1/projects/Projects-2/runbookSnapshots{/name}{?skip,take,searchByName}",
-  "Summary": "/api/Spaces-1/projects/Projects-2/summary",
-  "GitConnectionTest": "/api/Spaces-1/projects/Projects-2/git/connectivity-test",
-  "GitCompatibilityReport": "/api/Spaces-1/projects/Projects-2/git/compatibility-report",
-  "ConvertToGit": "/api/Spaces-1/projects/Projects-2/git/convert",
-  "ConvertToVcs": "/api/Spaces-1/projects/Projects-2/git/convert"
+    "Id": "Projects-2",
+    "SpaceId": "Spaces-1",
+    "VariableSetId": "variableset-Projects-2",
+    "DeploymentProcessId": "deploymentprocess-Projects-2",
+    "ClonedFromProjectId": null,
+    "DiscreteChannelRelease": false,
+    "IncludedLibraryVariableSetIds": [],
+    "DefaultToSkipIfAlreadyInstalled": false,
+    "TenantedDeploymentMode": "Untenanted",
+    "DefaultGuidedFailureMode": "EnvironmentDefault",
+    "VersioningStrategy": {
+      "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
+      "DonorPackage": null,
+      "DonorPackageStepId": null
+    },
+    "ReleaseCreationStrategy": {
+      "ChannelId": null,
+      "ReleaseCreationPackage": null,
+      "ReleaseCreationPackageStepId": null
+    },
+    "Templates": [],
+    "AutoDeployReleaseOverrides": [],
+    "ReleaseNotesTemplate": null,
+    "DeploymentChangesTemplate": null,
+    "ExtensionSettings": [],
+    "Name": "Your new Project Name",
+    "Slug": "your-new-project-name",
+    "Description": "My project created with python",
+    "IsDisabled": false,
+    "ProjectGroupId": "ProjectGroups-1",
+    "LifecycleId": "Lifecycles-1",
+    "AutoCreateRelease": false,
+    "IsVersionControlled": false,
+    "PersistenceSettings": {
+      "Type": "Database"
+    },
+    "ProjectConnectivityPolicy": {
+      "SkipMachineBehavior": "None",
+      "TargetRoles": [],
+      "AllowDeploymentsToNoTargets": false,
+      "ExcludeUnhealthyTargets": false
+    },
+    "Links": {
+      "Self": "/api/Spaces-1/projects/Projects-2",
+      "Variables": "/api/Spaces-1/variables/variableset-Projects-2",
+      "Releases": "/api/Spaces-1/projects/Projects-2/releases{/version}{?skip,take,searchByVersion}",
+      "Channels": "/api/Spaces-1/projects/Projects-2/channels{/id}{?skip,take,partialName}",
+      "Triggers": "/api/Spaces-1/projects/Projects-2/triggers{?skip,take,partialName,triggerActionType,triggerActionCategory,runbooks}",
+      "ScheduledTriggers": "/api/Spaces-1/projects/Projects-2/triggers/scheduled{?skip,take,partialName,ids}",
+      "OrderChannels": "/api/Spaces-1/projects/Projects-2/channels/order",
+      "Progression": "/api/Spaces-1/projects/Projects-2/progression{?aggregate}",
+      "RunbookTaskRunDashboardItemsTemplate": "/api/Spaces-1/progression/runbooks/taskRuns{?skip,take,ids,projectIds,runbookIds,environmentIds,tenantIds,taskIds}",
+      "DeploymentProcess": "/api/Spaces-1/projects/Projects-2/deploymentprocesses",
+      "DeploymentSettings": "/api/Spaces-1/projects/Projects-2/deploymentsettings",
+      "Web": "/app#/Spaces-1/projects/Projects-2",
+      "Logo": "/api/Spaces-1/projects/Projects-2/logo?cb=2022.2.3037-hotfix.3601",
+      "Metadata": "/api/Spaces-1/projects/Projects-2/metadata",
+      "Runbooks": "/api/Spaces-1/projects/Projects-2/runbooks{?skip,take,partialName}",
+      "RunbookSnapshots": "/api/Spaces-1/projects/Projects-2/runbookSnapshots{/name}{?skip,take,searchByName}",
+      "Summary": "/api/Spaces-1/projects/Projects-2/summary",
+      "GitConnectionTest": "/api/Spaces-1/projects/Projects-2/git/connectivity-test",
+      "GitCompatibilityReport": "/api/Spaces-1/projects/Projects-2/git/compatibility-report",
+      "ConvertToGit": "/api/Spaces-1/projects/Projects-2/git/convert",
+      "ConvertToVcs": "/api/Spaces-1/projects/Projects-2/git/convert"
+    }
   }
-  }
-  ]
+]
