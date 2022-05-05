@@ -16,8 +16,10 @@ import VError from 'verror';
 
 import {Octopus, OctopusConfig} from './octopus';
 import {Channels} from './streams/channels';
+import {Deployments} from './streams/deployments';
 import {Projects} from './streams/projects';
 import {Releases} from './streams/releases';
+
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -44,6 +46,7 @@ export class OctopusSource extends AirbyteSourceBase {
       new Projects(config, this.logger),
       new Releases(config, this.logger),
       new Channels(config, this.logger),
+      new Deployments(config, this.logger),
     ];
   }
 }

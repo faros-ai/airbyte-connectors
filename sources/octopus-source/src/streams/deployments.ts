@@ -21,7 +21,7 @@ export class Deployments extends AirbyteStreamBase {
     return require('../../resources/schemas/deployments.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return 'Id';
   }
 
   async *readRecords(
