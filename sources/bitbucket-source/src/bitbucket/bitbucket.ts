@@ -40,7 +40,6 @@ export class Bitbucket {
 
   constructor(
     private readonly client: APIClient,
-    private readonly workspace: string,
     private readonly pagelen: number,
     private readonly logger: AirbyteLogger,
     readonly startDate: Date
@@ -68,13 +67,7 @@ export class Bitbucket {
     }
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Bitbucket.bitbucket = new Bitbucket(
-      client,
-      config.workspace,
-      pagelen,
-      logger,
-      startDate
-    );
+    Bitbucket.bitbucket = new Bitbucket(client, pagelen, logger, startDate);
     logger.debug('Created Bitbucket instance');
 
     return Bitbucket.bitbucket;
@@ -113,11 +106,8 @@ export class Bitbucket {
       ];
     }
 
-    if (!config.workspace) {
-      return [false, 'No workspace provided'];
-    }
-    if (!config.repositories) {
-      return [false, 'No repository provided'];
+    if (!config.workspaces) {
+      return [false, 'No workspaces provided'];
     }
     try {
       config.serverUrl && new URL(config.serverUrl);
@@ -133,12 +123,15 @@ export class Bitbucket {
     return startTime > this.startDate ? startTime : this.startDate;
   }
 
-  async *getBranches(repoSlug: string): AsyncGenerator<Branch> {
+  async *getBranches(
+    workspace: string,
+    repoSlug: string
+  ): AsyncGenerator<Branch> {
     try {
       const func = (): Promise<BitbucketResponse<Branch>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listBranches({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -149,13 +142,14 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching branch(es) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getCommits(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Commit> {
@@ -164,7 +158,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listCommits({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -181,18 +175,21 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching commit(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  async *getDeployments(repoSlug: string): AsyncGenerator<Deployment> {
+  async *getDeployments(
+    workspace: string,
+    repoSlug: string
+  ): AsyncGenerator<Deployment> {
     try {
       const func = (): Promise<BitbucketResponse<Deployment>> =>
         this.limiter.schedule(() =>
           this.client.deployments.list({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -207,6 +204,7 @@ export class Bitbucket {
 
         try {
           res.fullEnvironment = await this.getEnvironment(
+            workspace,
             repoSlug,
             deployment.environment.uuid
           );
@@ -222,17 +220,21 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching deployment(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  async getEnvironment(repoSlug: string, envID: string): Promise<Environment> {
+  async getEnvironment(
+    workspace: string,
+    repoSlug: string,
+    envID: string
+  ): Promise<Environment> {
     try {
       const {data} = (await this.limiter.schedule(() =>
         this.client.deployments.getEnvironment({
-          workspace: this.workspace,
+          workspace,
           repo_slug: repoSlug,
           environment_uuid: envID,
         })
@@ -244,31 +246,37 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching %s environment for repository "%s/%s"',
         envID,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize((repoSlug: string): string => repoSlug)
-  async getRepository(repoSlug: string): Promise<Repository> {
+  @Memoize((workspace: string, repoSlug: string): string =>
+    workspace.concat(repoSlug)
+  )
+  async getRepository(
+    workspace: string,
+    repoSlug: string
+  ): Promise<Repository> {
     const response = await this.client.repositories.get({
-      workspace: this.workspace,
+      workspace,
       repo_slug: repoSlug,
     });
     return response.data;
   }
 
   async *getIssues(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Issue> {
-    if (!(await this.getRepository(repoSlug)).hasIssues) {
+    if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
       return;
     }
     const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     const params: any = {
-      workspace: this.workspace,
+      workspace,
       repo_slug: repoSlug,
       pagelen: this.pagelen,
     };
@@ -284,20 +292,25 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching issue(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize((repoSlug: string): string => repoSlug)
-  async getPipelines(repoSlug: string): Promise<ReadonlyArray<Pipeline>> {
+  @Memoize((workspace: string, repoSlug: string): string =>
+    workspace.concat(repoSlug)
+  )
+  async getPipelines(
+    workspace: string,
+    repoSlug: string
+  ): Promise<ReadonlyArray<Pipeline>> {
     const results: Pipeline[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Pipeline>> =>
         this.limiter.schedule(() =>
           this.client.pipelines.list({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
             sort: '-created_on', // sort by created_on field in desc order
@@ -315,13 +328,14 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching pipeline(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getPipelineSteps(
+    workspace: string,
     repoSlug: string,
     pipelineUUID: string
   ): AsyncGenerator<PipelineStep> {
@@ -329,7 +343,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PipelineStep>> =>
         this.limiter.schedule(() =>
           this.client.pipelines.listSteps({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pipeline_uuid: pipelineUUID,
             pagelen: this.pagelen,
@@ -343,16 +357,18 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching PipelineSteps(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize((repoSlug: string, lastUpdated?: string): string =>
-    repoSlug.concat(lastUpdated ?? '')
+  @Memoize(
+    (workspace: string, repoSlug: string, lastUpdated?: string): string =>
+      `${workspace}${repoSlug}${lastUpdated ?? ''}`
   )
   async getPullRequests(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): Promise<ReadonlyArray<PullRequest>> {
@@ -371,7 +387,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             paglen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
             q: query,
@@ -388,7 +404,7 @@ export class Bitbucket {
           res.diffStat = await this.getPRDiffStats(repoSlug, String(pr.id));
         } catch (err) {
           this.logger.warn(
-            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${this.workspace}/${repoSlug}`
+            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}`
           );
         }
         const commits = new Set<string>();
@@ -414,7 +430,7 @@ export class Bitbucket {
           }
         } catch (err) {
           this.logger.warn(
-            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${this.workspace}/${repoSlug}`
+            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}`
           );
         }
         res.calculatedActivity = {commitCount: commits.size, mergedAt};
@@ -425,13 +441,14 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching PullRequest(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getPRActivities(
+    workspace: string,
     repoSlug: string,
     pullRequestId?: string
   ): AsyncGenerator<PRActivity> {
@@ -439,7 +456,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequestActivities({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
@@ -454,13 +471,14 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching activities for pull request %s in repo %s/%s',
         pullRequestId,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async getPRDiffStats(
+    workspace: string,
     repoSlug: string,
     pullRequestId?: string
   ): Promise<DiffStat> {
@@ -469,7 +487,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PRDiffStat>> =>
         this.limiter.schedule(() =>
           this.client.pullrequests.getDiffStat({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: this.pagelen,
@@ -489,20 +507,27 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching diff stats for pull request %s in repository %s/%s',
         pullRequestId,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
     return diffStats;
   }
 
-  async *getRepositories(lastUpdated?: string): AsyncGenerator<Repository> {
+  @Memoize(
+    (workspace: string, lastUpdated?: string): string =>
+      `${workspace}${lastUpdated ?? ''}`
+  )
+  async *getRepositories(
+    workspace: string,
+    lastUpdated?: string
+  ): AsyncGenerator<Repository> {
     try {
       const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
           this.client.repositories.list({
-            workspace: this.workspace,
+            workspace,
             pagelen: this.pagelen,
             sort: '-updated_on', // sort by updated_on field in desc order
           })
@@ -519,7 +544,7 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching repositories for workspace: %s.',
-        this.workspace
+        workspace
       );
     }
   }
@@ -539,12 +564,12 @@ export class Bitbucket {
     }
   }
 
-  async *getWorkspaceUsers(): AsyncGenerator<WorkspaceUser> {
+  async *getWorkspaceUsers(workspace: string): AsyncGenerator<WorkspaceUser> {
     try {
       const func = (): Promise<BitbucketResponse<WorkspaceUser>> =>
         this.limiter.schedule(() =>
           this.client.workspaces.getMembersForWorkspace({
-            workspace: this.workspace,
+            workspace,
             pagelen: this.pagelen,
           })
         );
@@ -556,7 +581,7 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching users for workspace: %s',
-        this.workspace
+        workspace
       );
     }
   }

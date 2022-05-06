@@ -35,23 +35,15 @@
         "description": "Personal Access Token for Bitbucket API authentication. See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html for information on how to generate this token.",
         "airbyte_secret": true
       },
-      "workspace": {
-        "type": "string",
-        "title": "Workspace",
-        "description": "Name of your Bitbucket workspace",
-        "examples": [
-          "blaze-lib"
-        ]
-      },
-      "repositories": {
+      "workspaces": {
         "type": "array",
         "items": {
           "type": "string"
         },
-        "title": "Repositories",
-        "description": "List of repositories in your Bitbucket workspace",
+        "title": "Workspaces",
+        "description": "Names of your Bitbucket workspaces",
         "examples": [
-          "blaze"
+          "blaze-lib"
         ]
       },
       "cutoff_days": {
