@@ -250,10 +250,22 @@ export class Bitbucket {
     }
   }
 
+  @Memoize((repoSlug: string): string => repoSlug)
+  async getRepository(repoSlug: string): Promise<Repository> {
+    const response = await this.client.repositories.get({
+      workspace: this.workspace,
+      repo_slug: repoSlug,
+    });
+    return response.data;
+  }
+
   async *getIssues(
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Issue> {
+    if (!(await this.getRepository(repoSlug)).hasIssues) {
+      return;
+    }
     const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     const params: any = {
       workspace: this.workspace,
