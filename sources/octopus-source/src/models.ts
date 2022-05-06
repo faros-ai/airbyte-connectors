@@ -77,24 +77,6 @@ export interface Deployment {
   readonly EnvironmentId: string;
   readonly ExcludedMachineIds: object;
   readonly FailureEncountered: boolean;
-  readonly ForcePackageDownload: boolean;
   readonly ForcePackageRedeployment: boolean;
-  readonly FormValues: object;
   readonly Id: string;
-  readonly LastModifiedBy: string;
-  readonly LastModifiedOn: string;
-  readonly Links: object;
-  readonly ManifestVariableSetId: string;
-  readonly Name: string;
-  readonly ProjectId: string;
-  readonly QueueTime: string;
-  readonly QueueTimeExpiry: string;
-  readonly ReleaseId: string;
-  readonly SkipActions: object;
-  readonly SpaceId: string;
-  readonly SpecificMachineIds: object;
-  readonly TaskId: string;
-  readonly TenantId: string;
-  readonly TentacleRetentionPeriod: object;
-  readonly UseGuidedFailure: boolean;
 }
