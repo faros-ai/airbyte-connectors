@@ -69,9 +69,7 @@ export class Octopus {
       const res = await this.httpClient.get<T[]>(path, param);
       const totalPages = res.data['NumberOfPages'];
       const data = [];
-
       for (let totalcalls = 1; totalcalls <= totalPages; totalcalls++) {
-        console.log(param);
         const res = await this.httpClient.get<T[]>(path, param);
         for (const item of res.data['Items']) {
           data.push(item);

@@ -41,12 +41,12 @@ export class OctopusSource extends AirbyteSourceBase {
     }
     return [true, undefined];
   }
+
   streams(config: OctopusConfig): AirbyteStreamBase[] {
-    return [
-      new Projects(config, this.logger),
-      new Releases(config, this.logger),
-      new Channels(config, this.logger),
-      new Deployments(config, this.logger),
-    ];
+    const projects = new Projects(config, this.logger);
+    const releases = new Releases(config, this.logger);
+    const channels = new Channels(config, this.logger);
+    const deployment = new Deployments(config, this.logger);
+    return [releases, projects, channels, deployment];
   }
 }
