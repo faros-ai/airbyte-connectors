@@ -57,10 +57,10 @@ docker build . --build-arg path=sources/octopus-source -t octopus-source
 Then return to the Octopus connector directory and run any of the connector
 commands as follows:
 ```
-docker run --rm Octopus-source spec
-docker run --rm -v $(pwd)/secrets:/secrets Octopus-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets Octopus-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files Octopus-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm octopus-source spec
+docker run --rm -v $(pwd)/secrets:/secrets octopus-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets octopus-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files octopus-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
