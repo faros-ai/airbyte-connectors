@@ -97,7 +97,6 @@ export class Octopus {
         take: maxResults,
       },
     })) {
-      console.log(projects);
       yield projects;
     }
   }
@@ -108,7 +107,6 @@ export class Octopus {
         take: maxResults,
       },
     })) {
-      console.log(channels);
       yield channels;
     }
   }
@@ -119,7 +117,6 @@ export class Octopus {
         take: maxResults,
       },
     })) {
-      console.log(deployments);
       yield deployments;
     }
   }
@@ -130,7 +127,6 @@ export class Octopus {
         take: maxResults,
       },
     })) {
-      console.log(release);
       yield release;
     }
   }
