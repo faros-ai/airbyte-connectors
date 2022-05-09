@@ -10,7 +10,7 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly workspace: string;
+  readonly workspaces: ReadonlyArray<string>;
   readonly pagelen?: number;
   readonly cutoff_days: number;
 }

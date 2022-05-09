@@ -9,13 +9,12 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Commit} from '../bitbucket/types';
 
-type StreamSlice = {repository?: string} | undefined;
+type StreamSlice = {workspace: string; repository: string} | undefined;
 type CommitState = {cutoff?: string} | undefined;
 
 export class Commits extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
-    readonly repositories: string[],
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -36,8 +35,11 @@ export class Commits extends AirbyteStreamBase {
     cursorField?: string[],
     streamState?: Dictionary<any>
   ): AsyncGenerator<StreamSlice> {
-    for (const repository of this.repositories) {
-      yield {repository};
+    const bitbucket = Bitbucket.instance(this.config, this.logger);
+    for (const workspace of this.config.workspaces) {
+      for await (const repo of bitbucket.getRepositories(workspace)) {
+        yield {workspace, repository: repo.slug};
+      }
     }
   }
 
@@ -51,8 +53,9 @@ export class Commits extends AirbyteStreamBase {
 
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
+    const workspace = streamSlice.workspace;
     const repoSlug = streamSlice.repository;
-    yield* bitbucket.getCommits(repoSlug, lastUpdated);
+    yield* bitbucket.getCommits(workspace, repoSlug, lastUpdated);
   }
 
   getUpdatedState(

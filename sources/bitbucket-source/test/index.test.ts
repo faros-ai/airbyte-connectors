@@ -43,7 +43,6 @@ describe('index', () => {
     Bitbucket.instance = jest.fn().mockImplementation(() => {
       return new Bitbucket(
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
@@ -55,7 +54,7 @@ describe('index', () => {
       source.checkConnection({
         username: 'username',
         password: 'password',
-        workspace: 'workspace',
+        workspaces: ['workspace'],
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
@@ -69,7 +68,6 @@ describe('index', () => {
             getWorkspaces: jest.fn().mockRejectedValue(new Error('some error')),
           },
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
@@ -108,20 +106,19 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const branchesStream = streams[0];
     const branchesIter = branchesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      {workspace: 'workspace', repository: 'repository'}
     );
     const branches = [];
     for await (const branch of branchesIter) {
@@ -157,20 +154,19 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const deploymentsStream = streams[2];
     const deploymentsIter = deploymentsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      {workspace: 'workspace', repository: 'repository'}
     );
     const deployments = [];
     for await (const deployment of deploymentsIter) {
@@ -196,20 +192,19 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const pipelinesStream = streams[4];
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      {workspace: 'workspace', repository: 'repository'}
     );
     const pipelines = [];
     for await (const pipeline of pipelinesIter) {
@@ -234,20 +229,19 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const pipelineStepsStream = streams[5];
     const pipelineStepsIter = pipelineStepsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      {workspace: 'workspace', repository: 'repository', pipeline: 'pipeline'}
     );
     const pipelineSteps = [];
     for await (const pipelineStep of pipelineStepsIter) {
@@ -272,20 +266,19 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const repositoriesStream = streams[8];
     const repositoriesIter = repositoriesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      {workspace: 'workspace'}
     );
     const repositories = [];
     for await (const repository of repositoriesIter) {
@@ -310,20 +303,18 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
-        'workspace',
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800')
       );
     });
     const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({repository: 'repository'} as any);
+    const streams = source.streams({} as any);
 
     const workspacesStream = streams[10];
     const workspacesIter = workspacesStream.readRecords(
       SyncMode.FULL_REFRESH,
-      undefined,
-      {repository: 'repository', pipeline: 'pipeline'}
+      undefined
     );
     const workspaces = [];
     for await (const workspace of workspacesIter) {

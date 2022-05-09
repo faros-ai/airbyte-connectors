@@ -50,23 +50,17 @@ export class BitbucketSource extends AirbyteSourceBase {
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
-    const repositories = config.repositories;
-    const pipelines = new Pipelines(config, repositories, this.logger);
-    const pullRequests = new PullRequests(config, repositories, this.logger);
+    const pipelines = new Pipelines(config, this.logger);
+    const pullRequests = new PullRequests(config, this.logger);
     return [
-      new Branches(config, repositories, this.logger),
-      new Commits(config, repositories, this.logger),
-      new Deployments(config, repositories, this.logger),
-      new Issues(config, repositories, this.logger),
+      new Branches(config, this.logger),
+      new Commits(config, this.logger),
+      new Deployments(config, this.logger),
+      new Issues(config, this.logger),
       pipelines,
-      new PipelineSteps(config, repositories, pipelines, this.logger),
+      new PipelineSteps(config, pipelines, this.logger),
       pullRequests,
-      new PullRequestActivities(
-        config,
-        repositories,
-        pullRequests,
-        this.logger
-      ),
+      new PullRequestActivities(config, pullRequests, this.logger),
       new Repositories(config, this.logger),
       new WorkspaceUsers(config, this.logger),
       new Workspaces(config, this.logger),

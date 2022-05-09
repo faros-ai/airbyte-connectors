@@ -9,12 +9,11 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Pipeline} from '../bitbucket/types';
 
-type StreamSlice = {repository?: string} | undefined;
+type StreamSlice = {workspace: string; repository: string} | undefined;
 
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
-    readonly repositories: string[],
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -32,8 +31,11 @@ export class Pipelines extends AirbyteStreamBase {
     cursorField?: string[],
     streamState?: Dictionary<any>
   ): AsyncGenerator<StreamSlice> {
-    for (const repository of this.repositories) {
-      yield {repository};
+    const bitbucket = Bitbucket.instance(this.config, this.logger);
+    for (const workspace of this.config.workspaces) {
+      for await (const repo of bitbucket.getRepositories(workspace)) {
+        yield {workspace, repository: repo.slug};
+      }
     }
   }
 
@@ -45,8 +47,9 @@ export class Pipelines extends AirbyteStreamBase {
   ): AsyncGenerator<Pipeline> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
+    const workspace = streamSlice.workspace;
     const repoSlug = streamSlice.repository;
-    for (const pipeline of await bitbucket.getPipelines(repoSlug)) {
+    for (const pipeline of await bitbucket.getPipelines(workspace, repoSlug)) {
       yield pipeline;
     }
   }
