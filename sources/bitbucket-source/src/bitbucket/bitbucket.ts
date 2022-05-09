@@ -118,7 +118,7 @@ export class Bitbucket {
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: string) {
+  private getStartDateMax(lastUpdatedAt?: string): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
   }

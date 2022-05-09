@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket/bitbucket';
@@ -21,12 +16,7 @@ export class Workspaces extends AirbyteStreamBase {
     return ['uuid'];
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Workspace> {
+  async *readRecords(): AsyncGenerator<Workspace> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     yield* bitbucket.getWorkspaces();

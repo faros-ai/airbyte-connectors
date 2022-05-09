@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, WorkspaceUser} from '../bitbucket/types';
 
-type StreamSlice = {workspace: string} | undefined;
+type StreamSlice = {workspace: string};
 
 export class WorkspaceUsers extends AirbyteStreamBase {
   constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
@@ -23,11 +23,7 @@ export class WorkspaceUsers extends AirbyteStreamBase {
     return ['user', 'uuid'];
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const workspace of this.config.workspaces) {
       yield {workspace};
     }
@@ -36,8 +32,7 @@ export class WorkspaceUsers extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: Dictionary<any>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<WorkspaceUser> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 

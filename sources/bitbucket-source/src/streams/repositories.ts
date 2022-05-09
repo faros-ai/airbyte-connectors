@@ -30,11 +30,7 @@ export class Repositories extends AirbyteStreamBase {
     return 'updatedOn';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const workspace of this.config.workspaces) {
       yield {workspace};
     }
