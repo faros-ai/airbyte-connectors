@@ -34,7 +34,7 @@ export class Branches extends AirbyteStreamBase {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     for (const workspace of this.config.workspaces) {
       for await (const repo of bitbucket.getRepositories(workspace)) {
-        yield {workspace, repository: repo.name};
+        yield {workspace, repository: repo.slug};
       }
     }
   }

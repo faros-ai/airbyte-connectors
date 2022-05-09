@@ -54,13 +54,13 @@ export class PullRequestActivities extends AirbyteStreamBase {
         const prs = this.pullRequests.readRecords(
           SyncMode.INCREMENTAL,
           undefined,
-          {workspace, repository: repo.name},
+          {workspace, repository: repo.slug},
           streamState
         );
         for await (const pr of prs) {
           yield {
             workspace,
-            repository: repo.name,
+            repository: repo.slug,
             prID: pr.id.toString(),
             updatedOn: pr.updatedOn,
           };

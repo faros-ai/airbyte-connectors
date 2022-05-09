@@ -106,7 +106,7 @@ export class Bitbucket {
       ];
     }
 
-    if (!config.workspaces) {
+    if (!config.workspaces || config.workspaces.length < 1) {
       return [false, 'No workspaces provided'];
     }
     try {
@@ -252,8 +252,8 @@ export class Bitbucket {
     }
   }
 
-  @Memoize((workspace: string, repoSlug: string): string =>
-    workspace.concat(repoSlug)
+  @Memoize(
+    (workspace: string, repoSlug: string): string => `${workspace}${repoSlug}`
   )
   async getRepository(
     workspace: string,
@@ -298,8 +298,8 @@ export class Bitbucket {
     }
   }
 
-  @Memoize((workspace: string, repoSlug: string): string =>
-    workspace.concat(repoSlug)
+  @Memoize(
+    (workspace: string, repoSlug: string): string => `${workspace}${repoSlug}`
   )
   async getPipelines(
     workspace: string,
