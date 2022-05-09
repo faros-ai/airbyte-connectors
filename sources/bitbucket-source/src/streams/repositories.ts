@@ -50,7 +50,12 @@ export class Repositories extends AirbyteStreamBase {
 
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-    yield* bitbucket.getRepositories(streamSlice.workspace, lastUpdated);
+    for (const repo of await bitbucket.getRepositories(
+      streamSlice.workspace,
+      lastUpdated
+    )) {
+      yield repo;
+    }
   }
 
   getUpdatedState(

@@ -263,7 +263,7 @@ export class Bitbucket {
       workspace,
       repo_slug: repoSlug,
     });
-    return response.data;
+    return this.buildRepository(response.data);
   }
 
   async *getIssues(
@@ -401,16 +401,25 @@ export class Bitbucket {
       for await (const pr of iter) {
         const res = {...pr, repositorySlug: repoSlug};
         try {
-          res.diffStat = await this.getPRDiffStats(repoSlug, String(pr.id));
+          res.diffStat = await this.getPRDiffStats(
+            workspace,
+            repoSlug,
+            String(pr.id)
+          );
         } catch (err) {
+          const stringifiedError = JSON.stringify(this.buildInnerError(err));
           this.logger.warn(
-            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}`
+            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
         const commits = new Set<string>();
         let mergedAt = undefined;
         try {
-          const iterActivities = this.getPRActivities(repoSlug, String(pr.id));
+          const iterActivities = this.getPRActivities(
+            workspace,
+            repoSlug,
+            String(pr.id)
+          );
 
           for await (const activity of iterActivities) {
             const change: any =
@@ -429,8 +438,9 @@ export class Bitbucket {
             if (commit) commits.add(commit);
           }
         } catch (err) {
+          const stringifiedError = JSON.stringify(this.buildInnerError(err));
           this.logger.warn(
-            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}`
+            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
         res.calculatedActivity = {commitCount: commits.size, mergedAt};
@@ -450,7 +460,7 @@ export class Bitbucket {
   async *getPRActivities(
     workspace: string,
     repoSlug: string,
-    pullRequestId?: string
+    pullRequestId: string
   ): AsyncGenerator<PRActivity> {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
@@ -480,7 +490,7 @@ export class Bitbucket {
   async getPRDiffStats(
     workspace: string,
     repoSlug: string,
-    pullRequestId?: string
+    pullRequestId: string
   ): Promise<DiffStat> {
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
     try {
@@ -518,10 +528,11 @@ export class Bitbucket {
     (workspace: string, lastUpdated?: string): string =>
       `${workspace}${lastUpdated ?? ''}`
   )
-  async *getRepositories(
+  async getRepositories(
     workspace: string,
     lastUpdated?: string
-  ): AsyncGenerator<Repository> {
+  ): Promise<ReadonlyArray<Repository>> {
+    const results: Repository[] = [];
     try {
       const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Repository>> =>
@@ -535,11 +546,15 @@ export class Bitbucket {
       const isNew = (data: Repository): boolean =>
         new Date(data.updatedOn) > lastUpdatedMax;
 
-      yield* this.paginate<Repository>(
+      const repos = this.paginate<Repository>(
         func,
         (data) => this.buildRepository(data),
         isNew
       );
+      for await (const repo of repos) {
+        results.push(repo);
+      }
+      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
@@ -1194,9 +1209,9 @@ export class Bitbucket {
       linesAdded: data.lines_added,
       type: data.type,
       new: {
-        path: data.new.path,
-        escapedPath: data.new.escaped_path,
-        type: data.new.type,
+        path: data.new?.path,
+        escapedPath: data.new?.escaped_path,
+        type: data.new?.type,
       },
     };
   }

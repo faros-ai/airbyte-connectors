@@ -5,8 +5,7 @@
     "title": "Bitbucket Spec",
     "type": "object",
     "required": [
-      "workspace",
-      "repositories",
+      "workspaces",
       "cutoff_days"
     ],
     "additionalProperties": false,
