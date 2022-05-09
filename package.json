@@ -32,7 +32,7 @@
     "@typescript-eslint/parser": "^5.22.0",
     "eslint": "^8.14.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.1",
     "jest": "^27.4.7",
     "jest-extended": "^1.2.0",
     "lerna": "^4.0.0",
