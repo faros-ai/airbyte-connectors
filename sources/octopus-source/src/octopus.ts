@@ -66,13 +66,9 @@ export class Octopus {
       for (let totalcalls = 1; totalcalls <= totalPages; totalcalls++) {
         const res = await this.httpClient.get<T[]>(path, param);
         for (const item of res.data['Items']) {
-          data.push(item);
+          yield item;
         }
         param['params']['skip'] = param['params']['take'] * totalcalls;
-      }
-
-      for (const item of data) {
-        yield item;
       }
     } catch (err: any) {
       const errorMessage = wrapApiError(err).message;
