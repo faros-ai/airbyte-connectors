@@ -1,9 +1,3 @@
-import {
-  Client,
-  ClientConfiguration,
-  Repository,
-} from '@octopusdeploy/api-client';
-import {ProjectResource} from '@octopusdeploy/message-contracts';
 import {Command} from 'commander';
 import {
   AirbyteLogger,

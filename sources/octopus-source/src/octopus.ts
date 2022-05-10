@@ -1,9 +1,3 @@
-import {
-  Client,
-  ClientConfiguration,
-  Repository,
-} from '@octopusdeploy/api-client';
-import {ProjectResource} from '@octopusdeploy/message-contracts';
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
