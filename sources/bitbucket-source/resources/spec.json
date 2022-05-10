@@ -45,6 +45,17 @@
           "blaze-lib"
         ]
       },
+      "repositories": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Repositories",
+        "description": "Names of your Bitbucket repositories in the format 'workspace/repo-slug'. If none are provided, data from all repositories for the specified workspaces will be pulled.",
+        "examples": [
+          "blaze-lib/blaze"
+        ]
+      },
       "cutoff_days": {
         "type": "integer",
         "title": "Cutoff Days",

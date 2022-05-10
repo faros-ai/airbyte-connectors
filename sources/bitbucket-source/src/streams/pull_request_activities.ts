@@ -51,7 +51,10 @@ export class PullRequestActivities extends AirbyteStreamBase {
   ): AsyncGenerator<StreamSlice> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(workspace)) {
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
         const prs = this.pullRequests.readRecords(
           SyncMode.INCREMENTAL,
           undefined,

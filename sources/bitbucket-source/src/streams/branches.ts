@@ -29,7 +29,10 @@ export class Branches extends AirbyteStreamBase {
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(workspace)) {
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
         yield {workspace, repository: repo.slug};
       }
     }
