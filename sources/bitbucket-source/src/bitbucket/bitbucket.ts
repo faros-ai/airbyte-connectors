@@ -1253,10 +1253,11 @@ export class Bitbucket {
         name: data.mainbranch.name,
       },
       workspace: {
-        type: project.type,
-        name: project.name,
+        type: workspace.type,
+        name: workspace.name,
+        slug: workspace.slug,
         links: {htmlUrl: workspace.links?.html?.href},
-        uuid: project.uuid,
+        uuid: workspace.uuid,
       },
       hasIssues: data.has_issues,
       owner: {

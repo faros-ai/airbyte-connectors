@@ -668,6 +668,7 @@ export interface Repository {
   readonly workspace: {
     readonly type: string;
     readonly name: string;
+    readonly slug: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};
   };
