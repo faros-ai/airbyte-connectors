@@ -118,7 +118,7 @@ export class Bitbucket {
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: string) {
+  private getStartDateMax(lastUpdatedAt?: string): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
   }
@@ -253,7 +253,7 @@ export class Bitbucket {
   }
 
   @Memoize(
-    (workspace: string, repoSlug: string): string => `${workspace}${repoSlug}`
+    (workspace: string, repoSlug: string): string => `${workspace};${repoSlug}`
   )
   async getRepository(
     workspace: string,
@@ -299,7 +299,7 @@ export class Bitbucket {
   }
 
   @Memoize(
-    (workspace: string, repoSlug: string): string => `${workspace}${repoSlug}`
+    (workspace: string, repoSlug: string): string => `${workspace};${repoSlug}`
   )
   async getPipelines(
     workspace: string,
@@ -365,7 +365,7 @@ export class Bitbucket {
 
   @Memoize(
     (workspace: string, repoSlug: string, lastUpdated?: string): string =>
-      `${workspace}${repoSlug}${lastUpdated ?? ''}`
+      `${workspace};${repoSlug};${lastUpdated ?? ''}`
   )
   async getPullRequests(
     workspace: string,
@@ -525,11 +525,15 @@ export class Bitbucket {
   }
 
   @Memoize(
-    (workspace: string, lastUpdated?: string): string =>
-      `${workspace}${lastUpdated ?? ''}`
+    (
+      workspace: string,
+      reposToInclude: ReadonlyArray<string>,
+      lastUpdated?: string
+    ): string => `${workspace};${reposToInclude};${lastUpdated ?? ''}`
   )
   async getRepositories(
     workspace: string,
+    reposToInclude: ReadonlyArray<string> = [],
     lastUpdated?: string
   ): Promise<ReadonlyArray<Repository>> {
     const results: Repository[] = [];
@@ -543,13 +547,18 @@ export class Bitbucket {
             sort: '-updated_on', // sort by updated_on field in desc order
           })
         );
-      const isNew = (data: Repository): boolean =>
-        new Date(data.updatedOn) > lastUpdatedMax;
+      const isNewAndIncluded = (data: Repository): boolean => {
+        const isNew = new Date(data.updatedOn) > lastUpdatedMax;
+        const isIncluded =
+          reposToInclude.length < 1 ||
+          reposToInclude.includes(`${workspace}/${data.slug}`);
+        return isNew && isIncluded;
+      };
 
       const repos = this.paginate<Repository>(
         func,
         (data) => this.buildRepository(data),
-        isNew
+        isNewAndIncluded
       );
       for await (const repo of repos) {
         results.push(repo);

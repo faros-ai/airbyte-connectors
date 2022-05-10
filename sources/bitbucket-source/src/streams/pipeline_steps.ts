@@ -10,9 +10,7 @@ import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, PipelineStep} from '../bitbucket/types';
 import {Pipelines} from './pipelines';
 
-type StreamSlice =
-  | {workspace: string; repository: string; pipeline: string}
-  | undefined;
+type StreamSlice = {workspace: string; repository: string; pipeline: string};
 
 export class PipelineSteps extends AirbyteStreamBase {
   constructor(
@@ -30,14 +28,13 @@ export class PipelineSteps extends AirbyteStreamBase {
     return 'uuid';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(workspace)) {
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
         const pipelines = this.pipelines.readRecords(
           SyncMode.FULL_REFRESH,
           undefined,
@@ -53,8 +50,7 @@ export class PipelineSteps extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: Dictionary<any>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<PipelineStep> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 

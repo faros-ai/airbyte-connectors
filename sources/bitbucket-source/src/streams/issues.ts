@@ -9,8 +9,11 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Issue} from '../bitbucket/types';
 
-type StreamSlice = {workspace: string; repository: string} | undefined;
-type IssueState = {cutoff?: string} | undefined;
+type StreamSlice = {
+  workspace: string;
+  repository: {slug: string; fullName: string};
+};
+type IssueState = Dictionary<{cutoff?: string}>;
 
 export class Issues extends AirbyteStreamBase {
   constructor(
@@ -30,15 +33,17 @@ export class Issues extends AirbyteStreamBase {
     return 'updatedOn';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(workspace)) {
-        yield {workspace, repository: repo.slug};
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
+        yield {
+          workspace,
+          repository: {slug: repo.slug, fullName: repo.fullName},
+        };
       }
     }
   }
@@ -47,27 +52,31 @@ export class Issues extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice,
-    streamState?: Dictionary<any, string>
+    streamState?: IssueState
   ): AsyncGenerator<Issue> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
-    const lastUpdated =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
     const workspace = streamSlice.workspace;
-    const repoSlug = streamSlice.repository;
-    yield* bitbucket.getIssues(workspace, repoSlug, lastUpdated);
+    const repo = streamSlice.repository;
+    const lastUpdated =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.[repo.fullName]?.cutoff
+        : undefined;
+    yield* bitbucket.getIssues(workspace, repo.slug, lastUpdated);
   }
 
   getUpdatedState(
     currentStreamState: IssueState,
     latestRecord: Issue
   ): IssueState {
-    return {
+    const repo = latestRecord.repository.fullName;
+    const repoState = currentStreamState[repo] ?? {};
+    const newRepoState = {
       cutoff:
-        new Date(latestRecord.updatedOn) >
-        new Date(currentStreamState?.cutoff ?? 0)
+        new Date(latestRecord.updatedOn) > new Date(repoState.cutoff ?? 0)
           ? latestRecord.updatedOn
-          : currentStreamState.cutoff,
+          : repoState.cutoff,
     };
+    return {...currentStreamState, [repo]: newRepoState};
   }
 }
