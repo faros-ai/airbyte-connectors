@@ -23,6 +23,12 @@ export const gitlabAllStreamsLog = readTestResourceFile(
   'gitlab/all-streams.log'
 );
 
+export const gitlabCiLog = readTestResourceFile('gitlab-ci/streams.log');
+export const gitlabCiPGRawLog = readTestResourceFile('gitlab-ci/pg-raw.log');
+export const gitlabCiAllStreamsLog = readTestResourceFile(
+  'gitlab-ci/all-streams.log'
+);
+
 export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
@@ -90,6 +96,9 @@ export const opsgenieAllStreamsLog = readTestResourceFile(
 );
 export const servicenowAllStreamsLog = readTestResourceFile(
   'servicenow/all-streams.log'
+);
+export const azurereposAllStreamsLog = readTestResourceFile(
+  'azure-repos/all-streams.log'
 );
 export const travisciAllStreamsLog = readTestResourceFile(
   'travisci/all-streams.log'

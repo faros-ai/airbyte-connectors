@@ -19,7 +19,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** StatusPage source implementation. */
+/** Statuspage source implementation. */
 export class StatuspageSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));

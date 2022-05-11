@@ -76,7 +76,7 @@ jobs:
           version: ${{ env.CDK_VERSION }}
 
   publish-connectors:
-    name: Publish Connectors
+    name: Publish connectors
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
