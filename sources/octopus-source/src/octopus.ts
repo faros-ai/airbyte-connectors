@@ -90,7 +90,7 @@ export class Octopus {
     }
   }
 
-  async *getChannels(maxResults = 5000): AsyncGenerator<Channel> {
+  async *getChannels(maxResults = 500): AsyncGenerator<Channel> {
     for await (const channels of this.paginate<Channel>('/channels', {
       params: {
         take: maxResults,
@@ -100,7 +100,7 @@ export class Octopus {
     }
   }
 
-  async *getDeployments(maxResults = 5000): AsyncGenerator<Deployment> {
+  async *getDeployments(maxResults = 500): AsyncGenerator<Deployment> {
     for await (const deployments of this.paginate<Deployment>('/deployments', {
       params: {
         take: maxResults,
@@ -110,7 +110,7 @@ export class Octopus {
     }
   }
 
-  async *getReleases(maxResults = 5000): AsyncGenerator<Release> {
+  async *getReleases(maxResults = 500): AsyncGenerator<Release> {
     for await (const release of this.paginate<Release>('/releases', {
       params: {
         take: maxResults,
