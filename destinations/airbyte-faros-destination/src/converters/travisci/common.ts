@@ -39,21 +39,21 @@ export class TravisCICommon {
     const detail = toLower(status);
     switch (detail) {
       case 'started':
-        return {category: 'Running', detail};
+        return {category: 'Running', detail: status};
       case 'created':
       case 'queued':
       case 'ready':
       case 'received':
-        return {category: 'Queued', detail};
+        return {category: 'Queued', detail: status};
       case 'passed':
-        return {category: 'Success', detail};
+        return {category: 'Success', detail: status};
       case 'failed':
       case 'errored':
-        return {category: 'Failed', detail};
+        return {category: 'Failed', detail: status};
       case 'canceled':
-        return {category: 'Canceled', detail};
+        return {category: 'Canceled', detail: status};
       default:
-        return {category: 'Custom', detail};
+        return {category: 'Custom', detail: status};
     }
   }
 }
