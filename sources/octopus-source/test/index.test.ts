@@ -83,7 +83,7 @@ describe('index', () => {
       projects.push(proj);
     }
 
-    expect(fnProjectsFunc).toHaveBeenCalledTimes(2);
+    expect(fnProjectsFunc).toHaveBeenCalledTimes(1);
     expect(projects).toStrictEqual(readTestResourceFile('projects.json'));
   });
 
@@ -113,7 +113,7 @@ describe('index', () => {
       releases.push(chunk);
     }
 
-    expect(fnReleasesFunc).toHaveBeenCalledTimes(2);
+    expect(fnReleasesFunc).toHaveBeenCalledTimes(1);
     expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
   });
 
@@ -142,7 +142,7 @@ describe('index', () => {
       channels.push(rel);
     }
 
-    expect(fnChannelFunc).toHaveBeenCalledTimes(2);
+    expect(fnChannelFunc).toHaveBeenCalledTimes(1);
     expect(channels).toStrictEqual(readTestResourceFile('channels.json'));
   });
 
@@ -171,7 +171,7 @@ describe('index', () => {
       deployments.push(rel);
     }
 
-    expect(fnDeploymentFunc).toHaveBeenCalledTimes(2);
+    expect(fnDeploymentFunc).toHaveBeenCalledTimes(1);
     expect(deployments).toStrictEqual(readTestResourceFile('deployments.json'));
   });
 });
