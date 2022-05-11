@@ -60,14 +60,13 @@ export class Octopus {
 
   private async *paginate<T>(path: string, param = {}): AsyncGenerator<T> {
     try {
-      const res = await this.httpClient.get<T[]>(path, param);
-      const totalPages = res.data['NumberOfPages'];
-      const data = [];
+      let totalPages = 5;
       for (let totalcalls = 1; totalcalls <= totalPages; totalcalls++) {
         const res = await this.httpClient.get<T[]>(path, param);
         for (const item of res.data['Items']) {
           yield item;
         }
+        totalPages = res.data['NumberOfPages'];
         param['params']['skip'] = param['params']['take'] * totalcalls;
       }
     } catch (err: any) {
