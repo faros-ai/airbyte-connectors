@@ -105,7 +105,7 @@ export class Issues extends BitbucketConverter {
       model: 'tms_User',
       record: {
         uid: user.accountId?.toLowerCase(),
-        name: user.nickname,
+        name: user.displayName,
         source,
       },
     };

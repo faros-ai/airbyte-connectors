@@ -12,7 +12,7 @@ import {PullRequests} from './pull_requests';
 
 type StreamSlice = {
   workspace;
-  repository: {slug: string; fullName: string};
+  repoSlug: string;
   prID: string;
   updatedOn: string;
 };
@@ -20,7 +20,6 @@ type PRActivityState = Dictionary<{cutoff?: string}>;
 
 interface TimestampedPRActivity extends PRActivity {
   pullRequestUpdatedOn: string;
-  repoFullName: string;
 }
 
 export class PullRequestActivities extends AirbyteStreamBase {
@@ -64,7 +63,7 @@ export class PullRequestActivities extends AirbyteStreamBase {
         for await (const pr of prs) {
           yield {
             workspace,
-            repository: {slug: repo.slug, fullName: repo.fullName},
+            repoSlug: repo.slug,
             prID: pr.id.toString(),
             updatedOn: pr.updatedOn,
           };
@@ -81,15 +80,11 @@ export class PullRequestActivities extends AirbyteStreamBase {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     const workspace = streamSlice.workspace;
-    const repo = streamSlice.repository;
+    const repoSlug = streamSlice.repoSlug;
     const prID = streamSlice.prID;
-    const activities = bitbucket.getPRActivities(workspace, repo.slug, prID);
+    const activities = bitbucket.getPRActivities(workspace, repoSlug, prID);
     for await (const activity of activities) {
-      yield {
-        ...activity,
-        pullRequestUpdatedOn: streamSlice.updatedOn,
-        repoFullName: repo.fullName,
-      };
+      yield {...activity, pullRequestUpdatedOn: streamSlice.updatedOn};
     }
   }
 
@@ -97,7 +92,7 @@ export class PullRequestActivities extends AirbyteStreamBase {
     currentStreamState: PRActivityState,
     latestRecord: TimestampedPRActivity
   ): PRActivityState {
-    const repo = latestRecord.repoFullName;
+    const repo = `${latestRecord.pullRequest.workspace}/${latestRecord.pullRequest.repositorySlug}`;
     const repoState = currentStreamState[repo] ?? {};
     const newRepoState = {
       cutoff:

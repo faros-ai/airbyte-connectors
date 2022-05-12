@@ -27,4 +27,3 @@ tests:
         issues: ["RomanKyrnis/geekhub2019", "cutoff"]
         pull_request_activities: ["RomanKyrnis/geekhub2019", "cutoff"]
         pull_requests: ["RomanKyrnis/geekhub2019", "cutoff"]
-        repositories: ["cutoff"]

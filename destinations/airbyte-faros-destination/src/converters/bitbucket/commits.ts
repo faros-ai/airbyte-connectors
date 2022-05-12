@@ -11,6 +11,10 @@ export class Commits extends BitbucketConverter {
     'vcs_User',
   ];
 
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.hash;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext

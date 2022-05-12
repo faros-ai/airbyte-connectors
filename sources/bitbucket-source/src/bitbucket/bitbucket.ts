@@ -34,6 +34,11 @@ interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
+type PRActivityAndRaw = {
+  activity: PRActivity;
+  rawData: Dictionary<any>;
+};
+
 export class Bitbucket {
   private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
@@ -426,10 +431,10 @@ export class Bitbucket {
               activity?.comment ??
               activity?.update ??
               activity?.approval ??
-              activity?.changesRequested;
+              activity?.changes_requested;
 
             const date = toDate(
-              change?.date ?? change?.updatedOn ?? change?.createdOn
+              change?.date ?? change?.updated_on ?? change?.created_on
             );
             if (activity?.update?.state === 'MERGED' && date) {
               mergedAt = !mergedAt || date > mergedAt ? date : mergedAt;
@@ -474,7 +479,7 @@ export class Bitbucket {
         ) as any;
 
       yield* this.paginate<PRActivity>(func, (data) =>
-        this.buildPRActivity(data)
+        this.buildPRActivity(data, workspace, repoSlug)
       );
     } catch (err) {
       throw new VError(
@@ -533,32 +538,25 @@ export class Bitbucket {
   )
   async getRepositories(
     workspace: string,
-    reposToInclude: ReadonlyArray<string> = [],
-    lastUpdated?: string
+    reposToInclude: ReadonlyArray<string> = []
   ): Promise<ReadonlyArray<Repository>> {
     const results: Repository[] = [];
     try {
-      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.list({
-            workspace,
-            pagelen: this.pagelen,
-            sort: '-updated_on', // sort by updated_on field in desc order
-          })
+          this.client.repositories.list({workspace, pagelen: this.pagelen})
         );
-      const isNewAndIncluded = (data: Repository): boolean => {
-        const isNew = new Date(data.updatedOn) > lastUpdatedMax;
-        const isIncluded =
+      const isIncluded = (data: Repository): boolean => {
+        return (
           reposToInclude.length < 1 ||
-          reposToInclude.includes(`${workspace}/${data.slug}`);
-        return isNew && isIncluded;
+          reposToInclude.includes(`${workspace}/${data.slug}`)
+        );
       };
 
       const repos = this.paginate<Repository>(
         func,
         (data) => this.buildRepository(data),
-        isNewAndIncluded
+        isIncluded
       );
       for await (const repo of repos) {
         results.push(repo);
@@ -1099,72 +1097,110 @@ export class Bitbucket {
     };
   }
 
-  private buildPRActivity(data: Dictionary<any>): PRActivity {
+  private buildPRActivity(
+    data: Dictionary<any>,
+    workspace: string,
+    repoSlug: string
+  ): PRActivity {
     return {
-      update: {
-        description: data.update?.description,
-        title: data.update?.title,
-        state: data.update?.state,
-        reason: data.update?.reason,
-        date: data.update?.date,
-        reviewers: data.update?.reviewers,
-        destination: {
-          commit: {
-            hash: data.update?.destination.commit.hash,
-            type: data.update?.destination.type,
-            links: {
-              htmlUrl: data.update?.destination.links?.html?.href,
+      approval: data.approval
+        ? {
+            ...data.approval,
+            user: {
+              displayName: data.approval?.user.display_name,
+              uuid: data.approval?.user.uuid,
+              type: data.approval?.user.type,
+              nickname: data.approval?.user.nickname,
+              accountId: data.approval?.user.account_id,
+              links: {
+                htmlUrl: data.approval?.user.links?.html?.href,
+              },
             },
-          },
-          repository: {
-            type: data.update?.destination.type,
-            name: data.update?.destination.name,
-            fullName: data.update?.destination.full_name,
-            uuid: data.update?.destination.uuid,
-            links: {
-              htmlUrl: data.update?.destination.links?.html?.href,
+          }
+        : undefined,
+      changes_requested: data.changes_requested
+        ? {
+            ...data.changes_requested,
+            user: {
+              displayName: data.changes_requested?.user.display_name,
+              uuid: data.changes_requested?.user.uuid,
+              type: data.changes_requested?.user.type,
+              nickname: data.changes_requested?.user.nickname,
+              accountId: data.changes_requested?.user.account_id,
+              links: {
+                htmlUrl: data.changes_requested?.user.links?.html?.href,
+              },
             },
-          },
-          branch: {
-            name: data.update?.destination.branch.name,
-          },
-        },
-        source: {
-          commit: {
-            hash: data.update?.source.commit.hash,
-            type: data.update?.source.commit.type,
-            links: {
-              htmlUrl: data.update?.source.commit.links?.html?.href,
+          }
+        : undefined,
+      update: data.update
+        ? {
+            description: data.update?.description,
+            title: data.update?.title,
+            state: data.update?.state,
+            reason: data.update?.reason,
+            date: data.update?.date,
+            reviewers: data.update?.reviewers,
+            destination: {
+              commit: {
+                hash: data.update?.destination.commit.hash,
+                type: data.update?.destination.type,
+                links: {
+                  htmlUrl: data.update?.destination.links?.html?.href,
+                },
+              },
+              repository: {
+                type: data.update?.destination.type,
+                name: data.update?.destination.name,
+                fullName: data.update?.destination.full_name,
+                uuid: data.update?.destination.uuid,
+                links: {
+                  htmlUrl: data.update?.destination.links?.html?.href,
+                },
+              },
+              branch: {
+                name: data.update?.destination.branch.name,
+              },
             },
-          },
-          repository: {
-            type: data.update?.source.repository.type,
-            name: data.update?.source.repository.name,
-            fullName: data.update?.source.repository.full_name,
-            uuid: data.update?.source.repository.uuid,
-            links: {htmlUrl: data.update?.source.repository.links?.html?.href},
-          },
-          branch: {
-            name: data.update?.source.branch.name,
-          },
-        },
-        author: {
-          displayName: data.update?.author.display_name,
-          uuid: data.update?.author.uuid,
-          type: data.update?.author.type,
-          nickname: data.update?.author.nickname,
-          accountId: data.update?.author.account_id,
-          links: {
-            htmlUrl: data.update?.author.links?.html?.href,
-          },
-        },
-        changes: {
-          status: {
-            new: data.update?.changes.status?.new,
-            old: data.update?.changes.status?.old,
-          },
-        },
-      },
+            source: {
+              commit: {
+                hash: data.update?.source.commit.hash,
+                type: data.update?.source.commit.type,
+                links: {
+                  htmlUrl: data.update?.source.commit.links?.html?.href,
+                },
+              },
+              repository: {
+                type: data.update?.source.repository.type,
+                name: data.update?.source.repository.name,
+                fullName: data.update?.source.repository.full_name,
+                uuid: data.update?.source.repository.uuid,
+                links: {
+                  htmlUrl: data.update?.source.repository.links?.html?.href,
+                },
+              },
+              branch: {
+                name: data.update?.source.branch.name,
+              },
+            },
+            author: {
+              displayName: data.update?.author.display_name,
+              uuid: data.update?.author.uuid,
+              type: data.update?.author.type,
+              nickname: data.update?.author.nickname,
+              accountId: data.update?.author.account_id,
+              links: {
+                htmlUrl: data.update?.author.links?.html?.href,
+              },
+            },
+            changes: {
+              status: {
+                new: data.update?.changes.status?.new,
+                old: data.update?.changes.status?.old,
+              },
+            },
+          }
+        : undefined,
       pullRequest: {
         type: data.pull_request.type,
         title: data.pull_request.title,
@@ -1172,41 +1208,24 @@ export class Bitbucket {
         links: {
           htmlUrl: data.pull_request.links?.html?.href,
         },
+        workspace,
+        repositorySlug: repoSlug,
       },
-      comment: {
-        deleted: data.comment?.deleted,
-        createdOn: data.comment?.created_on,
-        updatedOn: data.comment?.updated_on,
-        type: data.comment?.type,
-        id: data.comment?.id,
-        links: {
-          htmlUrl: data.comment?.links?.html?.href,
-        },
-        pullrequest: {
-          type: data.comment?.pullrequest.type,
-          title: data.comment?.pullrequest.title,
-          id: data.comment?.pullrequest.id,
-          links: {
-            htmlUrl: data.comment?.pullrequest.links?.html?.href,
-          },
-        },
-        content: {
-          raw: data.comment?.content.raw,
-          markup: data.comment?.content.markup,
-          html: data.comment?.content.html,
-          type: data.comment?.content.type,
-        },
-        user: {
-          displayName: data.comment?.user.display_name,
-          uuid: data.comment?.user.uuid,
-          type: data.comment?.user.type,
-          nickname: data.comment?.user.nickname,
-          accountId: data.comment?.user.account_id,
-          links: {
-            htmlUrl: data.comment?.user.links?.html?.href,
-          },
-        },
-      },
+      comment: data.comment
+        ? {
+            ...data.comment,
+            user: {
+              displayName: data.comment?.user.display_name,
+              uuid: data.comment?.user.uuid,
+              type: data.comment?.user.type,
+              nickname: data.comment?.user.nickname,
+              accountId: data.comment?.user.account_id,
+              links: {
+                htmlUrl: data.comment?.user.links?.html?.href,
+              },
+            },
+          }
+        : undefined,
     };
   }
 
@@ -1253,10 +1272,11 @@ export class Bitbucket {
         name: data.mainbranch.name,
       },
       workspace: {
-        type: project.type,
-        name: project.name,
+        type: workspace.type,
+        name: workspace.name,
+        slug: workspace.slug,
         links: {htmlUrl: workspace.links?.html?.href},
-        uuid: project.uuid,
+        uuid: workspace.uuid,
       },
       hasIssues: data.has_issues,
       owner: {
