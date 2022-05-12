@@ -486,7 +486,7 @@ export interface PullRequest {
 }
 
 export interface PRActivity {
-  readonly changesRequested?: any;
+  readonly changes_requested?: any;
   readonly approval?: {
     readonly date: string;
     readonly pullrequest: {
@@ -586,8 +586,8 @@ export interface PRActivity {
   };
   readonly comment?: {
     readonly deleted: boolean;
-    readonly createdOn: string;
-    readonly updatedOn: string;
+    readonly created_on: string;
+    readonly updated_on: string;
     readonly type: string;
     readonly id: number;
     readonly links: {
