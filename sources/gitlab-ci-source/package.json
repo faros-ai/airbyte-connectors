@@ -1,6 +1,6 @@
 {
   "name": "gitlab-ci-source",
-  "version": "0.1.78",
+  "version": "0.1.79",
   "description": "Gitlab CI Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
     "@gitbeaker/node": "^35.6.0",
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.78",
+    "faros-airbyte-cdk": "^0.1.79",
     "verror": "^1.10.1"
   },
   "jest": {

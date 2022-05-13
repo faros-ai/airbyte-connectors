@@ -1,6 +1,6 @@
 {
   "name": "customer-io-source",
-  "version": "0.1.78",
+  "version": "0.1.79",
   "description": "Customer.io Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "axios": "^0.26.0",
     "axios-mock-adapter": "^1.20.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.78",
+    "faros-airbyte-cdk": "^0.1.79",
     "verror": "^1.10.1"
   },
   "jest": {
