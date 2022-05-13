@@ -59,8 +59,8 @@ export class Issues extends GitHubConverter {
     });
 
     const issueLabelsStream = this.issueLabelsStream.asString;
-    for (const id of issue.labels) {
-      const label = ctx.get(issueLabelsStream, String(id));
+    for (const labelNode of issue.labels) {
+      const label = ctx.get(issueLabelsStream, String(labelNode.id));
       const name = label?.record?.data?.name;
       if (!name) continue;
       res.push({
