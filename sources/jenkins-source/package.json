@@ -30,7 +30,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.26.0",
+    "axios": "^0.27.2",
     "faros-airbyte-cdk": "^0.1.79",
     "jenkins": "^0.28.1",
     "typescript-memoize": "^1.1.0",
