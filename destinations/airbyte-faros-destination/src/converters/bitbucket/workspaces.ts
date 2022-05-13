@@ -52,11 +52,11 @@ export class Workspaces extends BitbucketConverter {
   private VCSOrgType(type?: string): CategoryRef {
     const detail = type?.toLowerCase();
     if (detail === 'organization') {
-      return {category: OrgTypeCategory.ORGANIZATION, detail};
+      return {category: OrgTypeCategory.ORGANIZATION};
     } else if (detail === 'workspace') {
-      return {category: OrgTypeCategory.WORKSPACE, detail};
+      return {category: OrgTypeCategory.WORKSPACE};
     } else if (detail === 'group') {
-      return {category: OrgTypeCategory.GROUP, detail};
+      return {category: OrgTypeCategory.GROUP};
     }
     return {category: OrgTypeCategory.CUSTOM, detail};
   }

@@ -18,14 +18,17 @@
           "type": "object",
           "properties": {
             "Labels": {
-              "type": ["object", "null"],
+              "type": [
+                "object",
+                "null"
+              ],
               "additionalProperties": true,
               "additionalItems": true
             }
-          },
-          "created": {
-            "type": "string"
           }
+        },
+        "created": {
+          "type": "string"
         }
       }
     },

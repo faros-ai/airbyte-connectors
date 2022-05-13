@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -8,17 +9,13 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
+import {Releases} from '../lib/streams/releases';
 import * as sut from '../src/index';
 import {Octopus} from '../src/octopus';
 
 const octopusInstance = Octopus.instance;
 
 jest.mock('axios');
-
-const config = {
-  apiKey: 'apiKey',
-  apiUri: 'apiUri',
-};
 
 describe('index', () => {
   const logger = new AirbyteLogger(
@@ -66,20 +63,19 @@ describe('index', () => {
     const fnProjectsFunc = jest.fn();
 
     Octopus.instance = jest.fn().mockImplementation(() => {
-      const projectResource: any[] = readTestResourceFile('projects.json');
+      const projectResource: any[] = readTestResourceFile(
+        'projects_response.json'
+      );
       return new Octopus(
         {
-          get: fnProjectsFunc.mockResolvedValue({
-            data: {value: projectResource},
-          }),
+          get: fnProjectsFunc.mockResolvedValue({data: projectResource}),
         } as any,
-        null
+        logger
       );
     });
     const source = new sut.OctopusSource(logger);
-    const streams = source.streams(config);
-
-    const projectsStream = streams[0];
+    const streams = source.streams({} as any);
+    const projectsStream = streams[1];
     const projectIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
     const projects = [];
 
@@ -87,7 +83,7 @@ describe('index', () => {
       projects.push(proj);
     }
 
-    expect(fnProjectsFunc).toHaveBeenCalledTimes(3);
+    expect(fnProjectsFunc).toHaveBeenCalledTimes(1);
     expect(projects).toStrictEqual(readTestResourceFile('projects.json'));
   });
 
@@ -95,16 +91,17 @@ describe('index', () => {
     const fnReleasesFunc = jest.fn();
 
     Octopus.instance = jest.fn().mockImplementation(() => {
-      const releasesResource: any[] = readTestResourceFile('releases.json');
+      const releasesResource: any[] = readTestResourceFile(
+        'releases_response.json'
+      );
       return new Octopus(
         {
-          get: fnReleasesFunc.mockResolvedValue({
-            data: {value: releasesResource},
-          }),
+          get: fnReleasesFunc.mockResolvedValue({data: releasesResource}),
         } as any,
-        null
+        logger
       );
     });
+
     const source = new sut.OctopusSource(logger);
     const streams = source.streams({} as any);
 
@@ -112,11 +109,11 @@ describe('index', () => {
     const releaseIter = releasesStream.readRecords(SyncMode.FULL_REFRESH);
     const releases = [];
 
-    for await (const rel of releaseIter) {
-      releases.push(rel);
+    for await (const chunk of releaseIter) {
+      releases.push(chunk);
     }
 
-    expect(fnReleasesFunc).toHaveBeenCalledTimes(3);
+    expect(fnReleasesFunc).toHaveBeenCalledTimes(1);
     expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
   });
 
@@ -124,20 +121,20 @@ describe('index', () => {
     const fnChannelFunc = jest.fn();
 
     Octopus.instance = jest.fn().mockImplementation(() => {
-      const channelsResource: any[] = readTestResourceFile('channels.json');
+      const channelsResource: any[] = readTestResourceFile(
+        'channels_response.json'
+      );
       return new Octopus(
         {
-          get: fnChannelFunc.mockResolvedValue({
-            data: {value: channelsResource},
-          }),
+          get: fnChannelFunc.mockResolvedValue({data: channelsResource}),
         } as any,
-        null
+        logger
       );
     });
     const source = new sut.OctopusSource(logger);
     const streams = source.streams({} as any);
 
-    const channelStream = streams[0];
+    const channelStream = streams[2];
     const channelIter = channelStream.readRecords(SyncMode.FULL_REFRESH);
     const channels = [];
 
@@ -153,15 +150,14 @@ describe('index', () => {
     const fnDeploymentFunc = jest.fn();
 
     Octopus.instance = jest.fn().mockImplementation(() => {
-      const deploymentsResource: any[] =
-        readTestResourceFile('deployments.json');
+      const deploymentsResource: any[] = readTestResourceFile(
+        'deployments_response.json'
+      );
       return new Octopus(
         {
-          get: fnDeploymentFunc.mockResolvedValue({
-            data: {value: deploymentsResource},
-          }),
+          get: fnDeploymentFunc.mockResolvedValue({data: deploymentsResource}),
         } as any,
-        null
+        logger
       );
     });
     const source = new sut.OctopusSource(logger);

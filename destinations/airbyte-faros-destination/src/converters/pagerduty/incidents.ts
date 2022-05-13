@@ -59,24 +59,18 @@ export class Incidents extends PagerDutyConverter {
     }
 
     res.push({
-      // We are explicitly passing __Upsert command here with at := 0,
-      // to allow updating Incident severity from prioritiesResource stream
-      // in the same revision
-      model: 'ims_Incident__Upsert',
+      model: 'ims_Incident',
       record: {
-        at: 0,
-        data: {
-          ...incidentRef,
-          title: incident.title,
-          description: incident.description,
-          url: incident.self,
-          createdAt: Utils.toDate(incident.created_at),
-          updatedAt: resolvedAt,
-          acknowledgedAt: acknowledgedAt,
-          resolvedAt: resolvedAt,
-          priority: this.incidentPriority(incident.urgency),
-          status: this.incidentState(incident.status),
-        },
+        ...incidentRef,
+        title: incident.title,
+        description: incident.description,
+        url: incident.self,
+        createdAt: Utils.toDate(incident.created_at),
+        updatedAt: resolvedAt,
+        acknowledgedAt: acknowledgedAt,
+        resolvedAt: resolvedAt,
+        priority: this.incidentPriority(incident.urgency),
+        status: this.incidentState(incident.status),
       },
     });
 

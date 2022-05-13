@@ -49,7 +49,7 @@ export class Repositories extends BitbucketConverter {
         name: repository.fullName,
         description,
         url: repository?.links?.htmlUrl,
-        organization: {uid: workspace.uuid, source},
+        organization: {uid: workspace.slug.toLowerCase(), source},
       },
     });
     res.push({
@@ -65,7 +65,7 @@ export class Repositories extends BitbucketConverter {
         createdAt: Utils.toDate(repository.createdOn),
         updatedAt: Utils.toDate(repository.updatedOn),
         mainBranch: repository.mainBranch?.name,
-        organization: {uid: workspace.uuid, source},
+        organization: {uid: workspace.slug.toLowerCase(), source},
       },
     });
 

@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Repository} from '../bitbucket/types';
 
-type RepositoryState = {cutoff?: string};
+type StreamSlice = {workspace: string};
 
 export class Repositories extends AirbyteStreamBase {
   constructor(
@@ -25,33 +25,21 @@ export class Repositories extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return ['uuid'];
   }
-  get cursorField(): string | string[] {
-    return 'updatedOn';
+
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const workspace of this.config.workspaces) {
+      yield {workspace};
+    }
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: Dictionary<any, string>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<Repository> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
-
-    const lastUpdated =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-    yield* bitbucket.getRepositories(lastUpdated);
-  }
-
-  getUpdatedState(
-    currentStreamState: RepositoryState,
-    latestRecord: Repository
-  ): RepositoryState {
-    return {
-      cutoff:
-        new Date(latestRecord.updatedOn) >
-        new Date(currentStreamState?.cutoff ?? 0)
-          ? latestRecord.updatedOn
-          : currentStreamState.cutoff,
-    };
+    for (const repo of await bitbucket.getRepositories(streamSlice.workspace)) {
+      yield repo;
+    }
   }
 }

@@ -51,13 +51,18 @@ export class Pipelines extends BitbucketConverter {
     if (pipeline.target?.commit?.hash) {
       const projectKey = {
         name: repo.toLowerCase(),
+        uid: repo.toLowerCase(),
         organization: {uid: orgKey.uid, source},
       };
       res.push({
         model: 'cicd_BuildCommitAssociation',
         record: {
           build: {uid: pipeline.uuid, pipeline: pipelineKey},
-          commit: {repository: projectKey, sha: pipeline.target.commit.hash},
+          commit: {
+            repository: projectKey,
+            sha: pipeline.target.commit.hash,
+            uid: pipeline.target.commit.hash,
+          },
         },
       });
     }

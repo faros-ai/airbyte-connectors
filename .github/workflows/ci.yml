@@ -17,7 +17,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       FORCE_COLOR: true
       HUSKY_SKIP_INSTALL: 1
@@ -76,8 +76,10 @@ jobs:
           AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
           AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG: ${{ secrets.AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG }}
           AZUREPIPELINE_SOURCE_TEST_CONFIG: ${{ secrets.AZUREPIPELINE_SOURCE_TEST_CONFIG }}
+          AZURE_REPOS_SOURCE_TEST_CONFIG: ${{ secrets.AZURE_REPOS_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
+          BUILDKITE_SOURCE_TEST_CONFIG: ${{ secrets.BUILDKITE_SOURCE_TEST_CONFIG }}
           CUSTOMER_IO_SOURCE_TEST_CONFIG: ${{ secrets.CUSTOMER_IO_SOURCE_TEST_CONFIG }}
           DOCKER_SOURCE_TEST_CONFIG: ${{ secrets.DOCKER_SOURCE_TEST_CONFIG }}
           FIREHYDRANT_SOURCE_TEST_CONFIG: ${{ secrets.FIREHYDRANT_SOURCE_TEST_CONFIG }}
@@ -92,7 +94,7 @@ jobs:
           do
             source=$(echo $i | cut -f2 -d'/')
             case "$source" in
-              datadog-source|jenkins-source|okta-source|phabricator-source|squadcast-source|victorops-source)
+              azurepipeline-source|gitlab-ci-source|datadog-source|jenkins-source|okta-source|opsgenie-source|servicenow-source|phabricator-source|victorops-source)
                 echo "Skipping $source acceptance tests"
                 ;;
               *)

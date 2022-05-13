@@ -78,7 +78,12 @@ export class GitHubCommon {
     };
   }
 
-  static tms_User(user: Dictionary<any>, source: string): DestinationRecord {
+  static tms_User(
+    user: Dictionary<any> | undefined,
+    source: string
+  ): DestinationRecord | undefined {
+    if (!user?.login) return undefined;
+
     return {
       model: 'tms_User',
       record: {
