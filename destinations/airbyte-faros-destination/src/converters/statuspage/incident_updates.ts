@@ -5,11 +5,11 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   IncidentEventType,
   IncidentEventTypeCategory,
-  StatusPageConverter,
+  StatuspageConverter,
   StatuspageIncidentStatus,
 } from './common';
 
-export class IncidentUpdates extends StatusPageConverter {
+export class IncidentUpdates extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_IncidentEvent',
   ];

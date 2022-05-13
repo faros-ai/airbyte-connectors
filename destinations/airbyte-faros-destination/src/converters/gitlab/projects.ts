@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {GitlabCommon, GitlabConverter} from '../common/gitlab';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitlabCommon, GitlabConverter} from './common';
 
 export class Projects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

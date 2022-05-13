@@ -2,7 +2,7 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "StatusPage Spec",
+    "title": "Statuspage Spec",
     "type": "object",
     "required": [
       "page_id",
@@ -14,13 +14,13 @@
       "page_id": {
         "type": "string",
         "title": "Page ID",
-        "description": "StatusPage Page ID",
+        "description": "Statuspage Page ID",
         "airbyte_secret": true
       },
       "api_key": {
         "type": "string",
-        "title": "StatusPage API key",
-        "description": "API key for StatusPage API authentication",
+        "title": "Statuspage API key",
+        "description": "API key for Statuspage API authentication",
         "airbyte_secret": true
       },
       "cutoff_days": {
@@ -32,7 +32,7 @@
       "org_id": {
         "type": "string",
         "title": "Organization ID",
-        "description": "StatusPage Organization ID"
+        "description": "Statuspage Organization ID"
       }
     }
   }

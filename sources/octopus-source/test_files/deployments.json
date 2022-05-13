@@ -1,36 +1,48 @@
 [
     {
-        "Id": "Projects-1",
-        "Changes": [
-            "Spaces-1"
-        ],
-        "ChangesMarkdown": "variableset-Projects-1",
-        "ChannelId": "deploymentprocess-Projects-1",
-        "Comments": "null",
-        "DeployedBy": "false",
-        "DeployedById": "2",
-        "DeployedToMachineIds": "false",
-        "DeploymentProcessId": "Untenanted",
-        "EnvironmentId": "EnvironmentDefault",
-        "ExcludedMachineIds": [],
-        "ForcePackageRedeployment": true,
-        "FailureEncountered": "testing-azure"
+      "Id": "Projects-1",
+      "Changes": "Spaces-1",
+      "ChangesMarkdown": "variableset-Projects-1",
+      "ChannelId": "deploymentprocess-Projects-1",
+      "Comments": "null",
+      "DeployedBy": "false",
+      "DeployedById": "2",
+      "Created": "2022-05-10T07:12:29.923Z",
+      "LastModifiedOn": "2022-05-10T07:12:29.923Z",
+      "DeployedToMachineIds": "false",
+      "DeploymentProcessId": "Untenanted",
+      "EnvironmentId": "EnvironmentDefault",
+      "ExcludedMachineIds": [],
+      "ForcePackageRedeployment": true,
+      "FailureEncountered": "testing-azure",
+      "FormValues": {
+        "SkipMachineBehavior": "None",
+        "TargetRoles": [],
+        "AllowDeploymentsToNoTargets": true,
+        "ExcludeUnhealthyTargets": false
+      }
     },
     {
-        "Id": "Projects-2",
-        "Changes": [
-            "Spaces-1"
-        ],
-        "ChangesMarkdown": "variableset-Projects-1",
-        "ChannelId": "deploymentprocess-Projects-1",
-        "Comments": "null",
-        "DeployedBy": "false",
-        "DeployedById": "2",
-        "DeployedToMachineIds": "false",
-        "DeploymentProcessId": "Untenanted",
-        "EnvironmentId": "EnvironmentDefault",
-        "ExcludedMachineIds": [],
-        "ForcePackageRedeployment": true,
-        "FailureEncountered": "testing-azure"
+      "Id": "Projects-2",
+      "Changes": "Spaces-1",
+      "ChangesMarkdown": "variableset-Projects-1",
+      "ChannelId": "deploymentprocess-Projects-1",
+      "Comments": "null",
+      "DeployedBy": "false",
+      "DeployedById": "3",
+      "Created": "2022-05-10T07:12:29.923Z",
+      "LastModifiedOn": "2022-05-10T07:12:29.923Z",
+      "DeployedToMachineIds": "false",
+      "DeploymentProcessId": "Untenanted",
+      "EnvironmentId": "EnvironmentDefault",
+      "ExcludedMachineIds": [],
+      "ForcePackageRedeployment": true,
+      "FailureEncountered": "testing-azure",
+      "FormValues": {
+        "SkipMachineBehavior": "None",
+        "TargetRoles": [],
+        "AllowDeploymentsToNoTargets": true,
+        "ExcludeUnhealthyTargets": false
+      }
     }
 ]

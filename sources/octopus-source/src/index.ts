@@ -1,9 +1,3 @@
-import {
-  Client,
-  ClientConfiguration,
-  Repository,
-} from '@octopusdeploy/api-client';
-import {ProjectResource} from '@octopusdeploy/message-contracts';
 import {Command} from 'commander';
 import {
   AirbyteLogger,
@@ -15,10 +9,7 @@ import {
 import VError from 'verror';
 
 import {Octopus, OctopusConfig} from './octopus';
-import {Channels} from './streams/channels';
-import {Deployments} from './streams/deployments';
-import {Projects} from './streams/projects';
-import {Releases} from './streams/releases';
+import {Channels, Deployments, Projects, Releases} from './streams/index';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -41,12 +32,12 @@ export class OctopusSource extends AirbyteSourceBase {
     }
     return [true, undefined];
   }
+
   streams(config: OctopusConfig): AirbyteStreamBase[] {
-    return [
-      new Projects(config, this.logger),
-      new Releases(config, this.logger),
-      new Channels(config, this.logger),
-      new Deployments(config, this.logger),
-    ];
+    const projects = new Projects(config, this.logger);
+    const releases = new Releases(config, this.logger);
+    const channels = new Channels(config, this.logger);
+    const deployment = new Deployments(config, this.logger);
+    return [releases, projects, channels, deployment];
   }
 }

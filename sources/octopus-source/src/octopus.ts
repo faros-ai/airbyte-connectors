@@ -1,9 +1,3 @@
-import {
-  Client,
-  ClientConfiguration,
-  Repository,
-} from '@octopusdeploy/api-client';
-import {ProjectResource} from '@octopusdeploy/message-contracts';
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
@@ -66,21 +60,14 @@ export class Octopus {
 
   private async *paginate<T>(path: string, param = {}): AsyncGenerator<T> {
     try {
-      const res = await this.httpClient.get<T[]>(path, param);
-      const totalPages = res.data['NumberOfPages'];
-      const data = [];
-
+      let totalPages = 5;
       for (let totalcalls = 1; totalcalls <= totalPages; totalcalls++) {
-        console.log(param);
         const res = await this.httpClient.get<T[]>(path, param);
         for (const item of res.data['Items']) {
-          data.push(item);
+          yield item;
         }
+        totalPages = res.data['NumberOfPages'];
         param['params']['skip'] = param['params']['take'] * totalcalls;
-      }
-
-      for (const item of data) {
-        yield item;
       }
     } catch (err: any) {
       const errorMessage = wrapApiError(err).message;
@@ -93,46 +80,42 @@ export class Octopus {
     }
   }
 
-  async *getProjects(maxResults = 5): AsyncGenerator<Project> {
+  async *getProjects(maxResults = 500): AsyncGenerator<Project> {
     for await (const projects of this.paginate<Project>('/projects', {
       params: {
         take: maxResults,
       },
     })) {
-      console.log(projects);
       yield projects;
     }
   }
 
-  async *getChannels(maxResults = 5): AsyncGenerator<Channel> {
+  async *getChannels(maxResults = 500): AsyncGenerator<Channel> {
     for await (const channels of this.paginate<Channel>('/channels', {
       params: {
         take: maxResults,
       },
     })) {
-      console.log(channels);
       yield channels;
     }
   }
 
-  async *getDeployments(maxResults = 5): AsyncGenerator<Deployment> {
+  async *getDeployments(maxResults = 500): AsyncGenerator<Deployment> {
     for await (const deployments of this.paginate<Deployment>('/deployments', {
       params: {
         take: maxResults,
       },
     })) {
-      console.log(deployments);
       yield deployments;
     }
   }
 
-  async *getReleases(maxResults = 5): AsyncGenerator<Release> {
+  async *getReleases(maxResults = 500): AsyncGenerator<Release> {
     for await (const release of this.paginate<Release>('/releases', {
       params: {
         take: maxResults,
       },
     })) {
-      console.log(release);
       yield release;
     }
   }

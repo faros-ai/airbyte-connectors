@@ -34,13 +34,17 @@ interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
+type PRActivityAndRaw = {
+  activity: PRActivity;
+  rawData: Dictionary<any>;
+};
+
 export class Bitbucket {
   private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
 
   constructor(
     private readonly client: APIClient,
-    private readonly workspace: string,
     private readonly pagelen: number,
     private readonly logger: AirbyteLogger,
     readonly startDate: Date
@@ -68,13 +72,7 @@ export class Bitbucket {
     }
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Bitbucket.bitbucket = new Bitbucket(
-      client,
-      config.workspace,
-      pagelen,
-      logger,
-      startDate
-    );
+    Bitbucket.bitbucket = new Bitbucket(client, pagelen, logger, startDate);
     logger.debug('Created Bitbucket instance');
 
     return Bitbucket.bitbucket;
@@ -113,11 +111,8 @@ export class Bitbucket {
       ];
     }
 
-    if (!config.workspace) {
-      return [false, 'No workspace provided'];
-    }
-    if (!config.repositories) {
-      return [false, 'No repository provided'];
+    if (!config.workspaces || config.workspaces.length < 1) {
+      return [false, 'No workspaces provided'];
     }
     try {
       config.serverUrl && new URL(config.serverUrl);
@@ -128,17 +123,20 @@ export class Bitbucket {
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: string) {
+  private getStartDateMax(lastUpdatedAt?: string): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
   }
 
-  async *getBranches(repoSlug: string): AsyncGenerator<Branch> {
+  async *getBranches(
+    workspace: string,
+    repoSlug: string
+  ): AsyncGenerator<Branch> {
     try {
       const func = (): Promise<BitbucketResponse<Branch>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listBranches({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -149,13 +147,14 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching branch(es) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getCommits(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Commit> {
@@ -164,7 +163,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listCommits({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -181,18 +180,21 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching commit(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  async *getDeployments(repoSlug: string): AsyncGenerator<Deployment> {
+  async *getDeployments(
+    workspace: string,
+    repoSlug: string
+  ): AsyncGenerator<Deployment> {
     try {
       const func = (): Promise<BitbucketResponse<Deployment>> =>
         this.limiter.schedule(() =>
           this.client.deployments.list({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
           })
@@ -207,6 +209,7 @@ export class Bitbucket {
 
         try {
           res.fullEnvironment = await this.getEnvironment(
+            workspace,
             repoSlug,
             deployment.environment.uuid
           );
@@ -222,17 +225,21 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching deployment(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  async getEnvironment(repoSlug: string, envID: string): Promise<Environment> {
+  async getEnvironment(
+    workspace: string,
+    repoSlug: string,
+    envID: string
+  ): Promise<Environment> {
     try {
       const {data} = (await this.limiter.schedule(() =>
         this.client.deployments.getEnvironment({
-          workspace: this.workspace,
+          workspace,
           repo_slug: repoSlug,
           environment_uuid: envID,
         })
@@ -244,19 +251,37 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching %s environment for repository "%s/%s"',
         envID,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
+  @Memoize(
+    (workspace: string, repoSlug: string): string => `${workspace};${repoSlug}`
+  )
+  async getRepository(
+    workspace: string,
+    repoSlug: string
+  ): Promise<Repository> {
+    const response = await this.client.repositories.get({
+      workspace,
+      repo_slug: repoSlug,
+    });
+    return this.buildRepository(response.data);
+  }
+
   async *getIssues(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): AsyncGenerator<Issue> {
+    if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
+      return;
+    }
     const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     const params: any = {
-      workspace: this.workspace,
+      workspace,
       repo_slug: repoSlug,
       pagelen: this.pagelen,
     };
@@ -272,20 +297,25 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching issue(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize((repoSlug: string): string => repoSlug)
-  async getPipelines(repoSlug: string): Promise<ReadonlyArray<Pipeline>> {
+  @Memoize(
+    (workspace: string, repoSlug: string): string => `${workspace};${repoSlug}`
+  )
+  async getPipelines(
+    workspace: string,
+    repoSlug: string
+  ): Promise<ReadonlyArray<Pipeline>> {
     const results: Pipeline[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Pipeline>> =>
         this.limiter.schedule(() =>
           this.client.pipelines.list({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
             sort: '-created_on', // sort by created_on field in desc order
@@ -303,13 +333,14 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching pipeline(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getPipelineSteps(
+    workspace: string,
     repoSlug: string,
     pipelineUUID: string
   ): AsyncGenerator<PipelineStep> {
@@ -317,7 +348,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PipelineStep>> =>
         this.limiter.schedule(() =>
           this.client.pipelines.listSteps({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pipeline_uuid: pipelineUUID,
             pagelen: this.pagelen,
@@ -331,16 +362,18 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching PipelineSteps(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize((repoSlug: string, lastUpdated?: string): string =>
-    repoSlug.concat(lastUpdated ?? '')
+  @Memoize(
+    (workspace: string, repoSlug: string, lastUpdated?: string): string =>
+      `${workspace};${repoSlug};${lastUpdated ?? ''}`
   )
   async getPullRequests(
+    workspace: string,
     repoSlug: string,
     lastUpdated?: string
   ): Promise<ReadonlyArray<PullRequest>> {
@@ -359,7 +392,7 @@ export class Bitbucket {
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             paglen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
             q: query,
@@ -373,26 +406,35 @@ export class Bitbucket {
       for await (const pr of iter) {
         const res = {...pr, repositorySlug: repoSlug};
         try {
-          res.diffStat = await this.getPRDiffStats(repoSlug, String(pr.id));
+          res.diffStat = await this.getPRDiffStats(
+            workspace,
+            repoSlug,
+            String(pr.id)
+          );
         } catch (err) {
+          const stringifiedError = JSON.stringify(this.buildInnerError(err));
           this.logger.warn(
-            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${this.workspace}/${repoSlug}`
+            `Failed fetching Diff Stat(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
         const commits = new Set<string>();
         let mergedAt = undefined;
         try {
-          const iterActivities = this.getPRActivities(repoSlug, String(pr.id));
+          const iterActivities = this.getPRActivities(
+            workspace,
+            repoSlug,
+            String(pr.id)
+          );
 
           for await (const activity of iterActivities) {
             const change: any =
               activity?.comment ??
               activity?.update ??
               activity?.approval ??
-              activity?.changesRequested;
+              activity?.changes_requested;
 
             const date = toDate(
-              change?.date ?? change?.updatedOn ?? change?.createdOn
+              change?.date ?? change?.updated_on ?? change?.created_on
             );
             if (activity?.update?.state === 'MERGED' && date) {
               mergedAt = !mergedAt || date > mergedAt ? date : mergedAt;
@@ -401,8 +443,9 @@ export class Bitbucket {
             if (commit) commits.add(commit);
           }
         } catch (err) {
+          const stringifiedError = JSON.stringify(this.buildInnerError(err));
           this.logger.warn(
-            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${this.workspace}/${repoSlug}`
+            `Failed fetching Activities(s) for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
         res.calculatedActivity = {commitCount: commits.size, mergedAt};
@@ -413,21 +456,22 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching PullRequest(s) for repository "%s/%s"',
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async *getPRActivities(
+    workspace: string,
     repoSlug: string,
-    pullRequestId?: string
+    pullRequestId: string
   ): AsyncGenerator<PRActivity> {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequestActivities({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
@@ -435,29 +479,30 @@ export class Bitbucket {
         ) as any;
 
       yield* this.paginate<PRActivity>(func, (data) =>
-        this.buildPRActivity(data)
+        this.buildPRActivity(data, workspace, repoSlug)
       );
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching activities for pull request %s in repo %s/%s',
         pullRequestId,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
   }
 
   async getPRDiffStats(
+    workspace: string,
     repoSlug: string,
-    pullRequestId?: string
+    pullRequestId: string
   ): Promise<DiffStat> {
     const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
     try {
       const func = (): Promise<BitbucketResponse<PRDiffStat>> =>
         this.limiter.schedule(() =>
           this.client.pullrequests.getDiffStat({
-            workspace: this.workspace,
+            workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: this.pagelen,
@@ -477,37 +522,51 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching diff stats for pull request %s in repository %s/%s',
         pullRequestId,
-        this.workspace,
+        workspace,
         repoSlug
       );
     }
     return diffStats;
   }
 
-  async *getRepositories(lastUpdated?: string): AsyncGenerator<Repository> {
+  @Memoize(
+    (
+      workspace: string,
+      reposToInclude: ReadonlyArray<string>,
+      lastUpdated?: string
+    ): string => `${workspace};${reposToInclude};${lastUpdated ?? ''}`
+  )
+  async getRepositories(
+    workspace: string,
+    reposToInclude: ReadonlyArray<string> = []
+  ): Promise<ReadonlyArray<Repository>> {
+    const results: Repository[] = [];
     try {
-      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.list({
-            workspace: this.workspace,
-            pagelen: this.pagelen,
-            sort: '-updated_on', // sort by updated_on field in desc order
-          })
+          this.client.repositories.list({workspace, pagelen: this.pagelen})
         );
-      const isNew = (data: Repository): boolean =>
-        new Date(data.updatedOn) > lastUpdatedMax;
+      const isIncluded = (data: Repository): boolean => {
+        return (
+          reposToInclude.length < 1 ||
+          reposToInclude.includes(`${workspace}/${data.slug}`)
+        );
+      };
 
-      yield* this.paginate<Repository>(
+      const repos = this.paginate<Repository>(
         func,
         (data) => this.buildRepository(data),
-        isNew
+        isIncluded
       );
+      for await (const repo of repos) {
+        results.push(repo);
+      }
+      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching repositories for workspace: %s.',
-        this.workspace
+        workspace
       );
     }
   }
@@ -527,12 +586,12 @@ export class Bitbucket {
     }
   }
 
-  async *getWorkspaceUsers(): AsyncGenerator<WorkspaceUser> {
+  async *getWorkspaceUsers(workspace: string): AsyncGenerator<WorkspaceUser> {
     try {
       const func = (): Promise<BitbucketResponse<WorkspaceUser>> =>
         this.limiter.schedule(() =>
           this.client.workspaces.getMembersForWorkspace({
-            workspace: this.workspace,
+            workspace,
             pagelen: this.pagelen,
           })
         );
@@ -544,7 +603,7 @@ export class Bitbucket {
       throw new VError(
         this.buildInnerError(err),
         'Error fetching users for workspace: %s',
-        this.workspace
+        workspace
       );
     }
   }
@@ -1038,72 +1097,110 @@ export class Bitbucket {
     };
   }
 
-  private buildPRActivity(data: Dictionary<any>): PRActivity {
+  private buildPRActivity(
+    data: Dictionary<any>,
+    workspace: string,
+    repoSlug: string
+  ): PRActivity {
     return {
-      update: {
-        description: data.update?.description,
-        title: data.update?.title,
-        state: data.update?.state,
-        reason: data.update?.reason,
-        date: data.update?.date,
-        reviewers: data.update?.reviewers,
-        destination: {
-          commit: {
-            hash: data.update?.destination.commit.hash,
-            type: data.update?.destination.type,
-            links: {
-              htmlUrl: data.update?.destination.links?.html?.href,
+      approval: data.approval
+        ? {
+            ...data.approval,
+            user: {
+              displayName: data.approval?.user.display_name,
+              uuid: data.approval?.user.uuid,
+              type: data.approval?.user.type,
+              nickname: data.approval?.user.nickname,
+              accountId: data.approval?.user.account_id,
+              links: {
+                htmlUrl: data.approval?.user.links?.html?.href,
+              },
             },
-          },
-          repository: {
-            type: data.update?.destination.type,
-            name: data.update?.destination.name,
-            fullName: data.update?.destination.full_name,
-            uuid: data.update?.destination.uuid,
-            links: {
-              htmlUrl: data.update?.destination.links?.html?.href,
+          }
+        : undefined,
+      changes_requested: data.changes_requested
+        ? {
+            ...data.changes_requested,
+            user: {
+              displayName: data.changes_requested?.user.display_name,
+              uuid: data.changes_requested?.user.uuid,
+              type: data.changes_requested?.user.type,
+              nickname: data.changes_requested?.user.nickname,
+              accountId: data.changes_requested?.user.account_id,
+              links: {
+                htmlUrl: data.changes_requested?.user.links?.html?.href,
+              },
             },
-          },
-          branch: {
-            name: data.update?.destination.branch.name,
-          },
-        },
-        source: {
-          commit: {
-            hash: data.update?.source.commit.hash,
-            type: data.update?.source.commit.type,
-            links: {
-              htmlUrl: data.update?.source.commit.links?.html?.href,
+          }
+        : undefined,
+      update: data.update
+        ? {
+            description: data.update?.description,
+            title: data.update?.title,
+            state: data.update?.state,
+            reason: data.update?.reason,
+            date: data.update?.date,
+            reviewers: data.update?.reviewers,
+            destination: {
+              commit: {
+                hash: data.update?.destination.commit.hash,
+                type: data.update?.destination.type,
+                links: {
+                  htmlUrl: data.update?.destination.links?.html?.href,
+                },
+              },
+              repository: {
+                type: data.update?.destination.type,
+                name: data.update?.destination.name,
+                fullName: data.update?.destination.full_name,
+                uuid: data.update?.destination.uuid,
+                links: {
+                  htmlUrl: data.update?.destination.links?.html?.href,
+                },
+              },
+              branch: {
+                name: data.update?.destination.branch.name,
+              },
             },
-          },
-          repository: {
-            type: data.update?.source.repository.type,
-            name: data.update?.source.repository.name,
-            fullName: data.update?.source.repository.full_name,
-            uuid: data.update?.source.repository.uuid,
-            links: {htmlUrl: data.update?.source.repository.links?.html?.href},
-          },
-          branch: {
-            name: data.update?.source.branch.name,
-          },
-        },
-        author: {
-          displayName: data.update?.author.display_name,
-          uuid: data.update?.author.uuid,
-          type: data.update?.author.type,
-          nickname: data.update?.author.nickname,
-          accountId: data.update?.author.account_id,
-          links: {
-            htmlUrl: data.update?.author.links?.html?.href,
-          },
-        },
-        changes: {
-          status: {
-            new: data.update?.changes.status?.new,
-            old: data.update?.changes.status?.old,
-          },
-        },
-      },
+            source: {
+              commit: {
+                hash: data.update?.source.commit.hash,
+                type: data.update?.source.commit.type,
+                links: {
+                  htmlUrl: data.update?.source.commit.links?.html?.href,
+                },
+              },
+              repository: {
+                type: data.update?.source.repository.type,
+                name: data.update?.source.repository.name,
+                fullName: data.update?.source.repository.full_name,
+                uuid: data.update?.source.repository.uuid,
+                links: {
+                  htmlUrl: data.update?.source.repository.links?.html?.href,
+                },
+              },
+              branch: {
+                name: data.update?.source.branch.name,
+              },
+            },
+            author: {
+              displayName: data.update?.author.display_name,
+              uuid: data.update?.author.uuid,
+              type: data.update?.author.type,
+              nickname: data.update?.author.nickname,
+              accountId: data.update?.author.account_id,
+              links: {
+                htmlUrl: data.update?.author.links?.html?.href,
+              },
+            },
+            changes: {
+              status: {
+                new: data.update?.changes.status?.new,
+                old: data.update?.changes.status?.old,
+              },
+            },
+          }
+        : undefined,
       pullRequest: {
         type: data.pull_request.type,
         title: data.pull_request.title,
@@ -1111,41 +1208,24 @@ export class Bitbucket {
         links: {
           htmlUrl: data.pull_request.links?.html?.href,
         },
+        workspace,
+        repositorySlug: repoSlug,
       },
-      comment: {
-        deleted: data.comment?.deleted,
-        createdOn: data.comment?.created_on,
-        updatedOn: data.comment?.updated_on,
-        type: data.comment?.type,
-        id: data.comment?.id,
-        links: {
-          htmlUrl: data.comment?.links?.html?.href,
-        },
-        pullrequest: {
-          type: data.comment?.pullrequest.type,
-          title: data.comment?.pullrequest.title,
-          id: data.comment?.pullrequest.id,
-          links: {
-            htmlUrl: data.comment?.pullrequest.links?.html?.href,
-          },
-        },
-        content: {
-          raw: data.comment?.content.raw,
-          markup: data.comment?.content.markup,
-          html: data.comment?.content.html,
-          type: data.comment?.content.type,
-        },
-        user: {
-          displayName: data.comment?.user.display_name,
-          uuid: data.comment?.user.uuid,
-          type: data.comment?.user.type,
-          nickname: data.comment?.user.nickname,
-          accountId: data.comment?.user.account_id,
-          links: {
-            htmlUrl: data.comment?.user.links?.html?.href,
-          },
-        },
-      },
+      comment: data.comment
+        ? {
+            ...data.comment,
+            user: {
+              displayName: data.comment?.user.display_name,
+              uuid: data.comment?.user.uuid,
+              type: data.comment?.user.type,
+              nickname: data.comment?.user.nickname,
+              accountId: data.comment?.user.account_id,
+              links: {
+                htmlUrl: data.comment?.user.links?.html?.href,
+              },
+            },
+          }
+        : undefined,
     };
   }
 
@@ -1157,9 +1237,9 @@ export class Bitbucket {
       linesAdded: data.lines_added,
       type: data.type,
       new: {
-        path: data.new.path,
-        escapedPath: data.new.escaped_path,
-        type: data.new.type,
+        path: data.new?.path,
+        escapedPath: data.new?.escaped_path,
+        type: data.new?.type,
       },
     };
   }
@@ -1192,10 +1272,11 @@ export class Bitbucket {
         name: data.mainbranch.name,
       },
       workspace: {
-        type: project.type,
-        name: project.name,
+        type: workspace.type,
+        name: workspace.name,
+        slug: workspace.slug,
         links: {htmlUrl: workspace.links?.html?.href},
-        uuid: project.uuid,
+        uuid: workspace.uuid,
       },
       hasIssues: data.has_issues,
       owner: {

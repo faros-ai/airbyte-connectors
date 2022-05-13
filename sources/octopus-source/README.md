@@ -50,17 +50,17 @@ bin/main read --config secrets/config.json --catalog test_files/full_configured_
 Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 ```
-docker build . --build-arg path=sources/Octopus-source -t Octopus-source
+docker build . --build-arg path=sources/octopus-source -t octopus-source
 ```
 
 #### Run
 Then return to the Octopus connector directory and run any of the connector
 commands as follows:
 ```
-docker run --rm Octopus-source spec
-docker run --rm -v $(pwd)/secrets:/secrets Octopus-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets Octopus-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files Octopus-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm octopus-source spec
+docker run --rm -v $(pwd)/secrets:/secrets octopus-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets octopus-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files octopus-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
@@ -83,7 +83,7 @@ docker pull airbyte/source-acceptance-test
 
 To run the acceptance tests, from the root repository directory, run
 ```
-./scripts/source-acceptance-test.sh Octopus-source
+./scripts/source-acceptance-test.sh octopus-source
 ```
 
 ## Dependency Management
@@ -103,4 +103,4 @@ ready to share your changes with the world. Now what?
 1. Someone from Faros AI will take a look at your PR and iterate with you to
    merge it into main.
 1. The new connector image will be published to the
-   `farosai/airbyte-Octopus-source` Docker repository.
+   `farosai/airbyte-octopus-source` Docker repository.

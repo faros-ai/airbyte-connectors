@@ -19,6 +19,11 @@ interface RepositoryKey {
   organization: OrgKey;
 }
 
+interface BuildKey {
+  uid: string;
+  pipeline: Omit<RepositoryKey, 'name'>;
+}
+
 /** Common functions shares across GitLab converters */
 export class GitlabCommon {
   // Max length for free-form description text fields such as issue body
@@ -79,6 +84,16 @@ export class GitlabCommon {
       name: repositoryName?.toLowerCase(),
       uid: repositoryName?.toLowerCase(),
       organization: {uid: organization?.toLowerCase(), source},
+    };
+  }
+
+  static createBuildKey(pipelineId: any, repository: RepositoryKey): BuildKey {
+    return {
+      uid: String(pipelineId),
+      pipeline: {
+        organization: repository.organization,
+        uid: repository.name,
+      },
     };
   }
 

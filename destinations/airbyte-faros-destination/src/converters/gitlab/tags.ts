@@ -1,12 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {GitlabCommon, GitlabConverter} from '../common/gitlab';
 import {
   DestinationModel,
   DestinationRecord,
   StreamContext,
   StreamName,
 } from '../converter';
-import {GitlabCommon, GitlabConverter} from './common';
 
 export class Tags extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
