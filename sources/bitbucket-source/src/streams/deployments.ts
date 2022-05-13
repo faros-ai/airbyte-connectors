@@ -9,12 +9,11 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, Deployment} from '../bitbucket/types';
 
-type StreamSlice = {repository?: string} | undefined;
+type StreamSlice = {workspace: string; repository: string};
 
 export class Deployments extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
-    readonly repositories: string[],
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -27,25 +26,27 @@ export class Deployments extends AirbyteStreamBase {
     return 'uuid';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
-    for (const repository of this.repositories) {
-      yield {repository};
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const bitbucket = Bitbucket.instance(this.config, this.logger);
+    for (const workspace of this.config.workspaces) {
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
+        yield {workspace, repository: repo.slug};
+      }
     }
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: Dictionary<any>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<Deployment> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
+    const workspace = streamSlice.workspace;
     const repoSlug = streamSlice.repository;
-    yield* bitbucket.getDeployments(repoSlug);
+    yield* bitbucket.getDeployments(workspace, repoSlug);
   }
 }

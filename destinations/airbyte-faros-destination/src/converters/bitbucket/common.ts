@@ -17,7 +17,7 @@ type ApplicationMapping = Record<string, {name: string; platform: string}>;
 
 export interface CategoryRef {
   readonly category: string;
-  readonly detail: string;
+  readonly detail?: string;
 }
 
 enum UserTypeCategory {

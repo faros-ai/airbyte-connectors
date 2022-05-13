@@ -9,13 +9,15 @@ import {Dictionary} from 'ts-essentials';
 import {Bitbucket} from '../bitbucket/bitbucket';
 import {BitbucketConfig, PullRequest} from '../bitbucket/types';
 
-type StreamSlice = {repository?: string} | undefined;
-type PullRequestState = {cutoff?: string} | undefined;
+type StreamSlice = {
+  workspace: string;
+  repository: {slug: string; fullName: string};
+};
+type PullRequestState = Dictionary<{cutoff?: string}>;
 
 export class PullRequests extends AirbyteStreamBase {
   constructor(
     readonly config: BitbucketConfig,
-    readonly repositories: string[],
     readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -31,13 +33,18 @@ export class PullRequests extends AirbyteStreamBase {
     return 'updatedOn';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
-    for (const repository of this.repositories) {
-      yield {repository};
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const bitbucket = Bitbucket.instance(this.config, this.logger);
+    for (const workspace of this.config.workspaces) {
+      for (const repo of await bitbucket.getRepositories(
+        workspace,
+        this.config.repositories
+      )) {
+        yield {
+          workspace,
+          repository: {slug: repo.slug, fullName: repo.fullName},
+        };
+      }
     }
   }
 
@@ -49,10 +56,17 @@ export class PullRequests extends AirbyteStreamBase {
   ): AsyncGenerator<PullRequest> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
+    const workspace = streamSlice.workspace;
+    const repo = streamSlice.repository;
     const lastUpdated =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-    const repoSlug = streamSlice.repository;
-    for (const pr of await bitbucket.getPullRequests(repoSlug, lastUpdated)) {
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.[repo.fullName]?.cutoff
+        : undefined;
+    for (const pr of await bitbucket.getPullRequests(
+      workspace,
+      repo.slug,
+      lastUpdated
+    )) {
       yield pr;
     }
   }
@@ -61,12 +75,14 @@ export class PullRequests extends AirbyteStreamBase {
     currentStreamState: PullRequestState,
     latestRecord: PullRequest
   ): PullRequestState {
-    return {
+    const repo = latestRecord.destination.repository.fullName;
+    const repoState = currentStreamState[repo] ?? {};
+    const newRepoState = {
       cutoff:
-        new Date(latestRecord.updatedOn) >
-        new Date(currentStreamState?.cutoff ?? 0)
+        new Date(latestRecord.updatedOn) > new Date(repoState.cutoff ?? 0)
           ? latestRecord.updatedOn
-          : currentStreamState.cutoff,
+          : repoState.cutoff,
     };
+    return {...currentStreamState, [repo]: newRepoState};
   }
 }

@@ -9,12 +9,12 @@ import {
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
-  StatusPageConverter,
+  StatuspageConverter,
   StatuspageIncidentImpact,
   StatuspageIncidentStatus,
 } from './common';
 
-export class Incidents extends StatusPageConverter {
+export class Incidents extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',
@@ -33,7 +33,7 @@ export class Incidents extends StatusPageConverter {
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
 
-    let acknowledgedAt = Utils.toDate(incident.created_at); // StatusPage doesn't have "triggered" semantic status
+    let acknowledgedAt = Utils.toDate(incident.created_at); // Statuspage doesn't have "triggered" semantic status
     const resolvedAt = incident.resolved_at
         ? Utils.toDate(incident.resolved_at)
         : undefined,
@@ -47,7 +47,7 @@ export class Incidents extends StatusPageConverter {
       }
     }
 
-    // StatusPage doesn't have incident severity, take "severity" of affected component/service
+    // Statuspage doesn't have incident severity, take "severity" of affected component/service
     let severity: IncidentSeverity | undefined = undefined;
     for (const component of incident.components) {
       const thisSeverity = this.getSeverity(component.status);

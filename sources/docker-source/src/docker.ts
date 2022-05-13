@@ -1,5 +1,5 @@
 import * as dockerRegistry from '@snyk/docker-registry-v2-client';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -37,6 +37,7 @@ export interface DockerConfig {
   readonly username: string;
   readonly password: string;
   readonly repositories: string;
+  readonly cutoffDays: number;
   readonly authEndpoint?: string;
   readonly bearerAuthorization?: boolean;
   readonly registryBase?: string;
@@ -51,6 +52,7 @@ export class Docker {
 
   constructor(
     private readonly registryBase: string,
+    private readonly startDate: Date,
     private readonly pageSize: number,
     private readonly maxPages: number,
     private readonly options: RequestOptions,
@@ -79,6 +81,9 @@ export class Docker {
         'Missing authentication information. Please provide a Docker project name'
       );
     }
+    if (!config.cutoffDays || config.cutoffDays < 1) {
+      throw new VError('Cutoff Days must be at least 1');
+    }
 
     const registryBase = config.registryBase || DEFAULT_REGISTRY_BASE;
     const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
@@ -94,8 +99,11 @@ export class Docker {
       auth = {username: config.username, password: config.password};
     }
 
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoffDays);
     Docker.clients[config.projectName] = new Docker(
       registryBase,
+      startDate,
       pageSize,
       maxPage,
       options,
@@ -138,8 +146,13 @@ export class Docker {
     }
   }
 
-  @Memoize((repo: string): string => repo)
-  async getTags(repo: string): Promise<ReadonlyArray<Tag>> {
+  @Memoize((repo: string, lastCreatedAt?: Date): string =>
+    repo.concat(lastCreatedAt?.toISOString())
+  )
+  async getTags(
+    repo: string,
+    lastCreatedAt: Date = this.startDate
+  ): Promise<ReadonlyArray<Tag>> {
     const results: Tag[] = [];
     const res = await dockerRegistry.getTags(
       this.registryBase,
@@ -157,6 +170,10 @@ export class Docker {
         repo,
         imageManifest.config.digest
       );
+      const created = toDate(imageConfig.created);
+      if (created <= lastCreatedAt) {
+        continue;
+      }
       results.push({
         name: item,
         projectName: repo,

@@ -23,9 +23,7 @@ tests:
       configured_catalog_path: "test_files/incremental_configured_catalog.json"
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
-        commits: [ "cutoff" ]
-        issues: [ "cutoff" ]
-        pipeline_step: [ "cutoff" ]
-        pull_request_activities: [ "cutoff" ]
-        pull_requests: [ "cutoff" ]
-        repositories: [ "cutoff" ]
+        commits: ["RomanKyrnis/geekhub2019", "cutoff"]
+        issues: ["RomanKyrnis/geekhub2019", "cutoff"]
+        pull_request_activities: ["RomanKyrnis/geekhub2019", "cutoff"]
+        pull_requests: ["RomanKyrnis/geekhub2019", "cutoff"]

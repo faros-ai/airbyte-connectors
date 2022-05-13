@@ -63,9 +63,9 @@ describe('phabricator', () => {
       vcs_Commit: 6,
       vcs_Membership: 4,
       vcs_Organization: 2,
+      vcs_PullRequest: 3,
       vcs_PullRequestReview: 3,
       vcs_PullRequest__Update: 2,
-      vcs_PullRequest__Upsert: 3,
       vcs_Repository: 2,
       vcs_User: 4,
     };

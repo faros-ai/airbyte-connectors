@@ -10,7 +10,8 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly workspace: string;
+  readonly workspaces: ReadonlyArray<string>;
+  readonly repositories?: ReadonlyArray<string>;
   readonly pagelen?: number;
   readonly cutoff_days: number;
 }
@@ -485,7 +486,7 @@ export interface PullRequest {
 }
 
 export interface PRActivity {
-  readonly changesRequested?: any;
+  readonly changes_requested?: any;
   readonly approval?: {
     readonly date: string;
     readonly pullrequest: {
@@ -585,8 +586,8 @@ export interface PRActivity {
   };
   readonly comment?: {
     readonly deleted: boolean;
-    readonly createdOn: string;
-    readonly updatedOn: string;
+    readonly created_on: string;
+    readonly updated_on: string;
     readonly type: string;
     readonly id: number;
     readonly links: {
@@ -667,6 +668,7 @@ export interface Repository {
   readonly workspace: {
     readonly type: string;
     readonly name: string;
+    readonly slug: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};
   };

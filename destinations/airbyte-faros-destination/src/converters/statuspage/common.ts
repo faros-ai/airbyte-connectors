@@ -4,7 +4,7 @@ import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
-interface StatusPageConfig {
+interface StatuspageConfig {
   application_mapping?: ApplicationMapping;
 }
 
@@ -94,16 +94,16 @@ export interface IncidentSeverity {
   detail: string;
 }
 
-/** StatusPage converter base */
-export abstract class StatusPageConverter extends Converter {
-  source = 'StatusPage';
+/** Statuspage converter base */
+export abstract class StatuspageConverter extends Converter {
+  source = 'Statuspage';
 
-  /** Every StatusPage record have id property */
+  /** Every Statuspage record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
-  protected statuspageConfig(ctx: StreamContext): StatusPageConfig {
+  protected statuspageConfig(ctx: StreamContext): StatuspageConfig {
     return ctx.config.source_specific_configs?.statuspage ?? {};
   }
 

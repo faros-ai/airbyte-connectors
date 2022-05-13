@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__buildkite__organizations"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__buildkite__pipelines"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__buildkite__builds"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {GitlabConverter} from '../common/gitlab';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitlabConverter} from './common';
 
 export class ProjectLabels extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
