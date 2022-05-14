@@ -5,6 +5,8 @@ if [ -z "$1" ]; then
 fi
 connector_path=$1
 
+[[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
+
 org="farosai"
 connector_name="$(echo $connector_path | cut -f2 -d'/')"
 prefix="airbyte-"
