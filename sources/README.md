@@ -115,7 +115,7 @@ create a new folder `secrets` and write your configuration to
 }
 ```
 
-Since this configuration would likely contains sensitive values, it cannot be
+Since this configuration would likely contain sensitive values, it cannot be
 committed to the repo. To enable the Github Action Workflow to run the source
 acceptance test, ask one of the Faros team members to add the configuration JSON
 as a Github Repository Secret with the environment variable name
