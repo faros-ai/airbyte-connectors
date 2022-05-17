@@ -206,5 +206,5 @@
       "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-16/releases{?skip,take,searchByVersion}",
       "Project": "/api/Spaces-1/projects/Projects-1"
     }
-  }
+  },
 ]
