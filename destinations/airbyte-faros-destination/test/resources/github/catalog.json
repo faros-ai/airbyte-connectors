@@ -143,6 +143,12 @@
         "name": "mytestsource__github__pull_request_stats"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__workflows"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

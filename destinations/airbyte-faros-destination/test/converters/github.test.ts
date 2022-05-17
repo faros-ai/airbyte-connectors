@@ -231,6 +231,7 @@ describe('github', () => {
       tags: 2,
       teams: 1,
       users: 24,
+      workflows: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -240,6 +241,7 @@ describe('github', () => {
       .value();
 
     const writtenByModel = {
+      cicd_Pipeline: 3,
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
       generic_Record: 531,
