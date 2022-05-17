@@ -44,5 +44,5 @@
         "AllowDeploymentsToNoTargets": true,
         "ExcludeUnhealthyTargets": false
       }
-    }
+    },
   ]
