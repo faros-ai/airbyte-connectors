@@ -100,5 +100,5 @@
             "DeploymentPreviews": "/api/Spaces-1/releases/Releases-4/deployments/previews/",
             "Variables": "/api/Spaces-1/projects/Projects-1/releases/Releases-4/variables"
         }
-    }
+    },
 ]
