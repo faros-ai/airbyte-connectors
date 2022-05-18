@@ -18,7 +18,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** AzureActiveDirectory source implementation. */
+/** Octopus source implementation. */
 export class OctopusSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
