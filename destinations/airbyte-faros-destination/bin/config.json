@@ -1,0 +1,9 @@
+{
+  "edition_configs": {
+    "edition": "cloud",
+    "graph": "default",
+    "api_url": "https://devapp.faros.ai",
+    "api_key": "UZ9mEuXWOG5oKiv7LAz4MrYY2SpHxsi6"
+  },
+  "origin": "octopus"
+} 
