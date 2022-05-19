@@ -59,7 +59,7 @@ export class PullRequests extends BitbucketConverter {
         k.startsWith(shortHash)
       );
       if (commitHash) {
-        mergeCommit = {repository: repoRef, sha: commitHash};
+        mergeCommit = {repository: repoRef, sha: commitHash, uid: commitHash};
       }
     }
 
