@@ -5,8 +5,11 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class Workflows extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Organization',
     'cicd_Pipeline',
   ];
+
+  private seenOrganizations = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -21,16 +24,30 @@ export class Workflows extends GitHubConverter {
 
     if (!repositoryKey) return [];
 
-    return [
-      {
-        model: 'cicd_Pipeline',
+    const res = [];
+    const organization = repositoryKey.organization;
+
+    if (!this.seenOrganizations.has(organization.uid)) {
+      this.seenOrganizations.add(organization.uid);
+      res.push({
+        model: 'cicd_Organization',
         record: {
-          uid: workflow.id.toString(),
-          name: workflow.name,
-          url: workflow.url,
-          organization: repositoryKey.organization,
+          ...organization,
+          name: organization.uid,
         },
+      });
+    }
+
+    res.push({
+      model: 'cicd_Pipeline',
+      record: {
+        uid: workflow.id.toString(),
+        name: workflow.name,
+        url: workflow.url,
+        organization,
       },
-    ];
+    });
+
+    return res;
   }
 }
