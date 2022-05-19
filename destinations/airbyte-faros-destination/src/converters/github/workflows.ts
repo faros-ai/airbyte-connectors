@@ -21,14 +21,24 @@ export class Workflows extends GitHubConverter {
 
     if (!repositoryKey) return [];
 
+    const organization = repositoryKey.organization;
+
     return [
+      {
+        model: 'cicd_Organization',
+        record: {
+          uid: organization,
+          name: organization,
+          source,
+        },
+      },
       {
         model: 'cicd_Pipeline',
         record: {
           uid: workflow.id,
           name: workflow.name,
           url: workflow.url,
-          organization: repositoryKey.organization,
+          organization: {uid: organization, source},
         },
       },
     ];
