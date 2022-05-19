@@ -61,7 +61,7 @@ export class Repositories extends BitbucketConverter {
         description,
         private: repository.isPrivate,
         language: repository.language ?? null,
-        size: BigInt(repository.size),
+        size: repository.size,
         htmlUrl: repository?.links?.htmlUrl,
         createdAt: Utils.toDate(repository.createdOn),
         updatedAt: Utils.toDate(repository.updatedOn),
