@@ -46,6 +46,7 @@ export class PullRequests extends BitbucketConverter {
 
     const repoRef = {
       organization: {uid: workspace.toLowerCase(), source},
+      uid: repo.toLowerCase(),
       name: repo.toLowerCase(),
     };
     // Get full commit hash by fetching the commit by short hash
