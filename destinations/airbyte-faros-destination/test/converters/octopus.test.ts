@@ -15,7 +15,6 @@ describe('octopus', () => {
     prettyPrint: {levelFirst: true},
   });
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  console.log(mockttp);
   const catalogPath = 'test/resources/octopus/catalog.json';
   let configPath: string;
   const streamNamePrefix = 'mytestsource__octopus__';
@@ -45,7 +44,10 @@ describe('octopus', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      works: 11,
+      projects: 1,
+      deployments: 2,
+      channels: 1,
+      releases: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -55,11 +57,10 @@ describe('octopus', () => {
       .value();
 
     const writtenByModel = {
-      tms_Epic: 9,
-      tms_Project: 9,
-      tms_Sprint: 6,
-      tms_Task: 11,
-      tms_User: 1,
+      org_Channel: 1,
+      org_Deployment: 1,
+      org_Project: 2,
+      org_Release: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -67,7 +68,6 @@ describe('octopus', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(
