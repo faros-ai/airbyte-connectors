@@ -55,6 +55,7 @@ export class Repositories extends BitbucketConverter {
     res.push({
       model: 'vcs_Repository',
       record: {
+        uid: repository.slug.toLowerCase(),
         name: repository.slug.toLowerCase(),
         fullName: repository.fullName,
         description,
