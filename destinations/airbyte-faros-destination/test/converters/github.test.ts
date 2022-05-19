@@ -244,6 +244,7 @@ describe('github', () => {
     const writtenByModel = {
       cicd_Build: 1,
       cicd_BuildCommitAssociation: 1,
+      cicd_Organization: 1,
       cicd_Pipeline: 3,
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
