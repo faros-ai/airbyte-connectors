@@ -35,6 +35,7 @@ export class Releases extends OctopusConverter {
         selectedPackages: release.SelectedPackages,
         projectVariableSetSnapshotId: release.ProjectVariableSetSnapshotId,
         versionControlReference: release.VersionControlReference,
+        link: release.Link,
         source,
       },
     });

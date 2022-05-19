@@ -26,6 +26,8 @@ export class Channels extends OctopusConverter {
         projectId: channel.ProjectId,
         lifecycleId: channel.LifecycleId,
         spaceId: channel.SpaceId,
+        isDefault: channel.IsDefault,
+        tenantTags: channel.TenantTags,
         source,
       },
     });

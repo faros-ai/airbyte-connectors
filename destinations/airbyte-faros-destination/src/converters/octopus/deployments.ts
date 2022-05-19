@@ -33,9 +33,11 @@ export class Deployments extends OctopusConverter {
         lastModifiedOn: deployment.LastModifiedOn,
         deployedToMachineIds: deployment.DeployedToMachineIds,
         deploymentProcessId: deployment.DeploymentProcessId,
-        devironmentId: deployment.EnvironmentId,
+        environmentId: deployment.EnvironmentId,
+        excludedMachineIds: deployment.ExcludedMachineIds,
         forcePackageRedeployment: deployment.ForcePackageRedeployment,
         failureEncountered: deployment.FailureEncountered,
+        formValues: deployment.FormValues,
         source,
       },
     });

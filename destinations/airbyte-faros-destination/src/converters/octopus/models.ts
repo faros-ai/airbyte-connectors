@@ -34,6 +34,7 @@ export interface Channel {
   readonly TenantTags: string;
   readonly SpaceId: string;
   readonly Link: object;
+  readonly IsDefault: boolean;
 }
 
 export interface Release {

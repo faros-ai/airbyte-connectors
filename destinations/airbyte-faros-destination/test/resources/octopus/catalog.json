@@ -1,0 +1,25 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__octopus__projects"
+      },
+      "destination_sync_mode": "append"
+    },{
+      "stream": {
+        "name": "mytestsource__octopus__channels"
+      },
+      "destination_sync_mode": "append"
+    },{
+      "stream": {
+        "name": "mytestsource__octopus__deployments"
+      },
+      "destination_sync_mode": "append"
+    },{
+      "stream": {
+        "name": "mytestsource__octopus__releases"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
