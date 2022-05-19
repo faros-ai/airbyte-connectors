@@ -41,7 +41,7 @@ export class Workflows extends GitHubConverter {
     res.push({
       model: 'cicd_Pipeline',
       record: {
-        uid: workflow.id,
+        uid: workflow.id.toString(),
         name: workflow.name,
         url: workflow.url,
         organization,
