@@ -49,6 +49,7 @@ export class Commits extends BitbucketConverter {
         author,
         repository: {
           organization: {uid: workspace.toLowerCase(), source},
+          uid: repo.toLowerCase(),
           name: repo.toLowerCase(),
         },
       },

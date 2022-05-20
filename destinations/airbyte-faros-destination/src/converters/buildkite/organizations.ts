@@ -18,7 +18,7 @@ export class Organizations extends BuildkiteConverter {
       {
         model: 'cicd_Organization',
         record: {
-          uid: organization.id,
+          uid: organization.slug,
           name: organization.name,
           slug: organization.slug,
           url: organization.web_url,

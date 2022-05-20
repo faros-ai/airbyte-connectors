@@ -1,6 +1,6 @@
 {
   "name": "servicenow-source",
-  "version": "0.1.78",
+  "version": "0.1.83",
   "description": "ServiceNow Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.78",
+    "faros-airbyte-cdk": "^0.1.83",
     "verror": "^1.10.1"
   },
   "jest": {

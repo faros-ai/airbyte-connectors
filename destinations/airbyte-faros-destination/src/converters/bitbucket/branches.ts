@@ -25,6 +25,7 @@ export class Branches extends BitbucketConverter {
           uid: branch.name,
           repository: {
             organization: {uid: workspace.toLowerCase(), source},
+            uid: repo.toLowerCase(),
             name: repo.toLowerCase(),
           },
         },

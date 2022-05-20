@@ -70,10 +70,11 @@ export class PullRequestActivities extends BitbucketConverter {
       source,
     };
     const repoRef = {
+      uid: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
       name: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
       organization: orgRef,
     };
-    if (!orgRef.uid || !repoRef.name) {
+    if (!orgRef.uid || !repoRef.uid) {
       this.logger.info(
         `PR Activity has no repo ref: ${JSON.stringify(prActivity)}`
       );
