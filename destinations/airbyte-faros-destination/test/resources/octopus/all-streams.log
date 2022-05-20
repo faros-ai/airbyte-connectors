@@ -1,0 +1,3 @@
+{"log":{"level":"INFO","message":"config: {\"apiUri\":\"https://rapiddemo.octopus.app\",\"apiKey\":\"API-S8WUZLPDBTRTHH7QAAQX3DLCCWH5JL\"}"},"type":"LOG"}
+{"log":{"level":"INFO","message":"catalog: {\"streams\":[{\"stream\":{\"name\":\"octopus__projects\"},\"destination_sync_mode\":\"append\"},{\"stream\":{\"name\":\"octopus__channels\"},\"destination_sync_mode\":\"append\"},{\"stream\":{\"name\":\"octopus__deployments\"},\"destination_sync_mode\":\"append\"},{\"stream\":{\"name\":\"octopus__releases\"},\"destination_sync_mode\":\"append\"}]}"},"type":"LOG"}{"log":{"level":"INFO","message":"Syncing OctopusSource"},"type":"LOG"}
+

@@ -38,10 +38,10 @@
         "ForcePackageRedeployment": {
             "type": "boolean"
         },
-        "FormValues": {
-            "type": "object"
-        },
         "Id": {
+            "type": "string"
+        },
+        "Created": {
             "type": "string"
         }
     }

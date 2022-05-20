@@ -1,24 +1,16 @@
-export interface ProjectResponse {
-  value: Project[];
-}
-
 export interface Project {
-  readonly id: number;
+  readonly Id: string;
   readonly SpaceId: string;
   readonly VariableSetId: string;
   readonly DeploymentProcessId: string;
   readonly ClonedFromProjectId: string;
   readonly DiscreteChannelRelease: boolean;
-  readonly IncludedLibraryVariableSetIds: object;
+  readonly IncludedLibraryVariableSetIds: string;
   readonly DefaultToSkipIfAlreadyInstalled: boolean;
   readonly TenantedDeploymentMode: string;
   readonly DefaultGuidedFailureMode: string;
   readonly VersioningStrategy: object;
-  readonly DonorPackage: string;
-  readonly DonorPackageStepId: string;
   readonly ReleaseCreationStrategy: object;
-  readonly ReleaseCreationPackage: string;
-  readonly ReleaseCreationPackageStepId: string;
   readonly Name: string;
   readonly Slug: string;
   readonly Description: string;
@@ -33,50 +25,51 @@ export interface Project {
 }
 
 export interface Channel {
-  readonly id: number;
+  readonly Id: string;
   readonly Name: string;
   readonly Description: string;
   readonly ProjectId: string;
   readonly LifecycleId: string;
-  readonly Rules: boolean;
-  readonly TenantTags: object;
-  readonly SpaceId: object;
+  readonly Rules: string;
+  readonly TenantTags: string;
+  readonly SpaceId: string;
   readonly Link: object;
+  readonly IsDefault: boolean;
 }
 
 export interface Release {
-  readonly Id: number;
+  readonly Id: string;
   readonly ProjectId: string;
   readonly SpaceId: string;
   readonly ChannelId: string;
   readonly Version: string;
   readonly ReleaseNotes: string;
-  readonly ProjectDeploymentProcessSnapshotId: boolean;
+  readonly ProjectDeploymentProcessSnapshotId: string;
   readonly IgnoreChannelRules: boolean;
-  readonly BuildInformation: object;
-  readonly Assembled: boolean;
-  readonly LibraryVariableSetSnapshotIds: object;
-  readonly SelectedPackages: object;
-  readonly ProjectVariableSetSnapshotId: object;
-  readonly VersionControlReference: object;
-  readonly LastModifiedBy: object;
-  readonly LastModifiedOn: object;
+  readonly BuildInformation: string;
+  readonly Assembled: string;
+  readonly LibraryVariableSetSnapshotIds: string;
+  readonly SelectedPackages: string;
+  readonly ProjectVariableSetSnapshotId: string;
+  readonly VersionControlReference: string;
   readonly Link: object;
 }
 
 export interface Deployment {
-  readonly Changes: object;
+  readonly Changes: string;
   readonly ChangesMarkdown: string;
   readonly ChannelId: string;
   readonly Comments: string;
   readonly Created: string;
   readonly DeployedBy: string;
   readonly DeployedById: string;
-  readonly DeployedToMachineIds: object;
+  readonly DeployedToMachineIds: string;
   readonly DeploymentProcessId: string;
   readonly EnvironmentId: string;
-  readonly ExcludedMachineIds: object;
-  readonly FailureEncountered: boolean;
+  readonly ExcludedMachineIds: string;
+  readonly FailureEncountered: string;
   readonly ForcePackageRedeployment: boolean;
+  readonly FormValues: object;
   readonly Id: string;
+  readonly LastModifiedOn: string;
 }
