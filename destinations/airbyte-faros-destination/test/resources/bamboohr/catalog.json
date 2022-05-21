@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__bamboohr__users"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

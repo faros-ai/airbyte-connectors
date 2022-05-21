@@ -46,12 +46,12 @@ describe('index', () => {
     const source = new sut.BambooHRSource(logger);
     await expect(
       source.checkConnection({
-        client_id: 'client_id',
-        tenant_id: 'tenant_id',
+        api_key: '',
+        domain: '',
       } as any)
     ).resolves.toStrictEqual([
       false,
-      new VError('client_secret must be a not empty string'),
+      new VError('api_key must be a not empty string'),
     ]);
   });
 
@@ -59,7 +59,7 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
 
     BambooHR.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users.json');
+      const usersResource: any[] = readTestResourceFile('users_input.json');
       return new BambooHR(
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -79,7 +79,7 @@ describe('index', () => {
       users.push(user);
     }
 
-    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
+    expect(fnUsersFunc).toHaveBeenCalledTimes(2);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 });

@@ -8,6 +8,9 @@
     "employeeId": {
       "type": "string"
     },
+    "fullName1": {
+      "type": "string"
+    },
     "employeeNumber": {
       "type": "string"
     },
