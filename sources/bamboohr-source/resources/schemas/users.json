@@ -3,101 +3,36 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "type": "number"
     },
-    "businessPhones": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+    "employeeId": {
+      "type": "number"
     },
-    "displayName": {
+    "firstName": {
       "type": [
         "string",
         "null"
       ]
     },
-    "givenName": {
+    "lastName": {
       "type": [
         "string",
         "null"
       ]
     },
-    "mobilePhone": {
+    "email": {
       "type": [
         "string",
         "null"
       ]
     },
-    "officeLocation": {
+    "status": {
       "type": [
         "string",
         "null"
       ]
     },
-    "preferredLanguage": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "surname": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "userPrincipalName": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "department": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "postalCode": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "createdDateTime": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "streetAddress": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "identities": {
-      "type": "array",
-      "item": {
-        "signInType": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "issuer": {
-          "type": "string"
-        },
-        "issuerAssignedId": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
-    },
-    "manager": {
+    "lastLogin": {
       "type": [
         "string",
         "null"

@@ -37,7 +37,11 @@ export class BambooHR {
     const httpClient = axios.create({
       baseURL: `https://${config.api_key}:x@api.bamboohr.com/api/gateway.php/${config.domain}/${version}`,
       timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 500000, //default is 2000 bytes
+      maxContentLength: 500000,
+      headers: {
+        Accept: `application/json`,
+        'Content-Type': `application/json`,
+      },
     });
     BambooHR.bambooHR = new BambooHR(httpClient, logger);
     return BambooHR.bambooHR;
@@ -63,9 +67,9 @@ export class BambooHR {
   async *getUsers(): AsyncGenerator<User> {
     try {
       const users = await this.httpClient.get<any>(
-        `meta/users?fields=employeeNumber,jobTitle,status,employmentHistoryStatus,address1,address2,birthday,bestEmail,workEmail,workPhone,city,country,department,ethnicity,firstName,lastName,gender,middleName,mobilePhone,zipcode,hireDate,supervisor,payRate,bonusAmount,commissionAmount,payFrequency`
+        `/meta/users?fields=employeeNumber,jobTitle,status,employmentHistoryStatus,address1,address2,birthday,bestEmail,workEmail,workPhone,city,country,department,ethnicity,firstName,lastName,gender,middleName,mobilePhone,zipcode,hireDate,supervisor,payRate,bonusAmount,commissionAmount,payFrequency`
       );
-      for (const [key, value] of Object.entries(users)) {
+      for (const [key, value] of Object.entries(users.data)) {
         yield value as User;
       }
     } catch (error) {
