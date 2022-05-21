@@ -3,40 +3,85 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "number"
+      "type": "string"
     },
     "employeeId": {
-      "type": "number"
+      "type": "string"
     },
-    "firstName": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "employeeNumber": {
+      "type": "string"
     },
-    "lastName": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "email": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "jobTitle": {
+      "type": "string"
     },
     "status": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
-    "lastLogin": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "employmentHistoryStatus": {
+      "type": "string"
+    },
+    "address1": {
+      "type": "string"
+    },
+    "address2": {
+      "type": "string"
+    },
+    "birthday": {
+      "type": "string"
+    },
+    "bestEmail": {
+      "type": "string"
+    },
+    "workEmail": {
+      "type": "string"
+    },
+    "workPhone": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "ethnicity": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "middleName": {
+      "type": "string"
+    },
+    "mobilePhone": {
+      "type": "string"
+    },
+    "zipcode": {
+      "type": "string"
+    },
+    "hireDate": {
+      "type": "string"
+    },
+    "supervisor": {
+      "type": "string"
+    },
+    "payRate": {
+      "type": "string"
+    },
+    "payFrequency": {
+      "type": "string"
+    },
+    "supervisorId": {
+      "type": "string"
     }
   }
 }

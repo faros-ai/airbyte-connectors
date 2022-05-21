@@ -66,11 +66,12 @@ export class BambooHR {
   }
   async *getUsers(): AsyncGenerator<User> {
     try {
-      const users = await this.httpClient.get<any>(
-        `/meta/users?fields=employeeNumber,jobTitle,status,employmentHistoryStatus,address1,address2,birthday,bestEmail,workEmail,workPhone,city,country,department,ethnicity,firstName,lastName,gender,middleName,mobilePhone,zipcode,hireDate,supervisor,payRate,bonusAmount,commissionAmount,payFrequency`
-      );
+      const users = await this.httpClient.get<any>(`/meta/users`);
       for (const [key, value] of Object.entries(users.data)) {
-        yield value as User;
+        const user = await this.httpClient.get<any>(
+          `/employees/${value['employeeId']}/?fields=employeeNumber,jobTitle,status,employmentHistoryStatus,address1,address2,birthday,bestEmail,workEmail,workPhone,city,country,department,ethnicity,firstName,lastName,gender,middleName,mobilePhone,zipcode,hireDate,supervisor,payRate,bonusAmount,commissionAmount,payFrequency,hireDate,supervisor,supervisorId,payGroup`
+        );
+        yield user.data as User;
       }
     } catch (error) {
       this.logger.error(error.toString());
