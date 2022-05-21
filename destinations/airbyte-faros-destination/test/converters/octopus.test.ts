@@ -44,8 +44,8 @@ describe('octopus', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      projects: 1,
-      deployments: 2,
+      projects: 2,
+      deployments: 1,
       channels: 1,
       releases: 1,
     };
