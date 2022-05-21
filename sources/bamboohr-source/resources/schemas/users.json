@@ -12,76 +12,166 @@
       "type": "string"
     },
     "jobTitle": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "status": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "employmentHistoryStatus": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "address1": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "address2": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "birthday": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "bestEmail": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "workEmail": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "workPhone": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "city": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "country": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "department": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "ethnicity": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "firstName": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "lastName": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "gender": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "middleName": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "mobilePhone": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "zipcode": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "hireDate": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "supervisor": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "payRate": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "payFrequency": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "supervisorId": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "terminationDate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisorEId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisorEmail": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   }
 }

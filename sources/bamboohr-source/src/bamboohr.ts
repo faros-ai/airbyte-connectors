@@ -69,7 +69,7 @@ export class BambooHR {
       const users = await this.httpClient.get<any>(`/meta/users`);
       for (const [key, value] of Object.entries(users.data)) {
         const user = await this.httpClient.get<any>(
-          `/employees/${value['employeeId']}/?fields=employeeNumber,jobTitle,status,employmentHistoryStatus,address1,address2,birthday,bestEmail,workEmail,workPhone,city,country,department,ethnicity,firstName,lastName,gender,middleName,mobilePhone,zipcode,hireDate,supervisor,payRate,bonusAmount,commissionAmount,payFrequency,hireDate,supervisor,supervisorId,payGroup`
+          `/employees/${value['employeeId']}/?fields=acaStatus,caStatusCategory,address1,address2,age,bestEmail,birthday,bonusAmount,bonusComment,bonusDate,bonusReason,city,commissionAmount,commissionComment,commissionDate,commisionDate,country,createdByUserId,dateOfBirth,department,division,eeo,employeeNumber,employmentHistoryStatus,ethnicity,exempt,firstName,flsaCode,fullName1,fullName2,fullName3,fullName4,fullName5,displayName,gender,hireDate,originalHireDate,homeEmail,homePhone,id,isPhotoUploaded,jobTitle,lastChanged,lastName,location,maritalStatus,middleName,mobilePhone,nationalId,nationality,nin,payChangeReason,payGroup,payGroupId,payRate,payRateEffectiveDate,payType,paidPer,paySchedule,payScheduleId,payFrequency,includeInPayroll,timeTrackingEnabled,preferredName,ssn,sin,standardHoursPerWeek,state,stateCode,status,supervisor,supervisorId,supervisorEId,supervisorEmail,terminationDate,workEmail,workPhone,workPhonePlusExtension,workPhoneExtension,zipcode`
         );
         yield user.data as User;
       }

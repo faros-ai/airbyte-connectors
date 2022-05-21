@@ -20,9 +20,13 @@ export interface User {
   middleName?: string;
   mobilePhone?: string;
   zipcode?: string;
-  hireDate?: string;
   supervisor?: string;
+  // managerId
+  supervisorId?: string;
+  supervisorEId?: string;
+  supervisorEmail?: string;
   payRate?: string;
   payFrequency?: string;
-  supervisorId?: string;
+  hireDate?: string;
+  terminationDate?: string;
 }
