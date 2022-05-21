@@ -23,7 +23,7 @@ export class Users extends BambooHRConverter {
     const joinedAt = Utils.toDate(user.hireDate);
     const terminatedAt =
       user.terminationDate == '0000-00-00'
-        ? 0
+        ? null
         : Utils.toDate(user.terminationDate);
     const manager = user.supervisorId
       ? {uid: user.supervisorId, source}
