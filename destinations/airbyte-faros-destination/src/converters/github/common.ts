@@ -78,7 +78,12 @@ export class GitHubCommon {
     };
   }
 
-  static tms_User(user: Dictionary<any>, source: string): DestinationRecord {
+  static tms_User(
+    user: Dictionary<any> | undefined,
+    source: string
+  ): DestinationRecord | undefined {
+    if (!user?.login) return undefined;
+
     return {
       model: 'tms_User',
       record: {
@@ -148,6 +153,45 @@ export class GitHubCommon {
     return Utils.parseInteger(
       pull_request_url.substring(pull_request_url.lastIndexOf('/') + 1)
     );
+  }
+
+  static cicd_BuildStatus(
+    status: string,
+    conclusion: string
+  ): {
+    category: string;
+    detail: string;
+  } {
+    const statusLower = status.toLowerCase();
+
+    switch (statusLower) {
+      case 'queued':
+        return {category: 'Queued', detail: statusLower};
+      case 'in_progress':
+        return {category: 'Running', detail: statusLower};
+      case 'completed':
+        return GitHubCommon.buildStatus(conclusion);
+      default:
+        return {category: 'Custom', detail: statusLower};
+    }
+  }
+
+  private static buildStatus(conclusion: string): {
+    category: string;
+    detail: string;
+  } {
+    const conclusionLower = conclusion.toLowerCase();
+
+    switch (conclusionLower) {
+      case 'success':
+        return {category: 'Success', detail: conclusionLower};
+      case 'failure':
+        return {category: 'Failed', detail: conclusionLower};
+      case 'cancelled':
+        return {category: 'Canceled', detail: conclusionLower};
+      default:
+        return {category: 'Custom', detail: conclusionLower};
+    }
   }
 }
 

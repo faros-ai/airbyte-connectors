@@ -231,6 +231,8 @@ describe('github', () => {
       tags: 2,
       teams: 1,
       users: 24,
+      workflows: 3,
+      workflow_runs: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -240,6 +242,10 @@ describe('github', () => {
       .value();
 
     const writtenByModel = {
+      cicd_Build: 1,
+      cicd_BuildCommitAssociation: 1,
+      cicd_Organization: 1,
+      cicd_Pipeline: 3,
       cicd_Release: 1,
       cicd_ReleaseTagAssociation: 1,
       generic_Record: 531,
@@ -247,21 +253,20 @@ describe('github', () => {
       tms_Label: 24,
       tms_Project: 50,
       tms_Task: 1,
-      tms_TaskAssignment: 1,
       tms_TaskBoard: 50,
       tms_TaskBoardProjectRelationship: 50,
       tms_TaskBoardRelationship: 1,
       tms_TaskTag: 2,
-      tms_User: 14,
+      tms_User: 13,
       vcs_Branch: 4,
       vcs_BranchCommitAssociation: 1,
       vcs_Commit: 77,
       vcs_Membership: 12,
       vcs_Organization: 1,
+      vcs_PullRequest: 38,
       vcs_PullRequestComment: 87,
       vcs_PullRequestReview: 121,
       vcs_PullRequest__Update: 38,
-      vcs_PullRequest__Upsert: 38,
       vcs_Repository: 49,
       vcs_Tag: 2,
       vcs_User: 195,

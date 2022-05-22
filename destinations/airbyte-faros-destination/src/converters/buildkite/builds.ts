@@ -74,12 +74,13 @@ export class Builds extends BuildkiteConverter {
         const repoKey = {
           organization: {uid: toLower(repoExtract.org), source},
           name: toLower(repoExtract.name),
+          uid: toLower(repoExtract.name),
         };
         res.push({
           model: 'cicd_BuildCommitAssociation',
           record: {
             build: buildKey,
-            commit: {repository: repoKey, sha: build.commit},
+            commit: {repository: repoKey, sha: build.commit, uid: build.commit},
           },
         });
       }

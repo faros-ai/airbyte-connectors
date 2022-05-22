@@ -76,6 +76,7 @@ jobs:
           AGILEACCELERATOR_SOURCE_TEST_CONFIG: ${{ secrets.AGILEACCELERATOR_SOURCE_TEST_CONFIG }}
           AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG: ${{ secrets.AZUREACTIVEDIRECTORY_SOURCE_TEST_CONFIG }}
           AZUREPIPELINE_SOURCE_TEST_CONFIG: ${{ secrets.AZUREPIPELINE_SOURCE_TEST_CONFIG }}
+          AZURE_REPOS_SOURCE_TEST_CONFIG: ${{ secrets.AZURE_REPOS_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           BUILDKITE_SOURCE_TEST_CONFIG: ${{ secrets.BUILDKITE_SOURCE_TEST_CONFIG }}
@@ -93,7 +94,7 @@ jobs:
           do
             source=$(echo $i | cut -f2 -d'/')
             case "$source" in
-              azurepipeline-source|gitlab-ci-source|datadog-source|jenkins-source|okta-source|opsgenie-source|servicenow-source|phabricator-source|victorops-source)
+              gitlab-ci-source|datadog-source|jenkins-source|okta-source|opsgenie-source|servicenow-source|phabricator-source|victorops-source)
                 echo "Skipping $source acceptance tests"
                 ;;
               *)

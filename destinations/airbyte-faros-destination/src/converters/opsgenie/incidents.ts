@@ -73,24 +73,18 @@ export class Incidents extends OpsGenieConverter {
       });
     }
     res.push({
-      // We are explicitly passing __Upsert command here with at := 0,
-      // to allow updating Incident severity from prioritiesResource stream
-      // in the same revision
-      model: 'ims_Incident__Upsert',
+      model: 'ims_Incident',
       record: {
-        at: 0,
-        data: {
-          ...incidentRef,
-          title: incident.message,
-          description: incident.description?.substring(0, maxDescriptionLength),
-          url: incident.links.web,
-          createdAt,
-          updatedAt,
-          acknowledgedAt,
-          resolvedAt,
-          priority: this.getPriority(incident.priority),
-          status: this.getIncidentStatus(incident.status),
-        },
+        ...incidentRef,
+        title: incident.message,
+        description: incident.description?.substring(0, maxDescriptionLength),
+        url: incident.links.web,
+        createdAt,
+        updatedAt,
+        acknowledgedAt,
+        resolvedAt,
+        priority: this.getPriority(incident.priority),
+        status: this.getIncidentStatus(incident.status),
       },
     });
     for (const service of incident.impactedServices) {

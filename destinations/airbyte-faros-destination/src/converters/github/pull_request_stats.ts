@@ -25,7 +25,7 @@ export class PullRequestStats extends GitHubConverter {
       {
         model: 'vcs_PullRequest__Update',
         record: {
-          at: record.record.emitted_at,
+          at: Date.now(),
           where: {
             number: prStats.number,
             uid: prStats.number.toString(),
