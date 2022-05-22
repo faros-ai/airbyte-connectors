@@ -1,4 +1,4 @@
-connector_image: bammboohr-source
+connector_image: bamboohr-source
 tests:
   spec:
     - config_path: "secrets/config.json"

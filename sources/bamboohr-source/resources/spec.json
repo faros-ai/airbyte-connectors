@@ -12,14 +12,14 @@
     "properties": {
       "api_key": {
         "type": "string",
-        "title": "clientID",
-        "description": "BambooHR Client ID",
+        "title": "BambooHR API KEY",
+        "description": "BambooHR API KEY, create by go to https://{{domain}}.bamboohr.com/settings/permissions/api.php",
         "airbyte_secret": true
       },
       "domain": {
         "type": "string",
-        "title": "client secret",
-        "description": "BambooHR Client Secret",
+        "title": "domain",
+        "description": "Domain or Company domain",
         "airbyte_secret": true
       },
       "version": {

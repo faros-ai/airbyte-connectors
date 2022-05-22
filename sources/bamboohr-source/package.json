@@ -1,13 +1,13 @@
 {
-  "name": "bammboohr-source",
+  "name": "bamboohr-source",
   "version": "0.1.83",
-  "description": "BammbooHR Airbyte source",
+  "description": "BambooHR Airbyte source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "bammboo",
-    "bammboohr"
+    "bamboo",
+    "bamboohr"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
