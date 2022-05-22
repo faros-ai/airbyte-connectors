@@ -41,6 +41,7 @@ export class Builds extends AirbyteStreamBase {
     const travisCI = TravisCI.instance(this.config, this.axios);
     yield* travisCI.fetchBuilds(lastFinishedAt);
   }
+
   getUpdatedState(
     currentStreamState: BuildState,
     latestRecord: Build

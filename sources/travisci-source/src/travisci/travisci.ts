@@ -74,6 +74,7 @@ export class TravisCI {
       );
     }
   }
+
   async *fetchOwner(): AsyncGenerator<Owner> {
     const {data} = await this.axios.get(`/owner/${this.organization}`);
     yield {
@@ -84,6 +85,7 @@ export class TravisCI {
       type: data['@type'],
     };
   }
+
   async *fetchRepositories(): AsyncGenerator<Repository> {
     const {data} = await this.axios.get(`repos`);
     for (const repo of data?.repositories ?? []) {
