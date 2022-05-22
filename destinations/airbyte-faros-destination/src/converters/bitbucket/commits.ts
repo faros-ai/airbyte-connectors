@@ -11,6 +11,10 @@ export class Commits extends BitbucketConverter {
     'vcs_User',
   ];
 
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?.hash;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -45,6 +49,7 @@ export class Commits extends BitbucketConverter {
         author,
         repository: {
           organization: {uid: workspace.toLowerCase(), source},
+          uid: repo.toLowerCase(),
           name: repo.toLowerCase(),
         },
       },

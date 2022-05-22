@@ -8,7 +8,7 @@ import {PRActivity, User} from './types';
 enum PullRequestReviewStateCategory {
   APPROVED = 'Approved',
   COMMENTED = 'Commented',
-  CHANGES_REQUESTS = 'ChangesRequested',
+  CHANGES_REQUESTED = 'ChangesRequested',
   DISMISSED = 'Dismissed',
   CUSTOM = 'Custom',
 }
@@ -33,7 +33,7 @@ export class PullRequestActivities extends BitbucketConverter {
     const change =
       prActivity?.comment ??
       prActivity?.approval ??
-      prActivity?.changesRequested ??
+      prActivity?.changes_requested ??
       prActivity?.update;
 
     const date = Utils.toDate(
@@ -46,7 +46,7 @@ export class PullRequestActivities extends BitbucketConverter {
     const id = change?.id ?? date?.getUTCMilliseconds();
 
     if (!id) {
-      this.logger.debug(
+      this.logger.info(
         `Ignored activity for pull request ${
           prActivity.pullRequest.id
         } in repo ${
@@ -70,10 +70,14 @@ export class PullRequestActivities extends BitbucketConverter {
       source,
     };
     const repoRef = {
+      uid: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
       name: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
       organization: orgRef,
     };
-    if (!orgRef.uid || repoRef.name) {
+    if (!orgRef.uid || !repoRef.uid) {
+      this.logger.info(
+        `PR Activity has no repo ref: ${JSON.stringify(prActivity)}`
+      );
       return res;
     }
 
@@ -102,7 +106,7 @@ export class PullRequestActivities extends BitbucketConverter {
         record: {
           number: id,
           uid: id.toString(),
-          htmlUrl: change?.pull_request?.links?.html?.href,
+          htmlUrl: prActivity.pullRequest.links.htmlUrl,
           pullRequest,
           reviewer,
           state,
@@ -122,13 +126,13 @@ export class PullRequestActivities extends BitbucketConverter {
       return {category: PullRequestReviewStateCategory.COMMENTED, detail: null};
     if (prActivity?.approval)
       return {category: PullRequestReviewStateCategory.APPROVED, detail: null};
-    if (prActivity?.changesRequested)
+    if (prActivity?.changes_requested)
       return {
-        category: PullRequestReviewStateCategory.CHANGES_REQUESTS,
+        category: PullRequestReviewStateCategory.CHANGES_REQUESTED,
         detail: null,
       };
     if (prActivity?.update && prActivity?.update?.state === 'DECLINED')
       return {category: PullRequestReviewStateCategory.DISMISSED, detail: null};
-    return {category: PullRequestReviewStateCategory.CUSTOM, detail: null};
+    return undefined;
   }
 }

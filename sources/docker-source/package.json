@@ -1,6 +1,6 @@
 {
   "name": "docker-source",
-  "version": "0.1.77",
+  "version": "0.1.83",
   "description": "Docker Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "@snyk/docker-registry-v2-client": "^2.6.1",
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.77",
+    "faros-airbyte-cdk": "^0.1.83",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },

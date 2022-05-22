@@ -46,6 +46,7 @@ export class PullRequests extends BitbucketConverter {
 
     const repoRef = {
       organization: {uid: workspace.toLowerCase(), source},
+      uid: repo.toLowerCase(),
       name: repo.toLowerCase(),
     };
     // Get full commit hash by fetching the commit by short hash
@@ -58,7 +59,7 @@ export class PullRequests extends BitbucketConverter {
         k.startsWith(shortHash)
       );
       if (commitHash) {
-        mergeCommit = {repository: repoRef, sha: commitHash};
+        mergeCommit = {repository: repoRef, sha: commitHash, uid: commitHash};
       }
     }
 
