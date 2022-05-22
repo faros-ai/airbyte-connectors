@@ -69,6 +69,7 @@ export class CircleCI {
   projectSlug(): string {
     return encodeURIComponent(`${this.orgSlug}/${this.repoName}`);
   }
+
   async checkConnection(): Promise<void> {
     try {
       await this.axios.get(`/project/${this.projectSlug()}`);
@@ -87,6 +88,7 @@ export class CircleCI {
       );
     }
   }
+
   private async iterate<V>(
     requester: (params: any | undefined) => Promise<any>,
     deserializer: (item: any) => any,
@@ -111,11 +113,13 @@ export class CircleCI {
     } while (getNextPage && pageToken);
     return list;
   }
+
   async *fetchProject(): AsyncGenerator<Project> {
     const slug = this.projectSlug();
     const {data} = await this.axios.get(`/project/${slug}`);
     yield data;
   }
+
   async *fetchPipelines(since?: string): AsyncGenerator<Pipeline> {
     const startTime = new Date(since ?? 0);
     const startTimeMax =
