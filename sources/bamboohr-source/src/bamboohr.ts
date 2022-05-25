@@ -64,6 +64,7 @@ export class BambooHR {
       throw new VError(errorMessage);
     }
   }
+
   async *getUsers(): AsyncGenerator<User> {
     try {
       const users = await this.httpClient.get<any>(`/meta/users`);

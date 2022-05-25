@@ -13,7 +13,9 @@ export class Users extends BambooHRConverter {
     'org_Department',
     'org_Employee',
   ];
+
   private seenDepartments = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
