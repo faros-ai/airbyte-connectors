@@ -47,8 +47,8 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        'gh/huongtn',
-        'sample-test',
+        ['gh/huongtn'],
+        ['sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -57,8 +57,8 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        org_slug: '',
-        repo_name: '',
+        org_slug: [],
+        repo_name: [],
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
@@ -68,8 +68,8 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         null,
-        'gh/huongtn',
-        'sample-test',
+        ['gh/huongtn'],
+        ['sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -77,8 +77,8 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        org_slug: '',
-        repo_name: '',
+        org_slug: [],
+        repo_name: [],
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
@@ -98,8 +98,8 @@ describe('index', () => {
             data: readTestResourceFile('projects.json'),
           }),
         } as any,
-        'gh/huongtn',
-        'sample-test',
+        ['gh/huongtn'],
+        ['sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -128,8 +128,8 @@ describe('index', () => {
             },
           }),
         } as any,
-        'gh/huongtn',
-        'sample-test',
+        ['gh/huongtn'],
+        ['sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
