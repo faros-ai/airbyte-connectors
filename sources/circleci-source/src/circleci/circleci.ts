@@ -35,9 +35,10 @@ export class CircleCI {
     }
     const parts = config.org_slug.split('/').filter((p) => p);
     if (parts.length != 2) {
-      throw new VError(`Organization slug %s does not match the expected format' +
-      ' {vcs_slug}/{org_name}, e.g gh/my-org. We will try to query the' +
-      ' CircleCI API anyways assuming organization %s`);
+      throw new VError(
+        `Organization slug %s does not match the expected format {vcs_slug}/{org_name}, e.g gh/my-org`,
+        config.org_slug
+      );
     }
     if (!config.repo_name) {
       throw new VError('No repo_name provided');
