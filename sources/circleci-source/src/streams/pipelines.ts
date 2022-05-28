@@ -5,6 +5,11 @@ import {Dictionary} from 'ts-essentials';
 import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 import {Pipeline} from '../circleci/typings';
 
+type StreamSlice = {
+  orgSlug: string;
+  repoName: string;
+};
+
 interface PipelineState {
   lastUpdatedAt: string;
 }
@@ -28,10 +33,21 @@ export class Pipelines extends AirbyteStreamBase {
     return 'updated_at';
   }
 
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const orgSlug of this.config.org_slugs) {
+      for (const repoName of this.config.repo_names) {
+        yield {
+          orgSlug,
+          repoName,
+        };
+      }
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
+    streamSlice?: StreamSlice,
     streamState?: PipelineState
   ): AsyncGenerator<Pipeline, any, unknown> {
     const lastUpdatedAt =
@@ -39,7 +55,11 @@ export class Pipelines extends AirbyteStreamBase {
         ? streamState?.lastUpdatedAt
         : undefined;
     const circleCI = CircleCI.instance(this.config, this.axios);
-    yield* circleCI.fetchPipelines(lastUpdatedAt);
+    yield* circleCI.fetchPipelines(
+      streamSlice.orgSlug,
+      streamSlice.repoName,
+      lastUpdatedAt
+    );
   }
   getUpdatedState(
     currentStreamState: PipelineState,

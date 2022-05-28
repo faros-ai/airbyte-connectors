@@ -4,6 +4,10 @@ import {Dictionary} from 'ts-essentials';
 
 import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 import {Project} from '../circleci/typings';
+type StreamSlice = {
+  orgSlug: string;
+  repoName: string;
+};
 
 export class Projects extends AirbyteStreamBase {
   constructor(
@@ -22,13 +26,24 @@ export class Projects extends AirbyteStreamBase {
     return 'id';
   }
 
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const orgSlug of this.config.org_slugs) {
+      for (const repoName of this.config.repo_names) {
+        yield {
+          orgSlug,
+          repoName,
+        };
+      }
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
+    streamSlice?: StreamSlice,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Project, any, unknown> {
     const circleCI = CircleCI.instance(this.config, this.axios);
-    yield* circleCI.fetchProject();
+    yield* circleCI.fetchProject(streamSlice.orgSlug, streamSlice.repoName);
   }
 }

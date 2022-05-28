@@ -8,8 +8,9 @@ const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 
 export interface CircleCIConfig {
   readonly token: string;
-  readonly org_slug: string;
-  readonly repo_name: string;
+  readonly org_slugs: ReadonlyArray<string>;
+  readonly repo_names: ReadonlyArray<string>;
+
   readonly rejectUnauthorized: boolean;
   readonly cutoff_days: number;
   readonly url?: string;
@@ -18,8 +19,8 @@ export interface CircleCIConfig {
 export class CircleCI {
   constructor(
     readonly axios: AxiosInstance,
-    readonly orgSlug: string,
-    readonly repoName: string,
+    readonly orgSlugs: ReadonlyArray<string>,
+    readonly repoNames: ReadonlyArray<string>,
     readonly startDate: Date
   ) {}
 
@@ -30,17 +31,20 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.org_slug) {
+
+    if (!config.org_slugs || config.org_slugs.length == 0) {
       throw new VError('No org_slug provided');
     }
-    const parts = config.org_slug.split('/').filter((p) => p);
-    if (parts.length != 2) {
-      throw new VError(
-        `Organization slug %s does not match the expected format {vcs_slug}/{org_name}, e.g gh/my-org`,
-        config.org_slug
-      );
+    for (const orgSlug of config.org_slugs) {
+      const parts = orgSlug.split('/').filter((p) => p);
+      if (parts.length != 2) {
+        throw new VError(
+          `Organization slug %s does not match the expected format {vcs_slug}/{org_name}, e.g gh/my-org`,
+          orgSlug
+        );
+      }
     }
-    if (!config.repo_name) {
+    if (!config.repo_names || config.repo_names.length == 0) {
       throw new VError('No repo_name provided');
     }
     if (!config.cutoff_days) {
@@ -61,19 +65,21 @@ export class CircleCI {
           },
           httpsAgent: new https.Agent({rejectUnauthorized}),
         }),
-      config.org_slug,
-      config.repo_name,
+      config.org_slugs,
+      config.repo_names,
       startDate
     );
   }
 
-  projectSlug(): string {
-    return encodeURIComponent(`${this.orgSlug}/${this.repoName}`);
+  projectSlug(orgSlug: string, repoNames: string): string {
+    return encodeURIComponent(`${orgSlug}/${repoNames}`);
   }
 
   async checkConnection(): Promise<void> {
     try {
-      await this.axios.get(`/project/${this.projectSlug()}`);
+      await this.axios.get(
+        `/project/${this.projectSlug(this.orgSlugs[0], this.repoNames[0])}`
+      );
     } catch (error) {
       if (
         (error as AxiosError).response &&
@@ -115,17 +121,24 @@ export class CircleCI {
     return list;
   }
 
-  async *fetchProject(): AsyncGenerator<Project> {
-    const slug = this.projectSlug();
+  async *fetchProject(
+    orgSlug: string,
+    repoNames: string
+  ): AsyncGenerator<Project> {
+    const slug = this.projectSlug(orgSlug, repoNames);
     const {data} = await this.axios.get(`/project/${slug}`);
     yield data;
   }
 
-  async *fetchPipelines(since?: string): AsyncGenerator<Pipeline> {
+  async *fetchPipelines(
+    orgSlug: string,
+    repoNames: string,
+    since?: string
+  ): AsyncGenerator<Pipeline> {
     const startTime = new Date(since ?? 0);
     const startTimeMax =
       startTime > this.startDate ? startTime : this.startDate;
-    const slug = this.projectSlug();
+    const slug = this.projectSlug(orgSlug, repoNames);
     const url = `/project/${slug}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
       (params) => this.axios.get(url, {params: params}),
