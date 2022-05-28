@@ -32,11 +32,8 @@ export class CircleCISource extends AirbyteSourceBase {
 
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      const customerIO = CircleCI.instance(
-        config as CircleCIConfig,
-        this.axios
-      );
-      await customerIO.checkConnection();
+      const circleCI = CircleCI.instance(config as CircleCIConfig, this.axios);
+      await circleCI.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

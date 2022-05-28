@@ -57,8 +57,8 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        org_slug: [],
-        repo_name: [],
+        org_slugs: ['org_slugs'],
+        repo_names: ['repo_names'],
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([true, undefined]);
@@ -77,8 +77,8 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         token: '',
-        org_slug: [],
-        repo_name: [],
+        org_slugs: ['org_slugs'],
+        repo_names: ['repo_names'],
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
@@ -105,9 +105,12 @@ describe('index', () => {
     });
     const source = new sut.CircleCISource(logger);
     const streams = source.streams({});
-
     const projectsStream = streams[0];
-    const projectsIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
+    const projectsIter = projectsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {orgSlug: 'orgSlug', repoName: 'repoName'}
+    );
     const projects = [];
     for await (const project of projectsIter) {
       projects.push(project);
@@ -137,7 +140,11 @@ describe('index', () => {
     const streams = source.streams({});
 
     const pipelinesStream = streams[1];
-    const pipelinesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
+    const pipelinesIter = pipelinesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {orgSlug: 'orgSlug', repoName: 'repoName'}
+    );
     const pipelines = [];
     for await (const pipeline of pipelinesIter) {
       pipelines.push(pipeline);
