@@ -50,6 +50,7 @@ export class PullRequests extends GitHubConverter {
         number: pr.number,
         uid: pr.number.toString(),
         title: pr.title,
+        description: pr.body?.substring(0, GitHubCommon.MAX_DESCRIPTION_LENGTH),
         state,
         htmlUrl: pr.url,
         createdAt: Utils.toDate(pr.created_at),
