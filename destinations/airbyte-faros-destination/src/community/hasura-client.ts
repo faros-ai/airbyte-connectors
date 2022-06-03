@@ -119,7 +119,7 @@ export class HasuraClient {
         schema.types,
         (t) => t.name === tableName && t.kind === 'OBJECT'
       );
-      if (!type && !type.fields) continue;
+      if (!type || !type.fields) continue;
       const scalarTypes: any[] = type.fields.filter(
         (t) =>
           (t.type.kind === 'SCALAR' ||
