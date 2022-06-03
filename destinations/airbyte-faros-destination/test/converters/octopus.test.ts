@@ -57,7 +57,7 @@ describe('octopus', () => {
       .value();
 
     const writtenByModel = {
-      org_Channel: 1,
+      cicd_Channel: 1,
       cicd_Deployment: 1,
       cicd_Pipeline: 2,
       cicd_Release: 1,

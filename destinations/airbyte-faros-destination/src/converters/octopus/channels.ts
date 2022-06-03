@@ -6,7 +6,9 @@ import {OctopusConverter} from './common';
 import {Channel} from './models';
 
 export class Channels extends OctopusConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Channel'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Channel',
+  ];
 
   async convert(
     record: AirbyteRecord,
@@ -18,7 +20,7 @@ export class Channels extends OctopusConverter {
     const res: DestinationRecord[] = [];
 
     res.push({
-      model: 'org_Channel',
+      model: 'cicd_Channel',
       record: {
         uid,
         name: channel.Name,
