@@ -47,8 +47,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        ['gh/huongtn'],
-        ['sample-test'],
+        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -68,8 +67,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         null,
-        ['gh/huongtn'],
-        ['sample-test'],
+        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -98,8 +96,7 @@ describe('index', () => {
             data: readTestResourceFile('projects.json'),
           }),
         } as any,
-        ['gh/huongtn'],
-        ['sample-test'],
+        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -109,7 +106,7 @@ describe('index', () => {
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {orgSlug: 'orgSlug', repoName: 'repoName'}
+      {repoName: 'repoName'}
     );
     const projects = [];
     for await (const project of projectsIter) {
@@ -131,8 +128,7 @@ describe('index', () => {
             },
           }),
         } as any,
-        ['gh/huongtn'],
-        ['sample-test'],
+        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -143,7 +139,7 @@ describe('index', () => {
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {orgSlug: 'orgSlug', repoName: 'repoName'}
+      {repoName: 'repoName'}
     );
     const pipelines = [];
     for await (const pipeline of pipelinesIter) {

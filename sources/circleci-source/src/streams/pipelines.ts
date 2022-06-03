@@ -6,7 +6,6 @@ import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 import {Pipeline} from '../circleci/typings';
 
 type StreamSlice = {
-  orgSlug: string;
   repoName: string;
 };
 
@@ -34,13 +33,10 @@ export class Pipelines extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const orgSlug of this.config.org_slugs) {
-      for (const repoName of this.config.repo_names) {
-        yield {
-          orgSlug,
-          repoName,
-        };
-      }
+    for (const repoName of this.config.repo_names) {
+      yield {
+        repoName,
+      };
     }
   }
 
@@ -55,11 +51,7 @@ export class Pipelines extends AirbyteStreamBase {
         ? streamState?.lastUpdatedAt
         : undefined;
     const circleCI = CircleCI.instance(this.config, this.axios);
-    yield* circleCI.fetchPipelines(
-      streamSlice.orgSlug,
-      streamSlice.repoName,
-      lastUpdatedAt
-    );
+    yield* circleCI.fetchPipelines(streamSlice.repoName, lastUpdatedAt);
   }
   getUpdatedState(
     currentStreamState: PipelineState,

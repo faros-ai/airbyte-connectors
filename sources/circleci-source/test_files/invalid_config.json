@@ -1,6 +1,5 @@
 {
   "token": "",
-  "org_slugs":  [],
-  "projects": [],
+  "repo_names": [],
   "cutoff_days": 90
 }

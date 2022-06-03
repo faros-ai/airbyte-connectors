@@ -18,21 +18,13 @@
         "description": "CircleCI personal API token, https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
         "airbyte_secret": true
       },
-      "org_slugs": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "organization slug",
-        "description": "organization slug => project_type/organization_name"
-      },
       "repo_names": {
         "type": "array",
         "items": {
           "type": "string"
         },
         "title": "repository name",
-        "description": "CircleCI repository name"
+        "description": "CircleCI repository name include  project_type/organization_name"
       },
       "cutoff_days": {
         "type": "integer",
