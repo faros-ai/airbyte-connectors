@@ -58,9 +58,9 @@ describe('octopus', () => {
 
     const writtenByModel = {
       org_Channel: 1,
-      org_Deployment: 1,
-      org_Project: 2,
-      org_Release: 1,
+      cicd_Deployment: 1,
+      cicd_Pipeline: 2,
+      cicd_Release: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

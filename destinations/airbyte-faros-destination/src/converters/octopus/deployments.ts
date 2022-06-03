@@ -7,7 +7,7 @@ import {Deployment} from './models';
 
 export class Deployments extends OctopusConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'org_Deployment',
+    'cicd_Deployment',
   ];
 
   async convert(
@@ -20,7 +20,7 @@ export class Deployments extends OctopusConverter {
     const res: DestinationRecord[] = [];
 
     res.push({
-      model: 'org_Deployment',
+      model: 'cicd_Deployment',
       record: {
         uid,
         channelId: deployment.ChannelId,

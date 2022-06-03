@@ -6,7 +6,9 @@ import {OctopusConverter} from './common';
 import {Release} from './models';
 
 export class Releases extends OctopusConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Release'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Release',
+  ];
 
   async convert(
     record: AirbyteRecord,
@@ -18,7 +20,7 @@ export class Releases extends OctopusConverter {
     const res: DestinationRecord[] = [];
 
     res.push({
-      model: 'org_Release',
+      model: 'cicd_Release',
       record: {
         uid,
         spaceId: release.SpaceId,
