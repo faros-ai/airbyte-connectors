@@ -5,7 +5,9 @@ import {OctopusConverter} from './common';
 import {Project} from './models';
 
 export class Projects extends OctopusConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Project'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Pipeline',
+  ];
 
   async convert(
     record: AirbyteRecord,
@@ -24,7 +26,7 @@ export class Projects extends OctopusConverter {
     //     : undefined;
 
     res.push({
-      model: 'org_Project',
+      model: 'cicd_Pipeline',
       record: {
         uid,
         spaceId: project.SpaceId,
