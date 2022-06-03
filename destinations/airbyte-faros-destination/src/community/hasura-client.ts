@@ -119,7 +119,7 @@ export class HasuraClient {
         schema.types,
         (t) => t.name === tableName && t.kind === 'OBJECT'
       );
-      if (!type) continue;
+      if (!type && !type.fields) continue;
       const scalarTypes: any[] = type.fields.filter(
         (t) =>
           (t.type.kind === 'SCALAR' ||
@@ -174,6 +174,7 @@ export class HasuraClient {
       },
     });
     const result: [string, string][] = response.data.result;
+    if (!result) return;
     result
       .filter((row) => row[0] !== 'table_name')
       .forEach(([table, exp]) => {
@@ -189,7 +190,8 @@ export class HasuraClient {
 
   private backReferenceOriginCheck(br: Reference, origin: string): any {
     const base = {origin: {_neq: origin}};
-    const nestedChecks = this.backReferences[br.model]
+    const backReferencesByModel = this.backReferences[br.model] ?? [];
+    const nestedChecks = backReferencesByModel
       .filter((nbr) => nbr.field != br.field)
       .map((nbr) => this.backReferenceOriginCheck(nbr, origin));
     return {
