@@ -100,3 +100,6 @@ export const servicenowAllStreamsLog = readTestResourceFile(
 export const azurereposAllStreamsLog = readTestResourceFile(
   'azure-repos/all-streams.log'
 );
+export const travisciAllStreamsLog = readTestResourceFile(
+  'travisci/all-streams.log'
+);

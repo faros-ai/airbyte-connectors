@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__travisci__builds"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__travisci__repositories"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__travisci__owners"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

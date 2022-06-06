@@ -1,0 +1,78 @@
+{
+    "@type": "repositories",
+    "@href": "/repos",
+    "@representation": "standard",
+    "@pagination": {
+        "limit": 100,
+        "offset": 0,
+        "count": 10,
+        "is_first": true,
+        "is_last": true,
+        "next": null,
+        "prev": null,
+        "first": {
+            "@href": "/repos",
+            "offset": 0,
+            "limit": 100
+        },
+        "last": {
+            "@href": "/repos",
+            "offset": 0,
+            "limit": 100
+        }
+    },
+    "repositories": [
+        {
+            "@type": "repository",
+            "@href": "/repo/23315218",
+            "@representation": "standard",
+            "@permissions": {
+                "read": true,
+                "admin": true,
+                "activate": true,
+                "deactivate": true,
+                "migrate": false,
+                "star": true,
+                "unstar": true,
+                "create_cron": true,
+                "create_env_var": true,
+                "delete_key_pair": true,
+                "create_key_pair": true,
+                "create_request": true
+            },
+            "id": 23315218,
+            "name": "sample-test",
+            "slug": "huongtn/sample-test",
+            "description": "this is my test repository",
+            "github_id": 462110203,
+            "vcs_id": "462110203",
+            "vcs_type": "GithubRepository",
+            "github_language": null,
+            "active": true,
+            "private": false,
+            "owner": {
+                "@type": "user",
+                "id": 6121682,
+                "login": "huongtn",
+                "ro_mode": false,
+                "@href": "/user/6121682"
+            },
+            "owner_name": "huongtn",
+            "vcs_name": "sample-test",
+            "default_branch": {
+                "@type": "branch",
+                "@href": "/repo/23315218/branch/main",
+                "@representation": "minimal",
+                "name": "main"
+            },
+            "starred": false,
+            "managed_by_installation": true,
+            "active_on_org": false,
+            "migration_status": null,
+            "history_migration_status": null,
+            "shared": false,
+            "config_validation": true,
+            "server_type": "git"
+        }
+    ]
+}
