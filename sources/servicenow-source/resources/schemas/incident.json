@@ -34,9 +34,6 @@
       "properties": {
         "value": {
           "type": "string"
-        },
-        "displayValue": {
-          "type": "string"
         }
       }
     },
@@ -45,18 +42,12 @@
       "properties": {
         "value": {
           "type": "string"
-        },
-        "displayValue": {
-          "type": "string"
         }
       }
     },
     "state": {
       "type": "object",
       "properties": {
-        "value": {
-          "type": "string"
-        },
         "displayValue": {
           "type": "string"
         }
@@ -98,6 +89,14 @@
       "type": "object",
       "properties": {
         "value": {
+          "type": "string"
+        }
+      }
+    },
+    "cmdb_ci": {
+      "type": "object",
+      "properties": {
+        "displayValue": {
           "type": "string"
         }
       }

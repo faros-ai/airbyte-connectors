@@ -111,7 +111,7 @@ export class ServiceNow {
 
   // Retrieve users that have been modified since last sys_updated_on
   async *getUsers(
-    sys_updated_on = this.cutOff,
+    sys_updated_on?: string,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<User, any, any> {
     let offset = 0;
