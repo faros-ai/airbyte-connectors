@@ -33,6 +33,9 @@ describe('errors', () => {
   test('wrapped error can be printed', () => {
     const error = createAxiosError('message1');
     const wrappedError: any = wrapApiError(error, 'message');
+    expect(`${wrappedError}`).toEqual(
+      'VError: message: API responded with status 500: Internal Server Error'
+    );
     expect(JSON.stringify(wrappedError)).toMatchSnapshot();
   });
 
