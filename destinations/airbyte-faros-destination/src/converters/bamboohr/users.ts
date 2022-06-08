@@ -55,7 +55,7 @@ export class Users extends BambooHRConverter {
       },
     });
 
-    const location = user.address1 ? {uid: user.address1, source} : undefined;
+    const location = user.address1 ? {uid: user.address1} : undefined;
 
     if (user.address1) {
       res.push({
