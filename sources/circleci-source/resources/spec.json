@@ -6,8 +6,7 @@
     "type": "object",
     "required": [
       "token",
-      "org_slug",
-      "repo_name",
+      "repo_names",
       "cutoff_days"
     ],
     "additionalProperties": false,
@@ -15,7 +14,7 @@
       "token": {
         "type": "string",
         "title": "token",
-        "description": "CircleCI personal API token, https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
+        "description": "CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
         "airbyte_secret": true
       },
       "repo_names": {
@@ -23,8 +22,8 @@
         "items": {
           "type": "string"
         },
-        "title": "repository name",
-        "description": "CircleCI repository name include  project_type/organization_name"
+        "title": "Repository Names",
+        "description": "Names should be in the format \"project_type/organization_name/repository_name\""
       },
       "cutoff_days": {
         "type": "integer",
@@ -32,15 +31,16 @@
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "rejectUnauthorized": {
+      "reject_unauthorized": {
         "type": "boolean",
-        "title": "reject Unauthorized",
-        "description": "CircleCI reject Unauthorized"
+        "title": "Reject Unauthorized",
+        "description": "Reject unauthorized requests"
       },
       "url": {
         "type": "string",
         "title": "API URL",
-        "description": "CircleCI API URL"
+        "description": "CircleCI API URL",
+        "default": "https://circleci.com/api/v2"
       }
     }
   }

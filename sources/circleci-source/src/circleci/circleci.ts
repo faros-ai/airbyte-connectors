@@ -9,7 +9,7 @@ const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 export interface CircleCIConfig {
   readonly token: string;
   readonly repo_names: ReadonlyArray<string>;
-  readonly rejectUnauthorized: boolean;
+  readonly reject_unauthorized: boolean;
   readonly cutoff_days: number;
   readonly url?: string;
 }
@@ -29,7 +29,7 @@ export class CircleCI {
       throw new VError('No token provided');
     }
     if (!config.repo_names || config.repo_names.length == 0) {
-      throw new VError('No repo_name provided');
+      throw new VError('No repository names provided');
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');
@@ -37,7 +37,7 @@ export class CircleCI {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
-    const rejectUnauthorized = config.rejectUnauthorized ?? true;
+    const rejectUnauthorized = config.reject_unauthorized ?? true;
     const url = config.url ?? DEFAULT_API_URL;
     return new CircleCI(
       axiosInstance ??
@@ -68,7 +68,7 @@ export class CircleCI {
       }
 
       throw new VError(
-        `CircleCI api request failed: ${(error as Error).message}`
+        `CircleCI API request failed: ${(error as Error).message}`
       );
     }
   }
