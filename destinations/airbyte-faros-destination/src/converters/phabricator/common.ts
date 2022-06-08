@@ -100,6 +100,7 @@ export class PhabricatorCommon {
 
     return {
       name: toLower(repoName),
+      uid: toLower(repoName),
       organization: PhabricatorCommon.orgKey(source),
     };
   }
@@ -128,6 +129,7 @@ export interface CommitMessage {
 
 export interface RepositoryKey {
   name: string;
+  uid: string;
   organization: OrgKey;
 }
 

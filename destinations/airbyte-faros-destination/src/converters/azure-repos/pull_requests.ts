@@ -42,6 +42,7 @@ export class PullRequests extends AzureReposConverter {
           model: 'vcs_PullRequestComment',
           record: {
             number: comment.id,
+            uid: comment.id.toString(),
             comment: comment.content,
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
@@ -56,6 +57,7 @@ export class PullRequests extends AzureReposConverter {
       model: 'vcs_PullRequest',
       record: {
         number: pullRequestItem.pullRequestId,
+        uid: pullRequestItem.pullRequestId.toString(),
         title: pullRequestItem.title,
         state: this.convertPullRequestState(pullRequestItem.status),
         htmlUrl: pullRequestItem.url,
@@ -68,6 +70,7 @@ export class PullRequests extends AzureReposConverter {
         author: {uid: pullRequestItem.createdBy.uniqueName, source},
         mergeCommit: {
           sha: pullRequestItem.lastMergeCommit.commitId,
+          uid: pullRequestItem.lastMergeCommit.commitId,
           repository,
         },
         repository,
@@ -79,6 +82,7 @@ export class PullRequests extends AzureReposConverter {
         model: 'vcs_PullRequestReview',
         record: {
           number: this.convertStringToNumber(reviewer.id),
+          uid: reviewer.id,
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
