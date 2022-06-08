@@ -58,7 +58,7 @@ describe('errors', () => {
     expect(wrappedError.message).toBe('message');
     const wrappedCause: any = VError.cause(wrappedError);
     expect(wrappedCause).not.toBeUndefined();
-    expect(wrappedCause?.message).toBe('error: cause');
+    expect(wrappedCause.message).toBe('error: cause');
     expect(VError.cause(wrappedCause)?.message).toBe(
       'API responded with status 500: Internal Server Error'
     );
