@@ -1,0 +1,43 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "projects",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "pipelines",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ],
+        "default_cursor_field": [
+          "updated_at"
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

@@ -71,6 +71,7 @@ export class Releases extends GitlabConverter {
           name: release.tag_name,
           repository: {
             name: repo?.toLowerCase(),
+            uid: repo?.toLowerCase(),
             organization: {uid: owner?.toLowerCase(), source},
           },
         },

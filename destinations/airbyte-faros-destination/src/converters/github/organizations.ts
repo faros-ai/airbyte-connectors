@@ -24,12 +24,14 @@ export class Organizations extends GitHubConverter {
       ? {category: upperFirst(camelCase(org.type)), detail: org.type}
       : {category: 'Custom', detail: org.type};
 
+    const uid = toLower(org.login);
+
     return [
       {
         model: 'vcs_Organization',
         record: {
-          uid: toLower(org.login),
-          name: org.name,
+          uid,
+          name: org.name ? org.name : uid,
           htmlUrl: org.html_url,
           type,
           createdAt: Utils.toDate(org.created_at),

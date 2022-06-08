@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string"
+    },
+    "organization_name": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "organization_slug": {
+      "type": "string"
+    },
+    "vcs_info": {
+      "type": "object",
+      "properties": {
+        "vcs_url": {
+          "type": "string"
+        },
+        "default_branch": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

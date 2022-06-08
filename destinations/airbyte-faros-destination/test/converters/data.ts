@@ -100,6 +100,9 @@ export const servicenowAllStreamsLog = readTestResourceFile(
 export const azurereposAllStreamsLog = readTestResourceFile(
   'azure-repos/all-streams.log'
 );
+export const circleciAllStreamsLog = readTestResourceFile(
+  'circleci/all-streams.log'
+);
 export const bamboohrAllStreamsLog = readTestResourceFile(
   'bamboohr/all-streams.log'
 );
