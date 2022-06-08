@@ -24,7 +24,7 @@
       },
       "version": {
         "type": "string",
-        "title": "Api version",
+        "title": "API Version",
         "description": "BambooHR API Version",
         "default": "v1"
       }

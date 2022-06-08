@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {User} from './models';
@@ -26,11 +26,11 @@ export class BambooHR {
     if (BambooHR.bambooHR) return BambooHR.bambooHR;
 
     if (!config.api_key) {
-      throw new VError('api_key must be a not empty string');
+      throw new VError('api_key cannot be an empty string');
     }
 
     if (!config.domain) {
-      throw new VError('domain must be a not empty string');
+      throw new VError('domain cannot be an empty string');
     }
 
     const version = config.version ?? DEFAULT_VERSION;

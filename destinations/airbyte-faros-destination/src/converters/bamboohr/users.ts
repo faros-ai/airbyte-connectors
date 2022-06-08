@@ -48,7 +48,7 @@ export class Users extends BambooHRConverter {
       model: 'identity_Identity',
       record: {
         uid,
-        fullName: user.fullName1,
+        fullName: user.firstName,
         lastName: user.lastName,
         primaryEmail: user.bestEmail,
         emails: [user.bestEmail],
