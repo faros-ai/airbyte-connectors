@@ -17,11 +17,12 @@ export class Projects extends CircleCIConverter {
     const source = this.streamName.source;
     const project = record.record.data as Project;
     const uid = toLower(project.id);
+    const orgSlug = toLower(project.organization_slug);
     const res: DestinationRecord[] = [];
     res.push({
       model: 'cicd_Organization',
       record: {
-        uid: project.organization_slug,
+        uid: orgSlug,
         name: project.organization_name,
         source,
       },
@@ -31,7 +32,7 @@ export class Projects extends CircleCIConverter {
       record: {
         uid,
         name: project.name,
-        organization: {uid: toLower(project.organization_slug), source},
+        organization: {uid: orgSlug, source},
       },
     });
     return res;
