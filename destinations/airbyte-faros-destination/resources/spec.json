@@ -396,6 +396,16 @@
                     "type": "object",
                     "title": "Configuration",
                     "properties": {
+                      "application_mapping": {
+                        "type": "string",
+                        "title": "Application Mapping",
+                        "description": "JSON map of ServiceNow service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object.",
+                        "multiline": true,
+                        "default": "{}",
+                        "examples": [
+                          "{ \"Aion\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
+                        ]
+                      },
                       "default_severity": {
                         "type": "string",
                         "title": "Default Severity",
