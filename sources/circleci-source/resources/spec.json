@@ -34,13 +34,14 @@
       "reject_unauthorized": {
         "type": "boolean",
         "title": "Reject Unauthorized",
+        "default": true,
         "description": "Reject unauthorized requests"
       },
       "url": {
         "type": "string",
         "title": "API URL",
-        "description": "CircleCI API URL",
-        "default": "https://circleci.com/api/v2"
+        "default": "https://circleci.com/api/v2",
+        "description": "CircleCI API URL"
       }
     }
   }
