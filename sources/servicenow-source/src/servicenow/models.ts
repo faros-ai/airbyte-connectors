@@ -32,6 +32,9 @@ export interface Incident {
   readonly sys_updated_on: {
     readonly value: Date;
   };
+  readonly cmdb_ci: {
+    readonly displayValue: string;
+  };
 }
 
 export interface User {
