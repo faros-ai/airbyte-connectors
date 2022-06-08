@@ -33,9 +33,9 @@
       },
       "reject_unauthorized": {
         "type": "boolean",
-        "title": "Reject Unauthorized",
+        "title": "Enforce Authorized Requests",
         "default": true,
-        "description": "Reject unauthorized requests"
+        "description": "Enable certificate validation for the CircleCI server"
       },
       "url": {
         "type": "string",
