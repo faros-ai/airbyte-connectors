@@ -1,6 +1,6 @@
 {
   "name": "opsgenie-source",
-  "version": "0.1.86",
+  "version": "0.1.87",
   "description": "OpsGenie Airbyte source",
   "keywords": [
     "airbyte",
@@ -32,7 +32,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.86",
+    "faros-airbyte-cdk": "^0.1.87",
     "graphql-request": "^4.0.0",
     "verror": "^1.10.1"
   },
