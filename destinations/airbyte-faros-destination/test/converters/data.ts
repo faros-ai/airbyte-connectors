@@ -103,3 +103,6 @@ export const azurereposAllStreamsLog = readTestResourceFile(
 export const octopusAllStreamsLog = readTestResourceFile(
   'octopus/all-streams.log'
 );
+export const circleciAllStreamsLog = readTestResourceFile(
+  'circleci/all-streams.log'
+);

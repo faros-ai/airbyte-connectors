@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "errors": {
+      "type": "array",
+      "items": {}
+    },
+    "project_slug": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "number": {
+      "type": "number"
+    },
+    "state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "object",
+      "properties": {
+        "received_at": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string"
+            },
+            "avatar_url": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "vcs": {
+      "type": "object",
+      "properties": {
+        "origin_repository_url": {
+          "type": "string"
+        },
+        "target_repository_url": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        },
+        "provider_name": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        }
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pipeline_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "project_slug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "started_by": {
+            "type": "string"
+          },
+          "pipeline_number": {
+            "type": "number"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "stopped_at": {
+            "type": "string"
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dependencies": {
+                  "type": "array",
+                  "items": {}
+                },
+                "job_number": {
+                  "type": "number"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "project_slug": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "stopped_at": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

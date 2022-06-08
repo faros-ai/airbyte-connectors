@@ -39,9 +39,10 @@ export class PullRequests extends GitHubConverter {
       res.push(author);
     }
 
+    const stateDetail = pr?.draft ? 'DRAFT' : pr.state;
     const state = prStates.includes(pr.state.toLowerCase())
-      ? {category: upperFirst(camelCase(pr.state)), detail: pr.state}
-      : {category: 'Custom', detail: pr.state};
+      ? {category: upperFirst(camelCase(pr.state)), detail: stateDetail}
+      : {category: 'Custom', detail: stateDetail};
 
     res.push({
       model: 'vcs_PullRequest',
@@ -49,6 +50,7 @@ export class PullRequests extends GitHubConverter {
         number: pr.number,
         uid: pr.number.toString(),
         title: pr.title,
+        description: pr.body?.substring(0, GitHubCommon.MAX_DESCRIPTION_LENGTH),
         state,
         htmlUrl: pr.url,
         createdAt: Utils.toDate(pr.created_at),
