@@ -74,7 +74,7 @@ describe('datadog', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      compute_Application: 3,
+      compute_Application: 2,
       ims_Incident: 2,
       ims_IncidentApplicationImpact: 3,
       ims_IncidentAssignment: 2,
