@@ -48,7 +48,8 @@ export class IncidentLogEntries extends AirbyteStreamBase {
       const lastSynced = streamState?.lastSynced;
       const cutoffTimestamp = now
         .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
-        .toJSDate();
+        .toJSDate()
+        .toISOString();
       since = lastSynced ? new Date(lastSynced).toISOString() : cutoffTimestamp;
     }
 
