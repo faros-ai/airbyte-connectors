@@ -37,8 +37,8 @@ export class Users extends AirbyteStreamBase {
     const latestModifiedAt = currentStreamState?.sys_updated_on
       ? new Date(currentStreamState.sys_updated_on).getTime()
       : 0;
-    const recordModifiedAt = latestRecord?.sys_updated_on?.value
-      ? new Date(latestRecord.sys_updated_on.value).getTime()
+    const recordModifiedAt = latestRecord?.sys_updated_on
+      ? new Date(latestRecord.sys_updated_on).getTime()
       : 0;
     return {
       sys_updated_on: new Date(
