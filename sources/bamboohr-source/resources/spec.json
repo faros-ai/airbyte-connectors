@@ -12,8 +12,8 @@
     "properties": {
       "api_key": {
         "type": "string",
-        "title": "BambooHR API KEY",
-        "description": "BambooHR API KEY, create by go to https://{{domain}}.bamboohr.com/settings/permissions/api.php",
+        "title": "BambooHR API Key",
+        "description": "BambooHR API Key. Create by going to https://{{domain}}.bamboohr.com/settings/permissions/api.php",
         "airbyte_secret": true
       },
       "domain": {

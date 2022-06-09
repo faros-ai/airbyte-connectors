@@ -26,11 +26,11 @@ export class BambooHR {
     if (BambooHR.bambooHR) return BambooHR.bambooHR;
 
     if (!config.api_key) {
-      throw new VError('api_key cannot be an empty string');
+      throw new VError('api_key cannot be empty');
     }
 
     if (!config.domain) {
-      throw new VError('domain cannot be an empty string');
+      throw new VError('domain cannot be empty');
     }
 
     const version = config.version ?? DEFAULT_VERSION;
@@ -51,7 +51,7 @@ export class BambooHR {
       const iter = this.getUsers();
       await iter.next();
     } catch (err: any) {
-      let errorMessage = 'Please verify your apiKey is correct. Error: ';
+      let errorMessage = 'Please verify your api_key is correct. Error: ';
       if (err.error_code || err.error_info) {
         errorMessage += `${err.error_code}: ${err.error_info}`;
         throw new VError(errorMessage);

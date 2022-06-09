@@ -49,10 +49,7 @@ describe('index', () => {
         api_key: '',
         domain: '',
       } as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('api_key cannot be an empty string'),
-    ]);
+    ).resolves.toStrictEqual([false, new VError('api_key cannot be empty')]);
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
