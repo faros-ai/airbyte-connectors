@@ -17,9 +17,9 @@ export class Users extends ServiceNowConverter {
       {
         model: 'ims_User',
         record: {
-          uid: user?.sys_id?.value,
-          email: user?.email?.value,
-          name: user?.name?.value,
+          uid: user.sys_id,
+          email: user.email,
+          name: user.name,
           source,
         },
       },

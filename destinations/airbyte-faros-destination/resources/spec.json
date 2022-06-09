@@ -410,9 +410,11 @@
                         "type": "string",
                         "title": "Application Field",
                         "description": "Field name in a ServiceNow incident, to compute a Faros Application name. The value of this field will be used to look up the app/platform in the specified application mapping",
-                        "default": "service",
+                        "default": "business_service",
+                        "pattern": "^(business_service|cmdb_ci)$",
                         "examples": [
-                          "business_service"
+                          "business_service",
+                          "cmdb_ci"
                         ]
                       },
                       "default_severity": {

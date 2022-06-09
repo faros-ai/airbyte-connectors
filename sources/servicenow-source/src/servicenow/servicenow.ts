@@ -5,7 +5,7 @@ import VError from 'verror';
 import {Incident, IncidentRest, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_CUTOFF_DAYS = 10000;
 const INCIDENT_API = '/api/now/table/incident';
 const INCIDENT_FIELDS =
   'assigned_to,business_service,closed_at,cmdb_ci,number,opened_at,opened_by,priority,severity,short_description,state,sys_id,resolved_at,sys_updated_on';
@@ -108,8 +108,14 @@ export class ServiceNow {
             if (cmdb_ci_sys_id in cmdb_ci_Map) {
               cmdb_ci_name = cmdb_ci_Map.get(cmdb_ci_sys_id);
             } else {
-              cmdb_ci_name = await this.client.cmdb_ci.getName(cmdb_ci_sys_id);
-              cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_name);
+              try {
+                cmdb_ci_name = await this.client.cmdb_ci.getName(
+                  cmdb_ci_sys_id
+                );
+                cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_name);
+              } catch (err: any) {
+                this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
+              }
             }
           }
 
@@ -123,13 +129,20 @@ export class ServiceNow {
                 business_service_sys_id
               );
             } else {
-              business_service_name = await this.client.cmdb_ci_service.getName(
-                business_service_sys_id
-              );
-              business_service_Map.set(
-                business_service_sys_id,
-                business_service_name
-              );
+              try {
+                business_service_name =
+                  await this.client.cmdb_ci_service.getName(
+                    business_service_sys_id
+                  );
+                business_service_Map.set(
+                  business_service_sys_id,
+                  business_service_name
+                );
+              } catch (err: any) {
+                this.logger.warn(
+                  `Error retrieving business_service: ${business_service_sys_id}`
+                );
+              }
             }
           }
 
