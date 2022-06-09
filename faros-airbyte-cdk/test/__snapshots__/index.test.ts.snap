@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`errors includes info field for axios error 1`] = `
+Object {
+  "req": Object {
+    "baseUrl": "http://test.me",
+    "method": "GET",
+    "params": undefined,
+    "url": "/go",
+  },
+  "res": Object {
+    "data": "Internal Server Error",
+    "headers": Object {
+      "Content-Type": "text/html",
+    },
+    "status": 500,
+  },
+}
+`;
+
+exports[`errors includes info field for nested axios error 1`] = `
+Object {
+  "req": Object {
+    "baseUrl": "http://test.me",
+    "method": "GET",
+    "params": undefined,
+    "url": "/go",
+  },
+  "res": Object {
+    "data": "Internal Server Error",
+    "headers": Object {
+      "Content-Type": "text/html",
+    },
+    "status": 500,
+  },
+}
+`;
+
+exports[`errors wrapped error can be printed 1`] = `"{\\"jse_shortmsg\\":\\"message: API responded with status 500: Internal Server Error\\",\\"jse_info\\":{\\"req\\":{\\"baseUrl\\":\\"http://test.me\\",\\"url\\":\\"/go\\",\\"method\\":\\"GET\\"},\\"res\\":{\\"status\\":500,\\"headers\\":{\\"Content-Type\\":\\"text/html\\"},\\"data\\":\\"Internal Server Error\\"}},\\"message\\":\\"message: API responded with status 500: Internal Server Error\\"}"`;

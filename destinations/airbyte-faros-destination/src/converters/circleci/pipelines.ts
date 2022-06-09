@@ -22,6 +22,7 @@ export class Pipelines extends CircleCIConverter {
 
     for (const workflow of pipeline.workflows) {
       const buildKey = CircleCICommon.getBuildKey(workflow, pipeline, source);
+      const repoName = CircleCICommon.getProject(pipeline.project_slug);
       res.push({
         model: 'cicd_Build',
         record: {
@@ -42,8 +43,10 @@ export class Pipelines extends CircleCIConverter {
           build: buildKey,
           commit: {
             sha: pipeline.vcs?.revision,
+            uid: pipeline.vcs?.revision,
             repository: {
-              name: CircleCICommon.getProject(pipeline.project_slug),
+              name: repoName,
+              uid: repoName,
               organization: {
                 uid: CircleCICommon.getOrganization(pipeline.project_slug),
                 source: pipeline.vcs?.provider_name,

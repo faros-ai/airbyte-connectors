@@ -81,6 +81,33 @@ export class Incidents extends ServiceNowConverter {
       });
     }
 
+    const applicationName = incident.cmdb_ci?.displayValue;
+    if (applicationName) {
+      const applicationMapping = this.applicationMapping(ctx);
+
+      let application = {
+        name: applicationName,
+        platform: '',
+      };
+
+      if (
+        applicationName in applicationMapping &&
+        applicationMapping[applicationName].name
+      ) {
+        const mappedApp = applicationMapping[applicationName];
+        application = {
+          name: mappedApp.name,
+          platform: mappedApp.platform ?? application.platform,
+        };
+      }
+
+      res.push({model: 'compute_Application', record: application});
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {incident: incidentKey, application},
+      });
+    }
+
     return res;
   }
 

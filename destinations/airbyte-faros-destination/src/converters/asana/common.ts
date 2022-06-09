@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk/src/protocol';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, DestinationRecord} from '../converter';
 

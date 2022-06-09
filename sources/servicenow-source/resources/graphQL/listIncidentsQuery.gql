@@ -38,6 +38,10 @@ query listIncidents($pageSize: Int! = 100, $offset: Int! = 0, $queryConditions: 
         sys_updated_on {
           value
         }
+        cmdb_ci {
+          value
+          displayValue
+        }
       }
     }
   }

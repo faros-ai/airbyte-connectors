@@ -35,6 +35,9 @@
     },
     "sys_updated_on": {
       "value": "2022-03-17 19:44:35"
+    },
+    "cmdb_ci": {
+      "displayValue": "Storage Area Network 001"
     }
   },
   {
@@ -73,6 +76,9 @@
     },
     "sys_updated_on": {
       "value": "2022-03-17 20:15:35"
+    },
+    "cmdb_ci": {
+      "displayValue": "Service 1"
     }
   },
   {

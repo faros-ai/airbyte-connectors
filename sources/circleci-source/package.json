@@ -1,6 +1,6 @@
 {
   "name": "circleci-source",
-  "version": "0.1.85",
+  "version": "0.1.88",
   "description": "CircleCI Airbyte source",
   "keywords": [
     "airbyte",
@@ -33,7 +33,7 @@
     "axios": "^0.26.0",
     "axios-mock-adapter": "^1.20.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.85",
+    "faros-airbyte-cdk": "^0.1.88",
     "verror": "^1.10.1"
   },
   "jest": {

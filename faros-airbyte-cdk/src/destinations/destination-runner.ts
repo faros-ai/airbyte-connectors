@@ -1,6 +1,7 @@
 import {Command} from 'commander';
 import path from 'path';
 
+import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteDestination} from './destination';
@@ -82,10 +83,10 @@ export class AirbyteDestinationRunner {
               this.logger.write(message);
             }
           } catch (e: any) {
+            const w = wrapApiError(e);
+            const s = JSON.stringify(w);
             this.logger.error(
-              `Encountered an error while writing to destination: ${
-                e.message ?? JSON.stringify(e)
-              }`
+              `Encountered an error while writing to destination: ${w} - ${s}`
             );
             throw e;
           } finally {
