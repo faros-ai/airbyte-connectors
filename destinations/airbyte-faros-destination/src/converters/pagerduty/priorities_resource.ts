@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {
   DestinationModel,
@@ -26,8 +26,6 @@ interface Priority extends PagerdutyObject {
 }
 
 export class PrioritiesResource extends PagerDutyConverter {
-  private readonly logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_Incident',
   ];
