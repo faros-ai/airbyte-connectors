@@ -23,7 +23,7 @@ interface Acknowledgement {
 export class Incidents extends PagerDutyConverter {
   private readonly logger = new AirbyteLogger();
 
-  private applications = new Set<string>();
+  private seenApplications = new Set<string>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
@@ -105,9 +105,9 @@ export class Incidents extends PagerDutyConverter {
     }
 
     const appKey = JSON.stringify(application);
-    if (!this.applications.has(appKey)) {
+    if (!this.seenApplications.has(appKey)) {
       res.push({model: 'compute_Application', record: application});
-      this.applications.add(appKey);
+      this.seenApplications.add(appKey);
     }
 
     res.push({
