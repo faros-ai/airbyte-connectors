@@ -23,8 +23,16 @@ export class PullRequests extends AzureReposConverter {
       pullRequestItem.repository.url
     );
     const organization = {uid: organizationName, source};
-    const repository = {name: pullRequestItem.repository.name, organization};
-    const pullRequest = {number: pullRequestItem.pullRequestId, repository};
+    const repository = {
+      name: pullRequestItem.repository.name,
+      uid: pullRequestItem.repository.name,
+      organization,
+    };
+    const pullRequest = {
+      number: pullRequestItem.pullRequestId,
+      uid: pullRequestItem.pullRequestId.toString(),
+      repository,
+    };
 
     const res: DestinationRecord[] = [];
 

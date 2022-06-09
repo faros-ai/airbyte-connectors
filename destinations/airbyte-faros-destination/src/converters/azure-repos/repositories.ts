@@ -26,7 +26,11 @@ export class Repositories extends AzureReposConverter {
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(repositoryItem.url);
     const organization = {uid: organizationName, source};
-    const repository = {name: repositoryItem.name, organization};
+    const repository = {
+      name: repositoryItem.name,
+      uid: repositoryItem.name,
+      organization,
+    };
     if (!this.seenOrganizations.has(organizationName)) {
       this.seenOrganizations.add(organizationName);
       res.push({
