@@ -93,6 +93,7 @@ export class ServiceNow {
     const business_service_Map: Map<string, string> = new Map();
 
     do {
+      hasNext = false;
       const [incidents, totalCount] = await this.client.incidents.list(
         {pageSize, offset},
         query
@@ -199,12 +200,12 @@ export class ServiceNow {
       query = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
+      hasNext = false;
       const [users, totalCount] = await this.client.users.list(
         {pageSize, offset},
         query
       );
 
-      hasNext = false;
       if (users?.length) {
         for (const user of users) {
           yield user;
@@ -245,7 +246,7 @@ export class ServiceNow {
             this.handleApiError(err);
           }
 
-          return [res.data.result, parseInt(res.headers['X-Total-Count'])];
+          return [res.data.result, parseInt(res.headers['x-total-count'])];
         },
       },
       users: {
@@ -267,7 +268,7 @@ export class ServiceNow {
             this.handleApiError(err);
           }
 
-          return [res.data.result, parseInt(res.headers['X-Total-Count'])];
+          return [res.data.result, parseInt(res.headers['x-total-count'])];
         },
       },
       cmdb_ci: {

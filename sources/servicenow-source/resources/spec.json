@@ -41,7 +41,7 @@
         "type": "integer",
         "title": "Page Size",
         "description": "used when retrieving paginated data from ServiceNow",
-        "default": 100
+        "default": 2
       }
     }
   }
