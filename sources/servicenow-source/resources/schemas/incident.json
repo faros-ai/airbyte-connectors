@@ -1,105 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": [
-    "sys_id"
-  ],
+  "required": ["sys_id"],
   "properties": {
-    "sys_id": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "number": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "short_description": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "severity": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "priority": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "state": {
-      "type": "object",
-      "properties": {
-        "displayValue": {
-          "type": "string"
-        }
-      }
-    },
-    "assigned_to": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "resolved_at": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "opened_at": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "closed_at": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "sys_updated_on": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "cmdb_ci": {
-      "type": "object",
-      "properties": {
-        "displayValue": {
-          "type": "string"
-        }
-      }
-    }
+    "sys_id": {"type": "string"},
+    "number": {"type": "string"},
+    "short_description": {"type": "string"},
+    "severity": {"type": "string"},
+    "priority": {"type": "string"},
+    "state": {"type": "string"},
+    "assigned_to": {"type": "string"},
+    "resolved_at": {"type": "string"},
+    "opened_at": {"type": "string"},
+    "closed_at": {"type": "string"},
+    "sys_updated_on": {"type": "string"},
+    "business_service": {"type": "string"},
+    "cmdb_ci": {"type": "string"}
   }
 }

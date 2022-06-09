@@ -1,122 +1,18 @@
 [
   {
-    "sys_id": {
-      "value": "46f09e75a9fe198100f4ffd8d366d17b"
-    },
-    "number": {
-      "value": "INC0000025"
-    },
-    "short_description": {
-      "value": "Need to add more memory to laptop"
-    },
-    "severity": {
-      "value": "3",
-      "displayValue": "3 - Low"
-    },
-    "priority": {
-      "value": "1",
-      "displayValue": "1 - Critical"
-    },
-    "state": {
-      "value": "2",
-      "displayValue": "In Progress"
-    },
-    "assigned_to": {
-      "value": "681b365ec0a80164000fb0b05854a0cd"
-    },
-    "resolved_at": {
-      "value": null
-    },
-    "opened_at": {
-      "value": "2021-11-24 23:53:46"
-    },
-    "closed_at": {
-      "value": "2021-12-12 23:55:10"
-    },
-    "sys_updated_on": {
-      "value": "2022-03-17 19:44:35"
-    },
-    "cmdb_ci": {
-      "displayValue": "Storage Area Network 001"
-    }
-  },
-  {
-    "sys_id": {
-      "value": "46f09e75a9fe198100f4ffd8d366d17c"
-    },
-    "number": {
-      "value": "INC0000026"
-    },
-    "short_description": {
-      "value": "Seem to have an issue with my hard drive..."
-    },
-    "severity": {
-      "value": "3",
-      "displayValue": "3 - Low"
-    },
-    "priority": {
-      "value": "5",
-      "displayValue": "5 - Planning"
-    },
-    "state": {
-      "value": "7",
-      "displayValue": "Closed"
-    },
-    "assigned_to": {
-      "value": "9ee1b13dc6112271007f9d0efdb69cd0"
-    },
-    "resolved_at": {
-      "value": "2022-03-17 19:56:12"
-    },
-    "opened_at": {
-      "value": "2021-11-29 23:54:59"
-    },
-    "closed_at": {
-      "value": "2021-12-01 23:56:53"
-    },
-    "sys_updated_on": {
-      "value": "2022-03-17 20:15:35"
-    },
-    "cmdb_ci": {
-      "displayValue": "Service 1"
-    }
-  },
-  {
-    "sys_id": {
-      "value": "46f09e75a9fe198100f4ffd8d366d17d"
-    },
-    "number": {
-      "value": "INC0000027"
-    },
-    "short_description": {
-      "value": "Please remove the latest hotfix from my PC"
-    },
-    "severity": {
-      "value": "3",
-      "displayValue": "3 - Low"
-    },
-    "priority": {
-      "value": "2",
-      "displayValue": "2 - High"
-    },
-    "state": {
-      "value": "2",
-      "displayValue": "In Progress"
-    },
-    "assigned_to": {
-      "value": "681b365ec0a80164000fb0b05854a0cd"
-    },
-    "resolved_at": {
-      "value": ""
-    },
-    "opened_at": {
-      "value": "2021-12-13 23:55:55"
-    },
-    "closed_at": {
-      "value": "2021-12-17 23:59:20"
-    },
-    "sys_updated_on": {
-      "value": "2022-03-17 19:52:24"
-    }
+    "severity": "3",
+    "short_description": "Unable to connect to email",
+    "closed_at": "2016-12-14 02:46:44",
+    "cmdb_ci": "Storage Area Network 001",
+    "business_service": "Email",
+    "sys_updated_on": "2016-12-14 02:46:44",
+    "priority": "3",
+    "sys_id": "1c741bd70b2322007518478d83673af3",
+    "number": "INC0000060",
+    "opened_at": "2016-12-12 15:19:57",
+    "opened_by": "681ccaf9c0a8016400b98a06818d57c7",
+    "resolved_at": "2016-12-13 21:43:14",
+    "state": "7",
+    "assigned_to": "5137153cc611227c000bbd1bd8cd2007"
   }
 ]
