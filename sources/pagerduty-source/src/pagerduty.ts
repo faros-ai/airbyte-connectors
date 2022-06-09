@@ -55,6 +55,11 @@ export interface User extends PagerdutyObject {
   readonly name: string;
 }
 
+export interface Team extends PagerdutyObject {
+  readonly name: string;
+  readonly description: string;
+}
+
 export interface LogEntry extends PagerdutyObject {
   readonly created_at: string; // date-time
   readonly incident: PagerdutyObject;
@@ -173,6 +178,22 @@ export class Pagerduty {
       return this.client.get(`/users`);
     };
     yield* this.paginate<User>(func, (item): boolean => {
+      if (state) {
+        const fieldsExistingList = cursorField.map((f) => item[f] === state[f]);
+        return fieldsExistingList.findIndex((b) => !b) <= -1;
+      }
+      return false;
+    });
+  }
+
+  async *getTeams(
+    state?: Team | null,
+    cursorField?: string[]
+  ): AsyncGenerator<Team> {
+    const func = (): Promise<PagerdutyResponse<Team>> => {
+      return this.client.get(`/teams`);
+    };
+    yield* this.paginate<Team>(func, (item): boolean => {
       if (state) {
         const fieldsExistingList = cursorField.map((f) => item[f] === state[f]);
         return fieldsExistingList.findIndex((b) => !b) <= -1;

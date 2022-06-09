@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Test Team",
+    "description": "Test team description",
+    "id": "PFYTIX1",
+    "type": "team",
+    "summary": "Test Team",
+    "self": "https://api.pagerduty.com/teams/PFYTIX1",
+    "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX1"
+  }
+]
