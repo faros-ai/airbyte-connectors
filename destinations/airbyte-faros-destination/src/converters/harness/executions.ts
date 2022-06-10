@@ -30,6 +30,8 @@ export class Executions extends HarnessConverter {
     'compute_Application',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -47,7 +49,11 @@ export class Executions extends HarnessConverter {
       name: execution.application.name,
       platform: execution.application.platform ?? '',
     };
-    res.push({model: 'compute_Application', record: application});
+    const appKey = JSON.stringify(application);
+    if (!this.seenApplications.has(appKey)) {
+      res.push({model: 'compute_Application', record: application});
+      this.seenApplications.add(appKey);
+    }
 
     const deploymentStatus = this.toDeploymentStatus(execution.status);
     const buildStatus = this.toBuildStatus(execution.status);

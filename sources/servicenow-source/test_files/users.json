@@ -1,44 +1,32 @@
 [
   {
-    "name": {
-      "value": "survey user"
-    },
-    "sys_id": {
-      "value": "005d500b536073005e0addeeff7b12f4"
-    },
-    "email": {
-      "value": "survey.user@email.com"
-    },
-    "sys_updated_on": {
-      "value": "2022-04-14 17:52:55"
-    }
+    "sys_id": "02826bf03710200044e0bfc8bcbe5d55",
+    "name": "Jimmie Barninger",
+    "sys_updated_on": "2022-06-04 16:53:39",
+    "email": "jimmie.barninger@example.com"
   },
   {
-    "name": {
-      "value": "Lucius Bagnoli"
-    },
-    "sys_id": {
-      "value": "02826bf03710200044e0bfc8bcbe5d3f"
-    },
-    "email": {
-      "value": "lucius.bagnoli@example.com"
-    },
-    "sys_updated_on": {
-      "value": "2022-04-14 17:52:55"
-    }
+    "sys_id": "02826bf03710200044e0bfc8bcbe5d5e",
+    "name": "Melinda Carleton",
+    "sys_updated_on": "2022-06-04 16:53:39",
+    "email": "melinda.carleton@example.com"
   },
   {
-    "name": {
-      "value": "Jimmie Barninger"
-    },
-    "sys_id": {
-      "value": "02826bf03710200044e0bfc8bcbe5d55"
-    },
-    "email": {
-      "value": "jimmie.barninger@example.com"
-    },
-    "sys_updated_on": {
-      "value": "2022-04-14 17:52:55"
-    }
+    "sys_id": "02826bf03710200044e0bfc8bcbe5d64",
+    "name": "Jewel Agresta",
+    "sys_updated_on": "2022-06-04 16:53:39",
+    "email": "jewel.agresta@example.com"
+  },
+  {
+    "sys_id": "02826bf03710200044e0bfc8bcbe5d6d",
+    "name": "Sean Bonnet",
+    "sys_updated_on": "2022-06-04 16:53:39",
+    "email": "sean.bonnet@example.com"
+  },
+  {
+    "sys_id": "02826bf03710200044e0bfc8bcbe5d76",
+    "name": "Jacinto Gawron",
+    "sys_updated_on": "2022-06-04 16:53:39",
+    "email": "jacinto.gawron@example.com"
   }
 ]

@@ -80,7 +80,7 @@ describe('pagerduty', () => {
     expect(stdout).toMatch('Read 7 messages');
     expect(stdout).toMatch('Read 7 records');
     expect(stdout).toMatch('Processed 7 records');
-    expect(stdout).toMatch('Wrote 16 records');
+    expect(stdout).toMatch('Wrote 14 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -104,7 +104,7 @@ describe('pagerduty', () => {
     expect(stdout).toMatch('Read 7 messages');
     expect(stdout).toMatch('Read 7 records');
     expect(stdout).toMatch('Processed 7 records');
-    expect(stdout).toMatch('Would write 16 records');
+    expect(stdout).toMatch('Would write 14 records');
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
@@ -198,7 +198,7 @@ describe('pagerduty', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 3,
+      compute_Application: 1,
       ims_Incident: 3,
       ims_IncidentApplicationImpact: 3,
       ims_IncidentAssignment: 3,

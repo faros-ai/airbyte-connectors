@@ -406,6 +406,17 @@
                           "{ \"Aion\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
                         ]
                       },
+                      "application_field": {
+                        "type": "string",
+                        "title": "Application Field",
+                        "description": "Field name in a ServiceNow incident, to compute a Faros Application name. The value of this field will be used to look up the app/platform in the specified application mapping",
+                        "default": "business_service",
+                        "pattern": "^(business_service|cmdb_ci)$",
+                        "examples": [
+                          "business_service",
+                          "cmdb_ci"
+                        ]
+                      },
                       "default_severity": {
                         "type": "string",
                         "title": "Default Severity",

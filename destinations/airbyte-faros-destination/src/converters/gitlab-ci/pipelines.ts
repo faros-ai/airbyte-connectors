@@ -48,7 +48,7 @@ export class Pipelines extends GitlabConverter {
       model: 'cicd_BuildCommitAssociation',
       record: {
         build: buildKey,
-        commit: {repository, sha: pipeline.commitSha},
+        commit: {repository, sha: pipeline.commitSha, uid: pipeline.commitSha},
       },
     });
 
