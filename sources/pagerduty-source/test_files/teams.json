@@ -7,5 +7,14 @@
     "summary": "Test Team",
     "self": "https://api.pagerduty.com/teams/PFYTIX1",
     "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX1"
+  },
+  {
+    "name": "Test Team 2",
+    "description": "Test team 2 description",
+    "id": "PFYTIX2",
+    "type": "team",
+    "summary": "Test Team 2",
+    "self": "https://api.pagerduty.com/teams/PFYTIX2",
+    "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX2"
   }
 ]

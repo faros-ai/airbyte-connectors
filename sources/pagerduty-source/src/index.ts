@@ -14,6 +14,7 @@ import {
   IncidentLogEntries,
   Incidents,
   PrioritiesResource,
+  Teams,
   Users,
 } from './streams';
 
@@ -47,6 +48,7 @@ export class PagerdutySource extends AirbyteSourceBase {
       new Incidents(config as PagerdutyConfig, this.logger),
       new PrioritiesResource(config as PagerdutyConfig, this.logger),
       new Users(config as PagerdutyConfig, this.logger),
+      new Teams(config as PagerdutyConfig, this.logger),
     ];
   }
 }
