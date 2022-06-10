@@ -6,6 +6,7 @@ import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 export class Repositories extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_Branch',
     'vcs_Repository',
     'vcs_Organization',
   ];
@@ -30,7 +31,7 @@ export class Repositories extends PhabricatorConverter {
       record: {
         uid: repository.organization.uid,
         name: repository.organization.uid,
-        type: 'Organization',
+        type: {category: 'Organization'},
         source,
       },
     });
@@ -54,6 +55,17 @@ export class Repositories extends PhabricatorConverter {
           : null,
       },
     });
+
+    if (repo.fields?.defaultBranch) {
+      res.push({
+        model: 'vcs_Branch',
+        record: {
+          name: repo.fields.defaultBranch,
+          uid: repo.fields.defaultBranch,
+          repository,
+        },
+      });
+    }
 
     return res;
   }

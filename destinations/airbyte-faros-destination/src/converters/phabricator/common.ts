@@ -3,7 +3,14 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
+
+const MAX_DESCRIPTION_LENGTH = 1000;
+
+interface PhabricatorConfig {
+  // Max length for free-form description text fields such as task description
+  max_description_length?: number;
+}
 
 /** Common functions shares across Phabricator converters */
 export class PhabricatorCommon {
@@ -119,6 +126,17 @@ export abstract class PhabricatorConverter extends Converter {
   /** Most of Phabricator records should have phid property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.phid;
+  }
+
+  protected phabricatorConfig(ctx: StreamContext): PhabricatorConfig {
+    return ctx.config.source_specific_configs?.phabricator ?? {};
+  }
+
+  protected maxDescriptionLength(ctx: StreamContext): number {
+    return (
+      this.phabricatorConfig(ctx).max_description_length ??
+      MAX_DESCRIPTION_LENGTH
+    );
   }
 }
 

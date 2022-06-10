@@ -58,7 +58,10 @@ describe('phabricator', () => {
       .value();
 
     const writtenByModel = {
-      generic_Record: 4,
+      tms_Project: 4,
+      tms_TaskBoard: 4,
+      tms_TaskBoardProjectRelationship: 4,
+      vcs_Branch: 2,
       vcs_BranchCommitAssociation: 6,
       vcs_Commit: 6,
       vcs_Membership: 4,
