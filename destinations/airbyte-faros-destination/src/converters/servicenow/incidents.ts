@@ -22,6 +22,8 @@ export class Incidents extends ServiceNowConverter {
     'ims_IncidentAssignment',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -106,7 +108,12 @@ export class Incidents extends ServiceNowConverter {
         };
       }
 
-      res.push({model: 'compute_Application', record: application});
+      const appKey = JSON.stringify(application);
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
+
       res.push({
         model: 'ims_IncidentApplicationImpact',
         record: {incident: incidentKey, application},
