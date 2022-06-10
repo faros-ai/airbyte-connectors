@@ -1,6 +1,6 @@
 {
   "name": "datadog-source",
-  "version": "0.1.92",
+  "version": "0.1.93",
   "description": "DataDog Airbyte source",
   "keywords": [
     "airbyte",
@@ -30,10 +30,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "^1.0.0-beta.8",
+    "@datadog/datadog-api-client": "1.0.0-beta.8",
     "axios": "^0.26.0",
     "commander": "^9.0.0",
-    "faros-airbyte-cdk": "^0.1.92",
+    "faros-airbyte-cdk": "^0.1.93",
     "verror": "^1.10.1"
   },
   "jest": {

@@ -40,6 +40,7 @@ export class Datadog {
   ) {}
 
   static instance(config: DatadogConfig, logger: AirbyteLogger): Datadog {
+    // TODO: upgrade to v1.0.0 datadog api library
     const v2Config = v2.createConfiguration({
       authMethods: {
         apiKeyAuth: config.api_key,
