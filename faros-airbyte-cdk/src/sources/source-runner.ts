@@ -97,7 +97,7 @@ export class AirbyteSourceRunner {
             const w = wrapApiError(e);
             const s = JSON.stringify(w);
             this.logger.error(
-              `Encountered an error while writing from source: ${w} - ${s}`
+              `Encountered an error while reading from source: ${w} - ${s}`
             );
             throw e;
           }
