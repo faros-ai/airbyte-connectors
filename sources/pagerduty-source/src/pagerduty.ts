@@ -186,20 +186,19 @@ export class Pagerduty {
     });
   }
 
-  async *getTeams(
-    state?: Team | null,
-    cursorField?: string[]
-  ): AsyncGenerator<Team> {
-    const func = (): Promise<PagerdutyResponse<Team>> => {
-      return this.client.get(`/teams`);
-    };
-    yield* this.paginate<Team>(func, (item): boolean => {
-      if (state) {
-        const fieldsExistingList = cursorField.map((f) => item[f] === state[f]);
-        return fieldsExistingList.findIndex((b) => !b) <= -1;
+  async *getTeams(): AsyncGenerator<Team> {
+    let res;
+    try {
+      res = await this.client.get(`/teams`);
+    } catch (err) {
+      res = err;
+    }
+
+    if (res.response?.ok) {
+      for (const item of res.resource) {
+        yield item;
       }
-      return false;
-    });
+    }
   }
 
   async *getIncidents(

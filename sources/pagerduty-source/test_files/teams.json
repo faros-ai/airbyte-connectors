@@ -16,5 +16,32 @@
     "summary": "Test Team 2",
     "self": "https://api.pagerduty.com/teams/PFYTIX2",
     "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX2"
+  },
+  {
+    "name": "Test Team 3",
+    "description": "Test team 3 description",
+    "id": "PFYTIX3",
+    "type": "team",
+    "summary": "Test Team 3",
+    "self": "https://api.pagerduty.com/teams/PFYTIX3",
+    "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX3"
+  },
+  {
+    "name": "Test Team 4",
+    "description": "Test team 4 description",
+    "id": "PFYTIX4",
+    "type": "team",
+    "summary": "Test Team 4",
+    "self": "https://api.pagerduty.com/teams/PFYTIX4",
+    "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX4"
+  },
+  {
+    "name": "Test Team 5",
+    "description": "Test team 5 description",
+    "id": "PFYTIX5",
+    "type": "team",
+    "summary": "Test Team 5",
+    "self": "https://api.pagerduty.com/teams/PFYTIX5",
+    "html_url": "https://dev-devcube.pagerduty.com/teams/PFYTIX5"
   }
 ]

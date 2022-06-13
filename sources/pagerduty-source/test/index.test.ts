@@ -224,17 +224,20 @@ describe('index', () => {
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 
-  test('streams - teams, use full_refresh sync mode', async () => {
+  test('streams - Teams, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
 
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
           get: fnTeamsList.mockImplementation(async (path: string) => {
-            const isPathMatch = path.match(/^\/teams/);
+            const isPathMatch = path.match(/^\/priorities/);
             if (isPathMatch) {
               return {
                 resource: readTestResourceFile('teams.json'),
+                response: {
+                  ok: true,
+                },
               };
             }
           }),
@@ -247,13 +250,14 @@ describe('index', () => {
       token: 'pass',
     });
 
-    const teamsStream = streams[3];
-    const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
-    const teams = [];
-    for await (const team of teamsIter) {
-      teams.push(team);
+    const TeamsStream = streams[2];
+    const TeamsIter = TeamsStream.readRecords(SyncMode.FULL_REFRESH);
+    const priorities = [];
+    for await (const priority of TeamsIter) {
+      priorities.push(priority);
     }
+
     expect(fnTeamsList).toHaveBeenCalledTimes(1);
-    expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
+    expect(priorities).toStrictEqual(readTestResourceFile('teams.json'));
   });
 });
