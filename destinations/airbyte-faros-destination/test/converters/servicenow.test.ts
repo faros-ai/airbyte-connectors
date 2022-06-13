@@ -71,7 +71,7 @@ describe('servicenow', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      compute_Application: 2,
+      compute_Application: 1,
       ims_Incident: 2,
       ims_IncidentApplicationImpact: 2,
       ims_IncidentAssignment: 2,
