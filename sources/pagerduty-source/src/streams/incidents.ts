@@ -43,14 +43,14 @@ export class Incidents extends AirbyteStreamBase {
 
     const now = DateTime.now();
     const cutoffTimestamp = now
-      .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
+      .minus({days: Number(this.config.cutoff_days) || DEFAULT_CUTOFF_DAYS})
       .toJSDate();
     const since =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.lastSynced ?? cutoffTimestamp.toISOString()
         : undefined;
 
-    yield* pagerduty.getIncidents(since, this.config.page_size);
+    yield* pagerduty.getIncidents(since, Number(this.config.page_size));
   }
 
   getUpdatedState(

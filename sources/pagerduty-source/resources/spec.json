@@ -16,18 +16,18 @@
         "airbyte_secret": true
       },
       "cutoff_days": {
-        "type": "integer",
+        "type": "string",
         "title": "Cutoff Days",
-        "default": 90,
-        "description": "Fetch pipelines updated in the last number of days"
+        "default": "90",
+        "description": "Fetch pipelines updated in the last number of days",
+        "pattern": "^[0-9]+$"
       },
       "page_size": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 25,
-        "default": 25,
+        "type": "string",
         "title": "Page Size",
-        "description": "page size to use when querying PagerDuty API"
+        "default": "25",
+        "description": "page size to use when querying PagerDuty API",
+        "pattern": "^([1-9]|[12][0-5])$"
       },
       "incident_log_entries_overview": {
         "type": "boolean",

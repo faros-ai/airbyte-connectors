@@ -47,7 +47,7 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     if (syncMode === SyncMode.INCREMENTAL) {
       const lastSynced = streamState?.lastSynced;
       const cutoffTimestamp = now
-        .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
+        .minus({days: Number(this.config.cutoff_days) || DEFAULT_CUTOFF_DAYS})
         .toJSDate()
         .toISOString();
       since = lastSynced ? new Date(lastSynced).toISOString() : cutoffTimestamp;
@@ -56,7 +56,7 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     yield* pagerduty.getIncidentLogEntries(
       since,
       until,
-      this.config.page_size,
+      Number(this.config.page_size),
       this.config.incident_log_entries_overview
     );
   }
