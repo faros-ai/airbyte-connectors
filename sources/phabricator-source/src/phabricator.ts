@@ -207,11 +207,11 @@ export class Phabricator {
       repoIds?: phid[];
       repoNames?: string[];
     },
-    createdAt?: number,
+    modifiedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Repository, any, any> {
-    const created = Math.max(createdAt ?? 0, this.startDate.unix());
-    this.logger.debug(`Fetching repositories created since ${created}`);
+    const modified = modifiedAt ?? 0;
+    this.logger.debug(`Fetching repositories modified since ${modified}`);
 
     const attachments = {projects: true, uris: true, metrics: true};
     let constraints = {};
@@ -257,7 +257,7 @@ export class Phabricator {
       },
       async (repos) => {
         const newRepos = repos.filter(
-          (repo) => repo.fields.dateCreated > created
+          (repo) => repo.fields.dateModified > modified
         );
         // Cache repositories for other queries
         for (const repo of newRepos) {
@@ -379,13 +379,13 @@ export class Phabricator {
     filter: {
       userIds?: phid[];
     },
-    createdAt?: number,
+    modifiedAt?: number,
     limit = this.limit
   ): AsyncGenerator<User, any, any> {
-    const created = Math.max(createdAt ?? 0, this.startDate.unix());
-    this.logger.debug(`Fetching users created since ${created}`);
+    const modified = modifiedAt ?? 0;
+    this.logger.debug(`Fetching users modified since ${modified}`);
 
-    const constraints = {phids: filter.userIds ?? [], createdStart: created};
+    const constraints = {phids: filter.userIds ?? []};
 
     yield* this.paginate(
       limit,
@@ -400,7 +400,7 @@ export class Phabricator {
       },
       async (users) => {
         const newUsers = users.filter(
-          (user) => user.fields.dateCreated > created
+          (user) => user.fields.dateModified > modified
         );
         return newUsers;
       }
@@ -411,11 +411,11 @@ export class Phabricator {
     filter: {
       slugs?: string[];
     },
-    createdAt?: number,
+    modifiedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Project, any, any> {
-    const created = Math.max(createdAt ?? 0, this.startDate.unix());
-    this.logger.debug(`Fetching projects created since ${created}`);
+    const modified = modifiedAt ?? 0;
+    this.logger.debug(`Fetching projects modified since ${modified}`);
 
     const constraints = {slugs: filter.slugs ?? []};
     const attachments = {members: true, ancestors: true, watchers: true};
@@ -434,7 +434,7 @@ export class Phabricator {
       },
       async (projects) => {
         const newProjects = projects.filter(
-          (project) => project.fields.dateCreated > created
+          (project) => project.fields.dateModified > modified
         );
         return newProjects;
       }
