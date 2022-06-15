@@ -3,7 +3,14 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
+
+const MAX_DESCRIPTION_LENGTH = 1000;
+
+interface PhabricatorConfig {
+  // Max length for free-form description text fields such as task description
+  max_description_length?: number;
+}
 
 /** Common functions shares across Phabricator converters */
 export class PhabricatorCommon {
@@ -100,6 +107,7 @@ export class PhabricatorCommon {
 
     return {
       name: toLower(repoName),
+      uid: toLower(repoName),
       organization: PhabricatorCommon.orgKey(source),
     };
   }
@@ -119,6 +127,17 @@ export abstract class PhabricatorConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.phid;
   }
+
+  protected phabricatorConfig(ctx: StreamContext): PhabricatorConfig {
+    return ctx.config.source_specific_configs?.phabricator ?? {};
+  }
+
+  protected maxDescriptionLength(ctx: StreamContext): number {
+    return (
+      this.phabricatorConfig(ctx).max_description_length ??
+      MAX_DESCRIPTION_LENGTH
+    );
+  }
 }
 
 export interface CommitMessage {
@@ -128,6 +147,7 @@ export interface CommitMessage {
 
 export interface RepositoryKey {
   name: string;
+  uid: string;
   organization: OrgKey;
 }
 

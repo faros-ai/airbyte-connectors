@@ -22,6 +22,8 @@ export class Incidents extends ServiceNowConverter {
     'ims_IncidentAssignment',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -30,7 +32,7 @@ export class Incidents extends ServiceNowConverter {
     const source = this.streamName.source;
     const incident = record.record.data;
     const incidentKey = {
-      uid: incident.sys_id.value,
+      uid: incident.sys_id,
       source,
     };
 
@@ -55,19 +57,19 @@ export class Incidents extends ServiceNowConverter {
       model: 'ims_Incident',
       record: {
         ...incidentKey,
-        title: incident.number?.value,
-        description: incident.short_description?.value,
+        title: incident.number,
+        description: incident.short_description,
         url: null,
-        severity: this.getSeverity(incident.severity?.value) ?? defaultSeverity,
-        priority: this.getPriority(incident.priority?.value) ?? defaultPriority,
-        status: this.getStatus(incident.state?.displayValue) ?? null,
-        createdAt: Utils.toDate(incident.opened_at?.value) ?? null,
-        updatedAt: Utils.toDate(incident.sys_updated_on?.value) ?? null,
-        resolvedAt: Utils.toDate(incident.resolved_at?.value) ?? null,
+        severity: this.getSeverity(incident.severity) ?? defaultSeverity,
+        priority: this.getPriority(incident.priority) ?? defaultPriority,
+        status: this.getStatus(incident.state) ?? null,
+        createdAt: Utils.toDate(incident.opened_at) ?? null,
+        updatedAt: Utils.toDate(incident.sys_updated_on) ?? null,
+        resolvedAt: Utils.toDate(incident.resolved_at) ?? null,
       },
     });
 
-    const assigneeUid = incident.assigned_to?.value;
+    const assigneeUid = incident.assigned_to;
     if (assigneeUid) {
       res.push({
         model: 'ims_IncidentAssignment',
@@ -81,7 +83,12 @@ export class Incidents extends ServiceNowConverter {
       });
     }
 
-    const applicationName = incident.cmdb_ci?.displayValue;
+    const applicationField = this.applicationField(ctx);
+    const applicationName =
+      applicationField in incident &&
+      typeof incident[applicationField] === 'string'
+        ? incident[applicationField]
+        : undefined;
     if (applicationName) {
       const applicationMapping = this.applicationMapping(ctx);
 
@@ -101,7 +108,12 @@ export class Incidents extends ServiceNowConverter {
         };
       }
 
-      res.push({model: 'compute_Application', record: application});
+      const appKey = JSON.stringify(application);
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
+
       res.push({
         model: 'ims_IncidentApplicationImpact',
         record: {incident: incidentKey, application},
@@ -156,15 +168,27 @@ export class Incidents extends ServiceNowConverter {
   ): {category: IncidentStatusCategory; detail: string} | undefined {
     if (state) {
       switch (state) {
-        case 'New':
-          return {category: IncidentStatusCategory.Created, detail: state};
-        case 'In Progress':
+        case '1': // New
+          return {category: IncidentStatusCategory.Created, detail: 'New 1'};
+        case '2': // In Progress
           return {
             category: IncidentStatusCategory.Investigating,
-            detail: state,
+            detail: 'In Progess 2',
           };
-        case 'Resolved':
-          return {category: IncidentStatusCategory.Resolved, detail: state};
+        case '3': // On Hold
+          return {category: IncidentStatusCategory.Custom, detail: 'On Hold 3'};
+        case '6': // Resolved
+          return {
+            category: IncidentStatusCategory.Resolved,
+            detail: 'Resolved 6',
+          };
+        case '7': // Closed
+          return {category: IncidentStatusCategory.Custom, detail: 'Closed 7'};
+        case '8': // Canceled
+          return {
+            category: IncidentStatusCategory.Custom,
+            detail: 'Canceled 8',
+          };
         default:
           return {category: IncidentStatusCategory.Custom, detail: state};
       }

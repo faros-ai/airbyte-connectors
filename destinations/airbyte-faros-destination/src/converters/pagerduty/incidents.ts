@@ -23,6 +23,8 @@ interface Acknowledgement {
 export class Incidents extends PagerDutyConverter {
   private readonly logger = new AirbyteLogger();
 
+  private seenApplications = new Set<string>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'ims_Incident',
@@ -101,7 +103,12 @@ export class Incidents extends PagerDutyConverter {
         platform: mappedApp.platform ?? application.platform,
       };
     }
-    res.push({model: 'compute_Application', record: application});
+
+    const appKey = JSON.stringify(application);
+    if (!this.seenApplications.has(appKey)) {
+      res.push({model: 'compute_Application', record: application});
+      this.seenApplications.add(appKey);
+    }
 
     res.push({
       model: 'ims_IncidentApplicationImpact',

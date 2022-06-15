@@ -78,6 +78,7 @@ interface VCSRepositoryKey {
 
 interface CommitKey {
   readonly sha: string;
+  readonly uid: string;
   readonly repository: VCSRepositoryKey;
 }
 
@@ -123,6 +124,7 @@ export class DockerCommon {
     if (commitSha && vcsRepo && vcsOrg && vcsSource) {
       return {
         sha: commitSha.value,
+        uid: commitSha.value,
         repository: {
           name: vcsRepo.value,
           organization: {

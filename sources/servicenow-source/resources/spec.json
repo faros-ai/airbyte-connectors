@@ -42,6 +42,13 @@
         "title": "Page Size",
         "description": "used when retrieving paginated data from ServiceNow",
         "default": 100
+      },
+      "timeout": {
+        "order": 5,
+        "type": "integer",
+        "title": "Timeout",
+        "description": "client timeout in milliseconds, used when retrieving data from ServiceNow",
+        "default": 30000
       }
     }
   }

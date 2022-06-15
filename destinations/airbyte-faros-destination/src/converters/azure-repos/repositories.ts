@@ -26,7 +26,11 @@ export class Repositories extends AzureReposConverter {
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(repositoryItem.url);
     const organization = {uid: organizationName, source};
-    const repository = {name: repositoryItem.name, organization};
+    const repository = {
+      name: repositoryItem.name,
+      uid: repositoryItem.name,
+      organization,
+    };
     if (!this.seenOrganizations.has(organizationName)) {
       this.seenOrganizations.add(organizationName);
       res.push({
@@ -59,6 +63,7 @@ export class Repositories extends AzureReposConverter {
       model: 'vcs_Repository',
       record: {
         name: repositoryItem.name,
+        uid: repositoryItem.name,
         fullName: repositoryItem.name,
         description: repositoryItem.name,
         private: repositoryItem.project.visibility == 'private',
@@ -77,6 +82,7 @@ export class Repositories extends AzureReposConverter {
         model: 'vcs_Branch',
         record: {
           name: branch.name,
+          uid: branch.name,
           repository,
         },
       });
@@ -85,6 +91,7 @@ export class Repositories extends AzureReposConverter {
           model: 'vcs_Commit',
           record: {
             sha: commit.commitId,
+            uid: commit.commitId,
             message: commit.comment,
             htmlUrl: commit.remoteUrl,
             createdAt: Utils.toDate(commit.committer.date),
@@ -95,20 +102,21 @@ export class Repositories extends AzureReposConverter {
         res.push({
           model: 'vcs_BranchCommitAssociation',
           record: {
-            commit: {sha: commit.commitId, repository},
-            branch: {name: branch.name, repository},
+            commit: {sha: commit.commitId, uid: commit.commitId, repository},
+            branch: {name: branch.name, uid: branch.name, repository},
           },
         });
       }
     }
 
     for (const tag of repositoryItem.tags) {
+      const commitId = tag.commit.taggedObject.objectId;
       res.push({
         model: 'vcs_Tag',
         record: {
           name: tag.name,
           message: tag.commit.message,
-          commit: {sha: tag.commit.taggedObject.objectId, repository},
+          commit: {sha: commitId, uid: commitId, repository},
           repository,
         },
       });

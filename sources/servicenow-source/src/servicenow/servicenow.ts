@@ -1,23 +1,19 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
-import path from 'path';
 import VError from 'verror';
 
-import {Incident, Pagination, User} from './models';
+import {Incident, IncidentRest, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_CUTOFF_DAYS = 90;
-const GRAPHQL_API = '/api/now/graphql';
-
-const listIncidentsQuery = fs.readFileSync(
-  path.join(__dirname, '../../resources/graphQL/listIncidentsQuery.gql'),
-  'utf8'
-);
-const listUsersQuery = fs.readFileSync(
-  path.join(__dirname, '../../resources/graphQL/listUsersQuery.gql'),
-  'utf8'
-);
+const DEFAULT_TIMEOUT = 30000;
+const INCIDENT_API = '/api/now/table/incident';
+const INCIDENT_FIELDS =
+  'assigned_to,business_service,closed_at,cmdb_ci,number,opened_at,opened_by,priority,severity,short_description,state,sys_id,resolved_at,sys_updated_on';
+const CMDB_CI_API = '/api/now/table/cmdb_ci/';
+const CMDB_CI_SERVICE_API = '/api/now/table/cmdb_ci_service/';
+const USER_API = '/api/now/table/sys_user';
+const USER_FIELDS = 'name,sys_id,email,sys_updated_on';
 
 export interface ServiceNowConfig {
   readonly username: string;
@@ -25,17 +21,24 @@ export interface ServiceNowConfig {
   readonly url: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
+  readonly timeout?: number;
 }
 
 export interface ServiceNowClient {
   readonly incidents: {
     list: (
       pagination: Pagination,
-      queryConditions?: string
-    ) => Promise<Incident[]>;
+      query?: string
+    ) => Promise<[IncidentRest[], number]>;
   };
   readonly users: {
-    list: (pagination: Pagination, queryConditions?: string) => Promise<User[]>;
+    list: (pagination: Pagination, query?: string) => Promise<[User[], number]>;
+  };
+  readonly cmdb_ci: {
+    getName: (sys_id: string) => Promise<string>;
+  };
+  readonly cmdb_ci_service: {
+    getName: (sys_id: string) => Promise<string>;
   };
   readonly checkConnection: () => Promise<void>;
 }
@@ -79,29 +82,106 @@ export class ServiceNow {
     sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident, any, any> {
-    let offset = 0;
     let hasNext = false;
-    let queryCondition = '';
+    let offset = 0;
+    let query;
+
     if (sys_updated_on) {
       this.logger.info(`Syncing incidents updated since: ${sys_updated_on}`);
-      queryCondition = `sys_updated_on>=${sys_updated_on}`;
+      query = `sys_updated_on>=${sys_updated_on}`;
     }
+
+    const cmdb_ci_Map: Map<string, string> = new Map();
+    const business_service_Map: Map<string, string> = new Map();
+
     do {
-      const incidents = await this.client.incidents.list(
-        {
-          pageSize,
-          offset,
-        },
-        queryCondition
+      hasNext = false;
+      const [incidents, totalCount] = await this.client.incidents.list(
+        {pageSize, offset},
+        query
       );
 
-      hasNext = false;
-      if (incidents.length) {
+      if (incidents?.length) {
         for (const incident of incidents) {
-          yield incident;
+          // When no cmdb_ci for incident, cmdb_ci is empty string
+          let cmdb_ci_name: string;
+          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
+            const cmdb_ci_sys_id = incident.cmdb_ci.value;
+            // If sys_id previously seen, retrieve name from map
+            if (cmdb_ci_sys_id in cmdb_ci_Map) {
+              cmdb_ci_name = cmdb_ci_Map.get(cmdb_ci_sys_id);
+            } else {
+              try {
+                cmdb_ci_name = await this.client.cmdb_ci.getName(
+                  cmdb_ci_sys_id
+                );
+                cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_name);
+              } catch (err: any) {
+                this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
+              }
+            }
+          }
+
+          // When no business_service for incident, business_service is empty string
+          let business_service_name: string;
+          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
+            const business_service_sys_id = incident.cmdb_ci.value;
+            // If sys_id previously seen, retrieve name from map
+            if (business_service_sys_id in business_service_Map) {
+              business_service_name = business_service_Map.get(
+                business_service_sys_id
+              );
+            } else {
+              try {
+                business_service_name =
+                  await this.client.cmdb_ci_service.getName(
+                    business_service_sys_id
+                  );
+                business_service_Map.set(
+                  business_service_sys_id,
+                  business_service_name
+                );
+              } catch (err: any) {
+                this.logger.warn(
+                  `Error retrieving business_service: ${business_service_sys_id}`
+                );
+              }
+            }
+          }
+
+          // When no opened_by for incident, opened_by is empty string
+          let opened_by: string;
+          if (typeof incident.opened_by !== 'string') {
+            opened_by = incident.opened_by.value;
+          }
+
+          // When no assigned_to for incident, assigned_to is empty string
+          let assigned_to: string;
+          if (typeof incident.assigned_to !== 'string') {
+            assigned_to = incident.assigned_to.value;
+          }
+
+          const res: Incident = {
+            sys_id: incident.sys_id,
+            number: incident.number,
+            short_description: incident.short_description,
+            severity: incident.severity,
+            priority: incident.priority,
+            state: incident.state,
+            assigned_to,
+            opened_by,
+            opened_at: incident.opened_at,
+            resolved_at: incident.resolved_at,
+            closed_at: incident.closed_at,
+            cmdb_ci: cmdb_ci_name,
+            business_service: business_service_name,
+            sys_updated_on: incident.sys_updated_on,
+          };
+
+          yield res;
         }
 
-        if (incidents.length == pageSize) {
+        if (offset + pageSize < totalCount) {
           hasNext = true;
           offset += pageSize;
         }
@@ -114,29 +194,26 @@ export class ServiceNow {
     sys_updated_on?: string,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<User, any, any> {
+    let hasNext;
     let offset = 0;
-    let hasNext = false;
-    let queryCondition = '';
+    let query;
     if (sys_updated_on) {
       this.logger.info(`Syncing users updated since: ${sys_updated_on}`);
-      queryCondition = `sys_updated_on>=${sys_updated_on}`;
+      query = `sys_updated_on>=${sys_updated_on}`;
     }
     do {
-      const users = await this.client.users.list(
-        {
-          pageSize,
-          offset,
-        },
-        queryCondition
+      hasNext = false;
+      const [users, totalCount] = await this.client.users.list(
+        {pageSize, offset},
+        query
       );
 
-      hasNext = false;
-      if (users.length) {
+      if (users?.length) {
         for (const user of users) {
           yield user;
         }
 
-        if (users.length == pageSize) {
+        if (offset + pageSize < totalCount) {
           hasNext = true;
           offset += pageSize;
         }
@@ -147,54 +224,98 @@ export class ServiceNow {
   private static makeClient(config: ServiceNowConfig): ServiceNowClient {
     const httpClient = axios.create({
       baseURL: `${config.url}`,
-      timeout: 5000,
+      timeout: config.timeout ?? DEFAULT_TIMEOUT,
       auth: {username: config.username, password: config.password},
     });
 
     const client = {
       incidents: {
-        list: async (pagination, queryConditions) => {
-          let res;
+        list: async (
+          pagination: Pagination,
+          query
+        ): Promise<[IncidentRest[], number]> => {
+          let res: AxiosResponse;
           try {
-            res = await httpClient.post(GRAPHQL_API, {
-              query: listIncidentsQuery,
-              variables: {
-                pageSize: pagination.pageSize,
-                offset: pagination.offset,
-                queryConditions,
+            res = await httpClient.get(INCIDENT_API, {
+              params: {
+                sysparm_limit: pagination.pageSize,
+                sysparm_offset: pagination.offset,
+                sysparm_fields: INCIDENT_FIELDS,
+                sysparm_query: query,
               },
             });
           } catch (err: any) {
             this.handleApiError(err);
           }
 
-          return res?.data?.data?.GlideRecord_Query?.incident?._results ?? [];
+          return [res.data.result, parseInt(res.headers['x-total-count'])];
         },
       },
       users: {
-        list: async (pagination, queryConditions) => {
+        list: async (
+          pagination: Pagination,
+          query
+        ): Promise<[User[], number]> => {
           let res;
           try {
-            res = await httpClient.post(GRAPHQL_API, {
-              query: listUsersQuery,
-              variables: {
-                pageSize: pagination.pageSize,
-                offset: pagination.offset,
-                queryConditions,
+            res = await httpClient.get(USER_API, {
+              params: {
+                sysparm_limit: pagination.pageSize,
+                sysparm_offset: pagination.offset,
+                sysparm_fields: USER_FIELDS,
+                sysparm_query: query,
               },
             });
           } catch (err: any) {
             this.handleApiError(err);
           }
 
-          return res?.data?.data?.GlideRecord_Query?.sys_user?._results ?? [];
+          return [res.data.result, parseInt(res.headers['x-total-count'])];
+        },
+      },
+      cmdb_ci: {
+        getName: async (sys_id: string): Promise<string> => {
+          let res;
+          try {
+            res = await httpClient.get(CMDB_CI_API + sys_id, {
+              params: {sysparm_fields: 'name'},
+            });
+          } catch (err: any) {
+            this.handleApiError(err);
+          }
+
+          return res.data.result?.name;
+        },
+      },
+      cmdb_ci_service: {
+        getName: async (sys_id: string): Promise<string> => {
+          let res;
+          try {
+            res = await httpClient.get(CMDB_CI_SERVICE_API + sys_id, {
+              params: {sysparm_fields: 'name'},
+            });
+          } catch (err: any) {
+            this.handleApiError(err);
+          }
+
+          return res.data.result?.name;
         },
       },
       checkConnection: async (): Promise<void> => {
         try {
-          await httpClient.post(GRAPHQL_API, {
-            query: listUsersQuery,
-            variables: {pageSize: 1},
+          await httpClient.get(USER_API, {
+            params: {
+              sysparm_limit: 1,
+              sysparm_offset: 0,
+              sysparm_fields: 'sys_id',
+            },
+          });
+          await httpClient.get(INCIDENT_API, {
+            params: {
+              sysparm_limit: 1,
+              sysparm_offset: 0,
+              sysparm_fields: 'sys_id',
+            },
           });
         } catch (err: any) {
           this.handleApiError(err);
@@ -208,9 +329,9 @@ export class ServiceNow {
   private static handleApiError(err: any): void {
     let errorMessage;
     try {
-      errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
+      errorMessage = err.message ?? err.statusText ?? wrapApiError(err);
     } catch (wrapError: any) {
-      errorMessage += wrapError.message;
+      errorMessage = wrapError.message;
     }
     throw new VError(errorMessage);
   }

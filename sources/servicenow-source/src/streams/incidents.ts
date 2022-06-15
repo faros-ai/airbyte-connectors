@@ -37,8 +37,8 @@ export class Incidents extends AirbyteStreamBase {
     const latestModified = currentStreamState?.sys_updated_on
       ? new Date(currentStreamState.sys_updated_on).getTime()
       : 0;
-    const recordModified = latestRecord?.sys_updated_on?.value
-      ? new Date(latestRecord.sys_updated_on.value).getTime()
+    const recordModified = latestRecord?.sys_updated_on
+      ? new Date(latestRecord.sys_updated_on).getTime()
       : 0;
     return {
       sys_updated_on: new Date(

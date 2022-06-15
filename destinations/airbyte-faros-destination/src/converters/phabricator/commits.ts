@@ -53,7 +53,7 @@ export class Commits extends PhabricatorConverter {
       res.push({
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha, repository},
+          commit: {sha, repository, uid: sha},
           branch: {name: branch, uid: branch, repository},
         },
       });
@@ -71,7 +71,7 @@ export class Commits extends PhabricatorConverter {
           },
           mask: ['mergeCommit'],
           patch: {
-            mergeCommit: {repository, sha},
+            mergeCommit: {repository, sha, uid: sha},
           },
         },
       });

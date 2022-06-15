@@ -50,7 +50,7 @@ export class MergeRequests extends GitlabConverter {
           commentCount: Utils.parseInteger(mr.user_notes_count),
           author: username ? {uid: username, source} : null,
           mergeCommit: mr.merge_commit_sha
-            ? {repository, sha: mr.merge_commit_sha}
+            ? {repository, sha: mr.merge_commit_sha, uid: mr.merge_commit_sha}
             : null,
           repository,
         },

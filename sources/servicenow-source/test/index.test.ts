@@ -31,9 +31,12 @@ describe('index', () => {
   );
 
   const incidents = readTestResourceFile('incidents.json');
+  const incidentsRest = readTestResourceFile('incidentsRest.json');
   const users = readTestResourceFile('users.json');
-  const listIncidents = jest.fn().mockResolvedValue(incidents);
-  const listUsers = jest.fn().mockResolvedValue(users);
+  const listIncidents = jest.fn().mockResolvedValue([incidentsRest, 1]);
+  const listUsers = jest.fn().mockResolvedValue([users, 5]);
+  const getCmdbCi = jest.fn().mockResolvedValue('Storage Area Network 001');
+  const getCmdbCiService = jest.fn().mockResolvedValue('Email');
   const checkConnection = jest.fn().mockResolvedValue({});
   ServiceNow.instance = jest.fn().mockReturnValue(
     new ServiceNow(
@@ -43,6 +46,12 @@ describe('index', () => {
         },
         users: {
           list: listUsers,
+        },
+        cmdb_ci: {
+          getName: getCmdbCi,
+        },
+        cmdb_ci_service: {
+          getName: getCmdbCiService,
         },
         checkConnection,
       } as ServiceNowClient,
@@ -93,6 +102,8 @@ describe('index', () => {
     expect(listIncidents.mock.calls[0][1]).toBe(
       `sys_updated_on>=${sys_updated_on}`
     );
+    expect(getCmdbCi.mock.calls.length).toBe(1);
+    expect(getCmdbCiService.mock.calls.length).toBe(1);
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
