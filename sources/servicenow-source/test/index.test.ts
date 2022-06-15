@@ -130,7 +130,6 @@ describe('index', () => {
       fail('Error should have been thrown.');
     } catch (err: any) {
       expect(err.message).toBe(expectedMessage);
-      return;
     }
   });
 
@@ -182,7 +181,6 @@ describe('index', () => {
       fail('Error should have been thrown.');
     } catch (err: any) {
       expect(err.message).toBe(expectedMessage);
-      return;
     }
   });
 });
