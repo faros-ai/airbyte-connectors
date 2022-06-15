@@ -127,11 +127,11 @@ describe('index', () => {
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
       await iter.next();
+      fail('Error should have been thrown.');
     } catch (err: any) {
       expect(err.message).toBe(expectedMessage);
       return;
     }
-    expect(0).toBe(1);
   });
 
   test('streams - users, use incremental sync mode', async () => {
@@ -179,10 +179,10 @@ describe('index', () => {
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
       await iter.next();
+      fail('Error should have been thrown.');
     } catch (err: any) {
       expect(err.message).toBe(expectedMessage);
       return;
     }
-    expect(0).toBe(1);
   });
 });
