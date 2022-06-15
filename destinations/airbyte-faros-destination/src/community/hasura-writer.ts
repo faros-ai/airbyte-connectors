@@ -1,3 +1,4 @@
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {sortBy} from 'lodash';
 import {VError} from 'verror';
 
@@ -6,6 +7,7 @@ import {HasuraClient} from './hasura-client';
 import {Operation, TimestampedRecord} from './types';
 
 export class HasuraWriter {
+  private readonly logger = new AirbyteLogger();
   private readonly timestampedRecords: TimestampedRecord[] = [];
 
   constructor(
