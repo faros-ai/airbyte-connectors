@@ -5,7 +5,7 @@ import VError from 'verror';
 import {Incident, IncidentRest, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_CUTOFF_DAYS = 10000;
+const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_TIMEOUT = 30000;
 const INCIDENT_API = '/api/now/table/incident';
 const INCIDENT_FIELDS =
