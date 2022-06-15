@@ -369,7 +369,8 @@ export class HasuraClient {
       return undefined;
     }
     if (type === 'timestamptz') {
-      return timestamptz(value);
+      // The field value may already be a string. E.g., if coming from the Faros Feeds source.
+      return typeof value === 'string' ? value : timestamptz(value);
     } else if (typeof value === 'object' || Array.isArray(value)) {
       return traverse(value).map(function (this, val) {
         if (val instanceof Date) {
