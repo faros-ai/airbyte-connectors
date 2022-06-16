@@ -223,4 +223,41 @@ describe('index', () => {
     expect(fnUsersList).toHaveBeenCalledTimes(1);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
+
+  test('streams - Teams, use full_refresh sync mode', async () => {
+    const fnTeamsList = jest.fn();
+
+    Pagerduty.instance = jest.fn().mockImplementation(() => {
+      return new Pagerduty(
+        {
+          get: fnTeamsList.mockImplementation(async (path: string) => {
+            const isPathMatch = path.match(/^\/priorities/);
+            if (isPathMatch) {
+              return {
+                resource: readTestResourceFile('teams.json'),
+                response: {
+                  ok: true,
+                },
+              };
+            }
+          }),
+        },
+        logger
+      );
+    });
+    const source = new sut.PagerdutySource(logger);
+    const streams = source.streams({
+      token: 'pass',
+    });
+
+    const TeamsStream = streams[2];
+    const TeamsIter = TeamsStream.readRecords(SyncMode.FULL_REFRESH);
+    const priorities = [];
+    for await (const priority of TeamsIter) {
+      priorities.push(priority);
+    }
+
+    expect(fnTeamsList).toHaveBeenCalledTimes(1);
+    expect(priorities).toStrictEqual(readTestResourceFile('teams.json'));
+  });
 });

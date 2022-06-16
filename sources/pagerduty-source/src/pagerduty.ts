@@ -55,6 +55,11 @@ export interface User extends PagerdutyObject {
   readonly name: string;
 }
 
+export interface Team extends PagerdutyObject {
+  readonly name: string;
+  readonly description: string;
+}
+
 export interface LogEntry extends PagerdutyObject {
   readonly created_at: string; // date-time
   readonly incident: PagerdutyObject;
@@ -179,6 +184,30 @@ export class Pagerduty {
       }
       return false;
     });
+  }
+
+  async *getTeams(
+    since?: string,
+    limit = DEFAULT_PAGE_SIZE
+  ): AsyncGenerator<Team> {
+    let until: Date;
+    let timeRange = '&date_range=all';
+    if (since) {
+      until = new Date(since);
+      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
+      until.setHours(0, 0, 0); //rounding down to whole day
+
+      timeRange = `&since=${since}&until=${until.toISOString()}`;
+    }
+    const limitParam = `&limit=${limit.toFixed()}`;
+    const teamsResource = `/teams?time_zone=UTC${timeRange}${limitParam}`;
+    this.logger.debug(`Fetching Team at ${teamsResource}`);
+
+    const func = (): any => {
+      return this.client.get(teamsResource);
+    };
+
+    yield* this.paginate<Team>(func);
   }
 
   async *getIncidents(
