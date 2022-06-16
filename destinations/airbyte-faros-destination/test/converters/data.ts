@@ -106,3 +106,6 @@ export const circleciAllStreamsLog = readTestResourceFile(
 export const bamboohrAllStreamsLog = readTestResourceFile(
   'bamboohr/all-streams.log'
 );
+export const farosFeedsAllStreamsLog = readTestResourceFile(
+  'faros_feeds/all-streams.log'
+);

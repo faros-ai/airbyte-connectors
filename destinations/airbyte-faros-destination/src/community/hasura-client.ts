@@ -71,6 +71,7 @@ export class HasuraClient {
   private readonly references: Dictionary<Dictionary<Reference>> = {};
   private readonly backReferences: Dictionary<Reference[]> = {};
   private sortedModelDependencies: ReadonlyArray<string>;
+  private tableNames: Set<string>;
 
   constructor(url: string, adminSecret?: string) {
     this.api = axios.create({
@@ -113,8 +114,10 @@ export class HasuraClient {
     );
     const response = await this.api.post('/v1/graphql', {query});
     const schema = response.data.data.__schema;
+    this.tableNames = new Set();
     for (const table of source.tables) {
       const tableName = table.table.name;
+      this.tableNames.add(tableName);
       const type = find(
         schema.types,
         (t) => t.name === tableName && t.kind === 'OBJECT'
@@ -239,6 +242,10 @@ export class HasuraClient {
     record: Dictionary<any>,
     origin: string
   ): Promise<void> {
+    if (!this.tableNames.has(model)) {
+      throw new VError(`Table ${model} does not exist`);
+    }
+
     const obj = this.createMutationObject(model, origin, record);
     const mutation = {
       [`insert_${model}_one`]: {__args: obj, id: true},
@@ -369,7 +376,8 @@ export class HasuraClient {
       return undefined;
     }
     if (type === 'timestamptz') {
-      return timestamptz(value);
+      // The field value may already be a string. E.g., if coming from the Faros Feeds source.
+      return typeof value === 'string' ? value : timestamptz(value);
     } else if (typeof value === 'object' || Array.isArray(value)) {
       return traverse(value).map(function (this, val) {
         if (val instanceof Date) {

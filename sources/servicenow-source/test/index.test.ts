@@ -118,6 +118,21 @@ describe('index', () => {
     expect(items).toStrictEqual(incidents);
   });
 
+  test('streams - incidents, throws up API error', async () => {
+    const expectedMessage = 'API Error';
+    listIncidents.mockRejectedValue(new VError(expectedMessage));
+    const source = new sut.ServiceNowSource(logger);
+    const streams = source.streams({});
+    const stream = streams[0];
+    try {
+      const iter = stream.readRecords(SyncMode.FULL_REFRESH);
+      await iter.next();
+      fail('Error should have been thrown.');
+    } catch (err: any) {
+      expect(err.message).toBe(expectedMessage);
+    }
+  });
+
   test('streams - users, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams({
@@ -152,5 +167,20 @@ describe('index', () => {
       items.push(item);
     }
     expect(items).toStrictEqual(users);
+  });
+
+  test('streams - users, throws up API error', async () => {
+    const expectedMessage = 'API Error';
+    listUsers.mockRejectedValue(new VError(expectedMessage));
+    const source = new sut.ServiceNowSource(logger);
+    const streams = source.streams({});
+    const stream = streams[1];
+    try {
+      const iter = stream.readRecords(SyncMode.FULL_REFRESH);
+      await iter.next();
+      fail('Error should have been thrown.');
+    } catch (err: any) {
+      expect(err.message).toBe(expectedMessage);
+    }
   });
 });
