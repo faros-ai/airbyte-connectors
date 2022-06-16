@@ -28,6 +28,12 @@ export class FarosFeed extends Converter {
 
     const [model, rec] = Object.entries(data).pop();
 
+    // Ignore full model deletion records. E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
+    if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
+      const [key, value] = Object.entries(rec).pop();
+      if (key === 'where' && typeof value == 'string') return [];
+    }
+
     return [{model, record: rec}];
   }
 }
