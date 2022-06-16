@@ -1,4 +1,3 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {sortBy} from 'lodash';
 import {VError} from 'verror';
 
