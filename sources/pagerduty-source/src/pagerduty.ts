@@ -186,19 +186,28 @@ export class Pagerduty {
     });
   }
 
-  async *getTeams(): AsyncGenerator<Team> {
-    let res;
-    try {
-      res = await this.client.get(`/teams`);
-    } catch (err) {
-      res = err;
-    }
+  async *getTeams(
+    since?: string,
+    limit = DEFAULT_PAGE_SIZE
+  ): AsyncGenerator<Team> {
+    let until: Date;
+    let timeRange = '&date_range=all';
+    if (since) {
+      until = new Date(since);
+      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
+      until.setHours(0, 0, 0); //rounding down to whole day
 
-    if (res.response?.ok) {
-      for (const item of res.resource) {
-        yield item;
-      }
+      timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
+    const limitParam = `&limit=${limit.toFixed()}`;
+    const teamsResource = `/teams?time_zone=UTC${timeRange}${limitParam}`;
+    this.logger.debug(`Fetching Team at ${teamsResource}`);
+
+    const func = (): any => {
+      return this.client.get(teamsResource);
+    };
+
+    yield* this.paginate<Team>(func);
   }
 
   async *getIncidents(
