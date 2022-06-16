@@ -5,7 +5,8 @@ import VError from 'verror';
 import {Incident, IncidentRest, Pagination, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_CUTOFF_DAYS = 10000;
+const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_TIMEOUT = 30000;
 const INCIDENT_API = '/api/now/table/incident';
 const INCIDENT_FIELDS =
   'assigned_to,business_service,closed_at,cmdb_ci,number,opened_at,opened_by,priority,severity,short_description,state,sys_id,resolved_at,sys_updated_on';
@@ -20,6 +21,7 @@ export interface ServiceNowConfig {
   readonly url: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
+  readonly timeout?: number;
 }
 
 export interface ServiceNowClient {
@@ -222,7 +224,7 @@ export class ServiceNow {
   private static makeClient(config: ServiceNowConfig): ServiceNowClient {
     const httpClient = axios.create({
       baseURL: `${config.url}`,
-      timeout: 5000,
+      timeout: config.timeout ?? DEFAULT_TIMEOUT,
       auth: {username: config.username, password: config.password},
     });
 
@@ -327,9 +329,9 @@ export class ServiceNow {
   private static handleApiError(err: any): void {
     let errorMessage;
     try {
-      errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
+      errorMessage = err.message ?? err.statusText ?? wrapApiError(err);
     } catch (wrapError: any) {
-      errorMessage += wrapError.message;
+      errorMessage = wrapError.message;
     }
     throw new VError(errorMessage);
   }

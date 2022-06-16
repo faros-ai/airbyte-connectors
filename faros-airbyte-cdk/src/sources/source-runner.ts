@@ -1,6 +1,7 @@
 import {Command} from 'commander';
 import path from 'path';
 
+import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {AirbyteState} from '../protocol';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
@@ -87,9 +88,18 @@ export class AirbyteSourceRunner {
             this.logger.info('state: ' + JSON.stringify(state));
           }
 
-          const iter = this.source.read(config, catalog, state);
-          for await (const message of iter) {
-            this.logger.write(message);
+          try {
+            const iter = this.source.read(config, catalog, state);
+            for await (const message of iter) {
+              this.logger.write(message);
+            }
+          } catch (e: any) {
+            const w = wrapApiError(e);
+            const s = JSON.stringify(w);
+            this.logger.error(
+              `Encountered an error while reading from source: ${w} - ${s}`
+            );
+            throw e;
           }
         }
       );
