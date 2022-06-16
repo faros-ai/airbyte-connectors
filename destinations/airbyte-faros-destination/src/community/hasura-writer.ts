@@ -3,9 +3,15 @@ import {sortBy} from 'lodash';
 import {VError} from 'verror';
 
 import {WriteStats} from '../common/write-stats';
-import {InvalidRecordStrategy} from '../destination';
 import {HasuraClient} from './hasura-client';
 import {Operation, TimestampedRecord} from './types';
+
+export interface RecordProcessorHandler {
+  handleRecordProcessingError: (
+    stats: WriteStats,
+    processRecord: () => Promise<void>
+  ) => Promise<void>;
+}
 
 export class HasuraWriter {
   private readonly timestampedRecords: TimestampedRecord[] = [];
@@ -13,15 +19,8 @@ export class HasuraWriter {
   constructor(
     private readonly hasuraClient: HasuraClient,
     private readonly origin: string,
-    private readonly logger: AirbyteLogger,
-    private invalidRecordStrategy: InvalidRecordStrategy,
     private readonly stats: WriteStats,
-    private readonly handleRecordProcessingError: (
-      logger: AirbyteLogger,
-      invalidRecordStrategy: InvalidRecordStrategy,
-      stats: WriteStats,
-      processRecord: () => Promise<void>
-    ) => Promise<void>
+    private readonly recordProcessorHandler: RecordProcessorHandler
   ) {}
 
   async write(result: any): Promise<boolean> {
@@ -51,9 +50,7 @@ export class HasuraWriter {
 
   async end(): Promise<void> {
     for (const record of sortBy(this.timestampedRecords, (r) => r.at)) {
-      await this.handleRecordProcessingError(
-        this.logger,
-        this.invalidRecordStrategy,
+      await this.recordProcessorHandler.handleRecordProcessingError(
         this.stats,
         async () => {
           await this.hasuraClient.writeTimestampedRecord(record);

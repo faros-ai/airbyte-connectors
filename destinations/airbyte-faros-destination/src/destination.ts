@@ -343,14 +343,7 @@ export class FarosDestination extends AirbyteDestination {
         await hasura.loadSchema();
         await hasura.resetData(origin, deleteModelEntries);
 
-        const writer = new HasuraWriter(
-          hasura,
-          origin,
-          this.logger,
-          this.invalidRecordStrategy,
-          stats,
-          this.handleRecordProcessingError
-        );
+        const writer = new HasuraWriter(hasura, origin, stats, this);
 
         latestStateMessage = await this.writeEntries(
           streamContext,
@@ -472,79 +465,74 @@ export class FarosDestination extends AirbyteDestination {
     try {
       // Process input & write records
       for await (const line of input) {
-        await this.handleRecordProcessingError(
-          this.logger,
-          this.invalidRecordStrategy,
-          stats,
-          async () => {
-            const msg = parseAirbyteMessage(line);
+        await this.handleRecordProcessingError(stats, async () => {
+          const msg = parseAirbyteMessage(line);
 
-            stats.messagesRead++;
-            if (msg.type === AirbyteMessageType.STATE) {
-              stateMessage = msg as AirbyteStateMessage;
-            } else if (msg.type === AirbyteMessageType.RECORD) {
-              stats.recordsRead++;
-              const recordMessage = msg as AirbyteRecord;
-              if (!recordMessage.record) {
-                throw new VError('Empty record');
-              }
-              if (!streams[recordMessage.record.stream]) {
-                throw new VError(
-                  `Undefined stream ${recordMessage.record.stream}`
-                );
-              }
-              const unpacked = recordMessage.unpackRaw();
-              if (!unpacked.record) {
-                throw new VError('Empty unpacked record');
-              }
-              const stream = unpacked.record.stream;
-              stats.incrementProcessedByStream(stream);
+          stats.messagesRead++;
+          if (msg.type === AirbyteMessageType.STATE) {
+            stateMessage = msg as AirbyteStateMessage;
+          } else if (msg.type === AirbyteMessageType.RECORD) {
+            stats.recordsRead++;
+            const recordMessage = msg as AirbyteRecord;
+            if (!recordMessage.record) {
+              throw new VError('Empty record');
+            }
+            if (!streams[recordMessage.record.stream]) {
+              throw new VError(
+                `Undefined stream ${recordMessage.record.stream}`
+              );
+            }
+            const unpacked = recordMessage.unpackRaw();
+            if (!unpacked.record) {
+              throw new VError('Empty unpacked record');
+            }
+            const stream = unpacked.record.stream;
+            stats.incrementProcessedByStream(stream);
 
-              const converter = this.getConverter(stream);
-              // No need to fail on records we don't have a converter yet
-              if (!converter) {
-                stats.recordsSkipped++;
-                return;
-              }
-              // Collect all the used converters
-              if (!convertersUsed.has(stream)) {
-                convertersUsed.set(stream, converter);
-              }
+            const converter = this.getConverter(stream);
+            // No need to fail on records we don't have a converter yet
+            if (!converter) {
+              stats.recordsSkipped++;
+              return;
+            }
+            // Collect all the used converters
+            if (!convertersUsed.has(stream)) {
+              convertersUsed.set(stream, converter);
+            }
 
-              const writeRecord = async (
-                context: StreamContext
-              ): Promise<void> => {
-                stats.recordsWritten += await this.writeRecord(
-                  converter,
-                  unpacked,
-                  stats,
-                  context,
-                  writer
-                );
-                stats.recordsProcessed++;
-              };
+            const writeRecord = async (
+              context: StreamContext
+            ): Promise<void> => {
+              stats.recordsWritten += await this.writeRecord(
+                converter,
+                unpacked,
+                stats,
+                context,
+                writer
+              );
+              stats.recordsProcessed++;
+            };
 
-              // Check if any converters depend on this record stream.
-              // If yes, keep the record in the stream context for other converters to get.
-              const streamName = StreamName.fromString(stream).asString;
-              const recordId = converter.id(unpacked);
-              if (converterDependencies.has(streamName) && recordId) {
-                ctx.set(streamName, String(recordId), unpacked);
-                // Print stream context stats every so often
-                if (stats.recordsProcessed % 1000 == 0) {
-                  this.logger.info(`Stream context stats: ${ctx.stats()}`);
-                }
-              }
-              // Process the record immediately if converter has no dependencies,
-              // otherwise process it later once all streams are processed.
-              if (converter.dependencies.length === 0) {
-                await writeRecord(ctx);
-              } else {
-                recordsToBeProcessedLast.push(writeRecord);
+            // Check if any converters depend on this record stream.
+            // If yes, keep the record in the stream context for other converters to get.
+            const streamName = StreamName.fromString(stream).asString;
+            const recordId = converter.id(unpacked);
+            if (converterDependencies.has(streamName) && recordId) {
+              ctx.set(streamName, String(recordId), unpacked);
+              // Print stream context stats every so often
+              if (stats.recordsProcessed % 1000 == 0) {
+                this.logger.info(`Stream context stats: ${ctx.stats()}`);
               }
             }
+            // Process the record immediately if converter has no dependencies,
+            // otherwise process it later once all streams are processed.
+            if (converter.dependencies.length === 0) {
+              await writeRecord(ctx);
+            } else {
+              recordsToBeProcessedLast.push(writeRecord);
+            }
           }
-        );
+        });
       }
       // Process all the remaining records
       if (recordsToBeProcessedLast.length > 0) {
@@ -553,12 +541,7 @@ export class FarosDestination extends AirbyteDestination {
         );
         this.logger.info(`Stream context stats: ${ctx.stats()}`);
         for await (const process of recordsToBeProcessedLast) {
-          await this.handleRecordProcessingError(
-            this.logger,
-            this.invalidRecordStrategy,
-            stats,
-            () => process(ctx)
-          );
+          await this.handleRecordProcessingError(stats, () => process(ctx));
         }
       }
 
@@ -581,9 +564,7 @@ export class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private async handleRecordProcessingError(
-    logger: AirbyteLogger,
-    invalidRecordStrategy: InvalidRecordStrategy,
+  async handleRecordProcessingError(
     stats: WriteStats,
     processRecord: () => Promise<void>
   ): Promise<void> {
@@ -591,8 +572,10 @@ export class FarosDestination extends AirbyteDestination {
       await processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
-      logger.error(`Error processing input: ${e.message ?? JSON.stringify(e)}`);
-      switch (invalidRecordStrategy) {
+      this.logger.error(
+        `Error processing input: ${e.message ?? JSON.stringify(e)}`
+      );
+      switch (this.invalidRecordStrategy) {
         case InvalidRecordStrategy.SKIP:
           stats.recordsSkipped++;
           break;
