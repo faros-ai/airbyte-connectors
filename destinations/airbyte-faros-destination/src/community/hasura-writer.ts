@@ -5,6 +5,13 @@ import {WriteStats} from '../common/write-stats';
 import {HasuraClient} from './hasura-client';
 import {Operation, TimestampedRecord} from './types';
 
+export interface RecordProcessorHandler {
+  handleRecordProcessingError: (
+    stats: WriteStats,
+    processRecord: () => Promise<void>
+  ) => Promise<void>;
+}
+
 export class HasuraWriter {
   private readonly timestampedRecords: TimestampedRecord[] = [];
 
@@ -12,10 +19,7 @@ export class HasuraWriter {
     private readonly hasuraClient: HasuraClient,
     private readonly origin: string,
     private readonly stats: WriteStats,
-    private readonly handleRecordProcessingError: (
-      stats: WriteStats,
-      processRecord: () => Promise<void>
-    ) => Promise<void>
+    private readonly recordProcessorHandler: RecordProcessorHandler
   ) {}
 
   async write(result: any): Promise<boolean> {
@@ -45,13 +49,16 @@ export class HasuraWriter {
 
   async end(): Promise<void> {
     for (const record of sortBy(this.timestampedRecords, (r) => r.at)) {
-      await this.handleRecordProcessingError(this.stats, async () => {
-        await this.hasuraClient.writeTimestampedRecord(record);
-        this.stats.recordsWritten++;
-        this.stats.incrementWrittenByModel(
-          `${record.model}__${record.operation}`
-        );
-      });
+      await this.recordProcessorHandler.handleRecordProcessingError(
+        this.stats,
+        async () => {
+          await this.hasuraClient.writeTimestampedRecord(record);
+          this.stats.recordsWritten++;
+          this.stats.incrementWrittenByModel(
+            `${record.model}__${record.operation}`
+          );
+        }
+      );
     }
   }
 }

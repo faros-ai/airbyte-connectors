@@ -103,3 +103,7 @@ export const azurereposAllStreamsLog = readTestResourceFile(
 export const circleciAllStreamsLog = readTestResourceFile(
   'circleci/all-streams.log'
 );
+
+export const farosFeedsAllStreamsLog = readTestResourceFile(
+  'faros_feeds/all-streams.log'
+);
