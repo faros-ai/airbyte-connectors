@@ -44,7 +44,7 @@ describe('faros_feeds', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      faros_feed: 1000,
+      faros_feed: 1001,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -53,11 +53,9 @@ describe('faros_feeds', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      cicd_ReleaseTagAssociation__Deletion: 1,
-      tms_Project__Deletion: 1,
+      tms_TaskAssignment__Deletion: 1,
       tms_TaskBoard: 3,
       tms_TaskBoardProjectRelationship: 3,
-      tms_TaskBoardProjectRelationship__Deletion: 1,
       vcs_Commit: 34,
       vcs_Label: 2,
       vcs_Membership: 166,
