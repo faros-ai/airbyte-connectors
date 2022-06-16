@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "employeeId": {
+      "type": "string"
+    },
+    "fullName1": {
+      "type": "string"
+    },
+    "employeeNumber": {
+      "type": "string"
+    },
+    "jobTitle": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "employmentHistoryStatus": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "address1": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "address2": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "birthday": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bestEmail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workEmail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workPhone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "department": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ethnicity": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "firstName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lastName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gender": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "middleName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mobilePhone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "zipcode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "hireDate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payRate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payFrequency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisorId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "terminationDate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisorEId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supervisorEmail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

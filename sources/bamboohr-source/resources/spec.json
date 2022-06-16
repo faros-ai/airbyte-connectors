@@ -1,0 +1,33 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "BambooHR Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "domain"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "BambooHR API Key",
+        "description": "BambooHR API Key. Create by going to https://{{domain}}.bamboohr.com/settings/permissions/api.php",
+        "airbyte_secret": true
+      },
+      "domain": {
+        "type": "string",
+        "title": "domain",
+        "description": "Domain or Company domain",
+        "airbyte_secret": true
+      },
+      "version": {
+        "type": "string",
+        "title": "API Version",
+        "description": "BambooHR API Version",
+        "default": "v1"
+      }
+    }
+  }
+}
