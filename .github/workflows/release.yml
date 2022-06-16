@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch tags for check below.
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -34,11 +32,9 @@ jobs:
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Install dependencies
-        if: steps.check-tag.outputs.exists == 'false'
         run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
       - name: Publish CDK package
-        if: steps.check-tag.outputs.exists == 'false'
         run: |
           cd faros-airbyte-cdk && \
           npm i && \
@@ -48,7 +44,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Faros Destination package
-        if: steps.check-tag.outputs.exists == 'false'
         run: |
           cd destinations/airbyte-faros-destination && \
           npm i && \
