@@ -343,12 +343,7 @@ export class FarosDestination extends AirbyteDestination {
         await hasura.loadSchema();
         await hasura.resetData(origin, deleteModelEntries);
 
-        const writer = new HasuraWriter(
-          hasura,
-          origin,
-          stats,
-          this.handleRecordProcessingError
-        );
+        const writer = new HasuraWriter(hasura, origin, stats, this);
 
         latestStateMessage = await this.writeEntries(
           streamContext,
@@ -569,7 +564,7 @@ export class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private async handleRecordProcessingError(
+  async handleRecordProcessingError(
     stats: WriteStats,
     processRecord: () => Promise<void>
   ): Promise<void> {
