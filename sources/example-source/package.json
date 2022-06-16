@@ -1,6 +1,6 @@
 {
   "name": "example-source",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "Example Airbyte source",
   "keywords": [
     "airbyte",

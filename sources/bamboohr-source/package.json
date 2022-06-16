@@ -1,6 +1,6 @@
 {
   "name": "bamboohr-source",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "BambooHR Airbyte source",
   "keywords": [
     "airbyte",

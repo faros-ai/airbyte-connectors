@@ -1,6 +1,6 @@
 {
   "name": "docker-source",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "Docker Airbyte source",
   "keywords": [
     "airbyte",

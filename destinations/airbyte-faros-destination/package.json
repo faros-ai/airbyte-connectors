@@ -1,6 +1,6 @@
 {
   "name": "airbyte-faros-destination",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "Faros Destination for Airbyte",
   "keywords": [
     "airbyte",

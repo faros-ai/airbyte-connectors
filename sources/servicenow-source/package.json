@@ -1,6 +1,6 @@
 {
   "name": "servicenow-source",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "ServiceNow Airbyte source",
   "keywords": [
     "airbyte",

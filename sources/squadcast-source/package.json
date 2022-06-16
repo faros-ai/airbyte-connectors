@@ -1,6 +1,6 @@
 {
   "name": "squadcast-source",
-  "version": "0.1.99",
+  "version": "0.0.1",
   "description": "SquadCast Airbyte source",
   "keywords": [
     "airbyte",

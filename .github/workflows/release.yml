@@ -1,11 +1,8 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
+  release:
+    types: [created]
 
 jobs:
   publish-packages:
@@ -29,19 +26,12 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org
 
-      - name: Extract version
-        id: extract-version
+      - name: Extract tag version
+        id: extract-tag-version
         run: |
-          CDK_VERSION="$(jq -r '.version' < lerna.json)"
-          echo "CDK_VERSION=$CDK_VERSION" >> $GITHUB_ENV
-
-      - name: Check tag exists
-        uses: mukunku/tag-exists-action@v1.0.0
-        id: check-tag
-        with:
-          tag: v${{ env.CDK_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG="${GITHUB_REF:10}"
+          TAG_VERSION="${TAG//v/}"
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Install dependencies
         if: steps.check-tag.outputs.exists == 'false'
@@ -52,6 +42,7 @@ jobs:
         run: |
           cd faros-airbyte-cdk && \
           npm i && \
+          npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -61,19 +52,10 @@ jobs:
         run: |
           cd destinations/airbyte-faros-destination && \
           npm i && \
+          npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create tag
-        if: steps.check-tag.outputs.exists == 'false'
-        uses: pkgdeps/git-tag-action@v2.0.1
-        with:
-          git_commit_sha: ${{ github.sha }}
-          git_tag_prefix: v
-          github_repo: ${{ github.repository }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.CDK_VERSION }}
 
   publish-connectors:
     name: Publish connectors
@@ -82,6 +64,13 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
+
+      - name: Extract tag version
+        id: extract-tag-version
+        run: |
+          TAG="${GITHUB_REF:10}"
+          TAG_VERSION="${TAG//v/}"
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Docker login
         uses: docker/login-action@v2.0.0
@@ -95,5 +84,5 @@ jobs:
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
           do
-            ./scripts/publish-connector.sh $connector_path
+            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }}
           done
