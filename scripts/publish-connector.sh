@@ -3,7 +3,12 @@
 if [ -z "$1" ]; then
   error "Connector path not specified"
 fi
+
+if [ -z "$2" ]; then
+  error "Connector version not specified"
+fi
 connector_path=$1
+connector_version=$2
 
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 
@@ -17,7 +22,6 @@ else
 fi
 
 latest_tag="$image:latest"
-connector_version=$(jq -r '.version' < ${connector_path}package.json)
 version_tag="$image:$connector_version"
 echo "Image version tag: $version_tag"
 
