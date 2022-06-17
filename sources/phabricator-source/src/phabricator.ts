@@ -10,7 +10,7 @@ import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {trim, uniq} from 'lodash';
-import moment, {Moment} from 'moment';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -98,7 +98,7 @@ export class Phabricator {
 
   constructor(
     readonly client: Condoit,
-    readonly startDate: Moment,
+    readonly startDate: DateTime,
     readonly repositories: string[],
     readonly projects: string[],
     readonly limit: number,
@@ -141,8 +141,7 @@ export class Phabricator {
       {},
       axios as any // TODO: figure out how to deal with Axios versions mismatch
     );
-    const startDate = moment();
-    startDate.subtract(config.cutoff_days, 'd');
+    const startDate = DateTime.now().minus({days: config.cutoff_days});
     Phabricator.phabricator = new Phabricator(
       client,
       startDate,
@@ -277,7 +276,7 @@ export class Phabricator {
     committedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Commit, any, any> {
-    const committed = Math.max(committedAt ?? 0, this.startDate.unix());
+    const committed = Math.max(committedAt ?? 0, this.startDate.toMillis());
     this.logger.debug(`Fetching commits committed since ${committedAt}`);
 
     // Only repository IDs work as constraint filter for commits,
@@ -328,7 +327,7 @@ export class Phabricator {
     modifiedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Revision, any, any> {
-    const modified = Math.max(modifiedAt ?? 0, this.startDate.unix());
+    const modified = Math.max(modifiedAt ?? 0, this.startDate.toMillis());
     this.logger.debug(`Fetching revisions modified since ${modified}`);
 
     // Only repository IDs work as constraint filter for revisions,

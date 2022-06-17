@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "commander": "^9.0.0",
+    "commander": "^9.3.0",
     "condoit": "^2.1.0",
     "faros-airbyte-cdk": "0.0.1",
-    "moment": "^2.29.1",
+    "luxon": "^2.4.0",
     "verror": "^1.10.1"
   },
   "jest": {
