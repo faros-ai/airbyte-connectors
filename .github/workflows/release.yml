@@ -46,6 +46,7 @@ jobs:
       - name: Publish Faros Destination package
         run: |
           cd destinations/airbyte-faros-destination && \
+          cat package.json | jq --arg V "${{ env.TAG_VERSION }}" '.dependencies."faros-airbyte-cdk" = $V' > package.json && \
           npm i && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
