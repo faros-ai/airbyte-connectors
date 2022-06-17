@@ -72,6 +72,4 @@ docker run airbyte-faros-destination
 
 # Releasing
 
-[Create a new release](https://github.com/faros-ai/airbyte-connectors/releases/new) and GitHub Actions [release workflow](https://github.com/faros-ai/airbyte-connectors/blob/main/.github/workflows/release.yml) will automatically publish the packages to [NPM](https://www.npmjs.com/search?q=faros) and push Docker images to [Docker Hub](https://hub.docker.com/u/farosai).
-
-**Note:** If a connector is updated without incrementing the version, the release workflow will **NOT** overwrite the existing package/image.
+Create a [new GitHub Release](https://github.com/faros-ai/airbyte-connectors/releases/new). The [release workflow](https://github.com/faros-ai/airbyte-connectors/blob/main/.github/workflows/release.yml) will automatically publish the packages to [NPM](https://www.npmjs.com/search?q=faros) and push Docker images to [Docker Hub](https://hub.docker.com/u/farosai).
