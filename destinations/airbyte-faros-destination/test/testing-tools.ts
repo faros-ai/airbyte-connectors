@@ -1,13 +1,13 @@
 import fs from 'fs';
 import {Mockttp} from 'mockttp';
-import {AffixOptions, open, track} from 'temp';
+import tmp from 'tmp-promise';
 import {Dictionary} from 'ts-essentials';
+import util from 'util';
 
 import {Edition, InvalidRecordStrategy} from '../src/destination';
 
-// Automatically track and cleanup temp files at exit
-// TODO: this does not seem to work - figure out what's wrong
-track();
+// Remove all controlled temporary objects on process exit
+tmp.setGracefulCleanup();
 
 /**
  * Read a test resource by name
@@ -16,16 +16,15 @@ export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
 }
 
+const writeFile = util.promisify(fs.write);
+
 /**
  * Creates a temporary file
  * @return path to the temporary file
  */
-export async function tempFile(
-  data: string,
-  opts?: AffixOptions
-): Promise<string> {
-  const file = await open(opts);
-  fs.writeSync(file.fd, data, null, 'utf-8');
+export async function tempFile(data: string, postfix: string): Promise<string> {
+  const file = await tmp.file({postfix});
+  await writeFile(file.fd, data, null, 'utf-8');
   return file.path;
 }
 
@@ -68,7 +67,8 @@ export async function tempConfig(
     }`,
     source_specific_configs,
   };
-  return tempFile(JSON.stringify(conf), {suffix: '.json'});
+
+  return tempFile(JSON.stringify(conf), '.json');
 }
 
 export async function initMockttp(mockttp: Mockttp): Promise<void> {
