@@ -23,7 +23,7 @@ export class Projects extends AirbyteStreamBase {
     return require('../../resources/schemas/projects.json');
   }
   get primaryKey(): StreamKey {
-    throw 'phid';
+    return 'phid';
   }
   get cursorField(): string[] {
     return ['fields', 'dateModified'];

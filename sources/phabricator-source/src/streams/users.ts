@@ -23,7 +23,7 @@ export class Users extends AirbyteStreamBase {
     return require('../../resources/schemas/users.json');
   }
   get primaryKey(): StreamKey {
-    throw 'phid';
+    return 'phid';
   }
   get cursorField(): string[] {
     return ['fields', 'dateModified'];
