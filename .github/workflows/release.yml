@@ -37,7 +37,7 @@ jobs:
       - name: Publish Airbyte CDK package
         run: |
           cd faros-airbyte-cdk && \
-          npm i && \
+          npm ci && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
@@ -48,7 +48,7 @@ jobs:
           cd destinations/airbyte-faros-destination && \
           cat package.json | jq --arg V "${{ env.TAG_VERSION }}" '.dependencies."faros-airbyte-cdk" = $V' > package.tmp && \
           mv package.tmp package.json && \
-          npm i && \
+          npm ci && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
