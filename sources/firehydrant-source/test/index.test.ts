@@ -65,17 +65,16 @@ describe('index', () => {
       return new FireHydrant(null, null);
     });
     const source = new sut.FireHydrantSource(logger);
-    await expect(
-      source.checkConnection({
-        token: '',
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        "Please verify your token is correct. Error: Cannot read property 'get' of null"
-      ),
-    ]);
+    const res = await source.checkConnection({
+      token: '',
+      cutoff_days: 90,
+    });
+
+    expect(res[0]).toBe(false);
+    expect(res[1]).toBeDefined();
+    expect(res[1].message).toMatch(
+      /Please verify your token is correct. Error: Cannot read/
+    );
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {

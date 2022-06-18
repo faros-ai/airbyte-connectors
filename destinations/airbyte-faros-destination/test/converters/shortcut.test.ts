@@ -26,7 +26,6 @@ describe('shortcut', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('process records from all streams', async () => {

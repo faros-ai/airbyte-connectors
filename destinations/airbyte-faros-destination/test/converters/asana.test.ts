@@ -31,7 +31,6 @@ describe('asana', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('process and write records', async () => {
@@ -166,7 +165,6 @@ describe('asana', () => {
   });
 
   test('fail to process bad records when strategy is FAIL', async () => {
-    fs.unlinkSync(configPath);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
     const cli = await CLI.runWith([
       'write',

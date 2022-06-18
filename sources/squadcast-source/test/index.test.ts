@@ -69,10 +69,13 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    await expect(source.checkConnection({})).resolves.toStrictEqual([
-      false,
-      new VError('Please verify your token is correct. Error: some error'),
-    ]);
+    const res = await source.checkConnection({});
+
+    expect(res[0]).toBe(false);
+    expect(res[1]).toBeDefined();
+    expect(res[1].message).toMatch(
+      /Please verify your token is correct. Error: some error/
+    );
   });
 
   test('check connection - incorrect variables', async () => {

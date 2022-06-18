@@ -1,5 +1,4 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
@@ -26,7 +25,6 @@ describe('squadcast', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('process records from all streams', async () => {

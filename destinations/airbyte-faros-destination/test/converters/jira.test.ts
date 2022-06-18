@@ -44,7 +44,6 @@ describe('jira', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('check valid jira source config', async () => {

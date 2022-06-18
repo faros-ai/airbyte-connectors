@@ -41,17 +41,15 @@ describe('index', () => {
 
   test('check connection bad token', async () => {
     const source = new sut.OktaSource(logger);
-    await expect(
-      source.checkConnection({
-        token: 'secrettoken',
-        domain_name: 'dev-12345678',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Connection check failed. Please verify your token is correct. Error: API responded with status 401'
-      ),
-    ]);
+    const res = await source.checkConnection({
+      token: 'secrettoken',
+      domain_name: 'dev-12345678',
+    });
+    expect(res[0]).toBe(false);
+    expect(res[1]).toBeDefined();
+    expect(res[1].message).toMatch(
+      /Connection check failed. Please verify your token is correct. Error: API responded with status 401/
+    );
   });
 
   test('check connection good token', async () => {

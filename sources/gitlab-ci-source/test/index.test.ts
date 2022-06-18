@@ -62,12 +62,13 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     const source = new sut.GitlabCiSource(logger);
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Please verify your token is correct. Error: Response code 401 (Unauthorized)'
-      ),
-    ]);
+    const res = await source.checkConnection(config);
+
+    expect(res[0]).toBe(false);
+    expect(res[1]).toBeDefined();
+    expect(res[1].message).toStrictEqual(
+      'Please verify your token is correct. Error: Response code 401 (Unauthorized)'
+    );
   });
   test('streams - groups, use full_refresh sync mode', async () => {
     const fnGroupFunc = jest.fn();

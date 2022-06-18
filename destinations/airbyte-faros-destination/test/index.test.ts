@@ -3,7 +3,6 @@ import {
   AirbyteConnectionStatusMessage,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
-import fs from 'fs';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
@@ -22,7 +21,6 @@ describe('index', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('help', async () => {
@@ -58,47 +56,37 @@ describe('index', () => {
   });
 
   test('check community edition config', async () => {
-    let configPath: string;
-    try {
-      configPath = await tempConfig(
-        mockttp.url,
-        InvalidRecordStrategy.SKIP,
-        Edition.COMMUNITY
-      );
-      const cli = await CLI.runWith(['check', '--config', configPath]);
+    const configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.COMMUNITY
+    );
+    const cli = await CLI.runWith(['check', '--config', configPath]);
 
-      expect(await read(cli.stderr)).toBe('');
-      expect(await read(cli.stdout)).toBe(
-        JSON.stringify(
-          new AirbyteConnectionStatusMessage({
-            status: AirbyteConnectionStatus.SUCCEEDED,
-          })
-        ) + os.EOL
-      );
-      expect(await cli.wait()).toBe(0);
-    } finally {
-      fs.unlinkSync(configPath);
-    }
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toBe(
+      JSON.stringify(
+        new AirbyteConnectionStatusMessage({
+          status: AirbyteConnectionStatus.SUCCEEDED,
+        })
+      ) + os.EOL
+    );
+    expect(await cli.wait()).toBe(0);
   });
 
   test('fail check on invalid segment user id', async () => {
-    let configPath: string;
-    try {
-      configPath = await tempConfig(
-        mockttp.url,
-        InvalidRecordStrategy.SKIP,
-        Edition.COMMUNITY,
-        {segment_user_id: 'badid'}
-      );
-      const cli = await CLI.runWith(['check', '--config', configPath]);
+    const configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.COMMUNITY,
+      {segment_user_id: 'badid'}
+    );
+    const cli = await CLI.runWith(['check', '--config', configPath]);
 
-      expect(await read(cli.stderr)).toBe('');
-      expect(await read(cli.stdout)).toContain(
-        'Segment User Id badid is not a valid UUID.'
-      );
-      expect(await cli.wait()).toBe(0);
-    } finally {
-      fs.unlinkSync(configPath);
-    }
+    expect(await read(cli.stderr)).toBe('');
+    expect(await read(cli.stdout)).toContain(
+      'Segment User Id badid is not a valid UUID.'
+    );
+    expect(await cli.wait()).toBe(0);
   });
 });
