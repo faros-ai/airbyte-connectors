@@ -1,5 +1,4 @@
 import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
-import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -30,7 +29,6 @@ describe('jenkins', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('process and write records', async () => {
@@ -145,7 +143,6 @@ describe('jenkins', () => {
   });
 
   test('fail to process bad records when strategy is FAIL', async () => {
-    fs.unlinkSync(configPath);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
     const cli = await CLI.runWith([
       'write',

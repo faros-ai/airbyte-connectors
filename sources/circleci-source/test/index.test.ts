@@ -72,19 +72,16 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    await expect(
-      source.checkConnection({
-        token: '',
-        org_slugs: ['org_slugs'],
-        repo_names: ['repo_names'],
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        "CircleCI API request failed: Cannot read property 'get' of null"
-      ),
-    ]);
+    const res = await source.checkConnection({
+      token: '',
+      org_slugs: ['org_slugs'],
+      repo_names: ['repo_names'],
+      cutoff_days: 90,
+    });
+
+    expect(res[0]).toBe(false);
+    expect(res[1]).toBeDefined();
+    expect(res[1].message).toMatch(/CircleCI API request failed: Cannot read/);
   });
 
   test('streams - projects, use full_refresh sync mode', async () => {

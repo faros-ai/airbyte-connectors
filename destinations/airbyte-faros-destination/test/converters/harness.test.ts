@@ -1,5 +1,4 @@
 import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
-import fs from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -28,7 +27,6 @@ describe('harness', () => {
 
   afterEach(async () => {
     await mockttp.stop();
-    fs.unlinkSync(configPath);
   });
 
   test('skip to process bad records when strategy is SKIP', async () => {
@@ -64,7 +62,6 @@ describe('harness', () => {
   });
 
   test('fail to process bad records when strategy is FAIL', async () => {
-    fs.unlinkSync(configPath);
     configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
     const cli = await CLI.runWith([
       'write',
