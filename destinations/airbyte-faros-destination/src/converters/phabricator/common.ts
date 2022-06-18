@@ -80,7 +80,7 @@ export class PhabricatorCommon {
     const parts = message.split('\n\n');
     const revision = parts.find((p) => p.startsWith('Differential Revision:'));
     const revisionIdStr = revision
-      ? revision.split('/D').reverse()[0].trim()
+      ? revision.split('/D').reverse()[0].trim().split(/\s+/)[0]
       : undefined;
     const revisionId = Utils.parseIntegerWithDefault(revisionIdStr, -1);
 

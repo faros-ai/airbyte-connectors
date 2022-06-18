@@ -23,7 +23,7 @@ export class Revisions extends AirbyteStreamBase {
     return require('../../resources/schemas/revisions.json');
   }
   get primaryKey(): StreamKey {
-    throw 'phid';
+    return 'phid';
   }
   get cursorField(): string[] {
     return ['fields', 'dateModified'];

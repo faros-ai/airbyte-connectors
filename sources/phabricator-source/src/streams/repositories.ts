@@ -23,7 +23,7 @@ export class Repositories extends AirbyteStreamBase {
     return require('../../resources/schemas/repositories.json');
   }
   get primaryKey(): StreamKey {
-    throw 'phid';
+    return 'phid';
   }
   get cursorField(): string[] {
     return ['fields', 'dateModified'];

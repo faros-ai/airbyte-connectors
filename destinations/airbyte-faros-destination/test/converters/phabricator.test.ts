@@ -44,7 +44,7 @@ describe('phabricator', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      commits: 6,
+      commits: 7,
       projects: 4,
       repositories: 2,
       revisions: 3,
@@ -62,13 +62,13 @@ describe('phabricator', () => {
       tms_TaskBoard: 4,
       tms_TaskBoardProjectRelationship: 4,
       vcs_Branch: 2,
-      vcs_BranchCommitAssociation: 6,
-      vcs_Commit: 6,
+      vcs_BranchCommitAssociation: 7,
+      vcs_Commit: 7,
       vcs_Membership: 4,
       vcs_Organization: 2,
       vcs_PullRequest: 3,
       vcs_PullRequestReview: 3,
-      vcs_PullRequest__Update: 2,
+      vcs_PullRequest__Update: 3,
       vcs_Repository: 2,
       vcs_User: 4,
     };

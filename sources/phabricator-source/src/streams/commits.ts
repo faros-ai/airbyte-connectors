@@ -23,7 +23,7 @@ export class Commits extends AirbyteStreamBase {
     return require('../../resources/schemas/commits.json');
   }
   get primaryKey(): StreamKey {
-    throw ['fields', 'identifier'];
+    return ['fields', 'identifier'];
   }
   get cursorField(): string[] {
     return ['fields', 'committer', 'epoch'];
