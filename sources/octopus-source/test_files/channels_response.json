@@ -1,0 +1,228 @@
+{
+  "ItemType": "Channel",
+  "TotalResults": 2,
+  "ItemsPerPage": 5,
+  "NumberOfPages": 1,
+  "LastPageNumber": 0,
+  "Items": [
+      {
+        "Id": "Channels-1",
+        "Name": "Default",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": true,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-1",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-1/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-2",
+        "Name": "Default",
+        "Description": null,
+        "ProjectId": "Projects-2",
+        "LifecycleId": null,
+        "IsDefault": true,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-2/channels/Channels-2",
+          "Releases": "/api/Spaces-1/projects/Projects-2/channels/Channels-2/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-2"
+        }
+      },
+      {
+        "Id": "Channels-3",
+        "Name": "NewChannel",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-3",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-3/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-5",
+        "Name": "NewChannel-1",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-5",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-5/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-7",
+        "Name": "NewChannel-10",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-7",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-7/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-8",
+        "Name": "NewChannel-101",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-8",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-8/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-9",
+        "Name": "NewChannel-1012",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-9",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-9/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-10",
+        "Name": "NewChannel-10123",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-10",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-10/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-11",
+        "Name": "NewChannel-101234",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-11",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-11/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-12",
+        "Name": "NewChannel-1012345",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-12",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-12/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-14",
+        "Name": "NewChannel-17",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-14",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-14/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-15",
+        "Name": "NewChannel-178",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-15",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-15/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      },
+      {
+        "Id": "Channels-16",
+        "Name": "NewChannel-1789",
+        "Description": null,
+        "ProjectId": "Projects-1",
+        "LifecycleId": null,
+        "IsDefault": false,
+        "Rules": [],
+        "TenantTags": [],
+        "SpaceId": "Spaces-1",
+        "Links": {
+          "Self": "/api/Spaces-1/projects/Projects-1/channels/Channels-16",
+          "Releases": "/api/Spaces-1/projects/Projects-1/channels/Channels-16/releases{?skip,take,searchByVersion}",
+          "Project": "/api/Spaces-1/projects/Projects-1"
+        }
+      }
+
+  ],
+  "Links": {
+    "Self": "/api/Spaces-1/channels",
+    "Template": "/api/Spaces-1/channels{?name,skip,take,ids,partialName,clonedFromProjectId}",
+    "Page.All": "/api/Spaces-1/channels?skip=0&take=2147483647",
+    "Page.Current": "/api/Spaces-1/channels?skip=0&take=5",
+    "Page.Last": "/api/Spaces-1/channels?skip=0&take=5"
+  }
+}
+
+
+

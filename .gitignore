@@ -1,6 +1,7 @@
 lib/
 out/
 secrets/
+package-lock.json/
 node_modules/
 acceptance_tests_logs/
 .vscode/

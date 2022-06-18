@@ -1,0 +1,27 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Octopus Spec",
+    "type": "object",
+    "required": [
+      "apiKey",
+      "apiUri"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "title": "apiKey",
+        "description": "Octopus Api Key",
+        "airbyte_secret": true
+      },
+      "apiUri": {
+        "type": "string",
+        "title": "apiUri",
+        "description": "Octopus Api URL",
+        "airbyte_secret": false
+      }
+    }
+  }
+}
