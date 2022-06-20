@@ -29,65 +29,6 @@ describe('harness', () => {
     await mockttp.stop();
   });
 
-  test('skip to process bad records when strategy is SKIP', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(
-      JSON.stringify(
-        AirbyteRecord.make('mytestsource__harness__bad', {bad: 'dummy'})
-      ) +
-        os.EOL +
-        JSON.stringify(
-          AirbyteRecord.make('mytestsource__harness__something_else', {
-            foo: 'bar',
-          })
-        ) +
-        os.EOL,
-      'utf8'
-    );
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 1 records');
-    expect(stdout).toMatch('Would write 1 records');
-    expect(stdout).toMatch('Errored 1 records');
-    expect(stdout).toMatch('Skipped 1 records');
-    expect(await read(cli.stderr)).toMatch('');
-    expect(await cli.wait()).toBe(0);
-  });
-
-  test('fail to process bad records when strategy is FAIL', async () => {
-    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(
-      JSON.stringify(
-        AirbyteRecord.make('mytestsource__harness__bad', {bad: 'dummy'})
-      ) + os.EOL,
-      'utf8'
-    );
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('Processed 0 records');
-    expect(stdout).toMatch('Would write 0 records');
-    expect(stdout).toMatch('Errored 1 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__harness__bad');
-    expect(await cli.wait()).toBeGreaterThan(0);
-  });
-
   test('process records from all streams', async () => {
     const cli = await CLI.runWith([
       'write',
