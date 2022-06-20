@@ -1,10 +1,8 @@
-import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import os from 'os';
 import pino from 'pino';
 
-import {InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
 import {pagerdutyLog} from './data';
