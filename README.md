@@ -38,13 +38,12 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 # Development
 
 1. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Install Node.js `nvm install 14 && nvm use 14`
-3. Update `npm` to version 7.x by running `npm install -g npm@7`
-4. Install `lerna` by running `npm install -g lerna`
-5. Run `npm run prepare` to install dependencies for all projects (`npm run clean` to clean all)
-6. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope airbyte-faros-destination`)
-7. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope airbyte-faros-destination`)
-8. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope airbyte-faros-destination`)
+2. Install Node.js `nvm install 16 && nvm use 16`
+3. Install `lerna` by running `npm install -g lerna`
+4. Run `npm run prepare` to install dependencies for all projects (`npm run clean` to clean all)
+5. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope airbyte-faros-destination`)
+6. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope airbyte-faros-destination`)
+7. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope airbyte-faros-destination`)
 
 👉 Follow our guide on how to develop a new source [here](https://github.com/faros-ai/airbyte-connectors/tree/main/sources#developing-an-airbyte-source).
 

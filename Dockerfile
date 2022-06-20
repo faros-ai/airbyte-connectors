@@ -1,7 +1,7 @@
-FROM node:14-alpine
+FROM node:16-alpine
 
 WORKDIR /home/node/airbyte
-RUN npm install -g npm@7 lerna tsc
+RUN npm install -g lerna tsc
 
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/jest\|mockttp/d" package.json

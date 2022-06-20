@@ -44,10 +44,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Install dependencies
-        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+        run: npm install -g lerna && lerna bootstrap --hoist
 
       - name: Test
         run: lerna run test-cov
