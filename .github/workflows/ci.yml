@@ -50,6 +50,8 @@ jobs:
         run: npm install -g lerna && lerna bootstrap --hoist
 
       - name: Test
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: lerna run test-cov
 
       - name: Run Jenkins server
