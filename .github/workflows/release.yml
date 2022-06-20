@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org
 
       - name: Extract tag version
@@ -32,7 +32,7 @@ jobs:
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+        run: npm install -g lerna && lerna bootstrap --hoist
 
       - name: Publish Airbyte CDK package
         run: |
