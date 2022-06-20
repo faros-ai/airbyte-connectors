@@ -189,7 +189,7 @@ interface AirbyteErrorTrace {
   error: any;
 }
 
-export class AirbyteTraceMessage implements AirbyteMessage {
+export class AirbyteErrorTraceMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
   private readonly trace: AirbyteErrorTrace;
   constructor(error: any) {

@@ -5,7 +5,7 @@ import pino from 'pino';
 
 import {CLI, read} from '../cli';
 import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
-import {pagerdutyLog} from './data';
+import {pagerdutyAllStreamsLog} from './data';
 
 describe('pagerduty', () => {
   const logger = pino({
@@ -38,7 +38,7 @@ describe('pagerduty', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(pagerdutyLog, 'utf8');
+    cli.stdin.end(pagerdutyAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);

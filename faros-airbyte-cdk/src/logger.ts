@@ -2,12 +2,12 @@ import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
 
 import {
+  AirbyteErrorTraceMessage,
   AirbyteLog,
   AirbyteLogLevel,
   AirbyteLogLevelOrder,
   AirbyteMessage,
   AirbyteMessageType,
-  AirbyteTraceMessage,
 } from './protocol';
 
 export class AirbyteLogger {
@@ -41,7 +41,7 @@ export class AirbyteLogger {
   }
 
   trace(error: any): void {
-    this.write(new AirbyteTraceMessage(error));
+    this.write(new AirbyteErrorTraceMessage(error));
   }
 
   private log(level: AirbyteLogLevel, message: string): void {
