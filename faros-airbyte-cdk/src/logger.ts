@@ -7,6 +7,7 @@ import {
   AirbyteLogLevelOrder,
   AirbyteMessage,
   AirbyteMessageType,
+  AirbyteTraceMessage,
 } from './protocol';
 
 export class AirbyteLogger {
@@ -39,8 +40,8 @@ export class AirbyteLogger {
     this.log(AirbyteLogLevel.DEBUG, message);
   }
 
-  trace(message: string): void {
-    this.log(AirbyteLogLevel.TRACE, message);
+  trace(error: any): void {
+    this.write(new AirbyteTraceMessage(error));
   }
 
   private log(level: AirbyteLogLevel, message: string): void {

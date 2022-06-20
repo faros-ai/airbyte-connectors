@@ -3,14 +3,17 @@ import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
+import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteDestination} from './destination';
 
-export class AirbyteDestinationRunner {
+export class AirbyteDestinationRunner extends Runner {
   constructor(
     private readonly logger: AirbyteLogger,
     private readonly destination: AirbyteDestination
-  ) {}
+  ) {
+    super(logger);
+  }
 
   mainCommand(): Command {
     return new Command()
