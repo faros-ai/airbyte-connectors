@@ -6,25 +6,18 @@ export const githubAllStreamsLog = readTestResourceFile(
   'github/all-streams.log'
 );
 
-export const jenkinsLog = readTestResourceFile('jenkins/streams.log');
 export const jenkinsAllStreamsLog = readTestResourceFile(
   'jenkins/all-streams.log'
 );
 
 export const jiraAllStreamsLog = readTestResourceFile('jira/all-streams.log');
 
-export const asanaLog = readTestResourceFile('asana/streams.log');
-export const asanaPGRawLog = readTestResourceFile('asana/pg-raw.log');
 export const asanaAllStreamsLog = readTestResourceFile('asana/all-streams.log');
 
-export const gitlabLog = readTestResourceFile('gitlab/streams.log');
-export const gitlabPGRawLog = readTestResourceFile('gitlab/pg-raw.log');
 export const gitlabAllStreamsLog = readTestResourceFile(
   'gitlab/all-streams.log'
 );
 
-export const gitlabCiLog = readTestResourceFile('gitlab-ci/streams.log');
-export const gitlabCiPGRawLog = readTestResourceFile('gitlab-ci/pg-raw.log');
 export const gitlabCiAllStreamsLog = readTestResourceFile(
   'gitlab-ci/all-streams.log'
 );
@@ -51,7 +44,9 @@ export const harnessAllStreamsLog = readTestResourceFile(
   'harness/all-streams.log'
 );
 
-export const pagerdutyLog = readTestResourceFile('pagerduty/streams.log');
+export const pagerdutyAllStreamsLog = readTestResourceFile(
+  'pagerduty/all-streams.log'
+);
 
 export const squadcastAllStreamsLog = readTestResourceFile(
   'squadcast/all-streams.log'

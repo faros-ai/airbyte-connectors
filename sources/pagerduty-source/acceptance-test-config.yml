@@ -13,7 +13,7 @@ tests:
   basic_read:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"
-      empty_streams: ["priorities_resource"]
+      empty_streams: ["priorities_resource", "teams"]
   full_refresh:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"

@@ -1,3 +1,4 @@
+import {toPlainObject} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -34,6 +35,7 @@ export enum AirbyteMessageType {
   RECORD = 'RECORD',
   SPEC = 'SPEC',
   STATE = 'STATE',
+  TRACE = 'TRACE',
 }
 
 export enum AirbyteConnectionStatus {
@@ -178,6 +180,24 @@ export class AirbyteRecord implements AirbyteMessage {
       emitted_at: Date.now(),
       data,
     });
+  }
+}
+
+interface AirbyteErrorTrace {
+  type: 'ERROR';
+  emitted_at: number;
+  error: any;
+}
+
+export class AirbyteErrorTraceMessage implements AirbyteMessage {
+  readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
+  private readonly trace: AirbyteErrorTrace;
+  constructor(error: any) {
+    this.trace = {
+      type: 'ERROR',
+      emitted_at: Date.now(),
+      error,
+    };
   }
 }
 
