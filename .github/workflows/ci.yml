@@ -46,29 +46,29 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install dependencies
-        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+      #- name: Install dependencies
+        #run: npm install -g npm@7 lerna && lerna bootstrap --hoist
 
-      - name: Test
-        run: lerna run test-cov
+      #- name: Test
+        #run: lerna run test-cov
 
-      - name: Run Jenkins server
-        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
-        run: |
-          mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
-          docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
-          echo "Waiting until Jenkins is up"
-          waiting=0
-          until curl -s -I -X GET http://127.0.0.1:8080; do
-            docker ps -a
-            let waiting+=3
-            sleep 3
-            if [ $waiting -eq 120 ]; then
-              echo "Jenkins server did not respond within 120 seconds"
-              exit 42
-            fi
-          done
-          sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
+      #- name: Run Jenkins server
+        #if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
+        #run: |
+          #mkdir -p ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data/secrets/
+          #docker run -d -u 0 -i --name jenkins -p 8080:8080 -p 50000:50000 -v ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data:/var/jenkins_home jenkins/jenkins:lts-jdk11
+          #echo "Waiting until Jenkins is up"
+          #waiting=0
+          #until curl -s -I -X GET http://127.0.0.1:8080; do
+            #docker ps -a
+            #let waiting+=3
+            #sleep 3
+            #if [ $waiting -eq 120 ]; then
+              #echo "Jenkins server did not respond within 120 seconds"
+              #exit 42
+            #fi
+          #done
+          #sudo chown -R $USER:$USER ${{ github.workspace }}/sources/jenkins-source/test_files/jenkins/data
 
       - name: Source Acceptance Test
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
@@ -78,6 +78,7 @@ jobs:
           AZUREPIPELINE_SOURCE_TEST_CONFIG: ${{ secrets.AZUREPIPELINE_SOURCE_TEST_CONFIG }}
           AZURE_REPOS_SOURCE_TEST_CONFIG: ${{ secrets.AZURE_REPOS_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
+          BAMBOOHR_SOURCE_TEST_CONFIG: ${{ secrets.BAMBOOHR_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           BUILDKITE_SOURCE_TEST_CONFIG: ${{ secrets.BUILDKITE_SOURCE_TEST_CONFIG }}
           CIRCLECI_SOURCE_TEST_CONFIG: ${{ secrets.CIRCLECI_SOURCE_TEST_CONFIG }}
@@ -104,8 +105,8 @@ jobs:
             esac
           done
 
-      - name: Stop Jenkins server
-        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
-        run: |
-          docker stop jenkins
-          docker rm jenkins
+      #- name: Stop Jenkins server
+        #if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
+        #run: |
+          #docker stop jenkins
+          #docker rm jenkins
