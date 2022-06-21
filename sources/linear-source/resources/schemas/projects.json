@@ -24,6 +24,15 @@
                 "null"
             ]
         },
+        "progress": {
+            "type": "number"
+        },
+        "completedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
         "createdAt": {
             "type": "string"
         }

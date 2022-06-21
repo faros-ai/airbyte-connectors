@@ -87,6 +87,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
                 }
             }
         },
@@ -117,6 +120,22 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "cycle": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "creator": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "string"
                 }
             }

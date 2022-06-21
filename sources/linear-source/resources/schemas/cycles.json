@@ -32,6 +32,12 @@
         },
         "createdAt": {
             "type": "string"
+        },
+        "completedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
         }
     }
 }

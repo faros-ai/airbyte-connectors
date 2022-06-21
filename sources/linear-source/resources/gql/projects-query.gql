@@ -6,6 +6,8 @@ query Projects {
       description
       createdAt
       updatedAt
+			completedAt
+			progress 
     }
   }
 }

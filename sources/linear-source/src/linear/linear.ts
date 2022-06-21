@@ -30,38 +30,44 @@ const ISSUES_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'issues-query.gql'),
   'utf8'
 );
-
-export interface IDName {
+export interface CommonKey {
   readonly id: string;
   readonly name: string;
 }
 
-export interface IssueLabel extends IDName {
+export interface Assignee extends CommonKey {
+  readonly createdAt: string;
+}
+
+export interface IssueLabel extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
 }
 
-export interface User extends IDName {
+export interface User extends CommonKey {
   readonly displayName: string;
   readonly email: string;
   readonly createdAt: string;
 }
 
-export interface Project extends IDName {
+export interface Project extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
+  readonly completedAt: string;
   readonly updatedAt: string;
+  readonly progress: number;
 }
 
-export interface Cycle extends IDName {
+export interface Cycle extends CommonKey {
   readonly number: number;
   readonly progress: number;
   readonly createdAt: string;
   readonly startsAt: string;
   readonly endsAt: string;
+  readonly completedAt: string;
 }
 
-export interface Team extends IDName {
+export interface Team extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
   readonly updatedAt: string;
@@ -74,8 +80,8 @@ export interface IssueHistory {
     id: string;
   };
   readonly createdAt: string;
-  readonly fromState: IDName;
-  readonly toState: IDName;
+  readonly fromState: CommonKey;
+  readonly toState: CommonKey;
 }
 
 export interface Issue {
@@ -84,16 +90,22 @@ export interface Issue {
   readonly description: string;
   readonly priority: number;
   readonly url: string;
-  readonly state: IDName;
+  readonly state: CommonKey;
   readonly history: [IssueHistory];
   readonly parent: {
     id: string;
   };
-  readonly assignee: IDName;
+  readonly assignee: Assignee;
   readonly createdAt: string;
   readonly updatedAt: string;
-  readonly labels: [IDName];
-  readonly project: IDName;
+  readonly labels: [CommonKey];
+  readonly project: CommonKey;
+  readonly cycle: {
+    id: string;
+  };
+  readonly creator: {
+    id: string;
+  };
 }
 
 export interface LinearConfig {

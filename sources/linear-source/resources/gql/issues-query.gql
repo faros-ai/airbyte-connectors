@@ -33,6 +33,7 @@ query Issue($id: String!) {
     assignee {
       id
       name
+      createdAt
     }
     createdAt
     updatedAt
@@ -45,6 +46,12 @@ query Issue($id: String!) {
     project {
       id
       name
+    }
+    cycle {
+      id
+    }
+    creator {
+      id
     }
   }
 }

@@ -9,7 +9,8 @@ query Cycle {
 			completedScopeHistory
 			startsAt
 			endsAt
-			createdAt 
+			createdAt
+			completedAt
 		}
   }
 }
