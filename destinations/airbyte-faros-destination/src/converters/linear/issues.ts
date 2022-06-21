@@ -7,7 +7,6 @@ import {Issue, TaskField, TaskStatusChange} from './models';
 
 export class Issues extends LinearConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_Label',
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskBoardRelationship',
@@ -43,6 +42,17 @@ export class Issues extends LinearConverter {
         });
       }
     }
+    for (const label of issue.labels ?? []) {
+      res.push({
+        model: 'tms_TaskTag',
+        record: {
+          task: taskKey,
+          label: {
+            name: label.name,
+          },
+        },
+      });
+    }
     if (issue.assignee) {
       res.push({
         model: 'tms_TaskAssignment',
@@ -61,7 +71,10 @@ export class Issues extends LinearConverter {
         name: issue.title,
         description: issue.description?.substring(0, maxDescriptionLength),
         priority: String(issue.priority),
-        type: LinearCommon.getTaskType(issue.labels[0]),
+        type:
+          issue.labels && issue.labels.length
+            ? LinearCommon.getTaskType(issue.labels[0])
+            : undefined,
         status,
         additionalFields,
         createdAt: Utils.toDate(issue.createdAt),
