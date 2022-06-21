@@ -1,0 +1,11 @@
+query Projects {
+  projects {
+    nodes {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+}
