@@ -49,8 +49,7 @@ describe('index', () => {
     const source = new sut.LinearSource(logger);
     await expect(
       source.checkConnection({
-        token: '',
-        cutoff_days: 90,
+        api_key: 'api_key',
       })
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -61,29 +60,23 @@ describe('index', () => {
     });
     const source = new sut.LinearSource(logger);
     const res = await source.checkConnection({
-      token: '',
-      cutoff_days: 90,
+      api_key: '',
     });
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
     expect(res[1].message).toMatch(
-      /Please verify your token is correct. Error: Cannot read/
+      "Please verify your API key is correct. Error: Cannot read properties of null (reading 'request')"
     );
   });
 
-  test('streams - pipelines, use full_refresh sync mode', async () => {
-    const fnPipelinesList = jest.fn();
+  test('streams - cycles, use full_refresh sync mode', async () => {
+    const fnCyclesList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
       return new Linear({
-        request: fnPipelinesList.mockResolvedValue({
-          organization: {
-            pipelines: {
-              edges: readTestResourceFile('pipelines_input.json'),
-              pageInfo: {
-                endCursor: undefined,
-              },
-            },
+        request: fnCyclesList.mockResolvedValue({
+          cycles: {
+            nodes: readTestResourceFile('cycles.json'),
           },
         }),
       } as any);
@@ -91,27 +84,23 @@ describe('index', () => {
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
 
-    const pipelinesStream = streams[1];
-    const pipesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
-    const pipelines = [];
-    for await (const pipeline of pipesIter) {
-      pipelines.push(pipeline);
+    const cyclesStream = streams[0];
+    const cyclesIter = cyclesStream.readRecords(SyncMode.FULL_REFRESH);
+    const cycles = [];
+    for await (const cycle of cyclesIter) {
+      cycles.push(cycle);
     }
-    expect(fnPipelinesList).toHaveBeenCalledTimes(1);
-    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+    expect(fnCyclesList).toHaveBeenCalledTimes(1);
+    expect(cycles).toStrictEqual(readTestResourceFile('cycles.json'));
   });
-  test('streams - builds, use full_refresh sync mode', async () => {
-    const fnBuildsList = jest.fn();
+
+  test('streams - issuelabels, use full_refresh sync mode', async () => {
+    const fnIssueLabelsList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
       return new Linear({
-        request: fnBuildsList.mockResolvedValue({
-          pipeline: {
-            builds: {
-              edges: readTestResourceFile('builds_input.json'),
-              pageInfo: {
-                endCursor: undefined,
-              },
-            },
+        request: fnIssueLabelsList.mockResolvedValue({
+          issueLabels: {
+            nodes: readTestResourceFile('issuelabels.json'),
           },
         }),
       } as any);
@@ -119,13 +108,87 @@ describe('index', () => {
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
 
-    const buildsStream = streams[2];
-    const buildsIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);
-    const builds = [];
-    for await (const build of buildsIter) {
-      builds.push(build);
+    const issuelabelsStream = streams[1];
+    const issuelabelsIter = issuelabelsStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const issuelabels = [];
+    for await (const issuelabel of issuelabelsIter) {
+      issuelabels.push(issuelabel);
     }
-    expect(fnBuildsList).toHaveBeenCalledTimes(2);
-    expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
+    expect(fnIssueLabelsList).toHaveBeenCalledTimes(1);
+    expect(issuelabels).toStrictEqual(readTestResourceFile('issuelabels.json'));
+  });
+
+  test('streams - projects, use full_refresh sync mode', async () => {
+    const fnProjectsList = jest.fn();
+    Linear.instance = jest.fn().mockImplementation(() => {
+      return new Linear({
+        request: fnProjectsList.mockResolvedValue({
+          projects: {
+            nodes: readTestResourceFile('projects.json'),
+          },
+        }),
+      } as any);
+    });
+    const source = new sut.LinearSource(logger);
+    const streams = source.streams({});
+
+    const projectsStream = streams[3];
+    const projectsIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
+    const projects = [];
+    for await (const project of projectsIter) {
+      projects.push(project);
+    }
+    expect(fnProjectsList).toHaveBeenCalledTimes(1);
+    expect(projects).toStrictEqual(readTestResourceFile('projects.json'));
+  });
+
+  test('streams - teams, use full_refresh sync mode', async () => {
+    const fnTeamsList = jest.fn();
+    Linear.instance = jest.fn().mockImplementation(() => {
+      return new Linear({
+        request: fnTeamsList.mockResolvedValue({
+          teams: {
+            nodes: readTestResourceFile('teams_input.json'),
+          },
+        }),
+      } as any);
+    });
+    const source = new sut.LinearSource(logger);
+    const streams = source.streams({});
+
+    const teamsStream = streams[4];
+    const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
+    const teams = [];
+    for await (const team of teamsIter) {
+      teams.push(team);
+    }
+    expect(fnTeamsList).toHaveBeenCalledTimes(1);
+    expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
+  });
+
+  test('streams - users, use full_refresh sync mode', async () => {
+    const fnTeamsList = jest.fn();
+    Linear.instance = jest.fn().mockImplementation(() => {
+      return new Linear({
+        request: fnTeamsList.mockResolvedValue({
+          users: {
+            nodes: readTestResourceFile('users.json'),
+          },
+        }),
+      } as any);
+    });
+    const source = new sut.LinearSource(logger);
+    const streams = source.streams({});
+
+    const usersStream = streams[5];
+    const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of usersIter) {
+      users.push(user);
+    }
+    expect(fnTeamsList).toHaveBeenCalledTimes(1);
+    expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 });

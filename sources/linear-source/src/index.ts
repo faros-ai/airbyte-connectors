@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Linear, LinearConfig} from './linear/linear';
-import {Cycles, Issues, Projects, Teams, Users} from './streams';
+import {Cycles, Issuelabels, Issues, Projects, Teams, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -36,6 +36,7 @@ export class LinearSource extends AirbyteSourceBase {
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
       new Cycles(config as LinearConfig, this.logger),
+      new Issuelabels(config as LinearConfig, this.logger),
       new Issues(config as LinearConfig, this.logger),
       new Projects(config as LinearConfig, this.logger),
       new Teams(config as LinearConfig, this.logger),

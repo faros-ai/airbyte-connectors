@@ -22,6 +22,10 @@ const TEAMS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'teams-query.gql'),
   'utf8'
 );
+const ISSUELABELS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', '..', 'resources', 'gql', 'issuelabels-query.gql'),
+  'utf8'
+);
 const ISSUES_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'issues-query.gql'),
   'utf8'
@@ -30,6 +34,11 @@ const ISSUES_QUERY = fs.readFileSync(
 export interface IDName {
   readonly id: string;
   readonly name: string;
+}
+
+export interface IssueLabel extends IDName {
+  readonly description: string;
+  readonly createdAt: string;
 }
 
 export interface User extends IDName {
@@ -160,6 +169,13 @@ export class Linear {
       };
       team.members = node.members.nodes;
       yield team;
+    }
+  }
+
+  async *getIssueLabel(): AsyncGenerator<IssueLabel> {
+    const data = await this.graphClient.request(ISSUELABELS_QUERY, {});
+    for (const node of data.issueLabels.nodes ?? []) {
+      yield node;
     }
   }
 
