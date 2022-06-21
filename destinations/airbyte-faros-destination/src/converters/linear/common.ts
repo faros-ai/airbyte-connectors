@@ -65,7 +65,7 @@ export abstract class LinearConverter extends Converter {
   }
 
   protected linearConfig(ctx: StreamContext): LinearConfig {
-    return ctx.config.source_specific_configs?.backlog ?? {};
+    return ctx.config.source_specific_configs?.linear ?? {};
   }
 
   protected maxDescriptionLength(ctx: StreamContext): number {
