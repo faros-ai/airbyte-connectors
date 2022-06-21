@@ -115,3 +115,10 @@ export enum SprintState {
   Future = 'Future',
   Default = 'Default',
 }
+
+export enum EpicStatusCategory {
+  Custom = 'Custom',
+  Done = 'Done',
+  InProgress = 'InProgress',
+  Todo = 'Todo',
+}

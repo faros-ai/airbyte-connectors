@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Converter, StreamContext} from '../converter';
 import {
   CommonKey,
-  IssueLabel,
+  EpicStatusCategory,
   SprintState,
   TaskCategory,
   TaskStatus,
@@ -48,6 +48,10 @@ export class LinearCommon {
   static getSprintState(completedAt: string): string {
     if (completedAt) return SprintState.Closed;
     return SprintState.Active;
+  }
+  static getEpicStatus(completedAt: string): string {
+    if (completedAt) return EpicStatusCategory.Done;
+    return EpicStatusCategory.InProgress;
   }
 }
 

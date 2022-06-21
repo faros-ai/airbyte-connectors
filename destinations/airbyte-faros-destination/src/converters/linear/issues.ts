@@ -75,6 +75,9 @@ export class Issues extends LinearConverter {
           ? {uid: String(issue.creator.id), source}
           : undefined,
         sprint: issue.cycle ? {uid: String(issue.cycle.id), source} : undefined,
+        epic: issue.project
+          ? {uid: String(issue.project.id), source}
+          : undefined,
       },
     });
     if (issue.project) {

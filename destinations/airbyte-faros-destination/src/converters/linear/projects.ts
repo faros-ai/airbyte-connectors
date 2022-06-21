@@ -1,11 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {LinearConverter} from './common';
+import {LinearCommon, LinearConverter} from './common';
 import {Project} from './models';
 
 export class Projects extends LinearConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Epic',
     'tms_Project',
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
@@ -21,6 +22,22 @@ export class Projects extends LinearConverter {
 
     const maxDescriptionLength = this.maxDescriptionLength(ctx);
 
+    res.push({
+      model: 'tms_Epic',
+      record: {
+        uid,
+        name: project.name,
+        description: project.description?.substring(0, maxDescriptionLength),
+        status: {
+          category: LinearCommon.getEpicStatus(project.completedAt),
+        },
+        project: {
+          uid,
+          source,
+        },
+        source,
+      },
+    });
     res.push({
       model: 'tms_Project',
       record: {
