@@ -15,12 +15,12 @@ import {Cycles, Issues, Projects, Teams, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
-  const source = new BuildkiteSource(logger);
+  const source = new LinearSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Linear source implementation. */
-export class BuildkiteSource extends AirbyteSourceBase {
+export class LinearSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

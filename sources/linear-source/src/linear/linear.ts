@@ -133,48 +133,50 @@ export class Linear {
 
   async *getUsers(): AsyncGenerator<User> {
     const data = await this.graphClient.request(USERS_QUERY, {});
-    for (const node of data.data.users.nodes ?? []) {
+    for (const node of data.users.nodes ?? []) {
       yield node;
     }
   }
 
   async *getProjects(): AsyncGenerator<Project> {
     const data = await this.graphClient.request(PROJECTS_QUERY, {});
-    for (const node of data.data.projects.nodes ?? []) {
+    for (const node of data.projects.nodes ?? []) {
       yield node;
     }
   }
 
   async *getCycles(): AsyncGenerator<Cycle> {
     const data = await this.graphClient.request(CYCLES_QUERY, {});
-    for (const node of data.data.cycles.nodes ?? []) {
+    for (const node of data.cycles.nodes ?? []) {
       yield node;
     }
   }
 
   async *getTeams(): AsyncGenerator<Team> {
     const data = await this.graphClient.request(TEAMS_QUERY, {});
-    for (const node of data.data.teams.nodes ?? []) {
+    for (const node of data.teams.nodes ?? []) {
       const team = {
         ...node,
       };
-      team.members = node.members.nodes.map((e) => {
-        return e;
-      });
+      team.members = node.members.nodes;
       yield team;
     }
   }
 
   async *getIssues(): AsyncGenerator<Issue> {
     const data = await this.graphClient.request(TEAMS_QUERY, {});
-    for (const node of data.data.teams.nodes ?? []) {
-      for (const issue of node.issues.nodes) {
-        const issueId = issue.id;
+    for (const node of data.teams.nodes ?? []) {
+      for (const issueItem of node.issues.nodes) {
+        const issueId = issueItem.id;
         const variables = {
           id: issueId,
         };
         const data = await this.graphClient.request(ISSUES_QUERY, variables);
-        yield data.issue;
+        yield {
+          ...data.issue,
+          history: data.issue.history?.nodes,
+          labels: data.issue.labels?.nodes,
+        };
       }
     }
   }

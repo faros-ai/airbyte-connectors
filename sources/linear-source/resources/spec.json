@@ -12,7 +12,7 @@
       "token": {
         "type": "string",
         "title": "api_key",
-        "description": "To create api_key go to https://buildkite.com/user/api-access-tokens",
+        "description": "To create api_key go to https://linear.app/{team}/settings/api",
         "airbyte_secret": true
       }
     }
