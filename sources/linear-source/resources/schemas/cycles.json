@@ -3,67 +3,35 @@
     "type": "object",
     "additionalProperties": true,
     "properties": {
-        "uuid": {
+        "id": {
             "type": "string"
         },
-        "message": {
-            "type": "string"
+        "name": {
+            "type": [
+                "string",
+                "null"
+            ]
         },
         "number": {
             "type": "number"
         },
+        "progress": {
+            "type": "number"
+        },
+        "startsAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "endsAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
         "createdAt": {
             "type": "string"
-        },
-        "startedAt": {
-            "type": ["string","null"]
-        },
-        "finishedAt": {
-            "type": ["string","null"]
-        },
-        "state": {
-            "type": "string"
-        },
-        "url": {
-            "type": "string"
-        },
-        "commit": {
-            "type": "string"
-        },
-        "pipeline": {
-            "type": "object",
-            "properties": {
-                "slug": {
-                    "type": "string"
-                },
-                "repository": {
-                    "type": "object",
-                    "properties": {
-                        "url": {
-                            "type": "string"
-                        },
-                        "provider": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "organization": {
-                    "type": "object",
-                    "properties": {
-                        "slug": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "cursor": {
-            "type": ["string","null"]
         }
     }
 }

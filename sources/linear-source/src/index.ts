@@ -10,7 +10,7 @@ import {
 import VError from 'verror';
 
 import {Linear, LinearConfig} from './linear/linear';
-import {Cycles, Projects, Users} from './streams';
+import {Cycles, Issues, Projects, Teams, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -36,7 +36,9 @@ export class BuildkiteSource extends AirbyteSourceBase {
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
     return [
       new Cycles(config as LinearConfig, this.logger),
+      new Issues(config as LinearConfig, this.logger),
       new Projects(config as LinearConfig, this.logger),
+      new Teams(config as LinearConfig, this.logger),
       new Users(config as LinearConfig, this.logger),
     ];
   }

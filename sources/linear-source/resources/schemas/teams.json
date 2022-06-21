@@ -12,17 +12,25 @@
                 "null"
             ]
         },
-        "displayName": {
+        "description": {
             "type": [
                 "string",
                 "null"
             ]
         },
-        "email": {
-            "type": "string"
-        },
         "createdAt": {
             "type": "string"
+        },
+        "updatedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "members": {
+            "type": [
+                "array"
+            ]
         }
     }
 }

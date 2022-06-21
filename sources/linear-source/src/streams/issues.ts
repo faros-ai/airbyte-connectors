@@ -1,0 +1,37 @@
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
+import {Dictionary} from 'ts-essentials';
+
+import {Issue, Linear, LinearConfig} from '../linear/linear';
+
+export class Issues extends AirbyteStreamBase {
+  constructor(
+    private readonly config: LinearConfig,
+    protected readonly logger: AirbyteLogger
+  ) {
+    super(logger);
+  }
+
+  getJsonSchema(): Dictionary<any, string> {
+    return require('../../resources/schemas/projects.json');
+  }
+  get primaryKey(): StreamKey {
+    return 'id';
+  }
+  get cursorField(): string | string[] {
+    return ['createdAt'];
+  }
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: Dictionary<any>
+  ): AsyncGenerator<Issue> {
+    const linear = Linear.instance(this.config, this.logger);
+    yield* linear.getIssues();
+  }
+}
