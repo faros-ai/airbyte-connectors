@@ -43,9 +43,9 @@ describe('linear', () => {
 
     const processedByStream = {
       cycles: 3,
-      issuelabels: 5,
-      projects: 1,
+      labels: 5,
       issues: 11,
+      projects: 1,
       teams: 1,
       users: 1,
     };
@@ -58,7 +58,7 @@ describe('linear', () => {
 
     const writtenByModel = {
       tms_Epic: 1,
-      tms_Label: 6,
+      tms_Label: 5,
       tms_Project: 1,
       tms_Sprint: 2,
       tms_Task: 11,
@@ -69,6 +69,8 @@ describe('linear', () => {
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 2,
       tms_TaskTag: 2,
+      tms_Team: 1,
+      tms_TeamMembership: 1,
       tms_User: 1,
     };
 

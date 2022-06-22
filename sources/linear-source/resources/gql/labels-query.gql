@@ -1,0 +1,10 @@
+query IssueLabel {
+  issueLabels {
+    nodes {
+      id
+      description
+      createdAt
+      name
+    }
+  }
+}

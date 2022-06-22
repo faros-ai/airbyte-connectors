@@ -22,8 +22,8 @@ const TEAMS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'teams-query.gql'),
   'utf8'
 );
-const ISSUELABELS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', '..', 'resources', 'gql', 'issuelabels-query.gql'),
+const LABELS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', '..', 'resources', 'gql', 'labels-query.gql'),
   'utf8'
 );
 const ISSUES_QUERY = fs.readFileSync(
@@ -39,7 +39,7 @@ export interface Assignee extends CommonKey {
   readonly createdAt: string;
 }
 
-export interface IssueLabel extends CommonKey {
+export interface Label extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
 }
@@ -184,8 +184,8 @@ export class Linear {
     }
   }
 
-  async *getIssueLabel(): AsyncGenerator<IssueLabel> {
-    const data = await this.graphClient.request(ISSUELABELS_QUERY, {});
+  async *getLabels(): AsyncGenerator<Label> {
+    const data = await this.graphClient.request(LABELS_QUERY, {});
     for (const node of data.issueLabels.nodes ?? []) {
       yield node;
     }

@@ -7,7 +7,7 @@ export interface Assignee extends CommonKey {
   readonly createdAt: string;
 }
 
-export interface IssueLabel extends CommonKey {
+export interface Label extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
 }

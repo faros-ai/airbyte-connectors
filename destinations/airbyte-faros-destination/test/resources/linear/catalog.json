@@ -5,10 +5,10 @@
         "name": "mytestsource__linear__cycles"
       },
       "destination_sync_mode": "append"
-    },
+    }, 
     {
       "stream": {
-        "name": "mytestsource__linear__issuelabels"
+        "name": "mytestsource__linear__labels"
       },
       "destination_sync_mode": "append"
     },
