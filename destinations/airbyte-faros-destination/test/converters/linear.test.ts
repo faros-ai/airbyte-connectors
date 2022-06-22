@@ -42,7 +42,7 @@ describe('linear', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      cycles: 3,
+      cycles: 2,
       labels: 5,
       issues: 11,
       projects: 1,
