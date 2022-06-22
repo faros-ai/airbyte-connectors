@@ -32,7 +32,7 @@ export class Teams extends LinearConverter {
         model: 'tms_TeamMembership',
         record: {
           team: {uid: team.id},
-          member: {uid: member, source},
+          member: {uid: member.id, source},
         },
       });
     }

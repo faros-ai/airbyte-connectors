@@ -17,7 +17,7 @@ export class Users extends LinearConverter {
       {
         model: 'tms_User',
         record: {
-          uid: String(user.id),
+          uid: user.id,
           name: user.name,
           emailAddress: user.email,
           source,

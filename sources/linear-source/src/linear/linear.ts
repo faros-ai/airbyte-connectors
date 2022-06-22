@@ -71,7 +71,11 @@ export interface Team extends CommonKey {
   readonly description: string;
   readonly createdAt: string;
   readonly updatedAt: string;
-  readonly members: [string];
+  readonly members: [
+    {
+      id: string;
+    }
+  ];
   readonly issues: [string];
 }
 
