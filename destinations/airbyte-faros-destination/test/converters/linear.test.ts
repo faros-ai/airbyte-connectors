@@ -57,16 +57,19 @@ describe('linear', () => {
       .value();
 
     const writtenByModel = {
+      tms_Epic: 1,
+      tms_Label: 6,
       tms_Project: 1,
-      tms_Release: 1,
       tms_Sprint: 2,
-      tms_Task: 3,
-      tms_TaskAssignment: 1,
+      tms_Task: 11,
+      tms_TaskAssignment: 2,
       tms_TaskBoard: 1,
       tms_TaskBoardProjectRelationship: 1,
-      tms_TaskBoardRelationship: 3,
-      tms_TaskProjectRelationship: 3,
-      tms_User: 2,
+      tms_TaskBoardRelationship: 2,
+      tms_TaskDependency: 1,
+      tms_TaskProjectRelationship: 2,
+      tms_TaskTag: 2,
+      tms_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();
