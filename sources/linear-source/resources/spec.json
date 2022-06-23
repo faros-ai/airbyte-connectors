@@ -5,7 +5,8 @@
     "title": "Linear Spec",
     "type": "object",
     "required": [
-      "api_key"
+      "api_key",
+      "cutoff_days"
     ],
     "additionalProperties": false,
     "properties": {
@@ -19,6 +20,12 @@
         "type": "number",
         "title": "Page Size",
         "description": "number of issues to fetch per call"
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       }
     }
   }

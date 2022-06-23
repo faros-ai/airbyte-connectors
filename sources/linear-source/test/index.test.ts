@@ -59,13 +59,16 @@ describe('index', () => {
   test('streams - cycles, use full_refresh sync mode', async () => {
     const fnCyclesList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
-      return new Linear({
-        request: fnCyclesList.mockResolvedValue({
-          cycles: {
-            nodes: readTestResourceFile('cycles.json'),
-          },
-        }),
-      } as any);
+      return new Linear(
+        {
+          request: fnCyclesList.mockResolvedValue({
+            cycles: {
+              nodes: readTestResourceFile('cycles.json'),
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
@@ -83,13 +86,16 @@ describe('index', () => {
   test('streams - labels, use full_refresh sync mode', async () => {
     const fnLabelsList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
-      return new Linear({
-        request: fnLabelsList.mockResolvedValue({
-          issueLabels: {
-            nodes: readTestResourceFile('labels.json'),
-          },
-        }),
-      } as any);
+      return new Linear(
+        {
+          request: fnLabelsList.mockResolvedValue({
+            issueLabels: {
+              nodes: readTestResourceFile('labels.json'),
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
@@ -107,13 +113,16 @@ describe('index', () => {
   test('streams - projects, use full_refresh sync mode', async () => {
     const fnProjectsList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
-      return new Linear({
-        request: fnProjectsList.mockResolvedValue({
-          projects: {
-            nodes: readTestResourceFile('projects.json'),
-          },
-        }),
-      } as any);
+      return new Linear(
+        {
+          request: fnProjectsList.mockResolvedValue({
+            projects: {
+              nodes: readTestResourceFile('projects.json'),
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
@@ -131,13 +140,16 @@ describe('index', () => {
   test('streams - teams, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
-      return new Linear({
-        request: fnTeamsList.mockResolvedValue({
-          teams: {
-            nodes: readTestResourceFile('teams_input.json'),
-          },
-        }),
-      } as any);
+      return new Linear(
+        {
+          request: fnTeamsList.mockResolvedValue({
+            teams: {
+              nodes: readTestResourceFile('teams_input.json'),
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});
@@ -155,13 +167,16 @@ describe('index', () => {
   test('streams - users, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
     Linear.instance = jest.fn().mockImplementation(() => {
-      return new Linear({
-        request: fnTeamsList.mockResolvedValue({
-          users: {
-            nodes: readTestResourceFile('users.json'),
-          },
-        }),
-      } as any);
+      return new Linear(
+        {
+          request: fnTeamsList.mockResolvedValue({
+            users: {
+              nodes: readTestResourceFile('users.json'),
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
     });
     const source = new sut.LinearSource(logger);
     const streams = source.streams({});

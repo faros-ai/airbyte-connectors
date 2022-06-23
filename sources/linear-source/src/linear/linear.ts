@@ -115,6 +115,7 @@ export interface Issue {
 
 export interface LinearConfig {
   readonly api_key: string;
+  readonly cutoff_days: number;
   readonly page_size?: number;
 }
 
@@ -133,6 +134,7 @@ export class Linear {
 
   constructor(
     private readonly graphClient: GraphQLClient,
+    readonly startDate: Date,
     private readonly pageSize?: number
   ) {}
 
@@ -143,6 +145,10 @@ export class Linear {
       throw new VError('API key has to be provided');
     }
 
+    if (!config.cutoff_days) {
+      throw new VError('cutoff_days is null or empty');
+    }
+
     const auth = `Bearer ${config.api_key}`;
 
     const graphClient = new GraphQLClient(`${GRAPHQL_API_URL}`, {
@@ -151,7 +157,10 @@ export class Linear {
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
-    Linear.linear = new Linear(graphClient, pageSize);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - config.cutoff_days);
+
+    Linear.linear = new Linear(graphClient, startDate, pageSize);
     logger.debug('Created Linear instance');
     return Linear.linear;
   }
@@ -250,13 +259,16 @@ export class Linear {
     }
   }
 
-  async *getIssues(): AsyncGenerator<Issue> {
+  async *getIssues(updatedAtFrom?: Date): AsyncGenerator<Issue> {
+    const updatedAtFromMax =
+      updatedAtFrom > this.startDate ? updatedAtFrom : this.startDate;
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Issue>> => {
       const variables = {
         pageSize: this.pageSize,
         after: pageInfo ? pageInfo.endCursor : null,
+        updatedAtFrom: updatedAtFromMax,
       };
       const data = await this.graphClient.request(ISSUES_QUERY, variables);
 

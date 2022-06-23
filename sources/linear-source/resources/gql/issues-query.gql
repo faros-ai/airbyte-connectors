@@ -1,5 +1,7 @@
-query Issues($pageSize: Int!, $after: String) {
-  issues(first: $pageSize, orderBy: updatedAt, after: $after) {
+query Issues($pageSize: Int!, $after: String, $updatedAtFrom: DateTime) {
+  issues(first: $pageSize, orderBy: updatedAt, after: $after,filter: { 
+    updatedAt: { gte: $updatedAtFrom }
+  }) {
     edges {
       node {
         id
