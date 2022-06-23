@@ -44,7 +44,6 @@ export interface Team extends CommonKey {
       id: string;
     }
   ];
-  readonly issues: [string];
 }
 
 export interface IssueHistory {
