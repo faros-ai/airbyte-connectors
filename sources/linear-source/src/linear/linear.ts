@@ -5,6 +5,7 @@ import path from 'path';
 import {VError} from 'verror';
 
 const GRAPHQL_API_URL = 'https://api.linear.app/graphql';
+const DEFAULT_PAGE_SIZE = 10;
 
 const USERS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', '..', 'resources', 'gql', 'users-query.gql'),
@@ -110,16 +111,31 @@ export interface Issue {
   readonly creator: {
     id: string;
   };
+  cursor?: string;
 }
 
 export interface LinearConfig {
   readonly api_key: string;
+  readonly page_size?: number;
+}
+
+interface PaginateResponse<T> {
+  data: T[];
+  pageInfo: PageInfo;
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+  endCursor: string;
 }
 
 export class Linear {
   private static linear: Linear = null;
 
-  constructor(private readonly graphClient: GraphQLClient) {}
+  constructor(
+    private readonly graphClient: GraphQLClient,
+    private readonly pageSize?: number
+  ) {}
 
   static instance(config: LinearConfig, logger: AirbyteLogger): Linear {
     if (Linear.linear) return Linear.linear;
@@ -133,7 +149,10 @@ export class Linear {
     const graphClient = new GraphQLClient(`${GRAPHQL_API_URL}`, {
       headers: {Authorization: auth},
     });
-    Linear.linear = new Linear(graphClient);
+
+    const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+
+    Linear.linear = new Linear(graphClient, pageSize);
     logger.debug('Created Linear instance');
     return Linear.linear;
   }
@@ -154,6 +173,43 @@ export class Linear {
       }
       throw new VError(errorMessage);
     }
+  }
+
+  private async errorWrapper<T>(func: () => Promise<T>): Promise<T> {
+    let res: T;
+    try {
+      res = await func();
+    } catch (err: any) {
+      if (err.error_code || err.error_info) {
+        throw new VError(`${err.error_code}: ${err.error_info}`);
+      }
+      let errorMessage;
+      try {
+        errorMessage = err.message ?? err.statusText ?? wrapApiError(err);
+      } catch (wrapError: any) {
+        errorMessage = wrapError.message;
+      }
+      throw new VError(errorMessage);
+    }
+    return res;
+  }
+
+  private async *paginate<T>(
+    func: (pageInfo?: PageInfo) => Promise<PaginateResponse<T>>
+  ): AsyncGenerator<T> {
+    let fetchNextFunc: PageInfo = undefined;
+
+    do {
+      const response = await this.errorWrapper<PaginateResponse<T>>(() =>
+        func(fetchNextFunc)
+      );
+      if (response?.pageInfo?.hasNextPage) fetchNextFunc = response?.pageInfo;
+      else fetchNextFunc = null;
+
+      for (const item of response?.data ?? []) {
+        yield item;
+      }
+    } while (fetchNextFunc);
   }
 
   async *getUsers(): AsyncGenerator<User> {
@@ -196,20 +252,27 @@ export class Linear {
   }
 
   async *getIssues(): AsyncGenerator<Issue> {
-    const data = await this.graphClient.request(TEAMS_QUERY, {});
-    for (const node of data.teams.nodes ?? []) {
-      for (const issueItem of node.issues.nodes) {
-        const issueId = issueItem.id;
-        const variables = {
-          id: issueId,
-        };
-        const data = await this.graphClient.request(ISSUES_QUERY, variables);
-        yield {
-          ...data.issue,
-          history: data.issue.history?.nodes,
-          labels: data.issue.labels?.nodes,
-        };
-      }
-    }
+    const func = async (
+      pageInfo?: PageInfo
+    ): Promise<PaginateResponse<Issue>> => {
+      const variables = {
+        pageSize: this.pageSize,
+        after: pageInfo ? pageInfo.endCursor : null,
+      };
+      const data = await this.graphClient.request(ISSUES_QUERY, variables);
+
+      return {
+        data: data.issues?.edges.map((e) => {
+          const node = e.node;
+          if (e.cursor) node.cursor = e.cursor;
+
+          node.history = node.history?.nodes;
+          node.labels = node.labels?.nodes;
+          return node;
+        }),
+        pageInfo: data.issues.pageInfo,
+      };
+    };
+    yield* this.paginate(func);
   }
 }

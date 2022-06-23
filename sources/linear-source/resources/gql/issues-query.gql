@@ -1,57 +1,66 @@
-query Issue($id: String!) {
-  issue(id: $id) {
-    id
-    title
-    description
-    priority
-    url
-    state {
-      id
-      name
-    }
-    history {
-      nodes {
-        actor {
+query Issues($pageSize: Int!, $after: String) {
+  issues(first: $pageSize, orderBy: updatedAt, after: $after) {
+    edges {
+      node {
+        id
+        title
+        description
+        priority
+        url
+        state {
           id
+          name
+        }
+        history {
+          nodes {
+            actor {
+              id
+            }
+            createdAt
+            fromState {
+              id
+              name
+            }
+            toState {
+              id
+              name
+            }
+          }
+        }
+        startedAt
+        parent {
+          id
+        }
+
+        assignee {
+          id
+          name
+          createdAt
         }
         createdAt
-        fromState {
+        updatedAt
+        labels {
+          nodes {
+            id
+            name
+          }
+        }
+        project {
           id
           name
         }
-        toState {
+        cycle {
           id
-          name
+        }
+        creator {
+          id
         }
       }
+      cursor
     }
-    startedAt
-    parent {
-      id
-    }
-
-    assignee {
-      id
-      name
-      createdAt
-    }
-    createdAt
-    updatedAt
-    labels {
-      nodes {
-        id
-        name
-      }
-    }
-    project {
-      id
-      name
-    }
-    cycle {
-      id
-    }
-    creator {
-      id
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
