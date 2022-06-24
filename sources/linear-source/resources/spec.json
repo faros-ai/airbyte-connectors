@@ -10,9 +10,9 @@
     ],
     "additionalProperties": false,
     "properties": {
-      "token": {
+      "api_key": {
         "type": "string",
-        "title": "api_key",
+        "title": "api key",
         "description": "To create api_key go to https://linear.app/{team}/settings/api",
         "airbyte_secret": true
       },
