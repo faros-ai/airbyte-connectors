@@ -9,7 +9,7 @@ import {
 import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {trim, uniq} from 'lodash';
+import {floor, trim, uniq} from 'lodash';
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -276,8 +276,11 @@ export class Phabricator {
     committedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Commit, any, any> {
-    const committed = Math.max(committedAt ?? 0, this.startDate.toMillis());
-    this.logger.debug(`Fetching commits committed since ${committedAt}`);
+    const committed = Math.max(
+      committedAt ?? 0,
+      floor(this.startDate.toSeconds())
+    );
+    this.logger.debug(`Fetching commits committed since ${committed}`);
 
     // Only repository IDs work as constraint filter for commits,
     // therefore we do an extra lookup here
@@ -327,7 +330,10 @@ export class Phabricator {
     modifiedAt?: number,
     limit = this.limit
   ): AsyncGenerator<Revision, any, any> {
-    const modified = Math.max(modifiedAt ?? 0, this.startDate.toMillis());
+    const modified = Math.max(
+      modifiedAt ?? 0,
+      floor(this.startDate.toSeconds())
+    );
     this.logger.debug(`Fetching revisions modified since ${modified}`);
 
     // Only repository IDs work as constraint filter for revisions,

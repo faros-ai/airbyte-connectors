@@ -185,8 +185,8 @@ describe('github', () => {
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch('Errored 1 records');
     expect(stdout).toMatch('Skipped 0 records');
-    const stderr = await read(cli.stderr);
-    expect(stderr).toMatch('Undefined stream mytestsource__github__bad');
+    expect(stdout).toMatch('Undefined stream mytestsource__github__bad');
+    expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBeGreaterThan(0);
   });
 

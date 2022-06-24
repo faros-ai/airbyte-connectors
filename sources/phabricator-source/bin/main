@@ -2,7 +2,4 @@
 
 const {mainCommand} = require('../lib');
 
-mainCommand().parseAsync(process.argv).catch((err) => {
-  console.error(err.message);
-  process.exit(1);
-});
+mainCommand().parseAsync(process.argv);

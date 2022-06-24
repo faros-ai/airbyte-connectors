@@ -44,12 +44,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Install dependencies
-        run: npm install -g npm@7 lerna && lerna bootstrap --hoist
+        run: npm install -g lerna && lerna bootstrap --hoist
 
       - name: Test
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: lerna run test-cov
 
       - name: Run Jenkins server
@@ -78,6 +80,7 @@ jobs:
           AZUREPIPELINE_SOURCE_TEST_CONFIG: ${{ secrets.AZUREPIPELINE_SOURCE_TEST_CONFIG }}
           AZURE_REPOS_SOURCE_TEST_CONFIG: ${{ secrets.AZURE_REPOS_SOURCE_TEST_CONFIG }}
           BACKLOG_SOURCE_TEST_CONFIG: ${{ secrets.BACKLOG_SOURCE_TEST_CONFIG }}
+          BAMBOOHR_SOURCE_TEST_CONFIG: ${{ secrets.BAMBOOHR_SOURCE_TEST_CONFIG }}
           BITBUCKET_SOURCE_TEST_CONFIG: ${{ secrets.BITBUCKET_SOURCE_TEST_CONFIG }}
           BUILDKITE_SOURCE_TEST_CONFIG: ${{ secrets.BUILDKITE_SOURCE_TEST_CONFIG }}
           CIRCLECI_SOURCE_TEST_CONFIG: ${{ secrets.CIRCLECI_SOURCE_TEST_CONFIG }}
@@ -94,14 +97,12 @@ jobs:
           for i in $(ls -d sources/*/)
           do
             source=$(echo $i | cut -f2 -d'/')
-            case "$source" in
-              gitlab-ci-source|datadog-source|jenkins-source|okta-source|opsgenie-source|servicenow-source|phabricator-source|victorops-source)
-                echo "Skipping $source acceptance tests"
-                ;;
-              *)
-                ./scripts/source-acceptance-test.sh $source
-                ;;
-            esac
+            if grep -Fxq "$source" .github/workflows/skip-test-sources.txt
+            then
+              echo "Skipping $source acceptance tests"
+            else
+              ./scripts/source-acceptance-test.sh $source
+            fi
           done
 
       - name: Stop Jenkins server
