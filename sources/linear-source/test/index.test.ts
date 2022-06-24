@@ -1,4 +1,3 @@
-import {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -6,7 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
+import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Linear} from '../src/linear/linear';
@@ -51,8 +50,14 @@ describe('index', () => {
     await expect(
       source.checkConnection({
         api_key: 'api_key',
+        cutoff_days: 90,
       })
-    ).resolves.toStrictEqual([true, undefined]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "Please verify your API key is correct. Error: Cannot read properties of null (reading 'request')"
+      ),
+    ]);
   });
 
   test('streams - cycles, use full_refresh sync mode', async () => {

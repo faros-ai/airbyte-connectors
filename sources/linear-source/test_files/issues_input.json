@@ -116,10 +116,397 @@
                 }
             },
             "cursor": "365bcf3d-7649-46a3-8131-c7bf79f810d6"
+        },
+        {
+            "node": {
+                "id": "c09e79bf-20af-40e5-99e3-8316e429e8a6",
+                "title": "Connect to Slack",
+                "description": null,
+                "priority": 3,
+                "url": "https://linear.app/devcube/issue/DEV-3/connect-to-slack",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:31.060Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "c09e79bf-20af-40e5-99e3-8316e429e8a6"
+        },
+        {
+            "node": {
+                "id": "b67b7297-25d8-427b-8103-cda0b706685e",
+                "title": "Use Projects to organize work for features or releases",
+                "description": null,
+                "priority": 4,
+                "url": "https://linear.app/devcube/issue/DEV-7/use-projects-to-organize-work-for-features-or-releases",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.965Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "b67b7297-25d8-427b-8103-cda0b706685e"
+        },
+        {
+            "node": {
+                "id": "abe03aa4-51bf-4279-9c96-8e746fab8d9f",
+                "title": "Customize views with View Options and Filters",
+                "description": null,
+                "priority": 4,
+                "url": "https://linear.app/devcube/issue/DEV-9/customize-views-with-view-options-and-filters",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.893Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "abe03aa4-51bf-4279-9c96-8e746fab8d9f"
+        },
+        {
+            "node": {
+                "id": "91d9e02d-dccd-41e6-9c82-7b75b1fcb123",
+                "title": "Connect GitHub or GitLab",
+                "description": null,
+                "priority": 3,
+                "url": "https://linear.app/devcube/issue/DEV-4/connect-github-or-gitlab",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.808Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "91d9e02d-dccd-41e6-9c82-7b75b1fcb123"
+        },
+        {
+            "node": {
+                "id": "887cabe3-c80e-49eb-bb96-b1630697e873",
+                "title": "Use Cycles to focus work over n–weeks",
+                "description": null,
+                "priority": 4,
+                "url": "https://linear.app/devcube/issue/DEV-6/use-cycles-to-focus-work-over-n-weeks",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.734Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "887cabe3-c80e-49eb-bb96-b1630697e873"
+        },
+        {
+            "node": {
+                "id": "30d7fa9c-53e3-4e41-86d4-cd517fb7edf9",
+                "title": "✨ProTip: Mouse over this issue & press [Space]",
+                "description": null,
+                "priority": 4,
+                "url": "https://linear.app/devcube/issue/DEV-8/✨protip-mouse-over-this-issue-and-press-[space]",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.655Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "30d7fa9c-53e3-4e41-86d4-cd517fb7edf9"
+        },
+        {
+            "node": {
+                "id": "1ce4f9b8-5c00-4147-a620-8d18a88e4fc1",
+                "title": "Next Steps",
+                "description": null,
+                "priority": 4,
+                "url": "https://linear.app/devcube/issue/DEV-10/next-steps",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.593Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "1ce4f9b8-5c00-4147-a620-8d18a88e4fc1"
+        },
+        {
+            "node": {
+                "id": "1c50af62-8982-4280-af2a-eacab5f10ef1",
+                "title": "Customize settings",
+                "description": null,
+                "priority": 3,
+                "url": "https://linear.app/devcube/issue/DEV-5/customize-settings",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.527Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "1c50af62-8982-4280-af2a-eacab5f10ef1"
+        },
+        {
+            "node": {
+                "id": "173380e1-1f1e-4698-8e49-f49105ecdf7d",
+                "title": "Try 3 ways to navigate Linear: Command line, keyboard or mouse",
+                "description": null,
+                "priority": 3,
+                "url": "https://linear.app/devcube/issue/DEV-2/try-3-ways-to-navigate-linear-command-line-keyboard-or-mouse",
+                "state": {
+                    "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                    "name": "Backlog"
+                },
+                "history": {
+                    "nodes": [
+                        {
+                            "actor": {
+                                "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                            },
+                            "createdAt": "2022-06-20T15:35:30.340Z",
+                            "fromState": {
+                                "id": "0cacd186-b5ea-4649-8192-d3ce436c8231",
+                                "name": "Todo"
+                            },
+                            "toState": {
+                                "id": "9665f881-ada4-4f37-a997-669256a71a1f",
+                                "name": "Backlog"
+                            }
+                        }
+                    ]
+                },
+                "startedAt": null,
+                "parent": null,
+                "assignee": null,
+                "createdAt": "2022-06-16T15:07:18.821Z",
+                "updatedAt": "2022-06-20T15:35:30.456Z",
+                "labels": {
+                    "nodes": []
+                },
+                "project": null,
+                "cycle": null,
+                "creator": null
+            },
+            "cursor": "173380e1-1f1e-4698-8e49-f49105ecdf7d"
         }
     ],
     "pageInfo": {
-        "hasNextPage": true,
-        "endCursor": "365bcf3d-7649-46a3-8131-c7bf79f810d6"
+        "hasNextPage": false,
+        "endCursor": "173380e1-1f1e-4698-8e49-f49105ecdf7d"
     }
 }
