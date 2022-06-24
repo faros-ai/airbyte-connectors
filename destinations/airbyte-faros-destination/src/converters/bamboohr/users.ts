@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {intersection} from 'lodash';
 
@@ -6,11 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
 import {User} from './models';
 
-const ROOT_TEAM_ID = 'all_teams';
-
 export class Users extends BambooHRConverter {
-  private readonly logger: AirbyteLogger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
     'geo_Location',
@@ -133,7 +129,6 @@ export class Users extends BambooHRConverter {
           name: `${this.employeeIdsToNames.get(uid)} Org`,
           lead: {uid},
           parentTeam: parentTeamId ? {uid: parentTeamId} : null,
-          teamChain: this.computeManagerChain(uid),
         },
       });
       res.push({
@@ -145,26 +140,5 @@ export class Users extends BambooHRConverter {
       });
     }
     return res;
-  }
-
-  private computeManagerChain(employeeId: string) {
-    let managerId = employeeId;
-    const managerChain = [];
-    const visited = new Set<string>();
-    do {
-      managerChain.push(managerId);
-      if (visited.has(managerId)) {
-        this.logger.warn(
-          `There is a cycle in the manager chain for ${employeeId}. Manager chain: ${managerChain}`
-        );
-        return [];
-      }
-      visited.add(managerId);
-      const nextManagerId = this.managers.get(managerId);
-      if (!nextManagerId) break;
-      managerId = nextManagerId;
-    } while (managerId);
-    managerChain.push(ROOT_TEAM_ID);
-    return managerChain;
   }
 }
