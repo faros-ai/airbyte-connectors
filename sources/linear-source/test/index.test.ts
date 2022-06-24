@@ -49,7 +49,7 @@ describe('index', () => {
     const source = new sut.LinearSource(logger);
     await expect(
       source.checkConnection({
-        api_key: 'api_key',
+        api_key: '',
         cutoff_days: 90,
       })
     ).resolves.toStrictEqual([
