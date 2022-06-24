@@ -40,16 +40,18 @@ export class Users extends BambooHRConverter {
     const uid = user.id;
     const res: DestinationRecord[] = [];
 
-    this.employeeIdsToNames.set(uid, user.fullName1);
-    if (manager) {
-      this.managers.set(uid, manager.uid);
-      res.push({
-        model: 'org_TeamMembership',
-        record: {
-          team: {uid: manager.uid},
-          member: {uid},
-        },
-      });
+    if (this.bootstrapTeamsFromManagers(ctx)) {
+      this.employeeIdsToNames.set(uid, user.fullName1);
+      if (manager) {
+        this.managers.set(uid, manager.uid);
+        res.push({
+          model: 'org_TeamMembership',
+          record: {
+            team: {uid: manager.uid},
+            member: {uid},
+          },
+        });
+      }
     }
 
     if (user.department && !this.seenDepartments.has(user.department)) {
@@ -117,6 +119,8 @@ export class Users extends BambooHRConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
+    if (!this.bootstrapTeamsFromManagers(ctx)) return res;
+
     for (const uid of intersection(
       Array.from(this.managers.values()),
       Array.from(this.employeeIdsToNames.keys())
