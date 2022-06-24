@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import {intersection} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
@@ -12,9 +13,13 @@ export class Users extends BambooHRConverter {
     'identity_Identity',
     'org_Department',
     'org_Employee',
+    'org_Team',
+    'org_TeamMembership',
   ];
 
   private seenDepartments = new Set<string>();
+  private seenManagerIds = new Set<string>();
+  private employeeIdsToNames = new Map<string, string>();
 
   async convert(
     record: AirbyteRecord,
@@ -27,11 +32,21 @@ export class Users extends BambooHRConverter {
       user.terminationDate == '0000-00-00'
         ? null
         : Utils.toDate(user.terminationDate);
-    const manager = user.supervisorId
-      ? {uid: user.supervisorId, source}
-      : undefined;
+    const manager = user.supervisorEId ? {uid: user.supervisorEId} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
+
+    this.employeeIdsToNames.set(uid, user.fullName1);
+    if (manager) {
+      this.seenManagerIds.add(manager.uid);
+      res.push({
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid: manager.uid},
+          member: {uid},
+        },
+      });
+    }
 
     if (user.department && !this.seenDepartments.has(user.department)) {
       this.seenDepartments.add(user.department);
@@ -91,6 +106,33 @@ export class Users extends BambooHRConverter {
         source,
       },
     });
+    return res;
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+    for (const uid of intersection(
+      Array.from(this.seenManagerIds),
+      Array.from(this.employeeIdsToNames.keys())
+    )) {
+      res.push({
+        model: 'org_Team',
+        record: {
+          uid,
+          name: `${this.employeeIdsToNames.get(uid)} Org`,
+          lead: {uid},
+        },
+      });
+      res.push({
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid},
+          member: {uid},
+        },
+      });
+    }
     return res;
   }
 }
