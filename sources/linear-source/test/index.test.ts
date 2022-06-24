@@ -41,20 +41,19 @@ describe('index', () => {
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
-  // test('check connection', async () => {
-  //   Linear.instance = jest.fn().mockImplementation(() => {
-  //     return new Linear(null);
-  //   });
 
-  //   const source = new sut.LinearSource(logger);
-  //   await expect(
-  //     source.checkConnection({
-  //       api_key: 'api_key',
-  //     })
-  //   ).resolves.toStrictEqual([true, undefined]);
-  // });
+  test('check connection', async () => {
+    Linear.instance = jest.fn().mockImplementation(() => {
+      return new Linear(null, new Date('2010-03-27T14:03:51-0800'));
+    });
 
-  // API key is correct. Error: Cannot read properties of
+    const source = new sut.LinearSource(logger);
+    await expect(
+      source.checkConnection({
+        api_key: 'api_key',
+      })
+    ).resolves.toStrictEqual([true, undefined]);
+  });
 
   test('streams - cycles, use full_refresh sync mode', async () => {
     const fnCyclesList = jest.fn();
@@ -81,6 +80,31 @@ describe('index', () => {
     }
     expect(fnCyclesList).toHaveBeenCalledTimes(1);
     expect(cycles).toStrictEqual(readTestResourceFile('cycles.json'));
+  });
+
+  test('streams - issues, use full_refresh sync mode', async () => {
+    const fnIssuesList = jest.fn();
+    Linear.instance = jest.fn().mockImplementation(() => {
+      return new Linear(
+        {
+          request: fnIssuesList.mockResolvedValue({
+            issues: readTestResourceFile('issues_input.json'),
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800')
+      );
+    });
+    const source = new sut.LinearSource(logger);
+    const streams = source.streams({});
+
+    const issuesStream = streams[1];
+    const issuesIter = issuesStream.readRecords(SyncMode.FULL_REFRESH);
+    const issues = [];
+    for await (const issue of issuesIter) {
+      issues.push(issue);
+    }
+    expect(fnIssuesList).toHaveBeenCalledTimes(1);
+    expect(issues).toStrictEqual(readTestResourceFile('issues.json'));
   });
 
   test('streams - labels, use full_refresh sync mode', async () => {
