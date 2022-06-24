@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {intersection} from 'lodash';
+import {intersection, uniq} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
@@ -68,28 +68,42 @@ export class Users extends BambooHRConverter {
         firstName: user.firstName,
         fullName: user.fullName1,
         lastName: user.lastName,
-        primaryEmail: user.bestEmail,
-        emails: [user.bestEmail],
+        primaryEmail: user.bestEmail ?? user.workEmail,
+        emails: uniq([user.bestEmail, user.workEmail].filter((e) => e)),
       },
     });
 
-    const location = user.address1 ? {uid: user.address1} : undefined;
+    const fullAddress = [
+      user.address1,
+      user.address2,
+      user.city,
+      user.stateCode ?? user.state,
+      user.country,
+      user.zipcode,
+    ]
+      .filter((a) => a)
+      .join(', ');
+    const location = fullAddress ? {uid: fullAddress} : undefined;
 
-    if (user.address1) {
+    if (fullAddress) {
       res.push({
         model: 'geo_Address',
         record: {
-          uid: user.address1,
-          fullAddress: user.address1,
+          uid: fullAddress,
+          fullAddress,
           street: user.address1,
           postalCode: user.zipcode,
+          city: user.city,
+          state: user.state,
+          stateCode: user.stateCode,
+          country: user.country,
         },
       });
       const geo_Location = {
-        uid: user.address1,
-        name: user.address1,
-        raw: user.address1,
-        address: {uid: user.address1},
+        uid: fullAddress,
+        name: fullAddress,
+        raw: fullAddress,
+        address: {uid: fullAddress},
       };
       res.push({model: 'geo_Location', record: geo_Location});
     }
@@ -98,7 +112,6 @@ export class Users extends BambooHRConverter {
       record: {
         uid,
         title: user.jobTitle,
-        level: 0,
         joinedAt,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},

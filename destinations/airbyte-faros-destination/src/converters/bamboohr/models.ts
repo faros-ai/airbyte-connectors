@@ -12,6 +12,8 @@ export interface User {
   workEmail: string;
   workPhone?: string;
   city?: string;
+  state?: string;
+  stateCode?: string;
   country?: string;
   department?: string;
   ethnicity?: string;
