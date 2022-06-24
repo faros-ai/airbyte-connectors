@@ -1,20 +1,29 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
+import {intersection} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
 import {User} from './models';
 
+const ROOT_TEAM_ID = 'all_teams';
+
 export class Users extends BambooHRConverter {
+  private readonly logger: AirbyteLogger = new AirbyteLogger();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
     'geo_Location',
     'identity_Identity',
     'org_Department',
     'org_Employee',
+    'org_Team',
+    'org_TeamMembership',
   ];
 
   private seenDepartments = new Set<string>();
+  private managers = new Map<string, string>();
+  private employeeIdsToNames = new Map<string, string>();
 
   async convert(
     record: AirbyteRecord,
@@ -27,11 +36,23 @@ export class Users extends BambooHRConverter {
       user.terminationDate == '0000-00-00'
         ? null
         : Utils.toDate(user.terminationDate);
-    const manager = user.supervisorId
-      ? {uid: user.supervisorId, source}
-      : undefined;
+    const manager = user.supervisorEId ? {uid: user.supervisorEId} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
+
+    if (this.bootstrapTeamsFromManagers(ctx)) {
+      this.employeeIdsToNames.set(uid, user.fullName1);
+      if (manager) {
+        this.managers.set(uid, manager.uid);
+        res.push({
+          model: 'org_TeamMembership',
+          record: {
+            team: {uid: manager.uid},
+            member: {uid},
+          },
+        });
+      }
+    }
 
     if (user.department && !this.seenDepartments.has(user.department)) {
       this.seenDepartments.add(user.department);
@@ -92,5 +113,58 @@ export class Users extends BambooHRConverter {
       },
     });
     return res;
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+    if (!this.bootstrapTeamsFromManagers(ctx)) return res;
+
+    for (const uid of intersection(
+      Array.from(this.managers.values()),
+      Array.from(this.employeeIdsToNames.keys())
+    )) {
+      const parentTeamId = this.managers.get(uid);
+      res.push({
+        model: 'org_Team',
+        record: {
+          uid,
+          name: `${this.employeeIdsToNames.get(uid)} Org`,
+          lead: {uid},
+          parentTeam: parentTeamId ? {uid: parentTeamId} : null,
+          teamChain: this.computeManagerChain(uid),
+        },
+      });
+      res.push({
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid},
+          member: {uid},
+        },
+      });
+    }
+    return res;
+  }
+
+  private computeManagerChain(employeeId: string) {
+    let managerId = employeeId;
+    const managerChain = [];
+    const visited = new Set<string>();
+    do {
+      managerChain.push(managerId);
+      if (visited.has(managerId)) {
+        this.logger.warn(
+          `There is a cycle in the manager chain for ${employeeId}. Manager chain: ${managerChain}`
+        );
+        return [];
+      }
+      visited.add(managerId);
+      const nextManagerId = this.managers.get(managerId);
+      if (!nextManagerId) break;
+      managerId = nextManagerId;
+    } while (managerId);
+    managerChain.push(ROOT_TEAM_ID);
+    return managerChain;
   }
 }

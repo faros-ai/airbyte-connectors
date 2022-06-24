@@ -1,6 +1,5 @@
 export interface User {
-  id: number;
-  employeeId: number;
+  id: string;
   employeeNumber: string;
   jobTitle: string;
   status: string;

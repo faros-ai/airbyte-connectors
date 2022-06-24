@@ -3,6 +3,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
 
+import {Edition, InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {bamboohrAllStreamsLog} from './data';
@@ -20,7 +21,13 @@ describe('bamboohr', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {bamboohr: {bootstrap_teams_from_managers: true}}
+    );
   });
 
   afterEach(async () => {
@@ -57,6 +64,8 @@ describe('bamboohr', () => {
       identity_Identity: 86,
       org_Department: 9,
       org_Employee: 86,
+      org_Team: 26,
+      org_TeamMembership: 111,
     };
 
     const processedTotal = _(processedByStream).values().sum();
