@@ -1,0 +1,24 @@
+[
+  {
+    "id": 4339,
+    "name": "Secondary Language",
+    "type": "list",
+    "alias": "customSecondaryLanguage1"
+  },
+  {
+    "id": 1610,
+    "name": "Self-service access",
+    "type": "employee_access"
+  },
+  {
+    "id": 4374,
+    "name": "Serial #",
+    "type": "text"
+  },
+  {
+    "id": 4378,
+    "name": "Shirt size",
+    "type": "list",
+    "alias": "customShirtsize"
+  }
+]

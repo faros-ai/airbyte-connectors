@@ -52,22 +52,51 @@ describe('index', () => {
     ).resolves.toStrictEqual([false, new VError('api_key cannot be empty')]);
   });
 
-  test('streams - users, use full_refresh sync mode', async () => {
+  test('streams - users, fail when field alias not found', async () => {
     const fnUsersFunc = jest.fn();
 
     BambooHR.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users_input.json');
+      const fieldsResource: any[] = readTestResourceFile('fields_input.json');
       return new BambooHR(
         {
-          get: fnUsersFunc.mockResolvedValue({
-            data: {value: usersResource},
-          }),
+          get: fnUsersFunc.mockResolvedValueOnce({data: fieldsResource}),
         } as any,
         null
       );
     });
     const source = new sut.BambooHRSource(logger);
-    const streams = source.streams({} as any);
+    const streams = source.streams({
+      additional_fields: ['Bad Field Name'],
+    } as any);
+
+    const usersStream = streams[0];
+    const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    await expect(userIter.next()).rejects.toStrictEqual(
+      new VError(
+        'Could not find field alias for additional field Bad Field Name'
+      )
+    );
+  });
+
+  test('streams - users, use full_refresh sync mode', async () => {
+    const fnUsersFunc = jest.fn();
+
+    BambooHR.instance = jest.fn().mockImplementation(() => {
+      const fieldsResource: any[] = readTestResourceFile('fields_input.json');
+      const usersResource: any[] = readTestResourceFile('users_input.json');
+      return new BambooHR(
+        {
+          get: fnUsersFunc
+            .mockResolvedValue({data: {value: usersResource}})
+            .mockResolvedValueOnce({data: fieldsResource}),
+        } as any,
+        null
+      );
+    });
+    const source = new sut.BambooHRSource(logger);
+    const streams = source.streams({
+      additional_fields: ['customShirtsize'],
+    } as any);
 
     const usersStream = streams[0];
     const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
@@ -76,7 +105,7 @@ describe('index', () => {
       users.push(user);
     }
 
-    expect(fnUsersFunc).toHaveBeenCalledTimes(2);
+    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 });

@@ -1,5 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {keyBy} from 'lodash';
+import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {User} from './models';
@@ -9,7 +11,18 @@ export interface BambooHRConfig {
   readonly api_key: string;
   readonly domain: string;
   readonly version?: string;
+  readonly additional_fields?: ReadonlyArray<string>;
 }
+
+interface Field {
+  id: string;
+  name: string;
+  type: string;
+  alias?: string;
+}
+
+const DEFAULT_FIELD_ALIASES =
+  'acaStatus,caStatusCategory,address1,address2,age,bestEmail,birthday,bonusAmount,bonusComment,bonusDate,bonusReason,city,commissionAmount,commissionComment,commissionDate,commisionDate,country,createdByUserId,dateOfBirth,department,division,eeo,employeeNumber,employmentHistoryStatus,ethnicity,exempt,firstName,flsaCode,fullName1,fullName2,fullName3,fullName4,fullName5,displayName,gender,hireDate,originalHireDate,homeEmail,homePhone,id,isPhotoUploaded,jobTitle,lastChanged,lastName,location,maritalStatus,middleName,mobilePhone,nationalId,nationality,nin,payChangeReason,payGroup,payGroupId,payRate,payRateEffectiveDate,payType,paidPer,paySchedule,payScheduleId,payFrequency,includeInPayroll,timeTrackingEnabled,preferredName,ssn,sin,standardHoursPerWeek,state,stateCode,status,supervisor,supervisorId,supervisorEId,supervisorEmail,terminationDate,workEmail,workPhone,workPhonePlusExtension,workPhoneExtension,zipcode';
 
 export class BambooHR {
   private static bambooHR: BambooHR = null;
@@ -46,6 +59,7 @@ export class BambooHR {
     BambooHR.bambooHR = new BambooHR(httpClient, logger);
     return BambooHR.bambooHR;
   }
+
   async checkConnection(): Promise<void> {
     try {
       const iter = this.getUsers();
@@ -65,17 +79,35 @@ export class BambooHR {
     }
   }
 
-  async *getUsers(): AsyncGenerator<User> {
-    try {
-      const users = await this.httpClient.get<any>(`/meta/users`);
-      for (const [key, value] of Object.entries(users.data)) {
-        const user = await this.httpClient.get<any>(
-          `/employees/${value['employeeId']}/?fields=acaStatus,caStatusCategory,address1,address2,age,bestEmail,birthday,bonusAmount,bonusComment,bonusDate,bonusReason,city,commissionAmount,commissionComment,commissionDate,commisionDate,country,createdByUserId,dateOfBirth,department,division,eeo,employeeNumber,employmentHistoryStatus,ethnicity,exempt,firstName,flsaCode,fullName1,fullName2,fullName3,fullName4,fullName5,displayName,gender,hireDate,originalHireDate,homeEmail,homePhone,id,isPhotoUploaded,jobTitle,lastChanged,lastName,location,maritalStatus,middleName,mobilePhone,nationalId,nationality,nin,payChangeReason,payGroup,payGroupId,payRate,payRateEffectiveDate,payType,paidPer,paySchedule,payScheduleId,payFrequency,includeInPayroll,timeTrackingEnabled,preferredName,ssn,sin,standardHoursPerWeek,state,stateCode,status,supervisor,supervisorId,supervisorEId,supervisorEmail,terminationDate,workEmail,workPhone,workPhonePlusExtension,workPhoneExtension,zipcode`
+  async getFieldsByAlias(): Promise<Dictionary<Field>> {
+    const resp = await this.httpClient.get<any>(`/meta/fields`);
+    const fields: ReadonlyArray<Field> = resp.data;
+    return keyBy(
+      fields.filter((f) => f.alias),
+      (f) => f.alias
+    );
+  }
+
+  async *getUsers(
+    additionalFields: ReadonlyArray<string> = []
+  ): AsyncGenerator<User> {
+    const fields = await this.getFieldsByAlias();
+    const additionalAliases = [];
+    for (const name of additionalFields) {
+      if (!(name in fields)) {
+        throw new VError(
+          `Could not find field alias for additional field ${name}`
         );
-        if (user.status == 200) yield user.data as User;
       }
-    } catch (error) {
-      this.logger.error(error.toString());
+      additionalAliases.push(fields[name].alias);
+    }
+    const fieldsToFetch = [DEFAULT_FIELD_ALIASES, additionalAliases].join(',');
+    const users = await this.httpClient.get<any>(`/meta/users`);
+    for (const [key, value] of Object.entries(users.data)) {
+      const user = await this.httpClient.get<any>(
+        `/employees/${value['employeeId']}/?fields=${fieldsToFetch}`
+      );
+      if (user.status == 200) yield user.data as User;
     }
   }
 }
