@@ -188,6 +188,9 @@
                       },
                       "work_additional_fields": {
                         "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
                         "title": "Work Additional Fields",
                         "description": "Fields to save to tms_Task's additionalFields variable",
                         "default": []
