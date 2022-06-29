@@ -66,7 +66,9 @@ describe('opsgenie', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
+      compute_Application: 1,
       ims_Incident: 3,
+      ims_IncidentApplicationImpact: 1,
       ims_IncidentAssignment: 5,
       ims_IncidentEvent: 21,
       ims_IncidentTag: 3,
