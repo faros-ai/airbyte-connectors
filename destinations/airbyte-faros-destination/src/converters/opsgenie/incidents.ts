@@ -89,25 +89,23 @@ export class Incidents extends OpsGenieConverter {
       },
     });
     for (const service of incident.impactedServices) {
-      if (service in applicationMapping && applicationMapping[service].name) {
-        const mappedApp = applicationMapping[service];
-        const application = {
-          name: mappedApp.name,
-          platform: mappedApp.platform ?? '',
-        };
-        const appKey = JSON.stringify(application);
-        if (!this.seenApplications.has(appKey)) {
-          res.push({model: 'compute_Application', record: application});
-          this.seenApplications.add(appKey);
-        }
-        res.push({
-          model: 'ims_IncidentApplicationImpact',
-          record: {
-            incident: incidentRef,
-            application,
-          },
-        });
+      const mappedApp = applicationMapping[service];
+      const application = {
+        name: mappedApp?.name ?? service,
+        platform: mappedApp?.platform ?? '',
+      };
+      const appKey = JSON.stringify(application);
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
       }
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {
+          incident: incidentRef,
+          application,
+        },
+      });
     }
 
     for (const responder of incident.responders) {
