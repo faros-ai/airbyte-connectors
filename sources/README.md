@@ -9,7 +9,7 @@
 ## Helpful Documentation
 
 The [Airbyte Specification
-doc](https://docs.airbyte.io/understanding-airbyte/airbyte-specification)
+doc](https://docs.airbyte.com/connector-development/#the-airbyte-specification)
 describes each step of an Airbyte Source in detail. Also read [Airbyte's
 development
 guide](https://docs.airbyte.io/connector-development#adding-a-new-connector).
@@ -37,6 +37,9 @@ URLs, etc). The provided Source class does this by returning the JSON-Schema
 object in `resources/spec.json`. Update this file with your source's
 configuration parameters, making sure to protect any sensitive parameters by
 setting `"airbyte_secret": true` in their corresponding properties.
+
+See this [guide](https://github.com/airbytehq/airbyte/blob/master/airbyte-webapp/docs/HowTo-ConnectionSpecification.md)
+on how to preview the Airbyte UI elements generated from the specification.
 
 ### 3: Implement Check command
 
