@@ -106,6 +106,35 @@ describe('index', () => {
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
+  test('streams - incidents, paginate', async () => {
+    const fnIncidentsList = jest.fn();
+    OpsGenie.instance = jest.fn().mockImplementation(() => {
+      return new OpsGenie(
+        {
+          get: fnIncidentsList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('incidents.json'),
+              totalCount: 2,
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        logger
+      );
+    });
+    const source = new sut.OpsGenieSource(logger);
+    const streams = source.streams({});
+
+    const incidentsStream = streams[0];
+    const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
+    const incidents = [];
+    for await (const incident of incidentsIter) {
+      incidents.push(incident);
+    }
+    expect(fnIncidentsList).toHaveBeenCalledTimes(8);
+  });
+
   test('streams - teams, use full_refresh sync mode', async () => {
     const fnTeamsList = jest.fn();
     OpsGenie.instance = jest.fn().mockImplementation(() => {
@@ -143,6 +172,7 @@ describe('index', () => {
           get: fnUsersList.mockResolvedValue({
             data: {
               data: readTestResourceFile('users.json'),
+              totalCount: 1,
             },
           }),
         } as any,
@@ -162,5 +192,34 @@ describe('index', () => {
     }
     expect(fnUsersList).toHaveBeenCalledTimes(1);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
+  });
+
+  test('streams - users, paginate', async () => {
+    const fnUsersList = jest.fn();
+    OpsGenie.instance = jest.fn().mockImplementation(() => {
+      return new OpsGenie(
+        {
+          get: fnUsersList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('users.json'),
+              totalCount: 2,
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        logger
+      );
+    });
+    const source = new sut.OpsGenieSource(logger);
+    const streams = source.streams({});
+
+    const usersStream = streams[2];
+    const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of usersIter) {
+      users.push(user);
+    }
+    expect(fnUsersList).toHaveBeenCalledTimes(2);
   });
 });
