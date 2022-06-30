@@ -68,7 +68,7 @@ export class Incidents extends OpsGenieConverter {
           uid: event.id,
           type: eventType,
           incident: incidentRef,
-          detail: event.title.content,
+          detail: event.title?.content,
           createdAt: eventTime,
         },
       });
@@ -79,7 +79,7 @@ export class Incidents extends OpsGenieConverter {
         ...incidentRef,
         title: incident.message,
         description: incident.description?.substring(0, maxDescriptionLength),
-        url: incident.links.web,
+        url: incident.links?.web,
         createdAt,
         updatedAt,
         acknowledgedAt,
