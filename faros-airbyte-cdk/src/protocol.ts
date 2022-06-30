@@ -2,6 +2,8 @@ import {toPlainObject} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {wrapApiError} from './errors';
+
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
   ERROR = 'ERROR',
@@ -196,7 +198,7 @@ export class AirbyteErrorTraceMessage implements AirbyteMessage {
     this.trace = {
       type: 'ERROR',
       emitted_at: Date.now(),
-      error,
+      error: wrapApiError(error),
     };
   }
 }
