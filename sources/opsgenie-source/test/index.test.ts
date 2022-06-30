@@ -6,7 +6,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {OpsGenie} from '../src/opsgenie/opsgenie';
@@ -47,7 +46,8 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
 
@@ -61,7 +61,7 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     OpsGenie.instance = jest.fn().mockImplementation(() => {
-      return new OpsGenie(null, null);
+      return new OpsGenie(null, null, logger);
     });
     const source = new sut.OpsGenieSource(logger);
     const res = await source.checkConnection({
@@ -87,7 +87,8 @@ describe('index', () => {
             },
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.OpsGenieSource(logger);
@@ -114,7 +115,8 @@ describe('index', () => {
             },
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.OpsGenieSource(logger);
@@ -141,7 +143,8 @@ describe('index', () => {
             },
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.OpsGenieSource(logger);
