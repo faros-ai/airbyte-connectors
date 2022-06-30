@@ -110,7 +110,7 @@ export class OpsGenie {
         if (new Date(incident.createdAt) >= startTimeMax) {
           const incidentItem = incident;
           const timeLineResponse =
-            await this.restClient.get<IncidentTimeLinePaginateResponse>(
+            await this.retryApi<IncidentTimeLinePaginateResponse>(
               `v2/incident-timelines/${incident.id}/entries`
             );
           if (timeLineResponse.status === 200)
