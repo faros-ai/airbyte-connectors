@@ -47,6 +47,7 @@ describe('index', () => {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
         new Date('2010-03-27T14:03:51-0800'),
+        1,
         logger
       );
     });
@@ -61,7 +62,7 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     OpsGenie.instance = jest.fn().mockImplementation(() => {
-      return new OpsGenie(null, null, logger);
+      return new OpsGenie(null, null, 1, logger);
     });
     const source = new sut.OpsGenieSource(logger);
     const res = await source.checkConnection({
@@ -88,6 +89,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        1,
         logger
       );
     });
@@ -116,6 +118,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        1,
         logger
       );
     });
@@ -144,6 +147,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        1,
         logger
       );
     });
