@@ -86,9 +86,9 @@ export interface PageInfo {
 }
 
 export interface PaginationParams {
-  sort: string;
-  offset: number;
-  limit: number;
+  sort?: string;
+  offset?: number;
+  limit?: number;
 }
 
 export interface PaginateResponse<T> {
