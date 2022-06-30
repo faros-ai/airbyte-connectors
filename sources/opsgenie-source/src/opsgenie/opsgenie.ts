@@ -6,11 +6,12 @@ import {
   Incident,
   IncidentTimeLinePaginateResponse,
   PaginateResponse,
+  PaginationParams,
   Team,
   User,
 } from './models';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_BASE_URL = 'https://api.opsgenie.com/';
 const MAX_NUMBER_OF_RETRIES = 10;
 
@@ -26,8 +27,8 @@ export class OpsGenie {
   constructor(
     private readonly restClient: AxiosInstance,
     private readonly startDate: Date,
-    private readonly logger: AirbyteLogger,
-    private readonly pageSize?: number
+    private readonly pageSize: number,
+    private readonly logger: AirbyteLogger
   ) {}
 
   static instance(config: OpsGenieConfig, logger: AirbyteLogger): OpsGenie {
@@ -50,7 +51,7 @@ export class OpsGenie {
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    OpsGenie.opsGenie = new OpsGenie(httpClient, startDate, logger, pageSize);
+    OpsGenie.opsGenie = new OpsGenie(httpClient, startDate, pageSize, logger);
     logger.debug('Created OpsGenie instance');
     return OpsGenie.opsGenie;
   }
@@ -75,10 +76,14 @@ export class OpsGenie {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   delay = (waitingTime) =>
     new Promise((resolve) => setTimeout(resolve, waitingTime));
-  async retryApi<T>(url: string): Promise<AxiosResponse> {
+
+  async retryApi<T>(
+    url: string,
+    params?: PaginationParams
+  ): Promise<AxiosResponse> {
     let attemptCount = 0;
     do {
-      const response = await this.restClient.get<T>(url);
+      const response = await this.restClient.get<T>(url, {params});
       // retry when got rate limiting
       if (response.status === 429) {
         attemptCount++;
@@ -88,22 +93,24 @@ export class OpsGenie {
       return response;
     } while (attemptCount < MAX_NUMBER_OF_RETRIES);
   }
+
   async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
     const startTimeMax =
       createdAt > this.startDate ? createdAt : this.startDate;
-    let offset = 0;
-
     const serviceMap = new Map<string, string>();
 
+    let offset = 0;
     do {
+      const params = {offset, limit: this.pageSize, sort: 'createdAt'};
       const response = await this.retryApi<PaginateResponse<Incident>>(
-        `v1/incidents?sort=createdAt&order=asc&limit=${this.pageSize}&offset=${offset}`
+        `v1/incidents`,
+        params
       );
       for (const incident of response?.data?.data ?? []) {
         if (new Date(incident.createdAt) >= startTimeMax) {
           const incidentItem = incident;
           const timeLineResponse =
-            await this.restClient.get<IncidentTimeLinePaginateResponse>(
+            await this.retryApi<IncidentTimeLinePaginateResponse>(
               `v2/incident-timelines/${incident.id}/entries`
             );
           if (timeLineResponse.status === 200)
@@ -138,18 +145,26 @@ export class OpsGenie {
   }
 
   async *getUsers(): AsyncGenerator<User> {
-    const response = await this.restClient.get<PaginateResponse<User>>(
-      'v2/users'
-    );
-    for (const user of response.data.data) {
-      yield user;
-    }
+    let offset = 0;
+    do {
+      const params = {offset, limit: this.pageSize, sort: 'createdAt'};
+      const response = await this.retryApi<PaginateResponse<User>>(
+        'v2/users',
+        params
+      );
+      for (const user of response.data.data) {
+        yield user;
+      }
+      if (response?.data.totalCount > offset + this.pageSize) {
+        offset += this.pageSize;
+      } else {
+        break;
+      }
+    } while (true);
   }
 
   async *getTeams(): AsyncGenerator<Team> {
-    const response = await this.restClient.get<PaginateResponse<Team>>(
-      'v2/teams'
-    );
+    const response = await this.retryApi<PaginateResponse<Team>>('v2/teams');
     for (const team of response.data.data) {
       yield team;
     }
