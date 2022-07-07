@@ -1,4 +1,5 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {readFileSync} from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import pino from 'pino';
@@ -21,6 +22,14 @@ describe('faros_feeds', () => {
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
+
+    await mockttp
+      .forPost('/graphs/test-graph/graphql')
+      .once()
+      .thenReply(
+        200,
+        readFileSync('test/resources/faros_feeds/schema.json', 'utf8')
+      );
   });
 
   afterEach(async () => {
