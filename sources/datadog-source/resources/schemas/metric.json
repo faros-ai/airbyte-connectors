@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "ID of the metric point. Composed by the hash of the query, the metric name and the timestamp.",
+      "example": "79054025255fb1a26e4bc422aef54eb4-system.cpu.idle-1575317847",
+      "type": "string"
+    },
+    "display_name": {
+      "description": "Display name of the metric.",
+      "example": "system.cpu.idle",
+      "type": "string"
+    },
+    "metric": {
+      "description": "Metric name.",
+      "example": "system.cpu.idle",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "The timestamp in seconds.",
+      "format": "integer",
+      "type": "number"
+    },
+    "value": {
+      "description": "A 32bit float gauge-type value.",
+      "format": "double",
+      "type": "number"
+    },
+    "primary_unit": {
+      "description": "Detailed information about the metric \"primary unit\" (for example, `bytes` in `bytes per second`),second describes the \"per unit\" (for example, `second` in `bytes per second`).",
+      "properties": {
+        "family": {
+          "description": "Unit family, allows for conversion between units of the same family, for scaling.",
+          "example": "time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Unit name",
+          "example": "minute",
+          "type": "string"
+        },
+        "plural": {
+          "description": "Plural form of the unit name.",
+          "example": "minutes",
+          "type": "string"
+        },
+        "scale_factor": {
+          "description": "Factor for scaling between units of the same family.",
+          "example": 60,
+          "format": "double",
+          "type": "number"
+        },
+        "short_name": {
+          "description": "Abbreviation of the unit.",
+          "example": "min",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "per_unit": {
+      "description": "Detailed information about the metric \"per unit\" (for example, `second` in `bytes per second`).",
+      "properties": {
+        "family": {
+          "description": "Unit family, allows for conversion between units of the same family, for scaling.",
+          "example": "time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Unit name",
+          "example": "minute",
+          "readOnly": true,
+          "type": "string"
+        },
+        "plural": {
+          "description": "Plural form of the unit name.",
+          "example": "minutes",
+          "type": "string"
+        },
+        "scale_factor": {
+          "description": "Factor for scaling between units of the same family.",
+          "example": 60,
+          "format": "double",
+          "type": "number"
+        },
+        "short_name": {
+          "description": "Abbreviation of the unit.",
+          "example": "min",
+          "type": "string"
+        }
+      },
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "scope": {
+      "description": "Metric scope, comma separated list of tags.",
+      "example": "host:foo,env:test",
+      "readOnly": true,
+      "type": "string"
+    },
+    "tag_set": {
+      "description": "Unique tags identifying this series.",
+      "items": {
+        "description": "Unique tags identifying this series.",
+        "type": "string"
+      },
+      "readOnly": true,
+      "type": "array"
+    }
+  }
+}

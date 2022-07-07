@@ -29,6 +29,26 @@
         "title": "Page Size",
         "description": "used when retrieving paginated data from Datadog",
         "default": 100
+      },
+      "metrics": {
+        "order": 3,
+        "type": "array",
+        "title": "Metrics",
+        "description": "list of metrics to fetch and their configuration",
+        "item": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query": "string"
+          }
+        }
+      },
+      "metrics_max_window": {
+        "order": 4,
+        "type": "integer",
+        "title": "Metrics Max Window",
+        "description": "max time window when fetching metrics, in milliseconds. Defaults to 1 week.",
+        "default": 604800000
       }
     }
   }

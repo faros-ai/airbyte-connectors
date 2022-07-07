@@ -1,4 +1,4 @@
-import {v2} from '@datadog/datadog-api-client';
+import {v1, v2} from '@datadog/datadog-api-client';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
@@ -21,14 +21,33 @@ interface PagedResult<T> {
   };
 }
 
+export interface MetricPoint {
+  id: string;
+  displayName: string;
+  metric: string;
+  timestamp: number;
+  value: number;
+  primaryUnit: v1.MetricsQueryUnit;
+  perUnit?: v1.MetricsQueryUnit;
+  scope: string;
+  tagSet: Array<string>;
+}
+
+interface MetricConfig {
+  query: string;
+}
+
 export interface DatadogConfig {
   readonly api_key: string;
   readonly application_key: string;
   readonly page_size?: number;
+  readonly metrics?: Array<MetricConfig>;
+  readonly metrics_max_window?: number;
 }
 
 export interface DatadogClient {
   incidents: v2.IncidentsApi;
+  metrics: v1.MetricsApi;
   users: v2.UsersApi;
 }
 
@@ -48,11 +67,19 @@ export class Datadog {
       },
     });
 
+    const v1Config = v1.createConfiguration({
+      authMethods: {
+        apiKeyAuth: config.api_key,
+        appKeyAuth: config.application_key,
+      },
+    });
+
     // Beta endpoints are unstable and need to be explicitly enabled
     v2Config.unstableOperations['listIncidents'] = true;
 
     const client = {
       incidents: new v2.IncidentsApi(v2Config),
+      metrics: new v1.MetricsApi(v1Config),
       users: new v2.UsersApi(v2Config),
     };
 
@@ -110,6 +137,39 @@ export class Datadog {
         return issues;
       }
     );
+  }
+
+  // Retrieve the specified metric between from and to unix timestamps
+  async *getMetrics(
+    query: string,
+    query_hash: string,
+    from: number,
+    to: number
+  ): AsyncGenerator<MetricPoint, any, any> {
+    try {
+      const res = await this.client.metrics.queryMetrics({
+        from,
+        to,
+        query: query,
+      });
+      for (const metadata of res.series) {
+        for (const point of metadata.pointlist) {
+          yield {
+            id: `${query_hash}-${metadata.metric}-${point[0]}`,
+            displayName: metadata.displayName,
+            metric: metadata.metric,
+            timestamp: point[0],
+            value: point[1],
+            primaryUnit: metadata.unit[0],
+            perUnit: metadata.unit[1],
+            scope: metadata.scope,
+            tagSet: metadata.tagSet,
+          };
+        }
+      }
+    } catch (err: any) {
+      throw new VError(err.message ?? JSON.stringify(err));
+    }
   }
 
   // Retrieve users that have been modified since lastModifiedAt
