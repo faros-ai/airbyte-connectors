@@ -56,8 +56,10 @@ export class FarosFeed extends Converter {
           rec['where'],
           model.replace('__Deletion', '')
         );
-      } else {
+      } else if (model.endsWith('__Upsert')) {
         this.schema.fixTimestampFields(rec, model.replace('__Upsert', ''));
+      } else {
+        this.schema.fixTimestampFields(rec, model);
       }
     }
 
