@@ -325,7 +325,8 @@ export class FarosDestination extends AirbyteDestination {
       const streamContext = new StreamContext(
         this.logger,
         config,
-        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
+        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient(),
+        this.farosGraph
       );
 
       if (dryRunEnabled) {

@@ -73,7 +73,8 @@ export class StreamContext {
   constructor(
     readonly logger: AirbyteLogger,
     readonly config: AirbyteConfig,
-    readonly farosClient?: FarosClient
+    readonly farosClient?: FarosClient,
+    readonly graph?: string
   ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
