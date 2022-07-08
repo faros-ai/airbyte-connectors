@@ -34,7 +34,7 @@
     "jest": "^27.4.7",
     "jest-extended": "^1.2.0",
     "lerna": "^5.1.4",
-    "lint-staged": "^12.4.1",
+    "lint-staged": "^13.0.3",
     "mockttp": "^3.0.0",
     "pino-pretty": "^7.6.1",
     "prettier": "^2.6.2",
