@@ -13,6 +13,7 @@ import {
   AirbyteStateMessage,
   DestinationSyncMode,
   parseAirbyteMessage,
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   EntryUploaderConfig,
@@ -20,7 +21,7 @@ import {
   FarosClientConfig,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import {intersection, keyBy, sortBy, uniq} from 'lodash';
+import {difference, intersection, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -595,6 +596,7 @@ export class FarosDestination extends AirbyteDestination {
     const streamKeys = Object.keys(streams);
     const deleteModelEntries: string[] = [];
     const dependenciesByStream: Dictionary<Set<string>> = {};
+    const incrementalModels: string[] = [];
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -629,6 +631,8 @@ export class FarosDestination extends AirbyteDestination {
         // Prepare destination models to delete if any
         if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
           deleteModelEntries.push(...converter.destinationModels);
+        } else if (streams[stream].sync_mode === SyncMode.INCREMENTAL) {
+          incrementalModels.push(...converter.destinationModels);
         }
       }
     }
@@ -655,7 +659,10 @@ export class FarosDestination extends AirbyteDestination {
 
     return {
       streams,
-      deleteModelEntries: uniq(deleteModelEntries),
+      deleteModelEntries: difference(
+        uniq(deleteModelEntries),
+        uniq(incrementalModels)
+      ),
       converterDependencies,
     };
   }
