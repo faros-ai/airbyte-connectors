@@ -45,13 +45,13 @@ export class Metrics extends AirbyteStreamBase {
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     for (const metric of this.datadog.config.metrics ?? []) {
       let from = 0;
-      const query_hash = createHash('md5').update(metric.query).digest('hex');
+      const queryHash = createHash('md5').update(metric.query).digest('hex');
       if (syncMode === SyncMode.INCREMENTAL) {
-        from = streamState[query_hash] ?? 0;
+        from = streamState[queryHash] ?? 0;
       }
-      const max_to = from + this.datadog.config.metrics_max_window;
-      const to = Math.min(Date.now().valueOf(), max_to);
-      yield* this.datadog.getMetrics(metric.query, query_hash, from, to);
+      const maxTo = from + this.datadog.config.metrics_max_window;
+      const to = Math.min(Date.now().valueOf(), maxTo);
+      yield* this.datadog.getMetrics(metric.query, queryHash, from, to);
     }
   }
 }

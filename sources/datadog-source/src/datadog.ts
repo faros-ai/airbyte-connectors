@@ -142,7 +142,7 @@ export class Datadog {
   // Retrieve the specified metric between from and to unix timestamps
   async *getMetrics(
     query: string,
-    query_hash: string,
+    queryHash: string,
     from: number,
     to: number
   ): AsyncGenerator<MetricPoint, any, any> {
@@ -155,7 +155,7 @@ export class Datadog {
       for (const metadata of res.series) {
         for (const point of metadata.pointlist) {
           yield {
-            id: `${query_hash}-${metadata.metric}-${point[0]}`,
+            id: `${queryHash}-${metadata.metric}-${point[0]}`,
             displayName: metadata.displayName,
             metric: metadata.metric,
             timestamp: point[0],
