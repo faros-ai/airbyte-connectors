@@ -33,15 +33,11 @@ export interface MetricPoint {
   tagSet: Array<string>;
 }
 
-interface MetricConfig {
-  query: string;
-}
-
 export interface DatadogConfig {
   readonly api_key: string;
   readonly application_key: string;
   readonly page_size?: number;
-  readonly metrics?: Array<MetricConfig>;
+  readonly metrics?: Array<string>;
   readonly metrics_max_window?: number;
 }
 
