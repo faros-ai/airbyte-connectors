@@ -1,4 +1,4 @@
-import {v2} from '@datadog/datadog-api-client';
+import {v1, v2} from '@datadog/datadog-api-client';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -119,6 +119,111 @@ describe('index', () => {
     expect(items).toStrictEqual([incidents.data[1]]);
   });
 
+  test('streams - metrics, use full_refresh sync mode', async () => {
+    const metricsResponse = readTestResourceFile('metrics.json');
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
+        {
+          metrics: {
+            queryMetrics: jest.fn().mockReturnValue(metricsResponse),
+          } as unknown as v1.MetricsApi,
+        } as DatadogClient,
+        {
+          metrics: [
+            {
+              query: 'system.cpu.idle{*}',
+            },
+          ],
+        } as DatadogConfig,
+        logger
+      )
+    );
+
+    const source = new sut.DatadogSource(logger);
+    const streams = source.streams({
+      apiKey: '',
+      applicationKey: '',
+    });
+    const stream = streams[1];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items[0]).toStrictEqual({
+      displayName: 'system.cpu.idle',
+      id: '186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1575317847',
+      metric: 'system.cpu.idle',
+      perUnit: undefined,
+      primaryUnit: {
+        family: 'time',
+        name: 'minute',
+        plural: 'minutes',
+        scale_factor: 60,
+        short_name: 'min',
+      },
+      scope: 'host:foo,env:test',
+      tagSet: [],
+      timestamp: 1575317847,
+      value: 0.5,
+    });
+  });
+
+  test('streams - metrics, use incremental sync mode', async () => {
+    const metricsResponse = readTestResourceFile('metrics.json');
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
+        {
+          metrics: {
+            queryMetrics: jest.fn().mockReturnValue(metricsResponse),
+          } as unknown as v1.MetricsApi,
+        } as DatadogClient,
+        {
+          metrics: [
+            {
+              query: 'system.cpu.idle{*}',
+            },
+          ],
+        } as DatadogConfig,
+        logger
+      )
+    );
+
+    const source = new sut.DatadogSource(logger);
+    const streams = source.streams({
+      apiKey: '',
+      applicationKey: '',
+    });
+    const stream = streams[1];
+    const itemIter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {lastModifiedAt: '2022-02-27T21:00:44.706Z'}
+    );
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items[0]).toStrictEqual({
+      displayName: 'system.cpu.idle',
+      id: '186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1575317847',
+      metric: 'system.cpu.idle',
+      perUnit: undefined,
+      primaryUnit: {
+        family: 'time',
+        name: 'minute',
+        plural: 'minutes',
+        scale_factor: 60,
+        short_name: 'min',
+      },
+      scope: 'host:foo,env:test',
+      tagSet: [],
+      timestamp: 1575317847,
+      value: 0.5,
+    });
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const users = readTestResourceFile('users.json');
     Datadog.instance = jest.fn().mockReturnValue(
@@ -138,7 +243,7 @@ describe('index', () => {
       apiKey: '',
       applicationKey: '',
     });
-    const stream = streams[1];
+    const stream = streams[2];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of itemIter) {
@@ -166,7 +271,7 @@ describe('index', () => {
       apiKey: '',
       applicationKey: '',
     });
-    const stream = streams[1];
+    const stream = streams[2];
     const itemIter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,

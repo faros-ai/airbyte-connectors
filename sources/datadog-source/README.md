@@ -4,10 +4,11 @@ This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/
 
 ## Streams
 
-| Model | Full | Incremental |
-|---|---|---|
-| Incidents  | ✅ | ✅ |
-| Users  | ✅ | ✅ |
+| Model     | Full | Incremental |
+|-----------|---|---|
+| Incidents | ✅ | ✅ |
+| Metrics   | ✅ | ✅ |
+| Users     | ✅ | ✅ |
 
 ## Testing
 

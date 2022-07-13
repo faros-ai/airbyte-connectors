@@ -1,0 +1,37 @@
+{
+  "error": "string",
+  "from_date": "integer",
+  "group_by": [],
+  "message": "string",
+  "query": "string",
+  "res_type": "time_series",
+  "series": [
+    {
+      "aggr": "avg",
+      "displayName": "system.cpu.idle",
+      "end": "integer",
+      "expression": "system.cpu.idle{host:foo,env:test}",
+      "interval": "integer",
+      "length": "integer",
+      "metric": "system.cpu.idle",
+      "pointlist": [
+        [1575317847, 0.5]
+      ],
+      "queryIndex": "integer",
+      "scope": "host:foo,env:test",
+      "start": "integer",
+      "tagSet": [],
+      "unit": [
+        {
+          "family": "time",
+          "name": "minute",
+          "plural": "minutes",
+          "scale_factor": 60,
+          "short_name": "min"
+        }
+      ]
+    }
+  ],
+  "status": "ok",
+  "to_date": "integer"
+}
