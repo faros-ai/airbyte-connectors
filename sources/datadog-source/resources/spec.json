@@ -36,11 +36,7 @@
         "title": "Metrics",
         "description": "list of metrics to fetch and their configuration",
         "item": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "query": "string"
-          }
+          "type": "string"
         }
       },
       "metrics_max_window": {

@@ -129,11 +129,7 @@ describe('index', () => {
           } as unknown as v1.MetricsApi,
         } as DatadogClient,
         {
-          metrics: [
-            {
-              query: 'system.cpu.idle{*}',
-            },
-          ],
+          metrics: ['system.cpu.idle{*}'],
         } as DatadogConfig,
         logger
       )
@@ -179,11 +175,7 @@ describe('index', () => {
           } as unknown as v1.MetricsApi,
         } as DatadogClient,
         {
-          metrics: [
-            {
-              query: 'system.cpu.idle{*}',
-            },
-          ],
+          metrics: ['system.cpu.idle{*}'],
         } as DatadogConfig,
         logger
       )
