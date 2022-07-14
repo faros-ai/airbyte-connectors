@@ -1,13 +1,13 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {CategoryRef, GitlabCommon, GitlabConverter} from '../common/gitlab';
 import {
   DestinationModel,
   DestinationRecord,
   StreamContext,
   StreamName,
 } from '../converter';
+import {CategoryRef, GitlabCommon, GitlabConverter} from '../gitlab/common';
 
 export class Jobs extends GitlabConverter {
   source = 'GitLab-CI';

@@ -1,13 +1,13 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {GitlabConverter} from '../common/gitlab';
 import {
   DestinationModel,
   DestinationRecord,
   StreamContext,
   StreamName,
 } from '../converter';
+import {GitlabConverter} from './common';
 
 export class Releases extends GitlabConverter {
   private readonly logger: AirbyteLogger = new AirbyteLogger();
