@@ -6,8 +6,8 @@
     "clean": "lerna run clean && rm -rf node_modules out",
     "lint": "lerna run lint",
     "prepare": "lerna bootstrap --hoist && husky install",
-    "test": "lerna run test -- -- --color",
-    "test-cov": "lerna run test -- -- --coverage --color"
+    "test": "lerna run test",
+    "test-cov": "lerna run test-cov"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.8",
