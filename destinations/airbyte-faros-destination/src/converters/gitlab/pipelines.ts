@@ -43,7 +43,7 @@ export class Pipelines extends GitlabConverter {
       startedAt: Utils.toDate(pipeline.created_at),
       endedAt,
     };
-    
+
     res.push({
       model: 'cicd_Build',
       record: build,
@@ -59,7 +59,7 @@ export class Pipelines extends GitlabConverter {
       res.push({
         model: 'cicd_BuildCommitAssociation',
         record: {
-          build: {uid: build.uid, pipeline},
+          build: {uid: build.uid, pipeline: pipelineKey},
           commit,
         },
       });
