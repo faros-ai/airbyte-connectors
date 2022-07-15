@@ -50,6 +50,11 @@ export class Revisions extends AirbyteStreamBase {
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const modifiedAt = state?.latestModifiedAt ?? 0;
 
-    yield* phabricator.getRevisions(phabricator.repositories, modifiedAt);
+    for (const revision of await phabricator.getRevisions(
+      phabricator.repositories,
+      modifiedAt
+    )) {
+      yield revision;
+    }
   }
 }

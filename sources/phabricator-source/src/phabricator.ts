@@ -325,11 +325,12 @@ export class Phabricator {
     );
   }
 
-  async *getRevisions(
+  async getRevisions(
     repoNames: string[],
     modifiedAt?: number,
     limit = this.limit
-  ): AsyncGenerator<Revision, any, any> {
+  ): Promise<ReadonlyArray<Revision>> {
+    const results: Revision[] = [];
     const modified = Math.max(
       modifiedAt ?? 0,
       floor(this.startDate.toSeconds())
@@ -349,7 +350,7 @@ export class Phabricator {
     const constraints = {repositoryPHIDs, modifiedStart: modified};
     const attachments = {projects: true, subscribers: true, reviewers: true};
 
-    yield* this.paginate(
+    const revisions = this.paginate(
       limit,
       (after) =>
         this.client.differential.revisionSearch({
@@ -372,12 +373,21 @@ export class Phabricator {
         for await (const repo of repos) {
           reposById[repo.phid] = repo;
         }
+        const diffPHIDs: Dictionary<string, number> = {};
+        for (const revision of newRevisions) {
+          diffPHIDs[revision.id] = revision.fields.diffPHID;
+        }
+        console.log(JSON.stringify(diffPHIDs, null, 2));
         return newRevisions.map((revision) => {
           revision.repository = reposById[revision.fields.repositoryPHID];
           return revision;
         });
       }
     );
+    for await (const revision of revisions) {
+      results.push(revision);
+    }
+    return results;
   }
 
   async *getUsers(
