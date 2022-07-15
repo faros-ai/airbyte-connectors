@@ -9,9 +9,11 @@ import {
 import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {floor, trim, uniq} from 'lodash';
+import {chunk, floor, trim, uniq} from 'lodash';
 import {DateTime} from 'luxon';
+import parseDiff from 'parse-diff';
 import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 export const PHABRICATOR_DEFAULT_LIMIT = 100;
@@ -77,6 +79,20 @@ export interface Reviewer {
   status: string;
   isBlocking: boolean;
   actorPHID: string;
+}
+
+export interface RevisionDiff {
+  id: number;
+  phid: string;
+  revision: {
+    id: number;
+    phid: string;
+    dateModified: number;
+  };
+  repository: Repository;
+  filesChanged: string[];
+  linesAdded: number;
+  linesDeleted: number;
 }
 
 interface PagedResult<T> extends ErrorCodes {
@@ -165,7 +181,6 @@ export class Phabricator {
   }
 
   private async *paginate<T, R>(
-    limit: number,
     fetch: (after?: string) => Promise<PagedResult<T>>,
     process: (data: T[]) => Promise<R[]>,
     earlyTermination = true
@@ -185,7 +200,7 @@ export class Phabricator {
           yield item;
         }
       }
-      if (earlyTermination && count < limit) return;
+      if (earlyTermination && count < this.limit) return;
       after = res?.result?.cursor?.after;
     } while (after);
   }
@@ -202,13 +217,9 @@ export class Phabricator {
   }
 
   async *getRepositories(
-    filter: {
-      repoIds?: phid[];
-      repoNames?: string[];
-    },
-    modifiedAt?: number,
-    limit = this.limit
-  ): AsyncGenerator<Repository, any, any> {
+    filter: {repoIds?: phid[]; repoNames?: string[]},
+    modifiedAt?: number
+  ): AsyncGenerator<Repository> {
     const modified = modifiedAt ?? 0;
     this.logger.debug(`Fetching repositories modified since ${modified}`);
 
@@ -243,14 +254,13 @@ export class Phabricator {
     }
 
     yield* this.paginate(
-      limit,
       (after) => {
         return this.client.diffusion.repositorySearch({
           queryKey: 'all',
           order: 'newest',
           constraints,
           attachments,
-          limit,
+          limit: this.limit,
           after,
         });
       },
@@ -273,9 +283,8 @@ export class Phabricator {
 
   async *getCommits(
     repoNames: string[],
-    committedAt?: number,
-    limit = this.limit
-  ): AsyncGenerator<Commit, any, any> {
+    committedAt?: number
+  ): AsyncGenerator<Commit> {
     const committed = Math.max(
       committedAt ?? 0,
       floor(this.startDate.toSeconds())
@@ -295,14 +304,13 @@ export class Phabricator {
     const attachments = {projects: false, subscribers: false};
 
     yield* this.paginate(
-      limit,
       (after) =>
         this.client.diffusion.commitSearch({
           queryKey: 'all',
           order: 'newest',
           constraints,
           attachments,
-          limit,
+          limit: this.limit,
           after,
         }),
       async (commits) => {
@@ -325,10 +333,12 @@ export class Phabricator {
     );
   }
 
+  @Memoize(
+    (repoNames: string[], modifiedAt: number) => `${repoNames};${modifiedAt}`
+  )
   async getRevisions(
     repoNames: string[],
-    modifiedAt?: number,
-    limit = this.limit
+    modifiedAt?: number
   ): Promise<ReadonlyArray<Revision>> {
     const results: Revision[] = [];
     const modified = Math.max(
@@ -351,14 +361,13 @@ export class Phabricator {
     const attachments = {projects: true, subscribers: true, reviewers: true};
 
     const revisions = this.paginate(
-      limit,
       (after) =>
         this.client.differential.revisionSearch({
           queryKey: 'all',
           order: 'updated',
           constraints,
           attachments,
-          limit,
+          limit: this.limit,
           after,
         }),
       async (revisions) => {
@@ -373,11 +382,6 @@ export class Phabricator {
         for await (const repo of repos) {
           reposById[repo.phid] = repo;
         }
-        const diffPHIDs: Dictionary<string, number> = {};
-        for (const revision of newRevisions) {
-          diffPHIDs[revision.id] = revision.fields.diffPHID;
-        }
-        console.log(JSON.stringify(diffPHIDs, null, 2));
         return newRevisions.map((revision) => {
           revision.repository = reposById[revision.fields.repositoryPHID];
           return revision;
@@ -390,26 +394,76 @@ export class Phabricator {
     return results;
   }
 
+  async *getRevisionDiffs(
+    repoNames: string[],
+    modifiedAt?: number
+  ): AsyncGenerator<RevisionDiff> {
+    const revisions = await this.getRevisions(repoNames, modifiedAt);
+    for (const batch of chunk(revisions, this.limit)) {
+      const diffsRes = await this.client.differential.diffSearch({
+        constraints: {
+          phids: batch
+            .map((revision) => revision.fields.diffPHID)
+            .filter((id) => id),
+        },
+        attachments: {commits: false},
+      });
+      if (diffsRes?.error_code || diffsRes?.error_info) {
+        throw new VError(`${diffsRes?.error_code}: ${diffsRes?.error_info}`);
+      }
+      for (const diff of diffsRes.result.data) {
+        const rawDiffRes = await this.client.differential.getrawdiff({
+          diffID: `${diff.id}`,
+        });
+        if (rawDiffRes?.error_code || rawDiffRes?.error_info) {
+          throw new VError(
+            `${rawDiffRes?.error_code}: ${rawDiffRes?.error_info}`
+          );
+        }
+        if (typeof rawDiffRes.result !== 'string') {
+          this.logger.warn(`Unexpected raw diff type for diff ${diff.id}`);
+          continue;
+        }
+        const files = parseDiff(rawDiffRes.result);
+        const revision = batch.find((r) => r.phid === diff.fields.revisionPHID);
+        yield {
+          id: diff.id,
+          phid: diff.phid,
+          revision: {
+            id: revision.id,
+            phid: revision.phid,
+            dateModified: revision.fields?.dateModified,
+          },
+          repository: revision.repository,
+          filesChanged: uniq(
+            files.flatMap((f) => [f.from, f.to]).filter((f) => f)
+          ),
+          linesAdded: files.reduce((total, file) => total + file.additions, 0),
+          linesDeleted: files.reduce(
+            (total, file) => total + file.deletions,
+            0
+          ),
+        };
+      }
+    }
+  }
+
   async *getUsers(
-    filter: {
-      userIds?: phid[];
-    },
-    modifiedAt?: number,
-    limit = this.limit
-  ): AsyncGenerator<User, any, any> {
+    filter: {userIds?: phid[]},
+    modifiedAt?: number
+  ): AsyncGenerator<User> {
     const modified = modifiedAt ?? 0;
     this.logger.debug(`Fetching users modified since ${modified}`);
 
     const constraints = {phids: filter.userIds ?? []};
 
     yield* this.paginate(
-      limit,
       (after) => {
         return this.client.user.search({
           queryKey: 'all',
           order: 'newest',
           constraints,
-          limit,
+          limit: this.limit,
           after,
         });
       },
@@ -423,12 +477,9 @@ export class Phabricator {
   }
 
   async *getProjects(
-    filter: {
-      slugs?: string[];
-    },
-    modifiedAt?: number,
-    limit = this.limit
-  ): AsyncGenerator<Project, any, any> {
+    filter: {slugs?: string[]},
+    modifiedAt?: number
+  ): AsyncGenerator<Project> {
     const modified = modifiedAt ?? 0;
     this.logger.debug(`Fetching projects modified since ${modified}`);
 
@@ -436,14 +487,13 @@ export class Phabricator {
     const attachments = {members: true, ancestors: true, watchers: true};
 
     yield* this.paginate(
-      limit,
       (after) => {
         return this.client.project.search({
           queryKey: 'all',
           order: 'newest' as any,
           constraints,
           attachments,
-          limit,
+          limit: this.limit,
           after,
         });
       },
