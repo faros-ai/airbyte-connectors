@@ -5,14 +5,24 @@
     "id": {
       "type": "integer"
     },
-    "filesChanged": {
-      "type": "integer"
-    },
-    "linesAdded": {
-      "type": "integer"
-    },
-    "linesDeleted": {
-      "type": "integer"
+    "diff": {
+      "type": "object",
+      "properties": {
+        "filesChanged": {
+          "type": "integer"
+        },
+        "linesAdded": {
+          "type": "integer"
+        },
+        "linesDeleted": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "filesChanged",
+        "linesAdded",
+        "linesDeleted"
+      ]
     },
     "revision": {
       "type": "object",
@@ -22,8 +32,16 @@
         },
         "phid": {
           "type": "string"
+        },
+        "dateModified": {
+          "type": "integer"
         }
-      }
+      },
+      "required": [
+        "id",
+        "phid",
+        "dateModified"
+      ]
     },
     "repository": {
       "type": "object",

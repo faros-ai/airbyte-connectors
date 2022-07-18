@@ -6,12 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  Phabricator,
-  PhabricatorConfig,
-  Revision,
-  RevisionDiff,
-} from '../phabricator';
+import {Phabricator, PhabricatorConfig, RevisionDiff} from '../phabricator';
 
 export interface RevisionDiffsState {
   latestModifiedAt: number;

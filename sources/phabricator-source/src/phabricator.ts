@@ -90,9 +90,11 @@ export interface RevisionDiff {
     dateModified: number;
   };
   repository: Repository;
-  filesChanged: string[];
-  linesAdded: number;
-  linesDeleted: number;
+  diff: {
+    filesChanged: string[];
+    linesAdded: number;
+    linesDeleted: number;
+  };
 }
 
 interface PagedResult<T> extends ErrorCodes {
@@ -435,14 +437,19 @@ export class Phabricator {
             dateModified: revision.fields?.dateModified,
           },
           repository: revision.repository,
-          filesChanged: uniq(
-            files.flatMap((f) => [f.from, f.to]).filter((f) => f)
-          ),
-          linesAdded: files.reduce((total, file) => total + file.additions, 0),
-          linesDeleted: files.reduce(
-            (total, file) => total + file.deletions,
-            0
-          ),
+          diff: {
+            filesChanged: uniq(
+              files.flatMap((f) => [f.from, f.to]).filter((f) => f)
+            ),
+            linesAdded: files.reduce(
+              (total, file) => total + file.additions,
+              0
+            ),
+            linesDeleted: files.reduce(
+              (total, file) => total + file.deletions,
+              0
+            ),
+          },
         };
       }
     }

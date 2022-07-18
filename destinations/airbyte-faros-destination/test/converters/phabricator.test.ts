@@ -45,6 +45,7 @@ describe('phabricator', () => {
       commits: 7,
       projects: 4,
       repositories: 2,
+      revision_diffs: 1,
       revisions: 3,
       users: 4,
     };
@@ -66,7 +67,7 @@ describe('phabricator', () => {
       vcs_Organization: 2,
       vcs_PullRequest: 3,
       vcs_PullRequestReview: 3,
-      vcs_PullRequest__Update: 3,
+      vcs_PullRequest__Update: 4,
       vcs_Repository: 2,
       vcs_User: 4,
     };
