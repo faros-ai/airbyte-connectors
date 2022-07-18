@@ -13,6 +13,7 @@ export class Pipelines extends GitlabConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data;
+    const res: DestinationRecord[] = [];
 
     const repository = GitlabCommon.parseRepositoryKey(
       pipeline.web_url,
@@ -32,19 +33,38 @@ export class Pipelines extends GitlabConverter {
       uid: repository.name,
     };
 
-    return [
-      {
-        model: 'cicd_Build',
+    const build = {
+      uid: String(pipeline.id),
+      number: pipeline.id,
+      pipeline: pipelineKey,
+      status,
+      url: pipeline.web_url,
+      createdAt: Utils.toDate(pipeline.created_at),
+      startedAt: Utils.toDate(pipeline.created_at),
+      endedAt,
+    };
+
+    res.push({
+      model: 'cicd_Build',
+      record: build,
+    });
+
+    if (pipeline.sha) {
+      const commit = {
+        sha: pipeline.sha,
+        uid: pipeline.sha,
+        repository: repository,
+      };
+
+      res.push({
+        model: 'cicd_BuildCommitAssociation',
         record: {
-          uid: String(pipeline.id),
-          number: pipeline.id,
-          pipeline: pipelineKey,
-          status,
-          url: pipeline.web_url,
-          startedAt: Utils.toDate(pipeline.created_at),
-          endedAt,
+          build: {uid: build.uid, pipeline: pipelineKey},
+          commit,
         },
-      },
-    ];
+      });
+    }
+
+    return res;
   }
 }
