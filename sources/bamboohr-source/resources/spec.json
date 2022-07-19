@@ -32,7 +32,7 @@
         "type": "array",
         "title": "Additional Fields",
         "description": "List of additional employee field names to fetch. Each field name must have an alias. See https://documentation.bamboohr.com/reference/metadata-get-a-list-of-fields.",
-        "item": {
+        "items": {
           "type": "string"
         }
       }
