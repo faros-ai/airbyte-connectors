@@ -1143,44 +1143,44 @@ export class Bitbucket {
             reviewers: data.update?.reviewers,
             destination: {
               commit: {
-                hash: data.update?.destination.commit.hash,
-                type: data.update?.destination.type,
+                hash: data.update?.destination?.commit?.hash,
+                type: data.update?.destination?.type,
                 links: {
-                  htmlUrl: data.update?.destination.links?.html?.href,
+                  htmlUrl: data.update?.destination?.links?.html?.href,
                 },
               },
               repository: {
-                type: data.update?.destination.type,
-                name: data.update?.destination.name,
-                fullName: data.update?.destination.full_name,
-                uuid: data.update?.destination.uuid,
+                type: data.update?.destination?.type,
+                name: data.update?.destination?.name,
+                fullName: data.update?.destination?.full_name,
+                uuid: data.update?.destination?.uuid,
                 links: {
-                  htmlUrl: data.update?.destination.links?.html?.href,
+                  htmlUrl: data.update?.destination?.links?.html?.href,
                 },
               },
               branch: {
-                name: data.update?.destination.branch.name,
+                name: data.update?.destination?.branch?.name,
               },
             },
             source: {
               commit: {
-                hash: data.update?.source.commit.hash,
-                type: data.update?.source.commit.type,
+                hash: data.update?.source?.commit?.hash,
+                type: data.update?.source?.commit?.type,
                 links: {
-                  htmlUrl: data.update?.source.commit.links?.html?.href,
+                  htmlUrl: data.update?.source?.commit?.links?.html?.href,
                 },
               },
               repository: {
-                type: data.update?.source.repository.type,
-                name: data.update?.source.repository.name,
-                fullName: data.update?.source.repository.full_name,
-                uuid: data.update?.source.repository.uuid,
+                type: data.update?.source?.repository?.type,
+                name: data.update?.source?.repository?.name,
+                fullName: data.update?.source?.repository?.full_name,
+                uuid: data.update?.source?.repository?.uuid,
                 links: {
-                  htmlUrl: data.update?.source.repository.links?.html?.href,
+                  htmlUrl: data.update?.source?.repository?.links?.html?.href,
                 },
               },
               branch: {
-                name: data.update?.source.branch.name,
+                name: data.update?.source?.branch?.name,
               },
             },
             author: {
