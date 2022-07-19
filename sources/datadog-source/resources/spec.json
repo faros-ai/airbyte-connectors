@@ -35,7 +35,7 @@
         "type": "array",
         "title": "Metrics",
         "description": "list of metrics to fetch and their configuration",
-        "item": {
+        "items": {
           "type": "string"
         }
       },

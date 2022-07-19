@@ -27,7 +27,7 @@
         "type": "array",
         "title": "Repositories",
         "description": "List of repositories to fetch tags for",
-        "item": {
+        "items": {
           "type": "string"
         }
       },
