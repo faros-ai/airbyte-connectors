@@ -5,24 +5,35 @@
     "id": {
       "type": "integer"
     },
-    "diff": {
-      "type": "object",
-      "properties": {
-        "filesChanged": {
-          "type": "integer"
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "deletions": {
+            "type": "integer"
+          },
+          "additions": {
+            "type": "integer"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "new": {
+            "type": "boolean"
+          }
         },
-        "linesAdded": {
-          "type": "integer"
-        },
-        "linesDeleted": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "filesChanged",
-        "linesAdded",
-        "linesDeleted"
-      ]
+        "required": [
+          "deletions",
+          "additions"
+        ]
+      }
     },
     "revision": {
       "type": "object",

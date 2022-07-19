@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import {Condoit} from 'condoit';
+import {DiffDiffSearch} from 'condoit/dist/interfaces/iDifferential';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
 import {
   ErrorCodes,
@@ -9,7 +10,7 @@ import {
 import iProject from 'condoit/dist/interfaces/iProject';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {chunk, floor, trim, uniq} from 'lodash';
+import {chunk, floor, pick, trim, uniq} from 'lodash';
 import {DateTime} from 'luxon';
 import parseDiff from 'parse-diff';
 import {Dictionary} from 'ts-essentials';
@@ -89,12 +90,11 @@ export interface RevisionDiff {
     phid: string;
     dateModified: number;
   };
-  repository: Repository;
-  diff: {
-    filesChanged: string[];
-    linesAdded: number;
-    linesDeleted: number;
-  };
+  repository?: Repository;
+  files: Pick<
+    parseDiff.File,
+    'deletions' | 'additions' | 'from' | 'to' | 'deleted' | 'new'
+  >[];
 }
 
 interface PagedResult<T> extends ErrorCodes {
@@ -408,12 +408,17 @@ export class Phabricator {
             .map((revision) => revision.fields.diffPHID)
             .filter((id) => id),
         },
-        attachments: {commits: false},
-      });
+      } as DiffDiffSearch);
       if (diffsRes?.error_code || diffsRes?.error_info) {
         throw new VError(`${diffsRes?.error_code}: ${diffsRes?.error_info}`);
       }
+
       for (const diff of diffsRes.result.data) {
+        const revision = batch.find((r) => r.phid === diff.fields.revisionPHID);
+        if (!revision) {
+          this.logger.warn(`Could not determine revision for diff ${diff.id}`);
+          continue;
+        }
         const rawDiffRes = await this.client.differential.getrawdiff({
           diffID: `${diff.id}`,
         });
@@ -427,7 +432,7 @@ export class Phabricator {
           continue;
         }
         const files = parseDiff(rawDiffRes.result);
-        const revision = batch.find((r) => r.phid === diff.fields.revisionPHID);
+
         yield {
           id: diff.id,
           phid: diff.phid,
@@ -437,19 +442,9 @@ export class Phabricator {
             dateModified: revision.fields?.dateModified,
           },
           repository: revision.repository,
-          diff: {
-            filesChanged: uniq(
-              files.flatMap((f) => [f.from, f.to]).filter((f) => f)
-            ),
-            linesAdded: files.reduce(
-              (total, file) => total + file.additions,
-              0
-            ),
-            linesDeleted: files.reduce(
-              (total, file) => total + file.deletions,
-              0
-            ),
-          },
+          files: files.map((f) =>
+            pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
+          ),
         };
       }
     }
