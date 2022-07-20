@@ -27,7 +27,7 @@ export function mainCommand(): Command {
 }
 
 /** Phabricator source implementation. */
-class PhabricatorSource extends AirbyteSourceBase {
+export class PhabricatorSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

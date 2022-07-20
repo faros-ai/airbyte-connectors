@@ -1,0 +1,122 @@
+{
+  "result": {
+    "data": [
+      {
+        "id": 2,
+        "type": "REPO",
+        "phid": "PHID-REPO-uwrzrrles7cuyvbvadu2",
+        "fields": {
+          "name": "Test 2",
+          "vcs": "git",
+          "callsign": null,
+          "shortName": "test-2",
+          "status": "active",
+          "isImporting": false,
+          "almanacServicePHID": null,
+          "refRules": {
+            "fetchRules": [],
+            "trackRules": [],
+            "permanentRefRules": []
+          },
+          "defaultBranch": "master",
+          "description": {
+            "raw": "Just another test repository"
+          },
+          "spacePHID": null,
+          "dateCreated": 1632442890,
+          "dateModified": 1633129721,
+          "policy": {
+            "view": "users",
+            "edit": "admin",
+            "diffusion.push": "users"
+          }
+        },
+        "attachments": {
+          "projects": {
+            "projectPHIDs": [
+              "PHID-PROJ-cmq7ncnt3rfgspqfm3b5"
+            ]
+          },
+          "uris": {
+            "uris": []
+          },
+          "metrics": {
+            "commitCount": 6,
+            "recentCommit": {
+              "identifier": "053316a2b8e587c04a46f48e916babf011a24ef1",
+              "repositoryPHID": "PHID-REPO-uwrzrrles7cuyvbvadu2",
+              "author": {
+                "name": "Matthew Tovbin",
+                "email": "tovbinm@gmail.com",
+                "raw": "Matthew Tovbin <tovbinm@gmail.com>",
+                "epoch": 1632523259,
+                "identityPHID": "PHID-RIDT-vyrvpr3vdtg7p53wnjkl",
+                "userPHID": "PHID-USER-wbapfcgviw7jnbh4h5fj"
+              },
+              "committer": {
+                "name": "Matthew Tovbin",
+                "email": "tovbinm@gmail.com",
+                "raw": "Matthew Tovbin <tovbinm@gmail.com>",
+                "epoch": 1632523619,
+                "identityPHID": "PHID-RIDT-vyrvpr3vdtg7p53wnjkl",
+                "userPHID": "PHID-USER-wbapfcgviw7jnbh4h5fj"
+              },
+              "isUnreachable": false,
+              "isImported": true,
+              "auditStatus": {
+                "value": "none",
+                "name": "No Audits",
+                "closed": true,
+                "color.ansi": null
+              },
+              "message": "Added index\n\nTest Plan: no plans yet\n\nReviewers: mt\n\nReviewed By: mt\n\nDifferential Revision: https://ec2-3-84-52-69.compute-1.amazonaws.com/D2\n"
+            }
+          }
+        }
+      },
+      {
+        "id": 1,
+        "type": "REPO",
+        "phid": "PHID-REPO-s6uruoyp2xdw2txpkfzq",
+        "fields": {
+          "name": "Test",
+          "vcs": "git",
+          "callsign": null,
+          "shortName": "test",
+          "status": "inactive",
+          "isImporting": true,
+          "almanacServicePHID": null,
+          "refRules": {
+            "fetchRules": [],
+            "trackRules": [],
+            "permanentRefRules": []
+          },
+          "defaultBranch": "master",
+          "description": {
+            "raw": "Just a test repo"
+          },
+          "spacePHID": null,
+          "dateCreated": 1632434444,
+          "dateModified": 1632939206,
+          "policy": {
+            "view": "users",
+            "edit": "admin",
+            "diffusion.push": "users"
+          }
+        },
+        "attachments": {
+          "projects": {
+            "projectPHIDs": []
+          },
+          "uris": {
+            "uris": []
+          },
+          "metrics": {
+            "commitCount": 0,
+            "recentCommit": null
+          }
+        }
+      }
+    ]
+  }
+}
