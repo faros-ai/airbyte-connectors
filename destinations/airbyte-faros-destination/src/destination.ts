@@ -19,6 +19,7 @@ import {
   EntryUploaderConfig,
   FarosClient,
   FarosClientConfig,
+  HasuraSchemaLoader,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import {difference, keyBy, sortBy, uniq} from 'lodash';
@@ -29,9 +30,10 @@ import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
+import {GraphQLClient} from './common/graphql-client';
+import {GraphQLWriter} from './common/graphql-writer';
 import {WriteStats} from './common/write-stats';
-import {HasuraClient} from './community/hasura-client';
-import {HasuraWriter} from './community/hasura-writer';
+import {HasuraBackend} from './community/hasura-backend';
 import {
   Converter,
   DestinationRecordTyped,
@@ -70,7 +72,7 @@ export class FarosDestination extends AirbyteDestination {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-    private hasuraClient: HasuraClient = undefined,
+    private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
   ) {
@@ -84,9 +86,9 @@ export class FarosDestination extends AirbyteDestination {
     throw new VError('Faros client is not initialized');
   }
 
-  getHasuraClient(): HasuraClient {
-    if (this.hasuraClient) return this.hasuraClient;
-    throw new VError('Hasura client is not initialized');
+  getGraphQLClient(): GraphQLClient {
+    if (this.graphQLClient) return this.graphQLClient;
+    throw new VError('GraphQL client is not initialized');
   }
 
   async spec(): Promise<AirbyteSpec> {
@@ -117,16 +119,21 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError('Community Edition Hasura URL is not set');
     }
     try {
-      this.hasuraClient = new HasuraClient(
+      const backend = new HasuraBackend(
         config.edition_configs.hasura_url,
         config.edition_configs.hasura_admin_secret
       );
+      const schemaLoader = new HasuraSchemaLoader(
+        config.edition_configs.hasura_url,
+        config.edition_configs.hasura_admin_secret
+      );
+      this.graphQLClient = new GraphQLClient(schemaLoader, backend);
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
     try {
       if (config.dry_run !== true) {
-        await this.getHasuraClient().healthCheck();
+        await this.getGraphQLClient().healthCheck();
       }
     } catch (e) {
       throw new VError(`Invalid Hasura url. Error: ${e}`);
@@ -157,6 +164,10 @@ export class FarosDestination extends AirbyteDestination {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
+    // TODO: init v2
+    // if (config.edition_configs.use_graphql_v2) {
+    //   throw new VError('not yet implemented');
+    // } else {
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url,
@@ -166,13 +177,15 @@ export class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
-    try {
-      if (config.dry_run !== true) {
-        await this.getFarosClient().tenant();
-      }
-    } catch (e) {
-      throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
-    }
+    // }
+    // TODO: bring this back before merge
+    // try {
+    //   if (config.dry_run !== true) {
+    //     await this.getFarosClient().tenant();
+    //   }
+    // } catch (e) {
+    //   throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
+    // }
     this.farosGraph = config.edition_configs.graph;
     try {
       const exists = await this.getFarosClient().graphExists(this.farosGraph);
@@ -348,11 +361,11 @@ export class FarosDestination extends AirbyteDestination {
           stats
         );
       } else if (this.edition === Edition.COMMUNITY) {
-        const hasura = this.getHasuraClient();
-        await hasura.loadSchema();
-        await hasura.resetData(origin, deleteModelEntries);
+        const graphQLClient = this.getGraphQLClient();
+        await graphQLClient.loadSchema();
+        await graphQLClient.resetData(origin, deleteModelEntries);
 
-        const writer = new HasuraWriter(hasura, origin, stats, this);
+        const writer = new GraphQLWriter(graphQLClient, origin, stats, this);
 
         latestStateMessage = await this.writeEntries(
           streamContext,
@@ -362,6 +375,8 @@ export class FarosDestination extends AirbyteDestination {
           stats,
           writer
         );
+        // flush any buffered writes
+        await graphQLClient.flush();
       } else {
         this.logger.info(
           `Opening a new revision on graph ${this.farosGraph} ` +
@@ -457,7 +472,7 @@ export class FarosDestination extends AirbyteDestination {
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
     stats: WriteStats,
-    writer?: Writable | HasuraWriter
+    writer?: Writable | GraphQLWriter
   ): Promise<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -679,7 +694,7 @@ export class FarosDestination extends AirbyteDestination {
     recordMessage: AirbyteRecord,
     stats: WriteStats,
     ctx: StreamContext,
-    writer?: Writable | HasuraWriter
+    writer?: Writable | GraphQLWriter
   ): Promise<number> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
@@ -691,7 +706,7 @@ export class FarosDestination extends AirbyteDestination {
     converter: Converter,
     results: ReadonlyArray<DestinationRecordTyped<R>>,
     stats: WriteStats,
-    writer?: Writable | HasuraWriter
+    writer?: Writable | GraphQLWriter
   ): Promise<number> {
     if (!Array.isArray(results)) {
       throw new VError('Invalid results: not an array');
@@ -711,14 +726,12 @@ export class FarosDestination extends AirbyteDestination {
       }
 
       let isTimestamped = false;
-      if (writer) {
-        if (writer instanceof HasuraWriter) {
-          isTimestamped = await writer.write(result);
-        } else {
-          const obj: Dictionary<any> = {};
-          obj[result.model] = result.record;
-          writer.write(obj);
-        }
+      if (writer instanceof GraphQLWriter) {
+        isTimestamped = await writer.write(result);
+      } else if (writer) {
+        const obj: Dictionary<any> = {};
+        obj[result.model] = result.record;
+        writer.write(obj);
       }
       if (!isTimestamped) {
         recordsWritten++;

@@ -91,6 +91,12 @@
                 "description": "The Faros graph name.",
                 "default": "default"
               },
+              "use_graphql_v2": {
+                "type": "boolean",
+                "title": "GraphQL Version 2",
+                "description": "Use version 2 of graphql engine.",
+                "default": false
+              },
               "expiration": {
                 "type": "string",
                 "title": "Revision expiration",
