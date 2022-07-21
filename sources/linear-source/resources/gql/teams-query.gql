@@ -1,0 +1,16 @@
+query Teams {
+  teams {
+    nodes {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+      members {
+        nodes {
+          id
+        }
+      }
+    }
+  }
+}

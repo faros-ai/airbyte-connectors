@@ -1,0 +1,104 @@
+{
+    "streams": [
+        {
+            "stream": {
+                "name": "cycles",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "id"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "issues",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "default_cursor_field": [
+                    "updatedAt"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "id"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "labels",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "uuid"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "projects",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "uuid"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "teams",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "uuid"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "users",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "uuid"
+                    ]
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        }
+    ]
+}

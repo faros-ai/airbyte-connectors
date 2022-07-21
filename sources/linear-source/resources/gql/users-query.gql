@@ -1,0 +1,19 @@
+query Users {
+  users {
+     nodes
+		{
+			id
+			name
+			displayName
+			email
+			teams
+			{
+				nodes
+				{
+					id
+					name
+				}
+			}
+		}
+  }
+}

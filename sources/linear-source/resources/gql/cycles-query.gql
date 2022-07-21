@@ -1,0 +1,16 @@
+query Cycle {
+  cycles {
+   nodes
+		{
+			id
+			name
+			number
+			progress
+			completedScopeHistory
+			startsAt
+			endsAt
+			createdAt
+			completedAt
+		}
+  }
+}

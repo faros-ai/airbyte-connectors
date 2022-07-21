@@ -104,3 +104,6 @@ export const bamboohrAllStreamsLog = readTestResourceFile(
 export const farosFeedsAllStreamsLog = readTestResourceFile(
   'faros_feeds/all-streams.log'
 );
+export const linearAllStreamsLog = readTestResourceFile(
+  'linear/all-streams.log'
+);

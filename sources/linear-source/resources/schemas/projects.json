@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "description": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "updatedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "progress": {
+            "type": "number"
+        },
+        "completedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "createdAt": {
+            "type": "string"
+        }
+    }
+}

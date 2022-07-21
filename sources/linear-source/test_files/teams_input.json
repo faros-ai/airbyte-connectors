@@ -1,0 +1,16 @@
+[
+    {
+        "id": "6578cf0f-58b5-424f-87ae-a1d5ab7746e3",
+        "name": "Devcube",
+        "description": null,
+        "createdAt": "2022-06-16T15:07:18.821Z",
+        "updatedAt": "2022-06-20T15:35:31.141Z",
+        "members": {
+            "nodes": [
+                {
+                    "id": "2b0a0f81-f259-488b-ba9a-ded7e4e7772d"
+                }
+            ]
+        }
+    }
+]
