@@ -29,22 +29,29 @@
         "title": "ServiceNow url",
         "description": "ServiceNow instance url"
       },
-      "cutoff_days": {
+      "service_id_field": {
         "order": 3,
+        "type": "string",
+        "title": "ServiceNow service identifier field",
+        "description": "The cmdb_ci or cmdb_ci_service field to use as the service identifier",
+        "default": "name"
+      },
+      "cutoff_days": {
+        "order": 4,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
-        "order": 4,
+        "order": 5,
         "type": "integer",
         "title": "Page Size",
         "description": "used when retrieving paginated data from ServiceNow",
         "default": 100
       },
       "timeout": {
-        "order": 5,
+        "order": 6,
         "type": "integer",
         "title": "Timeout",
         "description": "client timeout in milliseconds, used when retrieving data from ServiceNow",

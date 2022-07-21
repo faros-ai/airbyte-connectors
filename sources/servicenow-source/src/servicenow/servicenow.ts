@@ -7,6 +7,7 @@ import {Incident, IncidentRest, Pagination, User} from './models';
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_TIMEOUT = 30000;
+const DEFAULT_SERVICE_ID_FIELD = 'name';
 const INCIDENT_API = '/api/now/table/incident';
 const INCIDENT_FIELDS =
   'assigned_to,business_service,closed_at,cmdb_ci,number,opened_at,opened_by,priority,severity,short_description,state,sys_id,resolved_at,sys_updated_on';
@@ -19,6 +20,7 @@ export interface ServiceNowConfig {
   readonly username: string;
   readonly password: string;
   readonly url: string;
+  readonly service_id_field?: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly timeout?: number;
@@ -35,10 +37,10 @@ export interface ServiceNowClient {
     list: (pagination: Pagination, query?: string) => Promise<[User[], number]>;
   };
   readonly cmdb_ci: {
-    getName: (sys_id: string) => Promise<string>;
+    getIdentifier: (sys_id: string) => Promise<string>;
   };
   readonly cmdb_ci_service: {
-    getName: (sys_id: string) => Promise<string>;
+    getIdentifier: (sys_id: string) => Promise<string>;
   };
   readonly checkConnection: () => Promise<void>;
 }
@@ -104,18 +106,18 @@ export class ServiceNow {
       if (incidents?.length) {
         for (const incident of incidents) {
           // When no cmdb_ci for incident, cmdb_ci is empty string
-          let cmdb_ci_name: string;
+          let cmdb_ci_identifier: string;
           if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
             if (cmdb_ci_sys_id in cmdb_ci_Map) {
-              cmdb_ci_name = cmdb_ci_Map.get(cmdb_ci_sys_id);
+              cmdb_ci_identifier = cmdb_ci_Map.get(cmdb_ci_sys_id);
             } else {
               try {
-                cmdb_ci_name = await this.client.cmdb_ci.getName(
+                cmdb_ci_identifier = await this.client.cmdb_ci.getIdentifier(
                   cmdb_ci_sys_id
                 );
-                cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_name);
+                cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_identifier);
               } catch (err: any) {
                 this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
               }
@@ -123,23 +125,23 @@ export class ServiceNow {
           }
 
           // When no business_service for incident, business_service is empty string
-          let business_service_name: string;
+          let business_service_identifier: string;
           if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const business_service_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
             if (business_service_sys_id in business_service_Map) {
-              business_service_name = business_service_Map.get(
+              business_service_identifier = business_service_Map.get(
                 business_service_sys_id
               );
             } else {
               try {
-                business_service_name =
-                  await this.client.cmdb_ci_service.getName(
+                business_service_identifier =
+                  await this.client.cmdb_ci_service.getIdentifier(
                     business_service_sys_id
                   );
                 business_service_Map.set(
                   business_service_sys_id,
-                  business_service_name
+                  business_service_identifier
                 );
               } catch (err: any) {
                 this.logger.warn(
@@ -173,8 +175,8 @@ export class ServiceNow {
             opened_at: incident.opened_at,
             resolved_at: incident.resolved_at,
             closed_at: incident.closed_at,
-            cmdb_ci: cmdb_ci_name,
-            business_service: business_service_name,
+            cmdb_ci: cmdb_ci_identifier,
+            business_service: business_service_identifier,
             sys_updated_on: incident.sys_updated_on,
           };
 
@@ -222,6 +224,7 @@ export class ServiceNow {
   }
 
   private static makeClient(config: ServiceNowConfig): ServiceNowClient {
+    const serviceIdField = config.service_id_field ?? DEFAULT_SERVICE_ID_FIELD;
     const httpClient = axios.create({
       baseURL: `${config.url}`,
       timeout: config.timeout ?? DEFAULT_TIMEOUT,
@@ -274,31 +277,31 @@ export class ServiceNow {
         },
       },
       cmdb_ci: {
-        getName: async (sys_id: string): Promise<string> => {
+        getIdentifier: async (sys_id: string): Promise<string> => {
           let res;
           try {
             res = await httpClient.get(CMDB_CI_API + sys_id, {
-              params: {sysparm_fields: 'name'},
+              params: {sysparm_fields: serviceIdField},
             });
           } catch (err: any) {
             this.handleApiError(err);
           }
 
-          return res.data.result?.name;
+          return res.data.result?.[serviceIdField];
         },
       },
       cmdb_ci_service: {
-        getName: async (sys_id: string): Promise<string> => {
+        getIdentifier: async (sys_id: string): Promise<string> => {
           let res;
           try {
             res = await httpClient.get(CMDB_CI_SERVICE_API + sys_id, {
-              params: {sysparm_fields: 'name'},
+              params: {sysparm_fields: serviceIdField},
             });
           } catch (err: any) {
             this.handleApiError(err);
           }
 
-          return res.data.result?.name;
+          return res.data.result?.[serviceIdField];
         },
       },
       checkConnection: async (): Promise<void> => {
