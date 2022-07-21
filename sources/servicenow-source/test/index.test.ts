@@ -48,10 +48,10 @@ describe('index', () => {
           list: listUsers,
         },
         cmdb_ci: {
-          getName: getCmdbCi,
+          getIdentifier: getCmdbCi,
         },
         cmdb_ci_service: {
-          getName: getCmdbCiService,
+          getIdentifier: getCmdbCiService,
         },
         checkConnection,
       } as ServiceNowClient,
