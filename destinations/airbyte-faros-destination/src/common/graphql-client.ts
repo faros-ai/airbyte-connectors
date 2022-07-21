@@ -30,6 +30,7 @@ export class GraphQLClient {
   private readonly schemaLoader: SchemaLoader;
   private readonly backend: GraphQLBackend;
   private schema: Schema;
+  private tableNames: Set<string>;
 
   constructor(schemaLoader: SchemaLoader, backend: GraphQLBackend) {
     this.schemaLoader = schemaLoader;
@@ -46,6 +47,7 @@ export class GraphQLClient {
 
   async loadSchema(): Promise<void> {
     this.schema = await this.schemaLoader.loadSchema();
+    this.tableNames = new Set(this.schema.tableNames);
   }
 
   private checkSchema(): void {
@@ -112,7 +114,7 @@ export class GraphQLClient {
     origin: string
   ): Promise<void> {
     this.checkSchema();
-    if (!this.schema.tableNames.has(model)) {
+    if (!this.tableNames.has(model)) {
       throw new VError(`Table ${model} does not exist`);
     }
 
