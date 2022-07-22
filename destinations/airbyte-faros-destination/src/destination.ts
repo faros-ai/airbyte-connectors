@@ -20,6 +20,7 @@ import {
   FarosClient,
   FarosClientConfig,
   HasuraSchemaLoader,
+  Schema,
   withEntryUploader,
 } from 'faros-feeds-sdk';
 import {difference, keyBy, sortBy, uniq} from 'lodash';
@@ -164,20 +165,17 @@ export class FarosDestination extends AirbyteDestination {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
-    // TODO: init v2
-    // if (config.edition_configs.use_graphql_v2) {
-    //   throw new VError('not yet implemented');
-    // } else {
+    const useGraphQLV2 = config.edition_configs.use_graphql_v2;
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url,
         apiKey: config.edition_configs.api_key,
+        useGraphQLV2,
       };
       this.farosClient = new FarosClient(this.farosClientConfig);
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
-    // }
     // TODO: bring this back before merge
     // try {
     //   if (config.dry_run !== true) {
@@ -198,6 +196,41 @@ export class FarosDestination extends AirbyteDestination {
     this.farosRevisionExpiration = config.edition_configs.expiration;
     if (!this.farosRevisionExpiration) {
       this.farosRevisionExpiration = '5 seconds';
+    }
+    if (useGraphQLV2) {
+      await this.initGraphQLV2(config);
+    }
+  }
+
+  private async initGraphQLV2(config: AirbyteConfig): Promise<void> {
+    this.logger.info('Initializing GraphQLClient for cloud edition');
+    const client = this.getFarosClient();
+    const graph = this.farosGraph;
+    try {
+      const backend = {
+        async healthCheck(): Promise<void> {
+          await client.graphExists(graph);
+        },
+        async postQuery(query: any): Promise<any> {
+          const res = await client.gql(graph, query);
+          return res;
+        },
+      };
+      const schemaLoader = {
+        async loadSchema(): Promise<Schema> {
+          return await client.gqlSchema();
+        },
+      };
+      this.graphQLClient = new GraphQLClient(schemaLoader, backend);
+    } catch (e) {
+      throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
+    }
+    try {
+      if (config.dry_run !== true) {
+        await this.getGraphQLClient().healthCheck();
+      }
+    } catch (e) {
+      throw new VError(`Failed to health check GraphQLClient. Error: ${e}`);
     }
   }
 
@@ -360,7 +393,8 @@ export class FarosDestination extends AirbyteDestination {
           converterDependencies,
           stats
         );
-      } else if (this.edition === Edition.COMMUNITY) {
+      } else if (this.getGraphQLClient()) {
+        this.logger.info('Using GraphQLClient for write');
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
         await graphQLClient.resetData(origin, deleteModelEntries);
