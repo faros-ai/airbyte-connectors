@@ -402,7 +402,7 @@ export class FarosDestination extends AirbyteDestination {
           converterDependencies,
           stats
         );
-      } else if (this.getGraphQLClient()) {
+      } else if (this.graphQLClient) {
         this.logger.info('Using GraphQLClient for write');
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
