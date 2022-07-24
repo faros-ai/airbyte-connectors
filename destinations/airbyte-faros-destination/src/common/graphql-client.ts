@@ -58,6 +58,7 @@ export class GraphQLClient {
     }
   }
 
+  // TODO: validate that these checks use proper camel cased names if applicable
   private backReferenceOriginCheck(br: Reference, origin: string): any {
     const base = {origin: {_neq: origin}};
     const backReferencesByModel = this.schema.backReferences[br.model] ?? [];
