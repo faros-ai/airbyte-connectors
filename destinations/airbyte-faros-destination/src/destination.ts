@@ -205,24 +205,13 @@ export class FarosDestination extends AirbyteDestination {
   private async initGraphQLV2(config: AirbyteConfig): Promise<void> {
     const client = this.getFarosClient();
     const graph = this.farosGraph;
-    const logger = this.logger;
     try {
       const backend = {
         async healthCheck(): Promise<void> {
           await client.graphExists(graph);
         },
         async postQuery(query: any): Promise<any> {
-          const data = await client.rawGql(graph, query);
-          if (data.errors) {
-            logger.error(
-              `graphql error: ${JSON.stringify(
-                data.errors
-              )} for query '${query}'`
-            );
-          }
-          return {
-            data,
-          };
+          return await client.rawGql(graph, query);
         },
       };
       const schemaLoader = {

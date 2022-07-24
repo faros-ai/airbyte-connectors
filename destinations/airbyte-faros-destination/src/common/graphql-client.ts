@@ -180,11 +180,14 @@ export class GraphQLClient {
 
   // TODO: add batching here
   private async postQuery(query: any, errorMsg: string): Promise<any> {
-    const response = await this.backend.postQuery(jsonToGraphQLQuery(query));
-    if (response.data.errors) {
-      throw new VError(`${errorMsg}: ${JSON.stringify(response.data.errors)}`);
+    const gql = jsonToGraphQLQuery(query);
+    const res = await this.backend.postQuery(gql);
+    if (res.errors) {
+      throw new VError(
+        `${errorMsg} with query '${gql}': ${JSON.stringify(res.errors)}`
+      );
     }
-    return response.data;
+    return res;
   }
 
   // TODO: implement batch flush
