@@ -231,30 +231,49 @@ export class Bitbucket {
     }
   }
 
+  @Memoize(
+    (workspace: string, repoSlug: string, envID: string): string =>
+      `${workspace};${repoSlug};${envID}`
+  )
   async getEnvironment(
     workspace: string,
     repoSlug: string,
     envID: string
   ): Promise<Environment> {
     try {
-      const {data} = (await this.limiter.schedule(() =>
-        this.client.deployments.getEnvironment({
-          workspace,
-          repo_slug: repoSlug,
-          environment_uuid: envID,
-        })
-      )) as any;
-
-      return this.buildEnvironment(data);
+      return await this.doGetEnvironment(workspace, repoSlug, envID);
     } catch (err) {
-      throw new VError(
-        this.buildInnerError(err),
-        'Error fetching %s environment for repository "%s/%s"',
-        envID,
-        workspace,
-        repoSlug
-      );
+      try {
+        return await this.doGetEnvironment(
+          workspace,
+          repoSlug,
+          encodeURIComponent(envID)
+        );
+      } catch (err2) {
+        throw new VError(
+          this.buildInnerError(err2),
+          'Error fetching %s environment for repository "%s/%s"',
+          envID,
+          workspace,
+          repoSlug
+        );
+      }
     }
+  }
+
+  private async doGetEnvironment(
+    workspace: string,
+    repoSlug: string,
+    envID: string
+  ): Promise<Environment> {
+    const {data} = (await this.limiter.schedule(() =>
+      this.client.deployments.getEnvironment({
+        workspace,
+        repo_slug: repoSlug,
+        environment_uuid: envID,
+      })
+    )) as any;
+    return this.buildEnvironment(data);
   }
 
   @Memoize(
