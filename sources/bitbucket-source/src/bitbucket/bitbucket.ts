@@ -244,6 +244,9 @@ export class Bitbucket {
       return await this.doGetEnvironment(workspace, repoSlug, envID);
     } catch (err) {
       try {
+        this.logger.debug(
+          `Error fetching ${envID} environment for repository "${workspace}/${repoSlug}"`
+        );
         return await this.doGetEnvironment(
           workspace,
           repoSlug,
