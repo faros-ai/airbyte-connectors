@@ -9,7 +9,7 @@
       "organization",
       "project"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "access_token": {
         "type": "string",

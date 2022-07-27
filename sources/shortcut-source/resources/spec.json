@@ -9,7 +9,7 @@
       "version",
       "token"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "base_url": {
         "type": "string",

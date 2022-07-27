@@ -15,7 +15,7 @@
     "required": [
       "edition_configs"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "edition_configs": {
         "order": 0,

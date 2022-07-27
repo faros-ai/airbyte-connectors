@@ -8,7 +8,7 @@
       "client_email",
       "private_key"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "client_email": {
         "type": "string",

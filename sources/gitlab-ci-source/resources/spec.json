@@ -5,7 +5,7 @@
     "title": "Gitlab CI Spec",
     "type": "object",
     "required": ["token", "groupName", "projects"],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "apiUrl": {
         "type": "string",

@@ -7,7 +7,7 @@
     "required": [
       "token"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "token": {
         "type": "string",

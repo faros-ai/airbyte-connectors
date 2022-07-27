@@ -9,7 +9,7 @@
       "space",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "space": {
         "type": "string",

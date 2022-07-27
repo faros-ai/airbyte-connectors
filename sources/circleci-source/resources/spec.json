@@ -9,7 +9,7 @@
       "repo_names",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "token": {
         "type": "string",
