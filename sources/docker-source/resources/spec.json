@@ -10,7 +10,7 @@
       "repositories",
       "cutoffDays"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "username": {
         "type": "string",

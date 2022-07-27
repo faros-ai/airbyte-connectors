@@ -9,7 +9,7 @@
       "password",
       "url"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "username": {
         "order": 0,

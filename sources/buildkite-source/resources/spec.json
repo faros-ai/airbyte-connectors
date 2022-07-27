@@ -8,7 +8,7 @@
       "token",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "token": {
         "type": "string",

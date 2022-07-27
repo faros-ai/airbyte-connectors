@@ -8,7 +8,7 @@
       "token",
       "domain_name"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "domain_name": {
         "type": "string",

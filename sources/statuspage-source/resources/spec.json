@@ -9,7 +9,7 @@
       "api_key",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "page_id": {
         "type": "string",

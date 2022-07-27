@@ -8,7 +8,7 @@
       "app_api_key",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "app_api_key": {
         "type": "string",

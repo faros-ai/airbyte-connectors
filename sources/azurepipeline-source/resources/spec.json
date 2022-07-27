@@ -10,7 +10,7 @@
       "project",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "access_token": {
         "type": "string",

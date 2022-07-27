@@ -9,7 +9,7 @@
       "account_id",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "api_key": {
         "type": "string",

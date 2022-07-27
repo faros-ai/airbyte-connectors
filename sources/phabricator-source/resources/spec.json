@@ -9,7 +9,7 @@
       "token",
       "cutoff_days"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "server_url": {
         "type": "string",
