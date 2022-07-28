@@ -21,7 +21,7 @@ import {
   FarosClientConfig,
   withEntryUploader,
 } from 'faros-feeds-sdk';
-import {difference, intersection, keyBy, sortBy, uniq} from 'lodash';
+import {difference, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -637,20 +637,7 @@ export class FarosDestination extends AirbyteDestination {
       }
     }
     // Check for circular dependencies and error early if any
-    const deps = Object.keys(dependenciesByStream);
-    for (const d of deps) {
-      const dd = [...dependenciesByStream[d].values()];
-      this.logger.info(
-        `Records of stream ${d} will be accumulated and processed last, ` +
-          `since their converter has dependencies on streams: ${dd.join(',')}`
-      );
-      const res = intersection(deps, dd);
-      if (res.length > 0) {
-        throw new VError(
-          `Circular converter dependency detected: ${res.join(',')}`
-        );
-      }
-    }
+    this.checkForCircularDependencies(dependenciesByStream);
     // Collect all converter dependencies
     const converterDependencies = new Set<string>();
     Object.keys(dependenciesByStream).forEach((k) =>
@@ -733,5 +720,37 @@ export class FarosDestination extends AirbyteDestination {
     }
 
     return recordsWritten;
+  }
+
+  private addToPath(
+    depsByStream: Dictionary<Set<string>>,
+    dep: string,
+    path: string[]
+  ): void {
+    if (path.includes(dep)) {
+      throw new VError(
+        `Circular converter dependency detected: ${path
+          .slice(path.indexOf(dep))
+          .concat(dep)
+          .join(',')}`
+      );
+    }
+    path.push(dep);
+    if (depsByStream[dep]) {
+      return depsByStream[dep].forEach((next) =>
+        this.addToPath(depsByStream, next, [...path])
+      );
+    }
+  }
+
+  checkForCircularDependencies(depsByStream: Dictionary<Set<string>>): void {
+    Object.keys(depsByStream).forEach((dep) => {
+      const dd = [...depsByStream[dep].values()];
+      this.logger.info(
+        `Records of stream ${dep} will be accumulated and processed last, ` +
+          `since their converter has dependencies on streams: ${dd.join(',')}`
+      );
+      this.addToPath(depsByStream, dep, []);
+    });
   }
 }

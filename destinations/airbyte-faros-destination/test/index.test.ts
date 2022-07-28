@@ -1,12 +1,17 @@
 import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
+  AirbyteLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {Edition, InvalidRecordStrategy} from '../src/destination';
+import {
+  Edition,
+  FarosDestination,
+  InvalidRecordStrategy,
+} from '../src/destination';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig} from './testing-tools';
 
@@ -88,5 +93,35 @@ describe('index', () => {
       'Segment User Id badid is not a valid UUID.'
     );
     expect(await cli.wait()).toBe(0);
+  });
+
+  test('check for circular converter dependencies', async () => {
+    const dest = new FarosDestination(new AirbyteLogger());
+    expect(() =>
+      dest.checkForCircularDependencies({
+        s1: new Set(['s2', 's3', 's4']),
+        s2: new Set('s3'),
+        s3: new Set('s0'),
+      })
+    ).not.toThrow();
+    expect(() =>
+      dest.checkForCircularDependencies({
+        s1: new Set(['s1']),
+      })
+    ).toThrow(/s1,s1/);
+    expect(() =>
+      dest.checkForCircularDependencies({
+        s1: new Set(['s2']),
+        s2: new Set(['s1']),
+      })
+    ).toThrow(/s1,s2,s1/);
+    expect(() =>
+      dest.checkForCircularDependencies({
+        s1: new Set(['s2', 's4']),
+        s2: new Set(['s0']),
+        s3: new Set(['s0', 's1']),
+        s4: new Set(['s3']),
+      })
+    ).toThrow(/s1,s4,s3,s1/);
   });
 });
