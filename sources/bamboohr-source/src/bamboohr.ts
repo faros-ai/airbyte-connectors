@@ -115,7 +115,7 @@ export class BambooHR {
         yield user.data as User;
       } else {
         this.logger.warn(
-          `Could not fetch info for employee id ${employeeId}: User not found`
+          `Could not fetch info for employee id ${employeeId}: Employee not found`
         );
       }
     }
