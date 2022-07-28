@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -35,6 +34,12 @@ describe('index', () => {
     return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
   }
 
+  const fieldsResource: any[] = readTestResourceFile('fields_input.json');
+  const usersResource: any = readTestResourceFile('users_input.json');
+  const userDetailsResource: any[] = readTestResourceFile(
+    'user_details_input.json'
+  );
+
   test('spec', async () => {
     const source = new sut.BambooHRSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
@@ -56,7 +61,6 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
 
     BambooHR.instance = jest.fn().mockImplementation(() => {
-      const fieldsResource: any[] = readTestResourceFile('fields_input.json');
       return new BambooHR(
         {
           get: fnUsersFunc.mockResolvedValueOnce({data: fieldsResource}),
@@ -82,13 +86,12 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
 
     BambooHR.instance = jest.fn().mockImplementation(() => {
-      const fieldsResource: any[] = readTestResourceFile('fields_input.json');
-      const usersResource: any[] = readTestResourceFile('users_input.json');
       return new BambooHR(
         {
           get: fnUsersFunc
-            .mockResolvedValue({data: {value: usersResource}})
-            .mockResolvedValueOnce({data: fieldsResource}),
+            .mockResolvedValueOnce({data: fieldsResource})
+            .mockResolvedValueOnce({data: usersResource})
+            .mockResolvedValueOnce({data: userDetailsResource, status: 200}),
         } as any,
         logger
       );
@@ -106,6 +109,44 @@ describe('index', () => {
     }
 
     expect(fnUsersFunc).toHaveBeenCalledTimes(3);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual([userDetailsResource]);
+  });
+
+  test('streams - users, filter by department', async () => {
+    const fnUsersFunc = jest.fn();
+
+    BambooHR.instance = jest.fn().mockImplementation(() => {
+      return new BambooHR(
+        {
+          get: fnUsersFunc
+            .mockResolvedValueOnce({
+              data: {...usersResource, '1': usersResource['0']},
+            })
+            .mockResolvedValueOnce({data: userDetailsResource, status: 200})
+            .mockResolvedValueOnce({
+              data: {
+                ...userDetailsResource,
+                department: 'department-to-ignore',
+              },
+              status: 200,
+            }),
+        } as any,
+        logger
+      );
+    });
+    const source = new sut.BambooHRSource(logger);
+    const streams = source.streams({
+      departments: ['test'],
+    } as any);
+
+    const usersStream = streams[0];
+    const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of userIter) {
+      users.push(user);
+    }
+
+    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
+    expect(users).toStrictEqual([userDetailsResource]);
   });
 });

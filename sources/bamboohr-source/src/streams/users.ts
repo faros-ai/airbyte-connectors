@@ -22,6 +22,9 @@ export class Users extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<User> {
     const bambooHR = await BambooHR.instance(this.config, this.logger);
-    yield* bambooHR.getUsers(this.config.additional_fields);
+    yield* bambooHR.getUsers(
+      new Set(this.config.departments),
+      this.config.additional_fields
+    );
   }
 }
