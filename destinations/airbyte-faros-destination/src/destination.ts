@@ -637,7 +637,7 @@ export class FarosDestination extends AirbyteDestination {
       }
     }
     // Check for circular dependencies and error early if any
-    checkForCircularDependencies(dependenciesByStream);
+    this.checkForCircularDependencies(dependenciesByStream);
     // Collect all converter dependencies
     const converterDependencies = new Set<string>();
     Object.keys(dependenciesByStream).forEach((k) =>
@@ -721,31 +721,36 @@ export class FarosDestination extends AirbyteDestination {
 
     return recordsWritten;
   }
-}
 
-function addToPath(
-  depsByStream: Dictionary<Set<string>>,
-  dep: string,
-  path: string[]
-): void {
-  if (path.includes(dep)) {
-    throw new VError(
-      `Circular converter dependency detected: ${path
-        .slice(path.indexOf(dep))
-        .concat(dep)
-        .join(',')}`
-    );
+  private addToPath(
+    depsByStream: Dictionary<Set<string>>,
+    dep: string,
+    path: string[]
+  ): void {
+    if (path.includes(dep)) {
+      throw new VError(
+        `Circular converter dependency detected: ${path
+          .slice(path.indexOf(dep))
+          .concat(dep)
+          .join(',')}`
+      );
+    }
+    path.push(dep);
+    if (depsByStream[dep]) {
+      return depsByStream[dep].forEach((next) =>
+        this.addToPath(depsByStream, next, [...path])
+      );
+    }
   }
-  path.push(dep);
-  if (depsByStream[dep]) {
-    return depsByStream[dep].forEach((next) =>
-      addToPath(depsByStream, next, [...path])
-    );
-  }
-}
 
-export function checkForCircularDependencies(
-  depsByStream: Dictionary<Set<string>>
-): void {
-  Object.keys(depsByStream).forEach((dep) => addToPath(depsByStream, dep, []));
+  checkForCircularDependencies(depsByStream: Dictionary<Set<string>>): void {
+    Object.keys(depsByStream).forEach((dep) => {
+      const dd = [...depsByStream[dep].values()];
+      this.logger.info(
+        `Records of stream ${dep} will be accumulated and processed last, ` +
+          `since their converter has dependencies on streams: ${dd.join(',')}`
+      );
+      this.addToPath(depsByStream, dep, []);
+    });
+  }
 }

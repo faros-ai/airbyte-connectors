@@ -1,15 +1,15 @@
 import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
+  AirbyteLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
-import VError from 'verror';
 
 import {
-  checkForCircularDependencies,
   Edition,
+  FarosDestination,
   InvalidRecordStrategy,
 } from '../src/destination';
 import {CLI, read} from './cli';
@@ -96,24 +96,27 @@ describe('index', () => {
   });
 
   test('check for circular converter dependencies', async () => {
-    checkForCircularDependencies({
-      s1: new Set(['s2', 's3', 's4']),
-      s2: new Set('s3'),
-      s3: new Set('s0'),
-    });
+    const dest = new FarosDestination(new AirbyteLogger());
     expect(() =>
-      checkForCircularDependencies({
+      dest.checkForCircularDependencies({
+        s1: new Set(['s2', 's3', 's4']),
+        s2: new Set('s3'),
+        s3: new Set('s0'),
+      })
+    ).not.toThrow();
+    expect(() =>
+      dest.checkForCircularDependencies({
         s1: new Set(['s1']),
       })
     ).toThrow(/s1,s1/);
     expect(() =>
-      checkForCircularDependencies({
+      dest.checkForCircularDependencies({
         s1: new Set(['s2']),
         s2: new Set(['s1']),
       })
     ).toThrow(/s1,s2,s1/);
     expect(() =>
-      checkForCircularDependencies({
+      dest.checkForCircularDependencies({
         s1: new Set(['s2', 's4']),
         s2: new Set(['s0']),
         s3: new Set(['s0', 's1']),
