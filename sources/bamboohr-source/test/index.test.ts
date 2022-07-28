@@ -90,7 +90,7 @@ describe('index', () => {
             .mockResolvedValue({data: {value: usersResource}})
             .mockResolvedValueOnce({data: fieldsResource}),
         } as any,
-        null
+        logger
       );
     });
     const source = new sut.BambooHRSource(logger);
