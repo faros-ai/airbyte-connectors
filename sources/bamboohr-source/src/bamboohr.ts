@@ -104,10 +104,20 @@ export class BambooHR {
     const fieldsToFetch = [DEFAULT_FIELD_ALIASES, additionalAliases].join(',');
     const users = await this.httpClient.get<any>(`/meta/users`);
     for (const [key, value] of Object.entries(users.data)) {
+      const employeeId = value['employeeId'];
       const user = await this.httpClient.get<any>(
-        `/employees/${value['employeeId']}/?fields=${fieldsToFetch}`
+        `/employees/${employeeId}/?fields=${fieldsToFetch}`,
+        {
+          validateStatus: (status) => status === 200 || status === 404,
+        }
       );
-      if (user.status == 200) yield user.data as User;
+      if (user.status == 200) {
+        yield user.data as User;
+      } else {
+        this.logger.warn(
+          `Could not fetch info for employee id ${employeeId}: User not found`
+        );
+      }
     }
   }
 }

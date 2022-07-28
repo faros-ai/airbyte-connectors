@@ -6,6 +6,8 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
 import {User} from './models';
 
+const ROOT_TEAM_UID = 'all_teams';
+
 export class Users extends BambooHRConverter {
   private logger = new AirbyteLogger();
 
@@ -157,7 +159,7 @@ export class Users extends BambooHRConverter {
           uid,
           name: `${this.employeeIdsToNames.get(uid)} Org`,
           lead: {uid},
-          parentTeam: parentTeamId ? {uid: parentTeamId} : null,
+          parentTeam: {uid: parentTeamId ?? ROOT_TEAM_UID},
         },
       });
       res.push({
