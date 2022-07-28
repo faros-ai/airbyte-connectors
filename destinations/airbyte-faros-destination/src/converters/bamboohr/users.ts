@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {intersection, uniq} from 'lodash';
 
@@ -7,6 +7,8 @@ import {BambooHRConverter} from './common';
 import {User} from './models';
 
 export class Users extends BambooHRConverter {
+  private logger = new AirbyteLogger();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
     'geo_Location',
@@ -27,13 +29,27 @@ export class Users extends BambooHRConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;
-    const joinedAt = Utils.toDate(user.hireDate);
-    const terminatedAt =
-      user.terminationDate == '0000-00-00'
-        ? null
-        : Utils.toDate(user.terminationDate);
-    const manager = user.supervisorEId ? {uid: user.supervisorEId} : undefined;
     const uid = user.id;
+    let joinedAt = Utils.toDate(user.hireDate);
+    if (isNaN(joinedAt?.getTime())) {
+      this.logger.warn(
+        `Found unexpected hire date ${user.hireDate} for user id ${user.id}`
+      );
+      joinedAt = null;
+    }
+    let terminatedAt: Date;
+    if (user.terminationDate === '0000-00-00') {
+      terminatedAt = null;
+    } else {
+      terminatedAt = Utils.toDate(user.terminationDate);
+      if (isNaN(terminatedAt?.getTime())) {
+        this.logger.warn(
+          `Found unexpected termination date ${user.terminationDate} for user id ${user.id}`
+        );
+        terminatedAt = null;
+      }
+    }
+    const manager = user.supervisorEId ? {uid: user.supervisorEId} : undefined;
     const res: DestinationRecord[] = [];
 
     if (this.bootstrapTeamsFromManagers(ctx)) {
