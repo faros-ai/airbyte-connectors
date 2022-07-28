@@ -128,7 +128,7 @@ export class Users extends BambooHRConverter {
       record: {
         uid,
         title: user.jobTitle,
-        joinedAt: new Date('sdf'),
+        joinedAt,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
         manager,
