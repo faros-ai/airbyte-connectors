@@ -44,7 +44,7 @@ export class Users extends BambooHRConverter {
       terminatedAt = Utils.toDate(user.terminationDate);
       if (isNaN(terminatedAt?.getTime())) {
         this.logger.warn(
-          `Found unexpected hire date ${user.terminationDate} for user id ${user.id}`
+          `Found unexpected termination date ${user.terminationDate} for user id ${user.id}`
         );
         terminatedAt = null;
       }
