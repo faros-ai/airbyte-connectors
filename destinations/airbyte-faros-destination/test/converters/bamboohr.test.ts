@@ -49,7 +49,7 @@ describe('bamboohr', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      users: 86,
+      users: 87,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -59,13 +59,13 @@ describe('bamboohr', () => {
       .value();
 
     const writtenByModel = {
-      geo_Address: 86,
-      geo_Location: 86,
-      identity_Identity: 86,
+      geo_Address: 87,
+      geo_Location: 87,
+      identity_Identity: 87,
       org_Department: 9,
-      org_Employee: 86,
+      org_Employee: 87,
       org_Team: 26,
-      org_TeamMembership: 111,
+      org_TeamMembership: 112,
     };
 
     const processedTotal = _(processedByStream).values().sum();
