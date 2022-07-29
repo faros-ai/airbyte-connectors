@@ -14,19 +14,31 @@
         "type": "string",
         "title": "BambooHR API Key",
         "description": "BambooHR API Key. Create by going to https://{{domain}}.bamboohr.com/settings/permissions/api.php",
-        "airbyte_secret": true
+        "airbyte_secret": true,
+        "order": 0
       },
       "domain": {
         "type": "string",
         "title": "domain",
         "description": "Domain or Company domain",
-        "airbyte_secret": true
+        "airbyte_secret": true,
+        "order": 1
       },
       "version": {
         "type": "string",
         "title": "API Version",
         "description": "BambooHR API Version",
-        "default": "v1"
+        "default": "v1",
+        "order": 2
+      },
+      "departments": {
+        "type": "array",
+        "title": "Departments",
+        "description": "List of departments to fetch employees from. If empty, all employees will be fetched.",
+        "items": {
+          "type": "string"
+        },
+        "order": 3
       },
       "additional_fields": {
         "type": "array",
@@ -34,7 +46,8 @@
         "description": "List of additional employee field names to fetch. Each field name must have an alias. See https://documentation.bamboohr.com/reference/metadata-get-a-list-of-fields.",
         "items": {
           "type": "string"
-        }
+        },
+        "order": 4
       }
     }
   }

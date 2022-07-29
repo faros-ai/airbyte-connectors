@@ -12,6 +12,7 @@ export interface BambooHRConfig {
   readonly domain: string;
   readonly version?: string;
   readonly additional_fields?: ReadonlyArray<string>;
+  readonly departments?: ReadonlyArray<string>;
 }
 
 interface Field {
@@ -89,17 +90,20 @@ export class BambooHR {
   }
 
   async *getUsers(
+    departments: ReadonlySet<string> = new Set(),
     additionalFields: ReadonlyArray<string> = []
   ): AsyncGenerator<User> {
-    const fields = await this.getFieldsByAlias();
     const additionalAliases = [];
-    for (const name of additionalFields) {
-      if (!(name in fields)) {
-        throw new VError(
-          `Could not find field alias for additional field ${name}`
-        );
+    if (additionalFields?.length > 0) {
+      const fields = await this.getFieldsByAlias();
+      for (const name of additionalFields) {
+        if (!(name in fields)) {
+          throw new VError(
+            `Could not find field alias for additional field ${name}`
+          );
+        }
+        additionalAliases.push(fields[name].alias);
       }
-      additionalAliases.push(fields[name].alias);
     }
     const fieldsToFetch = [DEFAULT_FIELD_ALIASES, additionalAliases].join(',');
     const users = await this.httpClient.get<any>(`/meta/users`);
@@ -112,7 +116,9 @@ export class BambooHR {
         }
       );
       if (user.status == 200) {
-        yield user.data as User;
+        if (departments.size === 0 || departments.has(user.data.department)) {
+          yield user.data as User;
+        }
       } else {
         this.logger.warn(
           `Could not fetch info for employee id ${employeeId}: Employee not found`
