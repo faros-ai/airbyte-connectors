@@ -5,7 +5,6 @@ import axios, {
   AxiosResponseHeaders,
 } from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {delay} from 'lodash';
 import parse, {Links} from 'parse-link-header';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -13,6 +12,11 @@ import {VError} from 'verror';
 const REST_API_VERSION = 'v1alpha';
 const SEMAPHORE_PAGE_HEADER = 'link';
 const HTTP_CLIENT_DEFAULT_TIMEOUT = 15000;
+
+export const UNAUTHORIZED_ERROR_MESSAGE =
+  'SemaphoreCI API authorization failed. Verify that your API Token and Organization name are setup correctly';
+export const MISSING_OR_INVISIBLE_RESOURCE_ERROR_MESSAGE =
+  'Resource not found or is not visible to the user';
 
 export interface ProjectSpec {
   readonly visibility: string;
@@ -136,13 +140,9 @@ export class SemaphoreCI {
       if ((error as AxiosError).response) {
         switch ((error as AxiosError).response.status) {
           case 401:
-            throw new VError(
-              'SemaphoreCI API authorization failed. Verify that your API Token and Organization name are setup correctly'
-            );
+            throw new VError(UNAUTHORIZED_ERROR_MESSAGE);
           case 404:
-            throw new VError(
-              'Resource not found or is not visible to the user'
-            );
+            throw new VError(MISSING_OR_INVISIBLE_RESOURCE_ERROR_MESSAGE);
         }
       }
 

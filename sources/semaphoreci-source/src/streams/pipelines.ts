@@ -11,7 +11,7 @@ import {Projects} from './projects';
 
 type StreamSlice =
   | {
-      projectId?: string;
+      projectId: string;
       branchName?: string;
     }
   | undefined;

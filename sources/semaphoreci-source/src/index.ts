@@ -20,7 +20,7 @@ export function mainCommand(): Command {
 }
 
 /** SemaphoreCI source implementation. */
-class SemaphoreCISource extends AirbyteSourceBase {
+export class SemaphoreCISource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
