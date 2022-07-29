@@ -23,7 +23,7 @@ export class Users extends BambooHRConverter {
 
   private seenDepartments = new Set<string>();
   private managers = new Map<string, string>();
-  private employeeIdsToNames = new Map<string, string>();
+  private employeeNamesById = new Map<string, string>();
 
   async convert(
     record: AirbyteRecord,
@@ -55,16 +55,9 @@ export class Users extends BambooHRConverter {
     const res: DestinationRecord[] = [];
 
     if (this.bootstrapTeamsFromManagers(ctx)) {
-      this.employeeIdsToNames.set(uid, user.fullName1);
+      this.employeeNamesById.set(uid, user.fullName1);
       if (manager) {
         this.managers.set(uid, manager.uid);
-        res.push({
-          model: 'org_TeamMembership',
-          record: {
-            team: {uid: manager.uid},
-            member: {uid},
-          },
-        });
       }
     }
 
@@ -150,16 +143,19 @@ export class Users extends BambooHRConverter {
 
     for (const uid of intersection(
       Array.from(this.managers.values()),
-      Array.from(this.employeeIdsToNames.keys())
+      Array.from(this.employeeNamesById.keys())
     )) {
-      const parentTeamId = this.managers.get(uid);
+      let parentTeamId = this.managers.get(uid);
+      if (!parentTeamId || !this.employeeNamesById.has(parentTeamId)) {
+        parentTeamId = ROOT_TEAM_UID;
+      }
       res.push({
         model: 'org_Team',
         record: {
           uid,
-          name: `${this.employeeIdsToNames.get(uid)} Org`,
+          name: `${this.employeeNamesById.get(uid)} Org`,
           lead: {uid},
-          parentTeam: {uid: parentTeamId ?? ROOT_TEAM_UID},
+          parentTeam: {uid: parentTeamId},
         },
       });
       res.push({
@@ -170,6 +166,20 @@ export class Users extends BambooHRConverter {
         },
       });
     }
+
+    for (const uid of this.employeeNamesById.keys()) {
+      const managerUid = this.managers.get(uid);
+      if (managerUid && this.employeeNamesById.has(managerUid)) {
+        res.push({
+          model: 'org_TeamMembership',
+          record: {
+            team: {uid: managerUid},
+            member: {uid},
+          },
+        });
+      }
+    }
+
     return res;
   }
 }

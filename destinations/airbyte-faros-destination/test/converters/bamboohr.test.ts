@@ -65,7 +65,7 @@ describe('bamboohr', () => {
       org_Department: 9,
       org_Employee: 87,
       org_Team: 26,
-      org_TeamMembership: 112,
+      org_TeamMembership: 110,
     };
 
     const processedTotal = _(processedByStream).values().sum();
