@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description":{
+      "type":["string", "null"]
+    },
+    "date_created": {
+      "type":"integer"
+    },
+    "date_updated": {
+      "type":"integer"
+    },
+    "custom_fields": {
+        "type": ["array"],
+        "items":{
+          "type":"object",
+          "properties": {
+            "id": {
+              "type":"string"
+            },
+          "name": {
+            "type":"string"
+          },
+          "type": {
+            "type":"string"
+          },
+          "type_config": {
+            "type":"object"
+          },
+          "date_created": {
+            "type":"string"
+          },
+          "hide_from_guests":{
+            "type":"boolean"
+          },
+          "required": {
+            "type":"boolean"
+          }
+          }
+        }
+      }
+  }
+}

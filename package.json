@@ -16,7 +16,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/jenkins": "^0.23.2",
     "@types/jest": "^27.5.0",
-    "@types/lodash": "^4.14.173",
+    "@types/lodash": "^4.14.182",
     "@types/luxon": "^2.3.2",
     "@types/node": "^16.11.41",
     "@types/parse-link-header": "2.0.0",
@@ -43,5 +43,9 @@
     "ts-jest": "^27.1.3",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "cross-fetch": "^3.1.5",
+    "verror": "^1.10.1"
   }
 }

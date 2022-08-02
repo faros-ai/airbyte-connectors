@@ -1,0 +1,831 @@
+{
+    "tasks": [
+        {
+            "id": "2kb5wz1",
+            "custom_id": null,
+            "name": "Laurie fin aout (pour elle même)",
+            "text_content": null,
+            "description": null,
+            "status": {
+                "status": "invoicing ready",
+                "color": "#1bbc9c",
+                "type": "custom",
+                "orderindex": 9
+            },
+            "orderindex": "1070946.00000000000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2kb5wz1",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2fk3dcb",
+            "custom_id": null,
+            "name": "Laure Francois + 2",
+            "text_content": "https://app.intercom.com/a/apps/r2561c7l/users/60d17081f4960f96e05256c5/all-conversations\n\nEmail\nlaurefrancois44@hotmail.fr\n\nPhone\n0692949243",
+            "description": "https://app.intercom.com/a/apps/r2561c7l/users/60d17081f4960f96e05256c5/all-conversations\n\nEmail\nlaurefrancois44@hotmail.fr\n\nPhone\n0692949243",
+            "status": {
+                "status": "invoicing ready",
+                "color": "#1bbc9c",
+                "type": "custom",
+                "orderindex": 9
+            },
+            "orderindex": "1070863.00000000000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2fk3dcb",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2f7ggvz",
+            "custom_id": null,
+            "name": "Cynthia Girémus",
+            "text_content": "https://app.intercom.com/a/apps/r2561c7l/users/61f224641d73259c0f064143/all-conversations\n\nEmail\ncynthia_g@live.fr\n\nPhone\n0786832615",
+            "description": "https://app.intercom.com/a/apps/r2561c7l/users/61f224641d73259c0f064143/all-conversations\n\nEmail\ncynthia_g@live.fr\n\nPhone\n0786832615",
+            "status": {
+                "status": "invoicing ready",
+                "color": "#1bbc9c",
+                "type": "custom",
+                "orderindex": 9
+            },
+            "orderindex": "1070852.00005030000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2f7ggvz",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2f1v2zg",
+            "custom_id": null,
+            "name": "Virginie DERUYTERE",
+            "text_content": "https://app.intercom.com/a/apps/r2561c7l/users/618a8159ae79768c6898e84d/all-conversations\n\nEmail\nvirginie.deruytere@gmail.com\n\nPhone\n+33 6 82 92 91 12",
+            "description": "https://app.intercom.com/a/apps/r2561c7l/users/618a8159ae79768c6898e84d/all-conversations\n\nEmail\nvirginie.deruytere@gmail.com\n\nPhone\n+33 6 82 92 91 12",
+            "status": {
+                "status": "invoicing follow up",
+                "color": "#f9d900",
+                "type": "custom",
+                "orderindex": 8
+            },
+            "orderindex": "1070843.00000000000000000000000000000000",
+            "date_created": "1655385215953",
+            "date_updated": "1658139404313",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": "1660788000000",
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2f1v2zg",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2ew2fka",
+            "custom_id": null,
+            "name": "Marie helene Alvarez",
+            "text_content": "Email\nmarie-h.alvarez@hotmail.fr\n\nPhone\n0603353750",
+            "description": "Email\nmarie-h.alvarez@hotmail.fr\n\nPhone\n0603353750",
+            "status": {
+                "status": "invoicing ready",
+                "color": "#1bbc9c",
+                "type": "custom",
+                "orderindex": 9
+            },
+            "orderindex": "1070854.00012280000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2ew2fka",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2d2xeaw",
+            "custom_id": null,
+            "name": "Jocelyne Scotto + 1",
+            "text_content": "Email\njoce.scotto@gmail.com\n\nPhone\n0664778752",
+            "description": "Email\njoce.scotto@gmail.com\n\nPhone\n0664778752",
+            "status": {
+                "status": "payment done - gsheet",
+                "color": "#bf55ec",
+                "type": "custom",
+                "orderindex": 10
+            },
+            "orderindex": "1070774.00004460000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [
+                {
+                    "id": 4629856,
+                    "username": "Nicolas Sanch",
+                    "color": "#0197a7",
+                    "initials": "NS",
+                    "email": "nicolas@ozzen.fr",
+                    "profilePicture": null
+                }
+            ],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2d2xeaw",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2bn24j5",
+            "custom_id": null,
+            "name": "Yamina Abdallah",
+            "text_content": "Email\nyamabdallah605@gmail.com\n\nPhone\n0769582616",
+            "description": "Email\nyamabdallah605@gmail.com\n\nPhone\n0769582616",
+            "status": {
+                "status": "invoicing follow up",
+                "color": "#f9d900",
+                "type": "custom",
+                "orderindex": 8
+            },
+            "orderindex": "1070578.00000000000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2bn24j5",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2ad5j37",
+            "custom_id": null,
+            "name": "SANDRA sermonat +3",
+            "text_content": "Email\nsandrita_78@hotmail.fr\n\nPhone\n0763581169",
+            "description": "Email\nsandrita_78@hotmail.fr\n\nPhone\n0763581169",
+            "status": {
+                "status": "invoicing ready",
+                "color": "#1bbc9c",
+                "type": "custom",
+                "orderindex": 9
+            },
+            "orderindex": "1070473.00000000000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [
+                {
+                    "id": 4629856,
+                    "username": "Nicolas Sanch",
+                    "color": "#0197a7",
+                    "initials": "NS",
+                    "email": "nicolas@ozzen.fr",
+                    "profilePicture": null
+                }
+            ],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": "1653444000000",
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2ad5j37",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2ad4kc1",
+            "custom_id": null,
+            "name": "Mathilde Antoine",
+            "text_content": "Email\nmathilde.antoine54000@gmail.com\n\nPhone\n0615951290",
+            "description": "Email\nmathilde.antoine54000@gmail.com\n\nPhone\n0615951290",
+            "status": {
+                "status": "invoicing follow up",
+                "color": "#f9d900",
+                "type": "custom",
+                "orderindex": 8
+            },
+            "orderindex": "1070470.00000000000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2ad4kc1",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        },
+        {
+            "id": "2ad41vw",
+            "custom_id": null,
+            "name": "Bastien Chague + Julien Salmon",
+            "text_content": "Email\nbchague@outlook.com\n\nPhone\n0769038748\n\n\nEmail\ncabinet.infirmier.begles@gmail.com\n\nPhone\n0615335308",
+            "description": "Email\nbchague@outlook.com\n\nPhone\n0769038748\n\n\nEmail\ncabinet.infirmier.begles@gmail.com\n\nPhone\n0615335308",
+            "status": {
+                "status": "payment done - gsheet",
+                "color": "#bf55ec",
+                "type": "custom",
+                "orderindex": 10
+            },
+            "orderindex": "1070777.00019530000000000000000000000000",
+            "date_created": "1646089200000",
+            "date_updated": "1646089200000",
+            "date_closed": null,
+            "archived": false,
+            "creator": {
+                "id": 4629856,
+                "username": "Nicolas Sanch",
+                "color": "#0197a7",
+                "email": "nicolas@ozzen.fr",
+                "profilePicture": null
+            },
+            "assignees": [
+                {
+                    "id": 4629856,
+                    "username": "Nicolas Sanch",
+                    "color": "#0197a7",
+                    "initials": "NS",
+                    "email": "nicolas@ozzen.fr",
+                    "profilePicture": null
+                }
+            ],
+            "watchers": [],
+            "checklists": [],
+            "tags": [],
+            "parent": null,
+            "priority": null,
+            "due_date": null,
+            "start_date": null,
+            "points": null,
+            "time_estimate": null,
+            "custom_fields": [
+                {
+                    "id": "ae68106f-fdcc-4005-a649-198b43332edb",
+                    "name": "Notes",
+                    "type": "text",
+                    "type_config": {},
+                    "date_created": "1625910187039",
+                    "hide_from_guests": false,
+                    "required": false
+                },
+                {
+                    "id": "8ad3d8d6-ee04-4a2f-879b-a4976add86b5",
+                    "name": "Qté",
+                    "type": "short_text",
+                    "type_config": {},
+                    "date_created": "1649142999366",
+                    "hide_from_guests": false,
+                    "required": false
+                }
+            ],
+            "dependencies": [],
+            "linked_tasks": [],
+            "team_id": "2505020",
+            "url": "https://app.clickup.com/t/2ad41vw",
+            "permission_level": "create",
+            "list": {
+                "id": "34192283",
+                "name": "CRM",
+                "access": true
+            },
+            "project": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "folder": {
+                "id": "17145715",
+                "name": "hidden",
+                "hidden": true,
+                "access": true
+            },
+            "space": {
+                "id": "4691030"
+            }
+        }
+    ]
+}

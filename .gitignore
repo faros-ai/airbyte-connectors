@@ -4,6 +4,7 @@ secrets/
 node_modules/
 acceptance_tests_logs/
 .vscode/
+env.ts
 
 .DS_Store
 acceptance-test-*.log
