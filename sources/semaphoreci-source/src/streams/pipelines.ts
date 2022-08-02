@@ -6,7 +6,11 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {SemaphoreCI, SemaphoreCIConfig} from '../semaphoreci/semaphoreci';
+import {
+  Pipeline,
+  SemaphoreCI,
+  SemaphoreCIConfig,
+} from '../semaphoreci/semaphoreci';
 import {Projects} from './projects';
 
 type StreamSlice =
@@ -16,6 +20,9 @@ type StreamSlice =
     }
   | undefined;
 
+interface PipelineState {
+  lastCreatedAt: string;
+}
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     private readonly config: SemaphoreCIConfig,
@@ -30,6 +37,10 @@ export class Pipelines extends AirbyteStreamBase {
   }
   get primaryKey(): StreamKey {
     return 'ppl_id';
+  }
+
+  get cursorField(): string {
+    return 'created_at';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -57,11 +68,29 @@ export class Pipelines extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+    const lastCreatedAt =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.lastCreatedAt
+        : undefined;
     const semaphoreci = SemaphoreCI.instance(this.config, this.logger);
 
     yield* semaphoreci.getPipelines(
       streamSlice.projectId,
-      streamSlice.branchName
+      streamSlice.branchName,
+      lastCreatedAt
     );
+  }
+
+  getUpdatedState(
+    currentStreamState: PipelineState,
+    latestRecord: Pipeline
+  ): PipelineState {
+    const lastCreatedAt: Date = new Date(latestRecord.created_at);
+    return {
+      lastCreatedAt:
+        lastCreatedAt >= new Date(currentStreamState?.lastCreatedAt || 0)
+          ? latestRecord.created_at
+          : currentStreamState.lastCreatedAt,
+    };
   }
 }

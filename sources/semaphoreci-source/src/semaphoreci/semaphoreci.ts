@@ -5,7 +5,9 @@ import axios, {
   AxiosResponseHeaders,
 } from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {DateTimeFormatOptions} from 'luxon';
 import parse, {Links} from 'parse-link-header';
+import {pipeline} from 'stream';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -37,14 +39,9 @@ export interface Project {
   readonly metadata: ProjectMeta;
 }
 
-export interface PipelineTime {
-  readonly seconds: number;
-  readonly nanos: number;
-}
-
 export interface Pipeline {
   readonly terminate_request: string;
-  readonly queuing_at: PipelineTime;
+  readonly queuing_at: string;
   readonly working_directory: string;
   readonly name: string;
   readonly branch_id: string;
@@ -58,15 +55,15 @@ export interface Pipeline {
   readonly commit_sha: string;
   readonly terminated_by: string;
   readonly after_task_id: string;
-  readonly created_at: PipelineTime;
+  readonly created_at: string;
   readonly error_description: string;
   readonly repository_id: string;
   readonly yaml_file_name: string;
-  readonly pending_at: PipelineTime;
+  readonly pending_at: string;
   readonly ppl_id: string;
-  readonly stopping_at: PipelineTime;
+  readonly stopping_at: string;
   readonly wf_id: string;
-  readonly done_at: PipelineTime;
+  readonly done_at: string;
   readonly result: string;
   readonly compile_task_id: string;
   readonly hook_id: string;
@@ -81,6 +78,7 @@ export interface SemaphoreCIConfig {
   readonly organization: string;
   readonly token: string;
   readonly projects?: string;
+  readonly startDate: string;
   readonly branches?: string;
   readonly timeout?: number;
   readonly delay?: number;
@@ -92,6 +90,7 @@ export class SemaphoreCI {
   constructor(
     private readonly restClient: AxiosInstance,
     private readonly projectIds: Array<string>,
+    private readonly startDate: Date,
     public readonly branchNames: Array<string>,
     private readonly delay: number,
     private readonly logger: AirbyteLogger
@@ -114,6 +113,11 @@ export class SemaphoreCI {
     const branchNames = (config.branches && config.branches?.split(',')) || [];
     const delay = config.delay || 0;
 
+    const startDate = new Date(config.startDate);
+    if (isNaN(startDate as unknown as number)) {
+      throw new VError('start date is invalid');
+    }
+
     const auth = `Token ${config.token}`;
 
     const httpClient = axios.create({
@@ -125,6 +129,7 @@ export class SemaphoreCI {
     SemaphoreCI.semaphoreci = new SemaphoreCI(
       httpClient,
       projectIds,
+      startDate,
       branchNames,
       delay,
       logger
@@ -160,23 +165,32 @@ export class SemaphoreCI {
 
   private async paginate<V>(
     requester: (params: any | undefined) => Promise<AxiosResponse>,
-    delay: number
+    delay: number,
+    deserializer: (item: any) => any,
+    stopper?: (items: any) => boolean
   ): Promise<V[]> {
     const list = [];
     let nextPage = '1';
+    let getNextPage = true;
 
     do {
       const res = await requester({nextPage});
 
       const items = res.data;
-
-      list.push(...items);
+      for (const item of items ?? []) {
+        const data = deserializer(item);
+        if (stopper && stopper(data)) {
+          getNextPage = false;
+          break;
+        }
+        list.push(data);
+      }
 
       nextPage = this.extractLinkHeaders(res.headers).next?.page;
       if (delay !== 0) {
         await new Promise((r) => setTimeout(r, delay));
       }
-    } while (nextPage);
+    } while (getNextPage && nextPage);
 
     return list;
   }
@@ -197,7 +211,39 @@ export class SemaphoreCI {
     return projects;
   }
 
-  async *getPipelines(projectId, branchName): AsyncGenerator<Pipeline> {
+  private parseDate(pipeline: Pipeline, field: string): string {
+    const formattedDate =
+      pipeline[field].seconds * 1000 + pipeline[field].nanos / 100000;
+
+    return new Date(formattedDate).toISOString();
+  }
+
+  private convertDates(pipeline: Pipeline): Pipeline {
+    const dateFields = [
+      'queuing_at',
+      'running_at',
+      'created_at',
+      'pending_at',
+      'stopping_at',
+      'done_at',
+    ];
+
+    dateFields.forEach((field: string) => {
+      pipeline[field] = this.parseDate(pipeline, field);
+    });
+
+    return pipeline;
+  }
+
+  async *getPipelines(
+    projectId: string,
+    branchName: string,
+    since?: string
+  ): AsyncGenerator<Pipeline> {
+    const startTime = new Date(since ?? 0);
+    const startTimeMax =
+      startTime > this.startDate ? startTime : this.startDate;
+
     const pipelines = await this.paginate<Pipeline>(
       ({nextPage}) =>
         this.restClient.get(
@@ -205,7 +251,9 @@ export class SemaphoreCI {
             branchName ? '&branch_name=' + branchName : ''
           }`
         ),
-      this.delay
+      this.delay,
+      (item: any) => this.convertDates(item),
+      (pipeline: Pipeline) => startTimeMax > new Date(pipeline.created_at)
     );
 
     for (const pipeline of pipelines) {

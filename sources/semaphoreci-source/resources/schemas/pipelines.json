@@ -6,15 +6,7 @@
       "type": "string"
     },
     "queuing_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "working_directory": {
       "type": "string"
@@ -31,15 +23,7 @@
       "format": "uuid"
     },
     "running_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "partially_rerun_by": {
       "type": "string"
@@ -66,15 +50,7 @@
       "type": "string"
     },
     "created_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "error_description": {
       "type": "string"
@@ -86,45 +62,21 @@
       "type": "string"
     },
     "pending_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "ppl_id": {
       "type": "string",
       "format": "uuid"
     },
     "stopping_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "wf_id": {
       "type": "string",
       "format": "uuid"
     },
     "done_at": {
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "type": "number"
-        },
-        "nanos": {
-          "type": "number"
-        }
-      }
+      "type": "string"
     },
     "result": {
       "type": "string"

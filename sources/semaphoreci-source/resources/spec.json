@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
       "organization",
-      "token"
+      "token",
+      "startDate"
     ],
     "properties": {
       "organization": {
@@ -23,6 +24,12 @@
         "type": "string",
         "title": "Semaphore Projects Ids",
         "description": "Comma separated list of project ids. If not set, all data will be pulled from all projects. Project ids can be retrieved using the api under '/api/v1alpha/projects'."
+      },
+      "startDate": {
+        "type": "string",
+        "title": "Start Date",
+        "default": "2022-01-01T00:00:00Z",
+        "description": "The date from which you'd like to replicate data from SemaphoreCI in the format YYYY-MM-DDT00:00:00Z. For the streams which support this configuration, only data generated on or after the start date will be replicated."
       },
       "branch": {
         "type": "string",
