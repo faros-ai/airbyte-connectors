@@ -16,9 +16,7 @@ export abstract class ConverterTyped<R> {
   get streamName(): StreamName {
     if (this.stream) return this.stream;
     this.stream = StreamName.fromString(
-      `${this.source.toLowerCase()}${StreamNameSeparator}${snakeCase(
-        this.constructor.name
-      )}`
+      `${this.source}${StreamNameSeparator}${snakeCase(this.constructor.name)}`
     );
     return this.stream;
   }
@@ -134,7 +132,7 @@ export class StreamName {
 
   get asString(): string {
     if (this.str) return this.str;
-    this.str = `${this.source}${StreamNameSeparator}${this.name}`;
+    this.str = `${this.source.toLowerCase()}${StreamNameSeparator}${this.name}`;
     return this.str;
   }
 
