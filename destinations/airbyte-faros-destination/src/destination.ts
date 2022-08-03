@@ -77,7 +77,7 @@ export class FarosDestination extends AirbyteDestination {
     super();
   }
 
-  public onConfigCheck: (config: AirbyteConfig) => Promise<void> = undefined;
+  onConfigCheck: (config: AirbyteConfig) => Promise<void> = undefined;
 
   getFarosClient(): FarosClient {
     if (this.farosClient) return this.farosClient;
