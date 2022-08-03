@@ -7,7 +7,7 @@ import {
   StreamName,
 } from '../converter';
 import {SemaphoreCICommon, SemaphoreCIConverter} from './common';
-import {Pipeline} from './models';
+import {Pipeline, Repository} from './models';
 
 export class Pipelines extends SemaphoreCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -37,13 +37,14 @@ export class Pipelines extends SemaphoreCIConverter {
       this.projectsStream.asString,
       String(pipelineRecord.project_id)
     );
-    const repository = project?.record?.data?.spec.repository;
+    const repository = project?.record?.data?.spec.repository as Repository;
 
     /*
      * Pipeline
      */
     const organizationKey = {
-      uid: project?.record?.data?.metadata.org_id,
+      uid: repository.owner,
+      name: repository.owner,
       source,
     };
 
@@ -82,8 +83,14 @@ export class Pipelines extends SemaphoreCIConverter {
      * BuildCommitAssociation
      */
     const repositoryKey = {
-      uid: pipelineRecord.project_id,
-      organization: organizationKey,
+      uid: repository.name,
+      name: repository.name,
+      fullName: `${repository.owner}/${repository.name}`,
+      url: SemaphoreCICommon.buildVCSUrls(repository).repository,
+      organization: {
+        ...organizationKey,
+        url: SemaphoreCICommon.buildVCSUrls(repository).organization,
+      },
     };
 
     pipelineRecord.commit_sha;

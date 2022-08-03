@@ -24,7 +24,7 @@ export class Projects extends SemaphoreCIConverter {
     const organization = {
       model: 'cicd_Organization',
       record: {
-        uid: project.metadata.org_id,
+        uid: project.spec.repository.owner,
         name: project.spec.repository.owner,
         url: SemaphoreCICommon.buildOrganizationUrl(
           project.spec.repository.owner
@@ -36,10 +36,10 @@ export class Projects extends SemaphoreCIConverter {
     const repository = {
       model: 'cicd_Repository',
       record: {
-        uid: project.metadata.id,
+        uid: project.spec.repository.name,
         name: project.spec.repository.name,
         description: project.metadata.description,
-        url: SemaphoreCICommon.buildRepositoryUrl(project.spec.repository),
+        url: SemaphoreCICommon.buildVCSUrls(project.spec.repository).repository,
         organization: {
           uid: organization.record.uid,
           source,

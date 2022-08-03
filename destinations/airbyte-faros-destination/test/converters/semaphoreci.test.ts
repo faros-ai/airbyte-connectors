@@ -5,7 +5,7 @@ import pino from 'pino';
 
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {circleciAllStreamsLog} from './data';
+import {semaphoreciAllStreamLogs} from './data';
 
 describe('semaphoreci', () => {
   const logger = pino({
@@ -36,14 +36,13 @@ describe('semaphoreci', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(circleciAllStreamsLog, 'utf8');
+    cli.stdin.end(semaphoreciAllStreamLogs, 'utf8');
 
     const stdout = await read(cli.stdout);
-    logger.debug(stdout);
 
     const processedByStream = {
-      projects: 1,
-      pipelines: 1,
+      projects: 2,
+      pipelines: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -52,11 +51,11 @@ describe('semaphoreci', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      cicd_Build: 3,
-      cicd_BuildCommitAssociation: 3,
-      cicd_BuildStep: 3,
-      cicd_Organization: 1,
-      cicd_Pipeline: 1,
+      cicd_Build: 2,
+      cicd_BuildCommitAssociation: 2,
+      cicd_Organization: 2,
+      cicd_Pipeline: 2,
+      cicd_Repository: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

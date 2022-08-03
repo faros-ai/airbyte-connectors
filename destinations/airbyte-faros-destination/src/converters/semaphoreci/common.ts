@@ -16,16 +16,23 @@ export class SemaphoreCICommon {
     return `https://${organization}.semaphore.com`;
   }
 
-  static buildRepositoryUrl(repository: Repository): string {
-    let repoUrl = '';
+  static buildVCSUrls(repository: Repository): {
+    organization: string;
+    repository: string;
+  } {
+    const urls = {
+      organization: '',
+      repository: '',
+    };
 
-    switch (repository.integration_type) {
+    switch (repository?.integration_type) {
       case 'github_app':
-        repoUrl = `https://github.com/${repository.owner}/${repository.name}`;
+        urls.organization = `https://github.com/${repository.owner}`;
+        urls.repository = `https://github.com/${repository.owner}/${repository.name}`;
         break;
     }
 
-    return repoUrl;
+    return urls;
   }
 
   static buildPipelineUrl(pipeline: Pipeline, repository: Repository): string {
