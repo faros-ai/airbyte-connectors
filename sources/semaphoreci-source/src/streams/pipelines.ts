@@ -18,7 +18,9 @@ type StreamSlice =
   | undefined;
 
 interface PipelineState {
-  lastCreatedAt: string;
+  [key: string]: {
+    lastCreatedAt: string;
+  };
 }
 export class Pipelines extends AirbyteStreamBase {
   constructor(
@@ -63,12 +65,13 @@ export class Pipelines extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice,
-    streamState?: Dictionary<any, string>
+    streamState?: PipelineState
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const lastCreatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCreatedAt
+        ? streamState && streamState[streamSlice?.projectId]?.lastCreatedAt
         : undefined;
+
     const semaphoreci = SemaphoreCI.instance(this.config, this.logger);
 
     yield* semaphoreci.getPipelines(
@@ -83,11 +86,18 @@ export class Pipelines extends AirbyteStreamBase {
     latestRecord: Pipeline
   ): PipelineState {
     const lastCreatedAt: Date = new Date(latestRecord.created_at);
+    const currentLastCreatedAt: Date = new Date(
+      currentStreamState[latestRecord.project_id]?.lastCreatedAt || 0
+    );
+
     return {
-      lastCreatedAt:
-        lastCreatedAt >= new Date(currentStreamState?.lastCreatedAt || 0)
-          ? latestRecord.created_at
-          : currentStreamState.lastCreatedAt,
+      ...currentStreamState,
+      [latestRecord.project_id]: {
+        lastCreatedAt:
+          lastCreatedAt >= currentLastCreatedAt
+            ? latestRecord.created_at
+            : currentStreamState[latestRecord.project_id].lastCreatedAt,
+      },
     };
   }
 }
