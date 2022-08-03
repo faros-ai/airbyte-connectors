@@ -188,8 +188,6 @@ export class SemaphoreCI {
     const startTimeMax =
       startTime > this.startDate ? startTime : this.startDate;
 
-    const projects = await this.getProjects();
-
     const pipelines = await this.paginate<Pipeline>(
       ({nextPage}) =>
         this.restClient.get(
@@ -203,11 +201,6 @@ export class SemaphoreCI {
     );
 
     for (const pipeline of pipelines) {
-      const project = projects.find(
-        (project) => project.metadata.id === pipeline.project_id
-      );
-      pipeline.project = project;
-
       yield pipeline;
     }
   }

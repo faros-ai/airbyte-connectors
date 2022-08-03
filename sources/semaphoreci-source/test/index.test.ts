@@ -207,15 +207,10 @@ describe('index', () => {
 
         SemaphoreCI.instance = jest.fn().mockImplementation(() =>
           makeSemaphoreCI({
-            get: restClient
-              .mockResolvedValueOnce({
-                data: readTestResourceFile('projects.json'),
-                headers: generateLinkHeaders(),
-              })
-              .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines.json'),
-                headers: generateLinkHeaders(),
-              }),
+            get: restClient.mockResolvedValue({
+              data: readTestResourceFile('pipelines.json'),
+              headers: generateLinkHeaders(),
+            }),
           })
         );
 
@@ -236,10 +231,8 @@ describe('index', () => {
           pipelines.push(pipeline);
         }
 
-        expect(restClient).toHaveBeenCalledTimes(2);
-        expect(restClient).toHaveBeenNthCalledWith(1, 'projects');
-        expect(restClient).toHaveBeenNthCalledWith(
-          2,
+        expect(restClient).toHaveBeenCalledTimes(1);
+        expect(restClient).toHaveBeenCalledWith(
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual(
@@ -253,15 +246,10 @@ describe('index', () => {
         SemaphoreCI.instance = jest.fn().mockImplementation(() =>
           makeSemaphoreCI(
             {
-              get: restClient
-                .mockResolvedValueOnce({
-                  data: readTestResourceFile('projects.json'),
-                  headers: generateLinkHeaders(),
-                })
-                .mockResolvedValueOnce({
-                  data: readTestResourceFile('pipelines.json'),
-                  headers: generateLinkHeaders(),
-                }),
+              get: restClient.mockResolvedValue({
+                data: readTestResourceFile('pipelines.json'),
+                headers: generateLinkHeaders(),
+              }),
             },
             [],
             new Date('2022-07-25T21:46:00Z')
@@ -285,10 +273,8 @@ describe('index', () => {
           pipelines.push(pipeline);
         }
 
-        expect(restClient).toHaveBeenCalledTimes(2);
-        expect(restClient).toHaveBeenNthCalledWith(1, 'projects');
-        expect(restClient).toHaveBeenNthCalledWith(
-          2,
+        expect(restClient).toHaveBeenCalledTimes(1);
+        expect(restClient).toHaveBeenCalledWith(
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual([
@@ -301,15 +287,10 @@ describe('index', () => {
 
         SemaphoreCI.instance = jest.fn().mockImplementation(() =>
           makeSemaphoreCI({
-            get: restClient
-              .mockResolvedValueOnce({
-                data: readTestResourceFile('projects.json'),
-                headers: generateLinkHeaders(),
-              })
-              .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines.json'),
-                headers: generateLinkHeaders(),
-              }),
+            get: restClient.mockResolvedValue({
+              data: readTestResourceFile('pipelines.json'),
+              headers: generateLinkHeaders(),
+            }),
           })
         );
 
@@ -330,10 +311,8 @@ describe('index', () => {
           pipelines.push(pipeline);
         }
 
-        expect(restClient).toHaveBeenCalledTimes(2);
-        expect(restClient).toHaveBeenNthCalledWith(1, 'projects');
-        expect(restClient).toHaveBeenNthCalledWith(
-          2,
+        expect(restClient).toHaveBeenCalledTimes(1);
+        expect(restClient).toHaveBeenCalledWith(
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86&branch_name=main'
         );
         expect(pipelines).toStrictEqual(
@@ -344,10 +323,6 @@ describe('index', () => {
       test('full_refresh sync mode - paginated', async () => {
         const restClient = jest.fn();
         const mockGet = restClient
-          .mockResolvedValueOnce({
-            data: readTestResourceFile('projects.json'),
-            headers: generateLinkHeaders(),
-          })
           .mockResolvedValueOnce({
             data: readTestResourceFile('pipelines.json'),
             headers: generateLinkHeaders(1, 2, 2),
@@ -380,14 +355,13 @@ describe('index', () => {
           pipelines.push(pipeline);
         }
 
-        expect(restClient).toHaveBeenCalledTimes(3);
-        expect(restClient).toHaveBeenNthCalledWith(1, 'projects');
+        expect(restClient).toHaveBeenCalledTimes(2);
         expect(restClient).toHaveBeenNthCalledWith(
-          2,
+          1,
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(restClient).toHaveBeenNthCalledWith(
-          3,
+          2,
           'pipelines?page=2&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual([

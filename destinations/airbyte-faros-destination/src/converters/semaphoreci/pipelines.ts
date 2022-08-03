@@ -1,6 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {SemaphoreCICommon, SemaphoreCIConverter} from './common';
 import {Pipeline} from './models';
 
@@ -10,6 +15,12 @@ export class Pipelines extends SemaphoreCIConverter {
     'cicd_Build',
     'cicd_BuildCommitAssociation',
   ];
+
+  private readonly projectsStream = new StreamName(this.source, 'projects');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.projectsStream];
+  }
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.ppl_id;
@@ -22,11 +33,17 @@ export class Pipelines extends SemaphoreCIConverter {
     const pipelineRecord = record.record.data as Pipeline;
     const source = this.streamName.source;
 
+    const project = ctx.get(
+      this.projectsStream.asString,
+      String(pipelineRecord.project_id)
+    );
+    const repository = project?.record?.data?.spec.repository;
+
     /*
      * Pipeline
      */
     const organizationKey = {
-      uid: pipelineRecord.project.metadata.org_id,
+      uid: project?.record?.data?.metadata.org_id,
       source,
     };
 
@@ -55,7 +72,7 @@ export class Pipelines extends SemaphoreCIConverter {
         createdAt: pipelineRecord.created_at,
         startedAt: pipelineRecord.running_at,
         endedAt: pipelineRecord.done_at,
-        url: SemaphoreCICommon.buildPipelineUrl(pipelineRecord),
+        url: SemaphoreCICommon.buildPipelineUrl(pipelineRecord, repository),
         status: SemaphoreCICommon.convertBuildState(pipelineRecord.result),
         pipeline: buildKey,
       },

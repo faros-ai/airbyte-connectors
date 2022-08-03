@@ -28,10 +28,8 @@ export class SemaphoreCICommon {
     return repoUrl;
   }
 
-  static buildPipelineUrl(pipeline: Pipeline): string {
-    const baseUrl = this.buildOrganizationUrl(
-      pipeline.project.spec.repository.owner
-    );
+  static buildPipelineUrl(pipeline: Pipeline, repository: Repository): string {
+    const baseUrl = this.buildOrganizationUrl(repository.owner);
 
     return `${baseUrl}/workflows/${pipeline.wf_id}?pipeline_id=${pipeline.ppl_id}`;
   }

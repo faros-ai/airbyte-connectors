@@ -23,8 +23,6 @@ export interface Project {
 }
 
 export interface Pipeline {
-  project: Project;
-
   readonly after_task_id: string;
   readonly branch_id: string;
   readonly branch_name: string;
