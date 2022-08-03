@@ -1,7 +1,7 @@
 import {AirbyteLogger} from './logger';
 
 export abstract class Runner {
-  constructor(logger: AirbyteLogger) {
+  constructor(protected readonly logger: AirbyteLogger) {
     process.on('unhandledRejection', (error) => {
       throw error;
     });

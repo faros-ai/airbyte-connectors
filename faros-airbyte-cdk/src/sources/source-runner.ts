@@ -10,8 +10,8 @@ import {AirbyteSource} from './source';
 
 export class AirbyteSourceRunner extends Runner {
   constructor(
-    private readonly logger: AirbyteLogger,
-    private readonly source: AirbyteSource
+    protected readonly logger: AirbyteLogger,
+    protected readonly source: AirbyteSource
   ) {
     super(logger);
   }

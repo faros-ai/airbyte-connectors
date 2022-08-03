@@ -61,6 +61,7 @@ interface FarosDestinationState {
 export class FarosDestination extends AirbyteDestination {
   constructor(
     private readonly logger: AirbyteLogger,
+    private specOverride: AirbyteSpec = undefined,
     private edition: Edition = undefined,
     private farosClientConfig: FarosClientConfig = undefined,
     private farosClient: FarosClient = undefined,
@@ -76,6 +77,8 @@ export class FarosDestination extends AirbyteDestination {
     super();
   }
 
+  public onConfigCheck: (config: AirbyteConfig) => Promise<void> = undefined;
+
   getFarosClient(): FarosClient {
     if (this.farosClient) return this.farosClient;
     throw new VError('Faros client is not initialized');
@@ -87,6 +90,7 @@ export class FarosDestination extends AirbyteDestination {
   }
 
   async spec(): Promise<AirbyteSpec> {
+    if (this.specOverride) return this.specOverride;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
@@ -94,6 +98,9 @@ export class FarosDestination extends AirbyteDestination {
   async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
     try {
       await this.init(config);
+      if (this.onConfigCheck) {
+        await this.onConfigCheck(config);
+      }
     } catch (e: any) {
       return new AirbyteConnectionStatusMessage({
         status: AirbyteConnectionStatus.FAILED,
