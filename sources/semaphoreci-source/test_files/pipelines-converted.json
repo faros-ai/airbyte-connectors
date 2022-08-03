@@ -5,7 +5,7 @@
         "working_directory": ".semaphore",
         "name": "Tests",
         "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-        "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
         "running_at": "2022-07-25T21:51:21.938Z",
         "partially_rerun_by": "",
         "with_after_task": false,
@@ -31,7 +31,48 @@
         "promotion_of": "",
         "switch_id": "",
         "result_reason": "INTERNAL",
-        "partial_rerun_of": ""
+        "partial_rerun_of": "",
+        "project": {
+            "spec": {
+                "visibility": "private",
+                "schedulers": [],
+                "repository": {
+                    "whitelist": {
+                        "tags": [],
+                        "branches": []
+                    },
+                    "url": "git@github.com:organization/repository-one.git",
+                    "status": {
+                        "pipeline_files": [
+                            {
+                                "path": ".semaphore/semaphore.yml",
+                                "level": "block"
+                            }
+                        ]
+                    },
+                    "run_on": [
+                        "tags",
+                        "branches"
+                    ],
+                    "pipeline_file": ".semaphore/semaphore.yml",
+                    "owner": "organization",
+                    "name": "repository-one",
+                    "integration_type": "github_token",
+                    "forked_pull_requests": {
+                        "allowed_secrets": []
+                    }
+                }
+            },
+            "metadata": {
+                "owner_id": "a0a1ed8b-053c-490e-bcd0-c679a1e82fbf",
+                "org_id": "07b2d3c6-f626-4ef1-af08-71ecb6d0dca7",
+                "name": "repository-one",
+                "id": "40513a80-0de8-4b75-9690-16fae6542e58",
+                "description": "Project One Description"
+            },
+            "kind": "Project",
+            "apiVersion": "v1alpha"
+        }
     },
     {
         "terminate_request": "",
@@ -39,7 +80,7 @@
         "working_directory": ".semaphore",
         "name": "Tests",
         "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-        "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
         "running_at": "2022-07-25T21:45:50.303Z",
         "partially_rerun_by": "",
         "with_after_task": false,
@@ -65,6 +106,47 @@
         "promotion_of": "",
         "switch_id": "",
         "result_reason": "TEST",
-        "partial_rerun_of": ""
+        "partial_rerun_of": "",
+        "project": {
+            "spec": {
+                "visibility": "private",
+                "schedulers": [],
+                "repository": {
+                    "whitelist": {
+                        "tags": [],
+                        "branches": []
+                    },
+                    "url": "git@github.com:organization/repository-one.git",
+                    "status": {
+                        "pipeline_files": [
+                            {
+                                "path": ".semaphore/semaphore.yml",
+                                "level": "block"
+                            }
+                        ]
+                    },
+                    "run_on": [
+                        "tags",
+                        "branches"
+                    ],
+                    "pipeline_file": ".semaphore/semaphore.yml",
+                    "owner": "organization",
+                    "name": "repository-one",
+                    "integration_type": "github_token",
+                    "forked_pull_requests": {
+                        "allowed_secrets": []
+                    }
+                }
+            },
+            "metadata": {
+                "owner_id": "a0a1ed8b-053c-490e-bcd0-c679a1e82fbf",
+                "org_id": "07b2d3c6-f626-4ef1-af08-71ecb6d0dca7",
+                "name": "repository-one",
+                "id": "40513a80-0de8-4b75-9690-16fae6542e58",
+                "description": "Project One Description"
+            },
+            "kind": "Project",
+            "apiVersion": "v1alpha"
+        }
     }
 ]

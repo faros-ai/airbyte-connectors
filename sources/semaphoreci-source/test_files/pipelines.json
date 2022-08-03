@@ -8,7 +8,7 @@
         "working_directory": ".semaphore",
         "name": "Tests",
         "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-        "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
         "running_at": {
             "seconds": 1658785877,
             "nanos": 493843000
@@ -60,7 +60,7 @@
         "working_directory": ".semaphore",
         "name": "Tests",
         "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-        "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
         "running_at": {
             "seconds": 1658785545,
             "nanos": 530338000

@@ -5,11 +5,19 @@
     "spec": {
       "type": "object",
       "properties": {
-        "owner": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
+        "repository": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
         }
       }
     },

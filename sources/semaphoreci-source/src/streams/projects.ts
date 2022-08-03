@@ -6,11 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  Project,
-  SemaphoreCI,
-  SemaphoreCIConfig,
-} from '../semaphoreci/semaphoreci';
+import {Project} from '../semaphoreci/models';
+import {SemaphoreCI, SemaphoreCIConfig} from '../semaphoreci/semaphoreci';
 
 export class Projects extends AirbyteStreamBase {
   constructor(

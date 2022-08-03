@@ -6,11 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  Pipeline,
-  SemaphoreCI,
-  SemaphoreCIConfig,
-} from '../semaphoreci/semaphoreci';
+import {Pipeline} from '../semaphoreci/models';
+import {SemaphoreCI, SemaphoreCIConfig} from '../semaphoreci/semaphoreci';
 import {Projects} from './projects';
 
 type StreamSlice =
