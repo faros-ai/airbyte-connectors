@@ -23,9 +23,9 @@ export const MISSING_OR_INVISIBLE_RESOURCE_ERROR_MESSAGE =
 export interface SemaphoreCIConfig {
   readonly organization: string;
   readonly token: string;
-  readonly projects?: string;
+  readonly projects: string[];
   readonly startDate: string;
-  readonly branches?: string;
+  readonly branches: string[];
   readonly timeout?: number;
   readonly delay?: number;
 }
@@ -35,9 +35,9 @@ export class SemaphoreCI {
 
   constructor(
     private readonly restClient: AxiosInstance,
-    private readonly projectIds: Array<string>,
+    private readonly projectIds: ReadonlyArray<string>,
     private readonly startDate: Date,
-    public readonly branchNames: Array<string>,
+    public readonly branchNames: ReadonlyArray<string>,
     private readonly delay: number,
     private readonly logger: AirbyteLogger
   ) {}
@@ -55,8 +55,6 @@ export class SemaphoreCI {
       throw new VError('organization has to be provided and be non-empty');
     }
 
-    const projectIds = (config.projects && config.projects?.split(',')) || [];
-    const branchNames = (config.branches && config.branches?.split(',')) || [];
     const delay = config.delay || 0;
 
     const startDate = new Date(config.startDate);
@@ -74,9 +72,9 @@ export class SemaphoreCI {
 
     SemaphoreCI.semaphoreci = new SemaphoreCI(
       httpClient,
-      projectIds,
+      config.projects,
       startDate,
-      branchNames,
+      config.branches,
       delay,
       logger
     );
