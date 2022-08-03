@@ -1,4 +1,5 @@
 import {
+  AirbyteConfig,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteLogger,
@@ -7,6 +8,7 @@ import {
 import {getLocal} from 'mockttp';
 import os from 'os';
 
+import {FarosDestinationRunner} from '../src';
 import {
   Edition,
   FarosDestination,
@@ -123,5 +125,38 @@ describe('index', () => {
         s4: new Set(['s3']),
       })
     ).toThrow(/s1,s4,s3,s1/);
+  });
+
+  test('allow overriding spec', async () => {
+    const dest = new FarosDestinationRunner(
+      new AirbyteSpec({
+        documentationUrl: 'test',
+        connectionSpecification: {foo: 'bar'},
+      })
+    );
+    const main = dest.mainCommand().exitOverride();
+    const res = await main
+      .parseAsync(['node', 'main', 'spec'])
+      .catch((e) => fail(e));
+    expect(res.opts()).toEqual({});
+  });
+
+  test('allow adding config check', async () => {
+    const dest = new FarosDestinationRunner(
+      new AirbyteSpec({
+        documentationUrl: 'test',
+        connectionSpecification: {foo: 'bar'},
+      })
+    );
+    let config: AirbyteConfig = undefined;
+    dest.onConfigCheck(async (cfg: AirbyteConfig) => {
+      config = cfg;
+    });
+    const main = dest.mainCommand().exitOverride();
+    const res = await main
+      .parseAsync(['node', 'main', 'check', '--config', configPath])
+      .catch((e) => fail(e));
+    expect(res.opts()).toEqual({});
+    expect(config).toBeDefined();
   });
 });

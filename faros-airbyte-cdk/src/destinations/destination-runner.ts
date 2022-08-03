@@ -9,8 +9,8 @@ import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner extends Runner {
   constructor(
-    private readonly logger: AirbyteLogger,
-    private readonly destination: AirbyteDestination
+    protected readonly logger: AirbyteLogger,
+    protected readonly destination: AirbyteDestination
   ) {
     super(logger);
   }
