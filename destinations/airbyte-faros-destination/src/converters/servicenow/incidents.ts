@@ -20,6 +20,8 @@ export class Incidents extends ServiceNowConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'ims_Incident',
     'ims_IncidentAssignment',
+    'compute_Application',
+    'ims_IncidentApplicationImpact',
   ];
 
   private seenApplications = new Set<string>();
