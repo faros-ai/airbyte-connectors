@@ -35,7 +35,7 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner {
   }
 
   /**
-   * Add an additional configuration check
+   * Add an additional configuration check. Handy when using spec override.
    */
   onConfigCheck(check: (config: AirbyteConfig) => Promise<void>) {
     (this.destination as FarosDestination).onConfigCheck = check;

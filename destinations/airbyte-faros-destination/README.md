@@ -46,6 +46,7 @@ We have implemented [a lot of converters](https://github.com/faros-ai/airbyte-co
 ### Custom Sources
 
 For custom or internal sources you can use Faros Destination as npm package in your project without having to fork or open PRs against this repo:
+
 ```
 npm i airbyte-faros-destination
 ```
@@ -53,6 +54,7 @@ npm i airbyte-faros-destination
 The library currently provides a main class `FarosDestinationRunner` which allows you to register the custom converters you created. Additionally, use the program property to get a default CLI app that provides the basic commands needed to write records to Faros.
 
 Example `index.ts`:
+
 ```typescript
 import {Command} from 'commander';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
@@ -100,11 +102,13 @@ export function mainCommand(): Command {
     new Builds(),
     new Pipelines()
   );
+
   return destinationRunner.program;
 }
 ```
 
 Example shell script to run file `bin/main`:
+
 ```shell
 #!/usr/bin/env node
 
@@ -117,6 +121,7 @@ mainCommand().parseAsync(process.argv).catch((err) => {
 ```
 
 ### Writing Records into Faros
+
 ```shell
 ./bin/main write --config config.json --catalog catalog.json
 ```
@@ -126,6 +131,7 @@ details of the Faros destination to write to, and `catalog.json` to
 document source streams to write records for.
 
 Example `config.json`
+
 ```json
 {
   "edition_configs": {
@@ -137,9 +143,11 @@ Example `config.json`
   "origin": "mydatasource"
 }
 ```
+
 See [spec.json](https://github.com/faros-ai/airbyte-connectors/tree/main/destinations/airbyte-faros-destination/resources/spec.json) for more properties for the `config.json`
 
 Example `catalog.json`
+
 ```json
 {
   "streams": [
@@ -160,9 +168,11 @@ Example `catalog.json`
 ```
 
 **Tip**: you can even pipe data directly from your custom source into your custom destination without Airbyte server while prefixing your streams (as expected by Faros Destination):
+
 ```shell
 <my-source-command> | jq -c -R 'fromjson? | select(.type == "RECORD") | .record.stream = "mydatasource__CustomSource__\(.record.stream)"' | <my-destination-command>
 ```
 
 ### Additional Commands
+
 Run `./bin/main --help` for detailed information on available commands.
