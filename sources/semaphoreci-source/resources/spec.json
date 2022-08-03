@@ -36,7 +36,8 @@
           "type": "string"
         },
         "title": "Semaphore Projects Ids (Optional)",
-        "description": "List of project ids. If not set, all data will be pulled from all projects. Project ids can be retrieved using the api under '/api/v1alpha/projects'."
+        "description": "List of project ids. If not set, all data will be pulled from all projects. Project ids can be retrieved using the api under '/api/v1alpha/projects'.",
+        "default": []
       },
       "branches": {
         "order": 4,
