@@ -1,13 +1,10 @@
-export enum RepoGitSource {
-  GITHUB = 'github.com',
-  BITBUCKET = 'bitbucket.com',
-}
 export interface Repository {
   readonly integration_type: string;
   readonly name: string;
   readonly owner: string;
   readonly url: string;
 }
+
 export interface ProjectSpec {
   readonly repository: Repository;
   readonly visibility: string;
@@ -24,6 +21,62 @@ export interface ProjectMeta {
 export interface Project {
   readonly metadata: ProjectMeta;
   readonly spec: ProjectSpec;
+}
+
+export interface JobMetadata {
+  readonly name: string;
+  readonly id: string;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly start_time: string;
+  readonly finish_time: string;
+}
+
+export interface JobSpec {
+  readonly project_id: string;
+  readonly agent: {
+    machine: {
+      type: string;
+      os_image: string;
+    };
+  };
+  readonly env_vars: {
+    name: string;
+    value: string;
+  }[];
+  readonly commands: string[];
+}
+
+export interface JobStatus {
+  readonly result: string;
+  readonly state: string;
+}
+
+export interface Job {
+  readonly metadata: JobMetadata;
+  readonly spec: JobSpec;
+  readonly status: JobStatus;
+}
+
+export interface BlockJob {
+  readonly status: string;
+  readonly result: string;
+  readonly name: string;
+  readonly job_id: string;
+  readonly index: number;
+}
+
+export interface Block {
+  readonly state: string;
+  readonly result_reason: string;
+  readonly result: string;
+  readonly name: string;
+  readonly jobs: BlockJob[];
+}
+
+export interface PipelineDetailed {
+  readonly pipeline: Pipeline;
+  readonly blocks: Block[];
 }
 
 export interface Pipeline {
@@ -59,6 +112,8 @@ export interface Pipeline {
   readonly with_after_task: string;
   readonly working_directory: string;
   readonly yaml_file_name: string;
+
+  readonly jobs: Job[];
 }
 
 /*
@@ -70,6 +125,11 @@ export enum PipelineResult {
   Failed = 'failed',
   Passed = 'passed',
   Stopped = 'stopped',
+}
+
+export enum RepoGitSource {
+  GITHUB = 'github.com',
+  BITBUCKET = 'bitbucket.com',
 }
 
 export enum BuildStateCategory {

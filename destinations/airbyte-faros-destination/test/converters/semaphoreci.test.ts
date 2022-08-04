@@ -41,8 +41,8 @@ describe('semaphoreci', () => {
     const stdout = await read(cli.stdout);
 
     const processedByStream = {
-      projects: 2,
-      pipelines: 2,
+      projects: 1,
+      pipelines: 7,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -51,11 +51,12 @@ describe('semaphoreci', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      cicd_Build: 2,
-      cicd_BuildCommitAssociation: 2,
-      cicd_Organization: 2,
-      cicd_Pipeline: 2,
-      cicd_Repository: 2,
+      cicd_Build: 7,
+      cicd_BuildCommitAssociation: 7,
+      cicd_BuildStep: 21,
+      cicd_Organization: 1,
+      cicd_Pipeline: 7,
+      cicd_Repository: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();
