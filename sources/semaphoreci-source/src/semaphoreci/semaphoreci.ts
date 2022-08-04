@@ -6,10 +6,11 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import parse, {Links} from 'parse-link-header';
+import {join} from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Pipeline, Project} from './models';
+import {Job, Pipeline, PipelineDetailed, Project} from './models';
 
 const REST_API_VERSION = 'v1alpha';
 const SEMAPHORE_PAGE_HEADER = 'link';
@@ -179,6 +180,33 @@ export class SemaphoreCI {
     return pipeline;
   }
 
+  private async getPipelineJobsList(
+    pipeline: Pipeline
+  ): Promise<Array<string>> {
+    const res = await this.restClient.get<PipelineDetailed>(
+      `pipelines/${pipeline.ppl_id}?detailed=true`
+    );
+    const jobIds = [];
+
+    res.data.blocks?.forEach((block) =>
+      jobIds.push(...block.jobs.map((job) => job.job_id))
+    );
+
+    return jobIds;
+  }
+
+  private async getJobsDetail(jobIds: string[]): Promise<Array<Job>> {
+    const jobs = [];
+
+    for (const jobId of jobIds) {
+      const res = await this.restClient.get<Job[]>(`jobs/${jobId}`);
+
+      jobs.push(res.data);
+    }
+
+    return jobs;
+  }
+
   async *getPipelines(
     projectId: string,
     branchName: string,
@@ -201,6 +229,11 @@ export class SemaphoreCI {
     );
 
     for (const pipeline of pipelines) {
+      const pipelineJobsList = await this.getPipelineJobsList(pipeline);
+      const pipelineJobs = await this.getJobsDetail(pipelineJobsList);
+
+      pipeline.jobs = pipelineJobs;
+
       yield pipeline;
     }
   }
