@@ -3,6 +3,7 @@ import parseGitUrl from 'git-url-parse';
 import {Converter} from '../converter';
 import {
   BuildStateCategory,
+  Job,
   Pipeline,
   PipelineResult,
   RepoGitSource,
@@ -16,6 +17,8 @@ export abstract class SemaphoreCIConverter extends Converter {
 }
 
 export class SemaphoreCICommon {
+  static readonly MAX_DESCRIPTION_LENGTH = 1000;
+
   static getVCSSourceFromUrl(repoUrl: string): RepoSource | undefined {
     switch (parseGitUrl(repoUrl).source) {
       case RepoGitSource.GITHUB:
@@ -64,6 +67,12 @@ export class SemaphoreCICommon {
     const baseUrl = this.buildOrganizationUrl(repository.owner);
 
     return `${baseUrl}/workflows/${pipeline.wf_id}?pipeline_id=${pipeline.ppl_id}`;
+  }
+
+  static buildJobUrl(job: Job, repository: Repository): string {
+    const baseUrl = this.buildOrganizationUrl(repository.owner);
+
+    return `${baseUrl}/jobs/${job.metadata.id}`;
   }
 
   static buildCICDUrls(repository: Repository): {

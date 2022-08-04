@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {join} from 'path';
 
 import {
   DestinationModel,
@@ -14,6 +15,7 @@ export class Pipelines extends SemaphoreCIConverter {
     'cicd_Pipeline',
     'cicd_Build',
     'cicd_BuildCommitAssociation',
+    'cicd_BuildSteps',
   ];
 
   private readonly projectsStream = new StreamName(this.source, 'projects');
@@ -107,6 +109,32 @@ export class Pipelines extends SemaphoreCIConverter {
       },
     };
 
-    return [pipeline, build, buildCommitAssociation];
+    const buildSteps = [];
+    for (const job of pipelineRecord.jobs) {
+      buildSteps.push({
+        model: 'cicd_BuildStep',
+        record: {
+          uid: job.metadata.id,
+          name: job.metadata.name,
+          command: job.spec.commands
+            .join('\n')
+            .substring(0, SemaphoreCICommon.MAX_DESCRIPTION_LENGTH),
+          createdAt: SemaphoreCICommon.nullifyDate(job.metadata.create_time),
+          startedAt: SemaphoreCICommon.nullifyDate(job.metadata.start_time),
+          endedAt: SemaphoreCICommon.nullifyDate(job.metadata.finish_time),
+          status: SemaphoreCICommon.convertBuildState(
+            job.status.result.toLowerCase()
+          ),
+          url: SemaphoreCICommon.buildJobUrl(job, repository),
+          build: build.record,
+        },
+      });
+    }
+
+    /*
+     * BuildSteps
+     */
+
+    return [pipeline, build, buildCommitAssociation, ...buildSteps];
   }
 }

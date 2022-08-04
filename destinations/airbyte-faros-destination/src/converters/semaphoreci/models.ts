@@ -26,8 +26,8 @@ export interface Project {
 export interface JobMetadata {
   readonly name: string;
   readonly id: string;
-  readonly created_at: string;
-  readonly updated_at: string;
+  readonly create_time: string;
+  readonly update_time: string;
   readonly start_time: string;
   readonly finish_time: string;
 }
