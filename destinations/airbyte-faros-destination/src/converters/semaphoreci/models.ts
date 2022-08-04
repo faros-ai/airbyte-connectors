@@ -1,5 +1,8 @@
+export enum IntegrationType {
+  GITHUB = 'github_app',
+}
 export interface Repository {
-  readonly integration_type: string;
+  readonly integration_type: IntegrationType;
   readonly name: string;
   readonly owner: string;
   readonly url: string;
@@ -76,4 +79,8 @@ export enum BuildStateCategory {
   Queued = 'Queued',
   Custom = 'Custom',
   Unknown = 'unknown',
+}
+
+export enum RepoSource {
+  GITHUB = 'GitHub',
 }

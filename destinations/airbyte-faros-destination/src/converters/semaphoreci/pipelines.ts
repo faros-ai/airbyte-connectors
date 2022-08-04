@@ -60,7 +60,7 @@ export class Pipelines extends SemaphoreCIConverter {
     /*
      * Build
      */
-    const buildKey = {
+    const pipelineKey = {
       uid: pipeline.record.uid,
       organization: organizationKey,
     };
@@ -71,11 +71,11 @@ export class Pipelines extends SemaphoreCIConverter {
         uid: pipelineRecord.ppl_id,
         name: pipelineRecord.name,
         createdAt: pipelineRecord.created_at,
-        startedAt: pipelineRecord.running_at,
-        endedAt: pipelineRecord.done_at,
+        startedAt: SemaphoreCICommon.nullifyDate(pipelineRecord.running_at),
+        endedAt: SemaphoreCICommon.nullifyDate(pipelineRecord.done_at),
         url: SemaphoreCICommon.buildPipelineUrl(pipelineRecord, repository),
         status: SemaphoreCICommon.convertBuildState(pipelineRecord.result),
-        pipeline: buildKey,
+        pipeline: pipelineKey,
       },
     };
 
@@ -88,17 +88,16 @@ export class Pipelines extends SemaphoreCIConverter {
       fullName: `${repository.owner}/${repository.name}`,
       url: SemaphoreCICommon.buildVCSUrls(repository).repository,
       organization: {
-        ...organizationKey,
+        uid: repository.owner,
+        source: SemaphoreCICommon.getRepoSource(repository),
         url: SemaphoreCICommon.buildVCSUrls(repository).organization,
       },
     };
 
-    pipelineRecord.commit_sha;
-
     const buildCommitAssociation = {
       model: 'cicd_BuildCommitAssociation',
       record: {
-        build: buildKey,
+        build: build.record,
         commit: {
           sha: pipelineRecord.commit_sha,
           uid: pipelineRecord.commit_sha,

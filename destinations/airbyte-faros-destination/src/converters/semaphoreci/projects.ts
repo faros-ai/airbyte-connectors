@@ -39,7 +39,10 @@ export class Projects extends SemaphoreCIConverter {
         uid: project.spec.repository.name,
         name: project.spec.repository.name,
         description: project.metadata.description,
-        url: SemaphoreCICommon.buildVCSUrls(project.spec.repository).repository,
+        url: SemaphoreCICommon.buildArtifactRepoUrl(
+          project.spec.repository.owner,
+          project.metadata.id
+        ),
         organization: {
           uid: organization.record.uid,
           source,
