@@ -1,9 +1,11 @@
+import parseGitUrl from 'git-url-parse';
+
 import {Converter} from '../converter';
 import {
   BuildStateCategory,
-  IntegrationType,
   Pipeline,
   PipelineResult,
+  RepoGitSource,
   Repository,
   RepoSource,
 } from './models';
@@ -14,19 +16,21 @@ export abstract class SemaphoreCIConverter extends Converter {
 }
 
 export class SemaphoreCICommon {
-  static getRepoSource(repository: Repository): string {
-    let source = '';
-
-    switch (repository?.integration_type) {
-      case IntegrationType.GITHUB:
-        source = RepoSource.GITHUB;
-        break;
+  static getVCSSourceFromUrl(repoUrl: string): RepoSource | undefined {
+    switch (parseGitUrl(repoUrl).source) {
+      case RepoGitSource.GITHUB:
+        return RepoSource.GITHUB;
+      case RepoGitSource.BITBUCKET:
+        return RepoSource.BITBUCKET;
+      default:
+        'undefined';
     }
-
-    return source;
   }
 
-  static buildVCSUrls(repository: Repository): {
+  static buildVCSUrls(
+    repository: Repository,
+    source: RepoSource
+  ): {
     organization: string;
     repository: string;
   } {
@@ -35,33 +39,14 @@ export class SemaphoreCICommon {
       repository: '',
     };
 
-    switch (repository?.integration_type) {
-      case 'github_app':
+    switch (source) {
+      case RepoSource.GITHUB:
         urls.organization = `https://github.com/${repository.owner}`;
         urls.repository = `https://github.com/${repository.owner}/${repository.name}`;
         break;
     }
 
     return urls;
-  }
-
-  static buildVCSRepositoryKeys(repository: Repository): {
-    organization: string;
-    repository: string;
-  } {
-    const primaryKeys = {
-      organization: '',
-      repository: '',
-    };
-
-    switch (repository?.integration_type) {
-      case 'github_app':
-        primaryKeys.organization = `GitHub|${repository.owner}`;
-        primaryKeys.repository = `GitHub|${repository.owner}|${repository.name}`;
-        break;
-    }
-
-    return primaryKeys;
   }
 
   static buildOrganizationUrl(organizationName: string): string {

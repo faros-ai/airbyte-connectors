@@ -1,8 +1,9 @@
-export enum IntegrationType {
-  GITHUB = 'github_app',
+export enum RepoGitSource {
+  GITHUB = 'github.com',
+  BITBUCKET = 'bitbucket.com',
 }
 export interface Repository {
-  readonly integration_type: IntegrationType;
+  readonly integration_type: string;
   readonly name: string;
   readonly owner: string;
   readonly url: string;
@@ -83,4 +84,5 @@ export enum BuildStateCategory {
 
 export enum RepoSource {
   GITHUB = 'GitHub',
+  BITBUCKET = 'Bitbucket',
 }

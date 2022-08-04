@@ -38,6 +38,7 @@ export class Pipelines extends SemaphoreCIConverter {
       String(pipelineRecord.project_id)
     );
     const repository = project?.record?.data?.spec.repository as Repository;
+    const VCSSource = SemaphoreCICommon.getVCSSourceFromUrl(repository.url);
 
     /*
      * Pipeline
@@ -86,11 +87,11 @@ export class Pipelines extends SemaphoreCIConverter {
       uid: repository.name,
       name: repository.name,
       fullName: `${repository.owner}/${repository.name}`,
-      url: SemaphoreCICommon.buildVCSUrls(repository).repository,
+      url: SemaphoreCICommon.buildVCSUrls(repository, VCSSource).repository,
       organization: {
         uid: repository.owner,
-        source: SemaphoreCICommon.getRepoSource(repository),
-        url: SemaphoreCICommon.buildVCSUrls(repository).organization,
+        source: VCSSource,
+        url: SemaphoreCICommon.buildVCSUrls(repository, VCSSource).organization,
       },
     };
 
