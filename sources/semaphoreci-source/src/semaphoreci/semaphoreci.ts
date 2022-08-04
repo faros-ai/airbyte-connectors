@@ -156,14 +156,14 @@ export class SemaphoreCI {
     return projects;
   }
 
-  private parseDate(pipeline: Pipeline, field: string): string {
+  private parsePipelineDate(pipeline: Pipeline, field: string): string {
     const formattedDate =
       pipeline[field].seconds * 1000 + pipeline[field].nanos / 100000;
 
     return new Date(formattedDate).toISOString();
   }
 
-  private convertDates(pipeline: Pipeline): Pipeline {
+  private convertPipelineDates(pipeline: Pipeline): Pipeline {
     const dateFields = [
       'queuing_at',
       'running_at',
@@ -174,10 +174,27 @@ export class SemaphoreCI {
     ];
 
     dateFields.forEach((field: string) => {
-      pipeline[field] = this.parseDate(pipeline, field);
+      pipeline[field] = this.parsePipelineDate(pipeline, field);
     });
 
     return pipeline;
+  }
+
+  private convertJobDates(job: Job): Job {
+    const dateFields = [
+      'create_time',
+      'update_time',
+      'start_time',
+      'finish_time',
+    ];
+
+    dateFields.forEach((field: string) => {
+      const time = job.metadata[field];
+
+      job.metadata[field] = new Date(time * 1000).toISOString();
+    });
+
+    return job;
   }
 
   private async getPipelineJobsList(
@@ -199,9 +216,9 @@ export class SemaphoreCI {
     const jobs = [];
 
     for (const jobId of jobIds) {
-      const res = await this.restClient.get<Job[]>(`jobs/${jobId}`);
+      const res = await this.restClient.get<Job>(`jobs/${jobId}`);
 
-      jobs.push(res.data);
+      jobs.push(this.convertJobDates(res.data));
     }
 
     return jobs;
@@ -224,7 +241,7 @@ export class SemaphoreCI {
           }`
         ),
       this.delay,
-      (item: any) => this.convertDates(item),
+      (item: any) => this.convertPipelineDates(item),
       (pipeline: Pipeline) => startTimeMax > new Date(pipeline.created_at)
     );
 
