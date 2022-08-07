@@ -158,11 +158,18 @@ export class SemaphoreCI {
     return projects;
   }
 
+  private isValidDate(d: Date): boolean {
+    return d instanceof Date && !isNaN(d as unknown as number);
+  }
+
   private parsePipelineDate(pipeline: Pipeline, field: string): string {
     const formattedDate =
       pipeline[field].seconds * 1000 + pipeline[field].nanos / 100000;
 
-    return new Date(formattedDate).toISOString();
+    const date = new Date(formattedDate);
+    return this.isValidDate(date)
+      ? date.toISOString()
+      : new Date(0).toISOString();
   }
 
   private convertPipelineDates(pipeline: Pipeline): Pipeline {
@@ -193,7 +200,10 @@ export class SemaphoreCI {
     dateFields.forEach((field: string) => {
       const time = job.metadata[field];
 
-      job.metadata[field] = new Date(time * 1000).toISOString();
+      const date = new Date(time * 1000);
+      job.metadata[field] = this.isValidDate(date)
+        ? date.toISOString()
+        : new Date(0).toISOString();
     });
 
     return job;
@@ -221,7 +231,13 @@ export class SemaphoreCI {
       const res = await this.restClient.get<Job>(`jobs/${jobId}`);
 
       jobs.push(this.convertJobDates(res.data));
+
+      if (jobs.length % 5 === 0) {
+        this.logger.info(`Loaded ${jobs.indexOf(jobId) / jobs.length}`);
+      }
     }
+
+    this.logger.info('All jobs loaded');
 
     return jobs;
   }
@@ -251,7 +267,11 @@ export class SemaphoreCI {
       let pipelineJobs = [];
 
       if (this.includeJobs) {
+        this.logger.info(`Fetching jobs from pipeline ${pipeline.ppl_id}`);
+
         const pipelineJobsList = await this.getPipelineJobsList(pipeline);
+
+        this.logger.info(`Found ${pipelineJobsList.length} jobs`);
         pipelineJobs = await this.getJobsDetail(pipelineJobsList);
       }
 
