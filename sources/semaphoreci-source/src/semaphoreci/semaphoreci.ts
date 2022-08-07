@@ -6,7 +6,6 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import parse, {Links} from 'parse-link-header';
-import {join} from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -29,6 +28,7 @@ export interface SemaphoreCIConfig {
   readonly branches: string[];
   readonly timeout?: number;
   readonly delay?: number;
+  readonly includeJobs?: boolean;
 }
 
 export class SemaphoreCI {
@@ -40,6 +40,7 @@ export class SemaphoreCI {
     private readonly startDate: Date,
     public readonly branchNames: ReadonlyArray<string>,
     private readonly delay: number,
+    private readonly includeJobs: boolean,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -77,6 +78,7 @@ export class SemaphoreCI {
       startDate,
       config.branches,
       delay,
+      config.includeJobs,
       logger
     );
     logger.debug('Created SemaphoreCI instance');
@@ -246,8 +248,12 @@ export class SemaphoreCI {
     );
 
     for (const pipeline of pipelines) {
-      const pipelineJobsList = await this.getPipelineJobsList(pipeline);
-      const pipelineJobs = await this.getJobsDetail(pipelineJobsList);
+      let pipelineJobs = [];
+
+      if (this.includeJobs) {
+        const pipelineJobsList = await this.getPipelineJobsList(pipeline);
+        pipelineJobs = await this.getJobsDetail(pipelineJobsList);
+      }
 
       pipeline.jobs = pipelineJobs;
 

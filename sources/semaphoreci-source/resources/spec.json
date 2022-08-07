@@ -65,6 +65,13 @@
         "title": "Delay to be added in between API requests",
         "description": "Delay (in ms) to force the source to sleep in between api calls. This can be used to control the rate of api requests - (0 means there's no delay)",
         "default": 0
+      },
+      "includeJobs": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Include Pipeline Jobs",
+        "description": "Determine whether or not the source will fetch the jobs from the pipelines. Given SemaphoreCI's available public api, this is an expensive operation and when coupled with the api's unreliable performance can take a few iterations.",
+        "default": false
       }
     }
   }

@@ -57,7 +57,8 @@ describe('index', () => {
     projectIds = [],
     startDate = new Date('2022-01-01T00:00:00Z'),
     branchNames = [],
-    delay = 0
+    delay = 0,
+    includeJobs = true
   ): SemaphoreCI =>
     new SemaphoreCI(
       httpClient as unknown as AxiosInstance,
@@ -65,6 +66,7 @@ describe('index', () => {
       startDate,
       branchNames,
       delay,
+      includeJobs,
       logger
     );
 
