@@ -276,7 +276,7 @@ export class SemaphoreCI {
       let pipelineJobs = [];
 
       if (this.includeJobs) {
-        this.logger.info(`Fetching jobs for pipeline ${pipeline.ppl_id}`);
+        this.logger.debug(`Fetching jobs for pipeline ${pipeline.ppl_id}`);
 
         const pipelineJobsList = await this.getPipelineJobsList(pipeline);
         pipelineJobs = await this.getJobsDetail(pipelineJobsList);
