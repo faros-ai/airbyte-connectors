@@ -10,7 +10,7 @@ on:
 jobs:
   reformat:
     name: Reformat package-lock.json
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 15
     env:
       FORCE_COLOR: true
@@ -42,6 +42,9 @@ jobs:
 
       - name: Reformat package-lock.json
         run: npm ci
+
+      - name: Print package-lock.json
+        run: head package-lock.json
 
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4
