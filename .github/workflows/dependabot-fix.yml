@@ -14,9 +14,6 @@ jobs:
     timeout-minutes: 15
     env:
       FORCE_COLOR: true
-      HUSKY_SKIP_INSTALL: 1
-      HUSKY_SKIP_HOOKS: 1
-      HUSKY: 0
 
     steps:
       - name: Check out
@@ -39,6 +36,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - name: Check npm version
+        run: npm --version
 
       - name: Reformat package-lock.json
         run: npm ci
