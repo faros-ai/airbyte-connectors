@@ -4,6 +4,7 @@ import axios, {
   AxiosResponse,
   AxiosResponseHeaders,
 } from 'axios';
+import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import parse, {Links} from 'parse-link-header';
 import {Memoize} from 'typescript-memoize';
@@ -66,11 +67,25 @@ export class SemaphoreCI {
 
     const auth = `Token ${config.token}`;
 
+    const retryConfig: IAxiosRetryConfig = {
+      retryDelay: axiosRetry.exponentialDelay,
+      shouldResetTimeout: true,
+      retries: 5,
+      onRetry(retryCount, error, requestConfig) {
+        logger.info(
+          `Retrying request ${requestConfig.url} due to ${error.message}`
+        );
+        logger.info(`${retryCount} attempt`);
+      },
+    };
+
     const httpClient = axios.create({
       baseURL: `https://${config.organization}.semaphoreci.com/api/${REST_API_VERSION}`,
       timeout: config.timeout * 1000 || HTTP_CLIENT_DEFAULT_TIMEOUT,
       headers: {authorization: auth},
     });
+
+    axiosRetry(httpClient, retryConfig);
 
     SemaphoreCI.semaphoreci = new SemaphoreCI(
       httpClient,
@@ -231,13 +246,7 @@ export class SemaphoreCI {
       const res = await this.restClient.get<Job>(`jobs/${jobId}`);
 
       jobs.push(this.convertJobDates(res.data));
-
-      if (jobs.length % 5 === 0) {
-        this.logger.info(`Loaded ${jobs.indexOf(jobId) / jobs.length}`);
-      }
     }
-
-    this.logger.info('All jobs loaded');
 
     return jobs;
   }
@@ -267,11 +276,9 @@ export class SemaphoreCI {
       let pipelineJobs = [];
 
       if (this.includeJobs) {
-        this.logger.info(`Fetching jobs from pipeline ${pipeline.ppl_id}`);
+        this.logger.info(`Fetching jobs for pipeline ${pipeline.ppl_id}`);
 
         const pipelineJobsList = await this.getPipelineJobsList(pipeline);
-
-        this.logger.info(`Found ${pipelineJobsList.length} jobs`);
         pipelineJobs = await this.getJobsDetail(pipelineJobsList);
       }
 
