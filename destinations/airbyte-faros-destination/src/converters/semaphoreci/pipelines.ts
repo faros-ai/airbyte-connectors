@@ -122,9 +122,7 @@ export class Pipelines extends SemaphoreCIConverter {
           createdAt: SemaphoreCICommon.nullifyDate(job.metadata.create_time),
           startedAt: SemaphoreCICommon.nullifyDate(job.metadata.start_time),
           endedAt: SemaphoreCICommon.nullifyDate(job.metadata.finish_time),
-          status: SemaphoreCICommon.convertBuildState(
-            job.status.result.toLowerCase()
-          ),
+          status: SemaphoreCICommon.convertBuildState(job.status.result),
           url: SemaphoreCICommon.buildJobUrl(job, repository),
           build: build.record,
         },
