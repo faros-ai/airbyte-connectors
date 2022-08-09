@@ -228,7 +228,6 @@ export class HasuraClient {
           affected_rows: true,
         },
       };
-      this.logger.info('mutation = '+ JSON.stringify(mutation));
       await this.postQuery(
         {mutation},
         `Failed to reset ${model} data for origin ${origin}`
