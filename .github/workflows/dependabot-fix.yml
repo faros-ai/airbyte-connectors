@@ -10,10 +10,13 @@ on:
 jobs:
   reformat:
     name: Reformat package-lock.json
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       FORCE_COLOR: true
+      HUSKY_SKIP_INSTALL: 1
+      HUSKY_SKIP_HOOKS: 1
+      HUSKY: 0
 
     steps:
       - name: Check out
