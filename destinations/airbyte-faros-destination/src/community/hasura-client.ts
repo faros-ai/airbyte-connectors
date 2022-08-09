@@ -192,7 +192,7 @@ export class HasuraClient {
   }
 
   private backReferenceOriginCheck(br: Reference, origin: string): any {
-    const base = {origin: {_neq: origin}};
+    const base = {origin: {_eq: origin}};
     const backReferencesByModel = this.backReferences[br.model] ?? [];
     const nestedChecks = backReferencesByModel
       .filter((nbr) => nbr.field != br.field)
@@ -228,6 +228,7 @@ export class HasuraClient {
           affected_rows: true,
         },
       };
+      this.logger.info('mutation = '+ JSON.stringify(mutation));
       await this.postQuery(
         {mutation},
         `Failed to reset ${model} data for origin ${origin}`
