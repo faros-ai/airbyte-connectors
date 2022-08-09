@@ -1,11 +1,6 @@
 name: Dependabot
 on:
-  push:
-    branches:
-      - dependabot/npm_and_yarn/**
-  pull_request:
-    branches:
-      - dependabot/npm_and_yarn/**
+  workflow_dispatch:
 
 jobs:
   reformat:
