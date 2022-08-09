@@ -17,7 +17,7 @@
     "@types/jenkins": "^0.23.2",
     "@types/jest": "^27.5.0",
     "@types/lodash": "^4.14.173",
-    "@types/luxon": "^2.3.2",
+    "@types/luxon": "^3.0.0",
     "@types/node": "^16.11.41",
     "@types/parse-link-header": "2.0.0",
     "@types/pino": "^7.0.5",
