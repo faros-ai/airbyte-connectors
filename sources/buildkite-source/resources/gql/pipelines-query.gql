@@ -4,8 +4,7 @@ query pipelinesQuery($slug: ID!, $pageSize: Int!, $after: String) {
         edges{
           node {
             id
-            organization()
-            {
+            organization {
               slug
             }
             uuid
