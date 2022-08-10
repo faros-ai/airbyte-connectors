@@ -191,19 +191,6 @@ export class HasuraClient {
       });
   }
 
-  private backReferenceOriginCheck(br: Reference, origin: string): any {
-    const base = {origin: {_neq: origin}};
-    const backReferencesByModel = this.backReferences[br.model] ?? [];
-    const nestedChecks = backReferencesByModel
-      .filter((nbr) => nbr.field != br.field)
-      .map((nbr) => this.backReferenceOriginCheck(nbr, origin));
-    return {
-      [br.field]: {
-        _or: [base].concat(nestedChecks),
-      },
-    };
-  }
-
   async resetData(
     origin: string,
     models: ReadonlyArray<string>
@@ -213,9 +200,11 @@ export class HasuraClient {
       const deleteConditions = {
         origin: {_eq: origin},
         _not: {
-          _or: this.backReferences[model].map((br) =>
-            this.backReferenceOriginCheck(br, origin)
-          ),
+          _or: this.backReferences[model].map((br) => {
+            return {
+              [br.field]: {},
+            };
+          }),
         },
       };
       const mutation = {
