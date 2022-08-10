@@ -32,6 +32,7 @@ export class Commits extends PhabricatorConverter {
     const fullMessage = commit.fields?.message;
     const commitMessage = PhabricatorCommon.parseCommitMessage(fullMessage);
     const epoch = author?.epoch ?? commit.fields?.committer?.epoch;
+    const createdAt = epoch ? Utils.toDate(epoch * 1000) : null;
 
     res.push({
       model: 'vcs_Commit',
@@ -41,7 +42,7 @@ export class Commits extends PhabricatorConverter {
         message: fullMessage,
         author: author?.userPHID ? {uid: author.userPHID, source} : null,
         htmlUrl: null,
-        createdAt: epoch ? Utils.toDate(epoch * 1000) : null,
+        createdAt,
         repository,
         source,
       },
@@ -70,9 +71,10 @@ export class Commits extends PhabricatorConverter {
             uid: commitMessage?.revisionId.toString(),
             repository,
           },
-          mask: ['mergeCommit'],
+          mask: ['mergeCommit', 'mergedAt'],
           patch: {
             mergeCommit: {repository, sha, uid: sha},
+            mergedAt: createdAt,
           },
         },
       });

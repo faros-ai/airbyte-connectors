@@ -8,6 +8,7 @@ import {
   RetSearchConstants,
 } from 'condoit/dist/interfaces/iGlobal';
 import iProject from 'condoit/dist/interfaces/iProject';
+import iTransactions from 'condoit/dist/interfaces/iTransactions';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {chunk, floor, pick, trim, uniq} from 'lodash';
@@ -34,6 +35,7 @@ export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: Repository;
 }
 export type User = iUser.retUsersSearchData;
+export type Transaction = iTransactions.retTransactionsSearchData;
 export type Project = iProject.retProjectSearchData;
 export interface Revision extends RetSearchConstants {
   // Added full repository information as well
@@ -104,7 +106,7 @@ interface PagedResult<T> extends ErrorCodes {
       limit: number;
       after: string;
       before: any;
-      order: any;
+      order?: any;
     };
   };
 }
@@ -504,6 +506,30 @@ export class Phabricator {
           (project) => project.fields.dateModified > modified
         );
         return newProjects;
+      }
+    );
+  }
+
+  async *getTransactions(
+    filter: {objectIdentifier: string} | {objectType: string},
+    modifiedAt?: number
+  ): AsyncGenerator<Transaction> {
+    const modified = modifiedAt ?? 0;
+    this.logger.debug(`Fetching transactions modified since ${modified}`);
+
+    yield* this.paginate(
+      (after) => {
+        return this.client.transaction.search({
+          ...filter,
+          limit: this.limit,
+          after,
+        } as any);
+      },
+      async (transactions) => {
+        const newTransactions = transactions.filter(
+          (transaction) => transaction.dateModified > modified
+        );
+        return newTransactions;
       }
     );
   }

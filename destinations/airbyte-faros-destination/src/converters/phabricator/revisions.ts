@@ -32,10 +32,6 @@ export class Revisions extends PhabricatorConverter {
     const updatedAt = revision.fields?.dateModified
       ? Utils.toDate(revision.fields?.dateModified * 1000)
       : null;
-
-    // TODO: figure out how to get the actual mergedAt timestamp for each revision
-    const mergedAt = state.category === 'Merged' ? updatedAt : null;
-
     const author = revision.fields?.authorPHID
       ? {uid: revision.fields?.authorPHID, source}
       : null;
@@ -50,37 +46,12 @@ export class Revisions extends PhabricatorConverter {
         htmlUrl: revision.fields?.uri,
         createdAt,
         updatedAt,
-        mergedAt,
         author,
         repository,
-        mergeCommit: null, // merge commit is set from commits stream
+        mergedAt: null, // set from commits stream
+        mergeCommit: null, // set from commits stream
       },
     });
-
-    const reviewers = Array.isArray(revision.attachments?.reviewers?.reviewers)
-      ? revision.attachments?.reviewers?.reviewers
-      : [];
-    const pullRequest = {
-      repository,
-      number: revision.id,
-      uid: revision.id.toString(),
-    };
-    let reviewId = 0;
-    for (const reviewer of reviewers) {
-      res.push({
-        model: 'vcs_PullRequestReview',
-        record: {
-          number: reviewId,
-          uid: reviewId.toString(),
-          pullRequest,
-          reviewer: {uid: reviewer.reviewerPHID, source},
-          state: PhabricatorCommon.vcs_PullRequestReviewState(reviewer?.status),
-          // TODO: figure out how to get the actual submittedAt timestamp for each revision
-          submittedAt: updatedAt,
-        },
-      });
-      reviewId++;
-    }
 
     return res;
   }
