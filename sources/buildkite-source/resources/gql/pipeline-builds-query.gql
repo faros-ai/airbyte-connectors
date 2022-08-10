@@ -5,17 +5,15 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime,
           node {
              id
             uuid
-            pipeline()
-            {
+            pipeline {
               slug
               repository {
                 url
                 provider {
                   name
-                } 
+                }
               }
-              organization()
-              {
+              organization {
                 slug
               }
             }
