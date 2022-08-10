@@ -56,6 +56,7 @@ export class Transactions extends PhabricatorConverter {
       uid: revision.id.toString(),
     };
 
+    // For now we only care about revision transactions
     if (!this.revisionReviewTypes.includes(transaction.type)) return res;
 
     const submittedAt = transaction.dateCreated
