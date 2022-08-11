@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
-import {uniq} from 'lodash';
+import {union, uniq} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
@@ -100,32 +100,29 @@ export class Transactions extends PhabricatorConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
 
-    for (const v of this.commitsCountByPR.values()) {
+    const allKeys = union(
+      Array.from(this.commitsCountByPR.keys()),
+      Array.from(this.commentsCountByPR.keys())
+    );
+
+    for (const id of allKeys) {
+      const commits = this.commitsCountByPR.get(id);
+      const comments = this.commentsCountByPR.get(id);
+
       res.push({
         model: 'vcs_PullRequest__Update',
         record: {
           at: Date.now(),
-          where: v.pullRequest,
-          mask: ['commitCount'],
+          where: commits?.pullRequest ?? comments?.pullRequest,
+          mask: ['commitCount', 'commentCount'],
           patch: {
-            commitCount: v.ids.length,
+            commentCount: comments?.count ?? null,
+            commitCount: commits?.ids?.length ?? null,
           },
         },
       });
     }
-    for (const v of this.commentsCountByPR.values()) {
-      res.push({
-        model: 'vcs_PullRequest__Update',
-        record: {
-          at: Date.now(),
-          where: v.pullRequest,
-          mask: ['commentCount'],
-          patch: {
-            commentCount: v.count,
-          },
-        },
-      });
-    }
+
     return res;
   }
 }
