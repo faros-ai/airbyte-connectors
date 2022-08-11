@@ -116,8 +116,8 @@ export class Transactions extends PhabricatorConverter {
           where: commits?.pullRequest ?? comments?.pullRequest,
           mask: ['commitCount', 'commentCount'],
           patch: {
-            commentCount: comments?.count ?? null,
             commitCount: commits?.ids?.length ?? null,
+            commentCount: comments?.count ?? null,
           },
         },
       });
