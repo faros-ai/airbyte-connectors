@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk/lib';
-import {union, uniq} from 'lodash';
+import {isEmpty, union, uniq} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {StatuspageIncidentImpact} from '../statuspage/common';
 import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
 
 type CountForPR = {
@@ -56,11 +57,11 @@ export class Transactions extends PhabricatorConverter {
       transaction.type
     );
 
-    if (state.category !== 'Custom') {
-      const submittedAt = transaction.dateCreated
-        ? Utils.toDate(transaction.dateCreated * 1000)
-        : null;
+    const dateCreated = transaction.dateCreated
+      ? Utils.toDate(transaction.dateCreated * 1000)
+      : null;
 
+    if (state.category !== 'Custom') {
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
@@ -69,7 +70,22 @@ export class Transactions extends PhabricatorConverter {
           pullRequest,
           reviewer: {uid: transaction.authorPHID, source},
           state,
-          submittedAt,
+          submittedAt: dateCreated,
+        },
+      });
+    }
+
+    if (
+      (state.detail === 'close' || state.detail === 'closed') &&
+      !isEmpty(transaction?.fields?.commitPHIDs)
+    ) {
+      res.push({
+        model: 'vcs_PullRequest__Update',
+        record: {
+          at: Date.now(),
+          where: pullRequest,
+          mask: ['mergedAt'],
+          patch: {mergedAt: dateCreated},
         },
       });
     }
