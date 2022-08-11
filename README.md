@@ -50,7 +50,7 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 ## Other Useful Commands
 
 1. Audit fix `npm audit fix`
-2. Clean your project `lerna run clean` (sometimes you also wanna `rm -rf ./node_modules`)
+2. Clean your project `npm run clean`
 
 Read more about `lerna` [here](https://github.com/lerna/lerna).
 

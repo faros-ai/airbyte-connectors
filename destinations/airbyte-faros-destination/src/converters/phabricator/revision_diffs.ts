@@ -1,10 +1,9 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
 import {uniq} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
+import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 interface FileDiff {
   deletions: number;

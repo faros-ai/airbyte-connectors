@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import Axios, {AxiosInstance} from 'axios';
 import {Condoit} from 'condoit';
 import {DiffDiffSearch} from 'condoit/dist/interfaces/iDifferential';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
@@ -8,6 +8,7 @@ import {
   RetSearchConstants,
 } from 'condoit/dist/interfaces/iGlobal';
 import iProject from 'condoit/dist/interfaces/iProject';
+import iTransactions from 'condoit/dist/interfaces/iTransactions';
 import iUser from 'condoit/dist/interfaces/iUser';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {chunk, floor, pick, trim, uniq} from 'lodash';
@@ -29,15 +30,16 @@ export interface PhabricatorConfig {
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
+export type RepositoryShort = RetSearchConstants & {
+  fields: {shortName: string};
+};
 export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
-  // Added full repository information as well
-  repository?: Repository;
+  repository?: RepositoryShort;
 }
 export type User = iUser.retUsersSearchData;
 export type Project = iProject.retProjectSearchData;
 export interface Revision extends RetSearchConstants {
-  // Added full repository information as well
-  repository?: Repository;
+  repository?: RepositoryShort;
   fields: {
     title: string;
     uri: string;
@@ -75,6 +77,16 @@ export interface Revision extends RetSearchConstants {
     };
   };
 }
+
+export type Transaction = iTransactions.retTransactionsSearchData & {
+  revision: {
+    id: number;
+    phid: string;
+    dateModified: number;
+  };
+  repository?: RepositoryShort;
+};
+
 export interface Reviewer {
   reviewerPHID: string;
   status: string;
@@ -90,7 +102,7 @@ export interface RevisionDiff {
     phid: string;
     dateModified: number;
   };
-  repository?: Repository;
+  repository?: RepositoryShort;
   files: Pick<
     parseDiff.File,
     'deletions' | 'additions' | 'from' | 'to' | 'deleted' | 'new'
@@ -104,7 +116,7 @@ interface PagedResult<T> extends ErrorCodes {
       limit: number;
       after: string;
       before: any;
-      order: any;
+      order?: any;
     };
   };
 }
@@ -115,6 +127,8 @@ export class Phabricator {
   private static repoCacheByName: Dictionary<Repository, string> = {};
 
   constructor(
+    readonly config: PhabricatorConfig,
+    readonly axios: AxiosInstance,
     readonly client: Condoit,
     readonly startDate: DateTime,
     readonly repositories: string[],
@@ -161,6 +175,8 @@ export class Phabricator {
     );
     const startDate = DateTime.now().minus({days: config.cutoff_days});
     Phabricator.phabricator = new Phabricator(
+      config,
+      axios,
       client,
       startDate,
       repositories,
@@ -320,7 +336,7 @@ export class Phabricator {
           .map((commit) => commit as Commit)
           .filter((commit) => commit.fields.committer.epoch > committed);
 
-        // Extend commits with full repository information if present
+        // Extend commits with repository information if present
         const repoIds = uniq(newCommits.map((c) => c.fields.repositoryPHID));
         const reposById: Dictionary<Repository> = {};
         const repos = this.getRepositories({repoIds});
@@ -328,7 +344,15 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newCommits.map((commit) => {
-          commit.repository = reposById[commit.fields.repositoryPHID];
+          const repository = reposById[commit.fields.repositoryPHID];
+          commit.repository = {
+            id: repository.id,
+            phid: repository.phid,
+            type: repository.type,
+            fields: {
+              shortName: repository?.fields?.shortName,
+            },
+          };
           return commit;
         });
       }
@@ -377,7 +401,7 @@ export class Phabricator {
           .map((revision) => revision as any as Revision)
           .filter((revision) => revision.fields.dateModified > modified);
 
-        // Extend revisions with full repository information if present
+        // Extend revisions with repository information if present
         const repoIds = uniq(newRevisions.map((c) => c.fields.repositoryPHID));
         const reposById: Dictionary<Repository> = {};
         const repos = this.getRepositories({repoIds});
@@ -385,7 +409,15 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newRevisions.map((revision) => {
-          revision.repository = reposById[revision.fields.repositoryPHID];
+          const repository = reposById[revision.fields.repositoryPHID];
+          revision.repository = {
+            id: repository.id,
+            phid: repository.phid,
+            type: repository.type,
+            fields: {
+              shortName: repository.fields?.shortName,
+            },
+          };
           return revision;
         });
       }
@@ -442,7 +474,14 @@ export class Phabricator {
               phid: revision.phid,
               dateModified: revision.fields?.dateModified,
             },
-            repository: revision.repository,
+            repository: {
+              id: revision.repository.id,
+              phid: revision.repository.phid,
+              type: revision.repository.type,
+              fields: {
+                shortName: revision.repository?.fields?.shortName,
+              },
+            },
             files: files.map((f) =>
               pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
             ),
@@ -514,5 +553,47 @@ export class Phabricator {
         return newProjects;
       }
     );
+  }
+
+  async *getRevisionsTransactions(
+    repoNames: string[],
+    modifiedAt?: number
+  ): AsyncGenerator<Transaction> {
+    const revisions = await this.getRevisions(repoNames, modifiedAt);
+
+    for (const revision of revisions) {
+      yield* this.paginate(
+        (after) => {
+          const params = {
+            objectIdentifier: revision.phid,
+            limit: this.limit,
+            after,
+            constraints: undefined,
+          };
+          return this.client.transaction.search(params);
+        },
+        async (transactions) => {
+          const newTransactions = transactions.map((transaction) => {
+            return {
+              ...transaction,
+              revision: {
+                id: revision.id,
+                phid: revision.phid,
+                dateModified: revision.fields?.dateModified,
+              },
+              repository: {
+                id: revision.repository.id,
+                phid: revision.repository.phid,
+                type: revision.repository.type,
+                fields: {
+                  shortName: revision.repository?.fields?.shortName,
+                },
+              },
+            };
+          });
+          return newTransactions;
+        }
+      );
+    }
   }
 }

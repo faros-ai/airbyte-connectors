@@ -65,8 +65,15 @@ export class PhabricatorCommon {
     if (!detail) return {category: 'Custom', detail: 'unknown'};
 
     switch (detail) {
+      case 'inline':
+      case 'comment':
+      case 'commented':
+        return {category: 'Commented', detail};
+      case 'reject':
       case 'rejected':
+      case 'request-changes':
         return {category: 'ChangesRequested', detail};
+      case 'accept':
       case 'accepted':
         return {category: 'Approved', detail};
       default:

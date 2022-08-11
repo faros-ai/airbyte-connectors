@@ -71,9 +71,7 @@ export class Commits extends PhabricatorConverter {
             repository,
           },
           mask: ['mergeCommit'],
-          patch: {
-            mergeCommit: {repository, sha, uid: sha},
-          },
+          patch: {mergeCommit: {repository, sha, uid: sha}},
         },
       });
     }

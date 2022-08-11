@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "phid": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "authorPHID": {
+      "type": "string"
+    },
+    "objectPHID": {
+      "type": "string"
+    },
+    "dateCreated": {
+      "type": "integer"
+    },
+    "dateModified": {
+      "type": "integer"
+    },
+    "groupID": {
+      "type": "string"
+    },
+    "comments": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "phid": {
+              "type": "string"
+            },
+            "version": {
+              "type": "integer"
+            },
+            "authorPHID": {
+              "type": "string"
+            },
+            "dateCreated": {
+              "type": "integer"
+            },
+            "dateModified": {
+              "type": "integer"
+            },
+            "removed": {
+              "type": "boolean"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "raw": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "raw"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "phid",
+            "version",
+            "authorPHID",
+            "dateCreated",
+            "dateModified",
+            "removed",
+            "content"
+          ]
+        }
+      ]
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "diff": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "phid": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "phid"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "replyToCommentPHID": {
+          "type": "string"
+        },
+        "isDone": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "diff",
+        "path",
+        "line",
+        "length",
+        "replyToCommentPHID",
+        "isDone"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "phid",
+    "type",
+    "authorPHID",
+    "objectPHID",
+    "dateCreated",
+    "dateModified",
+    "groupID",
+    "comments",
+    "fields"
+  ]
+}
+

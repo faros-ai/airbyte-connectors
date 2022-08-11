@@ -37,6 +37,8 @@ describe('index', () => {
   test('check connection', async () => {
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
+        undefined,
+        undefined,
         {user: {whoami: jest.fn().mockResolvedValue({})}} as any,
         DateTime.now(),
         [],
@@ -58,6 +60,8 @@ describe('index', () => {
     const expectedError = new VError('Bad Connection');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
+        undefined,
+        undefined,
         {user: {whoami: jest.fn().mockRejectedValue(expectedError)}} as any,
         DateTime.now(),
         [],
@@ -76,6 +80,8 @@ describe('index', () => {
     const repos = readTestResourceFile('repositories.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
+        undefined,
+        undefined,
         {
           diffusion: {repositorySearch: jest.fn().mockResolvedValue(repos)},
         } as any,
@@ -112,6 +118,8 @@ describe('index', () => {
     const revisions = readTestResourceFile('revisions.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
+        undefined,
+        undefined,
         {
           differential: {
             revisionSearch: jest.fn().mockResolvedValue(revisions),
@@ -156,6 +164,8 @@ describe('index', () => {
     const rawDiff = readTestResourceFile('raw_diff.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
+        undefined,
+        undefined,
         {
           differential: {
             diffSearch: jest.fn().mockResolvedValue(revisionDiffs),

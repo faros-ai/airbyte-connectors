@@ -16,6 +16,7 @@ import {
   Repositories,
   RevisionDiffs,
   Revisions,
+  Transactions,
   Users,
 } from './streams';
 
@@ -51,6 +52,7 @@ export class PhabricatorSource extends AirbyteSourceBase {
       new RevisionDiffs(config as PhabricatorConfig, this.logger),
       new Users(config as PhabricatorConfig, this.logger),
       new Projects(config as PhabricatorConfig, this.logger),
+      new Transactions(config as PhabricatorConfig, this.logger),
     ];
   }
 }
