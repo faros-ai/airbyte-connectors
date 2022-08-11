@@ -1,4 +1,4 @@
-import Axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import Axios, {AxiosInstance} from 'axios';
 import {Condoit} from 'condoit';
 import {DiffDiffSearch} from 'condoit/dist/interfaces/iDifferential';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
@@ -14,7 +14,6 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {chunk, floor, pick, trim, uniq} from 'lodash';
 import {DateTime} from 'luxon';
 import parseDiff from 'parse-diff';
-import qs from 'qs';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -36,7 +35,6 @@ export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: Repository;
 }
 export type User = iUser.retUsersSearchData;
-export type Transaction = iTransactions.retTransactionsSearchData;
 export type Project = iProject.retProjectSearchData;
 export interface Revision extends RetSearchConstants {
   // Added full repository information as well
@@ -78,6 +76,18 @@ export interface Revision extends RetSearchConstants {
     };
   };
 }
+
+export type Transaction = iTransactions.retTransactionsSearchData & {
+  // Added some revision information as well
+  revision: {
+    id: number;
+    phid: string;
+    dateModified: number;
+  };
+  // Added full repository information as well
+  repository?: Repository;
+};
+
 export interface Reviewer {
   reviewerPHID: string;
   status: string;
@@ -88,11 +98,13 @@ export interface Reviewer {
 export interface RevisionDiff {
   id: number;
   phid: string;
+  // Added some revision information as well
   revision: {
     id: number;
     phid: string;
     dateModified: number;
   };
+  // Added full repository information as well
   repository?: Repository;
   files: Pick<
     parseDiff.File,
@@ -523,59 +535,38 @@ export class Phabricator {
     );
   }
 
-  async *getTransactions(
-    filter: {objectIdentifier: string} | {objectType: string},
+  async *getRevisionsTransactions(
+    repoNames: string[],
     modifiedAt?: number
   ): AsyncGenerator<Transaction> {
-    const modified = Math.max(
-      modifiedAt ?? 0,
-      floor(this.startDate.toSeconds())
-    );
-    this.logger.debug(`Fetching transactions modified since ${modified}`);
+    const revisions = await this.getRevisions(repoNames, modifiedAt);
 
-    yield* this.paginate(
-      (after) => {
-        const params = {...filter, limit: this.limit, after};
-
-        // Unfortunately we cannot use 'Condoit.transaction.search'
-        // because 'objectType' is not supported the Condoit library.
-        // Therefore we make the call using Axios client directly
-        return this.makeRequest<iTransactions.RetTransactionsSearch>(
-          'transaction.search',
-          params
-        );
-      },
-      async (transactions) => {
-        const newTransactions = transactions.filter(
-          (transaction) => transaction.dateModified > modified
-        );
-        return newTransactions;
-      }
-    );
-  }
-
-  /**
-   * This method was copied from 'Condoit.makeRequest'
-   * It allows making some API calls bypassing Condoit type limitations
-   *
-   * @param endpoint endpoint to call, e.g 'transaction.search'
-   * @param params params to pass
-   */
-  private makeRequest<T>(endpoint: string, params: object): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.axios({
-        method: 'POST',
-        url: endpoint,
-        data: qs.stringify({...params, 'api.token': this.config.token}),
-      })
-        .then((res: AxiosResponse) => {
-          if (res.data.error_info !== null) {
-            reject(res.data);
-          } else {
-            resolve(res.data);
-          }
-        })
-        .catch((error: AxiosError) => reject(error));
-    });
+    for (const revision of revisions) {
+      yield* this.paginate(
+        (after) => {
+          const params = {
+            objectIdentifier: revision.phid,
+            limit: this.limit,
+            after,
+            constraints: undefined,
+          };
+          return this.client.transaction.search(params);
+        },
+        async (transactions) => {
+          const newTransactions = transactions.map((transaction) => {
+            return {
+              ...transaction,
+              revision: {
+                id: revision.id,
+                phid: revision.phid,
+                dateModified: revision.fields?.dateModified,
+              },
+              repository: revision.repository,
+            };
+          });
+          return newTransactions;
+        }
+      );
+    }
   }
 }

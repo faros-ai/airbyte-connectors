@@ -36,7 +36,6 @@
     "faros-airbyte-cdk": "0.0.1",
     "luxon": "^3.0.1",
     "parse-diff": "^0.9.0",
-    "qs": "^6.10.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },

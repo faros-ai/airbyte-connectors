@@ -21,7 +21,6 @@
     "@types/node": "^16.11.41",
     "@types/parse-link-header": "2.0.0",
     "@types/pino": "^7.0.5",
-    "@types/qs": "^6.9.7",
     "@types/toposort": "^2.0.3",
     "@types/traverse": "^0.6.32",
     "@types/turndown": "^5.0.1",

@@ -70,7 +70,7 @@ describe('phabricator', () => {
       vcs_PullRequest: 3,
       vcs_PullRequestFile: 5,
       vcs_PullRequestReview: 2,
-      vcs_PullRequest__Update: 4,
+      vcs_PullRequest__Update: 5,
       vcs_Repository: 2,
       vcs_User: 4,
     };

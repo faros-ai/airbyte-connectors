@@ -49,9 +49,11 @@ export class Transactions extends AirbyteStreamBase {
     const phabricator = Phabricator.instance(this.config, this.logger);
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     const modifiedAt = state?.latestModifiedAt ?? 0;
-    const filter = {objectType: 'DREV'}; // For now we only care about revision transactions
 
-    // TODO: filter transactions by 'phabricator.repositories' somehow
-    yield* phabricator.getTransactions(filter, modifiedAt);
+    // For now we are only interested in revision transactions
+    yield* phabricator.getRevisionsTransactions(
+      phabricator.repositories,
+      modifiedAt
+    );
   }
 }
