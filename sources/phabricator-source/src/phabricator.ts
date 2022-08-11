@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import Axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
 import {Condoit} from 'condoit';
 import {DiffDiffSearch} from 'condoit/dist/interfaces/iDifferential';
 import iDiffusion from 'condoit/dist/interfaces/iDiffusion';
@@ -14,6 +14,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {chunk, floor, pick, trim, uniq} from 'lodash';
 import {DateTime} from 'luxon';
 import parseDiff from 'parse-diff';
+import qs from 'qs';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -117,6 +118,8 @@ export class Phabricator {
   private static repoCacheByName: Dictionary<Repository, string> = {};
 
   constructor(
+    readonly config: PhabricatorConfig,
+    readonly axios: AxiosInstance,
     readonly client: Condoit,
     readonly startDate: DateTime,
     readonly repositories: string[],
@@ -163,6 +166,8 @@ export class Phabricator {
     );
     const startDate = DateTime.now().minus({days: config.cutoff_days});
     Phabricator.phabricator = new Phabricator(
+      config,
+      axios,
       client,
       startDate,
       repositories,
@@ -519,11 +524,15 @@ export class Phabricator {
 
     yield* this.paginate(
       (after) => {
-        return this.client.transaction.search({
-          ...filter,
-          limit: this.limit,
-          after,
-        } as any);
+        const params = {...filter, limit: this.limit, after};
+
+        // Unfortunately we cannot use 'Condoit.transaction.search'
+        // because 'objectType' is not supported the Condoit library.
+        // Therefore we make the call using Axios client directly
+        return this.makeRequest<iTransactions.RetTransactionsSearch>(
+          'transaction.search',
+          params
+        );
       },
       async (transactions) => {
         const newTransactions = transactions.filter(
@@ -532,5 +541,30 @@ export class Phabricator {
         return newTransactions;
       }
     );
+  }
+
+  /**
+   * This method was copied from 'Condoit.makeRequest'
+   * It allows making some API calls bypassing Condoit type limitations
+   *
+   * @param endpoint endpoint to call, e.g 'transaction.search'
+   * @param params params to pass
+   */
+  private makeRequest<T>(endpoint: string, params: object): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.axios({
+        method: 'POST',
+        url: endpoint,
+        data: qs.stringify({...params, 'api.token': this.config.token}),
+      })
+        .then((res: AxiosResponse) => {
+          if (res.data.error_info !== null) {
+            reject(res.data);
+          } else {
+            resolve(res.data);
+          }
+        })
+        .catch((error: AxiosError) => reject(error));
+    });
   }
 }
