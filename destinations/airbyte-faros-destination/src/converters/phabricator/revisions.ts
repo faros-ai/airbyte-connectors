@@ -7,7 +7,6 @@ import {PhabricatorCommon, PhabricatorConverter} from './common';
 export class Revisions extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
-    'vcs_PullRequestReview',
   ];
 
   async convert(

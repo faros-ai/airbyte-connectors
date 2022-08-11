@@ -10,7 +10,9 @@ import {
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 export class Transactions extends PhabricatorConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_PullRequestReview',
+  ];
 
   private readonly revisionReviewTypes = [
     'accept',
