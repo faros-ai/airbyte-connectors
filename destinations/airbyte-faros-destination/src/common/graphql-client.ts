@@ -58,9 +58,8 @@ export class GraphQLClient {
     }
   }
 
-  // TODO: validate that these checks use proper camel cased names if applicable
   private backReferenceOriginCheck(br: Reference, origin: string): any {
-    const base = {origin: {_neq: origin}};
+    const base = {origin: {_eq: origin}};
     const backReferencesByModel = this.schema.backReferences[br.model] ?? [];
     const nestedChecks = backReferencesByModel
       .filter((nbr) => nbr.field != br.field)
@@ -179,7 +178,6 @@ export class GraphQLClient {
     await this.postQuery({mutation}, `Failed to delete ${record.model} record`);
   }
 
-  // TODO: add batching here
   private async postQuery(query: any, errorMsg: string): Promise<any> {
     const gql = jsonToGraphQLQuery(query);
     const res = await this.backend.postQuery(gql);
@@ -189,11 +187,6 @@ export class GraphQLClient {
       );
     }
     return res;
-  }
-
-  // TODO: implement batch flush
-  async flush(): Promise<void> {
-    return await Promise.resolve();
   }
 
   private createWhereClause(

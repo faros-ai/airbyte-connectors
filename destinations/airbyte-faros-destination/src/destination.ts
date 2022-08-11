@@ -407,8 +407,9 @@ export class FarosDestination extends AirbyteDestination {
           stats,
           writer
         );
+
         // flush any buffered writes
-        await graphQLClient.flush();
+        await writer.flush();
       } else {
         this.logger.info(
           `Opening a new revision on graph ${this.farosGraph} ` +

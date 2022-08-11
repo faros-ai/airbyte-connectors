@@ -61,4 +61,8 @@ export class GraphQLWriter {
       );
     }
   }
+
+  async flush(): Promise<void> {
+    await Promise.resolve();
+  }
 }
