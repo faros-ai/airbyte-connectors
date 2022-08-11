@@ -419,33 +419,41 @@ export class Phabricator {
           this.logger.warn(`Could not determine revision for diff ${diff.id}`);
           continue;
         }
-        const rawDiffRes = await this.client.differential.getrawdiff({
-          diffID: `${diff.id}`,
-        });
-        if (rawDiffRes?.error_code || rawDiffRes?.error_info) {
-          throw new VError(
-            `${rawDiffRes?.error_code}: ${rawDiffRes?.error_info}`
+        try {
+          const rawDiffRes = await this.client.differential.getrawdiff({
+            diffID: `${diff.id}`,
+          });
+          if (rawDiffRes?.error_code || rawDiffRes?.error_info) {
+            throw new VError(
+              `${rawDiffRes?.error_code}: ${rawDiffRes?.error_info}`
+            );
+          }
+          if (typeof rawDiffRes.result !== 'string') {
+            this.logger.warn(`Unexpected raw diff type for diff ${diff.id}`);
+            continue;
+          }
+          const files = parseDiff(rawDiffRes.result);
+
+          yield {
+            id: diff.id,
+            phid: diff.phid,
+            revision: {
+              id: revision.id,
+              phid: revision.phid,
+              dateModified: revision.fields?.dateModified,
+            },
+            repository: revision.repository,
+            files: files.map((f) =>
+              pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
+            ),
+          };
+        } catch (err) {
+          this.logger.error(
+            `Failed to parse raw diff for ${revision.phid}: ${JSON.stringify(
+              err
+            )}`
           );
         }
-        if (typeof rawDiffRes.result !== 'string') {
-          this.logger.warn(`Unexpected raw diff type for diff ${diff.id}`);
-          continue;
-        }
-        const files = parseDiff(rawDiffRes.result);
-
-        yield {
-          id: diff.id,
-          phid: diff.phid,
-          revision: {
-            id: revision.id,
-            phid: revision.phid,
-            dateModified: revision.fields?.dateModified,
-          },
-          repository: revision.repository,
-          files: files.map((f) =>
-            pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
-          ),
-        };
       }
     }
   }
