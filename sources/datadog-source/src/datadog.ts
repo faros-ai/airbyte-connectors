@@ -1,4 +1,4 @@
-import {v1, v2} from '@datadog/datadog-api-client';
+import {client,v1, v2} from '@datadog/datadog-api-client';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
@@ -55,31 +55,25 @@ export class Datadog {
   ) {}
 
   static instance(config: DatadogConfig, logger: AirbyteLogger): Datadog {
-    // TODO: upgrade to v1.0.0 datadog api library
-    const v2Config = v2.createConfiguration({
+    const configurationOpts = {
       authMethods: {
         apiKeyAuth: config.api_key,
         appKeyAuth: config.application_key,
       },
-    });
-
-    const v1Config = v1.createConfiguration({
-      authMethods: {
-        apiKeyAuth: config.api_key,
-        appKeyAuth: config.application_key,
-      },
-    });
-
-    // Beta endpoints are unstable and need to be explicitly enabled
-    v2Config.unstableOperations['listIncidents'] = true;
-
-    const client = {
-      incidents: new v2.IncidentsApi(v2Config),
-      metrics: new v1.MetricsApi(v1Config),
-      users: new v2.UsersApi(v2Config),
     };
 
-    return new Datadog(client, config, logger);
+    const clientConfig = client.createConfiguration(configurationOpts);
+
+    // Beta endpoints are unstable and need to be explicitly enabled
+    clientConfig.unstableOperations['v2.listIncidents'] = true;
+
+    const newClient = {
+      incidents: new v2.IncidentsApi(clientConfig),
+      metrics: new v1.MetricsApi(clientConfig),
+      users: new v2.UsersApi(clientConfig),
+    };
+
+    return new Datadog(newClient, config, logger);
   }
 
   async checkConnection(): Promise<void> {
