@@ -44,7 +44,7 @@ export class Transactions extends PhabricatorConverter {
     if (!revision) return res;
 
     const repository = PhabricatorCommon.repositoryKey(
-      transaction.repository,
+      transaction?.repository,
       source
     );
     if (!repository) return res;
