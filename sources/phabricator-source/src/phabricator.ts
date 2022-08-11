@@ -519,7 +519,10 @@ export class Phabricator {
     filter: {objectIdentifier: string} | {objectType: string},
     modifiedAt?: number
   ): AsyncGenerator<Transaction> {
-    const modified = modifiedAt ?? 0;
+    const modified = Math.max(
+      modifiedAt ?? 0,
+      floor(this.startDate.toSeconds())
+    );
     this.logger.debug(`Fetching transactions modified since ${modified}`);
 
     yield* this.paginate(
