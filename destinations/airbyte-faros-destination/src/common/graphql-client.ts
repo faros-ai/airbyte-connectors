@@ -36,7 +36,7 @@ export class GraphQLClient {
   private readonly backend: GraphQLBackend;
   private schema: Schema;
   private tableNames: Set<string>;
-  private batchSize: number;
+  private readonly batchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
 
   constructor(
@@ -47,6 +47,10 @@ export class GraphQLClient {
     this.schemaLoader = schemaLoader;
     this.backend = backend;
     this.batchSize = batchSize;
+  }
+
+  getBatchSize(): number {
+    return this.batchSize;
   }
 
   async healthCheck(): Promise<void> {

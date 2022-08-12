@@ -53,6 +53,12 @@
                 "title": "Segment User Id",
                 "description": "The User UUID with which to track events in Segment. If not present, then reporting is disabled. See https://community.faros.ai/docs/telemetry for more details.",
                 "format": "uuid"
+              },
+              "graphql_mutation_batch_size": {
+                "type": "integer",
+                "title": "GraphQL mutation batch size",
+                "description": "Maximum number of mutations to execute in a single request to GraphQL backend",
+                "default": 100
               }
             }
           },
@@ -96,6 +102,18 @@
                 "title": "GraphQL Version 2",
                 "description": "Use version 2 of graphql engine.",
                 "default": false
+              },
+              "graphql_mutation_batch_size": {
+                "type": "integer",
+                "title": "GraphQL mutation batch size",
+                "description": "Maximum number of mutations to execute in a single request to GraphQL backend.",
+                "default": 100
+              },
+              "check_tenant": {
+                "type": "boolean",
+                "title": "Check tenant",
+                "description": "Check tenant on init.",
+                "default": true
               },
               "expiration": {
                 "type": "string",

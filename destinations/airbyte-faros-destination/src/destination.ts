@@ -128,7 +128,11 @@ export class FarosDestination extends AirbyteDestination {
         config.edition_configs.hasura_url,
         config.edition_configs.hasura_admin_secret
       );
-      this.graphQLClient = new GraphQLClient(schemaLoader, backend);
+      this.graphQLClient = new GraphQLClient(
+        schemaLoader,
+        backend,
+        config.edition_configs.graphql_mutation_batch_size
+      );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
@@ -176,14 +180,13 @@ export class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
-    // TODO: bring this back before merge
-    // try {
-    //   if (config.dry_run !== true) {
-    //     await this.getFarosClient().tenant();
-    //   }
-    // } catch (e) {
-    //   throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
-    // }
+    if (!config.dry_run && config.edition_configs.check_tenant) {
+      try {
+        await this.getFarosClient().tenant();
+      } catch (e) {
+        throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
+      }
+    }
     this.farosGraph = config.edition_configs.graph;
     try {
       const exists = await this.getFarosClient().graphExists(this.farosGraph);
@@ -219,7 +222,11 @@ export class FarosDestination extends AirbyteDestination {
           return await client.gqlSchema();
         },
       };
-      this.graphQLClient = new GraphQLClient(schemaLoader, backend, 100);
+      this.graphQLClient = new GraphQLClient(
+        schemaLoader,
+        backend,
+        config.edition_configs.graphql_mutation_batch_size
+      );
     } catch (e) {
       throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
     }
@@ -392,7 +399,9 @@ export class FarosDestination extends AirbyteDestination {
           stats
         );
       } else if (this.graphQLClient) {
-        this.logger.info('Using GraphQLClient for write');
+        this.logger.info(
+          `Using GraphQLClient for write with batch size ${this.graphQLClient.getBatchSize()}`
+        );
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
         await graphQLClient.resetData(origin, deleteModelEntries);

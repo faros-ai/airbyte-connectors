@@ -1,6 +1,7 @@
 import fastRedact from 'fast-redact';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';
+import _ from 'lodash';
 import path from 'path';
 
 import {AirbyteConfig, AirbyteSpec} from './protocol';
@@ -31,6 +32,31 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   });
   const redact = fastRedact({paths, censor: 'REDACTED'});
   return `${redact(config)}`;
+}
+
+export function withDefaults(
+  config: AirbyteConfig,
+  spec: AirbyteSpec
+): AirbyteConfig {
+  const defaultsByPath = new Map<string, any>();
+  traverse(spec.spec.connectionSpecification ?? {}, {
+    cb: (schema, pointer) => {
+      if (schema.default) {
+        const path = pointer
+          .replace(/\/oneOf\/\d+/g, '')
+          .split('/properties/')
+          .filter((s) => s)
+          .join('.');
+        defaultsByPath.set(path, schema.default);
+      }
+    },
+  });
+  for (const [path, defaultValue] of defaultsByPath) {
+    if (_.get(config, path) === undefined) {
+      _.set(config, path, defaultValue);
+    }
+  }
+  return config;
 }
 
 /** Convert a value to Date */
