@@ -202,6 +202,7 @@ export class GraphQLClient {
             res.errors
           )}. Query: ${gql}`
         );
+        // now try mutations individually and fail on the first bad one
         for (const op of this.writeBuffer) {
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
@@ -222,6 +223,28 @@ export class GraphQLClient {
     }
   }
 
+  /**
+   * Constructs a gql query from an array of json mutations.
+   * The outputted qql mutation might look like:
+   *
+   *   mutation  {
+   *     i1: insert_cicd_Artifact_one(object: {uid: "u1b"}) {
+   *       id
+   *       refreshedAt
+   *     }
+   *     i2: insert_cicd_Artifact_one(object: {uid: "u2b"}) {
+   *       id
+   *       refreshedAt
+   *     }
+   *   }
+   *
+   *  Notable here are the i1/i2 aliases.  These required when multiple operations
+   *  share the same name (e.g. insert_cicd_Artifact_one) and are supported in
+   *  jsonToGraphQLQuery with __aliasFor directive.
+   *
+   *  @return batch gql mutation or undefined if the input is undefined, empty
+   *  or doesn't contain any mutations.
+   */
   static batchMutation(queries: any[]): string | undefined {
     if (queries && queries.length > 0) {
       const queryObj = {};
