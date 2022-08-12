@@ -244,6 +244,7 @@ export class GraphQLClient {
           };
         }
       });
+      // TODO: test for non-mutation queries
       return jsonToGraphQLQuery({mutation: queryObj});
     }
     return undefined;
