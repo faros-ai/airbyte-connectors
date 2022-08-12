@@ -5,13 +5,11 @@ import {
   AirbyteLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
-import {jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {GraphQLClient} from '../src/common/graphql-client';
-import {Edition, InvalidRecordStrategy} from '../src/destination';
 import {FarosDestinationRunner} from '../src';
+import {GraphQLClient} from '../src/common/graphql-client';
 import {
   Edition,
   FarosDestination,
