@@ -58,7 +58,7 @@
                 "type": "integer",
                 "title": "GraphQL mutation batch size",
                 "description": "Maximum number of mutations to execute in a single request to GraphQL backend",
-                "default": 100
+                "default": 1
               }
             }
           },
