@@ -20,18 +20,20 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   traverse(spec.spec.connectionSpecification ?? {}, {
     cb: (schema, pointer) => {
       if (schema.airbyte_secret) {
-        paths.push(
-          pointer
-            .replace(/\/oneOf\/\d+/g, '')
-            .split('/properties/')
-            .filter((s) => s)
-            .join('.')
-        );
+        paths.push(toPath(pointer));
       }
     },
   });
   const redact = fastRedact({paths, censor: 'REDACTED'});
   return `${redact(config)}`;
+}
+
+function toPath(pointer: string): string {
+  return pointer
+    .replace(/\/oneOf\/\d+/g, '')
+    .split('/properties/')
+    .filter((s) => s)
+    .join('.');
 }
 
 /** Sets all undefined values with defaults to default value. The changes are made in-place. */
@@ -43,12 +45,7 @@ export function withDefaults(
   traverse(spec.spec.connectionSpecification ?? {}, {
     cb: (schema, pointer) => {
       if (schema.default) {
-        const path = pointer
-          .replace(/\/oneOf\/\d+/g, '')
-          .split('/properties/')
-          .filter((s) => s)
-          .join('.');
-        defaultsByPath.set(path, schema.default);
+        defaultsByPath.set(toPath(pointer), schema.default);
       }
     },
   });
