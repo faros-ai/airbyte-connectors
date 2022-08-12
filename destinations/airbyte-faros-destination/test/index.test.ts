@@ -227,4 +227,65 @@ describe('graphql-client', () => {
   test('empty batch mutation', async () => {
     expect(GraphQLClient.batchMutation([])).toBeUndefined();
   });
+  test('no mutations', async () => {
+    const json: any = [
+      {
+        query: {
+          insert_vcs_Membership_one: {
+            __args: {
+              object: {
+                vcs_User: {
+                  data: {uid: 'ashnet16', source: 'GitHub', origin: 'myghsrc'},
+                  on_conflict: {
+                    constraint: {value: 'vcs_User_pkey'},
+                    update_columns: [{value: 'refreshedAt'}],
+                  },
+                },
+                vcs_Organization: {
+                  data: {uid: 'faros-ai', source: 'GitHub', origin: 'myghsrc'},
+                  on_conflict: {
+                    constraint: {value: 'vcs_Organization_pkey'},
+                    update_columns: [{value: 'refreshedAt'}],
+                  },
+                },
+                origin: 'myghsrc',
+              },
+              on_conflict: {
+                constraint: {value: 'vcs_Membership_pkey'},
+                update_columns: [{value: 'origin'}, {value: 'refreshedAt'}],
+              },
+            },
+            id: true,
+          },
+        },
+      },
+      {
+        query: {
+          insert_vcs_User_one: {
+            __args: {
+              object: {
+                uid: 'betafood',
+                type: {category: 'User', detail: 'user'},
+                source: 'GitHub',
+                origin: 'myghsrc',
+              },
+              on_conflict: {
+                constraint: {value: 'vcs_User_pkey'},
+                update_columns: [
+                  {value: 'email'},
+                  {value: 'name'},
+                  {value: 'origin'},
+                  {value: 'refreshedAt'},
+                  {value: 'type'},
+                  {value: 'url'},
+                ],
+              },
+            },
+            id: true,
+          },
+        },
+      },
+    ];
+    expect(GraphQLClient.batchMutation(json)).toBeUndefined();
+  });
 });
