@@ -25,16 +25,28 @@ export interface GraphQLBackend {
   postQuery(query: any): Promise<any>;
 }
 
+interface WriteOp {
+  query: string;
+  errorMsg: string;
+}
+
 export class GraphQLClient {
   private readonly logger = new AirbyteLogger();
   private readonly schemaLoader: SchemaLoader;
   private readonly backend: GraphQLBackend;
   private schema: Schema;
   private tableNames: Set<string>;
+  private batchSize: number;
+  private readonly writeBuffer: WriteOp[] = [];
 
-  constructor(schemaLoader: SchemaLoader, backend: GraphQLBackend) {
+  constructor(
+    schemaLoader: SchemaLoader,
+    backend: GraphQLBackend,
+    batchSize = 1
+  ) {
     this.schemaLoader = schemaLoader;
     this.backend = backend;
+    this.batchSize = batchSize;
   }
 
   async healthCheck(): Promise<void> {
@@ -178,15 +190,63 @@ export class GraphQLClient {
     await this.postQuery({mutation}, `Failed to delete ${record.model} record`);
   }
 
-  private async postQuery(query: any, errorMsg: string): Promise<any> {
-    const gql = jsonToGraphQLQuery(query);
-    const res = await this.backend.postQuery(gql);
-    if (res.errors) {
-      throw new VError(
-        `${errorMsg} with query '${gql}': ${JSON.stringify(res.errors)}`
-      );
+  private async postQuery(query: any, errorMsg: string): Promise<void> {
+    this.writeBuffer.push({
+      query,
+      errorMsg,
+    });
+    if (this.writeBuffer.length >= this.batchSize) {
+      await this.flush();
     }
-    return res;
+  }
+
+  async flush(): Promise<void> {
+    const queries = this.writeBuffer.map((op) => op.query);
+    const gql = GraphQLClient.batchMutation(queries);
+    if (gql) {
+      const res = await this.backend.postQuery(gql);
+      if (res.errors) {
+        this.logger.warn(
+          `Error while saving batch: ${JSON.stringify(
+            res.errors
+          )}. Query: ${gql}`
+        );
+        for (const op of this.writeBuffer) {
+          const opGql = jsonToGraphQLQuery(op.query);
+          const opRes = await this.backend.postQuery(opGql);
+          if (opRes.errors) {
+            throw new VError(
+              `${op.errorMsg} with query '${opGql}': ${JSON.stringify(
+                opRes.errors
+              )}`
+            );
+          } else {
+            this.writeBuffer.shift();
+          }
+        }
+      } else {
+        // truncate the buffer
+        this.writeBuffer.splice(0);
+      }
+    }
+  }
+
+  static batchMutation(queries: any[]): string | undefined {
+    if (queries && queries.length > 0) {
+      const queryObj = {};
+      queries.forEach((query, idx) => {
+        if (query.mutation) {
+          const queryType = Object.keys(query.mutation)[0];
+          const queryBody = query.mutation[queryType];
+          queryObj[`m${idx}`] = {
+            __aliasFor: queryType,
+            ...queryBody,
+          };
+        }
+      });
+      return jsonToGraphQLQuery({mutation: queryObj});
+    }
+    return undefined;
   }
 
   private createWhereClause(

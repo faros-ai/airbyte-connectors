@@ -7,7 +7,7 @@
     "pretty": true,
     "resolveJsonModule": false,
     "skipLibCheck": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
     "target": "es2019"

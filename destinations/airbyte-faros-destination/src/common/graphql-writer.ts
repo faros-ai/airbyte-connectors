@@ -60,9 +60,6 @@ export class GraphQLWriter {
         }
       );
     }
-  }
-
-  async flush(): Promise<void> {
-    await Promise.resolve();
+    await this.graphQLClient.flush();
   }
 }

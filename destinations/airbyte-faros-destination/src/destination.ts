@@ -219,7 +219,7 @@ export class FarosDestination extends AirbyteDestination {
           return await client.gqlSchema();
         },
       };
-      this.graphQLClient = new GraphQLClient(schemaLoader, backend);
+      this.graphQLClient = new GraphQLClient(schemaLoader, backend, 100);
     } catch (e) {
       throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
     }
@@ -407,9 +407,6 @@ export class FarosDestination extends AirbyteDestination {
           stats,
           writer
         );
-
-        // flush any buffered writes
-        await writer.flush();
       } else {
         this.logger.info(
           `Opening a new revision on graph ${this.farosGraph} ` +
