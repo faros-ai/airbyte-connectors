@@ -34,6 +34,7 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
   return `${redact(config)}`;
 }
 
+/** Sets all undefined values with defaults to default value. The changes are made in-place. */
 export function withDefaults(
   config: AirbyteConfig,
   spec: AirbyteSpec
