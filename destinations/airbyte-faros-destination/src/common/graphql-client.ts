@@ -1,6 +1,6 @@
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Reference, Schema, SchemaLoader} from 'faros-feeds-sdk';
+import {Schema, SchemaLoader} from 'faros-feeds-sdk';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {difference, intersection} from 'lodash';
 import traverse from 'traverse';
@@ -68,19 +68,6 @@ export class GraphQLClient {
         'Schema is not initialized. Please call loadSchema first.'
       );
     }
-  }
-
-  private backReferenceOriginCheck(br: Reference, origin: string): any {
-    const base = {origin: {_eq: origin}};
-    const backReferencesByModel = this.schema.backReferences[br.model] ?? [];
-    const nestedChecks = backReferencesByModel
-      .filter((nbr) => nbr.field != br.field)
-      .map((nbr) => this.backReferenceOriginCheck(nbr, origin));
-    return {
-      [br.field]: {
-        _or: [base].concat(nestedChecks),
-      },
-    };
   }
 
   async resetData(
