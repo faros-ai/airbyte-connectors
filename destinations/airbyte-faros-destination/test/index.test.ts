@@ -4,6 +4,7 @@ import {
   AirbyteConnectionStatusMessage,
   AirbyteLogger,
   AirbyteSpec,
+  withDefaults,
 } from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -287,5 +288,41 @@ describe('graphql-client', () => {
       },
     ];
     expect(GraphQLClient.batchMutation(json)).toBeUndefined();
+  });
+});
+
+describe('utils withDefaults', () => {
+  const spec = new AirbyteSpec(require('../resources/spec.json'));
+  const config: AirbyteConfig = {
+    dry_run: false,
+    jsonata_mode: 'FALLBACK',
+    edition_configs: {
+      edition: 'cloud',
+      api_url: 'http://localhost:8081',
+      api_key: 'Bearer k1',
+      graph: 'ted',
+      check_tenant: false,
+    },
+    invalid_record_strategy: 'SKIP',
+  };
+
+  test('prop with default and defined value', () => {
+    const res = withDefaults(config, spec);
+    expect(res.edition_configs.check_tenant).toBeDefined();
+  });
+
+  test('prop without default and defined value', () => {
+    const res = withDefaults(config, spec);
+    expect(res.edition_configs.api_key).toBeDefined();
+  });
+
+  test('prop without default and undefined value', () => {
+    const res = withDefaults(config, spec);
+    expect(res.origin).toBeUndefined();
+  });
+
+  test('prop default and undefined value', () => {
+    const res = withDefaults(config, spec);
+    expect(res.edition_configs.graphql_mutation_batch_size).toBeDefined();
   });
 });
