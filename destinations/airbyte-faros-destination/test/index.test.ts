@@ -309,20 +309,28 @@ describe('utils withDefaults', () => {
   test('prop with default and defined value', () => {
     const res = withDefaults(config, spec);
     expect(res.edition_configs.check_tenant).toBeDefined();
+    expect(config.edition_configs.check_tenant).toStrictEqual(
+      res.edition_configs.check_tenant
+    );
   });
 
   test('prop without default and defined value', () => {
     const res = withDefaults(config, spec);
     expect(res.edition_configs.api_key).toBeDefined();
+    expect(config.edition_configs.api_key).toStrictEqual(
+      res.edition_configs.api_key
+    );
   });
 
   test('prop without default and undefined value', () => {
     const res = withDefaults(config, spec);
     expect(res.origin).toBeUndefined();
+    expect(config.edition_configs.origin).toBeUndefined();
   });
 
-  test('prop default and undefined value', () => {
+  test('prop  with default and undefined value', () => {
     const res = withDefaults(config, spec);
     expect(res.edition_configs.graphql_mutation_batch_size).toBeDefined();
+    expect(config.edition_configs.graphql_mutation_batch_size).toBeUndefined();
   });
 });

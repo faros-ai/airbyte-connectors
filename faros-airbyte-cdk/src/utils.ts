@@ -36,7 +36,10 @@ function toPath(pointer: string): string {
     .join('.');
 }
 
-/** Sets all undefined values with defaults to default value. The changes are made in-place. */
+/**
+ * Sets all undefined values with defaults from spec to their default value.
+ * The changes are made on a copy of the input.
+ * */
 export function withDefaults(
   config: AirbyteConfig,
   spec: AirbyteSpec
@@ -49,12 +52,14 @@ export function withDefaults(
       }
     },
   });
+  // create a copy of input and apply defaults
+  const result = _.cloneDeep(config);
   for (const [path, defaultValue] of defaultsByPath) {
-    if (_.get(config, path) === undefined) {
-      _.set(config, path, defaultValue);
+    if (_.get(result, path) === undefined) {
+      _.set(result, path, defaultValue);
     }
   }
-  return config;
+  return result;
 }
 
 /** Convert a value to Date */
