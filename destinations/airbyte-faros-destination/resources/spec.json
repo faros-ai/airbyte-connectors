@@ -97,11 +97,15 @@
                 "description": "The Faros graph name.",
                 "default": "default"
               },
-              "use_graphql_v2": {
-                "type": "boolean",
-                "title": "GraphQL Version 2",
-                "description": "Use version 2 of graphql engine.",
-                "default": false
+              "graphql_api": {
+                "type": "string",
+                "title": "GraphQL API",
+                "description": "The version of GraphQL API for writes.",
+                "default": "v1",
+                "enum": [
+                  "v1",
+                  "v2"
+                ]
               },
               "cloud_graphql_batch_size": {
                 "type": "integer",

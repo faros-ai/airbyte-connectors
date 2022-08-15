@@ -169,7 +169,7 @@ export class FarosDestination extends AirbyteDestination {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
-    const useGraphQLV2 = config.edition_configs.use_graphql_v2;
+    const useGraphQLV2 = config.edition_configs.graphql_api === 'v2';
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url,
@@ -765,12 +765,14 @@ export class FarosDestination extends AirbyteDestination {
       }
 
       let isTimestamped = false;
-      if (writer instanceof GraphQLWriter) {
-        isTimestamped = await writer.write(result);
-      } else if (writer) {
-        const obj: Dictionary<any> = {};
-        obj[result.model] = result.record;
-        writer.write(obj);
+      if (writer) {
+        if (writer instanceof GraphQLWriter) {
+          isTimestamped = await writer.write(result);
+        } else {
+          const obj: Dictionary<any> = {};
+          obj[result.model] = result.record;
+          writer.write(obj);
+        }
       }
       if (!isTimestamped) {
         recordsWritten++;
