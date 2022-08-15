@@ -238,7 +238,7 @@ export class GraphQLClient {
    *     }
    *   }
    *
-   *  Notable here are the i1/i2 aliases.  These required when multiple operations
+   *  Notable here are the i1/i2 aliases.  These are required when multiple operations
    *  share the same name (e.g. insert_cicd_Artifact_one) and are supported in
    *  jsonToGraphQLQuery with __aliasFor directive.
    *

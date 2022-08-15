@@ -330,7 +330,7 @@ describe('utils withDefaults', () => {
 
   test('prop  with default and undefined value', () => {
     const res = withDefaults(config, spec);
-    expect(res.edition_configs.graphql_mutation_batch_size).toBeDefined();
-    expect(config.edition_configs.graphql_mutation_batch_size).toBeUndefined();
+    expect(res.edition_configs.cloud_graphql_batch_size).toBeDefined();
+    expect(config.edition_configs.cloud_graphql_batch_size).toBeUndefined();
   });
 });
