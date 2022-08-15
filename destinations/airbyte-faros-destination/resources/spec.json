@@ -113,10 +113,10 @@
                 "description": "Maximum number of mutations to execute in a single request to GraphQL backend.",
                 "default": 100
               },
-              "check_tenant": {
+              "check_connection": {
                 "type": "boolean",
-                "title": "Check tenant",
-                "description": "Check tenant on init.",
+                "title": "Check Faros API Connection",
+                "description": "Check Faro API connection on init.",
                 "default": true
               },
               "expiration": {

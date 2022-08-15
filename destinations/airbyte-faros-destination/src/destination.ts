@@ -180,7 +180,7 @@ export class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
-    if (!config.dry_run && config.edition_configs.check_tenant) {
+    if (!config.dry_run && config.edition_configs.check_connection) {
       try {
         await this.getFarosClient().tenant();
       } catch (e) {
