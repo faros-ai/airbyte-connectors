@@ -137,7 +137,7 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
     try {
-      if (!config.dry_run && config.edition_configs.check_connection) {
+      if (!config.dry_run) {
         await this.getGraphQLClient().healthCheck();
       }
     } catch (e) {
