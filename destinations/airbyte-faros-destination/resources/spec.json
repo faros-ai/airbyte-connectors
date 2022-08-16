@@ -116,7 +116,7 @@
               "check_connection": {
                 "type": "boolean",
                 "title": "Check Faros API Connection",
-                "description": "Check Faro API connection on init.",
+                "description": "Check Faros API connection on init.",
                 "default": true
               },
               "expiration": {
