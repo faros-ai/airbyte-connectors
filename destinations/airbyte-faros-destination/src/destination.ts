@@ -137,7 +137,7 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
     }
     try {
-      if (config.dry_run !== true) {
+      if (!config.dry_run && config.edition_configs.check_connection) {
         await this.getGraphQLClient().healthCheck();
       }
     } catch (e) {
@@ -231,7 +231,7 @@ export class FarosDestination extends AirbyteDestination {
       throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
     }
     try {
-      if (config.dry_run !== true) {
+      if (!config.dry_run && config.edition_configs.check_connection) {
         await this.getGraphQLClient().healthCheck();
       }
     } catch (e) {
