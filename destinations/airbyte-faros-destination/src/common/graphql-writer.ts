@@ -1,9 +1,9 @@
 import {sortBy} from 'lodash';
 import {VError} from 'verror';
 
-import {WriteStats} from '../common/write-stats';
-import {HasuraClient} from './hasura-client';
+import {GraphQLClient} from './graphql-client';
 import {Operation, TimestampedRecord} from './types';
+import {WriteStats} from './write-stats';
 
 export interface RecordProcessorHandler {
   handleRecordProcessingError: (
@@ -12,11 +12,11 @@ export interface RecordProcessorHandler {
   ) => Promise<void>;
 }
 
-export class HasuraWriter {
+export class GraphQLWriter {
   private readonly timestampedRecords: TimestampedRecord[] = [];
 
   constructor(
-    private readonly hasuraClient: HasuraClient,
+    private readonly graphQLClient: GraphQLClient,
     private readonly origin: string,
     private readonly stats: WriteStats,
     private readonly recordProcessorHandler: RecordProcessorHandler
@@ -26,7 +26,7 @@ export class HasuraWriter {
     const [baseModel, operation] = result.model.split('__', 2);
 
     if (!operation) {
-      await this.hasuraClient.writeRecord(
+      await this.graphQLClient.writeRecord(
         result.model,
         result.record,
         this.origin
@@ -42,7 +42,7 @@ export class HasuraWriter {
       return true;
     } else {
       throw new VError(
-        `Unuspported model operation ${operation} for ${result.model}: ${result.record}`
+        `Unsupported model operation ${operation} for ${result.model}: ${result.record}`
       );
     }
   }
@@ -52,7 +52,7 @@ export class HasuraWriter {
       await this.recordProcessorHandler.handleRecordProcessingError(
         this.stats,
         async () => {
-          await this.hasuraClient.writeTimestampedRecord(record);
+          await this.graphQLClient.writeTimestampedRecord(record);
           this.stats.recordsWritten++;
           this.stats.incrementWrittenByModel(
             `${record.model}__${record.operation}`
@@ -60,5 +60,6 @@ export class HasuraWriter {
         }
       );
     }
+    await this.graphQLClient.flush();
   }
 }

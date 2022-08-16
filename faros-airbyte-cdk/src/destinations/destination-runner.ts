@@ -4,7 +4,7 @@ import path from 'path';
 import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {Runner} from '../runner';
-import {PACKAGE_VERSION, redactConfig} from '../utils';
+import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner extends Runner {
@@ -66,9 +66,9 @@ export class AirbyteDestinationRunner extends Runner {
       )
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
-          const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.destination.spec();
+          const config = withDefaults(require(path.resolve(opts.config)), spec);
           this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
           this.logger.info('dryRun: ' + opts.dryRun);
