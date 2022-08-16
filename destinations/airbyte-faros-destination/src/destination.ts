@@ -180,18 +180,20 @@ export class FarosDestination extends AirbyteDestination {
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }
-    if (!config.dry_run && config.edition_configs.check_connection) {
-      try {
+    try {
+      if (!config.dry_run && config.edition_configs.check_connection) {
         await this.getFarosClient().tenant();
-      } catch (e) {
-        throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
       }
+    } catch (e) {
+      throw new VError(`Invalid Faros API url or API key. Error: ${e}`);
     }
     this.farosGraph = config.edition_configs.graph;
     try {
-      const exists = await this.getFarosClient().graphExists(this.farosGraph);
-      if (!exists) {
-        throw new VError(`Faros graph ${this.farosGraph} does not exist`);
+      if (!config.dry_run && config.edition_configs.check_connection) {
+        const exists = await this.getFarosClient().graphExists(this.farosGraph);
+        if (!exists) {
+          throw new VError(`Faros graph ${this.farosGraph} does not exist`);
+        }
       }
     } catch (e) {
       throw new VError(`Invalid Faros graph ${this.farosGraph}. Error: ${e}`);
