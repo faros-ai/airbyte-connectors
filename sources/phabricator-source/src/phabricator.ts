@@ -345,14 +345,12 @@ export class Phabricator {
         }
         return newCommits.map((commit) => {
           const repository = reposById[commit.fields.repositoryPHID];
-          commit.repository = {
-            id: repository.id,
-            phid: repository.phid,
-            type: repository.type,
-            fields: {
-              shortName: repository?.fields?.shortName,
-            },
-          };
+          commit.repository = toRepoShort(repository);
+          if (!commit.repository) {
+            this.logger.warn(
+              `Could not find repository for commit id: ${commit.id}, phid: ${commit.phid}`
+            );
+          }
           return commit;
         });
       }
@@ -410,14 +408,12 @@ export class Phabricator {
         }
         return newRevisions.map((revision) => {
           const repository = reposById[revision.fields.repositoryPHID];
-          revision.repository = {
-            id: repository.id,
-            phid: repository.phid,
-            type: repository.type,
-            fields: {
-              shortName: repository.fields?.shortName,
-            },
-          };
+          revision.repository = toRepoShort(repository);
+          if (!revision.repository) {
+            this.logger.warn(
+              `Could not find repository for revision id: ${revision.id}, phid: ${revision.phid}`
+            );
+          }
           return revision;
         });
       }
@@ -474,14 +470,7 @@ export class Phabricator {
               phid: revision.phid,
               dateModified: revision.fields?.dateModified,
             },
-            repository: {
-              id: revision.repository.id,
-              phid: revision.repository.phid,
-              type: revision.repository.type,
-              fields: {
-                shortName: revision.repository?.fields?.shortName,
-              },
-            },
+            repository: revision.repository,
             files: files.map((f) =>
               pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
             ),
@@ -581,14 +570,7 @@ export class Phabricator {
                 phid: revision.phid,
                 dateModified: revision.fields?.dateModified,
               },
-              repository: {
-                id: revision.repository.id,
-                phid: revision.repository.phid,
-                type: revision.repository.type,
-                fields: {
-                  shortName: revision.repository?.fields?.shortName,
-                },
-              },
+              repository: revision.repository,
             };
           });
           return newTransactions;
@@ -596,4 +578,18 @@ export class Phabricator {
       );
     }
   }
+}
+
+function toRepoShort(
+  repo?: Repository | RepositoryShort
+): RepositoryShort | undefined {
+  if (!repo) return undefined;
+  return {
+    id: repo.id,
+    phid: repo.phid,
+    type: repo.type,
+    fields: {
+      shortName: repo.fields?.shortName,
+    },
+  };
 }
