@@ -107,6 +107,16 @@ export class SemaphoreCICommon {
     }
   }
 
+  /*
+   * SemaphoreCI API publishes date fields based on unix epoch times. For fields that
+   * are not initialized (null/empty) it returns 0, which converted, represents the
+   * beginning of epoch (January 1st, 1970 at 00:00:00 UTC). This date skews all existing
+   * metabase SQL queries that calculates duration as endedAt - startedAt. This helper function
+   * identifies those uninitialized dates and nullify then so the built in dashboards work
+   * as expected.
+   *
+   * https://docs.semaphoreci.com/reference/api-v1alpha/#overview
+   */
   static nullifyDate(isoDate: string): string | undefined {
     if (new Date(0).toISOString() === isoDate) {
       return;
