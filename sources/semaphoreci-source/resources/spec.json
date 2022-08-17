@@ -46,7 +46,7 @@
           "type": "string"
         },
         "title": "VCS Branch Name (Optional)",
-        "description": "Comma separated list of branch names to filter the dataset. If not set, all data will be pulled from all branches.",
+        "description": "List of branch names to filter the dataset. If not set, all data will be pulled from all branches.",
         "default": [
           "master",
           "main"
