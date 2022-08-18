@@ -48,17 +48,23 @@ export class RevisionDiffs extends PhabricatorConverter {
     const diff = record.record.data as RevisionDiff;
     const res: DestinationRecord[] = [];
     const repository = PhabricatorCommon.repositoryKey(diff.repository, source);
+    const diffShort = {
+      id: diff.id,
+      phid: diff.phid,
+      revision: diff.revision,
+      repository: diff.repository,
+    };
     if (!repository) {
       this.logger.warn(
         `Could not determine repository from revision diff ${JSON.stringify(
-          diff
+          diffShort
         )}`
       );
       return res;
     } else if (!diff.revision?.id) {
       this.logger.warn(
         `Could not determine revision from revision diff ${JSON.stringify(
-          diff
+          diffShort
         )}`
       );
       return res;
