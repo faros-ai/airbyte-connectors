@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {PhabricatorCommon, PhabricatorConverter} from './common';
+import {PhabricatorConverter} from './common';
 
 export class Projects extends PhabricatorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

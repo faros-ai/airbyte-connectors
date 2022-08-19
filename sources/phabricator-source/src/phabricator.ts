@@ -33,7 +33,11 @@ export interface PhabricatorConfig {
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
 export type RepositoryShort = RetSearchConstants & {
-  fields: {shortName: string};
+  fields: {
+    name: string;
+    shortName?: string;
+    callsign?: string;
+  };
 };
 export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: RepositoryShort;
@@ -594,7 +598,9 @@ function toRepoShort(
     phid: repo.phid,
     type: repo.type,
     fields: {
+      name: repo.fields?.name,
       shortName: repo.fields?.shortName,
+      callsign: repo.fields?.callsign,
     },
   };
 }

@@ -5,6 +5,8 @@
         "id": 1,
         "phid": "PHID-DIFF-s5z7iytghip2wolacch6",
         "fields": {
+          "callsign": null,
+          "name": "Test 2",
           "revisionPHID": "PHID-DREV-gsrobup7ptw5ubjounb4"
         }
       }
