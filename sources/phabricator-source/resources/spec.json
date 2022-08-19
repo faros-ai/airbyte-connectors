@@ -62,6 +62,13 @@
         "default": 100,
         "title": "Limit",
         "description": "Limit of results on a single page fetched from Phabricator"
+      },
+      "timeout": {
+        "type": "integer",
+        "minimum": 1000,
+        "default": 60000,
+        "title": "Timeout",
+        "description": "Request timeout in milliseconds"
       }
     }
   }
