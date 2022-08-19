@@ -3,7 +3,6 @@ import {Utils} from 'faros-feeds-sdk/lib';
 import {isEmpty, union, uniq} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {StatuspageIncidentImpact} from '../statuspage/common';
 import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
 
 type CountForPR = {
