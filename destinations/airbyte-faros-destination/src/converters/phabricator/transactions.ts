@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
+import {Utils} from 'faros-feeds-sdk';
 import {isEmpty, union} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
