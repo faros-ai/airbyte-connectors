@@ -347,11 +347,12 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newCommits.map((commit) => {
-          const repository = reposById[commit.fields.repositoryPHID];
+          const repoId = commit.fields.repositoryPHID;
+          const repository = reposById[repoId];
           commit.repository = toRepoShort(repository);
           if (!commit.repository) {
             this.logger.warn(
-              `Could not find repository for commit id: ${commit.id}, phid: ${commit.phid}`
+              `Could not find repository for commit id: ${commit.id}, phid: ${commit.phid}, repo_phid: ${repoId}`
             );
           }
           return commit;
@@ -410,11 +411,12 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newRevisions.map((revision) => {
-          const repository = reposById[revision.fields.repositoryPHID];
+          const repoId = revision.fields.repositoryPHID;
+          const repository = reposById[repoId];
           revision.repository = toRepoShort(repository);
           if (!revision.repository) {
             this.logger.warn(
-              `Could not find repository for revision id: ${revision.id}, phid: ${revision.phid}`
+              `Could not find repository for revision id: ${revision.id}, phid: ${revision.phid}, repo_phid: ${repoId}`
             );
           }
           return revision;
