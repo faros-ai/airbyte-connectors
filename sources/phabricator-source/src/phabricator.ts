@@ -19,6 +19,7 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 export const PHABRICATOR_DEFAULT_LIMIT = 100;
+export const PHABRICATOR_DEFAULT_TIMEOUT = 60000;
 
 export interface PhabricatorConfig {
   readonly server_url: string;
@@ -27,6 +28,7 @@ export interface PhabricatorConfig {
   readonly repositories: string | string[];
   readonly projects: string | string[];
   readonly limit: number;
+  readonly timeout: number;
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
@@ -165,8 +167,9 @@ export class Phabricator {
       config.limit <= PHABRICATOR_DEFAULT_LIMIT
         ? config.limit
         : PHABRICATOR_DEFAULT_LIMIT;
+    const timeout = config.timeout ?? PHABRICATOR_DEFAULT_TIMEOUT;
 
-    const axios = Axios.create({baseURL, timeout: 30000});
+    const axios = Axios.create({baseURL, timeout});
     const client = new Condoit(
       config.server_url,
       config.token,
