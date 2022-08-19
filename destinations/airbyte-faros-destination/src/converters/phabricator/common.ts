@@ -111,11 +111,13 @@ export class PhabricatorCommon {
   ): undefined | RepositoryKey {
     // We try our best to construct repo key to be recognizable and short
     // considering the following constraints:
-    // shortName - is optional, must be unique, has restrictions for use in URIs
-    // name - doesnt need to be unique, hence we append id
-    // callsign - is optional, must be unique, and is usually a few letters
-    // id - always there and unique
-    // Red more - https://secure.phabricator.com/book/phabricator/article/diffusion_managing/
+    //
+    // - shortName - is optional, must be unique, has restrictions for use in URIs
+    // - name - doesn't need to be unique, hence we append id
+    // - callsign - is optional, must be unique, and is usually a few letters
+    // - id - is always there and unique
+    //
+    // Read more - https://secure.phabricator.com/book/phabricator/article/diffusion_managing/
     const fallbackRepoName = repository?.fields?.name
       ? `${repository?.fields?.name} - ${repository?.id}`
       : repository?.id;
