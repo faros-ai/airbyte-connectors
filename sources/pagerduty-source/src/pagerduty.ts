@@ -36,6 +36,7 @@ export interface PagerdutyConfig {
 }
 
 interface PagerdutyResponse<Type> {
+  url: string;
   status: number;
   statusText: string;
   resource: Type[];
@@ -140,7 +141,9 @@ export class Pagerduty {
 
     do {
       if (response?.status >= 300) {
-        throw new VError(`${response?.status}: ${response?.statusText}`);
+        throw new VError(
+          `Error from ${response?.url}. Status code: ${response?.status}: ${response?.statusText}`
+        );
       }
       if (response?.next) fetchNextFunc = response?.next;
 
