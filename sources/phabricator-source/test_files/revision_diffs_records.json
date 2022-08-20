@@ -12,6 +12,8 @@
           "type": "REPO",
           "phid": "PHID-REPO-uwrzrrles7cuyvbvadu2",
           "fields": {
+            "callsign": null,
+            "name": "Test 2",
             "shortName": "test-2"
           }
         },

@@ -1,9 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk/lib';
-import {isEmpty, union, uniq} from 'lodash';
+import {Utils} from 'faros-feeds-sdk';
+import {isEmpty, union} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {StatuspageIncidentImpact} from '../statuspage/common';
 import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
 
 type CountForPR = {
@@ -21,7 +20,7 @@ type IdsForPR = {
     number: any;
     uid: any;
   };
-  ids: string[];
+  ids: Set<string>;
 };
 
 export class Transactions extends PhabricatorConverter {
@@ -91,12 +90,14 @@ export class Transactions extends PhabricatorConverter {
     }
 
     // Count all unique commits for each revision
-    const current = this.commitsCountByPR.get(revisionUid)?.ids ?? [];
+    const ids =
+      this.commitsCountByPR.get(revisionUid)?.ids ?? new Set<string>();
     const newVals = transaction?.fields?.commitPHIDs ?? [];
-    this.commitsCountByPR.set(revisionUid, {
-      pullRequest,
-      ids: uniq(current.concat(newVals)),
-    });
+
+    for (const newVal of newVals) {
+      ids.add(newVal);
+    }
+    this.commitsCountByPR.set(revisionUid, {pullRequest, ids});
 
     // Count all comments for each revision
     if (state.category === 'Commented') {
@@ -132,7 +133,7 @@ export class Transactions extends PhabricatorConverter {
           where: commits?.pullRequest ?? comments?.pullRequest,
           mask: ['commitCount', 'commentCount'],
           patch: {
-            commitCount: commits?.ids?.length ?? null,
+            commitCount: commits?.ids?.size ?? null,
             commentCount: comments?.count ?? null,
           },
         },

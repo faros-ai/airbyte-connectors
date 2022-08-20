@@ -19,6 +19,7 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 export const PHABRICATOR_DEFAULT_LIMIT = 100;
+export const PHABRICATOR_DEFAULT_TIMEOUT = 60000;
 
 export interface PhabricatorConfig {
   readonly server_url: string;
@@ -27,11 +28,16 @@ export interface PhabricatorConfig {
   readonly repositories: string | string[];
   readonly projects: string | string[];
   readonly limit: number;
+  readonly timeout: number;
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;
 export type RepositoryShort = RetSearchConstants & {
-  fields: {shortName: string};
+  fields: {
+    name: string;
+    shortName?: string;
+    callsign?: string;
+  };
 };
 export interface Commit extends iDiffusion.retDiffusionCommitSearchData {
   repository?: RepositoryShort;
@@ -165,8 +171,9 @@ export class Phabricator {
       config.limit <= PHABRICATOR_DEFAULT_LIMIT
         ? config.limit
         : PHABRICATOR_DEFAULT_LIMIT;
+    const timeout = config.timeout ?? PHABRICATOR_DEFAULT_TIMEOUT;
 
-    const axios = Axios.create({baseURL, timeout: 30000});
+    const axios = Axios.create({baseURL, timeout});
     const client = new Condoit(
       config.server_url,
       config.token,
@@ -344,15 +351,14 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newCommits.map((commit) => {
-          const repository = reposById[commit.fields.repositoryPHID];
-          commit.repository = {
-            id: repository.id,
-            phid: repository.phid,
-            type: repository.type,
-            fields: {
-              shortName: repository?.fields?.shortName,
-            },
-          };
+          const repoId = commit.fields.repositoryPHID;
+          const repository = reposById[repoId];
+          commit.repository = toRepoShort(repository);
+          if (!commit.repository) {
+            this.logger.warn(
+              `Could not find repository for commit id: ${commit.id}, phid: ${commit.phid}, repo_phid: ${repoId}`
+            );
+          }
           return commit;
         });
       }
@@ -409,15 +415,14 @@ export class Phabricator {
           reposById[repo.phid] = repo;
         }
         return newRevisions.map((revision) => {
-          const repository = reposById[revision.fields.repositoryPHID];
-          revision.repository = {
-            id: repository.id,
-            phid: repository.phid,
-            type: repository.type,
-            fields: {
-              shortName: repository.fields?.shortName,
-            },
-          };
+          const repoId = revision.fields.repositoryPHID;
+          const repository = reposById[repoId];
+          revision.repository = toRepoShort(repository);
+          if (!revision.repository) {
+            this.logger.warn(
+              `Could not find repository for revision id: ${revision.id}, phid: ${revision.phid}, repo_phid: ${repoId}`
+            );
+          }
           return revision;
         });
       }
@@ -474,14 +479,7 @@ export class Phabricator {
               phid: revision.phid,
               dateModified: revision.fields?.dateModified,
             },
-            repository: {
-              id: revision.repository.id,
-              phid: revision.repository.phid,
-              type: revision.repository.type,
-              fields: {
-                shortName: revision.repository?.fields?.shortName,
-              },
-            },
+            repository: revision.repository,
             files: files.map((f) =>
               pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
             ),
@@ -581,14 +579,7 @@ export class Phabricator {
                 phid: revision.phid,
                 dateModified: revision.fields?.dateModified,
               },
-              repository: {
-                id: revision.repository.id,
-                phid: revision.repository.phid,
-                type: revision.repository.type,
-                fields: {
-                  shortName: revision.repository?.fields?.shortName,
-                },
-              },
+              repository: revision.repository,
             };
           });
           return newTransactions;
@@ -596,4 +587,20 @@ export class Phabricator {
       );
     }
   }
+}
+
+function toRepoShort(
+  repo?: Repository | RepositoryShort
+): RepositoryShort | undefined {
+  if (!repo) return undefined;
+  return {
+    id: repo.id,
+    phid: repo.phid,
+    type: repo.type,
+    fields: {
+      name: repo.fields?.name,
+      shortName: repo.fields?.shortName,
+      callsign: repo.fields?.callsign,
+    },
+  };
 }
