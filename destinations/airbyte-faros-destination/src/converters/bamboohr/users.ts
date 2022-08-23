@@ -85,8 +85,6 @@ export class Users extends BambooHRConverter {
     });
 
     const fullAddress = [
-      user.address1,
-      user.address2,
       user.city,
       user.stateCode ?? user.state,
       user.country,
@@ -102,7 +100,6 @@ export class Users extends BambooHRConverter {
         record: {
           uid: fullAddress,
           fullAddress,
-          street: user.address1,
           postalCode: user.zipcode,
           city: user.city,
           state: user.state,
