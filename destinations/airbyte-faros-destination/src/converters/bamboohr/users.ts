@@ -126,6 +126,7 @@ export class Users extends BambooHRConverter {
         joinedAt,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
+        inactive: user.status?.toLowerCase() === 'inactive',
         manager,
         location,
         terminatedAt,
