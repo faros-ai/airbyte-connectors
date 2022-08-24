@@ -48,6 +48,18 @@
           "Custom"
         ],
         "pattern": "^(Sev[0-5])?(Custom)?$"
+      },
+      "exclude_services": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Exclude Services",
+        "examples": [
+          "service-1",
+          "service-2"
+        ],
+        "description": "List of PagerDuty service names to ignore incidents from. If not set, all incidents will be pulled."
       }
     }
   }
