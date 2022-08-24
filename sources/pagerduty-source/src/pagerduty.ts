@@ -239,37 +239,42 @@ export class Pagerduty {
       timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
 
-    let serviceIdsParam = '';
+    const limitParam = `&limit=${limit}`;
+    const services = [];
     if (exclude_services?.length > 0) {
-      const serviceIds = [];
-      for await (const service of this.getServices(limit)) {
+      const servicesIter = this.getServices(limit);
+      for await (const service of servicesIter) {
         if (
           exclude_services.includes(service.name) ||
           exclude_services.includes(service.summary)
         ) {
           this.logger.debug(
-            `Excluding incidents from service id: ${service.id}, name: ${service.name}, summary: ${service.summary}`
+            `Excluding Incidents from service id: ${service.id}, name: ${service.name}, summary: ${service.summary}`
           );
         } else {
-          serviceIds.push(service.id);
+          services.push(service);
         }
       }
-      serviceIdsParam = `&service_ids[]=${serviceIds.join(',')}`;
-      if (serviceIds.length === 0) {
-        this.logger.warn('Excluded incidents from all services.');
-        return;
-      }
+    } else {
+      services.push(undefined); // fetch incidents from all services
     }
 
-    const limitParam = `&limit=${limit}`;
-    const incidentsResource = `/incidents?time_zone=UTC${timeRange}${serviceIdsParam}${limitParam}`;
-    this.logger.debug(`Fetching Incidents at ${incidentsResource}`);
-
-    const func = (): any => {
-      return this.client.get(incidentsResource);
-    };
-
-    yield* this.paginate<Incident>(func);
+    // query per service to minimize chance of hitting 10000 records response limit
+    for (const service of services) {
+      let serviceIdsParam = '';
+      if (service) {
+        this.logger.debug(
+          `Fetching Incidents for service id: ${service.id}, name: ${service.name}, summary: ${service.summary}`
+        );
+        serviceIdsParam = `&service_ids[]=${service.id}`;
+      }
+      const incidentsResource = `/incidents?time_zone=UTC${timeRange}${serviceIdsParam}${limitParam}`;
+      this.logger.debug(`Fetching Incidents at ${incidentsResource}`);
+      const func = (): any => {
+        return this.client.get(incidentsResource);
+      };
+      yield* this.paginate<Incident>(func);
+    }
   }
 
   async *getIncidentLogEntries(

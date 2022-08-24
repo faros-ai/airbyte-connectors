@@ -1,0 +1,16 @@
+[
+  {
+    "id": "PAZDKS7",
+    "type": "service_reference",
+    "summary": "Service1",
+    "self": "https://api.pagerduty.com/services/PAZDKS7",
+    "html_url": "https://dev-devcube.pagerduty.com/service-directory/PAZDKS7"
+  },
+  {
+    "id": "PAZDKS8",
+    "type": "service_reference",
+    "summary": "Service2",
+    "self": "https://api.pagerduty.com/services/PAZDKS8",
+    "html_url": "https://dev-devcube.pagerduty.com/service-directory/PAZDKS8"
+  }
+]
