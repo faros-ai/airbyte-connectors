@@ -240,7 +240,7 @@ export class Pagerduty {
     }
 
     const limitParam = `&limit=${limit}`;
-    const services = [];
+    const services: (Service | undefined)[] = [];
     if (exclude_services?.length > 0) {
       const servicesIter = this.getServices(limit);
       for await (const service of servicesIter) {
