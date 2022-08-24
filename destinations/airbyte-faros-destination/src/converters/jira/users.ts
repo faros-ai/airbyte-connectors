@@ -30,6 +30,7 @@ export class Users extends JiraConverter {
           name: user.displayName,
           emailAddress: user.emailAddress,
           source: this.streamName.source,
+          inactive: user.active != null && !user.active,
         },
       },
     ];
