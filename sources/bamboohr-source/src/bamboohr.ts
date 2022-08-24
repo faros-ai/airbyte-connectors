@@ -107,7 +107,7 @@ export class BambooHR {
     }
     const fieldsToFetch = [DEFAULT_FIELD_ALIASES, additionalAliases].join(',');
     const users = await this.httpClient.get<any>(`/meta/users`);
-    for (const [key, value] of Object.entries(users.data)) {
+    for (const value of Object.values(users.data)) {
       const employeeId = value['employeeId'];
       const user = await this.httpClient.get<any>(
         `/employees/${employeeId}/?fields=${fieldsToFetch}`,
