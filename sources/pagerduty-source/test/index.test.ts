@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
-import {Pagerduty} from '../src/pagerduty';
+import {Incident, Pagerduty} from '../src/pagerduty';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -145,6 +145,57 @@ describe('index', () => {
 
     expect(fnIncidentsList).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+  });
+
+  test('streams - incidents, exclude services', async () => {
+    const fnList = jest.fn();
+
+    Pagerduty.instance = jest.fn().mockImplementation(() => {
+      return new Pagerduty(
+        {
+          get: fnList.mockImplementation(async (path: string) => {
+            const incidentsPathMatch = path.match(/^\/incidents/);
+            if (incidentsPathMatch) {
+              const includeServices = decodeURIComponent(path)
+                .split('&')
+                .filter((p) => p.startsWith('service_ids[]='))
+                .map((p) => p.split('=')[1]);
+              return {
+                resource: (
+                  readTestResourceFile('incidents.json') as Incident[]
+                ).filter((i) => includeServices.includes(i.service.id)),
+              };
+            }
+            const servicesPathMatch = path.match(/^\/services/);
+            if (servicesPathMatch) {
+              return {
+                resource: readTestResourceFile('services.json'),
+              };
+            }
+          }),
+        },
+        logger
+      );
+    });
+    const source = new sut.PagerdutySource(logger);
+    const streams = source.streams({
+      token: 'pass',
+      exclude_services: ['Service2'],
+    });
+
+    const incidentsStream = streams[1];
+    const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
+    const incidents = [];
+    for await (const incident of incidentsIter) {
+      incidents.push(incident);
+    }
+
+    expect(fnList).toHaveBeenCalledTimes(2);
+    expect(incidents).toStrictEqual(
+      (readTestResourceFile('incidents.json') as Incident[]).filter(
+        (i) => i.service.summary !== 'Service2'
+      )
+    );
   });
 
   test('streams - prioritiesResource, use full_refresh sync mode', async () => {

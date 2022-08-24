@@ -3,7 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAUTL_OVERVIEW = true;
+const DEFAULT_OVERVIEW = true;
 const DEFAULT_PAGE_SIZE = 25; // 25 is API default
 
 enum IncidentSeverityCategory {
@@ -14,7 +14,7 @@ enum IncidentSeverityCategory {
   Sev5 = 'Sev5',
   Custom = 'Custom',
 }
-type IncidentUrgency = 'high' | 'low'; //Pagerduty only has these two priorities
+type IncidentUrgency = 'high' | 'low'; // PagerDuty only has these two priorities
 type IncidentState = 'triggered' | 'acknowledged' | 'resolved';
 
 interface Acknowledgement {
@@ -33,6 +33,7 @@ export interface PagerdutyConfig {
   readonly page_size?: number;
   readonly default_severity?: IncidentSeverityCategory;
   readonly incident_log_entries_overview?: boolean;
+  readonly exclude_services?: ReadonlyArray<string>;
 }
 
 interface PagerdutyResponse<Type> {
@@ -86,6 +87,10 @@ export interface Incident extends PagerdutyObject {
 export interface Priority extends PagerdutyObject {
   readonly description: string;
   readonly name: string;
+}
+
+interface Service extends PagerdutyObject {
+  name: string;
 }
 
 export class Pagerduty {
@@ -208,7 +213,7 @@ export class Pagerduty {
 
       timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
-    const limitParam = `&limit=${limit.toFixed()}`;
+    const limitParam = `&limit=${limit}`;
     const teamsResource = `/teams?time_zone=UTC${timeRange}${limitParam}`;
     this.logger.debug(`Fetching Team at ${teamsResource}`);
 
@@ -221,7 +226,8 @@ export class Pagerduty {
 
   async *getIncidents(
     since?: string,
-    limit = DEFAULT_PAGE_SIZE
+    limit = DEFAULT_PAGE_SIZE,
+    exclude_services: ReadonlyArray<string> = []
   ): AsyncGenerator<Incident> {
     let until: Date;
     let timeRange = '&date_range=all';
@@ -232,26 +238,54 @@ export class Pagerduty {
 
       timeRange = `&since=${since}&until=${until.toISOString()}`;
     }
-    const limitParam = `&limit=${limit.toFixed()}`;
-    const incidentsResource = `/incidents?time_zone=UTC${timeRange}${limitParam}`;
-    this.logger.debug(`Fetching Incidents at ${incidentsResource}`);
 
-    const func = (): any => {
-      return this.client.get(incidentsResource);
-    };
+    const limitParam = `&limit=${limit}`;
+    const services: (Service | undefined)[] = [];
+    if (exclude_services?.length > 0) {
+      const servicesIter = this.getServices(limit);
+      for await (const service of servicesIter) {
+        if (
+          exclude_services.includes(service.name) ||
+          exclude_services.includes(service.summary)
+        ) {
+          this.logger.debug(
+            `Excluding Incidents from service id: ${service.id}, name: ${service.name}, summary: ${service.summary}`
+          );
+        } else {
+          services.push(service);
+        }
+      }
+    } else {
+      services.push(undefined); // fetch incidents from all services
+    }
 
-    yield* this.paginate<Incident>(func);
+    // query per service to minimize chance of hitting 10000 records response limit
+    for (const service of services) {
+      let serviceIdsParam = '';
+      if (service) {
+        this.logger.debug(
+          `Fetching Incidents for service id: ${service.id}, name: ${service.name}, summary: ${service.summary}`
+        );
+        serviceIdsParam = `&service_ids[]=${service.id}`;
+      }
+      const incidentsResource = `/incidents?time_zone=UTC${timeRange}${serviceIdsParam}${limitParam}`;
+      this.logger.debug(`Fetching Incidents at ${incidentsResource}`);
+      const func = (): any => {
+        return this.client.get(incidentsResource);
+      };
+      yield* this.paginate<Incident>(func);
+    }
   }
 
   async *getIncidentLogEntries(
     since?: string,
     until?: Date,
     limit: number = DEFAULT_PAGE_SIZE,
-    isOverview = DEFAUTL_OVERVIEW
+    isOverview = DEFAULT_OVERVIEW
   ): AsyncGenerator<LogEntry> {
     const sinceParam = since ? `&since=${since}` : '';
     const untilParam = until ? `&until=${until.toISOString()}` : '';
-    const limitParam = `&limit=${limit.toFixed()}`;
+    const limitParam = `&limit=${limit}`;
     const isOverviewParam = `&is_overview=${isOverview}`;
 
     const logsResource = `/log_entries?time_zone=UTC${sinceParam}${untilParam}${limitParam}${isOverviewParam}`;
@@ -276,5 +310,16 @@ export class Pagerduty {
         yield item;
       }
     }
+  }
+
+  async *getServices(
+    limit: number = DEFAULT_PAGE_SIZE
+  ): AsyncGenerator<Service> {
+    const servicesResource = `/services?limit=${limit}`;
+    this.logger.debug(`Fetching Services at ${servicesResource}`);
+    const func = (): any => {
+      return this.client.get(servicesResource);
+    };
+    yield* this.paginate<Service>(func);
   }
 }

@@ -240,9 +240,9 @@
     "status": "triggered",
     "incident_key": "4f1a2c8ae595475fa44fb5b82b0330d2",
     "service": {
-      "id": "PAZDKS7",
+      "id": "PAZDKS8",
       "type": "service_reference",
-      "summary": "Service",
+      "summary": "Service2",
       "self": "https://api.pagerduty.com/services/PAZDKS7",
       "html_url": "https://dev-devcube.pagerduty.com/service-directory/PAZDKS7"
     },
