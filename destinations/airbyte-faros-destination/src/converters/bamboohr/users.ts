@@ -84,14 +84,7 @@ export class Users extends BambooHRConverter {
       },
     });
 
-    const fullAddress = [
-      user.address1,
-      user.address2,
-      user.city,
-      user.stateCode ?? user.state,
-      user.country,
-      user.zipcode,
-    ]
+    const fullAddress = [user.city, user.stateCode ?? user.state, user.country]
       .filter((a) => a)
       .join(', ');
     const location = fullAddress ? {uid: fullAddress} : undefined;
@@ -102,8 +95,6 @@ export class Users extends BambooHRConverter {
         record: {
           uid: fullAddress,
           fullAddress,
-          street: user.address1,
-          postalCode: user.zipcode,
           city: user.city,
           state: user.state,
           stateCode: user.stateCode,
