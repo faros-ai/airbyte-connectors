@@ -29,6 +29,8 @@ export class Users extends BambooHRConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const inactiveEmploymentHistoryStatus =
+      this.inactiveEmploymentHistoryStatus(ctx);
     const source = this.streamName.source;
     const user = record.record.data as User;
     const uid = user.id;
@@ -109,6 +111,15 @@ export class Users extends BambooHRConverter {
       };
       res.push({model: 'geo_Location', record: geo_Location});
     }
+
+    let inactive = false;
+    if (inactiveEmploymentHistoryStatus) {
+      inactive =
+        user.employmentHistoryStatus === inactiveEmploymentHistoryStatus;
+    } else if (user.status) {
+      inactive = user.status.toLowerCase() === 'inactive';
+    }
+
     res.push({
       model: 'org_Employee',
       record: {
@@ -117,7 +128,7 @@ export class Users extends BambooHRConverter {
         joinedAt,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
-        inactive: user.status?.toLowerCase() === 'inactive',
+        inactive,
         manager,
         location,
         terminatedAt,
