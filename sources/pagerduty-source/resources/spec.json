@@ -67,7 +67,7 @@
         "maximum": 8,
         "default": 5,
         "title": "Max Retries",
-        "description": "Maxinum number of PagerDuty API request retries to perform upon connection errors. The source will pause for an exponentially increasing number of seconds before retrying."
+        "description": "Maximum number of PagerDuty API request retries to perform upon connection errors. The source will pause for an exponentially increasing number of seconds before retrying."
       }
     }
   }
