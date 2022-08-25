@@ -42,7 +42,7 @@ describe('semaphoreci', () => {
 
     const processedByStream = {
       projects: 1,
-      pipelines: 7,
+      pipelines: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -51,11 +51,11 @@ describe('semaphoreci', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      cicd_Build: 7,
-      cicd_BuildCommitAssociation: 7,
-      cicd_BuildStep: 21,
+      cicd_Build: 3,
+      cicd_BuildCommitAssociation: 3,
+      cicd_BuildStep: 12,
       cicd_Organization: 1,
-      cicd_Pipeline: 7,
+      cicd_Pipeline: 3,
       cicd_Repository: 1,
     };
 
