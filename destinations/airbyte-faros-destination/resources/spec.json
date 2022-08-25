@@ -670,6 +670,11 @@
                         "title": "Bootstrap Teams From Managers",
                         "description": "Assign employees to teams based off their managers.",
                         "default": false
+                      },
+                      "inactive_employment_history_status": {
+                        "type": "string",
+                        "title": "Inactive employmentHistoryStatus",
+                        "description": "The configured value for the employeeHistoryStatus that is equivalent to an employee being inactive"
                       }
                     }
                   }
