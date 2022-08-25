@@ -1,3 +1,4 @@
+import {PartialCall} from '@pagerduty/pdjs/build/src/api';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -43,7 +44,10 @@ describe('index', () => {
 
   test('check connection', async () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
-      return new Pagerduty({get: jest.fn().mockResolvedValue({})}, logger);
+      return new Pagerduty(
+        {get: jest.fn().mockResolvedValue({})} as unknown as PartialCall,
+        logger
+      );
     });
 
     const source = new sut.PagerdutySource(logger);
@@ -57,7 +61,9 @@ describe('index', () => {
   test('check connection - incorrect config', async () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
-        {get: jest.fn().mockRejectedValue('some text')},
+        {
+          get: jest.fn().mockRejectedValue('some text'),
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -90,7 +96,7 @@ describe('index', () => {
               }
             }
           ),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -127,7 +133,7 @@ describe('index', () => {
               };
             }
           }),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -173,7 +179,7 @@ describe('index', () => {
               };
             }
           }),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -217,7 +223,7 @@ describe('index', () => {
               }
             }
           ),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -255,7 +261,7 @@ describe('index', () => {
               };
             }
           }),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
@@ -291,7 +297,7 @@ describe('index', () => {
               };
             }
           }),
-        },
+        } as unknown as PartialCall,
         logger
       );
     });
