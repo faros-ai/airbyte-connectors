@@ -23,7 +23,9 @@ export abstract class BambooHRConverter extends Converter {
     return this.bamboohrConfig(ctx).bootstrap_teams_from_managers ?? false;
   }
 
-  protected inactiveEmploymentHistoryStatus(ctx: StreamContext): string {
+  protected inactiveEmploymentHistoryStatus(
+    ctx: StreamContext
+  ): string | undefined {
     return this.bamboohrConfig(ctx).inactive_employment_history_status;
   }
 }
