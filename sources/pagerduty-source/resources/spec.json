@@ -60,6 +60,14 @@
           "service-2"
         ],
         "description": "List of PagerDuty service names to ignore incidents from. If not set, all incidents will be pulled."
+      },
+      "max_retries": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 8,
+        "default": 5,
+        "title": "Max Retries",
+        "description": "Maximum number of PagerDuty API request retries to perform upon connection errors. The source will pause for an exponentially increasing number of seconds before retrying."
       }
     }
   }

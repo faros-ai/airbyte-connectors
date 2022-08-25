@@ -1,4 +1,5 @@
 import {api} from '@pagerduty/pdjs';
+import {PartialCall} from '@pagerduty/pdjs/build/src/api';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
@@ -34,6 +35,7 @@ export interface PagerdutyConfig {
   readonly default_severity?: IncidentSeverityCategory;
   readonly incident_log_entries_overview?: boolean;
   readonly exclude_services?: ReadonlyArray<string>;
+  readonly max_retries?: number;
 }
 
 interface PagerdutyResponse<Type> {
@@ -93,12 +95,18 @@ interface Service extends PagerdutyObject {
   name: string;
 }
 
+const DEFAULT_MAX_RETRIES = 5;
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
 export class Pagerduty {
   private static pagerduty: Pagerduty = null;
 
   constructor(
-    private readonly client: any,
-    private readonly logger: AirbyteLogger
+    private readonly client: PartialCall,
+    private readonly logger: AirbyteLogger,
+    private readonly maxRetries = DEFAULT_MAX_RETRIES
   ) {}
 
   static instance(config: PagerdutyConfig, logger: AirbyteLogger): Pagerduty {
@@ -110,13 +118,16 @@ export class Pagerduty {
 
     const client = api({token: config.token});
 
-    Pagerduty.pagerduty = new Pagerduty(client, logger);
+    Pagerduty.pagerduty = new Pagerduty(client, logger, config.max_retries);
     logger.debug('Created Pagerduty instance');
 
     return Pagerduty.pagerduty;
   }
 
-  private async errorWrapper<T>(func: () => Promise<T>): Promise<T> {
+  private async errorWrapper<T>(
+    func: () => Promise<T>,
+    retries = 0
+  ): Promise<T> {
     let res: T;
     try {
       res = await func();
@@ -124,6 +135,7 @@ export class Pagerduty {
       const url = err.url ?? 'Unknown url';
       if (err.error_code || err.error_info) {
         throw new VError(
+          '%s',
           `Received status code ${err.error_code}: ${err.error_info} from ${url}`
         );
       }
@@ -133,7 +145,15 @@ export class Pagerduty {
       } catch (wrapError: any) {
         errorMessage = wrapError.message;
       }
-      throw new VError(`Error from ${url}. Message: ${errorMessage}`);
+      errorMessage = `Error from ${url}. Message: ${errorMessage}`;
+      if (++retries > this.maxRetries) {
+        throw new VError('%s', errorMessage);
+      } else {
+        const secs = Math.pow(2, retries);
+        this.logger.error(`${errorMessage}. Retrying in ${secs} seconds...`);
+        await sleep(secs * 1000);
+        return await this.errorWrapper(func, retries);
+      }
     }
     return res;
   }
@@ -148,6 +168,7 @@ export class Pagerduty {
     do {
       if (response?.status >= 300) {
         throw new VError(
+          '%s',
           `Error from ${response?.url}. Status code: ${response?.status}: ${
             response?.statusText
           }. Data: ${JSON.stringify(response?.data)}`
@@ -216,12 +237,7 @@ export class Pagerduty {
     const limitParam = `&limit=${limit}`;
     const teamsResource = `/teams?time_zone=UTC${timeRange}${limitParam}`;
     this.logger.debug(`Fetching Team at ${teamsResource}`);
-
-    const func = (): any => {
-      return this.client.get(teamsResource);
-    };
-
-    yield* this.paginate<Team>(func);
+    yield* this.paginate<Team>(() => this.client.get(teamsResource));
   }
 
   async *getIncidents(
@@ -270,10 +286,7 @@ export class Pagerduty {
       }
       const incidentsResource = `/incidents?time_zone=UTC${timeRange}${serviceIdsParam}${limitParam}`;
       this.logger.debug(`Fetching Incidents at ${incidentsResource}`);
-      const func = (): any => {
-        return this.client.get(incidentsResource);
-      };
-      yield* this.paginate<Incident>(func);
+      yield* this.paginate<Incident>(() => this.client.get(incidentsResource));
     }
   }
 
@@ -290,17 +303,13 @@ export class Pagerduty {
 
     const logsResource = `/log_entries?time_zone=UTC${sinceParam}${untilParam}${limitParam}${isOverviewParam}`;
     this.logger.debug(`Fetching Log Entries at ${logsResource}`);
-    const func = (): any => {
-      return this.client.get(logsResource);
-    };
-
-    yield* this.paginate<LogEntry>(func);
+    yield* this.paginate<LogEntry>(() => this.client.get(logsResource));
   }
 
   async *getPrioritiesResource(): AsyncGenerator<Priority> {
     let res;
     try {
-      res = await this.client.get(`/priorities`);
+      res = await this.errorWrapper(() => this.client.get(`/priorities`));
     } catch (err) {
       res = err;
     }
