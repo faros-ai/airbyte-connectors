@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "terminate_request": {
+      "type": "string"
+    },
+    "queuing_at": {
+      "type": "string"
+    },
+    "working_directory": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "project_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "running_at": {
+      "type": "string"
+    },
+    "partially_rerun_by": {
+      "type": "string"
+    },
+    "with_after_task": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "commit_message": {
+      "type": "string"
+    },
+    "commit_sha": {
+      "type": "string"
+    },
+    "terminated_by": {
+      "type": "string"
+    },
+    "after_task_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "error_description": {
+      "type": "string"
+    },
+    "repository_id": {
+      "type": "string"
+    },
+    "yaml_file_name": {
+      "type": "string"
+    },
+    "pending_at": {
+      "type": "string"
+    },
+    "ppl_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "stopping_at": {
+      "type": "string"
+    },
+    "wf_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "done_at": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "compile_task_id": {
+      "type": "string"
+    },
+    "hook_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "promotion_of": {
+      "type": "string"
+    },
+    "switch_id": {
+      "type": "string"
+    },
+    "result_reason": {
+      "type": "string"
+    },
+    "partial_rerun_of": {
+      "type": "string"
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "create_time": {
+                "type": "string"
+              },
+              "update_time": {
+                "type": "string"
+              },
+              "start_time": {
+                "type": "string"
+              },
+              "finish_time": {
+                "type": "string"
+              }
+            }
+          },
+          "spec": {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

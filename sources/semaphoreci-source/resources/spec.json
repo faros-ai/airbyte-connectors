@@ -1,0 +1,78 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SemaphoreCI Spec",
+    "type": "object",
+    "required": [
+      "organization",
+      "token",
+      "startDate"
+    ],
+    "properties": {
+      "organization": {
+        "order": 0,
+        "type": "string",
+        "title": "Organization Slug",
+        "description": "Organization name/slug"
+      },
+      "token": {
+        "order": 1,
+        "type": "string",
+        "title": "Semaphore Token",
+        "airbyte_secret": true
+      },
+      "startDate": {
+        "order": 2,
+        "type": "string",
+        "title": "Start Date",
+        "default": "2022-01-01T00:00:00Z",
+        "description": "The date from which you'd like to replicate data from SemaphoreCI in the format YYYY-MM-DDT00:00:00Z. For the streams which support this configuration, only data generated on or after the start date will be replicated."
+      },
+      "projects": {
+        "order": 3,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Semaphore Projects Ids (Optional)",
+        "description": "List of project ids. If not set, all data will be pulled from all projects. Project ids can be retrieved using the api under '/api/v1alpha/projects'.",
+        "default": []
+      },
+      "branches": {
+        "order": 4,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "VCS Branch Name (Optional)",
+        "description": "List of branch names to filter the dataset. If not set, all data will be pulled from all branches.",
+        "default": [
+          "master",
+          "main"
+        ]
+      },
+      "timeout": {
+        "order": 5,
+        "type": "integer",
+        "title": "HTTP Client Timeout",
+        "description": "Timeout (in sec) for the HTTP client used to make the api calls. Use this to mitigate Semaphore Api performance",
+        "default": 30
+      },
+      "delay": {
+        "order": 6,
+        "type": "integer",
+        "title": "Delay to be added in between API requests",
+        "description": "Delay (in ms) to force the source to sleep in between api calls. This can be used to control the rate of api requests - (0 means there's no delay)",
+        "default": 0
+      },
+      "includeJobs": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Include Pipeline Jobs",
+        "description": "Determine whether or not the source will fetch the jobs from the pipelines. Given SemaphoreCI's available public api, this is an expensive operation and when coupled with the api's unreliable performance can take a few iterations.",
+        "default": false
+      }
+    }
+  }
+}

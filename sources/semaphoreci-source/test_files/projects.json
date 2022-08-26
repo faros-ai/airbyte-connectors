@@ -1,0 +1,84 @@
+[
+  {
+    "spec": {
+      "visibility": "private",
+      "schedulers": [],
+      "repository": {
+        "whitelist": {
+          "tags": [],
+          "branches": []
+        },
+        "url": "git@github.com:organization/repository-one.git",
+        "status": {
+          "pipeline_files": [
+            {
+              "path": ".semaphore/semaphore.yml",
+              "level": "block"
+            }
+          ]
+        },
+        "run_on": [
+          "tags",
+          "branches"
+        ],
+        "pipeline_file": ".semaphore/semaphore.yml",
+        "owner": "organization",
+        "name": "repository-one",
+        "integration_type": "github_token",
+        "forked_pull_requests": {
+          "allowed_secrets": []
+        }
+      }
+    },
+    "metadata": {
+      "owner_id": "a0a1ed8b-053c-490e-bcd0-c679a1e82fbf",
+      "org_id": "07b2d3c6-f626-4ef1-af08-71ecb6d0dca7",
+      "name": "repository-one",
+      "id": "40513a80-0de8-4b75-9690-16fae6542e58",
+      "description": "Project One Description"
+    },
+    "kind": "Project",
+    "apiVersion": "v1alpha"
+  },
+  {
+    "spec": {
+      "visibility": "private",
+      "schedulers": [],
+      "repository": {
+        "whitelist": {
+          "tags": [],
+          "branches": []
+        },
+        "url": "git@github.com:organization/repository-two.git",
+        "status": {
+          "pipeline_files": [
+            {
+              "path": ".semaphore/semaphore.yml",
+              "level": "pipeline"
+            }
+          ]
+        },
+        "run_on": [
+          "tags",
+          "branches"
+        ],
+        "pipeline_file": ".semaphore/semaphore.yml",
+        "owner": "organization",
+        "name": "repository-two",
+        "integration_type": "github_token",
+        "forked_pull_requests": {
+          "allowed_secrets": []
+        }
+      }
+    },
+    "metadata": {
+      "owner_id": "baef7e8e-62d3-416e-b967-6153905af685",
+      "org_id": "185dae87-d1f5-4897-bac9-11c9ff1c7680",
+      "name": "repository-two",
+      "id": "8c3aa2ea-8c59-4b10-83f5-d078cf788adb",
+      "description": "Project Two Description"
+    },
+    "kind": "Project",
+    "apiVersion": "v1alpha"
+  }
+]
