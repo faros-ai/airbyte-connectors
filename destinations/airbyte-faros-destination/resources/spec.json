@@ -673,6 +673,9 @@
                       },
                       "inactive_employment_history_status": {
                         "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
                         "title": "Inactive employmentHistoryStatus",
                         "description": "Values of employmentHistoryStatus that are equivalent to an employee being inactive"
                       }
