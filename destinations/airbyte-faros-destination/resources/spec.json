@@ -672,9 +672,13 @@
                         "default": false
                       },
                       "inactive_employment_history_status": {
-                        "type": "string",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
                         "title": "Inactive employmentHistoryStatus",
-                        "description": "The configured value for the employeeHistoryStatus that is equivalent to an employee being inactive"
+                        "description": "Values of employmentHistoryStatus that are equivalent to an employee being inactive",
+                        "example": ["Terminated","On-Leave"]
                       }
                     }
                   }
