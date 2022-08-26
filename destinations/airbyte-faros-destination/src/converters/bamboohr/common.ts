@@ -4,7 +4,7 @@ import {Converter, StreamContext} from '../converter';
 
 export interface BambooHRConfig {
   bootstrap_teams_from_managers?: boolean;
-  inactive_employment_history_status?: string;
+  inactive_employment_history_status?: string[];
 }
 
 /** BambooHR converter base */
@@ -25,7 +25,7 @@ export abstract class BambooHRConverter extends Converter {
 
   protected inactiveEmploymentHistoryStatus(
     ctx: StreamContext
-  ): string | undefined {
+  ): string[] | undefined {
     return this.bamboohrConfig(ctx).inactive_employment_history_status;
   }
 }

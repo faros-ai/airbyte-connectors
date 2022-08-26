@@ -672,9 +672,9 @@
                         "default": false
                       },
                       "inactive_employment_history_status": {
-                        "type": "string",
+                        "type": "array",
                         "title": "Inactive employmentHistoryStatus",
-                        "description": "Comma separated array of employmentHistoryStatus values that are equivalent to an employee being inactive"
+                        "description": "Value(s) of employmentHistoryStatus that are equivalent to an employee being inactive"
                       }
                     }
                   }

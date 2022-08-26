@@ -29,7 +29,7 @@ describe('bamboohr', () => {
       {
         bamboohr: {
           bootstrap_teams_from_managers: true,
-          inactive_employment_history_status: 'Terminated, On-Leave',
+          inactive_employment_history_status: ['Terminated', 'On-Leave'],
         },
       }
     );

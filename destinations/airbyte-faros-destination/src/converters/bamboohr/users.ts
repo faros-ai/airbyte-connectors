@@ -114,10 +114,9 @@ export class Users extends BambooHRConverter {
 
     let inactive = false;
     if (inactiveEmploymentHistoryStatus) {
-      const inactiveStatuses = inactiveEmploymentHistoryStatus
-        .split(',')
-        .map((item) => item.trim());
-      inactive = inactiveStatuses.includes(user.employmentHistoryStatus);
+      inactive = inactiveEmploymentHistoryStatus.includes(
+        user.employmentHistoryStatus
+      );
     } else if (user.status) {
       inactive = user.status.toLowerCase() === 'inactive';
     }
