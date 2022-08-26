@@ -196,24 +196,23 @@ export class GraphQLClient {
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
       const res = await this.backend.postQuery(gql);
-      if (res.errors) {
+      if (res.data.errors) {
         this.logger.warn(
           `Error while saving batch: ${JSON.stringify(
-            res.errors
+            res.data.errors
           )}. Query: ${gql}`
         );
         // now try mutations individually and fail on the first bad one
         for (const op of this.writeBuffer) {
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
-          if (opRes.errors) {
+          this.writeBuffer.shift();
+          if (opRes.data.errors) {
             throw new VError(
               `${op.errorMsg} with query '${opGql}': ${JSON.stringify(
-                opRes.errors
+                opRes.data.errors
               )}`
             );
-          } else {
-            this.writeBuffer.shift();
           }
         }
       } else {
