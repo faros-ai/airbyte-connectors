@@ -8,6 +8,7 @@ datadog-source
 jenkins-source
 okta-source
 opsgenie-source
+semaphoreci-source
 servicenow-source
 squadcast-source
 phabricator-source
