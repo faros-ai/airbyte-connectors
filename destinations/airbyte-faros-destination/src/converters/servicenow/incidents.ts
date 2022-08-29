@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   IncidentPriorityCategory,
@@ -94,26 +95,22 @@ export class Incidents extends ServiceNowConverter {
     if (applicationName) {
       const applicationMapping = this.applicationMapping(ctx);
 
-      let application = {
-        name: applicationName,
-        platform: '',
-      };
+      let application = Common.computeApplication(applicationName, '');
 
       if (
         applicationName in applicationMapping &&
         applicationMapping[applicationName].name
       ) {
         const mappedApp = applicationMapping[applicationName];
-        application = {
-          name: mappedApp.name,
-          platform: mappedApp.platform ?? application.platform,
-        };
+        application = Common.computeApplication(
+          mappedApp.name,
+          mappedApp.platform ?? application.platform
+        );
       }
 
-      const appKey = JSON.stringify(application);
-      if (!this.seenApplications.has(appKey)) {
+      if (!this.seenApplications.has(application.uid)) {
         res.push({model: 'compute_Application', record: application});
-        this.seenApplications.add(appKey);
+        this.seenApplications.add(application.uid);
       }
 
       res.push({
