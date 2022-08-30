@@ -1,5 +1,3 @@
-import {toLower} from 'lodash';
-
 /** Common functions shared across converters */
 export class Common {
   static computeApplication(
@@ -17,7 +15,7 @@ export class Common {
     name: string,
     platform?: string
   ): string {
-    if (!platform) return toLower(name);
-    return [toLower(name), toLower(platform)].join('_');
+    if (!platform) return name;
+    return [name, platform].join('_');
   }
 }

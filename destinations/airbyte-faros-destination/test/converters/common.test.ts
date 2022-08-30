@@ -5,27 +5,27 @@ describe('common', () => {
     expect(Common.computeApplication('SomeApp')).toStrictEqual({
       name: 'SomeApp',
       platform: '',
-      uid: 'someapp',
+      uid: 'SomeApp',
     });
     expect(Common.computeApplication('SomeApp', undefined)).toStrictEqual({
       name: 'SomeApp',
       platform: '',
-      uid: 'someapp',
+      uid: 'SomeApp',
     });
     expect(Common.computeApplication('SomeApp', null)).toStrictEqual({
       name: 'SomeApp',
       platform: '',
-      uid: 'someapp',
+      uid: 'SomeApp',
     });
     expect(Common.computeApplication('SomeApp', '')).toStrictEqual({
       name: 'SomeApp',
       platform: '',
-      uid: 'someapp',
+      uid: 'SomeApp',
     });
     expect(Common.computeApplication('SomeApp', 'SomePlatform')).toStrictEqual({
       name: 'SomeApp',
       platform: 'SomePlatform',
-      uid: 'someapp_someplatform',
+      uid: 'SomeApp_SomePlatform',
     });
   });
 });
