@@ -17,7 +17,7 @@
         "type": "string",
         "title": "API Type",
         "description": "paid - only available to the Plus paid plan, public - Linear's official public API",
-        "default": "public"
+        "default": "paid"
       },
       "page_size": {
         "type": "number",

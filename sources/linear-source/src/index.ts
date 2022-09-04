@@ -48,14 +48,13 @@ export class LinearSource extends AirbyteSourceBase {
   }
   async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
     try {
-      if (config.api_type === 'paid') {
-        const client = new LinearClient({api_key: config.api_key});
-        await client.checkConnection();
-        return [true, undefined];
-      }
       if (config.api_type === 'public') {
         const linear = Linear.instance(config as LinearConfig, this.logger);
         await linear.checkConnection();
+        return [true, undefined];
+      } else {
+        const client = new LinearClient({api_key: config.api_key});
+        await client.checkConnection();
         return [true, undefined];
       }
     } catch (err: any) {
@@ -63,7 +62,16 @@ export class LinearSource extends AirbyteSourceBase {
     }
   }
   streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    if (config.api_type === 'paid') {
+    if (config.api_type === 'public') {
+      return [
+        new Cycles(config as LinearConfig, this.logger),
+        new Issues(config as LinearConfig, this.logger),
+        new Labels(config as LinearConfig, this.logger),
+        new Projects(config as LinearConfig, this.logger),
+        new Teams(config as LinearConfig, this.logger),
+        new Users(config as LinearConfig, this.logger),
+      ];
+    } else {
       const client = new LinearClient({api_key: config.api_key});
       return [
         new Issue(this.logger, client),
@@ -85,16 +93,6 @@ export class LinearSource extends AirbyteSourceBase {
         new Cycle(this.logger, client),
         new WorkflowState(this.logger, client),
         new Document(this.logger, client),
-      ];
-    }
-    if (config.api_type === 'public') {
-      return [
-        new Cycles(config as LinearConfig, this.logger),
-        new Issues(config as LinearConfig, this.logger),
-        new Labels(config as LinearConfig, this.logger),
-        new Projects(config as LinearConfig, this.logger),
-        new Teams(config as LinearConfig, this.logger),
-        new Users(config as LinearConfig, this.logger),
       ];
     }
   }
