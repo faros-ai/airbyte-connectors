@@ -1,0 +1,68 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "number": {
+      "type": "integer"
+    },
+    "name": {
+      "type": [ "null", "string" ]
+    },
+    "startsAt": {
+      "type": "string"
+    },
+    "endsAt": {
+      "type": "string"
+    },
+    "completedAt": {
+      "type": [ "null", "string" ]
+    },
+    "autoArchivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "issueCountHistory": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "completedIssueCountHistory": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "scopeHistory": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "completedScopeHistory": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "teamId": {
+      "type": "string"
+    },
+    "uncompletedIssuesUponCloseIds": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}

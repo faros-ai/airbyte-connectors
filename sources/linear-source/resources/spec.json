@@ -1,20 +1,23 @@
 {
-  "documentationUrl": "https://docs.faros.ai",
+  "documentationUrl": "https://developers.linear.app/docs/",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Linear Spec",
     "type": "object",
-    "required": [
-      "api_key",
-      "cutoff_days"
-    ],
+    "required": ["api_key"],
     "additionalProperties": false,
     "properties": {
       "api_key": {
         "type": "string",
-        "title": "api key",
-        "description": "To create api_key go to https://linear.app/{team}/settings/api",
+        "title": "API Key",
+        "description": "For Linear Plus plan subscription: https://linear.app/vadimeo/settings/integrations/airbyte,for public api: create api_key https://linear.app/{team}/settings/api",
         "airbyte_secret": true
+      },
+      "api_type": {
+        "type": "string",
+        "title": "API Type",
+        "description": "paid - only available to the Plus paid plan, public - Linear's official public API",
+        "default": "public"
       },
       "page_size": {
         "type": "number",

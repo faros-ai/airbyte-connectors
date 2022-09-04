@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "description": {
+      "type": [ "null", "string" ]
+    },
+    "position": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string"
+    },
+    "teamId": {
+      "type": "string"
+    }
+  }
+}

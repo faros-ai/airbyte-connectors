@@ -1,0 +1,116 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "issueId": {
+      "type": "string"
+    },
+    "actorId": {
+      "type": "string"
+    },
+    "source": {
+      "type": ["null", "string"]
+    },
+    "updatedDescription": {
+      "type": ["null", "string"]
+    },
+    "fromTitle": {
+      "type": ["null", "string"]
+    },
+    "toTitle": {
+      "type": ["null", "string"]
+    },
+    "fromAssigneeId": {
+      "type": ["null", "string"]
+    },
+    "toAssigneeId": {
+      "type": ["null", "string"]
+    },
+    "fromPriority": {
+      "type": ["null", "string"]
+    },
+    "toPriority": {
+      "type": ["null", "string"]
+    },
+    "fromTeamId": {
+      "type": ["null", "string"]
+    },
+    "toTeamId": {
+      "type": ["null", "string"]
+    },
+    "fromParentId": {
+      "type": ["null", "string"]
+    },
+    "toParentId": {
+      "type": ["null", "string"]
+    },
+    "fromStateId": {
+      "type": ["null", "string"]
+    },
+    "toStateId": {
+      "type": ["null", "string"]
+    },
+    "fromCycleId": {
+      "type": ["null", "string"]
+    },
+    "toCycleId": {
+      "type": ["null", "string"]
+    },
+    "fromProjectId": {
+      "type": ["null", "string"]
+    },
+    "toProjectId": {
+      "type": ["null", "string"]
+    },
+    "fromEstimate": {
+      "type": ["null", "string"]
+    },
+    "toEstimate": {
+      "type": ["null", "string"]
+    },
+    "archived": {
+      "type": ["null", "string"]
+    },
+    "trashed": {
+      "type": ["null", "string"]
+    },
+    "issueImportId": {
+      "type": ["null", "string"]
+    },
+    "attachmentId": {
+      "type": ["null", "string"]
+    },
+    "addedLabelIds": {
+      "type": ["null", "string"]
+    },
+    "removedLabelIds": {
+      "type": ["null", "string"]
+    },
+    "relationChanges": {
+      "type": ["null", "string"]
+    },
+    "autoClosed": {
+      "type": "boolean"
+    },
+    "autoArchived": {
+      "type": "boolean"
+    },
+    "fromDueDate": {
+      "type": ["null", "string"]
+    },
+    "toDueDate": {
+      "type": ["null", "string"]
+    }
+  }
+
+}

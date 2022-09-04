@@ -51,6 +51,7 @@ describe('index', () => {
       source.checkConnection({
         api_key: '',
         cutoff_days: 90,
+        api_type: 'public',
       })
     ).resolves.toStrictEqual([
       false,
@@ -62,6 +63,7 @@ describe('index', () => {
 
   test('streams - cycles, use full_refresh sync mode', async () => {
     const fnCyclesList = jest.fn();
+
     Linear.instance = jest.fn().mockImplementation(() => {
       return new Linear(
         {
@@ -74,8 +76,12 @@ describe('index', () => {
         new Date('2010-03-27T14:03:51-0800')
       );
     });
+
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const cyclesStream = streams[0];
     const cyclesIter = cyclesStream.readRecords(SyncMode.FULL_REFRESH);
@@ -100,7 +106,10 @@ describe('index', () => {
       );
     });
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const issuesStream = streams[1];
     const issuesIter = issuesStream.readRecords(SyncMode.FULL_REFRESH);
@@ -127,7 +136,9 @@ describe('index', () => {
       );
     });
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const labelsStream = streams[2];
     const labelsIter = labelsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -154,7 +165,9 @@ describe('index', () => {
       );
     });
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const projectsStream = streams[3];
     const projectsIter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -181,7 +194,9 @@ describe('index', () => {
       );
     });
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const teamsStream = streams[4];
     const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -208,7 +223,9 @@ describe('index', () => {
       );
     });
     const source = new sut.LinearSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams({
+      api_type: 'public',
+    });
 
     const usersStream = streams[5];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);

@@ -6,9 +6,9 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Linear, LinearConfig, User} from '../linear/linear';
+import {Label, Linear, LinearConfig} from '../linear/linear';
 
-export class Users extends AirbyteStreamBase {
+export class Labels extends AirbyteStreamBase {
   constructor(
     private readonly config: LinearConfig,
     protected readonly logger: AirbyteLogger
@@ -17,7 +17,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/users.json');
+    return require('../../resources/schemas/public/labels.json');
   }
   get primaryKey(): StreamKey {
     return 'id';
@@ -30,8 +30,8 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
-  ): AsyncGenerator<User> {
+  ): AsyncGenerator<Label> {
     const linear = Linear.instance(this.config, this.logger);
-    yield* linear.getUsers();
+    yield* linear.getLabels();
   }
 }

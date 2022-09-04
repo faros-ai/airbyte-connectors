@@ -1,0 +1,41 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "health": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "editedAt": {
+      "type": "string"
+    },
+    "reactionData": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "bodyData": {
+      "type": "object"
+    }
+  }
+
+}

@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "url": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "creatorId": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    }
+  }
+}

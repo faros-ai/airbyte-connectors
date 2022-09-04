@@ -1,0 +1,44 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "issueId": {
+      "type": "string"
+    },
+    "parentId": {
+      "type": [ "null", "string" ]
+    },
+    "userId": {
+      "type": "string"
+    },
+    "editedAt": {
+      "type": "string"
+    },
+    "attachmentId": {
+      "type": [ "null", "string" ]
+    },
+    "sourceMetadata": {
+      "type": [ "null", "object" ]
+    },
+    "bodyData": {
+      "type": "object"
+    },
+    "reactionData": {
+      "type": "array",
+      "items": {
+        "type": "object" 
+      }
+    }
+  }
+}

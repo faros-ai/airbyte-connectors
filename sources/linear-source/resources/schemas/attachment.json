@@ -1,0 +1,49 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "creatorId": {
+      "type": "string"
+    },
+    "issueId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "source": {
+      "type": "object"
+    },
+    "groupBySource": {
+      "type": "boolean"
+    },
+    "iconUploadId": {
+      "type": [ "null", "string" ]
+    },
+    "sourceMetadata": {
+      "type": [ "null", "object" ]
+    }
+  }
+}

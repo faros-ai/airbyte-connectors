@@ -1,0 +1,117 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "number": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "estimate": {
+      "type": ["null", "string"]
+    },
+    "boardOrder": {
+      "type": "integer"
+    },
+    "sortOrder": {
+      "type": "number"
+    },
+    "startedAt": {
+      "type": ["null", "string"]
+    },
+    "completedAt": {
+      "type": ["null", "string"]
+    },
+    "canceledAt": {
+      "type": ["null", "string"]
+    },
+    "autoClosedAt": {
+      "type": ["null", "string"]
+    },
+    "autoArchivedAt": {
+      "type": ["null", "string"]
+    },
+    "dueDate": {
+      "type": ["null", "string"]
+    },
+    "trashed": {
+      "type": ["null", "string"]
+    },
+    "snoozedUntilAt": {
+      "type": ["null", "string"]
+    },
+    "labelIds": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "teamId": {
+      "type": "string"
+    },
+    "cycleId": {
+      "type": ["null", "string"]
+    },
+    "projectId": {
+      "type": ["null", "string"]
+    },
+    "subscriberIds": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "previousIdentifiers": {
+      "type": "array",
+      "items": {}
+    },
+    "creatorId": {
+      "type": "string"
+    },
+    "assigneeId": {
+      "type": "string"
+    },
+    "snoozedById": {
+      "type": ["null", "string"]
+    },
+    "issueImportId": {
+      "type": ["null", "string"]
+    },
+    "stateId": {
+      "type": "string"
+    },
+    "parentId": {
+      "type": ["null", "string"]
+    },
+    "subIssueSortOrder": {
+      "type": ["null", "string"]
+    },
+    "sourceMetadata": {
+      "type": ["null", "object"]
+    },
+    "descriptionData": {
+      "type": ["null", "object"]
+    },
+    "documentVersion": {
+      "type": "integer"
+    }
+  }
+}
