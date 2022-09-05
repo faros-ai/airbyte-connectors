@@ -117,6 +117,7 @@ export interface LinearConfig {
   readonly api_key: string;
   readonly cutoff_days: number;
   readonly page_size?: number;
+  readonly api_type: string;
 }
 
 interface PaginateResponse<T> {
@@ -167,7 +168,7 @@ export class Linear {
 
   async checkConnection(): Promise<void> {
     try {
-      await await this.graphClient.request(USERS_QUERY, {});
+      await this.graphClient.request(USERS_QUERY, {});
     } catch (err: any) {
       let errorMessage = 'Please verify your API key is correct. Error: ';
       if (err.error_code || err.error_info) {

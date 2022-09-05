@@ -1,0 +1,38 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": [ "null", "string" ]
+    },
+    "type": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "actorId": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string"
+    },
+    "countryCode": {
+      "type": [ "null", "string" ]
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "userId": {
+      "type": [ "null", "string" ]
+    }
+  }
+}

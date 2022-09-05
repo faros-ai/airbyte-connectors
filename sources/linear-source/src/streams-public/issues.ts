@@ -21,7 +21,7 @@ export class Issues extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/projects.json');
+    return require('../../resources/schemas/public/projects.json');
   }
   get primaryKey(): StreamKey {
     return 'id';

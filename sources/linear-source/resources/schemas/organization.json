@@ -1,0 +1,65 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "name": {
+      "type": "string"
+    },
+    "urlKey": {
+      "type": "string"
+    },
+    "logoUrl": {
+      "type": "string"
+    },
+    "periodUploadVolume": {
+      "type": "integer"
+    },
+    "gitBranchFormat": {
+      "type": ["null", "string"]
+    },
+    "gitLinkbackMessagesEnabled": {
+      "type": "boolean"
+    },
+    "gitPublicLinkbackMessagesEnabled": {
+      "type": "boolean"
+    },
+    "roadmapEnabled": {
+      "type": "boolean"
+    },
+    "samlEnabled": {
+      "type": "boolean"
+    },
+    "allowedAuthServices": {
+      "type": "array",
+      "items": {}
+    },
+    "deletionRequestedAt": {
+      "type": ["null", "string"]
+    },
+    "reducedPersonalInformation": {
+      "type": "boolean"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "deletionRequestedById": {
+      "type": ["null", "string"]
+    },
+    "serviceId": {
+      "type": "string"
+    },
+    "linearPreviewFlags": {
+      "type": "object"
+    }
+  }
+}

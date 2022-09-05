@@ -1,0 +1,136 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "name": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["null", "string"]
+    },
+    "icon": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "cyclesEnabled": {
+      "type": "boolean"
+    },
+    "cycleStartDay": {
+      "type": "integer"
+    },
+    "cycleDuration": {
+      "type": "integer"
+    },
+    "cycleCooldownTime": {
+      "type": "integer"
+    },
+    "cycleIssueAutoAssignStarted": {
+      "type": "boolean"
+    },
+    "cycleIssueAutoAssignCompleted": {
+      "type": "boolean"
+    },
+    "cycleLockToActive": {
+      "type": "boolean"
+    },
+    "upcomingCycleCount": {
+      "type": "integer"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "inviteHash": {
+      "type": "string"
+    },
+    "issueEstimationType": {
+      "type": "string"
+    },
+    "issueOrderingNoPriorityFirst": {
+      "type": "boolean"
+    },
+    "issueEstimationAllowZero": {
+      "type": "boolean"
+    },
+    "issueSortOrderDefaultToBottom": {
+      "type": "boolean"
+    },
+    "issueEstimationExtended": {
+      "type": "boolean"
+    },
+    "defaultIssueEstimate": {
+      "type": "integer"
+    },
+    "triageEnabled": {
+      "type": "boolean"
+    },
+    "defaultIssueStateId": {
+      "type": "string"
+    },
+    "defaultTemplateForMembersId": {
+      "type": ["null", "string"]
+    },
+    "defaultTemplateForNonMembersId": {
+      "type": ["null", "string"]
+    },
+    "triageIssueStateId": {
+      "type": ["null", "string"]
+    },
+    "private": {
+      "type": "boolean"
+    },
+    "draftWorkflowStateId": {
+      "type": ["null", "string"]
+    },
+    "startWorkflowStateId": {
+      "type": "string"
+    },
+    "reviewWorkflowStateId": {
+      "type": ["null", "string"]
+    },
+    "mergeWorkflowStateId": {
+      "type": "string"
+    },
+    "groupIssueHistory": {
+      "type": "boolean"
+    },
+    "slackNewIssue": {
+      "type": "boolean"
+    },
+    "slackIssueComments": {
+      "type": "boolean"
+    },
+    "slackIssueStatuses": {
+      "type": "boolean"
+    },
+    "autoClosePeriod": {
+      "type": "integer"
+    },
+    "autoCloseStateId": {
+      "type": "string"
+    },
+    "autoArchivePeriod": {
+      "type": "integer"
+    },
+    "markedAsDuplicateWorkflowStateId": {
+      "type": ["null", "string"]
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "name": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "avatarUrl": {
+      "type": "string"
+    },
+    "disableReason": {
+      "type": ["null", "string"]
+    },
+    "inviteHash": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["null", "string"]
+    },
+    "statusEmoji": {
+      "type": ["null", "string"]
+    },
+    "statusLabel": {
+      "type": ["null", "string"]
+    },
+    "statusUntilAt": {
+      "type": ["null", "string"]
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "userAccountId": {
+      "type": "string"
+    },
+    "alternativeEmails": {
+      "type": "array",
+      "items": {}
+    },
+    "gitHubUserId": {
+      "type": ["null", "string"]
+    },
+    "externalUserMapping": {
+      "type": "object"
+    },
+    "external": {
+      "type": "boolean"
+    },
+    "role": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+}

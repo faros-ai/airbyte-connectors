@@ -1,0 +1,27 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "type": {
+      "type": "string"
+    },
+    "issueId": {
+      "type": "string"
+    },
+    "relatedIssueId": {
+      "type": "string"
+    }
+  }
+
+}

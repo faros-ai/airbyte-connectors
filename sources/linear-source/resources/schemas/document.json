@@ -1,0 +1,41 @@
+{
+
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "archivedAt": {
+      "type": ["null", "string"]
+    },
+    "title": {
+      "type": "string"
+    },
+    "contentData": {
+      "type": "object"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "creatorId": {
+      "type": "string"
+    },
+    "updatedById": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "slugId": {
+      "type": "string"
+    }
+  }
+}

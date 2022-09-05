@@ -17,7 +17,7 @@ export class Cycles extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/cycles.json');
+    return require('../../resources/schemas/public/cycles.json');
   }
   get primaryKey(): StreamKey {
     return 'id';
