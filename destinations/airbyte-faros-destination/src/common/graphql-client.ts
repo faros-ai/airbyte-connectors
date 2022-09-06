@@ -145,7 +145,7 @@ export class GraphQLClient {
         break;
       default:
         throw new VError(
-          `Unuspported operation ${record.operation} for ${record}`
+          `Unsupported operation ${record.operation} for ${record}`
         );
     }
   }
@@ -196,10 +196,10 @@ export class GraphQLClient {
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
       const res = await this.backend.postQuery(gql);
-      if (res.data.errors) {
+      if (res.errors) {
         this.logger.warn(
           `Error while saving batch: ${JSON.stringify(
-            res.data.errors
+            res.errors
           )}. Query: ${gql}`
         );
         // now try mutations individually and fail on the first bad one
@@ -207,10 +207,10 @@ export class GraphQLClient {
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
           this.writeBuffer.shift();
-          if (opRes.data.errors) {
+          if (opRes.errors) {
             throw new VError(
               `${op.errorMsg} with query '${opGql}': ${JSON.stringify(
-                opRes.data.errors
+                opRes.errors
               )}`
             );
           }
