@@ -39,7 +39,7 @@ jobs:
         run: npm --version
 
       - name: Reformat package-lock.json
-        run: npm ci
+        run: npm run clean && npm run prepare
 
       - name: Print package-lock.json
         run: head package-lock.json
