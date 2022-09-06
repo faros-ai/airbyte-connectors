@@ -4,7 +4,8 @@ on:
     branches:
       - dependabot/npm_and_yarn/**
     paths:
-      - package-lock.json
+      - "package-lock.json"
+      - "**/package.json"
   workflow_dispatch:
 
 jobs:
