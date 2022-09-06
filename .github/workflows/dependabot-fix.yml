@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - dependabot/npm_and_yarn/**
-    paths:
-      - "package-lock.json"
-      - "**/package.json"
   workflow_dispatch:
 
 jobs:
