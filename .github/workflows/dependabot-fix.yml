@@ -9,6 +9,8 @@ jobs:
   reformat:
     name: Reformat package-lock.json
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 15
     env:
       FORCE_COLOR: true
