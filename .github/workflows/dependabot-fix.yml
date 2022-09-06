@@ -1,5 +1,10 @@
-name: Dependabot
+name: Dependabot Fix
 on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/**
+    paths:
+      - package-lock.json
   workflow_dispatch:
 
 jobs:
@@ -38,8 +43,11 @@ jobs:
       - name: Check npm version
         run: npm --version
 
+      - name: Install Lerna
+        run: npm install -g lerna
+
       - name: Reformat package-lock.json
-        run: npm ci
+        run: lerna bootstrap --hoist --no-ci
 
       - name: Print package-lock.json
         run: head package-lock.json
