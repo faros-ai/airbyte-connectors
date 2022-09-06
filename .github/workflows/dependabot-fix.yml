@@ -42,7 +42,7 @@ jobs:
         run: npm install -g lerna
 
       - name: Reformat package-lock.json
-        run: lerna bootstrap --hoist
+        run: lerna bootstrap --hoist --no-ci
 
       - name: Print package-lock.json
         run: head package-lock.json
