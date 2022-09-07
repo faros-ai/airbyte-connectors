@@ -1,23 +1,16 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {jenkinsAllStreamsLog} from './data';
 
 describe('jenkins', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/jenkins/catalog.json';
   let configPath: string;
-  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
-  const revisionId = 'test-revision-id';
   const streamNamePrefix = 'mytestsource__jenkins__';
 
   beforeEach(async () => {

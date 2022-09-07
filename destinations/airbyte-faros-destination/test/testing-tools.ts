@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {Mockttp} from 'mockttp';
+import pino from 'pino';
 import tmp from 'tmp-promise';
 import {Dictionary} from 'ts-essentials';
 import util from 'util';
@@ -88,4 +89,12 @@ export async function initMockttp(mockttp: Mockttp): Promise<void> {
 
   // Hasura health check
   await mockttp.forGet('/healthz').once().thenReply(200, JSON.stringify({}));
+}
+
+export function testLogger(name = 'test'): pino.Logger {
+  return pino({
+    name: 'test',
+    level: process.env.LOG_LEVEL ?? 'info',
+    transport: {target: 'pino-pretty', options: {levelFirst: true}},
+  });
 }

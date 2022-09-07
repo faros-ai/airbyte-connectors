@@ -2,18 +2,13 @@ import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {readFileSync} from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../testing-tools';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {farosFeedsAllStreamsLog} from './data';
 
 describe('faros_feeds', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/faros_feeds/catalog.json';
   let configPath: string;
