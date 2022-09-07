@@ -1,11 +1,16 @@
-name: Dependabot
+name: Dependabot Fix
 on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/**
   workflow_dispatch:
 
 jobs:
   reformat:
     name: Reformat package-lock.json
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 15
     env:
       FORCE_COLOR: true
@@ -38,8 +43,11 @@ jobs:
       - name: Check npm version
         run: npm --version
 
+      - name: Install Lerna
+        run: npm install -g lerna
+
       - name: Reformat package-lock.json
-        run: npm ci
+        run: lerna bootstrap --hoist --no-ci
 
       - name: Print package-lock.json
         run: head package-lock.json
