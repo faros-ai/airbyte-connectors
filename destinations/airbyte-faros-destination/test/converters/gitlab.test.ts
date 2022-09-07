@@ -1,21 +1,20 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {
+  initMockttp,
+  readTestResourceFile,
+  tempConfig,
+  testLogger,
+} from '../testing-tools';
 import {gitlabAllStreamsLog} from './data';
 
 describe('gitlab', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/gitlab/catalog.json';
-  const catalogRawPath = 'test/resources/gitlab/catalog-raw.json';
   let configPath: string;
   const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
   const revisionId = 'test-revision-id';

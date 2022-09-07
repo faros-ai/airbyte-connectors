@@ -1,18 +1,18 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import pino from 'pino';
 
 import {CLI, read} from '../cli';
-import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {
+  initMockttp,
+  readTestResourceFile,
+  tempConfig,
+  testLogger,
+} from '../testing-tools';
 import {gitlabCiAllStreamsLog} from './data';
 
 describe('gitlab-ci', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/gitlab-ci/catalog.json';
   const catalogRawPath = 'test/resources/gitlab-ci/catalog-raw.json';

@@ -1,19 +1,14 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
-import pino from 'pino';
 
 import {Edition, InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../testing-tools';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {servicenowAllStreamsLog} from './data';
 
 describe('servicenow', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/servicenow/catalog.json';
   let configPath: string;

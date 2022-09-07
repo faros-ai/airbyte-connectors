@@ -2,19 +2,19 @@ import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
-import pino from 'pino';
 
 import {InvalidRecordStrategy} from '../../src/destination';
 import {CLI, read} from '../cli';
-import {initMockttp, readTestResourceFile, tempConfig} from '../testing-tools';
+import {
+  initMockttp,
+  readTestResourceFile,
+  tempConfig,
+  testLogger,
+} from '../testing-tools';
 import {githubAllStreamsLog, githubLog, githubPGRawLog} from './data';
 
 describe('github', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/github/catalog.json';
   const catalogRawPath = 'test/resources/github/catalog-raw.json';

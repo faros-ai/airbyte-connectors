@@ -1,18 +1,13 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import pino from 'pino';
 
-import {initMockttp, tempConfig} from '../testing-tools';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {azureactivedirectoryAllStreamsLog} from './data';
 
 describe('azureactivedirectory', () => {
-  const logger = pino({
-    name: 'test',
-    level: process.env.LOG_LEVEL ?? 'info',
-    prettyPrint: {levelFirst: true},
-  });
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/azureactivedirectory/catalog.json';
   let configPath: string;
