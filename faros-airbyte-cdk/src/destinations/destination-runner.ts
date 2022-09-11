@@ -66,9 +66,21 @@ export class AirbyteDestinationRunner extends Runner {
       )
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
-          const catalog = require(path.resolve(opts.catalog));
-          const spec = await this.destination.spec();
-          const config = withDefaults(require(path.resolve(opts.config)), spec);
+          let catalog;
+          let spec;
+          let config;
+          try {
+            catalog = require(path.resolve(opts.catalog));
+            spec = await this.destination.spec();
+            config = withDefaults(require(path.resolve(opts.config)), spec);
+          } catch (e: any) {
+            const w = wrapApiError(e);
+            const s = JSON.stringify(w);
+            this.logger.error(
+              `Encountered an error while loading configuration: ${w} - ${s}`
+            );
+            throw e;
+          }
           this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
           this.logger.info('dryRun: ' + opts.dryRun);
