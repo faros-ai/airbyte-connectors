@@ -3,6 +3,7 @@ import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
+import {AirbyteConfig, AirbyteSpec} from '../protocol';
 import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
@@ -66,21 +67,7 @@ export class AirbyteDestinationRunner extends Runner {
       )
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
-          let catalog;
-          let spec;
-          let config;
-          try {
-            catalog = require(path.resolve(opts.catalog));
-            spec = await this.destination.spec();
-            config = withDefaults(require(path.resolve(opts.config)), spec);
-          } catch (e: any) {
-            const w = wrapApiError(e);
-            const s = JSON.stringify(w);
-            this.logger.error(
-              `Encountered an error while loading configuration: ${w} - ${s}`
-            );
-            throw e;
-          }
+          const {catalog, spec, config} = await this.loadConfig(opts);
           this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
           this.logger.info('dryRun: ' + opts.dryRun);
@@ -109,5 +96,25 @@ export class AirbyteDestinationRunner extends Runner {
           }
         }
       );
+  }
+
+  private async loadConfig(opts: {
+    config: string;
+    catalog: string;
+    dryRun: boolean;
+  }): Promise<{catalog: any; spec: AirbyteSpec; config: AirbyteConfig}> {
+    try {
+      const catalog = require(path.resolve(opts.catalog));
+      const spec = await this.destination.spec();
+      const config = withDefaults(require(path.resolve(opts.config)), spec);
+      return {catalog, spec, config};
+    } catch (e: any) {
+      const w = wrapApiError(e);
+      const s = JSON.stringify(w);
+      this.logger.error(
+        `Encountered an error while loading configuration: ${w} - ${s}`
+      );
+      throw e;
+    }
   }
 }
