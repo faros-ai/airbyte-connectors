@@ -8,9 +8,9 @@ COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
-    && npm install -g lerna tsc \
-    && lerna bootstrap --hoist \
-    && apk del .gyp
+    && npm install -g lerna tsc
+RUN lerna bootstrap --hoist
+RUN apk del .gyp
 
 ARG path
 RUN test -n "$path" || (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)
