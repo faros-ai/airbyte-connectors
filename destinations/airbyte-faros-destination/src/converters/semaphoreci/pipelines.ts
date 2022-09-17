@@ -54,7 +54,7 @@ export class Pipelines extends SemaphoreCIConverter {
     const pipeline = {
       model: 'cicd_Pipeline',
       record: {
-        uid: pipelineRecord.name,
+        uid: `${project?.record?.data?.metadata.name}-${pipelineRecord.name}`,
         name: pipelineRecord.name,
         organization: organizationKey,
       },
