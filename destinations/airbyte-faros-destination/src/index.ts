@@ -32,6 +32,7 @@ export function mainCommand(options?: {
   return program;
 }
 
+export {Edition, InvalidRecordStrategy} from './common/types';
 export {
   Converter,
   DestinationRecord,
@@ -40,5 +41,4 @@ export {
   StreamName,
   StreamNameSeparator,
 } from './converters/converter';
-export {Edition, InvalidRecordStrategy} from './destination';
 export {FarosDestinationRunner} from './destination-runner';

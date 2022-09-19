@@ -1,7 +1,6 @@
 import {Command} from 'commander';
 import {
   AirbyteConfig,
-  AirbyteConnectionStatusMessage,
   AirbyteDestinationRunner,
   AirbyteLogger,
   AirbyteSpec,

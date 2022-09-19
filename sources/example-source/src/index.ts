@@ -18,12 +18,16 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
+interface SourceConfig extends AirbyteConfig {
+  user: string;
+}
+
 /** Example source implementation. */
 class ExampleSource extends AirbyteSourceBase {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: SourceConfig): Promise<[boolean, VError]> {
     if (config.user === 'chris') {
       return [true, undefined];
     }

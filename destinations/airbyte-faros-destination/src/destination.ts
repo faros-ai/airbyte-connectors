@@ -1,6 +1,5 @@
 import Analytics from 'analytics-node';
 import {
-  AirbyteConfig,
   AirbyteConfiguredCatalog,
   AirbyteConfiguredStream,
   AirbyteConnectionStatus,
@@ -33,6 +32,11 @@ import {VError} from 'verror';
 
 import {GraphQLClient} from './common/graphql-client';
 import {GraphQLWriter} from './common/graphql-writer';
+import {
+  DestinationConfig,
+  Edition,
+  InvalidRecordStrategy,
+} from './common/types';
 import {WriteStats} from './common/write-stats';
 import {HasuraBackend} from './community/hasura-backend';
 import {
@@ -45,16 +49,6 @@ import {
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
-
-export enum InvalidRecordStrategy {
-  FAIL = 'FAIL',
-  SKIP = 'SKIP',
-}
-
-export enum Edition {
-  COMMUNITY = 'community',
-  CLOUD = 'cloud',
-}
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -80,7 +74,7 @@ export class FarosDestination extends AirbyteDestination {
     super();
   }
 
-  onConfigCheck: (config: AirbyteConfig) => Promise<void> = undefined;
+  onConfigCheck: (config: DestinationConfig) => Promise<void> = undefined;
 
   getFarosClient(): FarosClient {
     if (this.farosClient) return this.farosClient;
@@ -98,7 +92,9 @@ export class FarosDestination extends AirbyteDestination {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
+  async check(
+    config: DestinationConfig
+  ): Promise<AirbyteConnectionStatusMessage> {
     try {
       await this.init(config);
       if (this.onConfigCheck) {
@@ -115,7 +111,7 @@ export class FarosDestination extends AirbyteDestination {
     });
   }
 
-  private async initCommunity(config: AirbyteConfig): Promise<void> {
+  private async initCommunity(config: DestinationConfig): Promise<void> {
     if (!config.edition_configs.hasura_url) {
       throw new VError('Community Edition Hasura URL is not set');
     }
@@ -162,7 +158,7 @@ export class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private async initCloud(config: AirbyteConfig): Promise<void> {
+  private async initCloud(config: DestinationConfig): Promise<void> {
     if (!config.edition_configs.api_url) {
       throw new VError('API url is not set');
     }
@@ -207,7 +203,7 @@ export class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private async initGraphQLV2(config: AirbyteConfig): Promise<void> {
+  private async initGraphQLV2(config: DestinationConfig): Promise<void> {
     const client = this.getFarosClient();
     const graph = this.farosGraph;
     try {
@@ -241,7 +237,7 @@ export class FarosDestination extends AirbyteDestination {
     }
   }
 
-  private initGlobal(config: AirbyteConfig): void {
+  private initGlobal(config: DestinationConfig): void {
     try {
       this.jsonataConverter = config.jsonata_expression
         ? JSONataConverter.make(
@@ -320,7 +316,7 @@ export class FarosDestination extends AirbyteDestination {
     );
   }
 
-  private async init(config: AirbyteConfig): Promise<void> {
+  private async init(config: DestinationConfig): Promise<void> {
     const edition = config.edition_configs?.edition;
     if (!edition) {
       throw new VError('Faros Edition is not set');
@@ -340,7 +336,7 @@ export class FarosDestination extends AirbyteDestination {
   }
 
   private getOrigin(
-    config: AirbyteConfig,
+    config: DestinationConfig,
     catalog: AirbyteConfiguredCatalog
   ): string {
     if (config.origin) {
@@ -365,7 +361,7 @@ export class FarosDestination extends AirbyteDestination {
   }
 
   async *write(
-    config: AirbyteConfig,
+    config: DestinationConfig,
     catalog: AirbyteConfiguredCatalog,
     stdin: NodeJS.ReadStream,
     dryRun: boolean
