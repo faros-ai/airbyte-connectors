@@ -272,7 +272,7 @@ describe('utils', () => {
   };
 
   test('withDefaults prop with default and defined value', () => {
-    const res = withDefaults(config, spec) as DestinationConfig;
+    const res = withDefaults(config, spec);
     expect(res.edition_configs.check_tenant).toBeDefined();
     expect(config.edition_configs.check_tenant).toStrictEqual(
       res.edition_configs.check_tenant
@@ -280,7 +280,7 @@ describe('utils', () => {
   });
 
   test('withDefaults prop without default and defined value', () => {
-    const res = withDefaults(config, spec) as DestinationConfig;
+    const res = withDefaults(config, spec);
     expect(res.edition_configs.api_key).toBeDefined();
     expect(config.edition_configs.api_key).toStrictEqual(
       res.edition_configs.api_key
@@ -288,13 +288,13 @@ describe('utils', () => {
   });
 
   test('withDefaults prop without default and undefined value', () => {
-    const res = withDefaults(config, spec) as DestinationConfig;
+    const res = withDefaults(config, spec);
     expect(res.origin).toBeUndefined();
     expect(config.edition_configs.origin).toBeUndefined();
   });
 
   test('withDefaults prop with default and undefined value', () => {
-    const res = withDefaults(config, spec) as DestinationConfig;
+    const res = withDefaults(config, spec);
     expect(res.edition_configs.cloud_graphql_batch_size).toBeDefined();
     expect(config.edition_configs.cloud_graphql_batch_size).toBeUndefined();
   });

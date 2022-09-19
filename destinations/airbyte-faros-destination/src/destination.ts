@@ -55,7 +55,7 @@ interface FarosDestinationState {
 }
 
 /** Faros destination implementation. */
-export class FarosDestination extends AirbyteDestination {
+export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   constructor(
     private readonly logger: AirbyteLogger,
     private specOverride: AirbyteSpec = undefined,

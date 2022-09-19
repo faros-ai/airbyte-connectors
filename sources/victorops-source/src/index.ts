@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,16 +19,13 @@ export function mainCommand(): Command {
 }
 
 /** Victorops source implementation. */
-export class VictoropsSource extends AirbyteSourceBase {
+export class VictoropsSource extends AirbyteSourceBase<VictoropsConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: VictoropsConfig): Promise<[boolean, VError]> {
     try {
-      const victorops = Victorops.instance(
-        config as VictoropsConfig,
-        this.logger
-      );
+      const victorops = Victorops.instance(config, this.logger);
 
       await victorops.checkConnection();
     } catch (err: any) {
@@ -37,11 +33,11 @@ export class VictoropsSource extends AirbyteSourceBase {
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: VictoropsConfig): AirbyteStreamBase[] {
     return [
-      new Incidents(config as VictoropsConfig, this.logger),
-      new Teams(config as VictoropsConfig, this.logger),
-      new Users(config as VictoropsConfig, this.logger),
+      new Incidents(config, this.logger),
+      new Teams(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

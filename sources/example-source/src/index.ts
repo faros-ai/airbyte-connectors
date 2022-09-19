@@ -11,6 +11,10 @@ import VError from 'verror';
 
 import {Builds} from './streams';
 
+interface SourceConfig extends AirbyteConfig {
+  user: string;
+}
+
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -18,12 +22,8 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-interface SourceConfig extends AirbyteConfig {
-  user: string;
-}
-
 /** Example source implementation. */
-class ExampleSource extends AirbyteSourceBase {
+class ExampleSource extends AirbyteSourceBase<SourceConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

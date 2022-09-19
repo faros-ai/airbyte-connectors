@@ -42,20 +42,23 @@ describe('index', () => {
     });
     await expect(
       source.checkConnection({
-        apiKey: 'bad',
-        applicationKey: 'bad',
+        api_key: 'bad',
+        application_key: 'bad',
       })
     ).resolves.toStrictEqual([false, expectedError]);
   });
+
+  const sourceConfig = {api_key: 'good', application_key: 'good'};
 
   test('check connection good token', async () => {
     const source = new sut.DatadogSource(logger);
     Datadog.instance = jest.fn().mockReturnValue({
       checkConnection: jest.fn().mockResolvedValue({}),
     });
-    await expect(
-      source.checkConnection({apiKey: 'good', applicationKey: 'good'})
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
@@ -73,10 +76,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -101,10 +101,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     const itemIter = stream.readRecords(
       SyncMode.INCREMENTAL,
@@ -136,10 +133,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[1];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -182,10 +176,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[1];
     const itemIter = stream.readRecords(
       SyncMode.INCREMENTAL,
@@ -231,10 +222,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[2];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -259,10 +247,7 @@ describe('index', () => {
     );
 
     const source = new sut.DatadogSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[2];
     const itemIter = stream.readRecords(
       SyncMode.INCREMENTAL,

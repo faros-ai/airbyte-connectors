@@ -17,7 +17,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 /** Backlog source implementation. */
-export class BacklogSource extends AirbyteSourceBase {
+export class BacklogSource extends AirbyteSourceBase<BacklogConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

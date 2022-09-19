@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -21,20 +20,20 @@ export function mainCommand(): Command {
 }
 
 /** Harness source implementation. */
-export class HarnessSource extends AirbyteSourceBase {
+export class HarnessSource extends AirbyteSourceBase<HarnessConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: HarnessConfig): Promise<[boolean, VError]> {
     try {
-      const harness = Harness.instance(config as HarnessConfig, this.logger);
+      const harness = Harness.instance(config, this.logger);
       await harness.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    return [new Executions(config as HarnessConfig, this.logger)];
+  streams(config: HarnessConfig): AirbyteStreamBase[] {
+    return [new Executions(config, this.logger)];
   }
 }

@@ -21,7 +21,7 @@ export function mainCommand(): Command {
 }
 
 /** AzureActiveDirectory source implementation. */
-export class AzureActiveDirectorySource extends AirbyteSourceBase {
+export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDirectoryConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

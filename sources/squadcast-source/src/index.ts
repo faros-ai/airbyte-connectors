@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,28 +19,25 @@ export function mainCommand(): Command {
 }
 
 /** SquadCast source implementation. */
-export class SquadcastSource extends AirbyteSourceBase {
+export class SquadcastSource extends AirbyteSourceBase<SquadcastConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: SquadcastConfig): Promise<[boolean, VError]> {
     try {
-      const squadcast = await Squadcast.instance(
-        config as SquadcastConfig,
-        this.logger
-      );
+      const squadcast = await Squadcast.instance(config, this.logger);
       await squadcast.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: SquadcastConfig): AirbyteStreamBase[] {
     return [
-      new Events(config as SquadcastConfig, this.logger),
-      new Incidents(config as SquadcastConfig, this.logger),
-      new Services(config as SquadcastConfig, this.logger),
-      new Users(config as SquadcastConfig, this.logger),
+      new Events(config, this.logger),
+      new Incidents(config, this.logger),
+      new Services(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

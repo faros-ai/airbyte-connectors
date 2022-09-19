@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,29 +19,22 @@ export function mainCommand(): Command {
 }
 
 /** SemaphoreCI source implementation. */
-export class SemaphoreCISource extends AirbyteSourceBase {
+export class SemaphoreCISource extends AirbyteSourceBase<SemaphoreCIConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: SemaphoreCIConfig): Promise<[boolean, VError]> {
     try {
-      const semaphoreci = SemaphoreCI.instance(
-        config as SemaphoreCIConfig,
-        this.logger
-      );
+      const semaphoreci = SemaphoreCI.instance(config, this.logger);
       await semaphoreci.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    const projects = new Projects(config as SemaphoreCIConfig, this.logger);
-    const pipelines = new Pipelines(
-      config as SemaphoreCIConfig,
-      this.logger,
-      projects
-    );
+  streams(config: SemaphoreCIConfig): AirbyteStreamBase[] {
+    const projects = new Projects(config, this.logger);
+    const pipelines = new Pipelines(config, this.logger, projects);
 
     return [projects, pipelines];
   }

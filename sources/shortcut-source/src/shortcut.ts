@@ -16,7 +16,7 @@ export interface ShortcutConfig {
   readonly token: string;
   readonly base_url: string;
   readonly version: string;
-  readonly project_public_id: number | null;
+  readonly project_public_id?: number;
 }
 
 export interface ExtendStory extends Story {

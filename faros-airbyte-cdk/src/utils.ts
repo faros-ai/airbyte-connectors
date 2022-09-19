@@ -40,10 +40,10 @@ function toPath(pointer: string): string {
  * Sets all undefined values with defaults from spec to their default value.
  * The changes are made on a copy of the input.
  * */
-export function withDefaults(
-  config: AirbyteConfig,
+export function withDefaults<Config extends AirbyteConfig>(
+  config: Config,
   spec: AirbyteSpec
-): AirbyteConfig {
+): Config {
   const defaultsByPath = new Map<string, any>();
   traverse(spec.spec.connectionSpecification ?? {}, {
     cb: (schema, pointer) => {

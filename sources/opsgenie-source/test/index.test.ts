@@ -40,6 +40,9 @@ describe('index', () => {
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
+
+  const sourceConfig = {api_key: 'key', cutoff_days: 90};
+
   test('check connection', async () => {
     OpsGenie.instance = jest.fn().mockImplementation(() => {
       return new OpsGenie(
@@ -53,11 +56,10 @@ describe('index', () => {
     });
 
     const source = new sut.OpsGenieSource(logger);
-    await expect(
-      source.checkConnection({
-        token: '',
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect config', async () => {
@@ -65,10 +67,7 @@ describe('index', () => {
       return new OpsGenie(null, null, 1, logger);
     });
     const source = new sut.OpsGenieSource(logger);
-    const res = await source.checkConnection({
-      token: '',
-      cutoff_days: 90,
-    });
+    const res = await source.checkConnection(sourceConfig);
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
     expect(res[1].message).toMatch(
@@ -94,7 +93,7 @@ describe('index', () => {
       );
     });
     const source = new sut.OpsGenieSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const incidentsStream = streams[0];
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -124,7 +123,7 @@ describe('index', () => {
       );
     });
     const source = new sut.OpsGenieSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const incidentsStream = streams[0];
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -152,7 +151,7 @@ describe('index', () => {
       );
     });
     const source = new sut.OpsGenieSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const teamsStream = streams[1];
     const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -182,7 +181,7 @@ describe('index', () => {
       );
     });
     const source = new sut.OpsGenieSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const usersStream = streams[2];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
@@ -212,7 +211,7 @@ describe('index', () => {
       );
     });
     const source = new sut.OpsGenieSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const usersStream = streams[2];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
