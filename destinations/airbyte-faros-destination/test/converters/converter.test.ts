@@ -2,7 +2,6 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Converter, StreamContext} from '../../src';
-import {DestinationConfig} from '../../src/common/types';
 import {DestinationRecordTyped} from '../../src/converters/converter';
 
 describe('converter', () => {
@@ -33,7 +32,7 @@ describe('converter', () => {
 
   test('set and get records from StreamContext', () => {
     const stream = new GroupUsers().streamName.asString;
-    const ctx = new StreamContext(new AirbyteLogger(), {} as DestinationConfig);
+    const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}});
     const record = new AirbyteRecord({
       stream,
       emitted_at: 123,
