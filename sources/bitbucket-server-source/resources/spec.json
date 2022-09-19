@@ -1,0 +1,73 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Bitbucket Server Spec",
+    "type": "object",
+    "required": [
+      "projects",
+      "cutoff_days"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "serverUrl": {
+        "type": "string",
+        "title": "API URL",
+        "description": "The API URL for fetching data from Bitbucket",
+        "examples": [
+          "https://api.bitbucket.org/2.0"
+        ],
+        "default": "https://api.bitbucket.org/2.0"
+      },
+      "username": {
+        "type": "string",
+        "description": "Bitbucket username. Either username/password or Access Token must be provided."
+      },
+      "password": {
+        "type": "string",
+        "description": "Bitbucket password",
+        "airbyte_secret": true
+      },
+      "token": {
+        "type": "string",
+        "title": "Access Token",
+        "description": "Personal Access Token for Bitbucket Server API authentication. See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html for information on how to generate this token.",
+        "airbyte_secret": true
+      },
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Projects",
+        "description": "Names of your Bitbucket Server projects",
+        "examples": [
+          "myproject"
+        ]
+      },
+      "repositories": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Repositories",
+        "description": "Names of your Bitbucket repositories in the format 'project/repo-slug'. If none are provided, data from all repositories for the specified projects will be pulled.",
+        "examples": [
+          "myproject/myrepo"
+        ]
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "pagelen": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Page size to use when requesting records from Bitbucket Server API",
+        "default": 100
+      }
+    }
+  }
+}
