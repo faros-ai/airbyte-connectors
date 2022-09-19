@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {InvalidRecordStrategy} from '../../src/destination';
+import {InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {
   initMockttp,

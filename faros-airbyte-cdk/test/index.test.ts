@@ -241,7 +241,24 @@ describe('utils', () => {
     },
   };
   const spec = new AirbyteSpec(testSpec);
-  const config: AirbyteConfig = {
+
+  interface DestinationConfig extends AirbyteConfig {
+    dry_run?: boolean;
+    jsonata_mode?: string;
+    edition_configs: {
+      edition: string;
+      api_url: string;
+      api_key: string;
+      graph: string;
+      check_tenant?: boolean;
+      origin?: string;
+      cloud_graphql_batch_size?: number;
+    };
+    invalid_record_strategy: string;
+    origin?: string;
+  }
+
+  const config: DestinationConfig = {
     dry_run: false,
     jsonata_mode: 'FALLBACK',
     edition_configs: {
@@ -255,7 +272,7 @@ describe('utils', () => {
   };
 
   test('withDefaults prop with default and defined value', () => {
-    const res = withDefaults(config, spec);
+    const res = withDefaults(config, spec) as DestinationConfig;
     expect(res.edition_configs.check_tenant).toBeDefined();
     expect(config.edition_configs.check_tenant).toStrictEqual(
       res.edition_configs.check_tenant
@@ -263,7 +280,7 @@ describe('utils', () => {
   });
 
   test('withDefaults prop without default and defined value', () => {
-    const res = withDefaults(config, spec);
+    const res = withDefaults(config, spec) as DestinationConfig;
     expect(res.edition_configs.api_key).toBeDefined();
     expect(config.edition_configs.api_key).toStrictEqual(
       res.edition_configs.api_key
@@ -271,13 +288,13 @@ describe('utils', () => {
   });
 
   test('withDefaults prop without default and undefined value', () => {
-    const res = withDefaults(config, spec);
+    const res = withDefaults(config, spec) as DestinationConfig;
     expect(res.origin).toBeUndefined();
     expect(config.edition_configs.origin).toBeUndefined();
   });
 
   test('withDefaults prop with default and undefined value', () => {
-    const res = withDefaults(config, spec);
+    const res = withDefaults(config, spec) as DestinationConfig;
     expect(res.edition_configs.cloud_graphql_batch_size).toBeDefined();
     expect(config.edition_configs.cloud_graphql_batch_size).toBeUndefined();
   });
