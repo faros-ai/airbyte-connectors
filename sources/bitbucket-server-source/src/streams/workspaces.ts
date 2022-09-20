@@ -1,17 +1,12 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServer} from '../bitbucket-server/bitbucket-server';
 import {BitbucketServerConfig, Workspace} from '../bitbucket-server/types';
+import {StreamBase} from './common';
 
 type StreamSlice = {project: string};
 
-export class Workspaces extends AirbyteStreamBase {
+export class Workspaces extends StreamBase {
   constructor(readonly config: BitbucketServerConfig, logger: AirbyteLogger) {
     super(logger);
   }
@@ -35,8 +30,6 @@ export class Workspaces extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Workspace> {
-    yield BitbucketServer.instance(this.config, this.logger).workspace(
-      streamSlice.project
-    );
+    yield this.server.workspace(streamSlice.project);
   }
 }

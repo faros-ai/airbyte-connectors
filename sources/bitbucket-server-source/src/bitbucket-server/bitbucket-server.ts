@@ -1,6 +1,7 @@
 import Client, {Schema} from '@atlassian/bitbucket-server';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {AsyncOrSync, Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {
@@ -19,8 +20,7 @@ const DEFAULT_PAGE_SIZE = 100;
 type Dict = Dictionary<any>;
 type ExtendedClient = Client & {
   addPlugin: (plugin: typeof MoreEndpointMethodsPlugin) => void;
-  // MEP: MoreEndpointsPrefix
-  [MEP]: any;
+  [MEP]: any; // MEP: MoreEndpointsPrefix
 };
 
 export class BitbucketServer {
@@ -120,9 +120,11 @@ export class BitbucketServer {
     } while (page);
   }
 
-  async *repositories(projectKey: string): AsyncGenerator<Repository> {
+  @Memoize((projectKey: string) => projectKey)
+  async repositories(projectKey: string): Promise<ReadonlyArray<Repository>> {
     this.logger.debug(`Fetching repositories for project: ${projectKey}`);
-    yield* this.paginate<Dict, Repository>(
+    const results: Repository[] = [];
+    const repos = this.paginate<Dict, Repository>(
       (start) =>
         this.client[MEP].projects.getRepositories({
           projectKey,
@@ -146,6 +148,10 @@ export class BitbucketServer {
         };
       }
     );
+    for await (const repo of repos) {
+      results.push(repo);
+    }
+    return results;
   }
 
   async workspace(projectKey: string): Promise<Workspace> {
