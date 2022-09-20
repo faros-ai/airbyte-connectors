@@ -5,12 +5,13 @@
     "title": "Bitbucket Server Spec",
     "type": "object",
     "required": [
+      "cutoff_days",
       "projects",
-      "cutoff_days"
+      "server_url"
     ],
     "additionalProperties": true,
     "properties": {
-      "serverUrl": {
+      "server_url": {
         "type": "string",
         "title": "API URL",
         "description": "The API URL for fetching data from Bitbucket",
@@ -45,24 +46,13 @@
           "myproject"
         ]
       },
-      "repositories": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Repositories",
-        "description": "Names of your Bitbucket repositories in the format 'project/repo-slug'. If none are provided, data from all repositories for the specified projects will be pulled.",
-        "examples": [
-          "myproject/myrepo"
-        ]
-      },
       "cutoff_days": {
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "pagelen": {
+      "page_size": {
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket Server API",

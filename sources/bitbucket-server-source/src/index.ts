@@ -8,6 +8,10 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
+import {BitbucketServer} from './bitbucket-server/bitbucket-server';
+import {BitbucketServerConfig} from './bitbucket-server/types';
+import {WorkspaceUsers} from './streams/workspace_users';
+
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -15,17 +19,25 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class BitbucketServerSource extends AirbyteSourceBase {
+export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConfig> {
   async spec(): Promise<AirbyteSpec> {
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: any): Promise<[boolean, VError]> {
+  async checkConnection(
+    config: BitbucketServerConfig
+  ): Promise<[boolean, VError]> {
+    try {
+      const bitbucket = BitbucketServer.instance(config, this.logger);
+      await bitbucket.checkConnection();
+    } catch (error: any) {
+      return [false, error];
+    }
     return [true, undefined];
   }
 
-  streams(config: any): AirbyteStreamBase[] {
-    return [];
+  streams(config: BitbucketServerConfig): AirbyteStreamBase[] {
+    return [new WorkspaceUsers(config, this.logger)];
   }
 }
