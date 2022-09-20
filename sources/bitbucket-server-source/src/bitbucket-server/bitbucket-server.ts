@@ -17,7 +17,11 @@ import {
 const DEFAULT_PAGE_SIZE = 100;
 
 type Dict = Dictionary<any>;
-type ExtendedClient = Client & {[MEP]: any}; // MEP: MoreEndpointsPrefix
+type ExtendedClient = Client & {
+  addPlugin: (plugin: typeof MoreEndpointMethodsPlugin) => void;
+  // MEP: MoreEndpointsPrefix
+  [MEP]: any;
+};
 
 export class BitbucketServer {
   private static bitbucket: BitbucketServer = null;
@@ -39,9 +43,7 @@ export class BitbucketServer {
       logger.error(errorMessage);
       throw new VError(errorMessage);
     }
-    const client = new Client({baseUrl: config.server_url});
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    const client = new Client({baseUrl: config.server_url}) as ExtendedClient;
     client.addPlugin(MoreEndpointMethodsPlugin);
     client.authenticate(
       config.token
@@ -50,12 +52,8 @@ export class BitbucketServer {
     );
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    const bb = new BitbucketServer(
-      client as ExtendedClient,
-      config.page_size ?? DEFAULT_PAGE_SIZE,
-      logger,
-      startDate
-    );
+    const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const bb = new BitbucketServer(client, pageSize, logger, startDate);
     BitbucketServer.bitbucket = bb;
     logger.debug('Created Bitbucket Server instance');
     return BitbucketServer.bitbucket;
