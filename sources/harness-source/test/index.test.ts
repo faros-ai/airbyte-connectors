@@ -41,16 +41,20 @@ describe('index', () => {
     );
   });
 
+  const sourceConfig = {account_id: '111', api_key: 'key', cutoff_days: 90};
+
   test('check connection - if config params are not provided', async () => {
     const source = new sut.HarnessSource(logger);
-    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
+    await expect(
+      source.checkConnection({api_key: '', cutoff_days: 90, account_id: null})
+    ).resolves.toStrictEqual([
       false,
       new VError(
         "Missing authentication information. Please provide a Harness user's accountId"
       ),
     ]);
     await expect(
-      source.checkConnection({account_id: '111'})
+      source.checkConnection({cutoff_days: 90, api_key: null, account_id: 'id'})
     ).resolves.toStrictEqual([
       false,
       new VError(
@@ -71,13 +75,10 @@ describe('index', () => {
       );
     });
     const source = new sut.HarnessSource(logger);
-    await expect(
-      source.checkConnection({
-        account_id: 'account_id',
-        api_key: 'api_key',
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect config parameters', async () => {
@@ -92,13 +93,7 @@ describe('index', () => {
       );
     });
     const source = new sut.HarnessSource(logger);
-    await expect(
-      source.checkConnection({
-        account_id: 'account_id',
-        api_key: 'api_key',
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
       new VError('Please verify your API ID or key are correct. Error: '),
     ]);
@@ -127,11 +122,7 @@ describe('index', () => {
     });
 
     const source = new sut.HarnessSource(logger);
-    const [executionsStream] = source.streams({
-      account_id: 'account_id',
-      api_key: 'api_key',
-      start_date: '2010-03-27T14:03:51-0800',
-    });
+    const [executionsStream] = source.streams(sourceConfig);
     const executionsIter = executionsStream.readRecords(SyncMode.FULL_REFRESH);
     const executions = [];
     for await (const execution of executionsIter) {
@@ -164,11 +155,7 @@ describe('index', () => {
     });
 
     const source = new sut.HarnessSource(logger);
-    const [executionsStream] = source.streams({
-      account_id: 'account_id',
-      api_key: 'api_key',
-      start_date: '2010-03-27T14:03:51-0800',
-    });
+    const [executionsStream] = source.streams(sourceConfig);
     const executionsIter = executionsStream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,

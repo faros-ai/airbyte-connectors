@@ -19,7 +19,7 @@ export function mainCommand(): Command {
 }
 
 /** Example source implementation. */
-export class GitlabCiSource extends AirbyteSourceBase {
+export class GitlabCiSource extends AirbyteSourceBase<GitlabConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

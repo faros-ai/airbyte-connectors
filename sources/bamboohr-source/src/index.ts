@@ -18,7 +18,7 @@ export function mainCommand(): Command {
 }
 
 /** BambooHR source implementation. */
-export class BambooHRSource extends AirbyteSourceBase {
+export class BambooHRSource extends AirbyteSourceBase<BambooHRConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

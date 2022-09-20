@@ -241,7 +241,24 @@ describe('utils', () => {
     },
   };
   const spec = new AirbyteSpec(testSpec);
-  const config: AirbyteConfig = {
+
+  interface DestinationConfig extends AirbyteConfig {
+    dry_run?: boolean;
+    jsonata_mode?: string;
+    edition_configs: {
+      edition: string;
+      api_url: string;
+      api_key: string;
+      graph: string;
+      check_tenant?: boolean;
+      origin?: string;
+      cloud_graphql_batch_size?: number;
+    };
+    invalid_record_strategy: string;
+    origin?: string;
+  }
+
+  const config: DestinationConfig = {
     dry_run: false,
     jsonata_mode: 'FALLBACK',
     edition_configs: {

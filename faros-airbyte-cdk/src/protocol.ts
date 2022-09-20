@@ -45,7 +45,8 @@ export enum AirbyteConnectionStatus {
   FAILED = 'FAILED',
 }
 
-export type AirbyteConfig = Dictionary<any>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface AirbyteConfig {}
 
 export function parseAirbyteMessage(s: string): AirbyteMessage {
   try {

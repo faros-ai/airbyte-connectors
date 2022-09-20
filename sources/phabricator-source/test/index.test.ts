@@ -34,6 +34,12 @@ describe('index', () => {
     );
   });
 
+  const sourceConfig = {
+    server_url: 'url',
+    token: 'token',
+    cutoff_days: 90,
+  };
+
   test('check connection', async () => {
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
@@ -49,7 +55,7 @@ describe('index', () => {
     });
 
     const source = new sut.PhabricatorSource(logger);
-    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       true,
       undefined,
     ]);
@@ -70,7 +76,7 @@ describe('index', () => {
         logger
       );
     });
-    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
       expectedError,
     ]);
@@ -94,7 +100,7 @@ describe('index', () => {
     });
 
     const source = new sut.PhabricatorSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     let itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     let items = [];
@@ -135,7 +141,7 @@ describe('index', () => {
     });
 
     const source = new sut.PhabricatorSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[2];
     let itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     let items = [];
@@ -183,7 +189,7 @@ describe('index', () => {
     });
 
     const source = new sut.PhabricatorSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[3];
     let itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     let items = [];

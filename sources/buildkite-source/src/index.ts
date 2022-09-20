@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,27 +19,24 @@ export function mainCommand(): Command {
 }
 
 /** Buildkite source implementation. */
-export class BuildkiteSource extends AirbyteSourceBase {
+export class BuildkiteSource extends AirbyteSourceBase<BuildkiteConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: BuildkiteConfig): Promise<[boolean, VError]> {
     try {
-      const buildkite = Buildkite.instance(
-        config as BuildkiteConfig,
-        this.logger
-      );
+      const buildkite = Buildkite.instance(config, this.logger);
       await buildkite.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: BuildkiteConfig): AirbyteStreamBase[] {
     return [
-      new Organizations(config as BuildkiteConfig, this.logger),
-      new Pipelines(config as BuildkiteConfig, this.logger),
-      new Builds(config as BuildkiteConfig, this.logger),
+      new Organizations(config, this.logger),
+      new Pipelines(config, this.logger),
+      new Builds(config, this.logger),
     ];
   }
 }

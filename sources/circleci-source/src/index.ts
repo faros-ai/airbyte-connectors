@@ -1,7 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -21,7 +20,7 @@ export function mainCommand(): Command {
 }
 
 /** Customer.io source implementation. */
-export class CircleCISource extends AirbyteSourceBase {
+export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   constructor(logger: AirbyteLogger, private readonly axios?: AxiosInstance) {
     super(logger);
   }
@@ -30,9 +29,9 @@ export class CircleCISource extends AirbyteSourceBase {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: CircleCIConfig): Promise<[boolean, VError]> {
     try {
-      const circleCI = CircleCI.instance(config as CircleCIConfig, this.axios);
+      const circleCI = CircleCI.instance(config, this.axios);
       await circleCI.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -40,10 +39,10 @@ export class CircleCISource extends AirbyteSourceBase {
     return [true, undefined];
   }
 
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: CircleCIConfig): AirbyteStreamBase[] {
     return [
-      new Projects(this.logger, config as CircleCIConfig, this.axios),
-      new Pipelines(this.logger, config as CircleCIConfig, this.axios),
+      new Projects(this.logger, config, this.axios),
+      new Pipelines(this.logger, config, this.axios),
     ];
   }
 }

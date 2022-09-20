@@ -39,6 +39,8 @@ describe('index', () => {
     );
   });
 
+  const sourceConfig = {token: 'token', cutoff_days: 90};
+
   test('check connection', async () => {
     Squadcast.instance = jest.fn().mockImplementation(async () => {
       return new Squadcast(
@@ -53,9 +55,10 @@ describe('index', () => {
     });
 
     const source = new sut.SquadcastSource(logger);
-    await expect(
-      source.checkConnection({token: 'token'})
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect token', async () => {
@@ -69,7 +72,7 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    const res = await source.checkConnection({});
+    const res = await source.checkConnection(sourceConfig);
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
@@ -80,7 +83,9 @@ describe('index', () => {
 
   test('check connection - incorrect variables', async () => {
     const source = new sut.SquadcastSource(logger);
-    await expect(source.checkConnection({})).resolves.toStrictEqual([
+    await expect(
+      source.checkConnection({token: '', cutoff_days: 90})
+    ).resolves.toStrictEqual([
       false,
       new VError('token must be a not empty string'),
     ]);
@@ -113,7 +118,7 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const eventsStream = streams[0];
     const eventsIter = eventsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -146,7 +151,7 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const incidentsStream = streams[1];
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -174,7 +179,7 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const servicesStream = streams[2];
     const servicesIter = servicesStream.readRecords(SyncMode.FULL_REFRESH);
@@ -202,7 +207,7 @@ describe('index', () => {
       );
     });
     const source = new sut.SquadcastSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const usersStream = streams[3];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);

@@ -1,18 +1,18 @@
 import {Command} from 'commander';
 import {
   AirbyteConfig,
-  AirbyteConnectionStatusMessage,
   AirbyteDestinationRunner,
   AirbyteLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 
+import {DestinationConfig} from './common/types';
 import {Converter} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {FarosDestination} from './destination';
 
 /** Faros Destination Runner */
-export class FarosDestinationRunner extends AirbyteDestinationRunner {
+export class FarosDestinationRunner extends AirbyteDestinationRunner<DestinationConfig> {
   readonly program: Command;
 
   /**

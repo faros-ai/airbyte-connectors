@@ -3,15 +3,15 @@ import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
-import {AirbyteState} from '../protocol';
+import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
 
-export class AirbyteSourceRunner extends Runner {
+export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   constructor(
     protected readonly logger: AirbyteLogger,
-    protected readonly source: AirbyteSource
+    protected readonly source: AirbyteSource<Config>
   ) {
     super(logger);
   }

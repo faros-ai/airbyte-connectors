@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -26,29 +25,26 @@ export function mainCommand(): Command {
 }
 
 /** Pagerduty source implementation. */
-export class PagerdutySource extends AirbyteSourceBase {
+export class PagerdutySource extends AirbyteSourceBase<PagerdutyConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: PagerdutyConfig): Promise<[boolean, VError]> {
     try {
-      const pagerduty = Pagerduty.instance(
-        config as PagerdutyConfig,
-        this.logger
-      );
+      const pagerduty = Pagerduty.instance(config, this.logger);
       await pagerduty.checkConnection();
     } catch (error: any) {
       return [false, error];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: PagerdutyConfig): AirbyteStreamBase[] {
     return [
-      new IncidentLogEntries(config as PagerdutyConfig, this.logger),
-      new Incidents(config as PagerdutyConfig, this.logger),
-      new PrioritiesResource(config as PagerdutyConfig, this.logger),
-      new Users(config as PagerdutyConfig, this.logger),
-      new Teams(config as PagerdutyConfig, this.logger),
+      new IncidentLogEntries(config, this.logger),
+      new Incidents(config, this.logger),
+      new PrioritiesResource(config, this.logger),
+      new Users(config, this.logger),
+      new Teams(config, this.logger),
     ];
   }
 }

@@ -25,10 +25,10 @@ export interface PhabricatorConfig {
   readonly server_url: string;
   readonly token: string;
   readonly cutoff_days: number;
-  readonly repositories: string | string[];
-  readonly projects: string | string[];
-  readonly limit: number;
-  readonly timeout: number;
+  readonly repositories?: string | string[];
+  readonly projects?: string | string[];
+  readonly limit?: number;
+  readonly timeout?: number;
 }
 
 export type Repository = iDiffusion.retDiffusionRepositorySearchData;

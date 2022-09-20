@@ -8,10 +8,12 @@ import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
-export class AirbyteDestinationRunner extends Runner {
+export class AirbyteDestinationRunner<
+  Config extends AirbyteConfig
+> extends Runner {
   constructor(
     protected readonly logger: AirbyteLogger,
-    protected readonly destination: AirbyteDestination
+    protected readonly destination: AirbyteDestination<Config>
   ) {
     super(logger);
   }
@@ -102,7 +104,7 @@ export class AirbyteDestinationRunner extends Runner {
     config: string;
     catalog: string;
     dryRun: boolean;
-  }): Promise<{catalog: any; spec: AirbyteSpec; config: AirbyteConfig}> {
+  }): Promise<{catalog: any; spec: AirbyteSpec; config: Config}> {
     try {
       const catalog = require(path.resolve(opts.catalog));
       const spec = await this.destination.spec();
