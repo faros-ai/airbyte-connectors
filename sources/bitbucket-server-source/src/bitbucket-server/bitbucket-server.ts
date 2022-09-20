@@ -3,15 +3,22 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
-import {BitbucketServerConfig, WorkspaceUser} from './types';
+import {
+  MoreEndpointMethodsPlugin,
+  Prefix as MEP,
+} from './more-endpoint-methods';
+import {BitbucketServerConfig, Workspace, WorkspaceUser} from './types';
 
 const DEFAULT_PAGE_SIZE = 100;
+
+// MEP: MoreEndpointsPrefix
+type ExtendedClient = BitbucketServerClient & {[MEP]: any};
 
 export class BitbucketServer {
   private static bitbucket: BitbucketServer = null;
 
   constructor(
-    private readonly client: BitbucketServerClient,
+    private readonly client: ExtendedClient,
     private readonly pageSize: number,
     private readonly logger: AirbyteLogger,
     readonly startDate: Date
@@ -28,6 +35,9 @@ export class BitbucketServer {
       throw new VError(errorMessage);
     }
     const client = new BitbucketServerClient({baseUrl: config.server_url});
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    client.addPlugin(MoreEndpointMethodsPlugin);
     client.authenticate(
       config.token
         ? {type: 'token', token: config.token}
@@ -36,7 +46,12 @@ export class BitbucketServer {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     const pageLen = config.page_size ?? DEFAULT_PAGE_SIZE;
-    const bb = new BitbucketServer(client, pageLen, logger, startDate);
+    const bb = new BitbucketServer(
+      client as ExtendedClient,
+      pageLen,
+      logger,
+      startDate
+    );
     BitbucketServer.bitbucket = bb;
     logger.debug('Created Bitbucket Server instance');
     return BitbucketServer.bitbucket;
@@ -108,13 +123,32 @@ export class BitbucketServer {
     } while (data);
   }
 
+  async getWorkspace(project: string): Promise<Workspace> {
+    try {
+      const {data} = await this.client[MEP].projects.getProject({
+        projectKey: project,
+      });
+      return {
+        slug: data.key,
+        name: data.name,
+        type: 'workspace',
+        links: {htmlUrl: getSelfHref(data.links)},
+      };
+    } catch (err) {
+      throw new VError(
+        buildInnerError(err),
+        `Error fetching project: ${project}`
+      );
+    }
+  }
+
   async *getWorkspaceUsers(project: string): AsyncGenerator<WorkspaceUser> {
     try {
       yield* this.paginate<Schema.PaginatedUsers, WorkspaceUser>(
         (start) =>
           this.client.api.getUsers({
             start,
-            limit: 2,
+            limit: this.pageSize,
             q: {
               'permission.1': 'PROJECT_READ',
               'permission.1.projectKey': project,
@@ -127,7 +161,7 @@ export class BitbucketServer {
               accountId: item.slug,
               displayName: item.displayName,
               nickname: item.name,
-              links: {htmlUrl: item.links?.self?.href},
+              links: {htmlUrl: getSelfHref(item.links as HRefs)},
               type: 'user',
             },
           };
@@ -135,15 +169,19 @@ export class BitbucketServer {
       );
     } catch (err) {
       throw new VError(
-        this.buildInnerError(err),
-        'Error fetching users for project: %s',
-        project
+        buildInnerError(err),
+        `Error fetching users for project: ${project}`
       );
     }
   }
+}
 
-  private buildInnerError(err: any): VError {
-    const {message, error, status} = err;
-    return new VError({info: {status, error: error?.error?.message}}, message);
-  }
+type HRefs = {self?: {href: string}[]};
+function getSelfHref(links: HRefs): string | undefined {
+  return links.self?.find((l) => l.href)?.href;
+}
+
+function buildInnerError(err: any): VError {
+  const {message, error, status} = err;
+  return new VError({info: {status, error: error?.error?.message}}, message);
 }

@@ -11,6 +11,7 @@ import VError from 'verror';
 import {BitbucketServer} from './bitbucket-server/bitbucket-server';
 import {BitbucketServerConfig} from './bitbucket-server/types';
 import {WorkspaceUsers} from './streams/workspace_users';
+import {Workspaces} from './streams/workspaces';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -38,6 +39,9 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
   }
 
   streams(config: BitbucketServerConfig): AirbyteStreamBase[] {
-    return [new WorkspaceUsers(config, this.logger)];
+    return [
+      new WorkspaceUsers(config, this.logger),
+      new Workspaces(config, this.logger),
+    ];
   }
 }

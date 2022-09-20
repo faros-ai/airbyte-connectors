@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "getProject": {
+      "headers": {
+        "accept": "application/json"
+      },
+      "method": "GET",
+      "params": {
+        "projectKey": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      },
+      "url": "/rest/api/latest/projects/{projectKey}"
+    }
+  }
+}

@@ -10,6 +10,15 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
 }
 
+export interface Workspace {
+  readonly type: string;
+  readonly slug: string;
+  readonly name: string;
+  readonly links: {
+    readonly htmlUrl: string;
+  };
+}
+
 export interface WorkspaceUser {
   readonly user: {
     readonly displayName: string;
@@ -22,19 +31,5 @@ export interface WorkspaceUser {
   };
   readonly workspace: {
     readonly slug: string;
-  };
-}
-
-export interface Workspace {
-  readonly uuid: string;
-  readonly createdOn: string;
-  readonly type: string;
-  readonly slug: string;
-  readonly isPrivate: boolean;
-  readonly name: string;
-  readonly links: {
-    readonly ownersUrl: string;
-    readonly repositoriesUrl: string;
-    readonly htmlUrl: string;
   };
 }
