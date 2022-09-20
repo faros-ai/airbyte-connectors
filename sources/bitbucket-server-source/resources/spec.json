@@ -13,12 +13,11 @@
     "properties": {
       "server_url": {
         "type": "string",
-        "title": "API URL",
-        "description": "The API URL for fetching data from Bitbucket",
+        "title": "Server URL",
+        "description": "Bitbucket Server URL",
         "examples": [
-          "https://api.bitbucket.org/2.0"
-        ],
-        "default": "https://api.bitbucket.org/2.0"
+          "https://my.bitbucketserver.com"
+        ]
       },
       "username": {
         "type": "string",
