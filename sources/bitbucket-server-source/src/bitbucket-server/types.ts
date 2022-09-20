@@ -10,6 +10,23 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
 }
 
+export interface Repository {
+  readonly slug: string;
+  readonly name: string;
+  readonly description: string;
+  readonly fullName: string;
+  readonly isPrivate: boolean;
+  readonly mainBranch: {
+    readonly name: string;
+  };
+  readonly links: {
+    readonly htmlUrl: string;
+  };
+  readonly workspace: {
+    readonly slug: string;
+  };
+}
+
 export interface Workspace {
   readonly type: string;
   readonly slug: string;

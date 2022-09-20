@@ -1,18 +1,23 @@
-import BitbucketServerClient, {Schema} from '@atlassian/bitbucket-server';
+import Client, {Schema} from '@atlassian/bitbucket-server';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Dictionary} from 'ts-essentials';
+import {AsyncOrSync, Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
 import {
   MoreEndpointMethodsPlugin,
   Prefix as MEP,
 } from './more-endpoint-methods';
-import {BitbucketServerConfig, Workspace, WorkspaceUser} from './types';
+import {
+  BitbucketServerConfig,
+  Repository,
+  Workspace,
+  WorkspaceUser,
+} from './types';
 
 const DEFAULT_PAGE_SIZE = 100;
 
-// MEP: MoreEndpointsPrefix
-type ExtendedClient = BitbucketServerClient & {[MEP]: any};
+type Dict = Dictionary<any>;
+type ExtendedClient = Client & {[MEP]: any}; // MEP: MoreEndpointsPrefix
 
 export class BitbucketServer {
   private static bitbucket: BitbucketServer = null;
@@ -34,7 +39,7 @@ export class BitbucketServer {
       logger.error(errorMessage);
       throw new VError(errorMessage);
     }
-    const client = new BitbucketServerClient({baseUrl: config.server_url});
+    const client = new Client({baseUrl: config.server_url});
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     client.addPlugin(MoreEndpointMethodsPlugin);
@@ -45,10 +50,9 @@ export class BitbucketServer {
     );
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    const pageLen = config.page_size ?? DEFAULT_PAGE_SIZE;
     const bb = new BitbucketServer(
       client as ExtendedClient,
-      pageLen,
+      config.page_size ?? DEFAULT_PAGE_SIZE,
       logger,
       startDate
     );
@@ -99,51 +103,74 @@ export class BitbucketServer {
     }
   }
 
-  private async *paginate<T extends {[k: string]: any}, U>(
-    func: (start: number) => Promise<BitbucketServerClient.Response<T>>,
-    mapToObject: (data: Dictionary<any>) => U
+  private async *paginate<T extends Dict, U>(
+    fetch: (start: number) => Promise<Client.Response<T>>,
+    toStreamData: (data: Dict) => AsyncOrSync<U>
   ): AsyncGenerator<U> {
-    let {data} = await func(0);
-    if (!data) return undefined;
-    const valuesExist = 'values' in data && Array.isArray(data.values);
-    if (!valuesExist) {
-      yield mapToObject(data);
+    let {data: page} = await fetch(0);
+    if (!page) return;
+    const resultIsPage = 'values' in page && Array.isArray(page.values);
+    if (!resultIsPage) {
+      yield toStreamData(page);
       return;
     }
     do {
-      for (const item of data.values) {
-        const object = mapToObject(item);
-        yield object;
+      for (const data of page.values) {
+        const streamData = await toStreamData(data);
+        yield streamData;
       }
-      if (data.isLastPage || !data.nextPageStart) {
-        data = undefined;
-      } else {
-        data = (await func(data.nextPageStart)).data;
-      }
-    } while (data);
+      page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
+    } while (page);
   }
 
-  async getWorkspace(project: string): Promise<Workspace> {
+  async *repositories(projectKey: string): AsyncGenerator<Repository> {
+    this.logger.debug(`Fetching repositories for project: ${projectKey}`);
+    yield* this.paginate<Dict, Repository>(
+      (start) =>
+        this.client[MEP].projects.getRepositories({
+          projectKey,
+          start,
+          limit: this.pageSize,
+        }),
+      async (data: Dict): Promise<Repository> => {
+        const {data: defaultBranch} = await this.client.repos.getDefaultBranch({
+          projectKey,
+          repositorySlug: data.slug,
+        });
+        return {
+          slug: data.slug,
+          name: data.name,
+          fullName: data.name,
+          description: data.description,
+          isPrivate: !data.public,
+          mainBranch: {name: defaultBranch?.displayId},
+          links: {htmlUrl: selfHRef(data.links)},
+          workspace: {slug: projectKey},
+        };
+      }
+    );
+  }
+
+  async workspace(projectKey: string): Promise<Workspace> {
     try {
-      const {data} = await this.client[MEP].projects.getProject({
-        projectKey: project,
-      });
+      const {data} = await this.client[MEP].projects.getProject({projectKey});
       return {
         slug: data.key,
         name: data.name,
         type: 'workspace',
-        links: {htmlUrl: getSelfHref(data.links)},
+        links: {htmlUrl: selfHRef(data.links)},
       };
     } catch (err) {
       throw new VError(
-        buildInnerError(err),
-        `Error fetching project: ${project}`
+        innerError(err),
+        `Error fetching project: ${projectKey}`
       );
     }
   }
 
-  async *getWorkspaceUsers(project: string): AsyncGenerator<WorkspaceUser> {
+  async *workspaceUsers(project: string): AsyncGenerator<WorkspaceUser> {
     try {
+      this.logger.debug(`Fetching users for project: ${project}`);
       yield* this.paginate<Schema.PaginatedUsers, WorkspaceUser>(
         (start) =>
           this.client.api.getUsers({
@@ -154,14 +181,14 @@ export class BitbucketServer {
               'permission.1.projectKey': project,
             },
           }),
-        (item: Schema.User): WorkspaceUser => {
+        (data: Schema.User): WorkspaceUser => {
           return {
             workspace: {slug: project},
             user: {
-              accountId: item.slug,
-              displayName: item.displayName,
-              nickname: item.name,
-              links: {htmlUrl: getSelfHref(item.links as HRefs)},
+              accountId: data.slug,
+              displayName: data.displayName,
+              nickname: data.name,
+              links: {htmlUrl: selfHRef(data.links as HRefs)},
               type: 'user',
             },
           };
@@ -169,7 +196,7 @@ export class BitbucketServer {
       );
     } catch (err) {
       throw new VError(
-        buildInnerError(err),
+        innerError(err),
         `Error fetching users for project: ${project}`
       );
     }
@@ -177,11 +204,11 @@ export class BitbucketServer {
 }
 
 type HRefs = {self?: {href: string}[]};
-function getSelfHref(links: HRefs): string | undefined {
+function selfHRef(links: HRefs): string | undefined {
   return links.self?.find((l) => l.href)?.href;
 }
 
-function buildInnerError(err: any): VError {
+function innerError(err: any): VError {
   const {message, error, status} = err;
   return new VError({info: {status, error: error?.error?.message}}, message);
 }

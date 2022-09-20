@@ -19,6 +19,7 @@ export class WorkspaceUsers extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any> {
     return require('../../resources/schemas/workspace_users.json');
   }
+
   get primaryKey(): StreamKey {
     return ['user', 'accountId'];
   }
@@ -34,7 +35,7 @@ export class WorkspaceUsers extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<WorkspaceUser> {
-    yield* BitbucketServer.instance(this.config, this.logger).getWorkspaceUsers(
+    yield* BitbucketServer.instance(this.config, this.logger).workspaceUsers(
       streamSlice.project
     );
   }
