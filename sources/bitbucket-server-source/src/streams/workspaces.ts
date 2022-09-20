@@ -17,7 +17,7 @@ export class Workspaces extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/workspace_users.json');
+    return require('../../resources/schemas/workspaces.json');
   }
 
   get primaryKey(): StreamKey {

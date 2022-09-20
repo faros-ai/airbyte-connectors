@@ -2,7 +2,6 @@
   "extends": "../../../.tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "outDir": "../lib",
-    "experimentalDecorators": true
+    "outDir": "../lib"
   }
 }

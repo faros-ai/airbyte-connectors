@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import Client from '@atlassian/bitbucket-server';
 
 const ROUTES = require('../../resources/more-routes.json');
@@ -5,7 +7,7 @@ const ROUTES = require('../../resources/more-routes.json');
 const endpointMethod = require('@atlassian/bitbucket-server/src/plugins/endpoint-methods/method');
 const getParamGroups = require('@atlassian/bitbucket-server/src/plugins/endpoint-methods/get-param-groups');
 
-export const Prefix = 'ext';
+export const Prefix = '__faros__';
 
 // Adapted from @atlassian/bitbucket-server/src/plugins/endpoint-methods/index
 export class MoreEndpointMethodsPlugin {
