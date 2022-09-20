@@ -21,6 +21,8 @@ export class PullRequestCommits extends GitHubConverter {
       prCommit.repository,
       source
     );
+      
+    if (!repository) return [];
 
     const commit = {
       uid: prCommit.sha,

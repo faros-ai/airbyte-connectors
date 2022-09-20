@@ -6,7 +6,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 
 import {CircleCI} from '../src/circleci/circleci';
 import * as sut from '../src/index';
@@ -35,6 +34,13 @@ describe('index', () => {
     jest.restoreAllMocks();
   });
 
+  const sourceConfig = {
+    token: '',
+    repo_names: ['repo_names'],
+    cutoff_days: 90,
+    reject_unauthorized: true,
+  };
+
   test('spec', async () => {
     const source = new sut.CircleCISource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
@@ -53,14 +59,10 @@ describe('index', () => {
     });
 
     const source = new sut.CircleCISource(logger);
-    await expect(
-      source.checkConnection({
-        token: '',
-        org_slugs: ['org_slugs'],
-        repo_names: ['repo_names'],
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect config', async () => {
@@ -72,12 +74,7 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    const res = await source.checkConnection({
-      token: '',
-      org_slugs: ['org_slugs'],
-      repo_names: ['repo_names'],
-      cutoff_days: 90,
-    });
+    const res = await source.checkConnection(sourceConfig);
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
@@ -98,7 +95,7 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const projectsStream = streams[0];
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
@@ -130,7 +127,7 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const pipelinesStream = streams[1];
     const pipelinesIter = pipelinesStream.readRecords(

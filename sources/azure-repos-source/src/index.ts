@@ -18,7 +18,7 @@ export function mainCommand(): Command {
 }
 
 /** AzureRepo source implementation. */
-export class AzureRepoSource extends AirbyteSourceBase {
+export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

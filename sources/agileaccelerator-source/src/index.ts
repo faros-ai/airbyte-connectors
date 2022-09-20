@@ -22,7 +22,7 @@ export function mainCommand(): Command {
 }
 
 /** AgileAccelerator source implementation. */
-export class AgileacceleratorSource extends AirbyteSourceBase {
+export class AgileacceleratorSource extends AirbyteSourceBase<AgileacceleratorConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

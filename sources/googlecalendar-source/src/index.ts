@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,26 +19,25 @@ export function mainCommand(): Command {
 }
 
 /** GoogleCalendar source implementation. */
-export class GooglecalendarSource extends AirbyteSourceBase {
+export class GooglecalendarSource extends AirbyteSourceBase<GoogleCalendarConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(
+    config: GoogleCalendarConfig
+  ): Promise<[boolean, VError]> {
     try {
-      const googleCalendar = await Googlecalendar.instance(
-        config as GoogleCalendarConfig,
-        this.logger
-      );
+      const googleCalendar = await Googlecalendar.instance(config, this.logger);
       await googleCalendar.checkConnection();
     } catch (error: any) {
       return [false, error];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: GoogleCalendarConfig): AirbyteStreamBase[] {
     return [
-      new Calendars(config as any, this.logger),
-      new Events(config as any, this.logger),
+      new Calendars(config, this.logger),
+      new Events(config, this.logger),
     ];
   }
 }

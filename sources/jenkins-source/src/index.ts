@@ -19,7 +19,7 @@ export function mainCommand(): Command {
 }
 
 /** Jenkins source implementation. */
-export class JenkinsSource extends AirbyteSourceBase {
+export class JenkinsSource extends AirbyteSourceBase<JenkinsConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
@@ -27,7 +27,7 @@ export class JenkinsSource extends AirbyteSourceBase {
     config: JenkinsConfig
   ): Promise<[boolean, VError | undefined]> {
     try {
-      const jenkins = Jenkins.instance(config as JenkinsConfig, this.logger);
+      const jenkins = Jenkins.instance(config, this.logger);
       await jenkins.checkConnection();
     } catch (err: any) {
       return [false, err];

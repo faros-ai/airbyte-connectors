@@ -18,7 +18,7 @@ export function mainCommand(): Command {
 }
 
 /** Okta source implementation. */
-export class OktaSource extends AirbyteSourceBase {
+export class OktaSource extends AirbyteSourceBase<OktaConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

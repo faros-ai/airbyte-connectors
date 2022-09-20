@@ -25,7 +25,9 @@ import {AirbyteStreamBase} from './streams/stream-base';
  * user needs to implement the spec() and checkConnection() methods and the
  * streams.
  */
-export abstract class AirbyteSourceBase extends AirbyteSource {
+export abstract class AirbyteSourceBase<
+  Config extends AirbyteConfig
+> extends AirbyteSource<Config> {
   constructor(protected readonly logger: AirbyteLogger) {
     super();
   }
@@ -43,7 +45,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
    * describe what went wrong. The VError message will be displayed to the user.
    */
   abstract checkConnection(
-    config: AirbyteConfig
+    config: Config
   ): Promise<[boolean, VError | undefined]>;
 
   /**
@@ -53,7 +55,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
    * spec. Any stream construction related operation should happen here.
    * @return A list of the streams in this source connector.
    */
-  abstract streams(config: AirbyteConfig): AirbyteStreamBase[];
+  abstract streams(config: Config): AirbyteStreamBase[];
 
   /**
    * Source name
@@ -66,7 +68,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
    * Implements the Discover operation from the Airbyte Specification. See
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
-  async discover(config: AirbyteConfig): Promise<AirbyteCatalogMessage> {
+  async discover(config: Config): Promise<AirbyteCatalogMessage> {
     const streams = this.streams(config).map((stream) =>
       stream.asAirbyteStream()
     );
@@ -77,7 +79,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
    * Implements the Check Connection operation from the Airbyte Specification.
    * See https://docs.airbyte.io/architecture/airbyte-specification.
    */
-  async check(config: AirbyteConfig): Promise<AirbyteConnectionStatusMessage> {
+  async check(config: Config): Promise<AirbyteConnectionStatusMessage> {
     try {
       const [succeeded, error] = await this.checkConnection(config);
       if (!succeeded) {
@@ -103,7 +105,7 @@ export abstract class AirbyteSourceBase extends AirbyteSource {
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
   async *read(
-    config: AirbyteConfig,
+    config: Config,
     catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {

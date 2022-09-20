@@ -50,9 +50,12 @@ describe('index', () => {
       false,
       new VError('API ID must be not an empty string'),
     ]);
-    await expect(source.checkConnection({apiId: '111'})).resolves.toStrictEqual(
-      [false, new VError('API key must be not an empty string')]
-    );
+    await expect(
+      source.checkConnection({apiId: '111', cutoff_days: 90, apiKey: ''})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('API key must be not an empty string'),
+    ]);
   });
 
   test('check connection', async () => {

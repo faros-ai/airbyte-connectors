@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -18,14 +17,14 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 /** Shortcut source implementation. */
-export class ShortcutSource extends AirbyteSourceBase {
+export class ShortcutSource extends AirbyteSourceBase<ShortcutConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: ShortcutConfig): Promise<[boolean, VError]> {
     try {
-      const shortcut = Shortcut.instance(config as ShortcutConfig);
+      const shortcut = Shortcut.instance(config);
       await (await shortcut).checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -35,15 +34,11 @@ export class ShortcutSource extends AirbyteSourceBase {
 
   streams(config: ShortcutConfig): AirbyteStreamBase[] {
     return [
-      new Projects(config as ShortcutConfig, this.logger),
-      new Iterations(config as ShortcutConfig, this.logger),
-      new Epics(
-        config as ShortcutConfig,
-        this.logger,
-        config.project_public_id
-      ),
-      new Stories(config as ShortcutConfig, this.logger),
-      new Members(config as ShortcutConfig, this.logger),
+      new Projects(config, this.logger),
+      new Iterations(config, this.logger),
+      new Epics(config, this.logger, config.project_public_id),
+      new Stories(config, this.logger),
+      new Members(config, this.logger),
     ];
   }
 }
