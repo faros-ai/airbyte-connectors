@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,27 +19,24 @@ export function mainCommand(): Command {
 }
 
 /** FireHydrant source implementation. */
-export class FireHydrantSource extends AirbyteSourceBase {
+export class FireHydrantSource extends AirbyteSourceBase<FireHydrantConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: FireHydrantConfig): Promise<[boolean, VError]> {
     try {
-      const fireHydrant = FireHydrant.instance(
-        config as FireHydrantConfig,
-        this.logger
-      );
+      const fireHydrant = FireHydrant.instance(config, this.logger);
       await fireHydrant.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: FireHydrantConfig): AirbyteStreamBase[] {
     return [
-      new Incidents(config as FireHydrantConfig, this.logger),
-      new Teams(config as FireHydrantConfig, this.logger),
-      new Users(config as FireHydrantConfig, this.logger),
+      new Incidents(config, this.logger),
+      new Teams(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

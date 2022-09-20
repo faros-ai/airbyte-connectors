@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -20,27 +19,24 @@ export function mainCommand(): Command {
 }
 
 /** Statuspage source implementation. */
-export class StatuspageSource extends AirbyteSourceBase {
+export class StatuspageSource extends AirbyteSourceBase<StatuspageConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: StatuspageConfig): Promise<[boolean, VError]> {
     try {
-      const statuspage = Statuspage.instance(
-        config as StatuspageConfig,
-        this.logger
-      );
+      const statuspage = Statuspage.instance(config, this.logger);
       await statuspage.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: StatuspageConfig): AirbyteStreamBase[] {
     return [
-      new Incidents(config as StatuspageConfig, this.logger),
-      new IncidentUpdates(config as StatuspageConfig, this.logger),
-      new Users(config as StatuspageConfig, this.logger),
+      new Incidents(config, this.logger),
+      new IncidentUpdates(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

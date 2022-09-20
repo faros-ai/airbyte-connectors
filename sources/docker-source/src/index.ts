@@ -19,7 +19,7 @@ export function mainCommand(): Command {
 }
 
 /** Docker source implementation. */
-export class DockerSource extends AirbyteSourceBase {
+export class DockerSource extends AirbyteSourceBase<DockerConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

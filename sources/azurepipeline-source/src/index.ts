@@ -18,7 +18,7 @@ export function mainCommand(): Command {
 }
 
 /** AzurePipeline source implementation. */
-export class AzurePipelineSource extends AirbyteSourceBase {
+export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }

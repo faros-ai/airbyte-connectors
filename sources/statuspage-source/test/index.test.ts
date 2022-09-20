@@ -39,6 +39,8 @@ describe('index', () => {
     );
   });
 
+  const sourceConfig = {api_key: '', page_id: 'page_id', cutoff_days: 90};
+
   test('check connection', async () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
@@ -49,13 +51,10 @@ describe('index', () => {
     });
 
     const source = new sut.StatuspageSource(logger);
-    await expect(
-      source.checkConnection({
-        api_key: '',
-        page_id: 'page_id',
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect page_id', async () => {
@@ -73,7 +72,7 @@ describe('index', () => {
       );
     });
     const source = new sut.StatuspageSource(logger);
-    await expect(source.checkConnection({})).resolves.toStrictEqual([
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
       new VError('Please verify your token are correct. Error: some error'),
     ]);
@@ -81,7 +80,7 @@ describe('index', () => {
 
   test('check connection - incorrect variables', async () => {
     const source = new sut.StatuspageSource(logger);
-    await expect(source.checkConnection({})).resolves.toStrictEqual([
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
       new VError('api_key must be a not empty string'),
     ]);
@@ -108,7 +107,7 @@ describe('index', () => {
       );
     });
     const source = new sut.StatuspageSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const incidentsStream = streams[0];
     const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
@@ -142,7 +141,7 @@ describe('index', () => {
       );
     });
     const source = new sut.StatuspageSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const specificStream = streams[1];
     const cutoff = '2021-11-10T15:55:51.144Z';
     const iter = specificStream.readRecords(
@@ -186,7 +185,7 @@ describe('index', () => {
       );
     });
     const source = new sut.StatuspageSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const specificStream = streams[1];
     const iter = specificStream.readRecords(SyncMode.FULL_REFRESH);
     const list = [];
@@ -221,7 +220,7 @@ describe('index', () => {
       );
     });
     const source = new sut.StatuspageSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const usersStream = streams[2];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);

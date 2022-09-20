@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -18,21 +17,21 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class DatadogSource extends AirbyteSourceBase {
+export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: DatadogConfig): Promise<[boolean, VError]> {
     try {
-      const datadog = Datadog.instance(config as DatadogConfig, this.logger);
+      const datadog = Datadog.instance(config, this.logger);
       await datadog.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    const datadog = Datadog.instance(config as DatadogConfig, this.logger);
+  streams(config: DatadogConfig): AirbyteStreamBase[] {
+    const datadog = Datadog.instance(config, this.logger);
     return [
       new Incidents(datadog, this.logger),
       new Metrics(datadog, this.logger),

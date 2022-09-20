@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -18,27 +17,21 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class ServiceNowSource extends AirbyteSourceBase {
+export class ServiceNowSource extends AirbyteSourceBase<ServiceNowConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: ServiceNowConfig): Promise<[boolean, VError]> {
     try {
-      const servicenow = ServiceNow.instance(
-        config as ServiceNowConfig,
-        this.logger
-      );
+      const servicenow = ServiceNow.instance(config, this.logger);
       await servicenow.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
-    const servicenow = ServiceNow.instance(
-      config as ServiceNowConfig,
-      this.logger
-    );
+  streams(config: ServiceNowConfig): AirbyteStreamBase[] {
+    const servicenow = ServiceNow.instance(config, this.logger);
     return [
       new Incidents(servicenow, this.logger),
       new Users(servicenow, this.logger),

@@ -41,6 +41,9 @@ describe('index', () => {
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
+
+  const sourceConfig = {token: '', cutoff_days: 90};
+
   test('check connection', async () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {
       return new Buildkite(
@@ -53,12 +56,10 @@ describe('index', () => {
     });
 
     const source = new sut.BuildkiteSource(logger);
-    await expect(
-      source.checkConnection({
-        token: '',
-        cutoff_days: 90,
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('check connection - incorrect config', async () => {
@@ -66,10 +67,7 @@ describe('index', () => {
       return new Buildkite(null, null, new Date('2010-03-27T14:03:51-0800'));
     });
     const source = new sut.BuildkiteSource(logger);
-    const res = await source.checkConnection({
-      token: '',
-      cutoff_days: 90,
-    });
+    const res = await source.checkConnection(sourceConfig);
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
@@ -92,7 +90,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const organizationsStream = streams[0];
     const organizationsIter = organizationsStream.readRecords(
@@ -130,7 +128,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const pipelinesStream = streams[1];
     const pipesIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
@@ -168,7 +166,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BuildkiteSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
 
     const buildsStream = streams[2];
     const buildsIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);

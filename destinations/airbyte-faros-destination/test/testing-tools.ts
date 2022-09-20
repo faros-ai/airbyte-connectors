@@ -5,7 +5,7 @@ import tmp from 'tmp-promise';
 import {Dictionary} from 'ts-essentials';
 import util from 'util';
 
-import {Edition, InvalidRecordStrategy} from '../src/destination';
+import {Edition, InvalidRecordStrategy} from '../src';
 
 // Remove all controlled temporary objects on process exit
 tmp.setGracefulCleanup();

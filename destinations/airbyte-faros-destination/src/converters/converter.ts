@@ -1,9 +1,11 @@
-import {AirbyteConfig, AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-feeds-sdk';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
+
+import {DestinationConfig} from '../common/types';
 
 /** Airbyte -> Faros record converter */
 export abstract class ConverterTyped<R> {
@@ -72,7 +74,7 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 export class StreamContext {
   constructor(
     readonly logger: AirbyteLogger,
-    readonly config: AirbyteConfig,
+    readonly config: DestinationConfig,
     readonly farosClient?: FarosClient,
     readonly graph?: string
   ) {}

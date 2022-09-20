@@ -72,20 +72,23 @@ describe('index', () => {
     const expectedError = new VError('Bad Connection');
     checkConnection.mockRejectedValueOnce(expectedError);
     await expect(
-      source.checkConnection({username: 'bad', password: 'bad'})
+      source.checkConnection({username: 'bad', password: 'bad', url: 'bad'})
     ).resolves.toStrictEqual([false, expectedError]);
   });
 
+  const sourceConfig = {username: 'good', password: 'good', url: 'good'};
+
   test('check connection good token', async () => {
     const source = new sut.ServiceNowSource(logger);
-    await expect(
-      source.checkConnection({username: 'good', password: 'good'})
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('streams - incidents, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     const sys_updated_on = '2022-02-27T21:00:44.706Z';
     const itemIter = stream.readRecords(
@@ -108,7 +111,7 @@ describe('index', () => {
 
   test('streams - incidents, use full_refresh sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -122,7 +125,7 @@ describe('index', () => {
     const expectedMessage = 'API Error';
     listIncidents.mockRejectedValue(new VError(expectedMessage));
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[0];
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
@@ -135,10 +138,7 @@ describe('index', () => {
 
   test('streams - users, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({
-      apiKey: '',
-      applicationKey: '',
-    });
+    const streams = source.streams(sourceConfig);
     const stream = streams[1];
     const sys_updated_on = '2022-02-27T21:00:44.706Z';
     const itemIter = stream.readRecords(
@@ -159,7 +159,7 @@ describe('index', () => {
 
   test('streams - users, use full_refresh sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[1];
     const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -173,7 +173,7 @@ describe('index', () => {
     const expectedMessage = 'API Error';
     listUsers.mockRejectedValue(new VError(expectedMessage));
     const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams({});
+    const streams = source.streams(sourceConfig);
     const stream = streams[1];
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);

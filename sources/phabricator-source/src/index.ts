@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -28,31 +27,28 @@ export function mainCommand(): Command {
 }
 
 /** Phabricator source implementation. */
-export class PhabricatorSource extends AirbyteSourceBase {
+export class PhabricatorSource extends AirbyteSourceBase<PhabricatorConfig> {
   async spec(): Promise<AirbyteSpec> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AirbyteConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: PhabricatorConfig): Promise<[boolean, VError]> {
     try {
-      const phabricator = Phabricator.instance(
-        config as PhabricatorConfig,
-        this.logger
-      );
+      const phabricator = Phabricator.instance(config, this.logger);
       await phabricator.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(config: PhabricatorConfig): AirbyteStreamBase[] {
     return [
-      new Repositories(config as PhabricatorConfig, this.logger),
-      new Commits(config as PhabricatorConfig, this.logger),
-      new Revisions(config as PhabricatorConfig, this.logger),
-      new RevisionDiffs(config as PhabricatorConfig, this.logger),
-      new Users(config as PhabricatorConfig, this.logger),
-      new Projects(config as PhabricatorConfig, this.logger),
-      new Transactions(config as PhabricatorConfig, this.logger),
+      new Repositories(config, this.logger),
+      new Commits(config, this.logger),
+      new Revisions(config, this.logger),
+      new RevisionDiffs(config, this.logger),
+      new Users(config, this.logger),
+      new Projects(config, this.logger),
+      new Transactions(config, this.logger),
     ];
   }
 }

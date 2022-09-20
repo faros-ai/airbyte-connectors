@@ -8,13 +8,9 @@ import {
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {FarosDestinationRunner} from '../src';
+import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {GraphQLClient} from '../src/common/graphql-client';
-import {
-  Edition,
-  FarosDestination,
-  InvalidRecordStrategy,
-} from '../src/destination';
+import {FarosDestination} from '../src/destination';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig} from './testing-tools';
 
