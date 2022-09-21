@@ -31,8 +31,8 @@ export function repoFullName(projectKey: string, repoSlug: string): string {
 export function toStreamUser(data: {[k: string]: any}): User {
   return {
     accountId: data.slug,
-    emailAddress: data.emailAddress,
     displayName: data.displayName,
+    emailAddress: data.emailAddress,
     name: data.name,
     links: {htmlUrl: selfHRef(data.links as HRefs)},
     type: 'user',

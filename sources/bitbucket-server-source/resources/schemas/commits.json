@@ -23,6 +23,9 @@
             "displayName": {
               "type": "string"
             },
+            "emailAddress": {
+              "type": "string"
+            },
             "name": {
               "type": "string"
             },
