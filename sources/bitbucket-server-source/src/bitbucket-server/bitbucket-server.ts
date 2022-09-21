@@ -191,7 +191,7 @@ export class BitbucketServer {
           return {
             slug: data.slug,
             name: data.name,
-            fullName: `${projectKey}/${data.name}`,
+            fullName: repoFullName(projectKey, data.name),
             description: data.description,
             isPrivate: !data.public,
             mainBranch: {name: defaultBranch?.displayId},
