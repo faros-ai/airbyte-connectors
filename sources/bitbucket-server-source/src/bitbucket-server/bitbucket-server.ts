@@ -109,28 +109,24 @@ export class BitbucketServer {
   private async *paginate<T extends Dict, U>(
     fetch: (start: number) => Promise<Client.Response<T>>,
     toStreamData: (data: Dict) => AsyncOrSync<U>,
-    shouldEmit?: (streamData: U) => AsyncOrSync<EmitFlags>
+    shouldEmit: (streamData: U) => AsyncOrSync<EmitFlags> = () => {
+      return {shouldEmit: true, shouldBreak: false};
+    }
   ): AsyncGenerator<U> {
     let {data: page} = await fetch(0);
     if (!page) return;
-    const resultIsPage = 'values' in page && Array.isArray(page.values);
-    if (!resultIsPage) {
+    if (!Array.isArray(page.values)) {
       yield toStreamData(page);
       return;
     }
     do {
       for (const data of page.values) {
         const streamData = await toStreamData(data);
-        if (!shouldEmit) {
+        const flags = await shouldEmit(streamData);
+        if (flags.shouldEmit) {
           yield streamData;
-        } else {
-          const flags = await shouldEmit(streamData);
-          if (flags.shouldEmit) {
-            yield streamData;
-          } else if (flags.shouldBreak) {
-            console.log('Breaking early');
-            return;
-          }
+        } else if (flags.shouldBreak) {
+          return;
         }
       }
       page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
