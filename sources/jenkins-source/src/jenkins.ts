@@ -10,6 +10,7 @@ const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s
 const FEED_JOBS_COUNT_PATTERN = 'jobs[name]';
 const FEED_MAX_DEPTH_CALC_PATTERN = 'fullName,jobs[*]';
 const FOLDER_JOB_TYPE = 'com.cloudbees.hudson.plugins.folder.Folder';
+const PIPELINE_MULTIBRANCH_JOB_TYPE= 'org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject';
 const POTENTIAL_MAX_DEPTH = 10;
 
 export interface JenkinsConfig extends AirbyteConfig {
@@ -270,7 +271,7 @@ export class Jenkins {
       if (!job) {
         break;
       }
-      if (job._class === FOLDER_JOB_TYPE) {
+      if (job._class === FOLDER_JOB_TYPE || job._class === PIPELINE_MULTIBRANCH_JOB_TYPE) {
         if (job.jobs) {
           for (const nestedJob of job.jobs) {
             nestedJob.name = `${job.name}/${nestedJob.name}`;
