@@ -11,13 +11,13 @@ import {
 import {
   BitbucketServerConfig,
   Commit,
+  Project,
+  ProjectUser,
   PullRequest,
   repoFullName,
   Repository,
   selfHRef,
   toStreamUser,
-  Workspace,
-  WorkspaceUser,
 } from './types';
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -253,7 +253,7 @@ export class BitbucketServer {
             isPrivate: !data.public,
             mainBranch: {name: defaultBranch?.displayId},
             links: {htmlUrl: selfHRef(data.links)},
-            workspace: {slug: projectKey},
+            project: {slug: projectKey},
           };
         },
         (repo) => {
@@ -275,13 +275,12 @@ export class BitbucketServer {
     }
   }
 
-  async workspace(projectKey: string): Promise<Workspace> {
+  async project(projectKey: string): Promise<Project> {
     try {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
       return {
         slug: data.key,
         name: data.name,
-        type: 'workspace',
         links: {htmlUrl: selfHRef(data.links)},
       };
     } catch (err) {
@@ -292,10 +291,10 @@ export class BitbucketServer {
     }
   }
 
-  async *workspaceUsers(project: string): AsyncGenerator<WorkspaceUser> {
+  async *projectUsers(project: string): AsyncGenerator<ProjectUser> {
     try {
       this.logger.debug(`Fetching users for project: ${project}`);
-      yield* this.paginate<Schema.PaginatedUsers, WorkspaceUser>(
+      yield* this.paginate<Schema.PaginatedUsers, ProjectUser>(
         (start) =>
           this.client.api.getUsers({
             start,
@@ -305,9 +304,9 @@ export class BitbucketServer {
               'permission.1.projectKey': project,
             },
           }),
-        (data: Schema.User): WorkspaceUser => {
+        (data: Schema.User): ProjectUser => {
           return {
-            workspace: {slug: project},
+            project: {slug: project},
             user: toStreamUser(data),
           };
         }

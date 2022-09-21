@@ -602,6 +602,7 @@ export interface Repository {
   readonly project: {
     readonly type: string;
     readonly name: string;
+    readonly slug: string;
     readonly key: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};
@@ -623,6 +624,11 @@ export interface Repository {
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};
   };
+}
+
+export interface ProjectUser {
+  readonly user: User;
+  readonly project: {readonly slug: string};
 }
 
 export interface WorkspaceUser {

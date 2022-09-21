@@ -68,17 +68,16 @@ export interface Repository {
   readonly isPrivate: boolean;
   readonly mainBranch: {readonly name: string};
   readonly links: {readonly htmlUrl: string};
-  readonly workspace: {readonly slug: string};
+  readonly project: {readonly slug: string};
 }
 
-export interface Workspace {
-  readonly type: string;
+export interface Project {
   readonly slug: string;
   readonly name: string;
   readonly links: {readonly htmlUrl: string};
 }
 
-export interface WorkspaceUser {
+export interface ProjectUser {
   readonly user: User;
-  readonly workspace: {readonly slug: string};
+  readonly project: {readonly slug: string};
 }

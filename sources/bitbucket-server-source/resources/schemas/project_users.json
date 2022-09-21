@@ -32,7 +32,7 @@
         }
       }
     },
-    "workspace": {
+    "project": {
       "type": "object",
       "properties": {
         "slug": {

@@ -1,12 +1,12 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServerConfig, Workspace} from '../bitbucket-server/types';
+import {BitbucketServerConfig, ProjectUser} from '../bitbucket-server/types';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string};
 
-export class Workspaces extends StreamBase {
+export class ProjectUsers extends StreamBase {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -15,11 +15,11 @@ export class Workspaces extends StreamBase {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/workspaces.json');
+    return require('../../resources/schemas/project_users.json');
   }
 
   get primaryKey(): StreamKey {
-    return 'slug';
+    return ['user', 'accountId'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -32,7 +32,7 @@ export class Workspaces extends StreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice
-  ): AsyncGenerator<Workspace> {
-    yield this.server.workspace(streamSlice.project);
+  ): AsyncGenerator<ProjectUser> {
+    yield* this.server.projectUsers(streamSlice.project);
   }
 }

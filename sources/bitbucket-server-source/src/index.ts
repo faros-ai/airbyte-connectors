@@ -11,10 +11,10 @@ import VError from 'verror';
 import {BitbucketServer} from './bitbucket-server/bitbucket-server';
 import {BitbucketServerConfig} from './bitbucket-server/types';
 import {Commits} from './streams/commits';
+import {ProjectUsers} from './streams/project_users';
+import {Projects} from './streams/projects';
 import {PullRequests} from './streams/pull_requests';
 import {Repositories} from './streams/repositories';
-import {WorkspaceUsers} from './streams/workspace_users';
-import {Workspaces} from './streams/workspaces';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -42,12 +42,8 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
   }
 
   streams(config: BitbucketServerConfig): AirbyteStreamBase[] {
-    return [
-      Commits,
-      PullRequests,
-      Repositories,
-      WorkspaceUsers,
-      Workspaces,
-    ].map((Stream) => new Stream(config, this.logger));
+    return [Commits, ProjectUsers, Projects, PullRequests, Repositories].map(
+      (Stream) => new Stream(config, this.logger)
+    );
   }
 }
