@@ -121,7 +121,7 @@ export class BitbucketServer {
       for (const data of page.values) {
         const streamData = await toStreamData(data);
         if (!shouldEmit || (await shouldEmit(streamData))) {
-          yield await toStreamData(data);
+          yield streamData;
         }
       }
       page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
