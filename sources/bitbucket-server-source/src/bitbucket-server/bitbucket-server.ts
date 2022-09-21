@@ -51,17 +51,16 @@ export class BitbucketServer {
     }
     const client = new Client({baseUrl: config.server_url}) as ExtendedClient;
     client.addPlugin(MoreEndpointMethodsPlugin);
-    client.authenticate(
-      config.token
-        ? {type: 'token', token: config.token}
-        : {type: 'basic', username: config.username, password: config.password}
-    );
+    const auth = config.token
+      ? {type: 'token', token: config.token}
+      : {type: 'basic', username: config.username, password: config.password};
+    client.authenticate(auth as Client.Auth);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     const bb = new BitbucketServer(client, pageSize, logger, startDate);
     BitbucketServer.bitbucket = bb;
-    logger.debug('Created Bitbucket Server instance');
+    logger.debug(`Created Bitbucket Server instance with ${auth.type} auth`);
     return BitbucketServer.bitbucket;
   }
 
@@ -79,7 +78,7 @@ export class BitbucketServer {
       return [
         false,
         'Invalid authentication details. Please provide either a ' +
-          'Bitbucket access token or a Bitbucket username and password',
+          'Bitbucket access token OR a Bitbucket username and password',
       ];
     }
     if (!config.projects || config.projects.length < 1) {

@@ -1,8 +1,6 @@
 # Bitbucket Server Source
 
 This is the repository for the Bitbucket Server source connector, written in Typescript.
-For information about how to use this connector within Airbyte, see [the
-documentation](https://docs.airbyte.io/integrations/sources/bitbucket).
 
 ## Local development
 
@@ -11,7 +9,7 @@ documentation](https://docs.airbyte.io/integrations/sources/bitbucket).
 **To iterate on this connector, make sure to complete this prerequisites
 section.**
 
-#### Minimum Node.js version required `= 14.5`
+#### Minimum Node.js version required `= 16.x`
 
 #### Build connector
 
@@ -24,7 +22,7 @@ npm run prepare
 This will install all required dependencies and build all included connectors,
 including the Bitbucket Server source connector.
 
-Now you can cd into the Bitbucket Server connector directory, `sources/bitbucket-source`,
+Now you can cd into the Bitbucket Server connector directory, `sources/bitbucket-server-source`,
 and iterate on the Bitbucket Server source connector. After making code changes, run:
 
 ```
@@ -34,8 +32,8 @@ npm run build
 #### Create credentials
 
 Follow the instructions in the
-[documentation](https://docs.airbyte.io/integrations/sources/bitbucket) to
-generate the necessary credentials. Then create a file `secrets/config.json`
+[documentation](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html) to
+generate a HTTP access token. Then create a file `secrets/config.json`
 conforming to the `resources/spec.json` file. Note that any directory named
 `secrets` is gitignored across the entire `airbyte-connectors` repo, so there is
 no danger of accidentally checking in sensitive information. See
