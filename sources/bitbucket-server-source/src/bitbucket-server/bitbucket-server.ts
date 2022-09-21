@@ -10,7 +10,11 @@ import {
 } from './more-endpoint-methods';
 import {
   BitbucketServerConfig,
+  Commit,
+  repoFullName,
   Repository,
+  selfHRef,
+  toStreamUser,
   Workspace,
   WorkspaceUser,
 } from './types';
@@ -103,7 +107,8 @@ export class BitbucketServer {
 
   private async *paginate<T extends Dict, U>(
     fetch: (start: number) => Promise<Client.Response<T>>,
-    toStreamData: (data: Dict) => AsyncOrSync<U>
+    toStreamData: (data: Dict) => AsyncOrSync<U>,
+    shouldEmit?: (streamData: U) => AsyncOrSync<boolean>
   ): AsyncGenerator<U> {
     let {data: page} = await fetch(0);
     if (!page) return;
@@ -114,44 +119,98 @@ export class BitbucketServer {
     }
     do {
       for (const data of page.values) {
-        yield await toStreamData(data);
+        const streamData = await toStreamData(data);
+        if (!shouldEmit || (await shouldEmit(streamData))) {
+          yield await toStreamData(data);
+        }
       }
       page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
     } while (page);
   }
 
-  @Memoize((projectKey: string) => projectKey)
-  async repositories(projectKey: string): Promise<ReadonlyArray<Repository>> {
-    this.logger.debug(`Fetching repositories for project: ${projectKey}`);
-    const results: Repository[] = [];
-    const repos = this.paginate<Dict, Repository>(
-      (start) =>
-        this.client[MEP].projects.getRepositories({
-          projectKey,
-          start,
-          limit: this.pageSize,
-        }),
-      async (data: Dict): Promise<Repository> => {
-        const {data: defaultBranch} = await this.client.repos.getDefaultBranch({
-          projectKey,
-          repositorySlug: data.slug,
-        });
-        return {
-          slug: data.slug,
-          name: data.name,
-          fullName: data.name,
-          description: data.description,
-          isPrivate: !data.public,
-          mainBranch: {name: defaultBranch?.displayId},
-          links: {htmlUrl: selfHRef(data.links)},
-          workspace: {slug: projectKey},
-        };
-      }
-    );
-    for await (const repo of repos) {
-      results.push(repo);
+  async *commits(
+    projectKey: string,
+    repositorySlug: string,
+    latestCommitId?: string
+  ): AsyncGenerator<Commit> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(`Fetching commits for repository: ${fullName}`);
+      yield* this.paginate<Dict, Commit>(
+        (start) =>
+          this.client[MEP].repos.getCommits({
+            projectKey,
+            repositorySlug,
+            merges: 'include',
+            start,
+            since: latestCommitId,
+            limit: this.pageSize,
+          } as Client.Params.ReposGetCommits),
+        (data) => {
+          return {
+            hash: data.id,
+            message: data.message,
+            date: data.committerTimestamp,
+            author: {user: toStreamUser(data.author)},
+            repository: {fullName},
+          };
+        }
+      );
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching commits for repository: ${fullName}`
+      );
     }
-    return results;
+  }
+
+  @Memoize(
+    (projectKey: string, include?: ReadonlyArray<string>) =>
+      `${projectKey};${JSON.stringify(include)}`
+  )
+  async repositories(
+    projectKey: string,
+    include?: ReadonlyArray<string>
+  ): Promise<ReadonlyArray<Repository>> {
+    try {
+      this.logger.debug(`Fetching repositories for project: ${projectKey}`);
+      const results: Repository[] = [];
+      const repos = this.paginate<Dict, Repository>(
+        (start) =>
+          this.client[MEP].projects.getRepositories({
+            projectKey,
+            start,
+            limit: this.pageSize,
+          }),
+        async (data): Promise<Repository> => {
+          const {data: defaultBranch} =
+            await this.client.repos.getDefaultBranch({
+              projectKey,
+              repositorySlug: data.slug,
+            });
+          return {
+            slug: data.slug,
+            name: data.name,
+            fullName: `${projectKey}/${data.name}`,
+            description: data.description,
+            isPrivate: !data.public,
+            mainBranch: {name: defaultBranch?.displayId},
+            links: {htmlUrl: selfHRef(data.links)},
+            workspace: {slug: projectKey},
+          };
+        },
+        (repo) => !include || include.includes(repo.fullName)
+      );
+      for await (const repo of repos) {
+        results.push(repo);
+      }
+      return results;
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching repositories for project: ${projectKey}`
+      );
+    }
   }
 
   async workspace(projectKey: string): Promise<Workspace> {
@@ -187,13 +246,7 @@ export class BitbucketServer {
         (data: Schema.User): WorkspaceUser => {
           return {
             workspace: {slug: project},
-            user: {
-              accountId: data.slug,
-              displayName: data.displayName,
-              nickname: data.name,
-              links: {htmlUrl: selfHRef(data.links as HRefs)},
-              type: 'user',
-            },
+            user: toStreamUser(data),
           };
         }
       );
@@ -204,11 +257,6 @@ export class BitbucketServer {
       );
     }
   }
-}
-
-type HRefs = {self?: {href: string}[]};
-function selfHRef(links: HRefs): string | undefined {
-  return links.self?.find((l) => l.href)?.href;
 }
 
 function innerError(err: any): VError {

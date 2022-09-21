@@ -248,6 +248,7 @@ export interface Issue {
 
 export interface User {
   readonly displayName: string;
+  readonly emailAddress?: string;
   readonly uuid: string;
   readonly type: string;
   readonly nickname: string;

@@ -16,3 +16,8 @@ tests:
   full_refresh:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/full_configured_catalog.json"
+  incremental:
+    - config_path: "secrets/config.json"
+      configured_catalog_path: "test_files/incremental_configured_catalog.json"
+      cursor_paths:
+        commits: ["PLAYG/repo1", "latestDate"]

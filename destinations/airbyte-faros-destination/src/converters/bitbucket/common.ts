@@ -49,6 +49,7 @@ export class BitbucketCommon {
       record: {
         uid: user.accountId,
         name: user.displayName,
+        email: user.emailAddress,
         type: userType,
         htmlUrl: user.links?.htmlUrl,
         source,

@@ -36,5 +36,42 @@
       },
       "url": "/rest/api/latest/projects/{projectKey}/repos"
     }
+  },
+  "repos": {
+    "getCommits": {
+      "headers": {
+        "accept": "application/json"
+      },
+      "method": "GET",
+      "params": {
+        "merges": {
+          "in": "query",
+          "type": "string"
+        },
+        "projectKey": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        "repositorySlug": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        "since": {
+          "in": "query",
+          "type": "string"
+        },
+        "start": {
+          "in": "query",
+          "type": "integer"
+        },
+        "limit": {
+          "in": "query",
+          "type": "integer"
+        }
+      },
+      "url": "/rest/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits"
+    }
   }
 }

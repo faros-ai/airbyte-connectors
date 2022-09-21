@@ -40,9 +40,20 @@
           "type": "string"
         },
         "title": "Projects",
-        "description": "Names of your Bitbucket Server projects",
+        "description": "Keys of your Bitbucket Server projects",
         "examples": [
-          "myproject"
+          "PROJ"
+        ]
+      },
+      "repositories": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Repositories",
+        "description": "Names of your Bitbucket repositories in the format 'project-key/repo-slug'. If none are provided, data from all repositories for the specified projects will be pulled.",
+        "examples": [
+          "PROJ/myrepo"
         ]
       },
       "cutoff_days": {

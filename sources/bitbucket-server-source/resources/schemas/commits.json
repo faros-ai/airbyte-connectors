@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "hash": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "date": {
+      "type": "integer"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "accountId": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string"
+                }
+              }
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

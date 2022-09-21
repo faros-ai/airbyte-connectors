@@ -30,8 +30,10 @@ export class Repositories extends StreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Repository> {
-    const repos = await this.server.repositories(streamSlice.project);
-    for (const repo of repos) {
+    for (const repo of await this.server.repositories(
+      streamSlice.project,
+      this.config.repositories
+    )) {
       yield repo;
     }
   }
