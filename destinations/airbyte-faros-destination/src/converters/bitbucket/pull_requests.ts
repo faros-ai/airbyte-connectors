@@ -78,6 +78,7 @@ export class PullRequests extends BitbucketConverter {
         number: pr.id,
         uid: pr.id.toString(),
         title: pr.title,
+        description: pr.description,
         state: this.toPrState(pr.state),
         htmlUrl: pr?.links?.htmlUrl,
         createdAt: Utils.toDate(pr.createdOn),

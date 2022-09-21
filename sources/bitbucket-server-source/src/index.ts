@@ -11,6 +11,7 @@ import VError from 'verror';
 import {BitbucketServer} from './bitbucket-server/bitbucket-server';
 import {BitbucketServerConfig} from './bitbucket-server/types';
 import {Commits} from './streams/commits';
+import {PullRequests} from './streams/pull_requests';
 import {Repositories} from './streams/repositories';
 import {WorkspaceUsers} from './streams/workspace_users';
 import {Workspaces} from './streams/workspaces';
@@ -41,8 +42,12 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
   }
 
   streams(config: BitbucketServerConfig): AirbyteStreamBase[] {
-    return [Commits, Repositories, WorkspaceUsers, Workspaces].map(
-      (Stream) => new Stream(config, this.logger)
-    );
+    return [
+      Commits,
+      PullRequests,
+      Repositories,
+      WorkspaceUsers,
+      Workspaces,
+    ].map((Stream) => new Stream(config, this.logger));
   }
 }

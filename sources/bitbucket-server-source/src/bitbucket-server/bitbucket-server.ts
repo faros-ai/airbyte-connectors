@@ -11,6 +11,7 @@ import {
 import {
   BitbucketServerConfig,
   Commit,
+  PullRequest,
   repoFullName,
   Repository,
   selfHRef,
@@ -22,6 +23,7 @@ import {
 const DEFAULT_PAGE_SIZE = 25;
 
 type Dict = Dictionary<any>;
+type EmitFlags = {shouldEmit: boolean; shouldBreak: boolean};
 type ExtendedClient = Client & {
   addPlugin: (plugin: typeof MoreEndpointMethodsPlugin) => void;
   [MEP]: any; // MEP: MoreEndpointsPrefix
@@ -108,7 +110,7 @@ export class BitbucketServer {
   private async *paginate<T extends Dict, U>(
     fetch: (start: number) => Promise<Client.Response<T>>,
     toStreamData: (data: Dict) => AsyncOrSync<U>,
-    shouldEmit?: (streamData: U) => AsyncOrSync<boolean>
+    shouldEmit?: (streamData: U) => AsyncOrSync<EmitFlags>
   ): AsyncGenerator<U> {
     let {data: page} = await fetch(0);
     if (!page) return;
@@ -120,8 +122,16 @@ export class BitbucketServer {
     do {
       for (const data of page.values) {
         const streamData = await toStreamData(data);
-        if (!shouldEmit || (await shouldEmit(streamData))) {
+        if (!shouldEmit) {
           yield streamData;
+        } else {
+          const flags = await shouldEmit(streamData);
+          if (flags.shouldEmit) {
+            yield streamData;
+          } else if (flags.shouldBreak) {
+            console.log('Breaking early');
+            return;
+          }
         }
       }
       page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
@@ -164,6 +174,54 @@ export class BitbucketServer {
     }
   }
 
+  async *pullRequests(
+    projectKey: string,
+    repositorySlug: string,
+    latestUpdatedOn = 0
+  ): AsyncGenerator<PullRequest> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(`Fetching pull requests for repository: ${fullName}`);
+      yield* this.paginate<Dict, PullRequest>(
+        (start) =>
+          this.client.repos.getPullRequests({
+            projectKey,
+            repositorySlug,
+            order: 'NEWEST',
+            direction: 'INCOMING',
+            state: 'ALL',
+            start,
+            limit: this.pageSize,
+          }),
+        (data) => {
+          return {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            state: data.state,
+            createdOn: data.createdDate,
+            updatedOn: data.updatedDate,
+            commentCount: data.properties.commentCount,
+            author: toStreamUser(data.author.user),
+            links: {htmlUrl: selfHRef(data.links)},
+            destination: {repository: {fullName}},
+          };
+        },
+        (pr) => {
+          return {
+            shouldEmit: pr.updatedOn > latestUpdatedOn,
+            shouldBreak: true,
+          };
+        }
+      );
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching pull requests for repository: ${fullName}`
+      );
+    }
+  }
+
   @Memoize(
     (projectKey: string, include?: ReadonlyArray<string>) =>
       `${projectKey};${JSON.stringify(include)}`
@@ -199,7 +257,12 @@ export class BitbucketServer {
             workspace: {slug: projectKey},
           };
         },
-        (repo) => !include || include.includes(repo.fullName)
+        (repo) => {
+          return {
+            shouldEmit: !include || include.includes(repo.fullName),
+            shouldBreak: false,
+          };
+        }
       );
       for await (const repo of repos) {
         results.push(repo);

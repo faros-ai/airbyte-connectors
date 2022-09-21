@@ -1,15 +1,15 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServerConfig, Commit} from '../bitbucket-server/types';
+import {BitbucketServerConfig, PullRequest} from '../bitbucket-server/types';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
-type CommitState = {
-  [repoFullName: string]: {lastDate: number; lastHash: string};
+type PullRequestState = {
+  [repoFullName: string]: {lastUpdatedOn: number};
 };
 
-export class Commits extends StreamBase {
+export class PullRequests extends StreamBase {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -18,15 +18,15 @@ export class Commits extends StreamBase {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/commits.json');
+    return require('../../resources/schemas/pull_requests.json');
   }
 
   get primaryKey(): StreamKey {
-    return 'hash';
+    return [['destination', 'repository', 'fullName'], ['id']];
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'updatedOn';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -44,26 +44,26 @@ export class Commits extends StreamBase {
     syncMode: SyncMode,
     cursorField: string[],
     streamSlice: StreamSlice,
-    streamState?: CommitState
-  ): AsyncGenerator<Commit> {
+    streamState?: PullRequestState
+  ): AsyncGenerator<PullRequest> {
     const {project, repo} = streamSlice;
-    const lastCommitId =
+    const lastUpdated =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[repo.fullName]?.lastHash
+        ? streamState?.[repo.fullName]?.lastUpdatedOn
         : undefined;
-    yield* this.server.commits(project, repo.slug, lastCommitId);
+    yield* this.server.pullRequests(project, repo.slug, lastUpdated);
   }
 
   getUpdatedState(
-    currentStreamState: CommitState,
-    latestRecord: Commit
-  ): CommitState {
-    const repo = latestRecord.repository.fullName;
+    currentStreamState: PullRequestState,
+    latestRecord: PullRequest
+  ): PullRequestState {
+    const repo = latestRecord.destination.repository.fullName;
     const repoState = currentStreamState[repo] ?? null;
-    if (latestRecord.date > (repoState?.lastDate ?? 0)) {
+    if (latestRecord.updatedOn > (repoState?.lastUpdatedOn ?? 0)) {
       return {
         ...currentStreamState,
-        [repo]: {lastDate: latestRecord.date, lastHash: latestRecord.hash},
+        [repo]: {lastUpdatedOn: latestRecord.updatedOn},
       };
     }
     return currentStreamState;

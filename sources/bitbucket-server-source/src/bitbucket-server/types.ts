@@ -47,6 +47,19 @@ export interface Commit {
   readonly repository: {readonly fullName: string};
 }
 
+export interface PullRequest {
+  readonly id: number;
+  readonly title: string;
+  readonly description: string;
+  readonly state: string;
+  readonly createdOn: number;
+  readonly updatedOn: number;
+  readonly commentCount: number;
+  readonly author: User;
+  readonly links: {readonly htmlUrl: string};
+  readonly destination: {readonly repository: {readonly fullName: string}};
+}
+
 export interface Repository {
   readonly slug: string;
   readonly name: string;

@@ -7,7 +7,10 @@ import {StreamBase} from './common';
 type StreamSlice = {project: string};
 
 export class Repositories extends StreamBase {
-  constructor(readonly config: BitbucketServerConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: BitbucketServerConfig,
+    readonly logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
