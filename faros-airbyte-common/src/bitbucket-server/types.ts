@@ -71,20 +71,30 @@ export interface Repository {
   readonly slug: string;
   readonly name: string;
   readonly description: string;
-  readonly fullName: string;
-  readonly isPrivate: boolean;
-  readonly mainBranch: {readonly name: string};
-  readonly links: {readonly htmlUrl: string};
-  readonly project: {readonly slug: string};
+  readonly project: Project;
+  readonly public: boolean;
+  readonly links: HRefs;
+  readonly computedProperties: {
+    readonly fullName: string;
+    readonly mainBranch: string;
+  };
 }
 
 export interface Project {
-  readonly slug: string;
+  readonly key: string;
   readonly name: string;
-  readonly links: {readonly htmlUrl: string};
+  readonly links: HRefs;
+}
+
+export interface NewUser {
+  readonly displayName: string;
+  readonly emailAddress: string;
+  readonly name: string;
+  readonly slug: string;
+  readonly links: HRefs;
 }
 
 export interface ProjectUser {
-  readonly user: User;
-  readonly project: {readonly slug: string};
+  readonly user: NewUser;
+  readonly project: {readonly key: string};
 }

@@ -116,7 +116,7 @@ export class BitbucketServer {
   private async *paginate<T extends Dict, U>(
     fetch: (start: number) => Promise<Client.Response<T>>,
     toStreamData: (data: Dict) => AsyncOrSync<U>,
-    shouldEmit: (streamData: U) => AsyncOrSync<EmitFlags> = () => {
+    shouldEmit: (streamData: U) => AsyncOrSync<EmitFlags> = (): EmitFlags => {
       return {shouldEmit: true, shouldBreakEarly: false};
     }
   ): AsyncGenerator<U> {
@@ -205,7 +205,6 @@ export class BitbucketServer {
               limit: this.pageSize,
             }),
           (data) => {
-            console.log(JSON.stringify(data));
             return {
               pullRequest: {
                 id: pr.id,
@@ -305,19 +304,17 @@ export class BitbucketServer {
               repositorySlug: data.slug,
             });
           return {
-            slug: data.slug,
-            name: data.name,
-            fullName: repoFullName(projectKey, data.name),
-            description: data.description,
-            isPrivate: !data.public,
-            mainBranch: {name: defaultBranch?.displayId},
-            links: {htmlUrl: selfHRef(data.links)},
-            project: {slug: projectKey},
-          };
+            ...data,
+            computedProperties: {
+              fullName: repoFullName(projectKey, data.slug),
+              mainBranch: defaultBranch?.displayId,
+            },
+          } as Repository;
         },
         (repo) => {
           return {
-            shouldEmit: !include || include.includes(repo.fullName),
+            shouldEmit:
+              !include || include.includes(repo.computedProperties.fullName),
             shouldBreakEarly: false,
           };
         }
@@ -337,11 +334,7 @@ export class BitbucketServer {
   async project(projectKey: string): Promise<Project> {
     try {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
-      return {
-        slug: data.key,
-        name: data.name,
-        links: {htmlUrl: selfHRef(data.links)},
-      };
+      return data;
     } catch (err) {
       throw new VError(
         innerError(err),
@@ -365,9 +358,9 @@ export class BitbucketServer {
           }),
         (data: Schema.User): ProjectUser => {
           return {
-            project: {slug: project},
-            user: toStreamUser(data),
-          };
+            user: data,
+            project: {key: project},
+          } as ProjectUser;
         }
       );
     } catch (err) {

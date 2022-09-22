@@ -18,15 +18,15 @@ export class ProjectUsers extends BitbucketServerConverter {
     const projectUser = record.record.data as ProjectUser;
     const res: DestinationRecord[] = [];
 
-    const user = BitbucketServerCommon.vcsUser(projectUser.user, source);
+    const user = BitbucketServerCommon.vcsUserNew(projectUser.user, source);
     if (!user) return res;
 
     res.push(user);
     res.push({
       model: 'vcs_Membership',
       record: {
-        user: {uid: projectUser.user.accountId, source},
-        organization: {uid: projectUser.project.slug.toLowerCase(), source},
+        user: {uid: projectUser.user.slug, source},
+        organization: {uid: projectUser.project.key.toLowerCase(), source},
       },
     });
 

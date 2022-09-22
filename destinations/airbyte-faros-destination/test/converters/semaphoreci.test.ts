@@ -3,11 +3,10 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {semaphoreciAllStreamLogs} from './data';
 
 describe('semaphoreci', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/semaphoreci/catalog.json';
   let configPath: string;

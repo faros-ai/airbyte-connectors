@@ -17,7 +17,7 @@ export class Projects extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'slug';
+    return 'key';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {

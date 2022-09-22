@@ -17,7 +17,7 @@ export class ProjectUsers extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['user', 'accountId'];
+    return ['user', 'slug'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {

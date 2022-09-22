@@ -33,7 +33,10 @@ export class Commits extends StreamBase {
         project,
         this.config.repositories
       )) {
-        yield {project, repo: {slug: repo.slug, fullName: repo.fullName}};
+        yield {
+          project,
+          repo: {slug: repo.slug, fullName: repo.computedProperties.fullName},
+        };
       }
     }
   }

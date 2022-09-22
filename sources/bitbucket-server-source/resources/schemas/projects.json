@@ -2,22 +2,41 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "type": "object",
   "properties": {
-    "links": {
-      "type": "object",
-      "properties": {
-        "htmlUrl": {
-          "type": "string",
-          "format": "uri"
-        }
-      }
+    "key": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "public": {
+      "type": "boolean"
     },
     "type": {
       "type": "string"
     },
-    "slug": {
-      "type": "string"
+    "links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     },
-    "name": {
+    "avatarUrl": {
       "type": "string"
     }
   }

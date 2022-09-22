@@ -93,7 +93,7 @@ export async function initMockttp(mockttp: Mockttp): Promise<void> {
 
 export function testLogger(name = 'test'): pino.Logger {
   return pino({
-    name: 'test',
+    name,
     level: process.env.LOG_LEVEL ?? 'info',
     // pino-pretty leaves threads open which can prevent Jest from exiting properly
     transport:

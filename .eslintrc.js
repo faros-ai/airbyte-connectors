@@ -5,20 +5,13 @@ module.exports = {
     node: true,
   },
   parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-    'simple-import-sort',
-  ],
+  plugins: ['@typescript-eslint', 'simple-import-sort'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
-  ignorePatterns: [
-    '/bin/',
-    '/lib/',
-    '/out/',
-  ],
+  ignorePatterns: ['/bin/', '/lib/', '/out/'],
   rules: {
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/explicit-function-return-type': 'warn',
@@ -45,7 +38,13 @@ module.exports = {
       files: ['test/**/*.ts'],
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
-      }
+      },
+    },
+    {
+      files: ['destinations/airbyte-faros-destination/src/converters/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': ['warn', {args: 'none'}],
+      },
     },
   ],
 };

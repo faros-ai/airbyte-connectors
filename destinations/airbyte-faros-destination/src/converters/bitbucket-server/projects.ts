@@ -1,7 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
+import {
+  Project,
+  selfHRef,
+} from 'faros-airbyte-common/lib/bitbucket-server/types';
 
-import {Workspace} from '../bitbucket/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketServerConverter} from './common';
 
@@ -15,17 +17,16 @@ export class Projects extends BitbucketServerConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const workspace = record.record.data as Workspace;
+    const project = record.record.data as Project;
 
     return [
       {
         model: 'vcs_Organization',
         record: {
-          uid: workspace.slug.toLowerCase(),
-          name: workspace.name,
+          uid: project.key.toLowerCase(),
+          name: project.name,
           type: {category: 'Workspace'},
-          htmlUrl: workspace.links.htmlUrl,
-          createdAt: Utils.toDate(workspace.createdOn),
+          htmlUrl: selfHRef(project.links),
           source,
         },
       },
