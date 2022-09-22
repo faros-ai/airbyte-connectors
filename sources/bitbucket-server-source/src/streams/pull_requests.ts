@@ -51,7 +51,10 @@ export class PullRequests extends StreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedOn
         : undefined;
-    yield* this.server.pullRequests(project, repo.slug, lastUpdated);
+    const prs = this.server.pullRequests(project, repo.slug, lastUpdated);
+    for (const pr of await prs) {
+      yield pr;
+    }
   }
 
   getUpdatedState(
