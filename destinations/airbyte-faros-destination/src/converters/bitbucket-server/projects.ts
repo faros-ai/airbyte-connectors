@@ -1,11 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Workspace} from '../bitbucket/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketConverter} from './common';
-import {Workspace} from './types';
+import {BitbucketServerConverter} from './common';
 
-export class Projects extends BitbucketConverter {
+export class Projects extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
   ];

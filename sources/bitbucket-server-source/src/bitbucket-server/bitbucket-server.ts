@@ -14,6 +14,7 @@ import {
   Project,
   ProjectUser,
   PullRequest,
+  PullRequestActivity,
   repoFullName,
   Repository,
   selfHRef,
@@ -172,6 +173,35 @@ export class BitbucketServer {
       throw new VError(
         innerError(err),
         `Error fetching commits for repository: ${fullName}`
+      );
+    }
+  }
+
+  async *pullRequestActivities(
+    projectKey: string,
+    repositorySlug: string,
+    lastUpdatedOn = this.startDate.getTime()
+  ): AsyncGenerator<PullRequestActivity> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(
+        `Fetching pull request activities for repository: ${fullName}`
+      );
+      const prs = this.pullRequests(projectKey, repositorySlug, lastUpdatedOn);
+      for (const pr of await prs) {
+        const demo = await this.client.pullRequests.getActivities({
+          projectKey,
+          repositorySlug,
+          pullRequestId: pr.id,
+          limit: 50, //this.pageSize,
+        });
+        yield {} as PullRequestActivity;
+        // console.log(JSON.stringify(demo.data));
+      }
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching pull request activities for repository: ${fullName}`
       );
     }
   }

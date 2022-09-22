@@ -95,6 +95,10 @@ export function testLogger(name = 'test'): pino.Logger {
   return pino({
     name: 'test',
     level: process.env.LOG_LEVEL ?? 'info',
-    transport: {target: 'pino-pretty', options: {levelFirst: true}},
+    // pino-pretty leaves threads open which can prevent Jest from exiting properly
+    transport:
+      process.env.LOG_LEVEL?.toLowerCase() === 'debug'
+        ? {target: 'pino-pretty', options: {levelFirst: true}}
+        : undefined,
   });
 }

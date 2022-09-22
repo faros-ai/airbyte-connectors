@@ -23,7 +23,7 @@
     },
     {
       "stream": {
-        "name": "pull_requests",
+        "name": "pull_request_activities",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
@@ -41,7 +41,32 @@
       },
       "sync_mode": "incremental",
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pull_requests",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updatedOn"
+        ],
+        "source_defined_primary_key": [
+          [
+            "destination",
+            "repository",
+            "fullName"
+          ],
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "destination_sync_mode": "append"
     }
   ]
 }
-

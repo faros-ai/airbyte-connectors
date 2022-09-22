@@ -60,6 +60,15 @@ export interface PullRequest {
   readonly destination: {readonly repository: {readonly fullName: string}};
 }
 
+export interface PullRequestActivity {
+  readonly pullRequest: {
+    readonly id: number;
+    readonly repositorySlug?: string;
+    readonly workspace?: string;
+    readonly links: {readonly htmlUrl: string};
+  };
+}
+
 export interface Repository {
   readonly slug: string;
   readonly name: string;

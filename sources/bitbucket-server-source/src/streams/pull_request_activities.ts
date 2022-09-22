@@ -1,15 +1,18 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServerConfig, PullRequest} from '../bitbucket-server/types';
+import {
+  BitbucketServerConfig,
+  PullRequestActivity,
+} from '../bitbucket-server/types';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
-type PullRequestState = {
+type PullRequestActivityState = {
   [repoFullName: string]: {lastUpdatedOn: number};
 };
 
-export class PullRequests extends StreamBase {
+export class PullRequestActivities extends StreamBase {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -18,7 +21,7 @@ export class PullRequests extends StreamBase {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/pull_requests.json');
+    return require('../../resources/schemas/pull_request_activities.json');
   }
 
   get primaryKey(): StreamKey {
@@ -44,31 +47,13 @@ export class PullRequests extends StreamBase {
     syncMode: SyncMode,
     cursorField: string[],
     streamSlice: StreamSlice,
-    streamState?: PullRequestState
-  ): AsyncGenerator<PullRequest> {
+    streamState?: PullRequestActivityState
+  ): AsyncGenerator<PullRequestActivity> {
     const {project, repo} = streamSlice;
-    const lastUpdatedOn =
+    const lastUpdated =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedOn
         : undefined;
-    const prs = this.server.pullRequests(project, repo.slug, lastUpdatedOn);
-    for (const pr of await prs) {
-      yield pr;
-    }
-  }
-
-  getUpdatedState(
-    currentStreamState: PullRequestState,
-    latestRecord: PullRequest
-  ): PullRequestState {
-    const repo = latestRecord.destination.repository.fullName;
-    const repoState = currentStreamState[repo] ?? null;
-    if (latestRecord.updatedOn > (repoState?.lastUpdatedOn ?? 0)) {
-      return {
-        ...currentStreamState,
-        [repo]: {lastUpdatedOn: latestRecord.updatedOn},
-      };
-    }
-    return currentStreamState;
+    yield* this.server.pullRequestActivities(project, repo.slug, lastUpdated);
   }
 }

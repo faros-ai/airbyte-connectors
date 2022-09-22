@@ -1,10 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {BitbucketCommon} from '../bitbucket/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketCommon, BitbucketConverter} from './common';
+import {BitbucketServerConverter} from './common';
 import {ProjectUser} from './types';
 
-export class ProjectUsers extends BitbucketConverter {
+export class ProjectUsers extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_User',
     'vcs_Membership',

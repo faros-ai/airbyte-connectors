@@ -626,11 +626,6 @@ export interface Repository {
   };
 }
 
-export interface ProjectUser {
-  readonly user: User;
-  readonly project: {readonly slug: string};
-}
-
 export interface WorkspaceUser {
   readonly type: string;
   readonly user: User;
