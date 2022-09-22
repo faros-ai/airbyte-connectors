@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {ProjectUser} from 'faros-airbyte-common/lib/bitbucket-server/types';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketServerCommon, BitbucketServerConverter} from './common';
+import {BitbucketServerConverter} from './common';
 
 export class ProjectUsers extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -10,23 +10,25 @@ export class ProjectUsers extends BitbucketServerConverter {
     'vcs_Membership',
   ];
 
+  id(record: AirbyteRecord): string {
+    const user = record?.record?.data as ProjectUser;
+    return `${user.project.key};${user.user.slug}`;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const projectUser = record.record.data as ProjectUser;
     const res: DestinationRecord[] = [];
-
-    const user = BitbucketServerCommon.vcsUserNew(projectUser.user, source);
+    const {record: user, ref: userRef} = this.vcsUser(projectUser.user);
     if (!user) return res;
-
     res.push(user);
     res.push({
       model: 'vcs_Membership',
       record: {
-        user: {uid: projectUser.user.slug, source},
-        organization: {uid: projectUser.project.key.toLowerCase(), source},
+        user: userRef,
+        organization: this.vcsOrgRef(projectUser.project.key),
       },
     });
 

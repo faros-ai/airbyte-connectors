@@ -7,7 +7,7 @@ import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
 type CommitState = {
-  [repoFullName: string]: {lastDate: number; lastHash: string};
+  [repoFullName: string]: {lastCommitterTimestamp: number; lastId: string};
 };
 
 export class Commits extends StreamBase {
@@ -20,11 +20,11 @@ export class Commits extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'hash';
+    return 'id';
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'committerTimestamp';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -50,7 +50,7 @@ export class Commits extends StreamBase {
     const {project, repo} = streamSlice;
     const lastCommitId =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[repo.fullName]?.lastHash
+        ? streamState?.[repo.fullName]?.lastId
         : undefined;
     yield* this.server.commits(project, repo.slug, lastCommitId);
   }
@@ -59,12 +59,17 @@ export class Commits extends StreamBase {
     currentStreamState: CommitState,
     latestRecord: Commit
   ): CommitState {
-    const repo = latestRecord.repository.fullName;
+    const repo = latestRecord.computedProperties.repository.fullName;
     const repoState = currentStreamState[repo] ?? null;
-    if (latestRecord.date > (repoState?.lastDate ?? 0)) {
+    if (
+      latestRecord.committerTimestamp > (repoState?.lastCommitterTimestamp ?? 0)
+    ) {
       return {
         ...currentStreamState,
-        [repo]: {lastDate: latestRecord.date, lastHash: latestRecord.hash},
+        [repo]: {
+          lastCommitterTimestamp: latestRecord.committerTimestamp,
+          lastId: latestRecord.id,
+        },
       };
     }
     return currentStreamState;

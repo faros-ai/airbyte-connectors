@@ -1,37 +1,18 @@
-export interface User {
-  readonly accountId: string;
-  readonly name: string;
-  readonly displayName: string;
-  readonly emailAddress?: string;
-  readonly type: string;
-  readonly links: {readonly htmlUrl: string};
-}
-
 type HRefs = {self?: {href: string}[]};
 export function selfHRef(links: HRefs): string | undefined {
   return links.self?.find((l) => l.href)?.href;
 }
 
-export function repoFullName(projectKey: string, repoSlug: string): string {
-  return `${projectKey}/${repoSlug}`;
-}
-export function toStreamUser(data: {[k: string]: any}): User {
-  return {
-    accountId: data.slug,
-    displayName: data.displayName,
-    emailAddress: data.emailAddress,
-    name: data.name,
-    links: {htmlUrl: selfHRef(data.links as HRefs)},
-    type: 'user',
-  };
-}
-
 export interface Commit {
-  readonly hash: string;
+  readonly id: string;
+  readonly author: User;
+  readonly authorTimestamp: number;
+  readonly committer: User;
+  readonly committerTimestamp: number;
   readonly message: string;
-  readonly date: number;
-  readonly author: {readonly user: User};
-  readonly repository: {readonly fullName: string};
+  readonly computedProperties: {
+    readonly repository: {readonly fullName: string};
+  };
 }
 
 export interface PullRequestActivity {
@@ -55,7 +36,7 @@ export interface PullRequestComment extends PullRequestActivity {
 }
 
 export interface PullRequest {
-  readonly author: {readonly user: NewUser};
+  readonly author: {readonly user: User};
   readonly id: number;
   readonly title: string;
   readonly description: string;
@@ -88,7 +69,7 @@ export interface Project {
   readonly links: HRefs;
 }
 
-export interface NewUser {
+export interface User {
   readonly displayName: string;
   readonly emailAddress: string;
   readonly name: string;
@@ -97,6 +78,6 @@ export interface NewUser {
 }
 
 export interface ProjectUser {
-  readonly user: NewUser;
+  readonly user: User;
   readonly project: {readonly key: string};
 }

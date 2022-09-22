@@ -17,16 +17,16 @@ export class Repositories extends BitbucketServerConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const repo = record.record.data as Repository;
     const slug = repo.slug.toLowerCase();
+    const repoRef = this.vcsRepoRef(repo.project.key, slug);
     return [
       {
         model: 'vcs_Repository',
         record: {
           uid: slug,
           name: slug,
-          organization: {uid: repo.project.key.toLowerCase(), source},
+          organization: repoRef.organization,
           fullName: repo.computedProperties.fullName.toLowerCase(),
           description: repo.description?.substring(
             0,

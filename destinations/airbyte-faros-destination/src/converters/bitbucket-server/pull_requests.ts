@@ -7,7 +7,7 @@ import {Utils} from 'faros-feeds-sdk';
 
 import {CategoryRef} from '../bitbucket/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketServerCommon, BitbucketServerConverter} from './common';
+import {BitbucketServerConverter} from './common';
 
 enum PullRequestStateCategory {
   CLOSED = 'Closed',
@@ -22,21 +22,21 @@ export class PullRequests extends BitbucketServerConverter {
     'vcs_PullRequest',
   ];
 
+  id(record: AirbyteRecord): string {
+    const pr = record?.record?.data as PullRequest;
+    return `${pr.computedProperties.repository.fullName};${pr.id}`;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const pr = record.record.data as PullRequest;
     const res: DestinationRecord[] = [];
     const [project, repo] =
       pr.computedProperties.repository.fullName.split('/');
-    const repoRef = {
-      organization: {uid: project.toLowerCase(), source},
-      uid: repo.toLowerCase(),
-      name: repo.toLowerCase(),
-    };
-    const user = BitbucketServerCommon.vcsUserNew(pr.author.user, source);
+    const repoRef = this.vcsRepoRef(project, repo);
+    const {record: user, ref: author} = this.vcsUser(pr.author.user);
     if (!user) return res;
     res.push(user);
     res.push({
@@ -52,7 +52,7 @@ export class PullRequests extends BitbucketServerConverter {
         createdAt: Utils.toDate(pr.createdDate),
         updatedAt: Utils.toDate(pr.updatedDate),
         commentCount: pr.properties.commentCount,
-        author: {uid: pr.author.user.slug, source},
+        author,
       },
     });
     return res;

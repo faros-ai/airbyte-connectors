@@ -7,11 +7,9 @@ import {
   ProjectUser,
   PullRequest,
   PullRequestActivity,
-  repoFullName,
   Repository,
-  toStreamUser,
 } from 'faros-airbyte-common/lib/bitbucket-server/types';
-import {AsyncOrSync, Dictionary} from 'ts-essentials';
+import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -33,7 +31,7 @@ export interface Config extends AirbyteConfig {
 
 const DEFAULT_PAGE_SIZE = 25;
 
-type Dict = Dictionary<any>;
+type Dict = {[k: string]: any};
 type EmitFlags = {shouldEmit: boolean; shouldBreakEarly: boolean};
 type ExtendedClient = Client & {
   addPlugin: (plugin: typeof MoreEndpointMethodsPlugin) => void;
@@ -160,16 +158,14 @@ export class BitbucketServer {
           } as Client.Params.ReposGetCommits),
         (data) => {
           return {
-            hash: data.id,
-            message: data.message,
-            date: data.committerTimestamp,
-            author: {user: toStreamUser(data.author)},
-            repository: {fullName},
-          };
+            ...data,
+            computedProperties: {repository: {fullName}},
+          } as Commit;
         },
         (commit) => {
           return {
-            shouldEmit: !!lastCommitId || commit.date > startDateMs,
+            shouldEmit:
+              !!lastCommitId || commit.committerTimestamp > startDateMs,
             shouldBreakEarly: !lastCommitId,
           };
         }
@@ -363,6 +359,10 @@ export class BitbucketServer {
       );
     }
   }
+}
+
+function repoFullName(projectKey: string, repoSlug: string): string {
+  return `${projectKey}/${repoSlug}`;
 }
 
 function innerError(err: any): VError {

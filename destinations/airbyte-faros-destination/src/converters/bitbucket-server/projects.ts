@@ -16,18 +16,15 @@ export class Projects extends BitbucketServerConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const project = record.record.data as Project;
-
     return [
       {
         model: 'vcs_Organization',
         record: {
-          uid: project.key.toLowerCase(),
+          ...this.vcsOrgRef(project.key),
           name: project.name,
           type: {category: 'Workspace'},
           htmlUrl: selfHRef(project.links),
-          source,
         },
       },
     ];
