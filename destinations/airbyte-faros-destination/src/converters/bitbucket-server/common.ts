@@ -4,6 +4,9 @@ import {selfHRef, User} from 'faros-airbyte-common/lib/bitbucket-server/types';
 import {UserTypeCategory} from '../bitbucket/common';
 import {Converter, DestinationRecord} from '../converter';
 
+type VcsOrgRef = {uid: string; source: string};
+type VcsRepoRef = {uid: string; name: string; organization: VcsOrgRef};
+
 export abstract class BitbucketServerConverter extends Converter {
   source = 'Bitbucket-Server';
 
@@ -12,7 +15,7 @@ export abstract class BitbucketServerConverter extends Converter {
   }
 
   protected vcsUser(
-    user: User
+    user?: User
   ):
     | {record: DestinationRecord; ref: {uid: string; source: string}}
     | undefined {
@@ -34,10 +37,7 @@ export abstract class BitbucketServerConverter extends Converter {
     };
   }
 
-  protected vcsRepoRef(
-    projectKey: string,
-    repoSlug: string
-  ): {uid: string; name: string; organization: {uid: string; source: string}} {
+  protected vcsRepoRef(projectKey: string, repoSlug: string): VcsRepoRef {
     return {
       uid: repoSlug.toLowerCase(),
       name: repoSlug.toLowerCase(),
@@ -45,7 +45,7 @@ export abstract class BitbucketServerConverter extends Converter {
     };
   }
 
-  protected vcsOrgRef(projectKey: string): {uid: string; source: string} {
+  protected vcsOrgRef(projectKey: string): VcsOrgRef {
     return {uid: projectKey.toLowerCase(), source: this.streamName.source};
   }
 }

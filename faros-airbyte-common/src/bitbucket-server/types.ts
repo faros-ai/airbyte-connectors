@@ -20,19 +20,45 @@ export interface PullRequestActivity {
   readonly createdDate: number;
   readonly user: User;
   readonly action: string;
-  readonly pullRequest: {
-    readonly id: number;
-    readonly repository: {readonly fullName: string};
+  readonly computedProperties: {
+    readonly pullRequest: {
+      readonly id: number;
+      readonly repository: {readonly fullName: string};
+      readonly updatedDate: number;
+    };
   };
 }
 
-export interface PullRequestComment extends PullRequestActivity {
+interface PullRequestComment extends PullRequestActivity {
   readonly comment: {
     readonly text: string;
-    readonly author: User;
     readonly createdDate: number;
     readonly updatedDate: number;
   };
+}
+
+export function isPullRequestComment(
+  activity: PullRequestActivity
+): activity is PullRequestComment {
+  return activity.action === 'COMMENTED';
+}
+
+interface PullRequestMerge extends PullRequestActivity {
+  readonly commit: Commit;
+}
+
+export function isPullRequestMerge(
+  activity: PullRequestActivity
+): activity is PullRequestMerge {
+  return activity.action === 'MERGED';
+}
+
+export function isPullRequestReview(activity: PullRequestActivity): boolean {
+  return (
+    activity.action === 'APPROVED' ||
+    activity.action === 'DECLINED' ||
+    activity.action === 'REVIEWED'
+  );
 }
 
 export interface PullRequest {

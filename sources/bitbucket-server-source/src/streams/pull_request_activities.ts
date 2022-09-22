@@ -7,7 +7,7 @@ import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
 type PullRequestActivityState = {
-  [repoFullName: string]: {lastUpdatedOn: number};
+  [repoFullName: string]: {lastUpdatedDate: number};
 };
 
 export class PullRequestActivities extends StreamBase {
@@ -20,11 +20,11 @@ export class PullRequestActivities extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return [['destination', 'repository', 'fullName'], ['id']];
+    return ['id'];
   }
 
   get cursorField(): string | string[] {
-    return 'updatedOn';
+    return ['computedProperties', 'pullRequest', 'updatedDate'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -48,10 +48,29 @@ export class PullRequestActivities extends StreamBase {
     streamState?: PullRequestActivityState
   ): AsyncGenerator<PullRequestActivity> {
     const {project, repo} = streamSlice;
-    const lastUpdated =
+    const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[repo.fullName]?.lastUpdatedOn
+        ? streamState?.[repo.fullName]?.lastUpdatedDate
         : undefined;
-    yield* this.server.pullRequestActivities(project, repo.slug, lastUpdated);
+    yield* this.server.pullRequestActivities(
+      project,
+      repo.slug,
+      lastUpdatedDate
+    );
+  }
+
+  getUpdatedState(
+    currentStreamState: PullRequestActivityState,
+    latestRecord: PullRequestActivity
+  ): PullRequestActivityState {
+    const repo =
+      latestRecord.computedProperties.pullRequest.repository.fullName;
+    const repoState = currentStreamState[repo] ?? null;
+    const newUpdatedDate =
+      latestRecord.computedProperties.pullRequest.updatedDate;
+    if (newUpdatedDate > (repoState?.lastUpdatedDate ?? 0)) {
+      return {...currentStreamState, [repo]: {lastUpdatedDate: newUpdatedDate}};
+    }
+    return currentStreamState;
   }
 }

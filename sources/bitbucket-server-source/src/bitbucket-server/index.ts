@@ -181,14 +181,18 @@ export class BitbucketServer {
   async *pullRequestActivities(
     projectKey: string,
     repositorySlug: string,
-    lastUpdatedOn = this.startDate.getTime()
+    lastPRUpdatedDate = this.startDate.getTime()
   ): AsyncGenerator<PullRequestActivity> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(
         `Fetching pull request activities for repository: ${fullName}`
       );
-      const prs = this.pullRequests(projectKey, repositorySlug, lastUpdatedOn);
+      const prs = this.pullRequests(
+        projectKey,
+        repositorySlug,
+        lastPRUpdatedDate
+      );
       for (const pr of await prs) {
         yield* this.paginate<Dict, PullRequestActivity>(
           (start) =>
@@ -201,13 +205,23 @@ export class BitbucketServer {
             }),
           (data) => {
             return {
-              pullRequest: {
-                id: pr.id,
-                repository: {
-                  fullName: pr.computedProperties.repository.fullName,
+              ...data,
+              computedProperties: {
+                pullRequest: {
+                  id: pr.id,
+                  repository: {
+                    fullName: pr.computedProperties.repository.fullName,
+                  },
+                  updatedDate: pr.updatedDate,
                 },
               },
             } as PullRequestActivity;
+          },
+          (activity) => {
+            return {
+              shouldEmit: activity.createdDate > lastPRUpdatedDate,
+              shouldBreakEarly: false,
+            };
           }
         );
       }

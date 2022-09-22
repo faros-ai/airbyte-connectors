@@ -22,4 +22,5 @@ tests:
       configured_catalog_path: "test_files/incremental_configured_catalog.json"
       cursor_paths:
         commits: ["PLAYG/repo1", "lastCommitterTimestamp"]
+        pull_request_activities: ["PLAYG/repo1", "lastUpdatedDate"]
         pull_requests: ["PLAYG/repo1", "lastUpdatedDate"]
