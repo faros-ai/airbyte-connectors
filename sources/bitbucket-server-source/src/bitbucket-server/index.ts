@@ -1,6 +1,5 @@
 import Client, {Schema} from '@atlassian/bitbucket-server';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {AirbyteConfig} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Commit,
   Project,
