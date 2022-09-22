@@ -21,5 +21,4 @@ tests:
     - config_path: "secrets/config.json"
       configured_catalog_path: "test_files/incremental_configured_catalog.json"
       cursor_paths:
-        commits: ["PLAYG/repo1", "lastDate"]
-        pull_requests: ["PLAYG/repo1", "lastUpdatedOn"]
+        pull_requests: ["PLAYG/repo1", "lastUpdatedDate"]

@@ -7,7 +7,7 @@ import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
 type PullRequestState = {
-  [repoFullName: string]: {lastUpdatedOn: number};
+  [repoFullName: string]: {lastUpdatedDate: number};
 };
 
 export class PullRequests extends StreamBase {
@@ -20,11 +20,11 @@ export class PullRequests extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return [['destination', 'repository', 'fullName'], ['id']];
+    return [['computedProperties', 'repository', 'fullName'], ['id']];
   }
 
   get cursorField(): string | string[] {
-    return 'updatedOn';
+    return 'updatedDate';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -48,11 +48,11 @@ export class PullRequests extends StreamBase {
     streamState?: PullRequestState
   ): AsyncGenerator<PullRequest> {
     const {project, repo} = streamSlice;
-    const lastUpdatedOn =
+    const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[repo.fullName]?.lastUpdatedOn
+        ? streamState?.[repo.fullName]?.lastUpdatedDate
         : undefined;
-    const prs = this.server.pullRequests(project, repo.slug, lastUpdatedOn);
+    const prs = this.server.pullRequests(project, repo.slug, lastUpdatedDate);
     for (const pr of await prs) {
       yield pr;
     }
@@ -62,12 +62,12 @@ export class PullRequests extends StreamBase {
     currentStreamState: PullRequestState,
     latestRecord: PullRequest
   ): PullRequestState {
-    const repo = latestRecord.destination.repository.fullName;
+    const repo = latestRecord.computedProperties.repository.fullName;
     const repoState = currentStreamState[repo] ?? null;
-    if (latestRecord.updatedOn > (repoState?.lastUpdatedOn ?? 0)) {
+    if (latestRecord.updatedDate > (repoState?.lastUpdatedDate ?? 0)) {
       return {
         ...currentStreamState,
-        [repo]: {lastUpdatedOn: latestRecord.updatedOn},
+        [repo]: {lastUpdatedDate: latestRecord.updatedDate},
       };
     }
     return currentStreamState;

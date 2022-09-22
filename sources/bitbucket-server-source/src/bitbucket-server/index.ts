@@ -9,7 +9,6 @@ import {
   PullRequestActivity,
   repoFullName,
   Repository,
-  selfHRef,
   toStreamUser,
 } from 'faros-airbyte-common/lib/bitbucket-server/types';
 import {AsyncOrSync, Dictionary} from 'ts-essentials';
@@ -208,7 +207,9 @@ export class BitbucketServer {
             return {
               pullRequest: {
                 id: pr.id,
-                repository: {fullName: pr.destination.repository.fullName},
+                repository: {
+                  fullName: pr.computedProperties.repository.fullName,
+                },
               },
             } as PullRequestActivity;
           }
@@ -223,13 +224,13 @@ export class BitbucketServer {
   }
 
   @Memoize(
-    (projectKey: string, repositorySlug: string, lastUpdatedOn?: number) =>
-      `${projectKey};${repositorySlug};${lastUpdatedOn}`
+    (projectKey: string, repositorySlug: string, lastUpdatedDate?: number) =>
+      `${projectKey};${repositorySlug};${lastUpdatedDate}`
   )
   async pullRequests(
     projectKey: string,
     repositorySlug: string,
-    lastUpdatedOn = this.startDate.getTime()
+    lastUpdatedDate = this.startDate.getTime()
   ): Promise<ReadonlyArray<PullRequest>> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
@@ -248,21 +249,13 @@ export class BitbucketServer {
           }),
         (data) => {
           return {
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            state: data.state,
-            createdOn: data.createdDate,
-            updatedOn: data.updatedDate,
-            commentCount: data.properties.commentCount,
-            author: toStreamUser(data.author.user),
-            links: {htmlUrl: selfHRef(data.links)},
-            destination: {repository: {fullName}},
-          };
+            ...data,
+            computedProperties: {repository: {fullName}},
+          } as PullRequest;
         },
         (pr) => {
           return {
-            shouldEmit: pr.updatedOn > lastUpdatedOn,
+            shouldEmit: pr.updatedDate > lastUpdatedDate,
             shouldBreakEarly: true,
           };
         }

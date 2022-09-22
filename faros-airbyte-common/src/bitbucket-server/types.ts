@@ -34,19 +34,6 @@ export interface Commit {
   readonly repository: {readonly fullName: string};
 }
 
-export interface PullRequest {
-  readonly id: number;
-  readonly title: string;
-  readonly description: string;
-  readonly state: string;
-  readonly createdOn: number;
-  readonly updatedOn: number;
-  readonly commentCount: number;
-  readonly author: User;
-  readonly links: {readonly htmlUrl: string};
-  readonly destination: {readonly repository: {readonly fullName: string}};
-}
-
 export interface PullRequestActivity {
   readonly id: number;
   readonly createdDate: number;
@@ -64,6 +51,21 @@ export interface PullRequestComment extends PullRequestActivity {
     readonly author: User;
     readonly createdDate: number;
     readonly updatedDate: number;
+  };
+}
+
+export interface PullRequest {
+  readonly author: {readonly user: NewUser};
+  readonly id: number;
+  readonly title: string;
+  readonly description: string;
+  readonly state: string;
+  readonly createdDate: number;
+  readonly updatedDate: number;
+  readonly properties: {readonly commentCount: number};
+  readonly links: HRefs;
+  readonly computedProperties: {
+    readonly repository: {readonly fullName: string};
   };
 }
 

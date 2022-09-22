@@ -15,7 +15,7 @@ export class BitbucketServerCommon {
     user: NewUser,
     source: string
   ): DestinationRecord | undefined {
-    if (!user.slug) return undefined;
+    if (!user?.slug) return undefined;
     return {
       model: 'vcs_User',
       record: {
