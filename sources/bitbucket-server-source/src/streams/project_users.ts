@@ -1,16 +1,14 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {ProjectUser} from 'faros-airbyte-common/lib/bitbucket-server/types';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServerConfig, ProjectUser} from '../bitbucket-server/types';
+import {Config} from '../bitbucket-server';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string};
 
 export class ProjectUsers extends StreamBase {
-  constructor(
-    readonly config: BitbucketServerConfig,
-    readonly logger: AirbyteLogger
-  ) {
+  constructor(readonly config: Config, readonly logger: AirbyteLogger) {
     super(logger);
   }
 

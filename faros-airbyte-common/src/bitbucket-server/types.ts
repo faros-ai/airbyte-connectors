@@ -1,17 +1,4 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk';
-
-export interface BitbucketServerConfig extends AirbyteConfig {
-  readonly server_url?: string;
-  readonly username?: string;
-  readonly password?: string;
-  readonly token?: string;
-  readonly projects?: ReadonlyArray<string>;
-  readonly repositories?: ReadonlyArray<string>;
-  readonly page_size?: number;
-  readonly cutoff_days?: number;
-}
-
-interface User {
+export interface User {
   readonly accountId: string;
   readonly name: string;
   readonly displayName: string;

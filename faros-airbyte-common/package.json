@@ -1,23 +1,29 @@
 {
-  "name": "bitbucket-server-source",
+  "name": "faros-airbyte-common",
   "version": "0.0.1",
-  "description": "Bitbucket Server Airbyte source",
+  "description": "Faros Airbyte Connector shared utilities",
   "keywords": [
     "airbyte",
-    "bitbucket-server",
     "faros"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
+  "repository": "https://github.com/faros-ai/airbyte-connectors",
+  "bugs": {
+    "url": "https://github.com/faros-ai/airbyte-connectors/issues"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "files": [
-    "lib/",
-    "resources/"
+    "lib/"
   ],
+  "main": "./lib",
   "engines": {
     "node": ">=16"
   },
-  "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
@@ -28,15 +34,13 @@
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
   },
-  "dependencies": {
-    "@atlassian/bitbucket-server": "^0.0.6",
-    "faros-airbyte-cdk": "0.0.1",
-    "faros-airbyte-common": "0.0.1",
-    "typescript-memoize": "^1.1.0",
-    "verror": "^1.10.1"
-  },
+  "dependencies": {},
   "jest": {
     "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
@@ -51,3 +55,4 @@
     }
   }
 }
+

@@ -1,15 +1,7 @@
 import Client, {Schema} from '@atlassian/bitbucket-server';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {AsyncOrSync, Dictionary} from 'ts-essentials';
-import {Memoize} from 'typescript-memoize';
-import VError from 'verror';
-
+import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {
-  MoreEndpointMethodsPlugin,
-  Prefix as MEP,
-} from './more-endpoint-methods';
-import {
-  BitbucketServerConfig,
   Commit,
   Project,
   ProjectUser,
@@ -19,7 +11,26 @@ import {
   Repository,
   selfHRef,
   toStreamUser,
-} from './types';
+} from 'faros-airbyte-common/lib/bitbucket-server/types';
+import {AsyncOrSync, Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
+
+import {
+  MoreEndpointMethodsPlugin,
+  Prefix as MEP,
+} from './more-endpoint-methods';
+
+export interface Config extends AirbyteConfig {
+  readonly server_url?: string;
+  readonly username?: string;
+  readonly password?: string;
+  readonly token?: string;
+  readonly projects?: ReadonlyArray<string>;
+  readonly repositories?: ReadonlyArray<string>;
+  readonly page_size?: number;
+  readonly cutoff_days?: number;
+}
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -40,10 +51,7 @@ export class BitbucketServer {
     readonly startDate: Date
   ) {}
 
-  static instance(
-    config: BitbucketServerConfig,
-    logger: AirbyteLogger
-  ): BitbucketServer {
+  static instance(config: Config, logger: AirbyteLogger): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
     const [passed, errorMessage] = BitbucketServer.validateConfig(config);
     if (!passed) {
@@ -65,9 +73,7 @@ export class BitbucketServer {
     return BitbucketServer.bitbucket;
   }
 
-  private static validateConfig(
-    config: BitbucketServerConfig
-  ): [boolean, string] {
+  private static validateConfig(config: Config): [boolean, string] {
     const existToken = config.token && !config.username && !config.password;
     const existAuth = !config.token && config.username && config.password;
     try {

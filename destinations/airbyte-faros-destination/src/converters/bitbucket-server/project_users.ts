@@ -1,9 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {ProjectUser} from 'faros-airbyte-common/lib/bitbucket-server/types';
 
-import {BitbucketCommon} from '../bitbucket/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketServerConverter} from './common';
-import {ProjectUser} from './types';
+import {BitbucketServerCommon, BitbucketServerConverter} from './common';
 
 export class ProjectUsers extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -19,7 +18,7 @@ export class ProjectUsers extends BitbucketServerConverter {
     const projectUser = record.record.data as ProjectUser;
     const res: DestinationRecord[] = [];
 
-    const user = BitbucketCommon.vcsUser(projectUser.user, source);
+    const user = BitbucketServerCommon.vcsUser(projectUser.user, source);
     if (!user) return res;
 
     res.push(user);

@@ -1,10 +1,8 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequestActivity} from 'faros-airbyte-common/lib/bitbucket-server/types';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  BitbucketServerConfig,
-  PullRequestActivity,
-} from '../bitbucket-server/types';
+import {Config} from '../bitbucket-server';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
@@ -13,10 +11,7 @@ type PullRequestActivityState = {
 };
 
 export class PullRequestActivities extends StreamBase {
-  constructor(
-    readonly config: BitbucketServerConfig,
-    readonly logger: AirbyteLogger
-  ) {
+  constructor(readonly config: Config, readonly logger: AirbyteLogger) {
     super(logger);
   }
 

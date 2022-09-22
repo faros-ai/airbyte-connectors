@@ -1,7 +1,8 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/lib/bitbucket-server/types';
 import {Dictionary} from 'ts-essentials';
 
-import {BitbucketServerConfig, Commit} from '../bitbucket-server/types';
+import {Config} from '../bitbucket-server';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
@@ -10,10 +11,7 @@ type CommitState = {
 };
 
 export class Commits extends StreamBase {
-  constructor(
-    readonly config: BitbucketServerConfig,
-    readonly logger: AirbyteLogger
-  ) {
+  constructor(readonly config: Config, readonly logger: AirbyteLogger) {
     super(logger);
   }
 

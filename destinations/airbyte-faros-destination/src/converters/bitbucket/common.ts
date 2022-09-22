@@ -20,7 +20,7 @@ export interface CategoryRef {
   readonly detail?: string;
 }
 
-enum UserTypeCategory {
+export enum UserTypeCategory {
   BOT = 'Bot',
   ORGANIZATION = 'Organization',
   USER = 'User',
