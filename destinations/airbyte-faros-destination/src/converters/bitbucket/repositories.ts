@@ -25,7 +25,7 @@ export class Repositories extends BitbucketConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repository = record.record.data as Repository;
-    const workspace = repository.workspace;
+    const workspace = repository.workspace ?? repository.project;
     const res: DestinationRecord[] = [];
     const description = repository.description?.substring(
       0,

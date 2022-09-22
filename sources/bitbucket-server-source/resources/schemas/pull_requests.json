@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "createdOn": {
+      "type": "integer"
+    },
+    "updatedOn": {
+      "type": "integer"
+    },
+    "commentCount": {
+      "type": "integer"
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "htmlUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "object",
+          "properties": {
+            "fullName": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
