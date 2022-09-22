@@ -61,11 +61,22 @@ export interface PullRequest {
 }
 
 export interface PullRequestActivity {
+  readonly id: number;
+  readonly createdDate: number;
+  readonly user: User;
+  readonly action: string;
   readonly pullRequest: {
     readonly id: number;
-    readonly repositorySlug?: string;
-    readonly workspace?: string;
-    readonly links: {readonly htmlUrl: string};
+    readonly repository: {readonly fullName: string};
+  };
+}
+
+export interface PullRequestComment extends PullRequestActivity {
+  readonly comment: {
+    readonly text: string;
+    readonly author: User;
+    readonly createdDate: number;
+    readonly updatedDate: number;
   };
 }
 

@@ -1,14 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
-import {Repository, Workspace} from './types';
+import {Repository} from './types';
 
 export class Repositories extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

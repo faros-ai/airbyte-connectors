@@ -189,14 +189,25 @@ export class BitbucketServer {
       );
       const prs = this.pullRequests(projectKey, repositorySlug, lastUpdatedOn);
       for (const pr of await prs) {
-        const demo = await this.client.pullRequests.getActivities({
-          projectKey,
-          repositorySlug,
-          pullRequestId: pr.id,
-          limit: 50, //this.pageSize,
-        });
-        yield {} as PullRequestActivity;
-        // console.log(JSON.stringify(demo.data));
+        yield* this.paginate<Dict, PullRequestActivity>(
+          (start) =>
+            this.client.pullRequests.getActivities({
+              projectKey,
+              repositorySlug,
+              pullRequestId: pr.id,
+              start,
+              limit: this.pageSize,
+            }),
+          (data) => {
+            console.log(JSON.stringify(data));
+            return {
+              pullRequest: {
+                id: pr.id,
+                repository: {fullName: pr.destination.repository.fullName},
+              },
+            } as PullRequestActivity;
+          }
+        );
       }
     } catch (err) {
       throw new VError(
