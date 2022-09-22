@@ -14,7 +14,6 @@ export class PullRequestActivities extends BitbucketServerConverter {
   readonly logger = new AirbyteLogger();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_User',
     'vcs_PullRequestComment',
     'vcs_PullRequestReview',
   ];
@@ -27,7 +26,6 @@ export class PullRequestActivities extends BitbucketServerConverter {
     const activity = record.record.data as PullRequestActivity;
     const {record: user, ref: author} = this.vcsUser(activity.user);
     if (!user) return res;
-    res.push(user);
     const [project, repo] =
       activity.computedProperties.pullRequest.repository.fullName.split('/');
     const id = activity.id;

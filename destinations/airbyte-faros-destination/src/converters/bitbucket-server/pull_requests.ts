@@ -18,7 +18,6 @@ enum PullRequestStateCategory {
 
 export class PullRequests extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_User',
     'vcs_PullRequest',
   ];
 
@@ -38,7 +37,6 @@ export class PullRequests extends BitbucketServerConverter {
     const repoRef = this.vcsRepoRef(project, repo);
     const {record: user, ref: author} = this.vcsUser(pr.author.user);
     if (!user) return res;
-    res.push(user);
     res.push({
       model: 'vcs_PullRequest',
       record: {

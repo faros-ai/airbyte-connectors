@@ -6,10 +6,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketServerConverter} from './common';
 
 export class Commits extends BitbucketServerConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Commit',
-    'vcs_User',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   async convert(
     record: AirbyteRecord,
@@ -22,7 +19,6 @@ export class Commits extends BitbucketServerConverter {
     const repoRef = this.vcsRepoRef(project, repo);
     const {record: user, ref: author} = this.vcsUser(commit.author);
     if (!user) return res;
-    res.push(user);
     res.push({
       model: 'vcs_Commit',
       record: {
