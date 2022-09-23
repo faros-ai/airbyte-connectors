@@ -2,10 +2,8 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {selfHRef, User} from 'faros-airbyte-common/bitbucket-server';
 
 import {UserTypeCategory} from '../bitbucket/common';
+import {VcsOrgRef, VcsRepoRef} from '../common/common';
 import {Converter, DestinationRecord} from '../converter';
-
-type VcsOrgRef = {uid: string; source: string};
-type VcsRepoRef = {uid: string; name: string; organization: VcsOrgRef};
 
 export abstract class BitbucketServerConverter extends Converter {
   source = 'Bitbucket-Server';

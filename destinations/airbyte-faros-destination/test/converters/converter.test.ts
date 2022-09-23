@@ -7,7 +7,7 @@ import {DestinationRecordTyped} from '../../src/converters/converter';
 describe('converter', () => {
   class GroupUsers extends Converter {
     source = 'MyCustomSource';
-    id(record: AirbyteRecord) {
+    id(record: AirbyteRecord): any {
       return record.record.data.id;
     }
     get destinationModels(): readonly string[] {

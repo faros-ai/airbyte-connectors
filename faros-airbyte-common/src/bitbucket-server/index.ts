@@ -1,5 +1,7 @@
 // TODO: Deduplicate shared types for other source/converter pairs
 
+import {FileDiff} from '../common';
+
 type HRefs = {self?: {href: string}[]};
 export function selfHRef(links: HRefs): string | undefined {
   return links.self?.find((l) => l.href)?.href;
@@ -64,14 +66,7 @@ export function isPullRequestReview(activity: PullRequestActivity): boolean {
 }
 
 export interface PullRequestDiff {
-  readonly files: ReadonlyArray<{
-    deletions: number;
-    additions: number;
-    from?: string;
-    to?: string;
-    deleted?: boolean;
-    new?: boolean;
-  }>;
+  readonly files: ReadonlyArray<FileDiff>;
   readonly computedProperties: {
     readonly pullRequest: {
       readonly id: number;

@@ -3,22 +3,14 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {CLI, read} from '../cli';
-import {
-  initMockttp,
-  readTestResourceFile,
-  tempConfig,
-  testLogger,
-} from '../testing-tools';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {gitlabCiAllStreamsLog} from './data';
 
 describe('gitlab-ci', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/gitlab-ci/catalog.json';
-  const catalogRawPath = 'test/resources/gitlab-ci/catalog-raw.json';
   let configPath: string;
-  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
-  const revisionId = 'test-revision-id';
   const streamNamePrefix = 'mytestsource__gitlab-ci__';
 
   beforeEach(async () => {
