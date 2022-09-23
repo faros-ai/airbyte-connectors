@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon, RepositoryKey} from './common';
 import {GitHubConverter} from './common';
 
@@ -10,8 +10,7 @@ export class PullRequestCommits extends GitHubConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prCommit = record.record.data;
@@ -21,7 +20,7 @@ export class PullRequestCommits extends GitHubConverter {
       prCommit.repository,
       source
     );
-      
+
     if (!repository) return [];
 
     const commit = {

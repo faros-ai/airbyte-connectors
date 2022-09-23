@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
 export class Branches extends GitlabConverter {
@@ -14,8 +14,7 @@ export class Branches extends GitlabConverter {
   }
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const branch = record.record.data;

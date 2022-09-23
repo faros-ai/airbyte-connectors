@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
 export class Workflows extends GitHubConverter {
@@ -12,8 +12,7 @@ export class Workflows extends GitHubConverter {
   private seenOrganizations = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const workflow = record.record.data;

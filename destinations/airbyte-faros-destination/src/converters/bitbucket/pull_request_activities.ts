@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {PRActivity, User} from './types';
 
@@ -23,8 +23,7 @@ export class PullRequestActivities extends BitbucketConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prActivity = record.record.data as PRActivity;
