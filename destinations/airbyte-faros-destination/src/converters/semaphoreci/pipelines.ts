@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {join} from 'path';
 
 import {
   DestinationModel,

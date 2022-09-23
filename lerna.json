@@ -2,6 +2,7 @@
   "version": "0.0.1",
   "packages": [
     "faros-airbyte-cdk",
+    "faros-airbyte-common",
     "destinations/**",
     "sources/**"
   ]

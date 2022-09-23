@@ -10,11 +10,34 @@
         ],
         "source_defined_cursor": true,
         "default_cursor_field": [
-          "date"
+          "committerTimestamp"
         ],
         "source_defined_primary_key": [
           [
-            "hash"
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "pull_request_activities",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "computedProperties",
+          "pullRequest",
+          "updatedDate"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
           ]
         ]
       },
@@ -31,11 +54,16 @@
         ],
         "source_defined_cursor": true,
         "default_cursor_field": [
-          "date"
+          "updatedDate"
         ],
         "source_defined_primary_key": [
           [
-            "hash"
+            "computedProperties",
+            "repository",
+            "fullName"
+          ],
+          [
+            "id"
           ]
         ]
       },
@@ -44,4 +72,3 @@
     }
   ]
 }
-

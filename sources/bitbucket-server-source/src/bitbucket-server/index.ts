@@ -1,6 +1,14 @@
 import Client, {Schema} from '@atlassian/bitbucket-server';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {AsyncOrSync, Dictionary} from 'ts-essentials';
+import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {
+  Commit,
+  Project,
+  ProjectUser,
+  PullRequest,
+  PullRequestActivity,
+  Repository,
+} from 'faros-airbyte-common/bitbucket-server';
+import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -8,22 +16,22 @@ import {
   MoreEndpointMethodsPlugin,
   Prefix as MEP,
 } from './more-endpoint-methods';
-import {
-  BitbucketServerConfig,
-  Commit,
-  Project,
-  ProjectUser,
-  PullRequest,
-  repoFullName,
-  Repository,
-  selfHRef,
-  toStreamUser,
-} from './types';
+
+export interface Config extends AirbyteConfig {
+  readonly server_url?: string;
+  readonly username?: string;
+  readonly password?: string;
+  readonly token?: string;
+  readonly projects?: ReadonlyArray<string>;
+  readonly repositories?: ReadonlyArray<string>;
+  readonly page_size?: number;
+  readonly cutoff_days?: number;
+}
 
 const DEFAULT_PAGE_SIZE = 25;
 
-type Dict = Dictionary<any>;
-type EmitFlags = {shouldEmit: boolean; shouldBreak: boolean};
+type Dict = {[k: string]: any};
+type EmitFlags = {shouldEmit: boolean; shouldBreakEarly: boolean};
 type ExtendedClient = Client & {
   addPlugin: (plugin: typeof MoreEndpointMethodsPlugin) => void;
   [MEP]: any; // MEP: MoreEndpointsPrefix
@@ -39,10 +47,7 @@ export class BitbucketServer {
     readonly startDate: Date
   ) {}
 
-  static instance(
-    config: BitbucketServerConfig,
-    logger: AirbyteLogger
-  ): BitbucketServer {
+  static instance(config: Config, logger: AirbyteLogger): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
     const [passed, errorMessage] = BitbucketServer.validateConfig(config);
     if (!passed) {
@@ -64,9 +69,7 @@ export class BitbucketServer {
     return BitbucketServer.bitbucket;
   }
 
-  private static validateConfig(
-    config: BitbucketServerConfig
-  ): [boolean, string] {
+  private static validateConfig(config: Config): [boolean, string] {
     const existToken = config.token && !config.username && !config.password;
     const existAuth = !config.token && config.username && config.password;
     try {
@@ -109,8 +112,8 @@ export class BitbucketServer {
   private async *paginate<T extends Dict, U>(
     fetch: (start: number) => Promise<Client.Response<T>>,
     toStreamData: (data: Dict) => AsyncOrSync<U>,
-    shouldEmit: (streamData: U) => AsyncOrSync<EmitFlags> = () => {
-      return {shouldEmit: true, shouldBreak: false};
+    shouldEmit: (streamData: U) => AsyncOrSync<EmitFlags> = (): EmitFlags => {
+      return {shouldEmit: true, shouldBreakEarly: false};
     }
   ): AsyncGenerator<U> {
     let {data: page} = await fetch(0);
@@ -125,7 +128,7 @@ export class BitbucketServer {
         const flags = await shouldEmit(streamData);
         if (flags.shouldEmit) {
           yield streamData;
-        } else if (flags.shouldBreak) {
+        } else if (flags.shouldBreakEarly) {
           return;
         }
       }
@@ -136,9 +139,10 @@ export class BitbucketServer {
   async *commits(
     projectKey: string,
     repositorySlug: string,
-    latestCommitId?: string
+    lastCommitId?: string
   ): AsyncGenerator<Commit> {
     const fullName = repoFullName(projectKey, repositorySlug);
+    const startDateMs = this.startDate.getTime();
     try {
       this.logger.debug(`Fetching commits for repository: ${fullName}`);
       yield* this.paginate<Dict, Commit>(
@@ -148,16 +152,20 @@ export class BitbucketServer {
             repositorySlug,
             merges: 'include',
             start,
-            since: latestCommitId,
+            since: lastCommitId,
             limit: this.pageSize,
           } as Client.Params.ReposGetCommits),
         (data) => {
           return {
-            hash: data.id,
-            message: data.message,
-            date: data.committerTimestamp,
-            author: {user: toStreamUser(data.author)},
-            repository: {fullName},
+            ...data,
+            computedProperties: {repository: {fullName}},
+          } as Commit;
+        },
+        (commit) => {
+          return {
+            shouldEmit:
+              !!lastCommitId || commit.committerTimestamp > startDateMs,
+            shouldBreakEarly: !lastCommitId,
           };
         }
       );
@@ -169,15 +177,75 @@ export class BitbucketServer {
     }
   }
 
-  async *pullRequests(
+  async *pullRequestActivities(
     projectKey: string,
     repositorySlug: string,
-    latestUpdatedOn = 0
-  ): AsyncGenerator<PullRequest> {
+    lastPRUpdatedDate = this.startDate.getTime()
+  ): AsyncGenerator<PullRequestActivity> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(
+        `Fetching pull request activities for repository: ${fullName}`
+      );
+      const prs = this.pullRequests(
+        projectKey,
+        repositorySlug,
+        lastPRUpdatedDate
+      );
+      for (const pr of await prs) {
+        yield* this.paginate<Dict, PullRequestActivity>(
+          (start) =>
+            this.client.pullRequests.getActivities({
+              projectKey,
+              repositorySlug,
+              pullRequestId: pr.id,
+              start,
+              limit: this.pageSize,
+            }),
+          (data) => {
+            return {
+              ...data,
+              computedProperties: {
+                pullRequest: {
+                  id: pr.id,
+                  repository: {
+                    fullName: pr.computedProperties.repository.fullName,
+                  },
+                  updatedDate: pr.updatedDate,
+                },
+              },
+            } as PullRequestActivity;
+          },
+          (activity) => {
+            return {
+              shouldEmit: activity.createdDate > lastPRUpdatedDate,
+              shouldBreakEarly: false,
+            };
+          }
+        );
+      }
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching pull request activities for repository: ${fullName}`
+      );
+    }
+  }
+
+  @Memoize(
+    (projectKey: string, repositorySlug: string, lastUpdatedDate?: number) =>
+      `${projectKey};${repositorySlug};${lastUpdatedDate}`
+  )
+  async pullRequests(
+    projectKey: string,
+    repositorySlug: string,
+    lastUpdatedDate = this.startDate.getTime()
+  ): Promise<ReadonlyArray<PullRequest>> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(`Fetching pull requests for repository: ${fullName}`);
-      yield* this.paginate<Dict, PullRequest>(
+      const results: PullRequest[] = [];
+      const prs = this.paginate<Dict, PullRequest>(
         (start) =>
           this.client.repos.getPullRequests({
             projectKey,
@@ -190,25 +258,21 @@ export class BitbucketServer {
           }),
         (data) => {
           return {
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            state: data.state,
-            createdOn: data.createdDate,
-            updatedOn: data.updatedDate,
-            commentCount: data.properties.commentCount,
-            author: toStreamUser(data.author.user),
-            links: {htmlUrl: selfHRef(data.links)},
-            destination: {repository: {fullName}},
-          };
+            ...data,
+            computedProperties: {repository: {fullName}},
+          } as PullRequest;
         },
         (pr) => {
           return {
-            shouldEmit: pr.updatedOn > latestUpdatedOn,
-            shouldBreak: true,
+            shouldEmit: pr.updatedDate > lastUpdatedDate,
+            shouldBreakEarly: true,
           };
         }
       );
+      for await (const pr of prs) {
+        results.push(pr);
+      }
+      return results;
     } catch (err) {
       throw new VError(
         innerError(err),
@@ -242,20 +306,18 @@ export class BitbucketServer {
               repositorySlug: data.slug,
             });
           return {
-            slug: data.slug,
-            name: data.name,
-            fullName: repoFullName(projectKey, data.name),
-            description: data.description,
-            isPrivate: !data.public,
-            mainBranch: {name: defaultBranch?.displayId},
-            links: {htmlUrl: selfHRef(data.links)},
-            project: {slug: projectKey},
-          };
+            ...data,
+            computedProperties: {
+              fullName: repoFullName(projectKey, data.slug),
+              mainBranch: defaultBranch?.displayId,
+            },
+          } as Repository;
         },
         (repo) => {
           return {
-            shouldEmit: !include || include.includes(repo.fullName),
-            shouldBreak: false,
+            shouldEmit:
+              !include || include.includes(repo.computedProperties.fullName),
+            shouldBreakEarly: false,
           };
         }
       );
@@ -274,11 +336,7 @@ export class BitbucketServer {
   async project(projectKey: string): Promise<Project> {
     try {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
-      return {
-        slug: data.key,
-        name: data.name,
-        links: {htmlUrl: selfHRef(data.links)},
-      };
+      return data;
     } catch (err) {
       throw new VError(
         innerError(err),
@@ -302,9 +360,9 @@ export class BitbucketServer {
           }),
         (data: Schema.User): ProjectUser => {
           return {
-            project: {slug: project},
-            user: toStreamUser(data),
-          };
+            user: data,
+            project: {key: project},
+          } as ProjectUser;
         }
       );
     } catch (err) {
@@ -314,6 +372,10 @@ export class BitbucketServer {
       );
     }
   }
+}
+
+function repoFullName(projectKey: string, repoSlug: string): string {
+  return `${projectKey}/${repoSlug}`;
 }
 
 function innerError(err: any): VError {

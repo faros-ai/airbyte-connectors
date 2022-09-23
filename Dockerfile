@@ -5,6 +5,7 @@ WORKDIR /home/node/airbyte
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/jest\|mockttp/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
+COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 RUN apk add --no-cache --virtual .gyp python3 make g++ \

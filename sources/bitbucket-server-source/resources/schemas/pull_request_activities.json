@@ -1,0 +1,366 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "createdDate": {
+      "type": "integer"
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "emailAddress": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "avatarUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "action": {
+      "type": "string"
+    },
+    "commentAction": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "object",
+          "properties": {
+            "repositoryId": {
+              "type": "integer"
+            }
+          }
+        },
+        "id": {
+          "type": "integer"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "emailAddress": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "active": {
+              "type": "boolean"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "self": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "avatarUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "createdDate": {
+          "type": "integer"
+        },
+        "updatedDate": {
+          "type": "integer"
+        },
+        "comments": {
+          "type": "array",
+          "items": {}
+        },
+        "tasks": {
+          "type": "array",
+          "items": {}
+        },
+        "severity": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "permittedOperations": {
+          "type": "object",
+          "properties": {
+            "editable": {
+              "type": "boolean"
+            },
+            "transitionable": {
+              "type": "boolean"
+            },
+            "deletable": {
+              "type": "boolean"
+            }
+          }
+        },
+        "html": {
+          "type": "string"
+        }
+      }
+    },
+    "commit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "displayId": {
+          "type": "string"
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "emailAddress": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "active": {
+              "type": "boolean"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "self": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "avatarUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "authorTimestamp": {
+          "type": "integer"
+        },
+        "committer": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "emailAddress": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "active": {
+              "type": "boolean"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "self": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "avatarUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "committerTimestamp": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "displayId": {
+                "type": "string"
+              },
+              "author": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "emailAddress": {
+                    "type": "string"
+                  },
+                  "avatarUrl": {
+                    "type": "string"
+                  }
+                }
+              },
+              "authorTimestamp": {
+                "type": "integer"
+              },
+              "committer": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "emailAddress": {
+                    "type": "string"
+                  },
+                  "avatarUrl": {
+                    "type": "string"
+                  }
+                }
+              },
+              "committerTimestamp": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
+              },
+              "parents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "displayId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "computedProperties": {
+      "type": "object",
+      "properties": {
+        "pullRequest": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "repository": {
+              "type": "object",
+              "properties": {
+                "fullName": {
+                  "type": "string"
+                }
+              }
+            },
+            "updatedDate": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}

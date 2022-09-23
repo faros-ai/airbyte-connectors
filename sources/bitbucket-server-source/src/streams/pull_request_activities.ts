@@ -1,30 +1,30 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {PullRequest} from 'faros-airbyte-common/bitbucket-server';
+import {PullRequestActivity} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {Config} from '../bitbucket-server';
 import {StreamBase} from './common';
 
 type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
-type PullRequestState = {
+type PullRequestActivityState = {
   [repoFullName: string]: {lastUpdatedDate: number};
 };
 
-export class PullRequests extends StreamBase {
+export class PullRequestActivities extends StreamBase {
   constructor(readonly config: Config, readonly logger: AirbyteLogger) {
     super(logger);
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/pull_requests.json');
+    return require('../../resources/schemas/pull_request_activities.json');
   }
 
   get primaryKey(): StreamKey {
-    return [['computedProperties', 'repository', 'fullName'], ['id']];
+    return ['id'];
   }
 
   get cursorField(): string | string[] {
-    return 'updatedDate';
+    return ['computedProperties', 'pullRequest', 'updatedDate'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -45,30 +45,31 @@ export class PullRequests extends StreamBase {
     syncMode: SyncMode,
     cursorField: string[],
     streamSlice: StreamSlice,
-    streamState?: PullRequestState
-  ): AsyncGenerator<PullRequest> {
+    streamState?: PullRequestActivityState
+  ): AsyncGenerator<PullRequestActivity> {
     const {project, repo} = streamSlice;
     const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedDate
         : undefined;
-    const prs = this.server.pullRequests(project, repo.slug, lastUpdatedDate);
-    for (const pr of await prs) {
-      yield pr;
-    }
+    yield* this.server.pullRequestActivities(
+      project,
+      repo.slug,
+      lastUpdatedDate
+    );
   }
 
   getUpdatedState(
-    currentStreamState: PullRequestState,
-    latestRecord: PullRequest
-  ): PullRequestState {
-    const repo = latestRecord.computedProperties.repository.fullName;
+    currentStreamState: PullRequestActivityState,
+    latestRecord: PullRequestActivity
+  ): PullRequestActivityState {
+    const repo =
+      latestRecord.computedProperties.pullRequest.repository.fullName;
     const repoState = currentStreamState[repo] ?? null;
-    if (latestRecord.updatedDate > (repoState?.lastUpdatedDate ?? 0)) {
-      return {
-        ...currentStreamState,
-        [repo]: {lastUpdatedDate: latestRecord.updatedDate},
-      };
+    const newUpdatedDate =
+      latestRecord.computedProperties.pullRequest.updatedDate;
+    if (newUpdatedDate > (repoState?.lastUpdatedDate ?? 0)) {
+      return {...currentStreamState, [repo]: {lastUpdatedDate: newUpdatedDate}};
     }
     return currentStreamState;
   }

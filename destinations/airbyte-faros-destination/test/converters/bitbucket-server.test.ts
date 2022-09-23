@@ -3,14 +3,15 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig} from '../testing-tools';
-import {semaphoreciAllStreamLogs} from './data';
+import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {bitbucketServerAllStreamsLog} from './data';
 
-describe('semaphoreci', () => {
+describe('bitbucket-server', () => {
+  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/semaphoreci/catalog.json';
+  const catalogPath = 'test/resources/bitbucket-server/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__semaphoreci__';
+  const streamNamePrefix = 'mytestsource__bitbucket-server__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -30,13 +31,18 @@ describe('semaphoreci', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(semaphoreciAllStreamLogs, 'utf8');
+    cli.stdin.end(bitbucketServerAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
+    logger.debug(stdout);
 
     const processedByStream = {
+      commits: 7,
+      pull_request_activities: 18,
+      pull_requests: 3,
+      repositories: 1,
+      project_users: 3,
       projects: 1,
-      pipelines: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -44,13 +50,17 @@ describe('semaphoreci', () => {
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
+
     const writtenByModel = {
-      cicd_Build: 3,
-      cicd_BuildCommitAssociation: 3,
-      cicd_BuildStep: 12,
-      cicd_Organization: 1,
-      cicd_Pipeline: 3,
-      cicd_Repository: 1,
+      vcs_Commit: 7,
+      vcs_Membership: 3,
+      vcs_Organization: 1,
+      vcs_PullRequest: 3,
+      vcs_PullRequestComment: 5,
+      vcs_PullRequestReview: 5,
+      vcs_PullRequest__Update: 2,
+      vcs_Repository: 1,
+      vcs_User: 3,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -58,6 +68,7 @@ describe('semaphoreci', () => {
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
     expect(stdout).toMatch(
       JSON.stringify(
         AirbyteLog.make(

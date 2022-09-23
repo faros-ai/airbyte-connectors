@@ -5,38 +5,112 @@
     "slug": {
       "type": "string"
     },
-    "name": {
-      "type": "string"
+    "id": {
+      "type": "integer"
     },
-    "fullName": {
+    "name": {
       "type": "string"
     },
     "description": {
       "type": "string"
     },
-    "isPrivate": {
+    "hierarchyId": {
+      "type": "string"
+    },
+    "scmId": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "statusMessage": {
+      "type": "string"
+    },
+    "forkable": {
       "type": "boolean"
-    },
-    "mainBranch": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "links": {
-      "type": "object",
-      "properties": {
-        "htmlUrl": {
-          "type": "string"
-        }
-      }
     },
     "project": {
       "type": "object",
       "properties": {
-        "slug": {
+        "key": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "public": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "avatarUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "public": {
+      "type": "boolean"
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "clone": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "self": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "computedProperties": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        },
+        "mainBranch": {
           "type": "string"
         }
       }

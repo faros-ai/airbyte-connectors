@@ -5,6 +5,9 @@
     "id": {
       "type": "integer"
     },
+    "version": {
+      "type": "integer"
+    },
     "title": {
       "type": "string"
     },
@@ -14,24 +17,192 @@
     "state": {
       "type": "string"
     },
-    "createdOn": {
+    "open": {
+      "type": "boolean"
+    },
+    "closed": {
+      "type": "boolean"
+    },
+    "createdDate": {
       "type": "integer"
     },
-    "updatedOn": {
+    "updatedDate": {
       "type": "integer"
     },
-    "commentCount": {
+    "closedDate": {
       "type": "integer"
     },
-    "links": {
+    "fromRef": {
+      "type": "object"
+    },
+    "toRef": {
+      "type": "object"
+    },
+    "locked": {
+      "type": "boolean"
+    },
+    "author": {
       "type": "object",
       "properties": {
-        "htmlUrl": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "emailAddress": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "active": {
+              "type": "boolean"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "self": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "avatarUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "role": {
+          "type": "string"
+        },
+        "approved": {
+          "type": "boolean"
+        },
+        "status": {
           "type": "string"
         }
       }
     },
-    "destination": {
+    "reviewers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "emailAddress": {
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "active": {
+                "type": "boolean"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "links": {
+                "type": "object",
+                "properties": {
+                  "self": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "avatarUrl": {
+                "type": "string"
+              }
+            }
+          },
+          "lastReviewedCommit": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "participants": {
+      "type": "array",
+      "items": {}
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "resolvedTaskCount": {
+          "type": "integer"
+        },
+        "commentCount": {
+          "type": "integer"
+        },
+        "openTaskCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "href": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "descriptionAsHtml": {
+      "type": "string"
+    },
+    "computedProperties": {
       "type": "object",
       "properties": {
         "repository": {

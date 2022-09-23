@@ -16,7 +16,7 @@ export class FarosFeed extends Converter {
 
   private schema: FarosGraphSchema = undefined;
 
-  id(record: AirbyteRecord) {
+  id(record: AirbyteRecord): any {
     return undefined;
   }
 
