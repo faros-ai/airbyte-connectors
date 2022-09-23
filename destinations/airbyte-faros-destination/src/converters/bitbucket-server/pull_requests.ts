@@ -36,7 +36,9 @@ export class PullRequests extends BitbucketServerConverter {
       pr.computedProperties.repository.fullName.split('/');
     const repoRef = this.vcsRepoRef(project, repo);
     const {record: user, ref: author} = this.vcsUser(pr.author.user);
+
     if (!user) return res;
+
     res.push({
       model: 'vcs_PullRequest',
       record: {
@@ -53,6 +55,7 @@ export class PullRequests extends BitbucketServerConverter {
         author,
       },
     });
+
     return res;
   }
 }

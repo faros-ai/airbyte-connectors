@@ -25,7 +25,9 @@ export class PullRequestActivities extends BitbucketServerConverter {
     const res: DestinationRecord[] = [];
     const activity = record.record.data as PullRequestActivity;
     const {record: user, ref: author} = this.vcsUser(activity.user);
+
     if (!user) return res;
+
     const [project, repo] =
       activity.computedProperties.pullRequest.repository.fullName.split('/');
     const id = activity.id;
@@ -35,6 +37,7 @@ export class PullRequestActivities extends BitbucketServerConverter {
       uid: pullRequestId.toString(),
       repository: this.vcsRepoRef(project, repo),
     };
+
     if (isPullRequestComment(activity)) {
       res.push({
         model: 'vcs_PullRequestComment',
@@ -78,6 +81,7 @@ export class PullRequestActivities extends BitbucketServerConverter {
         },
       });
     }
+
     return res;
   }
 }

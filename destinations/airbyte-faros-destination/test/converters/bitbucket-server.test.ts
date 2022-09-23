@@ -6,7 +6,7 @@ import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {bitbucketServerAllStreamsLog} from './data';
 
-describe('bitbucket', () => {
+describe('bitbucket-server', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/bitbucket-server/catalog.json';

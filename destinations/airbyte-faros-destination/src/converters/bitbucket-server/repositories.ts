@@ -20,13 +20,12 @@ export class Repositories extends BitbucketServerConverter {
     const repo = record.record.data as Repository;
     const slug = repo.slug.toLowerCase();
     const repoRef = this.vcsRepoRef(repo.project.key, slug);
+
     return [
       {
         model: 'vcs_Repository',
         record: {
-          uid: slug,
-          name: slug,
-          organization: repoRef.organization,
+          ...repoRef,
           fullName: repo.computedProperties.fullName.toLowerCase(),
           description: repo.description?.substring(
             0,

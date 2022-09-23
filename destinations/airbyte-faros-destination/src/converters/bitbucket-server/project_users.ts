@@ -12,7 +12,7 @@ export class ProjectUsers extends BitbucketServerConverter {
 
   id(record: AirbyteRecord): string {
     const user = record?.record?.data as ProjectUser;
-    return `${user.project.key};${user.user.slug}`;
+    return `${user.project.key}:${user.user.slug}`;
   }
 
   async convert(
@@ -22,6 +22,7 @@ export class ProjectUsers extends BitbucketServerConverter {
     const projectUser = record.record.data as ProjectUser;
     const res: DestinationRecord[] = [];
     const {record: user, ref: userRef} = this.vcsUser(projectUser.user);
+
     if (!user) return res;
     res.push(user);
     res.push({
