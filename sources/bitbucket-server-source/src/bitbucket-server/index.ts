@@ -17,7 +17,7 @@ import {
   Prefix as MEP,
 } from './more-endpoint-methods';
 
-export interface Config extends AirbyteConfig {
+export interface BitbucketServerConfig extends AirbyteConfig {
   readonly server_url?: string;
   readonly username?: string;
   readonly password?: string;
@@ -47,7 +47,10 @@ export class BitbucketServer {
     readonly startDate: Date
   ) {}
 
-  static instance(config: Config, logger: AirbyteLogger): BitbucketServer {
+  static instance(
+    config: BitbucketServerConfig,
+    logger: AirbyteLogger
+  ): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
     const [passed, errorMessage] = BitbucketServer.validateConfig(config);
     if (!passed) {
@@ -69,7 +72,9 @@ export class BitbucketServer {
     return BitbucketServer.bitbucket;
   }
 
-  private static validateConfig(config: Config): [boolean, string] {
+  private static validateConfig(
+    config: BitbucketServerConfig
+  ): [boolean, string] {
     const existToken = config.token && !config.username && !config.password;
     const existAuth = !config.token && config.username && config.password;
     try {
