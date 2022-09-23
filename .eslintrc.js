@@ -40,11 +40,5 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
       },
     },
-    {
-      files: ['destinations/airbyte-faros-destination/src/converters/**/*.ts'],
-      rules: {
-        '@typescript-eslint/no-unused-vars': ['warn', {args: 'none'}],
-      },
-    },
   ],
 };
