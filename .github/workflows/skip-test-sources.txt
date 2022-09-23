@@ -3,14 +3,15 @@ azure-repos-source
 azurepipeline-source
 bamboohr-source
 bitbucket-server-source
+datadog-source
+docker-source
 gitlab-ci-source
 googlecalendar-source
-datadog-source
 jenkins-source
 okta-source
 opsgenie-source
+phabricator-source
 semaphoreci-source
 servicenow-source
 squadcast-source
-phabricator-source
 victorops-source
