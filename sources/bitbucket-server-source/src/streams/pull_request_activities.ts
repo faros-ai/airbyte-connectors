@@ -3,14 +3,13 @@ import {PullRequestActivity} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {BitbucketServerConfig} from '../bitbucket-server';
-import {StreamBase} from './common';
+import {PullRequestSubStream, StreamSlice} from './pull_request_substream';
 
-type StreamSlice = {project: string; repo: {slug: string; fullName: string}};
 type PullRequestActivityState = {
   [repoFullName: string]: {lastUpdatedDate: number};
 };
 
-export class PullRequestActivities extends StreamBase {
+export class PullRequestActivities extends PullRequestSubStream {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -24,24 +23,6 @@ export class PullRequestActivities extends StreamBase {
 
   get primaryKey(): StreamKey {
     return ['id'];
-  }
-
-  get cursorField(): string | string[] {
-    return ['computedProperties', 'pullRequest', 'updatedDate'];
-  }
-
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
-      for (const repo of await this.server.repositories(
-        project,
-        this.config.repositories
-      )) {
-        yield {
-          project,
-          repo: {slug: repo.slug, fullName: repo.computedProperties.fullName},
-        };
-      }
-    }
   }
 
   async *readRecords(
