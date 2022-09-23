@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {selfHRef, User} from 'faros-airbyte-common/lib/bitbucket-server/types';
+import {selfHRef, User} from 'faros-airbyte-common/bitbucket-server';
 
 import {UserTypeCategory} from '../bitbucket/common';
 import {Converter, DestinationRecord} from '../converter';

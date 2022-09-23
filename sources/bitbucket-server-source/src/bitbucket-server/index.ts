@@ -7,7 +7,7 @@ import {
   PullRequest,
   PullRequestActivity,
   Repository,
-} from 'faros-airbyte-common/lib/bitbucket-server/types';
+} from 'faros-airbyte-common/bitbucket-server';
 import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';

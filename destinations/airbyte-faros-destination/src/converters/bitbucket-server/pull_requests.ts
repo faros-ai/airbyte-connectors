@@ -1,8 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {
-  PullRequest,
-  selfHRef,
-} from 'faros-airbyte-common/lib/bitbucket-server/types';
+import {PullRequest, selfHRef} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {CategoryRef} from '../bitbucket/common';

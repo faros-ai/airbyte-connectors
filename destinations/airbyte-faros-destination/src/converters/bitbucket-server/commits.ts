@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Commit} from 'faros-airbyte-common/lib/bitbucket-server/types';
+import {Commit} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';

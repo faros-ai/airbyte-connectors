@@ -4,7 +4,7 @@ import {
   isPullRequestMerge,
   isPullRequestReview,
   PullRequestActivity,
-} from 'faros-airbyte-common/lib/bitbucket-server/types';
+} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';

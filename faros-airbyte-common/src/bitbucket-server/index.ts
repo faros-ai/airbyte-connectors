@@ -1,3 +1,5 @@
+// TODO: Deduplicate shared types for other source/converter pairs
+
 type HRefs = {self?: {href: string}[]};
 export function selfHRef(links: HRefs): string | undefined {
   return links.self?.find((l) => l.href)?.href;

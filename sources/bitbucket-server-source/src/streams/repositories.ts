@@ -1,5 +1,5 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Repository} from 'faros-airbyte-common/lib/bitbucket-server/types';
+import {Repository} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {Config} from '../bitbucket-server';

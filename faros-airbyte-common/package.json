@@ -24,6 +24,14 @@
   "engines": {
     "node": ">=16"
   },
+  "exports": {
+    "./bitbucket-server": "./lib/bitbucket-server/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "bitbucket-server": ["./lib/bitbucket-server/index.d.ts"]
+    }
+  },
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
