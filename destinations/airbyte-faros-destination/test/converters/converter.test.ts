@@ -2,7 +2,10 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Converter, StreamContext} from '../../src';
-import {DestinationRecordTyped} from '../../src/converters/converter';
+import {
+  DestinationModel,
+  DestinationRecordTyped,
+} from '../../src/converters/converter';
 
 describe('converter', () => {
   class GroupUsers extends Converter {
@@ -10,13 +13,12 @@ describe('converter', () => {
     id(record: AirbyteRecord): any {
       return record.record.data.id;
     }
-    get destinationModels(): readonly string[] {
+    get destinationModels(): ReadonlyArray<DestinationModel> {
       return [];
     }
-    async convert(
-      record: AirbyteRecord,
-      ctx: StreamContext
-    ): Promise<readonly DestinationRecordTyped<Dictionary<any, string>>[]> {
+    async convert(): Promise<
+      ReadonlyArray<DestinationRecordTyped<Dictionary<any>>>
+    > {
       return [];
     }
   }

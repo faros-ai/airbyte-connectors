@@ -30,7 +30,7 @@ export class PullRequests extends BitbucketServerConverter {
     const res: DestinationRecord[] = [];
     const [project, repo] =
       pr.computedProperties.repository.fullName.split('/');
-    const repoRef = this.vcsRepoRef(project, repo);
+    const repoRef = this.vcsRepoKey(project, repo);
     const {record: user, ref: author} = this.vcsUser(pr.author.user);
 
     if (!user) return res;

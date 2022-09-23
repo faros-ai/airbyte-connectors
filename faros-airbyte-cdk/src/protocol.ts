@@ -1,4 +1,3 @@
-import {toPlainObject} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 

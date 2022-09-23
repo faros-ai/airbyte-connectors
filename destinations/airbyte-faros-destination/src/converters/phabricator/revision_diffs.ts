@@ -2,7 +2,7 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {FileDiff} from 'faros-airbyte-common/common';
 import {Dictionary} from 'ts-essentials';
 
-import {Common} from '../common/common';
+import {processPullRequestFileDiffs} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
@@ -65,7 +65,7 @@ export class RevisionDiffs extends PhabricatorConverter {
       repository,
     };
 
-    res.push(...Common.processVcsPullRequestFileDiffs(diff.files, pullRequest));
+    res.push(...processPullRequestFileDiffs(diff.files, pullRequest));
     return res;
   }
 }

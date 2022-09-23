@@ -17,7 +17,7 @@ export class Projects extends BitbucketServerConverter {
       {
         model: 'vcs_Organization',
         record: {
-          ...this.vcsOrgRef(project.key),
+          ...this.vcsOrgKey(project.key),
           name: project.name,
           type: {category: 'Workspace'},
           htmlUrl: selfHRef(project.links),

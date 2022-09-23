@@ -28,7 +28,7 @@ export class ProjectUsers extends BitbucketServerConverter {
       model: 'vcs_Membership',
       record: {
         user: userRef,
-        organization: this.vcsOrgRef(projectUser.project.key),
+        organization: this.vcsOrgKey(projectUser.project.key),
       },
     });
 

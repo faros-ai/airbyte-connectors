@@ -4,6 +4,7 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna run clean && rm -rf node_modules out",
+    "fix": "lerna run fix",
     "lint": "lerna run lint",
     "prepare": "lerna bootstrap --hoist && husky install",
     "test": "lerna run test",

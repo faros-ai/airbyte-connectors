@@ -5,7 +5,7 @@ import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
 import {Runner} from '../runner';
-import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
+import {fileJson, PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner<
@@ -47,7 +47,7 @@ export class AirbyteDestinationRunner<
       .alias('c')
       .requiredOption('--config <path to json>', 'config json')
       .action(async (opts: {config: string}) => {
-        const config = require(path.resolve(opts.config));
+        const config = fileJson(path.resolve(opts.config));
         const status = await this.destination.check(config);
 
         // Expected output
@@ -106,9 +106,9 @@ export class AirbyteDestinationRunner<
     dryRun: boolean;
   }): Promise<{catalog: any; spec: AirbyteSpec; config: Config}> {
     try {
-      const catalog = require(path.resolve(opts.catalog));
+      const catalog = fileJson(path.resolve(opts.catalog));
       const spec = await this.destination.spec();
-      const config = withDefaults(require(path.resolve(opts.config)), spec);
+      const config = withDefaults(fileJson(path.resolve(opts.config)), spec);
       return {catalog, spec, config};
     } catch (e: any) {
       const w = wrapApiError(e);

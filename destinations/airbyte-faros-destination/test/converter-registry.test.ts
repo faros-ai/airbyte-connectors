@@ -7,7 +7,6 @@ import {
   ConverterTyped,
   DestinationRecord,
   DestinationRecordTyped,
-  StreamContext,
   StreamName,
 } from '../src/converters/converter';
 import {ConverterRegistry as sut} from '../src/converters/converter-registry';
@@ -76,8 +75,7 @@ describe('converter registry', () => {
         return record.record.data.id;
       }
       async convert(
-        record: AirbyteRecord,
-        ctx: StreamContext
+        record: AirbyteRecord
       ): Promise<ReadonlyArray<DestinationRecord>> {
         const data = record.record.data;
         return [
@@ -116,8 +114,7 @@ describe('converter registry', () => {
         return record.record.data.id;
       }
       async convert(
-        record: AirbyteRecord,
-        ctx: StreamContext
+        record: AirbyteRecord
       ): Promise<ReadonlyArray<DestinationRecordTyped<FooBar>>> {
         const data = record.record.data;
         return [

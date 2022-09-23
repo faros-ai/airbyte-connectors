@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {selfHRef, User} from 'faros-airbyte-common/bitbucket-server';
 
 import {UserTypeCategory} from '../bitbucket/common';
-import {VcsOrgRef, VcsRepoRef} from '../common/common';
+import {OrgKey, RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
 export abstract class BitbucketServerConverter extends Converter {
@@ -35,15 +35,15 @@ export abstract class BitbucketServerConverter extends Converter {
     };
   }
 
-  protected vcsRepoRef(projectKey: string, repoSlug: string): VcsRepoRef {
+  protected vcsRepoKey(projectKey: string, repoSlug: string): RepoKey {
     return {
       uid: repoSlug.toLowerCase(),
       name: repoSlug.toLowerCase(),
-      organization: this.vcsOrgRef(projectKey),
+      organization: this.vcsOrgKey(projectKey),
     };
   }
 
-  protected vcsOrgRef(projectKey: string): VcsOrgRef {
+  protected vcsOrgKey(projectKey: string): OrgKey {
     return {uid: projectKey.toLowerCase(), source: this.streamName.source};
   }
 }

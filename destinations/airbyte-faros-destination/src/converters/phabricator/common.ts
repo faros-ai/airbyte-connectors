@@ -136,7 +136,7 @@ export class PhabricatorCommon {
     };
   }
 
-  static orgKey(source: string): undefined | OrgKey {
+  static orgKey(source: string): OrgKey {
     // Since Phabricator does not have a concept of organization,
     // we are simply using the source name instead
     return {uid: source, source};

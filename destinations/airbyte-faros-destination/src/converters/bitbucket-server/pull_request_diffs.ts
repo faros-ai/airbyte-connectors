@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequestDiff} from 'faros-airbyte-common/bitbucket-server';
 
-import {Common} from '../common/common';
+import {processPullRequestFileDiffs} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
@@ -26,7 +26,7 @@ export class PullRequestDiffs extends BitbucketServerConverter {
     const pullRequest = {
       number: pullRequestId,
       uid: pullRequestId.toString(),
-      repository: this.vcsRepoRef(project, repo),
+      repository: this.vcsRepoKey(project, repo),
     };
     const files = diff.files.map((f) => {
       return {
@@ -36,7 +36,7 @@ export class PullRequestDiffs extends BitbucketServerConverter {
       };
     });
 
-    res.push(...Common.processVcsPullRequestFileDiffs(files, pullRequest));
+    res.push(...processPullRequestFileDiffs(files, pullRequest));
     return res;
   }
 }

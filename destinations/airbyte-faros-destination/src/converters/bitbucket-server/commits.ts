@@ -15,7 +15,7 @@ export class Commits extends BitbucketServerConverter {
     const res: DestinationRecord[] = [];
     const [project, repo] =
       commit.computedProperties.repository.fullName.split('/');
-    const repoRef = this.vcsRepoRef(project, repo);
+    const repoRef = this.vcsRepoKey(project, repo);
     const {record: user, ref: author} = this.vcsUser(commit.author);
 
     if (!user) return res;
