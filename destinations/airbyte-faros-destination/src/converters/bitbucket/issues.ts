@@ -1,12 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamName} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {Issue, User} from './types';
 
@@ -40,8 +35,7 @@ export class Issues extends BitbucketConverter {
   }
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const issue = record.record.data as Issue;

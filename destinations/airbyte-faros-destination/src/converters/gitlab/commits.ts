@@ -1,15 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
 
 export class Commits extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;

@@ -4,7 +4,7 @@ import {
   selfHRef,
 } from 'faros-airbyte-common/lib/bitbucket-server/types';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
 export class Projects extends BitbucketServerConverter {
@@ -13,8 +13,7 @@ export class Projects extends BitbucketServerConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data as Project;
     return [

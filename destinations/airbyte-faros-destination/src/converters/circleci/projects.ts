@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {CircleCIConverter} from './common';
 import {Project} from './models';
 
@@ -11,8 +11,7 @@ export class Projects extends CircleCIConverter {
     'cicd_Pipeline',
   ];
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const project = record.record.data as Project;

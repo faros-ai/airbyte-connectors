@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {Build, BuildkiteConverter} from './common';
 
 export class Builds extends BuildkiteConverter {
@@ -13,8 +13,7 @@ export class Builds extends BuildkiteConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data as Build;

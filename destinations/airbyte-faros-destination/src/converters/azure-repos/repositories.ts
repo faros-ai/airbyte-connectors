@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
 import {OrgTypeCategory, Repository} from './models';
 
@@ -18,8 +18,7 @@ export class Repositories extends AzureReposConverter {
   private seenOrganizations = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repositoryItem = record.record.data as Repository;

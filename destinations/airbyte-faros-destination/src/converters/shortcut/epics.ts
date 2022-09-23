@@ -1,14 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {ShortcutCommon, ShortcutConverter} from './common';
 import {Epic} from './models';
 export class Epics extends ShortcutConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Epic'];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const epic = record.record.data as Epic;

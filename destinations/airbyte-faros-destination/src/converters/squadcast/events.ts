@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {Event, IncidentEventTypeCategory, SquadcastConverter} from './common';
 
 export class Events extends SquadcastConverter {
@@ -14,8 +14,7 @@ export class Events extends SquadcastConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const event = record.record.data as Event;

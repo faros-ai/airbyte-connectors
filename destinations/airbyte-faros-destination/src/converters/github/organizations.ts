@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubConverter} from './common';
 
 // Github org types
@@ -14,8 +14,7 @@ export class Organizations extends GitHubConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const org = record.record.data;

@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {Groups as OktaGroups} from '../okta/groups';
 import {OktaFarosConverter} from './common';
 
@@ -19,9 +19,8 @@ export class Groups extends OktaFarosConverter {
   }
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.alias.convert(record, ctx);
+    return this.alias.convert(record);
   }
 }

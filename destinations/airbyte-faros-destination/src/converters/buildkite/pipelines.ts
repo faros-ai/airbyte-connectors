@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BuildkiteConverter, Pipeline} from './common';
 
 export class Pipelines extends BuildkiteConverter {
@@ -9,8 +9,7 @@ export class Pipelines extends BuildkiteConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;

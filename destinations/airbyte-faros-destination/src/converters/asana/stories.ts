@@ -1,15 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
 
 export class Stories extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Task'];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
     const source = this.streamName.source;

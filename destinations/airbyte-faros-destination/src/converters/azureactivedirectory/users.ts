@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureActiveDirectoryConverter} from './common';
 import {User} from './models';
 
@@ -17,8 +17,7 @@ export class Users extends AzureActiveDirectoryConverter {
   private seenDepartments = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;

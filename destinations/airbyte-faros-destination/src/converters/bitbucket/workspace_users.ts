@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {WorkspaceUser} from './types';
 
@@ -11,8 +11,7 @@ export class WorkspaceUsers extends BitbucketConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const workspaceUser = record.record.data as WorkspaceUser;

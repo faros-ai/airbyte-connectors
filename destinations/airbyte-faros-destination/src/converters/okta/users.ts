@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {sortBy} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {OktaConverter} from './common';
 import {User} from './models';
 
@@ -16,8 +16,7 @@ export class Users extends OktaConverter {
   private seenDepartments = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const user = record.record.data as User;

@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {AzurePipelineConverter} from './common';
 import {Build, Tag} from './models';
 
@@ -16,8 +16,7 @@ export class Builds extends AzurePipelineConverter {
   private seenRepositories = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data as Build;

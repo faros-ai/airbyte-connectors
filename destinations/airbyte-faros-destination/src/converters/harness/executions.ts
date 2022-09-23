@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {
   CICDArtifact,
   CICDBuild,
@@ -33,8 +33,7 @@ export class Executions extends HarnessConverter {
   private seenApplications = new Set<string>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const executionRaw = record.record.data;
     const source = this.streamName.source;

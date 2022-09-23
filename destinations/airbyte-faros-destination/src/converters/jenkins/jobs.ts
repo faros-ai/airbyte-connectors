@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {JenkinsCommon, JenkinsConverter, Job} from './common';
 
 export class Jobs extends JenkinsConverter {
@@ -14,8 +14,7 @@ export class Jobs extends JenkinsConverter {
   }
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const job = record.record.data as Job;
