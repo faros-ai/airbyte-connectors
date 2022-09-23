@@ -3,7 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import parseGitUrl from 'git-url-parse';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {JenkinsCommon, JenkinsConverter, RepoSource} from './common';
 
 export class Builds extends JenkinsConverter {
@@ -19,8 +19,7 @@ export class Builds extends JenkinsConverter {
   }
   BUILD_DATA_CLASS = 'hudson.plugins.git.util.BuildData';
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data;

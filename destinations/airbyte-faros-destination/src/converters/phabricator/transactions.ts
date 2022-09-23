@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {isEmpty, union} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
 
 type CountForPR = {
@@ -32,8 +32,7 @@ export class Transactions extends PhabricatorConverter {
   private readonly commitsCountByPR = new Map<string, IdsForPR>();
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const transaction = record.record.data;
@@ -112,9 +111,9 @@ export class Transactions extends PhabricatorConverter {
     return res;
   }
 
-  override async onProcessingComplete(
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
+  override async onProcessingComplete(): Promise<
+    ReadonlyArray<DestinationRecord>
+  > {
     const res: DestinationRecord[] = [];
 
     const allKeys = union(
