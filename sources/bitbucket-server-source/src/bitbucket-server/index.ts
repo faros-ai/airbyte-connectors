@@ -6,8 +6,11 @@ import {
   ProjectUser,
   PullRequest,
   PullRequestActivity,
+  PullRequestDiff,
   Repository,
 } from 'faros-airbyte-common/bitbucket-server';
+import {pick} from 'lodash';
+import parseDiff from 'parse-diff';
 import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -17,7 +20,7 @@ import {
   Prefix as MEP,
 } from './more-endpoint-methods';
 
-export interface Config extends AirbyteConfig {
+export interface BitbucketServerConfig extends AirbyteConfig {
   readonly server_url?: string;
   readonly username?: string;
   readonly password?: string;
@@ -47,7 +50,10 @@ export class BitbucketServer {
     readonly startDate: Date
   ) {}
 
-  static instance(config: Config, logger: AirbyteLogger): BitbucketServer {
+  static instance(
+    config: BitbucketServerConfig,
+    logger: AirbyteLogger
+  ): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
     const [passed, errorMessage] = BitbucketServer.validateConfig(config);
     if (!passed) {
@@ -69,7 +75,9 @@ export class BitbucketServer {
     return BitbucketServer.bitbucket;
   }
 
-  private static validateConfig(config: Config): [boolean, string] {
+  private static validateConfig(
+    config: BitbucketServerConfig
+  ): [boolean, string] {
     const existToken = config.token && !config.username && !config.password;
     const existAuth = !config.token && config.username && config.password;
     try {
@@ -223,6 +231,58 @@ export class BitbucketServer {
             };
           }
         );
+      }
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching pull request activities for repository: ${fullName}`
+      );
+    }
+  }
+
+  async *pullRequestDiffs(
+    projectKey: string,
+    repositorySlug: string,
+    lastPRUpdatedDate = this.startDate.getTime()
+  ): AsyncGenerator<PullRequestDiff> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(
+        `Fetching pull request diffs for repository: ${fullName}`
+      );
+      const prs = this.pullRequests(
+        projectKey,
+        repositorySlug,
+        lastPRUpdatedDate
+      );
+      for (const pr of await prs) {
+        const {data} = await this.client[MEP].pullRequests.getDiff({
+          projectKey,
+          repositorySlug,
+          pullRequestId: pr.id,
+        });
+        try {
+          yield {
+            files: parseDiff(data).map((f) =>
+              pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
+            ),
+            computedProperties: {
+              pullRequest: {
+                id: pr.id,
+                repository: {
+                  fullName: pr.computedProperties.repository.fullName,
+                },
+                updatedDate: pr.updatedDate,
+              },
+            },
+          };
+        } catch (err) {
+          this.logger.error(
+            `Failed to parse raw diff for repository ${fullName} pull request ${
+              pr.id
+            }: ${JSON.stringify(err)}`
+          );
+        }
       }
     } catch (err) {
       throw new VError(

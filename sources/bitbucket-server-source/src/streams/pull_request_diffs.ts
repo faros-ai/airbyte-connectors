@@ -1,15 +1,15 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {PullRequestActivity} from 'faros-airbyte-common/bitbucket-server';
+import {PullRequestDiff} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {BitbucketServerConfig} from '../bitbucket-server';
 import {PullRequestSubStream, StreamSlice} from './pull_request_substream';
 
-type PullRequestActivityState = {
+type PullRequestDiffState = {
   [repoFullName: string]: {lastUpdatedDate: number};
 };
 
-export class PullRequestActivities extends PullRequestSubStream {
+export class PullRequestDiffs extends PullRequestSubStream {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -18,35 +18,34 @@ export class PullRequestActivities extends PullRequestSubStream {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/pull_request_activities.json');
+    return require('../../resources/schemas/pull_request_diffs.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['id'];
+    return [
+      ['computedProperties', 'pullRequest', 'repository', 'fullname'],
+      ['computedProperties', 'pullRequest', 'id'],
+    ];
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField: string[],
     streamSlice: StreamSlice,
-    streamState?: PullRequestActivityState
-  ): AsyncGenerator<PullRequestActivity> {
+    streamState?: PullRequestDiffState
+  ): AsyncGenerator<PullRequestDiff> {
     const {project, repo} = streamSlice;
     const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedDate
         : undefined;
-    yield* this.server.pullRequestActivities(
-      project,
-      repo.slug,
-      lastUpdatedDate
-    );
+    yield* this.server.pullRequestDiffs(project, repo.slug, lastUpdatedDate);
   }
 
   getUpdatedState(
-    currentStreamState: PullRequestActivityState,
-    latestRecord: PullRequestActivity
-  ): PullRequestActivityState {
+    currentStreamState: PullRequestDiffState,
+    latestRecord: PullRequestDiff
+  ): PullRequestDiffState {
     const repo =
       latestRecord.computedProperties.pullRequest.repository.fullName;
     const repoState = currentStreamState[repo] ?? null;

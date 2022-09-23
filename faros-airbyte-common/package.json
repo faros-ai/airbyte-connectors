@@ -25,11 +25,17 @@
     "node": ">=16"
   },
   "exports": {
-    "./bitbucket-server": "./lib/bitbucket-server/index.js"
+    "./bitbucket-server": "./lib/bitbucket-server/index.js",
+    "./common": "./lib/common/common.js"
   },
   "typesVersions": {
     "*": {
-      "bitbucket-server": ["./lib/bitbucket-server/index.d.ts"]
+      "bitbucket-server": [
+        "./lib/bitbucket-server/index.d.ts"
+      ],
+      "common": [
+        "./lib/common/index.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -63,4 +69,3 @@
     }
   }
 }
-

@@ -8,11 +8,12 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {BitbucketServer, Config} from './bitbucket-server';
+import {BitbucketServer, BitbucketServerConfig} from './bitbucket-server';
 import {Commits} from './streams/commits';
 import {ProjectUsers} from './streams/project_users';
 import {Projects} from './streams/projects';
 import {PullRequestActivities} from './streams/pull_request_activities';
+import {PullRequestDiffs} from './streams/pull_request_diffs';
 import {PullRequests} from './streams/pull_requests';
 import {Repositories} from './streams/repositories';
 
@@ -23,13 +24,15 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class BitbucketServerSource extends AirbyteSourceBase<Config> {
+export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConfig> {
   async spec(): Promise<AirbyteSpec> {
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: Config): Promise<[boolean, VError]> {
+  async checkConnection(
+    config: BitbucketServerConfig
+  ): Promise<[boolean, VError]> {
     try {
       const bitbucket = BitbucketServer.instance(config, this.logger);
       await bitbucket.checkConnection();
@@ -39,12 +42,13 @@ export class BitbucketServerSource extends AirbyteSourceBase<Config> {
     return [true, undefined];
   }
 
-  streams(config: Config): AirbyteStreamBase[] {
+  streams(config: BitbucketServerConfig): AirbyteStreamBase[] {
     return [
       Commits,
       ProjectUsers,
       Projects,
       PullRequestActivities,
+      PullRequestDiffs,
       PullRequests,
       Repositories,
     ].map((Stream) => new Stream(config, this.logger));

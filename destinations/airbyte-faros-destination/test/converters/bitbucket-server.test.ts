@@ -39,6 +39,7 @@ describe('bitbucket-server', () => {
     const processedByStream = {
       commits: 7,
       pull_request_activities: 18,
+      pull_request_diffs: 3,
       pull_requests: 3,
       repositories: 1,
       project_users: 3,
@@ -53,12 +54,14 @@ describe('bitbucket-server', () => {
 
     const writtenByModel = {
       vcs_Commit: 7,
+      vcs_File: 3,
       vcs_Membership: 3,
       vcs_Organization: 1,
       vcs_PullRequest: 3,
       vcs_PullRequestComment: 5,
+      vcs_PullRequestFile: 3,
       vcs_PullRequestReview: 5,
-      vcs_PullRequest__Update: 2,
+      vcs_PullRequest__Update: 5,
       vcs_Repository: 1,
       vcs_User: 3,
     };
