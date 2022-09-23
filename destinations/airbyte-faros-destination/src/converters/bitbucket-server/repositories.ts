@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository, selfHRef} from 'faros-airbyte-common/bitbucket-server';
 
 import {BitbucketCommon} from '../bitbucket/common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
 export class Repositories extends BitbucketServerConverter {
@@ -11,8 +11,7 @@ export class Repositories extends BitbucketServerConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const repo = record.record.data as Repository;
     const slug = repo.slug.toLowerCase();

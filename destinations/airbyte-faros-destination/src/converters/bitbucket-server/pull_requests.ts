@@ -3,7 +3,7 @@ import {PullRequest, selfHRef} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {CategoryRef} from '../bitbucket/common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
 enum PullRequestStateCategory {
@@ -24,8 +24,7 @@ export class PullRequests extends BitbucketServerConverter {
   }
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const pr = record.record.data as PullRequest;
     const res: DestinationRecord[] = [];

@@ -6,8 +6,11 @@ import {
   ProjectUser,
   PullRequest,
   PullRequestActivity,
+  PullRequestDiff,
   Repository,
 } from 'faros-airbyte-common/bitbucket-server';
+import {pick} from 'lodash';
+import parseDiff from 'parse-diff';
 import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -228,6 +231,58 @@ export class BitbucketServer {
             };
           }
         );
+      }
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching pull request activities for repository: ${fullName}`
+      );
+    }
+  }
+
+  async *pullRequestDiffs(
+    projectKey: string,
+    repositorySlug: string,
+    lastPRUpdatedDate = this.startDate.getTime()
+  ): AsyncGenerator<PullRequestDiff> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(
+        `Fetching pull request diffs for repository: ${fullName}`
+      );
+      const prs = this.pullRequests(
+        projectKey,
+        repositorySlug,
+        lastPRUpdatedDate
+      );
+      for (const pr of await prs) {
+        const {data} = await this.client[MEP].pullRequests.getDiff({
+          projectKey,
+          repositorySlug,
+          pullRequestId: pr.id,
+        });
+        try {
+          yield {
+            files: parseDiff(data).map((f) =>
+              pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
+            ),
+            computedProperties: {
+              pullRequest: {
+                id: pr.id,
+                repository: {
+                  fullName: pr.computedProperties.repository.fullName,
+                },
+                updatedDate: pr.updatedDate,
+              },
+            },
+          };
+        } catch (err) {
+          this.logger.error(
+            `Failed to parse raw diff for repository ${fullName} pull request ${
+              pr.id
+            }: ${JSON.stringify(err)}`
+          );
+        }
       }
     } catch (err) {
       throw new VError(

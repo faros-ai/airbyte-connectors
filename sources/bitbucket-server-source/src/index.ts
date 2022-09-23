@@ -13,6 +13,7 @@ import {Commits} from './streams/commits';
 import {ProjectUsers} from './streams/project_users';
 import {Projects} from './streams/projects';
 import {PullRequestActivities} from './streams/pull_request_activities';
+import {PullRequestDiffs} from './streams/pull_request_diffs';
 import {PullRequests} from './streams/pull_requests';
 import {Repositories} from './streams/repositories';
 
@@ -47,6 +48,7 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
       ProjectUsers,
       Projects,
       PullRequestActivities,
+      PullRequestDiffs,
       PullRequests,
       Repositories,
     ].map((Stream) => new Stream(config, this.logger));

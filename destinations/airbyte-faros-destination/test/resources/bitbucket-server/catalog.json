@@ -14,6 +14,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__bitbucket-server__pull_request_diffs"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__bitbucket-server__pull_requests"
       },
       "destination_sync_mode": "overwrite"

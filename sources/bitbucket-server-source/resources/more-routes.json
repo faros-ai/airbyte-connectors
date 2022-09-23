@@ -37,6 +37,32 @@
       "url": "/rest/api/latest/projects/{projectKey}/repos"
     }
   },
+  "pullRequests": {
+    "getDiff": {
+      "headers": {
+        "accept": "text/plain;charset=utf-8"
+      },
+      "method": "GET",
+      "params": {
+        "projectKey": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        "repositorySlug": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        "pullRequestId": {
+          "in": "path",
+          "required": true,
+          "type": "integer"
+        }
+      },
+      "url": "/rest/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.diff"
+    }
+  },
   "repos": {
     "getCommits": {
       "headers": {

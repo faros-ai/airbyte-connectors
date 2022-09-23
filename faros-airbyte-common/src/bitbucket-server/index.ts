@@ -63,6 +63,24 @@ export function isPullRequestReview(activity: PullRequestActivity): boolean {
   );
 }
 
+export interface PullRequestDiff {
+  readonly files: ReadonlyArray<{
+    deletions: number;
+    additions: number;
+    from?: string;
+    to?: string;
+    deleted?: boolean;
+    new?: boolean;
+  }>;
+  readonly computedProperties: {
+    readonly pullRequest: {
+      readonly id: number;
+      readonly repository: {readonly fullName: string};
+      readonly updatedDate: number;
+    };
+  };
+}
+
 export interface PullRequest {
   readonly author: {readonly user: User};
   readonly id: number;
