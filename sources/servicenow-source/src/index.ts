@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {ServiceNow, ServiceNowConfig} from './servicenow/servicenow';
@@ -19,7 +21,9 @@ export function mainCommand(): Command {
 
 export class ServiceNowSource extends AirbyteSourceBase<ServiceNowConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: ServiceNowConfig): Promise<[boolean, VError]> {
     try {

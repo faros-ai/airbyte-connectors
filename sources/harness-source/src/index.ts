@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Harness} from './harness';
@@ -22,7 +24,9 @@ export function mainCommand(): Command {
 /** Harness source implementation. */
 export class HarnessSource extends AirbyteSourceBase<HarnessConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: HarnessConfig): Promise<[boolean, VError]> {
     try {

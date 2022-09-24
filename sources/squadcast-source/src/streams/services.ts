@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Service} from '../models';
@@ -24,12 +19,7 @@ export class Services extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Service> {
+  async *readRecords(): AsyncGenerator<Service> {
     const squadcast = await Squadcast.instance(this.config, this.logger);
     yield* squadcast.getServices();
   }

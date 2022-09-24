@@ -28,12 +28,8 @@ export class Pipelines extends AirbyteStreamBase {
     return 'updatedAt';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
-    const projects = this.projects.readRecords(SyncMode.FULL_REFRESH);
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const projects = this.projects.readRecords();
     for await (const project of projects) {
       yield {projectPath: project.pathWithNamespace};
     }

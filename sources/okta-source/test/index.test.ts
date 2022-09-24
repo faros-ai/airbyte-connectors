@@ -5,10 +5,9 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 
 import * as sut from '../src/index';
-import {Okta, OktaConfig} from '../src/okta';
+import {Okta} from '../src/okta';
 
 describe('index', () => {
   test('ok?', async () => {

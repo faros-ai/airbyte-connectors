@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {AzureRepo, AzureRepoConfig} from './azure-repos';
@@ -20,7 +22,9 @@ export function mainCommand(): Command {
 /** AzureRepo source implementation. */
 export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: AzureRepoConfig): Promise<[boolean, VError]> {
     try {

@@ -5,7 +5,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 
 import {Gitlab} from '../src/gitlab';
 import * as sut from '../src/index';

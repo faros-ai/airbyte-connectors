@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -12,8 +11,6 @@ import {AzureActiveDirectory} from '../src/azureactivedirectory';
 import * as sut from '../src/index';
 
 const azureActiveDirectoryInstance = AzureActiveDirectory.instance;
-
-jest.mock('axios');
 
 describe('index', () => {
   const logger = new AirbyteLogger(

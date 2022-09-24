@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Incidents, Teams, Users} from './streams';
@@ -21,7 +23,9 @@ export function mainCommand(): Command {
 /** Victorops source implementation. */
 export class VictoropsSource extends AirbyteSourceBase<VictoropsConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: VictoropsConfig): Promise<[boolean, VError]> {
     try {

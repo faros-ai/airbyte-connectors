@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {BitbucketServer, BitbucketServerConfig} from './bitbucket-server';
@@ -26,8 +28,9 @@ export function mainCommand(): Command {
 
 export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConfig> {
   async spec(): Promise<AirbyteSpec> {
-    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
 
   async checkConnection(

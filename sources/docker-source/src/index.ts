@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Docker, DockerConfig} from './docker';
@@ -21,7 +23,9 @@ export function mainCommand(): Command {
 /** Docker source implementation. */
 export class DockerSource extends AirbyteSourceBase<DockerConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: DockerConfig): Promise<[boolean, VError]> {
     try {

@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {User} from '../opsgenie/models';
@@ -22,12 +17,7 @@ export class Users extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<User> {
     const opsGenie = OpsGenie.instance(this.config, this.logger);
     yield* opsGenie.getUsers();
   }

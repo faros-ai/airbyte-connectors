@@ -32,11 +32,7 @@ export class Tags extends AirbyteStreamBase {
     return ['imageConfig', 'created'];
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const repository of this.config.repositories) {
       yield {repository};
     }

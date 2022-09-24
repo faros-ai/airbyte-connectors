@@ -2,13 +2,7 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
 import {VError} from 'verror';
 
-import {
-  Group,
-  GroupResponse,
-  User,
-  UserExtraInfo,
-  UserResponse,
-} from './models';
+import {Group, User, UserResponse} from './models';
 
 const DEFAULT_AUTH_VERSION = 'v2.0';
 const DEFAULT_VERSION = 'v1.0';

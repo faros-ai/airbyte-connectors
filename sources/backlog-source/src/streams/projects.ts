@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Backlog, BacklogConfig} from '../backlog';
@@ -25,11 +20,7 @@ export class Projects extends AirbyteStreamBase {
     return ['id', 'source'];
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Project, any, unknown> {
+  async *readRecords(): AsyncGenerator<Project, any, unknown> {
     const backlog = await Backlog.instance(this.config, this.logger);
     yield* backlog.getProjects();
   }

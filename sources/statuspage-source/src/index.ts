@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Statuspage, StatuspageConfig} from './statuspage';
@@ -21,7 +23,9 @@ export function mainCommand(): Command {
 /** Statuspage source implementation. */
 export class StatuspageSource extends AirbyteSourceBase<StatuspageConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: StatuspageConfig): Promise<[boolean, VError]> {
     try {

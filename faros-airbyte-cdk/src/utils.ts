@@ -75,7 +75,6 @@ export function toDate(
   return new Date(val);
 }
 
-export function fileJson(path: string): any {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require(path);
+export function fileJson(filePath: string): any {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }

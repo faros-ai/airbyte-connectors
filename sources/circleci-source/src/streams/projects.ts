@@ -36,8 +36,7 @@ export class Projects extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: Dictionary<any, string>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
     const circleCI = CircleCI.instance(this.config, this.axios);
     yield* circleCI.fetchProject(streamSlice.repoName);

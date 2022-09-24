@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -13,7 +12,6 @@ import * as sut from '../src/index';
 
 const azureActivePipeline = AzurePipeline.instance;
 
-jest.mock('axios');
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug

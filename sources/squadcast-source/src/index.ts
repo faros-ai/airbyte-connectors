@@ -5,7 +5,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Squadcast, SquadcastConfig} from './squadcast';
@@ -21,7 +23,9 @@ export function mainCommand(): Command {
 /** SquadCast source implementation. */
 export class SquadcastSource extends AirbyteSourceBase<SquadcastConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: SquadcastConfig): Promise<[boolean, VError]> {
     try {

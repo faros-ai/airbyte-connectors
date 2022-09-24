@@ -6,7 +6,9 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
+  fileJson,
 } from 'faros-airbyte-cdk';
+import path from 'path';
 import VError from 'verror';
 
 import {Builds} from './streams';
@@ -25,7 +27,9 @@ export function mainCommand(): Command {
 /** Example source implementation. */
 class ExampleSource extends AirbyteSourceBase<SourceConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return new AirbyteSpec(
+      fileJson(path.resolve(__dirname, '../resources/spec.json'))
+    );
   }
   async checkConnection(config: SourceConfig): Promise<[boolean, VError]> {
     if (config.user === 'chris') {
@@ -33,7 +37,7 @@ class ExampleSource extends AirbyteSourceBase<SourceConfig> {
     }
     return [false, new VError('User is not chris')];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(): AirbyteStreamBase[] {
     return [new Builds(this.logger)];
   }
 }
