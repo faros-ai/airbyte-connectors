@@ -5,9 +5,7 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-  fileJson,
 } from 'faros-airbyte-cdk';
-import path from 'path';
 import VError from 'verror';
 
 import {Phabricator, PhabricatorConfig} from './phabricator';
@@ -31,9 +29,8 @@ export function mainCommand(): Command {
 /** Phabricator source implementation. */
 export class PhabricatorSource extends AirbyteSourceBase<PhabricatorConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(
-      fileJson(path.resolve(__dirname, '../resources/spec.json'))
-    );
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: PhabricatorConfig): Promise<[boolean, VError]> {
     try {

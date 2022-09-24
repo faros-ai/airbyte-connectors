@@ -5,9 +5,7 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-  fileJson,
 } from 'faros-airbyte-cdk';
-import path from 'path';
 import VError from 'verror';
 
 import {BambooHR, BambooHRConfig} from './bamboohr';
@@ -22,9 +20,8 @@ export function mainCommand(): Command {
 /** BambooHR source implementation. */
 export class BambooHRSource extends AirbyteSourceBase<BambooHRConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(
-      fileJson(path.resolve(__dirname, '../resources/spec.json'))
-    );
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: BambooHRConfig): Promise<[boolean, VError]> {
     try {

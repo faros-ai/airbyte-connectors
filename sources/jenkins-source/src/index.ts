@@ -5,9 +5,7 @@ import {
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-  fileJson,
 } from 'faros-airbyte-cdk';
-import path from 'path';
 import VError from 'verror';
 
 import {Jenkins, JenkinsConfig} from './jenkins';
@@ -23,9 +21,8 @@ export function mainCommand(): Command {
 /** Jenkins source implementation. */
 export class JenkinsSource extends AirbyteSourceBase<JenkinsConfig> {
   async spec(): Promise<AirbyteSpec> {
-    return new AirbyteSpec(
-      fileJson(path.resolve(__dirname, '../resources/spec.json'))
-    );
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(
     config: JenkinsConfig

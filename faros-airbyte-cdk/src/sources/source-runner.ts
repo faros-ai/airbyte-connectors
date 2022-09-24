@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import {Command} from 'commander';
 import path from 'path';
 
@@ -5,7 +7,7 @@ import {wrapApiError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
-import {fileJson, PACKAGE_VERSION, redactConfig} from '../utils';
+import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
 
 export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
@@ -46,7 +48,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .alias('c')
       .requiredOption('--config <path to json>', 'config json')
       .action(async (opts: {config: string}) => {
-        const config = fileJson(path.resolve(opts.config));
+        const config = require(path.resolve(opts.config));
         const status = await this.source.check(config);
 
         // Expected output
@@ -61,7 +63,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .alias('d')
       .requiredOption('--config <path to json>', 'config json')
       .action(async (opts: {config: string}) => {
-        const config = fileJson(path.resolve(opts.config));
+        const config = require(path.resolve(opts.config));
         const catalog = await this.source.discover(config);
 
         // Expected output
@@ -79,15 +81,15 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .option('--state <path to json>', 'state json')
       .action(
         async (opts: {config: string; catalog: string; state?: string}) => {
-          const config = fileJson(path.resolve(opts.config));
-          const catalog = fileJson(path.resolve(opts.catalog));
+          const config = require(path.resolve(opts.config));
+          const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();
           this.logger.info('config: ' + redactConfig(config, spec));
           this.logger.info('catalog: ' + JSON.stringify(catalog));
 
           let state: AirbyteState | undefined = undefined;
           if (opts.state) {
-            state = fileJson(path.resolve(opts.state));
+            state = require(path.resolve(opts.state));
             this.logger.info('state: ' + JSON.stringify(state));
           }
 

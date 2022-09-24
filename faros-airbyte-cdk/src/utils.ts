@@ -74,7 +74,3 @@ export function toDate(
   }
   return new Date(val);
 }
-
-export function fileJson(filePath: string): any {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
