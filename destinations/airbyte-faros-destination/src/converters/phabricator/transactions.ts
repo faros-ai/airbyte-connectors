@@ -2,24 +2,17 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {isEmpty, union} from 'lodash';
 
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
-import {PhabricatorCommon, PhabricatorConverter, RepositoryKey} from './common';
+import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 type CountForPR = {
-  pullRequest: {
-    repository: RepositoryKey;
-    number: any;
-    uid: any;
-  };
+  pullRequest: {repository: RepoKey; number: any; uid: any};
   count: number;
 };
 
 type IdsForPR = {
-  pullRequest: {
-    repository: RepositoryKey;
-    number: any;
-    uid: any;
-  };
+  pullRequest: {repository: RepoKey; number: any; uid: any};
   ids: Set<string>;
 };
 

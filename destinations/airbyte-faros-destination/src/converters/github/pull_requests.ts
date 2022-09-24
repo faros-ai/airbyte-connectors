@@ -2,8 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {camelCase, toLower, upperFirst} from 'lodash';
 
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
-import {GitHubCommon, RepositoryKey} from './common';
+import {GitHubCommon} from './common';
 import {GitHubConverter} from './common';
 
 // Github PR states
@@ -22,7 +23,7 @@ export class PullRequests extends GitHubConverter {
     const pr = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository: RepositoryKey = {
+    const repository: RepoKey = {
       name: toLower(pr.base.repo.name),
       uid: toLower(pr.base.repo.name),
       organization: {uid: toLower(pr.base.repo.owner.login), source},

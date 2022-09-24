@@ -3,6 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
 /** Common functions shares across GitHub converters */
@@ -135,7 +136,7 @@ export class GitHubCommon {
   static parseRepositoryKey(
     repository: string,
     source: string
-  ): undefined | RepositoryKey {
+  ): undefined | RepoKey {
     if (!repository) return undefined;
 
     const orgRepo: ReadonlyArray<string> = repository.split('/');
@@ -203,17 +204,6 @@ export abstract class GitHubConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
-}
-
-export interface RepositoryKey {
-  name: string;
-  uid: string;
-  organization: OrgKey;
-}
-
-export interface OrgKey {
-  uid: string;
-  source: string;
 }
 
 export interface ProjectKey {

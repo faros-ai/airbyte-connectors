@@ -3,6 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {OrgKey, RepoKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
@@ -108,7 +109,7 @@ export class PhabricatorCommon {
   static repositoryKey(
     repository: Dictionary<any>,
     source: string
-  ): undefined | RepositoryKey {
+  ): undefined | RepoKey {
     // We try our best to construct repo key to be recognizable and short
     // considering the following constraints:
     //
@@ -167,15 +168,4 @@ export abstract class PhabricatorConverter extends Converter {
 export interface CommitMessage {
   message?: string;
   revisionId?: number;
-}
-
-export interface RepositoryKey {
-  name: string;
-  uid: string;
-  organization: OrgKey;
-}
-
-export interface OrgKey {
-  uid: string;
-  source: string;
 }
