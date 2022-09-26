@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Buildkite, BuildkiteConfig, Organization} from '../buildkite/buildkite';
@@ -23,12 +18,7 @@ export class Organizations extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Organization> {
+  async *readRecords(): AsyncGenerator<Organization> {
     const buildkite = Buildkite.instance(this.config, this.logger);
 
     yield* buildkite.getOrganizations();

@@ -1,5 +1,9 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Gitlab, GitlabConfig, Job} from '../gitlab';
@@ -26,12 +30,8 @@ export class Jobs extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *streamSlices(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<StreamSlice> {
-    const projects = this.projects.readRecords(SyncMode.FULL_REFRESH);
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const projects = this.projects.readRecords();
 
     for await (const project of projects) {
       const projectPath = project.pathWithNamespace;
@@ -49,8 +49,7 @@ export class Jobs extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: Dictionary<any, string>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<Job> {
     const gitlab = Gitlab.instance(this.config, this.logger);
 

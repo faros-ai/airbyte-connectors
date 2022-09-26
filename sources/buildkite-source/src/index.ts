@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** Buildkite source implementation. */
 export class BuildkiteSource extends AirbyteSourceBase<BuildkiteConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: BuildkiteConfig): Promise<[boolean, VError]> {

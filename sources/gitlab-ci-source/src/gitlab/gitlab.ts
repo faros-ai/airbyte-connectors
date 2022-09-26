@@ -49,7 +49,7 @@ export class Gitlab {
     return new Gitlab(client, logger);
   }
 
-  private createError(error: any, errorMessage: string) {
+  private createError(error: any, errorMessage: string): void {
     const err = error?.message ?? JSON.stringify(error);
     throw new VError(`${errorMessage} Error: ${err}`);
   }

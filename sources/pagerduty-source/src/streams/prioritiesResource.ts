@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Pagerduty, PagerdutyConfig, Priority} from '../pagerduty';
@@ -20,14 +15,8 @@ export class PrioritiesResource extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Priority,
-    streamState?: Dictionary<string>
-  ): AsyncGenerator<Priority> {
+  async *readRecords(): AsyncGenerator<Priority> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-
     yield* pagerduty.getPrioritiesResource();
   }
 }

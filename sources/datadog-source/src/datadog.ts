@@ -1,4 +1,4 @@
-import {client,v1, v2} from '@datadog/datadog-api-client';
+import {client, v1, v2} from '@datadog/datadog-api-client';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 

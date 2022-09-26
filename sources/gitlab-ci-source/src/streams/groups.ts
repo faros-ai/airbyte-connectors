@@ -1,5 +1,4 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Gitlab, GitlabConfig, Group} from '../gitlab';
@@ -17,12 +16,7 @@ export class Groups extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Group> {
+  async *readRecords(): AsyncGenerator<Group> {
     const gitlab = Gitlab.instance(this.config, this.logger);
 
     yield* gitlab.getGroups(this.config.groupName, this.config.projects);

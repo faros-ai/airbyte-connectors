@@ -19,6 +19,7 @@ export function mainCommand(): Command {
 /** Backlog source implementation. */
 export class BacklogSource extends AirbyteSourceBase<BacklogConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 

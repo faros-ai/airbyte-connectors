@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';
@@ -22,12 +17,7 @@ export class Users extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<User> {
     const buildkite = FireHydrant.instance(this.config, this.logger);
     yield* buildkite.getUsers();
   }

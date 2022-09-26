@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Project} from '../semaphoreci/models';
@@ -24,12 +19,7 @@ export class Projects extends AirbyteStreamBase {
     return [['metadata', 'id']];
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Project> {
+  async *readRecords(): AsyncGenerator<Project> {
     const semaphoreci = SemaphoreCI.instance(this.config, this.logger);
 
     for (const project of await semaphoreci.getProjects()) {

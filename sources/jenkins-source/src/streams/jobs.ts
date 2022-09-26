@@ -46,8 +46,7 @@ export class Jobs extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Job,
-    streamState?: any
+    streamSlice?: Job
   ): AsyncGenerator<Job, any, any> {
     const jenkins = Jenkins.instance(this.config, this.logger);
     const state =

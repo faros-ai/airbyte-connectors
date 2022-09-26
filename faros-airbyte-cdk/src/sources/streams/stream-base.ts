@@ -102,6 +102,8 @@ export abstract class AirbyteStreamBase {
    */
   abstract get primaryKey(): StreamKey | undefined;
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+
   /**
    * Override to define the slices for this stream. See the stream slicing
    * section of the docs for more information.
@@ -156,6 +158,8 @@ export abstract class AirbyteStreamBase {
   ): Dictionary<any> {
     return {};
   }
+
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   /**
    * @returns wrap the primary_key property in a list of list of strings

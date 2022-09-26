@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Team, Victorops, VictoropsConfig} from '../victorops';
@@ -20,12 +15,7 @@ export class Teams extends AirbyteStreamBase {
     return 'slug';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Team,
-    streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Team> {
+  async *readRecords(): AsyncGenerator<Team> {
     yield* Victorops.instance(this.config, this.logger).getTeams();
   }
 }

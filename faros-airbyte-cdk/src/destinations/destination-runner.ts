@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import {Command} from 'commander';
 import path from 'path';
 

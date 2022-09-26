@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk/lib';
+import {wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {

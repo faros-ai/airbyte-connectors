@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** SquadCast source implementation. */
 export class SquadcastSource extends AirbyteSourceBase<SquadcastConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: SquadcastConfig): Promise<[boolean, VError]> {

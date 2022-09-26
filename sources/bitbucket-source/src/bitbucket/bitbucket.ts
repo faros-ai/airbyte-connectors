@@ -34,11 +34,6 @@ interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
-type PRActivityAndRaw = {
-  activity: PRActivity;
-  rawData: Dictionary<any>;
-};
-
 export class Bitbucket {
   private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;

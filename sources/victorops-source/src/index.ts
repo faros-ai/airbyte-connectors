@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** Victorops source implementation. */
 export class VictoropsSource extends AirbyteSourceBase<VictoropsConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: VictoropsConfig): Promise<[boolean, VError]> {

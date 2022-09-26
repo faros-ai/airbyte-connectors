@@ -34,7 +34,7 @@ export class PullRequestActivities extends BitbucketServerConverter {
     const pullRequest = {
       number: pullRequestId,
       uid: pullRequestId.toString(),
-      repository: this.vcsRepoRef(project, repo),
+      repository: this.vcsRepoKey(project, repo),
     };
 
     if (isPullRequestComment(activity)) {

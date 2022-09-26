@@ -17,8 +17,6 @@ import {
 
 const DEFAULT_API_VERSION = '6.0';
 const DEFAULT_MEMOIZE_START_TIME = 0;
-const REG_EXP_ISO_8601_FULL =
-  /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/;
 
 export interface AzurePipelineConfig {
   readonly access_token: string;

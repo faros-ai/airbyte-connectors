@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Epic, Shortcut, ShortcutConfig} from '../shortcut';
@@ -25,11 +20,7 @@ export class Epics extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Epic> {
+  async *readRecords(): AsyncGenerator<Epic> {
     const shortcut = await Shortcut.instance(this.config);
     yield* shortcut.getEpics(this.projectId);
   }

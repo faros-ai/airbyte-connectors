@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
-import {GitHubCommon, RepositoryKey} from './common';
+import {GitHubCommon} from './common';
 import {GitHubConverter} from './common';
 
 export class PullRequestCommits extends GitHubConverter {
@@ -16,7 +17,7 @@ export class PullRequestCommits extends GitHubConverter {
     const prCommit = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository: RepositoryKey = GitHubCommon.parseRepositoryKey(
+    const repository: RepoKey = GitHubCommon.parseRepositoryKey(
       prCommit.repository,
       source
     );

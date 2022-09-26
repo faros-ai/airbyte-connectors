@@ -44,7 +44,7 @@ export class Pipelines extends AirbyteStreamBase {
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     const semaphore = SemaphoreCI.instance(this.config, this.logger);
-    const projects = this.projects.readRecords(SyncMode.FULL_REFRESH);
+    const projects = this.projects.readRecords();
     const branches = semaphore.branchNames;
 
     for await (const project of projects) {

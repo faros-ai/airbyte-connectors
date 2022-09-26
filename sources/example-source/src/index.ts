@@ -25,6 +25,7 @@ export function mainCommand(): Command {
 /** Example source implementation. */
 class ExampleSource extends AirbyteSourceBase<SourceConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: SourceConfig): Promise<[boolean, VError]> {
@@ -33,7 +34,7 @@ class ExampleSource extends AirbyteSourceBase<SourceConfig> {
     }
     return [false, new VError('User is not chris')];
   }
-  streams(config: AirbyteConfig): AirbyteStreamBase[] {
+  streams(): AirbyteStreamBase[] {
     return [new Builds(this.logger)];
   }
 }

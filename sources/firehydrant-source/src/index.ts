@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** FireHydrant source implementation. */
 export class FireHydrantSource extends AirbyteSourceBase<FireHydrantConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: FireHydrantConfig): Promise<[boolean, VError]> {

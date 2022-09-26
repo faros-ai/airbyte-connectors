@@ -23,6 +23,7 @@ export function mainCommand(): Command {
 /** AzureActiveDirectory source implementation. */
 export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDirectoryConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(

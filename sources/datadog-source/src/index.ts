@@ -19,6 +19,7 @@ export function mainCommand(): Command {
 
 export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: DatadogConfig): Promise<[boolean, VError]> {

@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** Jenkins source implementation. */
 export class JenkinsSource extends AirbyteSourceBase<JenkinsConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(

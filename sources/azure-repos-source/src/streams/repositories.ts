@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepo, AzureRepoConfig} from '../azure-repos';
@@ -24,11 +19,7 @@ export class Repositories extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>
-  ): AsyncGenerator<Repository> {
+  async *readRecords(): AsyncGenerator<Repository> {
     const azureRepo = await AzureRepo.instance(this.config);
     yield* azureRepo.getRepositories();
   }

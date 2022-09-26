@@ -46,7 +46,7 @@ export abstract class ConverterTyped<R> {
    * after the input processing is complete.
    * Use this to release any resources or produce any additional records if necessary. */
   async onProcessingComplete(
-    ctx: StreamContext
+    ctx: StreamContext // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<ReadonlyArray<DestinationRecordTyped<R>>> {
     return [];
   }

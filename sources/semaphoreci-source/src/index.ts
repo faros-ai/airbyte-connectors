@@ -21,6 +21,7 @@ export function mainCommand(): Command {
 /** SemaphoreCI source implementation. */
 export class SemaphoreCISource extends AirbyteSourceBase<SemaphoreCIConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: SemaphoreCIConfig): Promise<[boolean, VError]> {

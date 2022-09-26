@@ -15,7 +15,7 @@ export class Repositories extends BitbucketServerConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const repo = record.record.data as Repository;
     const slug = repo.slug.toLowerCase();
-    const repoRef = this.vcsRepoRef(repo.project.key, slug);
+    const repoRef = this.vcsRepoKey(repo.project.key, slug);
 
     return [
       {

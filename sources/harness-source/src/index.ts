@@ -22,6 +22,7 @@ export function mainCommand(): Command {
 /** Harness source implementation. */
 export class HarnessSource extends AirbyteSourceBase<HarnessConfig> {
   async spec(): Promise<AirbyteSpec> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: HarnessConfig): Promise<[boolean, VError]> {
