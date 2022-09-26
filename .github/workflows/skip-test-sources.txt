@@ -3,11 +3,11 @@ azure-repos-source
 azurepipeline-source
 bamboohr-source
 bitbucket-server-source
-circleci-source
 datadog-source
 docker-source
 gitlab-ci-source
 googlecalendar-source
+harness-source
 jenkins-source
 okta-source
 opsgenie-source
