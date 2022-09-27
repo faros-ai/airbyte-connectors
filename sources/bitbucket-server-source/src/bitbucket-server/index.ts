@@ -57,7 +57,7 @@ export class BitbucketServer {
   ): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
 
-    if (!(config.reject_unauthorized ?? true)) {
+    if (config?.reject_unauthorized === false) {
       logger.warn('Disabling certificate validation');
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
