@@ -29,6 +29,7 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly repositories?: ReadonlyArray<string>;
   readonly page_size?: number;
   readonly cutoff_days?: number;
+  readonly reject_unauthorized?: boolean;
 }
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -55,11 +56,17 @@ export class BitbucketServer {
     logger: AirbyteLogger
   ): BitbucketServer {
     if (BitbucketServer.bitbucket) return BitbucketServer.bitbucket;
+
+    if (config?.reject_unauthorized === false) {
+      logger.warn('Disabling certificate validation');
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
     const [passed, errorMessage] = BitbucketServer.validateConfig(config);
     if (!passed) {
       logger.error(errorMessage);
       throw new VError(errorMessage);
     }
+
     const client = new Client({baseUrl: config.server_url}) as ExtendedClient;
     client.addPlugin(MoreEndpointMethodsPlugin);
     const auth = config.token
@@ -69,6 +76,7 @@ export class BitbucketServer {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+
     const bb = new BitbucketServer(client, pageSize, logger, startDate);
     BitbucketServer.bitbucket = bb;
     logger.debug(`Created Bitbucket Server instance with ${auth.type} auth`);
