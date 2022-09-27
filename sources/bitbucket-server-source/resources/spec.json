@@ -67,6 +67,12 @@
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket Server API",
         "default": 25
+      },
+      "reject_unauthorized": {
+        "type": "boolean",
+        "title": "Enforce Certificate Validation",
+        "default": true,
+        "description": "Enforce certificate validation for the Bitbucket Server"
       }
     }
   }
