@@ -58,7 +58,7 @@ export function processPullRequestFileDiffs(
         },
       });
     } else {
-      if (file.from !== NULL) {
+      if (file.from && file.from !== NULL) {
         res.push({
           model: 'vcs_PullRequestFile',
           record: {
@@ -69,7 +69,7 @@ export function processPullRequestFileDiffs(
           },
         });
       }
-      if (file.to !== NULL) {
+      if (file.to && file.to !== NULL) {
         res.push({
           model: 'vcs_PullRequestFile',
           record: {
