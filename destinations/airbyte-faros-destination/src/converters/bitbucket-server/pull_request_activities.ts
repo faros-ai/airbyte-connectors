@@ -37,7 +37,7 @@ export class PullRequestActivities extends BitbucketServerConverter {
       repository: this.vcsRepoKey(project, repo),
     };
 
-    if (isPullRequestComment(activity)) {
+    if (isPullRequestComment(activity) && activity.comment?.text) {
       res.push({
         model: 'vcs_PullRequestComment',
         record: {
@@ -58,11 +58,13 @@ export class PullRequestActivities extends BitbucketServerConverter {
           where: pullRequest,
           mask: ['mergeCommit', 'mergedAt'],
           patch: {
-            mergeCommit: {
-              sha: activity.commit.id,
-              uid: activity.commit.id,
-              repository: pullRequest.repository,
-            },
+            mergeCommit: activity.commit?.id
+              ? {
+                  sha: activity.commit.id,
+                  uid: activity.commit.id,
+                  repository: pullRequest.repository,
+                }
+              : undefined,
             mergedAt: Utils.toDate(activity.createdDate),
           },
         },
