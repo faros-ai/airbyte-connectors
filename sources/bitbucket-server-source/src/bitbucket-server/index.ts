@@ -160,7 +160,7 @@ export class BitbucketServer {
     const fullName = repoFullName(projectKey, repositorySlug);
     const startDateMs = this.startDate.getTime();
     try {
-      this.logger.debug(`Fetching commits for repository: ${fullName}`);
+      this.logger.debug(`Fetching commits for repository ${fullName}`);
       yield* this.paginate<Dict, Commit>(
         (start) =>
           this.client[MEP].repos.getCommits({
@@ -188,7 +188,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching commits for repository: ${fullName}`
+        `Error fetching commits for repository ${fullName}`
       );
     }
   }
@@ -201,7 +201,7 @@ export class BitbucketServer {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(
-        `Fetching pull request activities for repository: ${fullName}`
+        `Fetching pull request activities for repository ${fullName}`
       );
       const prs = this.pullRequests(
         projectKey,
@@ -243,7 +243,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching pull request activities for repository: ${fullName}`
+        `Error fetching pull request activities for repository ${fullName}`
       );
     }
   }
@@ -256,7 +256,7 @@ export class BitbucketServer {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(
-        `Fetching pull request diffs for repository: ${fullName}`
+        `Fetching pull request diffs for repository ${fullName}`
       );
       const prs = this.pullRequests(
         projectKey,
@@ -295,7 +295,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching pull request activities for repository: ${fullName}`
+        `Error fetching pull request activities for repository ${fullName}`
       );
     }
   }
@@ -311,7 +311,7 @@ export class BitbucketServer {
   ): Promise<ReadonlyArray<PullRequest>> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
-      this.logger.debug(`Fetching pull requests for repository: ${fullName}`);
+      this.logger.debug(`Fetching pull requests for repository ${fullName}`);
       const results: PullRequest[] = [];
       const prs = this.paginate<Dict, PullRequest>(
         (start) =>
@@ -344,7 +344,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching pull requests for repository: ${fullName}`
+        `Error fetching pull requests for repository ${fullName}`
       );
     }
   }
@@ -358,7 +358,7 @@ export class BitbucketServer {
     include?: ReadonlyArray<string>
   ): Promise<ReadonlyArray<Repository>> {
     try {
-      this.logger.debug(`Fetching repositories for project: ${projectKey}`);
+      this.logger.debug(`Fetching repositories for project ${projectKey}`);
       const results: Repository[] = [];
       const repos = this.paginate<Dict, Repository>(
         (start) =>
@@ -368,17 +368,25 @@ export class BitbucketServer {
             limit: this.pageSize,
           }),
         async (data): Promise<Repository> => {
-          const {data: defaultBranch} =
-            await this.client.repos.getDefaultBranch({
-              projectKey,
-              repositorySlug: data.slug,
-            });
+          const fullName = repoFullName(projectKey, data.slug);
+          let mainBranch: string = undefined;
+          try {
+            const {data: defaultBranch} =
+              await this.client.repos.getDefaultBranch({
+                projectKey,
+                repositorySlug: data.slug,
+              });
+            mainBranch = defaultBranch?.displayId;
+          } catch (err) {
+            this.logger.warn(
+              `Received invalid default branch response for repository ${fullName}: ${
+                innerError(err).message
+              }`
+            );
+          }
           return {
             ...data,
-            computedProperties: {
-              fullName: repoFullName(projectKey, data.slug),
-              mainBranch: defaultBranch?.displayId,
-            },
+            computedProperties: {fullName, mainBranch},
           } as Repository;
         },
         (repo) => {
@@ -396,7 +404,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching repositories for project: ${projectKey}`
+        `Error fetching repositories for project ${projectKey}`
       );
     }
   }
@@ -406,16 +414,13 @@ export class BitbucketServer {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
       return data;
     } catch (err) {
-      throw new VError(
-        innerError(err),
-        `Error fetching project: ${projectKey}`
-      );
+      throw new VError(innerError(err), `Error fetching project ${projectKey}`);
     }
   }
 
   async *projectUsers(project: string): AsyncGenerator<ProjectUser> {
     try {
-      this.logger.debug(`Fetching users for project: ${project}`);
+      this.logger.debug(`Fetching users for project ${project}`);
       yield* this.paginate<Schema.PaginatedUsers, ProjectUser>(
         (start) =>
           this.client.api.getUsers({
@@ -436,7 +441,7 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching users for project: ${project}`
+        `Error fetching users for project ${project}`
       );
     }
   }
