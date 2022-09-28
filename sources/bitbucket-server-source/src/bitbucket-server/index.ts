@@ -368,17 +368,25 @@ export class BitbucketServer {
             limit: this.pageSize,
           }),
         async (data): Promise<Repository> => {
-          const {data: defaultBranch} =
-            await this.client.repos.getDefaultBranch({
-              projectKey,
-              repositorySlug: data.slug,
-            });
+          const fullName = repoFullName(projectKey, data.slug);
+          let mainBranch: string = undefined;
+          try {
+            const {data: defaultBranch} =
+              await this.client.repos.getDefaultBranch({
+                projectKey,
+                repositorySlug: data.slug,
+              });
+            mainBranch = defaultBranch?.displayId;
+          } catch (err) {
+            this.logger.warn(
+              `Received invalid default branch response for repository: ${fullName}: ${
+                innerError(err).message
+              }`
+            );
+          }
           return {
             ...data,
-            computedProperties: {
-              fullName: repoFullName(projectKey, data.slug),
-              mainBranch: defaultBranch?.displayId,
-            },
+            computedProperties: {fullName, mainBranch},
           } as Repository;
         },
         (repo) => {
