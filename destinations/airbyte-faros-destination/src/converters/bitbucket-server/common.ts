@@ -12,12 +12,11 @@ export abstract class BitbucketServerConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected vcsUser(
-    user?: User
-  ):
-    | {record: DestinationRecord; ref: {uid: string; source: string}}
-    | undefined {
-    if (!user?.slug) return undefined;
+  protected vcsUser(user?: User): {
+    record?: DestinationRecord;
+    ref?: {uid: string; source: string};
+  } {
+    if (!user?.slug) return {record: undefined, ref: undefined};
     const source = this.streamName.source;
     return {
       record: {

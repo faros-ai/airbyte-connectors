@@ -37,7 +37,7 @@ describe('bitbucket-server', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      commits: 7,
+      commits: 8,
       pull_request_activities: 18,
       pull_request_diffs: 3,
       pull_requests: 3,
