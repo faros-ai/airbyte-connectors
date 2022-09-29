@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Service, SquadcastConverter} from './common';
 
@@ -8,27 +9,27 @@ export class Services extends SquadcastConverter {
     'compute_Application',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
     const service = record.record.data as Service;
 
     const applicationMapping = this.applicationMapping(ctx);
-
-    let application = {name: service.name, platform: ''};
-
-    if (
-      service.name in applicationMapping &&
-      applicationMapping[service.name].name
-    ) {
-      const mappedApp = applicationMapping[service.name];
-      application = {
-        name: mappedApp.name,
-        platform: mappedApp.platform ?? application.platform,
-      };
+    const mappedApp = applicationMapping[service.name];
+    const application = Common.computeApplication(
+      mappedApp?.name ?? service.name,
+      mappedApp?.platform
+    );
+    const appKey = application.uid;
+    if (!this.seenApplications.has(appKey)) {
+      res.push({model: 'compute_Application', record: application});
+      this.seenApplications.add(appKey);
     }
 
-    return [{model: 'compute_Application', record: application}];
+    return res;
   }
 }

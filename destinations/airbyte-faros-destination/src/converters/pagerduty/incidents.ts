@@ -1,6 +1,7 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PagerDutyConverter, PagerdutyObject} from './common';
 
@@ -87,36 +88,23 @@ export class Incidents extends PagerDutyConverter {
       });
     }
 
-    const applicationMapping = this.applicationMapping(ctx);
-    let application = {
-      name: incident.service.summary,
-      platform: '',
-    };
-    // if we have an app mapping specified
-    if (
-      incident.service.summary in applicationMapping &&
-      applicationMapping[incident.service.summary].name
-    ) {
+    if (incident?.service?.summary) {
+      const applicationMapping = this.applicationMapping(ctx);
       const mappedApp = applicationMapping[incident.service.summary];
-      application = {
-        name: mappedApp.name,
-        platform: mappedApp.platform ?? application.platform,
-      };
+      const application = Common.computeApplication(
+        mappedApp?.name ?? incident.service.summary,
+        mappedApp?.platform
+      );
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {incident: incidentRef, application},
+      });
     }
-
-    const appKey = JSON.stringify(application);
-    if (!this.seenApplications.has(appKey)) {
-      res.push({model: 'compute_Application', record: application});
-      this.seenApplications.add(appKey);
-    }
-
-    res.push({
-      model: 'ims_IncidentApplicationImpact',
-      record: {
-        incident: incidentRef,
-        application,
-      },
-    });
 
     return res;
   }

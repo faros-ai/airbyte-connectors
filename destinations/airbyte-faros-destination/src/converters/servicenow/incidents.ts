@@ -92,27 +92,19 @@ export class Incidents extends ServiceNowConverter {
       typeof incident[applicationField] === 'string'
         ? incident[applicationField]
         : undefined;
+
     if (applicationName) {
       const applicationMapping = this.applicationMapping(ctx);
-
-      let application = Common.computeApplication(applicationName, '');
-
-      if (
-        applicationName in applicationMapping &&
-        applicationMapping[applicationName].name
-      ) {
-        const mappedApp = applicationMapping[applicationName];
-        application = Common.computeApplication(
-          mappedApp.name,
-          mappedApp.platform ?? application.platform
-        );
-      }
-
-      if (!this.seenApplications.has(application.uid)) {
+      const mappedApp = applicationMapping[applicationName];
+      const application = Common.computeApplication(
+        mappedApp?.name ?? applicationName,
+        mappedApp?.platform
+      );
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
         res.push({model: 'compute_Application', record: application});
-        this.seenApplications.add(application.uid);
+        this.seenApplications.add(appKey);
       }
-
       res.push({
         model: 'ims_IncidentApplicationImpact',
         record: {incident: incidentKey, application},

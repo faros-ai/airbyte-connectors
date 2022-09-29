@@ -1,11 +1,11 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {
   CICDArtifact,
   CICDBuild,
-  ComputeApplication,
   Execution,
   ExecutionImplementation,
   ExecutionPipeline,
@@ -44,23 +44,22 @@ export class Executions extends HarnessConverter {
       source
     );
 
-    const application: ComputeApplication = {
-      name: execution.application.name,
-      platform: execution.application.platform ?? '',
-    };
-    const appKey = JSON.stringify(application);
-    if (!this.seenApplications.has(appKey)) {
-      res.push({model: 'compute_Application', record: application});
-      this.seenApplications.add(appKey);
+    let application = null;
+    if (execution?.application) {
+      application = Common.computeApplication(
+        execution.application?.name,
+        execution.application?.platform
+      );
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
     }
 
     const deploymentStatus = this.toDeploymentStatus(execution.status);
     const buildStatus = this.toBuildStatus(execution.status);
-
-    const deployment = {
-      uid: execution.uid,
-      source,
-    };
+    const deployment = {uid: execution.uid, source};
 
     res.push({
       model: 'cicd_Deployment',
@@ -182,13 +181,12 @@ export class Executions extends HarnessConverter {
     }
 
     return {
-      application: {
-        name: execution.application.name ?? artifactSource.name,
-        platform:
-          execution.application.tags?.find(
-            (t) => t.name === DEFAULT_EXECUTION_TAG_APPLICATION_PLATFORM
-          )?.value ?? '',
-      },
+      application: Common.computeApplication(
+        execution.application.name ?? artifactSource.name,
+        execution.application.tags?.find(
+          (t) => t.name === DEFAULT_EXECUTION_TAG_APPLICATION_PLATFORM
+        )?.value ?? ''
+      ),
       env: outcome.environment.name ?? outcome.environment.type,
       build,
       artifact,
@@ -212,10 +210,10 @@ export class Executions extends HarnessConverter {
       return;
     }
     return {
-      application: {
-        name: artifactSource.name,
-        platform: service.artifactType,
-      },
+      application: Common.computeApplication(
+        artifactSource.name,
+        service.artifactType
+      ),
       env: environment.name ?? environment.type,
     };
   }

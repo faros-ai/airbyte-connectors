@@ -49,7 +49,7 @@ describe('statuspage', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 5,
+      compute_Application: 3,
       ims_Incident: 3,
       ims_IncidentApplicationImpact: 5,
       ims_IncidentEvent: 10,

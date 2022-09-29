@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OpsGenieConverter} from './common';
 import {
@@ -39,7 +40,6 @@ export class Incidents extends OpsGenieConverter {
 
     const maxDescriptionLength = this.maxDescriptionLength(ctx);
 
-    const applicationMapping = this.applicationMapping(ctx);
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.createdAt);
     const updatedAt = Utils.toDate(incident.updatedAt);
@@ -88,24 +88,26 @@ export class Incidents extends OpsGenieConverter {
         status: this.getIncidentStatus(incident.status),
       },
     });
-    for (const service of incident.impactedServices) {
-      const mappedApp = applicationMapping[service];
-      const application = {
-        name: mappedApp?.name ?? service,
-        platform: mappedApp?.platform ?? '',
-      };
-      const appKey = JSON.stringify(application);
-      if (!this.seenApplications.has(appKey)) {
-        res.push({model: 'compute_Application', record: application});
-        this.seenApplications.add(appKey);
+
+    if (incident.impactedServices) {
+      const applicationMapping = this.applicationMapping(ctx);
+      for (const service of incident.impactedServices) {
+        if (!service) continue;
+        const mappedApp = applicationMapping[service];
+        const application = Common.computeApplication(
+          mappedApp?.name ?? service,
+          mappedApp?.platform
+        );
+        const appKey = application.uid;
+        if (!this.seenApplications.has(appKey)) {
+          res.push({model: 'compute_Application', record: application});
+          this.seenApplications.add(appKey);
+        }
+        res.push({
+          model: 'ims_IncidentApplicationImpact',
+          record: {incident: incidentRef, application},
+        });
       }
-      res.push({
-        model: 'ims_IncidentApplicationImpact',
-        record: {
-          incident: incidentRef,
-          application,
-        },
-      });
     }
 
     for (const responder of incident.responders) {

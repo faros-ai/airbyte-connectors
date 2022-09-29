@@ -1,18 +1,21 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 import {Pipeline} from './models';
 
 export class Pipelines extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
     'cicd_Deployment',
     'cicd_Organization',
     'cicd_Pipeline',
   ];
 
   private seenOrganizations = new Set<string>();
+  private seenApplications = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -36,10 +39,23 @@ export class Pipelines extends AzurePipelineConverter {
       });
     }
 
+    const applicationMapping = this.applicationMapping(ctx);
+
     for (const runItem of pipeline.runs) {
-      const applicationMapping = this.applicationMapping(ctx);
-      const application =
-        (applicationMapping && applicationMapping[runItem.name]) ?? null;
+      let application = null;
+      if (runItem?.name) {
+        const mappedApp = applicationMapping[runItem.name];
+        application = Common.computeApplication(
+          mappedApp?.name ?? runItem.name,
+          mappedApp?.platform
+        );
+        const appKey = application.uid;
+        if (!this.seenApplications.has(appKey)) {
+          res.push({model: 'compute_Application', record: application});
+          this.seenApplications.add(appKey);
+        }
+      }
+
       const startedAt = Utils.toDate(runItem.createdDate);
       const endedAt = Utils.toDate(runItem.finishedDate);
       const status = this.convertDeploymentStatus(runItem.result);

@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   ComponentStatus,
@@ -21,6 +22,8 @@ export class Incidents extends StatuspageConverter {
     'ims_IncidentApplicationImpact',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
@@ -29,7 +32,6 @@ export class Incidents extends StatuspageConverter {
     const incident = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const applicationMapping = this.applicationMapping(ctx);
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
 
@@ -72,28 +74,26 @@ export class Incidents extends StatuspageConverter {
       },
     });
 
-    for (const service of incident.components) {
-      let application = {name: service.name, platform: ''};
+    if (incident.components) {
+      const applicationMapping = this.applicationMapping(ctx);
+      for (const service of incident.components) {
+        if (!service.name) continue;
 
-      if (
-        service.name in applicationMapping &&
-        applicationMapping[service.name].name
-      ) {
         const mappedApp = applicationMapping[service.name];
-        application = {
-          name: mappedApp.name,
-          platform: mappedApp.platform ?? application.platform,
-        };
+        const application = Common.computeApplication(
+          mappedApp?.name ?? service.name,
+          mappedApp?.platform
+        );
+        const appKey = application.uid;
+        if (!this.seenApplications.has(appKey)) {
+          res.push({model: 'compute_Application', record: application});
+          this.seenApplications.add(appKey);
+        }
+        res.push({
+          model: 'ims_IncidentApplicationImpact',
+          record: {incident: incidentRef, application},
+        });
       }
-      res.push({model: 'compute_Application', record: application});
-
-      res.push({
-        model: 'ims_IncidentApplicationImpact',
-        record: {
-          incident: incidentRef,
-          application,
-        },
-      });
     }
 
     return res;

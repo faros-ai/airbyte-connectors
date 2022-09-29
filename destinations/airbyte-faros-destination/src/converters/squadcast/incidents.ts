@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   Incident,
@@ -15,7 +16,6 @@ import {
 
 export class Incidents extends SquadcastConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_Application',
     'ims_Incident',
     'ims_IncidentApplicationImpact',
     'ims_Label',
@@ -89,26 +89,14 @@ export class Incidents extends SquadcastConverter {
 
     if (incident.service) {
       const applicationMapping = this.applicationMapping(ctx);
-
-      let application = {name: incident.service, platform: ''};
-
-      if (
-        incident.service in applicationMapping &&
-        applicationMapping[incident.service].name
-      ) {
-        const mappedApp = applicationMapping[incident.service];
-        application = {
-          name: mappedApp.name,
-          platform: mappedApp.platform ?? application.platform,
-        };
-      }
-
+      const mappedApp = applicationMapping[incident.service];
+      const application = Common.computeApplication(
+        mappedApp?.name ?? incident.service,
+        mappedApp?.platform
+      );
       res.push({
         model: 'ims_IncidentApplicationImpact',
-        record: {
-          incident: incidentRef,
-          application,
-        },
+        record: {incident: incidentRef, application},
       });
     }
 

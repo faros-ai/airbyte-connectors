@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {
   DestinationModel,
   DestinationRecord,
@@ -31,10 +32,12 @@ enum DeploymentStatusCategory {
 
 export class Deployments extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
     'cicd_Deployment',
   ];
 
   private readonly pipelinesStream = new StreamName('bitbucket', 'pipelines');
+  private seenApplications = new Set<string>();
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [this.pipelinesStream];
@@ -44,14 +47,24 @@ export class Deployments extends BitbucketConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
     const source = this.streamName.source;
     const deployment = record.record.data as Deployment;
 
     const applicationMapping = this.applicationMapping(ctx);
-    const application =
-      (applicationMapping && applicationMapping[deployment.deployable?.name]) ??
-      null;
-
+    let application = null;
+    if (deployment.deployable?.name) {
+      const mappedApp = applicationMapping[deployment.deployable?.name];
+      application = Common.computeApplication(
+        mappedApp?.name ?? deployment.deployable?.name,
+        mappedApp?.platform
+      );
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
+    }
     const pipelinesStream = this.pipelinesStream.asString;
 
     const pipelineRecord = ctx.get(
@@ -73,22 +86,22 @@ export class Deployments extends BitbucketConverter {
       };
     }
 
-    return [
-      {
-        model: 'cicd_Deployment',
-        record: {
-          application,
-          build,
-          uid: deployment.uuid,
-          env: this.convertEnvironment(
-            deployment.environment?.slug ?? deployment.fullEnvironment?.slug
-          ),
-          status: this.convertDeploymentStatus(deployment.state),
-          startedAt: Utils.toDate(deployment.deployable.createdOn),
-          source,
-        },
+    res.push({
+      model: 'cicd_Deployment',
+      record: {
+        application,
+        build,
+        uid: deployment.uuid,
+        env: this.convertEnvironment(
+          deployment.environment?.slug ?? deployment.fullEnvironment?.slug
+        ),
+        status: this.convertDeploymentStatus(deployment.state),
+        startedAt: Utils.toDate(deployment.deployable.createdOn),
+        source,
       },
-    ];
+    });
+
+    return res;
   }
 
   private convertEnvironment(env?: string): CategoryRef {

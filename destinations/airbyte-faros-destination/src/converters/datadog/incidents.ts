@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {DatadogConverter, IncidentSeverityCategory} from './common';
 
@@ -74,29 +75,24 @@ export class Incidents extends DatadogConverter {
       });
     }
 
-    const applicationMapping = this.applicationMapping(ctx);
     const services: string[] = incident.attributes?.fields?.services?.value;
     if (services) {
+      const applicationMapping = this.applicationMapping(ctx);
       for (const service of services) {
-        let application = {name: service, platform: ''};
-        if (applicationMapping?.[service]?.name) {
-          const mappedApp = applicationMapping[service];
-          application = {
-            name: mappedApp.name,
-            platform: mappedApp.platform ?? '',
-          };
-        }
-        const appKey = JSON.stringify(application);
+        if (!service) continue;
+        const mappedApp = applicationMapping[service];
+        const application = Common.computeApplication(
+          mappedApp?.name ?? service,
+          mappedApp?.platform
+        );
+        const appKey = application.uid;
         if (!this.seenApplications.has(appKey)) {
           res.push({model: 'compute_Application', record: application});
           this.seenApplications.add(appKey);
         }
         res.push({
           model: 'ims_IncidentApplicationImpact',
-          record: {
-            incident: incidentKey,
-            application,
-          },
+          record: {incident: incidentKey, application},
         });
       }
     }
