@@ -3,7 +3,7 @@ export class Common {
   static computeApplication(
     name: string,
     platform?: string
-  ): {name: string; platform?: string; uid: string} {
+  ): {name: string; platform: string; uid: string} {
     return {
       name,
       platform: platform ?? '',

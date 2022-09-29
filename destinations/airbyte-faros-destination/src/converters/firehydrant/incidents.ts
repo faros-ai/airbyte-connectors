@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FireHydrantConverter} from './common';
 import {IncidentTicket} from './models';
@@ -47,7 +48,6 @@ export class Incidents extends FireHydrantConverter {
 
     const maxDescriptionLength = this.maxDescriptionLength(ctx);
 
-    const applicationMapping = this.applicationMapping(ctx);
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
     const updatedAt = incident.events
@@ -129,27 +129,23 @@ export class Incidents extends FireHydrantConverter {
       },
     });
 
-    for (const service of incident.services) {
-      if (
-        service.name in applicationMapping &&
-        applicationMapping[service.name].name
-      ) {
+    if (incident.services) {
+      const applicationMapping = this.applicationMapping(ctx);
+      for (const service of incident.services) {
+        if (!service?.name) continue;
         const mappedApp = applicationMapping[service.name];
-        const application = {
-          name: mappedApp.name,
-          platform: mappedApp.platform ?? '',
-        };
-        const appKey = JSON.stringify(application);
+        const application = Common.computeApplication(
+          mappedApp?.name ?? service.name,
+          mappedApp?.platform
+        );
+        const appKey = application.uid;
         if (!this.seenApplications.has(appKey)) {
           res.push({model: 'compute_Application', record: application});
           this.seenApplications.add(appKey);
         }
         res.push({
           model: 'ims_IncidentApplicationImpact',
-          record: {
-            incident: incidentRef,
-            application,
-          },
+          record: {incident: incidentRef, application},
         });
       }
     }

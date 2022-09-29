@@ -3,6 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Converter} from '../converter';
 
 export interface ComputeApplication {
+  uid: string;
   name: string;
   platform: string;
 }

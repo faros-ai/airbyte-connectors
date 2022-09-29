@@ -1,6 +1,7 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VictorOpsConverter} from './common';
 
@@ -52,6 +53,8 @@ export class Incidents extends VictorOpsConverter {
     'ims_IncidentEvent',
     'ims_TeamIncidentAssociation',
   ];
+
+  private seenApplications = new Set<string>();
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.incidentNumber;
@@ -155,37 +158,30 @@ export class Incidents extends VictorOpsConverter {
       },
     });
 
-    const appMapping = this.applicationMapping(ctx);
     const appField = this.applicationField(ctx);
     // check optional application field parameter
     const service =
       appField in incident && typeof incident[appField] === 'string'
         ? incident[appField]
         : incident.service;
-    let application = {name: service, platform: ''};
 
-    if (service && service in appMapping && appMapping[service].name) {
-      this.logger.info(
-        `Incident ${incident.incidentNumber} impacted service: ${service}`
+    if (service) {
+      const applicationMapping = this.applicationMapping(ctx);
+      const mappedApp = applicationMapping[service];
+      const application = Common.computeApplication(
+        mappedApp?.name ?? service,
+        mappedApp?.platform
       );
-
-      application = {
-        name: appMapping[service].name,
-        platform: appMapping[service].platform ?? '',
-      };
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
+      res.push({
+        model: 'ims_IncidentApplicationImpact',
+        record: {incident: incidentRef, application},
+      });
     }
-    res.push({
-      model: 'compute_Application',
-      record: application,
-    });
-
-    res.push({
-      model: 'ims_IncidentApplicationImpact',
-      record: {
-        incident: incidentRef,
-        application,
-      },
-    });
 
     return res;
   }
