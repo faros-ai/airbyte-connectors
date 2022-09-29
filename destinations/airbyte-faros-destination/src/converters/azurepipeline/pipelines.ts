@@ -8,12 +8,14 @@ import {Pipeline} from './models';
 
 export class Pipelines extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
     'cicd_Deployment',
     'cicd_Organization',
     'cicd_Pipeline',
   ];
 
   private seenOrganizations = new Set<string>();
+  private seenApplications = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -47,6 +49,11 @@ export class Pipelines extends AzurePipelineConverter {
           mappedApp?.name ?? runItem.name,
           mappedApp?.platform
         );
+        const appKey = application.uid;
+        if (!this.seenApplications.has(appKey)) {
+          res.push({model: 'compute_Application', record: application});
+          this.seenApplications.add(appKey);
+        }
       }
 
       const startedAt = Utils.toDate(runItem.createdDate);

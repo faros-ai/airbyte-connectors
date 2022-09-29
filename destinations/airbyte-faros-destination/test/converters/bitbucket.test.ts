@@ -62,6 +62,7 @@ describe('bitbucket', () => {
       cicd_Deployment: 14,
       cicd_Organization: 3,
       cicd_Repository: 6,
+      compute_Application: 7,
       tms_Project: 6,
       tms_Task: 1,
       tms_TaskAssignment: 1,

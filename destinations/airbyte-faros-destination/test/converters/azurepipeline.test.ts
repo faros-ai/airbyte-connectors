@@ -57,6 +57,7 @@ describe('azurepipeline', () => {
       cicd_Pipeline: 2,
       cicd_Release: 1,
       cicd_Repository: 1,
+      compute_Application: 3,
       vcs_User: 1,
     };
 
