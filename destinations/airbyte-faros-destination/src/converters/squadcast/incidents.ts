@@ -16,13 +16,10 @@ import {
 
 export class Incidents extends SquadcastConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_Application',
     'ims_Incident',
     'ims_IncidentApplicationImpact',
     'ims_Label',
   ];
-
-  private seenApplications = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -97,11 +94,6 @@ export class Incidents extends SquadcastConverter {
         mappedApp?.name ?? incident.service,
         mappedApp?.platform
       );
-      const appKey = application.uid;
-      if (!this.seenApplications.has(appKey)) {
-        res.push({model: 'compute_Application', record: application});
-        this.seenApplications.add(appKey);
-      }
       res.push({
         model: 'ims_IncidentApplicationImpact',
         record: {incident: incidentRef, application},

@@ -9,27 +9,27 @@ export class Services extends SquadcastConverter {
     'compute_Application',
   ];
 
+  private seenApplications = new Set<string>();
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
     const service = record.record.data as Service;
 
     const applicationMapping = this.applicationMapping(ctx);
-
-    let application = Common.computeApplication(service.name);
-
-    if (
-      service.name in applicationMapping &&
-      applicationMapping[service.name].name
-    ) {
-      const mappedApp = applicationMapping[service.name];
-      application = Common.computeApplication(
-        mappedApp.name,
-        mappedApp.platform
-      );
+    const mappedApp = applicationMapping[service.name];
+    const application = Common.computeApplication(
+      mappedApp?.name ?? service.name,
+      mappedApp?.platform
+    );
+    const appKey = application.uid;
+    if (!this.seenApplications.has(appKey)) {
+      res.push({model: 'compute_Application', record: application});
+      this.seenApplications.add(appKey);
     }
 
-    return [{model: 'compute_Application', record: application}];
+    return res;
   }
 }
