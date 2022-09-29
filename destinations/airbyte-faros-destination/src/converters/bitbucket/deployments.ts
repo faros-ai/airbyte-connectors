@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {
   DestinationModel,
   DestinationRecord,
@@ -48,10 +49,14 @@ export class Deployments extends BitbucketConverter {
     const deployment = record.record.data as Deployment;
 
     const applicationMapping = this.applicationMapping(ctx);
-    const application =
-      (applicationMapping && applicationMapping[deployment.deployable?.name]) ??
-      null;
-
+    let application = null;
+    if (deployment.deployable?.name) {
+      const mappedApp = applicationMapping[deployment.deployable?.name];
+      application = Common.computeApplication(
+        mappedApp?.name ?? deployment.deployable?.name,
+        mappedApp?.platform
+      );
+    }
     const pipelinesStream = this.pipelinesStream.asString;
 
     const pipelineRecord = ctx.get(

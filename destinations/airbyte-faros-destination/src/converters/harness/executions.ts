@@ -6,7 +6,6 @@ import {DestinationModel, DestinationRecord} from '../converter';
 import {
   CICDArtifact,
   CICDBuild,
-  ComputeApplication,
   Execution,
   ExecutionImplementation,
   ExecutionPipeline,
@@ -45,14 +44,17 @@ export class Executions extends HarnessConverter {
       source
     );
 
-    const application: ComputeApplication = Common.computeApplication(
-      execution.application.name,
-      execution.application.platform
-    );
-    const appKey = application.uid;
-    if (!this.seenApplications.has(appKey)) {
-      res.push({model: 'compute_Application', record: application});
-      this.seenApplications.add(appKey);
+    let application = null;
+    if (execution?.application) {
+      application = Common.computeApplication(
+        execution.application?.name,
+        execution.application?.platform
+      );
+      const appKey = application.uid;
+      if (!this.seenApplications.has(appKey)) {
+        res.push({model: 'compute_Application', record: application});
+        this.seenApplications.add(appKey);
+      }
     }
 
     const deploymentStatus = this.toDeploymentStatus(execution.status);

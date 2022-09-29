@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 import {Pipeline} from './models';
@@ -36,10 +37,18 @@ export class Pipelines extends AzurePipelineConverter {
       });
     }
 
+    const applicationMapping = this.applicationMapping(ctx);
+
     for (const runItem of pipeline.runs) {
-      const applicationMapping = this.applicationMapping(ctx);
-      const application =
-        (applicationMapping && applicationMapping[runItem.name]) ?? null;
+      let application = null;
+      if (runItem?.name) {
+        const mappedApp = applicationMapping[runItem.name];
+        application = Common.computeApplication(
+          mappedApp?.name ?? runItem.name,
+          mappedApp?.platform
+        );
+      }
+
       const startedAt = Utils.toDate(runItem.createdDate);
       const endedAt = Utils.toDate(runItem.finishedDate);
       const status = this.convertDeploymentStatus(runItem.result);
