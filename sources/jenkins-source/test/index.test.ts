@@ -130,6 +130,7 @@ describe('index', () => {
         lastCompletedBuild: {
           number: 3,
         },
+        nextBuildNumber: 4,
       },
     ]);
   });
