@@ -1,6 +1,6 @@
 import {URL} from 'url';
 
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 interface JenkinsUrl {
   hostname: string;
@@ -73,6 +73,18 @@ export class JenkinsCommon {
   }
 }
 
+interface JenkinsConfig {
+  create_commit_records?: boolean;
+}
+
 export abstract class JenkinsConverter extends Converter {
   source = 'Jenkins';
+
+  protected jenkinsConfig(ctx: StreamContext): JenkinsConfig {
+    return ctx.config?.source_specific_configs?.jenkins;
+  }
+
+  protected shouldCreateCommitRecords(ctx: StreamContext): boolean {
+    return this.jenkinsConfig(ctx)?.create_commit_records ?? false;
+  }
 }

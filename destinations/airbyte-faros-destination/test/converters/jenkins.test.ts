@@ -1,7 +1,9 @@
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
+import {Dictionary} from 'ts-essentials';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {jenkinsAllStreamsLog} from './data';
@@ -22,7 +24,10 @@ describe('jenkins', () => {
     await mockttp.stop();
   });
 
-  test('process records from all streams', async () => {
+  async function testStreams(
+    processedByStream: Dictionary<number>,
+    writtenByModel: Dictionary<number>
+  ): Promise<void> {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -36,24 +41,12 @@ describe('jenkins', () => {
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
 
-    const processedByStream = {
-      jobs: 2,
-      builds: 4,
-    };
     const processed = _(processedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-
-    const writtenByModel = {
-      cicd_Build: 4,
-      cicd_BuildCommitAssociation: 1,
-      cicd_Organization: 6,
-      cicd_Pipeline: 6,
-      vcs_Commit: 1,
-    };
 
     const processedTotal = _(processedByStream).values().sum();
     const writtenTotal = _(writtenByModel).values().sum();
@@ -79,5 +72,45 @@ describe('jenkins', () => {
     );
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
+  }
+
+  test('process records from all streams', async () => {
+    const processedByStream = {
+      jobs: 2,
+      builds: 4,
+    };
+    const writtenByModel = {
+      cicd_Build: 4,
+      cicd_BuildCommitAssociation: 1,
+      cicd_Organization: 6,
+      cicd_Pipeline: 6,
+    };
+    await testStreams(processedByStream, writtenByModel);
+  });
+
+  test('process records from all streams with commits', async () => {
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {
+        jenkins: {
+          create_commit_records: true,
+        },
+      }
+    );
+    const processedByStream = {
+      jobs: 2,
+      builds: 4,
+    };
+    const writtenByModel = {
+      cicd_Build: 4,
+      cicd_BuildCommitAssociation: 1,
+      cicd_Organization: 6,
+      cicd_Pipeline: 6,
+      vcs_Commit: 1,
+    };
+    await testStreams(processedByStream, writtenByModel);
   });
 });
