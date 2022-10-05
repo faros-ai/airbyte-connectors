@@ -3,7 +3,7 @@ import {Utils} from 'faros-feeds-sdk';
 import parseGitUrl from 'git-url-parse';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JenkinsCommon, JenkinsConverter, RepoSource} from './common';
 
 export class Builds extends JenkinsConverter {
@@ -19,7 +19,8 @@ export class Builds extends JenkinsConverter {
   }
   BUILD_DATA_CLASS = 'hudson.plugins.git.util.BuildData';
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data;
@@ -54,6 +55,7 @@ export class Builds extends JenkinsConverter {
       },
     };
 
+    const createCommitRecords = this.shouldCreateCommitRecords(ctx);
     const res: DestinationRecord[] = [organization, pipeline, buildRecord];
     build.actions
       ?.filter((a) => a?._class === this.BUILD_DATA_CLASS)
@@ -77,16 +79,18 @@ export class Builds extends JenkinsConverter {
               },
             });
 
-            res.push({
-              model: 'vcs_Commit',
-              record: {
-                sha,
-                repository: repoKey,
-                uid: sha,
-                message: sha,
-                htmlUrl: repo.org,
-              },
-            });
+            if (createCommitRecords) {
+              res.push({
+                model: 'vcs_Commit',
+                record: {
+                  sha,
+                  repository: repoKey,
+                  uid: sha,
+                  message: sha,
+                  htmlUrl: repo.org,
+                },
+              });
+            }
           }
         }
       });
