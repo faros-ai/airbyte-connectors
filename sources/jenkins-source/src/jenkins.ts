@@ -6,10 +6,9 @@ import util from 'util';
 import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 10;
-const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
+const FEED_ALL_FIELDS_PATTERN = `name,fullName,url,nextBuildNumber,lastCompletedBuild[number],%s[id,displayName,number,building,result,timestamp,duration,url,actions[lastBuiltRevision[SHA1],remoteUrls],fullName,fullDisplayName],jobs[*]`;
 const FEED_JOBS_COUNT_PATTERN = 'jobs[name]';
-const FEED_MAX_DEPTH_CALC_PATTERN = 'fullName,jobs[*]';
-const FOLDER_JOB_TYPE = 'com.cloudbees.hudson.plugins.folder.Folder';
+const FEED_MAX_DEPTH_CALC_PATTERN = 'fullName,nextBuildNumber,jobs[*]';
 const POTENTIAL_MAX_DEPTH = 10;
 
 export interface JenkinsConfig extends AirbyteConfig {
@@ -28,6 +27,7 @@ export interface Job {
   url: string;
   allBuilds?: Build[];
   builds?: Build[];
+  nextBuildNumber?: number;
   lastCompletedBuild: Build | null;
   jobs?: Job[];
 }
@@ -270,15 +270,13 @@ export class Jenkins {
       if (!job) {
         break;
       }
-      if (job._class === FOLDER_JOB_TYPE) {
-        if (job.jobs) {
-          for (const nestedJob of job.jobs) {
-            nestedJob.name = `${job.name}/${nestedJob.name}`;
-          }
-          rootJobs.push(...job.jobs);
-        }
-      } else {
+      if (job.nextBuildNumber) {
         allJobs.push(job);
+      } else if (job.jobs) {
+        for (const nestedJob of job.jobs) {
+          nestedJob.name = `${job.name}/${nestedJob.name}`;
+        }
+        rootJobs.push(...job.jobs);
       }
     }
     return allJobs;
