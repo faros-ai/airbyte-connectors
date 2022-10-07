@@ -10,7 +10,7 @@ import {
 import {ALL_MODEL_NAMES} from './model_names';
 
 export class FarosFeed extends Converter {
-  source = 'Faros_Feeds';
+  source = 'Faros-Feeds';
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = ALL_MODEL_NAMES;
 

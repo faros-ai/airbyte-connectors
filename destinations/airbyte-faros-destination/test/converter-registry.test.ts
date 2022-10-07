@@ -138,4 +138,11 @@ describe('converter registry', () => {
       await res.convert(AirbyteRecord.make('s1', {id: 'test'}), null)
     ).toStrictEqual([{model: 'test_Model', record: {bar: 123, foo: 'test'}}]);
   });
+
+  test('loads a converter with underscore instead of dash', async () => {
+    const res = sut.getConverter(new StreamName('okta-faros', 'groups'));
+    expect(res).toBeDefined();
+    sut.getConverter(new StreamName('okta_faros', 'groups'));
+    expect(res).toBeDefined();
+  });
 });
