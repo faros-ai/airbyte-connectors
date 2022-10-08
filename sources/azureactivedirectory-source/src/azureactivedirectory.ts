@@ -114,13 +114,14 @@ export class AzureActiveDirectory {
           yield item;
         }
       } catch (err: any) {
-        const errorMessage = wrapApiError(err).message;
+        const w = wrapApiError(err);
         this.logger.error(
           `Failed requesting '${path}' with params ${JSON.stringify(
             param
-          )}. Error: ${errorMessage}`
+          )}. Error: ${w.message}`,
+          w.stack
         );
-        throw new VError(errorMessage);
+        throw new VError(w.message);
       }
     } while (after);
   }
@@ -145,8 +146,9 @@ export class AzureActiveDirectory {
         if (managerItem.status === 200) {
           user.manager = managerItem.data.id;
         }
-      } catch (error) {
-        this.logger.error(error.toString());
+      } catch (e: any) {
+        const w = wrapApiError(e);
+        this.logger.error(w.message, w.stack);
       }
       yield user;
     }

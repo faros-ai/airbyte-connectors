@@ -44,6 +44,11 @@ export enum AirbyteConnectionStatus {
   FAILED = 'FAILED',
 }
 
+export enum AirbyteFailureType {
+  SYSTEM_ERROR = 'system_error',
+  CONFIG_ERROR = 'config_error',
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AirbyteConfig {}
 
@@ -132,10 +137,15 @@ export class AirbyteLog implements AirbyteMessage {
     readonly log: {
       level: AirbyteLogLevel;
       message: string;
+      stack_trace: string;
     }
   ) {}
-  static make(level: AirbyteLogLevel, message: string): AirbyteLog {
-    return new AirbyteLog({level, message});
+  static make(
+    level: AirbyteLogLevel,
+    message: string,
+    stack_trace?: string
+  ): AirbyteLog {
+    return new AirbyteLog({level, message, stack_trace});
   }
 }
 
@@ -185,20 +195,32 @@ export class AirbyteRecord implements AirbyteMessage {
   }
 }
 
-interface AirbyteErrorTrace {
+export interface AirbyteTrace {
   type: 'ERROR';
   emitted_at: number;
-  error: any;
+  error: {
+    message: string;
+    internal_message?: string;
+    stack_trace?: string;
+    failure_type?: AirbyteFailureType;
+  };
 }
 
-export class AirbyteErrorTraceMessage implements AirbyteMessage {
+export class AirbyteTraceMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
-  private readonly trace: AirbyteErrorTrace;
-  constructor(error: any) {
+  readonly trace: AirbyteTrace;
+  constructor(err: any, failure_type?: AirbyteFailureType) {
+    const wrapped = wrapApiError(err);
     this.trace = {
       type: 'ERROR',
       emitted_at: Date.now(),
-      error: wrapApiError(error),
+      error: {
+        message: wrapped.message,
+        stack_trace: wrapped.stack,
+        internal_message: wrapped.name,
+        failure_type,
+        ...wrapped,
+      },
     };
   }
 }

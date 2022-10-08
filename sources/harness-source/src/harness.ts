@@ -118,9 +118,9 @@ export class Harness {
         }
         offset += executions.pageInfo.limit ?? executions.nodes.length;
         hasMore = executions.pageInfo.hasMore;
-      } catch (ex: any) {
-        logger.error(ex);
-        throw ex;
+      } catch (e: any) {
+        logger.error(e, e.stack);
+        throw e;
       }
     } while (hasMore);
   }

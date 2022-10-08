@@ -102,7 +102,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             const w = wrapApiError(e);
             const s = JSON.stringify(w);
             this.logger.error(
-              `Encountered an error while reading from source: ${w} - ${s}`
+              `Encountered an error while reading from source: ${w} - ${s}`,
+              w.stack
             );
             throw e;
           }

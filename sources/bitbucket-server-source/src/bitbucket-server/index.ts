@@ -284,11 +284,12 @@ export class BitbucketServer {
               },
             },
           };
-        } catch (err) {
+        } catch (err: any) {
           this.logger.error(
             `Failed to parse raw diff for repository ${fullName} pull request ${
               pr.id
-            }: ${JSON.stringify(err)}`
+            }: ${JSON.stringify(err)}`,
+            err.stack
           );
         }
       }
