@@ -44,7 +44,7 @@ export enum AirbyteConnectionStatus {
   FAILED = 'FAILED',
 }
 
-export enum AirbyteFailureType {
+export enum AirbyteTraceFailureType {
   SYSTEM_ERROR = 'system_error',
   CONFIG_ERROR = 'config_error',
 }
@@ -66,6 +66,7 @@ export function parseAirbyteMessage(s: string): AirbyteMessage {
       case AirbyteMessageType.LOG:
       case AirbyteMessageType.SPEC:
       case AirbyteMessageType.STATE:
+      case AirbyteMessageType.TRACE:
         return res;
       default:
         throw new VError(`Unsupported message type ${res.type}`);
@@ -202,14 +203,14 @@ export interface AirbyteTraceError {
     message: string;
     internal_message?: string;
     stack_trace?: string;
-    failure_type?: AirbyteFailureType;
+    failure_type?: AirbyteTraceFailureType;
   };
 }
 
-export class AirbyteTraceMessage implements AirbyteMessage {
+export class AirbyteTrace implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
   readonly trace: AirbyteTraceError;
-  constructor(err: any, failure_type?: AirbyteFailureType) {
+  constructor(err: any, failure_type?: AirbyteTraceFailureType) {
     const wrapped = wrapApiError(err);
     this.trace = {
       type: 'ERROR',
