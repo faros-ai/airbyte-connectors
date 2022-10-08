@@ -9,7 +9,7 @@ export class CircleCICommon {
     return {
       uid: `${toLower(pipeline.id)}_${toLower(workflow.id)}`,
       pipeline: {
-        uid: pipeline.project_slug,
+        uid: this.getProject(pipeline.project_slug),
         organization: {
           uid: this.getOrganization(pipeline.project_slug),
           source,
