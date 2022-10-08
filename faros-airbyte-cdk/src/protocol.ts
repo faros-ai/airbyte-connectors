@@ -209,10 +209,22 @@ export interface AirbyteTraceError {
 
 export class AirbyteTrace implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
-  readonly trace: AirbyteTraceError;
-  constructor(err: any, failure_type?: AirbyteTraceFailureType) {
+  constructor(
+    readonly trace: {
+      type: 'ERROR';
+      emitted_at: number;
+      error: {
+        message: string;
+        internal_message?: string;
+        stack_trace?: string;
+        failure_type?: AirbyteTraceFailureType;
+      };
+    }
+  ) {}
+
+  static make(err: any, failure_type?: AirbyteTraceFailureType): AirbyteTrace {
     const wrapped = wrapApiError(err);
-    this.trace = {
+    return new AirbyteTrace({
       type: 'ERROR',
       emitted_at: Date.now(),
       error: {
@@ -222,7 +234,7 @@ export class AirbyteTrace implements AirbyteMessage {
         failure_type,
         ...wrapped,
       },
-    };
+    });
   }
 }
 

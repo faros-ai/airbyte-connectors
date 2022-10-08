@@ -7,7 +7,7 @@ export abstract class Runner {
       throw error;
     });
     process.on('uncaughtException', (error) => {
-      logger.trace(error, AirbyteTraceFailureType.SYSTEM_ERROR);
+      logger.traceError(error, AirbyteTraceFailureType.SYSTEM_ERROR);
       process.exit(1);
     });
   }

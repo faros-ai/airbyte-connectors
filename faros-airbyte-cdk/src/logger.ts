@@ -41,8 +41,12 @@ export class AirbyteLogger {
     this.write(AirbyteLog.make(AirbyteLogLevel.DEBUG, message, stack_trace));
   }
 
-  trace(error: any, failure_type?: AirbyteTraceFailureType): void {
-    this.write(new AirbyteTrace(error, failure_type));
+  trace(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.TRACE, message, stack_trace));
+  }
+
+  traceError(error: any, failure_type?: AirbyteTraceFailureType): void {
+    this.write(AirbyteTrace.make(error, failure_type));
   }
 
   write(msg: AirbyteMessage): void {
