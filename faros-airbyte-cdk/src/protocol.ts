@@ -195,7 +195,7 @@ export class AirbyteRecord implements AirbyteMessage {
   }
 }
 
-export interface AirbyteTrace {
+export interface AirbyteTraceError {
   type: 'ERROR';
   emitted_at: number;
   error: {
@@ -208,7 +208,7 @@ export interface AirbyteTrace {
 
 export class AirbyteTraceMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
-  readonly trace: AirbyteTrace;
+  readonly trace: AirbyteTraceError;
   constructor(err: any, failure_type?: AirbyteFailureType) {
     const wrapped = wrapApiError(err);
     this.trace = {
