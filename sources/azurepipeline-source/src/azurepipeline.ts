@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {wrapApiError} from 'faros-airbyte-cdk/lib';
+import {wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 

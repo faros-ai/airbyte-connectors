@@ -1,4 +1,4 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk/lib';
+import {AirbyteConfig} from 'faros-airbyte-cdk';
 
 export interface GitlabConfig extends AirbyteConfig {
   readonly apiUrl?: string;

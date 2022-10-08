@@ -4,7 +4,11 @@ import {Dictionary} from 'ts-essentials';
 import {Gitlab, GitlabConfig, Group} from '../gitlab';
 
 export class Groups extends AirbyteStreamBase {
-  constructor(readonly config: GitlabConfig, readonly logger: AirbyteLogger) {
+  constructor(
+    readonly config: GitlabConfig,
+    readonly gitlab: Gitlab,
+    readonly logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
@@ -17,8 +21,6 @@ export class Groups extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Group> {
-    const gitlab = Gitlab.instance(this.config, this.logger);
-
-    yield* gitlab.getGroups(this.config.groupName, this.config.projects);
+    yield* this.gitlab.getGroups(this.config.groupName, this.config.projects);
   }
 }

@@ -1,5 +1,5 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {buildGroup, buildJob, buildPipeline, buildProject} from './builders';
@@ -15,12 +15,9 @@ import {
 const DEFAULT_PER_PAGE = 100;
 
 export class Gitlab {
-  constructor(
-    private readonly client: any,
-    private readonly logger: AirbyteLogger
-  ) {}
+  constructor(private readonly client: any, readonly config: GitlabConfig) {}
 
-  static instance(config: GitlabConfig, logger: AirbyteLogger): Gitlab {
+  static instance(config: GitlabConfig): Gitlab {
     if (!config.token) {
       throw new VError('token must not be an empty string');
     }
@@ -44,9 +41,7 @@ export class Gitlab {
       version: config.apiVersion as 3 | 4 | undefined,
     });
 
-    logger.debug('Created Gitlab instance');
-
-    return new Gitlab(client, logger);
+    return new Gitlab(client, config);
   }
 
   private createError(error: any, errorMessage: string): void {
@@ -62,6 +57,9 @@ export class Gitlab {
     }
   }
 
+  @Memoize(
+    (groupPath: string, projects: string[]) => `${groupPath};${projects}`
+  )
   async *getGroups(
     groupName: string,
     projects: string[]
@@ -95,6 +93,9 @@ export class Gitlab {
     }
   }
 
+  @Memoize(
+    (groupPath: string, projects: string[]) => `${groupPath};${projects}`
+  )
   async *getProjects(
     groupPath: string,
     projects: string[]
@@ -110,13 +111,15 @@ export class Gitlab {
     }
   }
 
+  @Memoize(
+    (groupPath: string, lastUpdated?: string) => `${groupPath};${lastUpdated}`
+  )
   async *getPipelines(
     projectPath: string,
-    config: GitlabConfig,
     lastUpdated?: string
   ): AsyncGenerator<Pipeline> {
     const options: RequestOptions = {
-      perPage: config.pageSize || DEFAULT_PER_PAGE,
+      perPage: this.config.pageSize || DEFAULT_PER_PAGE,
       updatedAfter: lastUpdated,
       orderBy: 'updated_at',
       showExpanded: true,
@@ -124,7 +127,9 @@ export class Gitlab {
     // If we have already synced this project, ignore maxPipelinesPerProject
     // and get everything since last sync to avoid gaps in data
     // https://github.com/faros-ai/feeds/blob/a08a35c6da0c60586095816d7a2e4f659d45b594/feeds/cicd/gitlabci-feed/src/gitlab.ts#L177
-    const maxCount = lastUpdated ? undefined : config.maxPipelinesPerProject;
+    const maxCount = lastUpdated
+      ? undefined
+      : this.config.maxPipelinesPerProject;
     let page = 1;
     let count = 0;
     do {
@@ -145,6 +150,9 @@ export class Gitlab {
     } while (page);
   }
 
+  @Memoize(
+    (projectPath: string, pipelineId: number) => `${projectPath};${pipelineId}`
+  )
   async *getJobs(projectPath: string, pipelineId: number): AsyncGenerator<Job> {
     let page = 1;
     do {
