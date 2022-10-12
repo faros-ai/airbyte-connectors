@@ -2,7 +2,7 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-feeds-sdk';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, intersection} from 'lodash';
+import {difference, intersection, isNil} from 'lodash';
 import traverse from 'traverse';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -306,7 +306,7 @@ export class GraphQLClient {
         );
       } else {
         const val = this.formatFieldValue(model, field, value);
-        if (val) obj[field] = val;
+        if (!isNil(val)) obj[field] = val;
       }
     }
     obj['origin'] = origin;
@@ -317,7 +317,7 @@ export class GraphQLClient {
   }
 
   private formatFieldValue(model: string, field: string, value: any): any {
-    if (!value) return undefined;
+    if (isNil(value)) return undefined;
     const type = this.schema.scalars[model][field];
     if (!type) {
       this.logger.debug(`Could not find type of ${field} in ${model}`);
