@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 import {PRActivity, User} from './types';
 
@@ -14,8 +14,6 @@ enum PullRequestReviewStateCategory {
 }
 
 export class PullRequestActivities extends BitbucketConverter {
-  readonly logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_User',
     'vcs_PullRequestComment',
@@ -23,7 +21,8 @@ export class PullRequestActivities extends BitbucketConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const prActivity = record.record.data as PRActivity;
@@ -45,7 +44,7 @@ export class PullRequestActivities extends BitbucketConverter {
     const id = change?.id ?? date?.getUTCMilliseconds();
 
     if (!id) {
-      this.logger.info(
+      ctx.logger.info(
         `Ignored activity for pull request ${
           prActivity.pullRequest.id
         } in repo ${
@@ -74,7 +73,7 @@ export class PullRequestActivities extends BitbucketConverter {
       organization: orgRef,
     };
     if (!orgRef.uid || !repoRef.uid) {
-      this.logger.info(
+      ctx.logger.info(
         `PR Activity has no repo ref: ${JSON.stringify(prActivity)}`
       );
       return res;

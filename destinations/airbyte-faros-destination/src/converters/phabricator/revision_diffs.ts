@@ -1,9 +1,9 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FileDiff} from 'faros-airbyte-common/common';
 import {Dictionary} from 'ts-essentials';
 
 import {processPullRequestFileDiffs} from '../common/vcs';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {PhabricatorCommon, PhabricatorConverter} from './common';
 
 interface RevisionDiff {
@@ -19,8 +19,6 @@ interface RevisionDiff {
 }
 
 export class RevisionDiffs extends PhabricatorConverter {
-  private readonly logger: AirbyteLogger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_File',
     'vcs_PullRequestFile',
@@ -31,7 +29,8 @@ export class RevisionDiffs extends PhabricatorConverter {
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const diff = record.record.data as RevisionDiff;
@@ -44,14 +43,14 @@ export class RevisionDiffs extends PhabricatorConverter {
       repository: diff.repository,
     };
     if (!repository) {
-      this.logger.warn(
+      ctx.logger.warn(
         `Could not determine repository from revision diff ${JSON.stringify(
           diffShort
         )}`
       );
       return res;
     } else if (!diff.revision?.id) {
-      this.logger.warn(
+      ctx.logger.warn(
         `Could not determine revision from revision diff ${JSON.stringify(
           diffShort
         )}`

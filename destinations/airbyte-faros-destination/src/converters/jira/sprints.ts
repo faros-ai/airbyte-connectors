@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {
   camelCase,
@@ -19,8 +19,6 @@ import {
 import {JiraCommon, JiraConverter, SprintIssue} from './common';
 
 export class Sprints extends JiraConverter {
-  private logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
 
   private static readonly issueFieldsStream = new StreamName(
@@ -59,7 +57,7 @@ export class Sprints extends JiraConverter {
     );
   }
 
-  private getPoints(issue: SprintIssue): number {
+  private getPoints(issue: SprintIssue, ctx: StreamContext): number {
     let points = 0;
     for (const fieldName of JiraCommon.POINTS_FIELD_NAMES) {
       const fieldIds = this.pointsFieldIdsByName[fieldName] ?? [];
@@ -69,7 +67,7 @@ export class Sprints extends JiraConverter {
         try {
           points = Utils.parseFloatFixedPoint(pointsString);
         } catch (err: any) {
-          this.logger.warn(
+          ctx.logger.warn(
             `Failed to get story points for issue ${issue.key}: ${err.message}`
           );
         }
@@ -95,7 +93,7 @@ export class Sprints extends JiraConverter {
     for (const issue of this.sprintIssueRecords[sprint.id] ?? []) {
       const status = issue.fields.status?.statusCategory?.name;
       if (status && JiraCommon.normalize(status) === 'done') {
-        completedPoints += this.getPoints(issue);
+        completedPoints += this.getPoints(issue, ctx);
       }
     }
 

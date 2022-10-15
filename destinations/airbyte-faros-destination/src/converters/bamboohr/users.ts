@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import {intersection, uniq} from 'lodash';
 
@@ -9,8 +9,6 @@ import {User} from './models';
 const ROOT_TEAM_UID = 'all_teams';
 
 export class Users extends BambooHRConverter {
-  private logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
     'geo_Location',
@@ -36,7 +34,7 @@ export class Users extends BambooHRConverter {
     const uid = user.id;
     let joinedAt = Utils.toDate(user.hireDate);
     if (isNaN(joinedAt?.getTime())) {
-      this.logger.warn(
+      ctx.logger.warn(
         `Found unexpected hire date ${user.hireDate} for user id ${user.id}`
       );
       joinedAt = null;
@@ -47,7 +45,7 @@ export class Users extends BambooHRConverter {
     } else {
       terminatedAt = Utils.toDate(user.terminationDate);
       if (isNaN(terminatedAt?.getTime())) {
-        this.logger.warn(
+        ctx.logger.warn(
           `Found unexpected termination date ${user.terminationDate} for user id ${user.id}`
         );
         terminatedAt = null;

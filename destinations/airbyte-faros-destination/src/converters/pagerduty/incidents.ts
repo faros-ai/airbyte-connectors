@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {Common} from '../common/common';
@@ -22,8 +22,6 @@ interface Acknowledgement {
 }
 
 export class Incidents extends PagerDutyConverter {
-  private readonly logger = new AirbyteLogger();
-
   private seenApplications = new Set<string>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -46,7 +44,7 @@ export class Incidents extends PagerDutyConverter {
     let acknowledgedAt, resolvedAt;
     if (incident.status === 'acknowledged') {
       if (!incident.acknowledgements || !incident.acknowledgements.length) {
-        this.logger.warn(
+        ctx.logger.warn(
           `Incident ${incident.id} acknowledged, but acknowledger info missing`
         );
       } else {

@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   isPullRequestComment,
   isPullRequestMerge,
@@ -11,8 +11,6 @@ import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
 export class PullRequestActivities extends BitbucketServerConverter {
-  readonly logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequestComment',
     'vcs_PullRequestReview',

@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {
@@ -10,8 +10,6 @@ import {
 import {CategoryRef, GitlabCommon, GitlabConverter} from './common';
 
 export class Jobs extends GitlabConverter {
-  private readonly logger: AirbyteLogger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_BuildStep',
   ];
@@ -39,7 +37,7 @@ export class Jobs extends GitlabConverter {
         ? `Could not find pipelineId from StreamContext for this record:
           ${this.id}:${job.pipeline_id}`
         : `Could not find repository from web_url: ${this.id}:${job.web_url}`;
-      this.logger.warn(message);
+      ctx.logger.warn(message);
       return [];
     }
 

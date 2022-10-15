@@ -1,12 +1,10 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CommitMessage, PhabricatorCommon, PhabricatorConverter} from './common';
 
 export class Commits extends PhabricatorConverter {
-  private logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_BranchCommitAssociation',
     'vcs_Commit',
@@ -17,7 +15,8 @@ export class Commits extends PhabricatorConverter {
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commit = record.record.data;
@@ -35,7 +34,7 @@ export class Commits extends PhabricatorConverter {
     try {
       commitMessage = PhabricatorCommon.parseCommitMessage(fullMessage);
     } catch (e: any) {
-      this.logger.warn(
+      ctx.logger.warn(
         `Failed to parse revision id from commit sha: ${sha}, repository: ${
           repository.uid
         }. Error: ${(e as Error).message || JSON.stringify(e)}`
