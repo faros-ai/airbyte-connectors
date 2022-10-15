@@ -138,7 +138,8 @@ export abstract class AirbyteSourceBase<
         this.logger.error(
           `Encountered an error while reading stream ${streamName}: ${
             e.message ?? JSON.stringify(e)
-          }`
+          }`,
+          e.stack
         );
         throw e;
       }

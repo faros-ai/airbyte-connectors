@@ -44,6 +44,11 @@ export enum AirbyteConnectionStatus {
   FAILED = 'FAILED',
 }
 
+export enum AirbyteTraceFailureType {
+  SYSTEM_ERROR = 'system_error',
+  CONFIG_ERROR = 'config_error',
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AirbyteConfig {}
 
@@ -61,6 +66,7 @@ export function parseAirbyteMessage(s: string): AirbyteMessage {
       case AirbyteMessageType.LOG:
       case AirbyteMessageType.SPEC:
       case AirbyteMessageType.STATE:
+      case AirbyteMessageType.TRACE:
         return res;
       default:
         throw new VError(`Unsupported message type ${res.type}`);
@@ -132,10 +138,15 @@ export class AirbyteLog implements AirbyteMessage {
     readonly log: {
       level: AirbyteLogLevel;
       message: string;
+      stack_trace: string;
     }
   ) {}
-  static make(level: AirbyteLogLevel, message: string): AirbyteLog {
-    return new AirbyteLog({level, message});
+  static make(
+    level: AirbyteLogLevel,
+    message: string,
+    stack_trace?: string
+  ): AirbyteLog {
+    return new AirbyteLog({level, message, stack_trace});
   }
 }
 
@@ -185,21 +196,45 @@ export class AirbyteRecord implements AirbyteMessage {
   }
 }
 
-interface AirbyteErrorTrace {
+export interface AirbyteTraceError {
   type: 'ERROR';
   emitted_at: number;
-  error: any;
+  error: {
+    message: string;
+    internal_message?: string;
+    stack_trace?: string;
+    failure_type?: AirbyteTraceFailureType;
+  };
 }
 
-export class AirbyteErrorTraceMessage implements AirbyteMessage {
+export class AirbyteTrace implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.TRACE;
-  private readonly trace: AirbyteErrorTrace;
-  constructor(error: any) {
-    this.trace = {
+  constructor(
+    readonly trace: {
+      type: 'ERROR';
+      emitted_at: number;
+      error: {
+        message: string;
+        internal_message?: string;
+        stack_trace?: string;
+        failure_type?: AirbyteTraceFailureType;
+      };
+    }
+  ) {}
+
+  static make(err: any, failure_type?: AirbyteTraceFailureType): AirbyteTrace {
+    const wrapped = wrapApiError(err);
+    return new AirbyteTrace({
       type: 'ERROR',
       emitted_at: Date.now(),
-      error: wrapApiError(error),
-    };
+      error: {
+        message: wrapped.message,
+        stack_trace: wrapped.stack,
+        internal_message: wrapped.name,
+        failure_type,
+        ...wrapped,
+      },
+    });
   }
 }
 

@@ -484,11 +484,12 @@ export class Phabricator {
               pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
             ),
           };
-        } catch (err) {
+        } catch (err: any) {
           this.logger.error(
             `Failed to parse raw diff for ${revision.phid}: ${JSON.stringify(
               err
-            )}`
+            )}`,
+            err.stack
           );
         }
       }

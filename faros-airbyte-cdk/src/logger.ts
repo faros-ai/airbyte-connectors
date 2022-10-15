@@ -2,12 +2,13 @@ import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
 
 import {
-  AirbyteErrorTraceMessage,
   AirbyteLog,
   AirbyteLogLevel,
   AirbyteLogLevelOrder,
   AirbyteMessage,
   AirbyteMessageType,
+  AirbyteTrace,
+  AirbyteTraceFailureType,
 } from './protocol';
 
 export class AirbyteLogger {
@@ -24,28 +25,28 @@ export class AirbyteLogger {
     }
   }
 
-  error(message: string): void {
-    this.log(AirbyteLogLevel.ERROR, message);
+  error(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.ERROR, message, stack_trace));
   }
 
-  warn(message: string): void {
-    this.log(AirbyteLogLevel.WARN, message);
+  warn(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.WARN, message, stack_trace));
   }
 
-  info(message: string): void {
-    this.log(AirbyteLogLevel.INFO, message);
+  info(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.INFO, message, stack_trace));
   }
 
-  debug(message: string): void {
-    this.log(AirbyteLogLevel.DEBUG, message);
+  debug(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.DEBUG, message, stack_trace));
   }
 
-  trace(error: any): void {
-    this.write(new AirbyteErrorTraceMessage(error));
+  trace(message: string, stack_trace?: string): void {
+    this.write(AirbyteLog.make(AirbyteLogLevel.TRACE, message, stack_trace));
   }
 
-  private log(level: AirbyteLogLevel, message: string): void {
-    this.write(AirbyteLog.make(level, message));
+  traceError(error: any, failure_type?: AirbyteTraceFailureType): void {
+    this.write(AirbyteTrace.make(error, failure_type));
   }
 
   write(msg: AirbyteMessage): void {

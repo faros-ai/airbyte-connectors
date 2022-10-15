@@ -92,7 +92,8 @@ export class AirbyteDestinationRunner<
             const w = wrapApiError(e);
             const s = JSON.stringify(w);
             this.logger.error(
-              `Encountered an error while writing to destination: ${w} - ${s}`
+              `Encountered an error while writing to destination: ${w} - ${s}`,
+              w.stack
             );
             throw e;
           } finally {
@@ -116,7 +117,8 @@ export class AirbyteDestinationRunner<
       const w = wrapApiError(e);
       const s = JSON.stringify(w);
       this.logger.error(
-        `Encountered an error while loading configuration: ${w} - ${s}`
+        `Encountered an error while loading configuration: ${w} - ${s}`,
+        w.stack
       );
       throw e;
     }

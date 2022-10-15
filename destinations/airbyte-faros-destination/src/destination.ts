@@ -485,7 +485,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           .promisify(fn)()
           .catch((err) =>
             this.logger.error(
-              `Failed to send write stats to Segment: ${err.message}`
+              `Failed to send write stats to Segment: ${err.message}`,
+              err.stack
             )
           );
       }
@@ -634,7 +635,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } catch (e: any) {
       stats.recordsErrored++;
       this.logger.error(
-        `Error processing input: ${e.message ?? JSON.stringify(e)}`
+        `Error processing input: ${e.message ?? JSON.stringify(e)}`,
+        e.stack
       );
       switch (this.invalidRecordStrategy) {
         case InvalidRecordStrategy.SKIP:
@@ -669,7 +671,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         if (err.message.includes('Cannot find module ')) {
           this.logger.info(`No converter found for ${stream}`);
         } else {
-          this.logger.error(err.message);
+          this.logger.error(err.message, err.stack);
         }
       });
       if (converter) {
