@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {
@@ -10,8 +10,6 @@ import {
 import {GitlabCommon, GitlabConverter} from './common';
 
 export class Issues extends GitlabConverter {
-  private readonly logger: AirbyteLogger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
     'tms_Task',
@@ -53,7 +51,7 @@ export class Issues extends GitlabConverter {
             },
           });
         } else {
-          this.logger.warn(
+          ctx.logger.warn(
             `Could not find assigneeUser from StreamContext for this record: ${this.id}:${assignee}`
           );
         }

@@ -26,7 +26,7 @@ export class GitlabCiSource extends AirbyteSourceBase<GitlabConfig> {
   }
   async checkConnection(config: GitlabConfig): Promise<[boolean, VError]> {
     try {
-      const gitlab = Gitlab.instance(config, this.logger);
+      const gitlab = Gitlab.instance(config);
       await gitlab.checkConnection();
     } catch (error: any) {
       return [false, error];
@@ -34,10 +34,12 @@ export class GitlabCiSource extends AirbyteSourceBase<GitlabConfig> {
     return [true, undefined];
   }
   streams(config: GitlabConfig): AirbyteStreamBase[] {
-    const groups = new Groups(config, this.logger);
-    const projects = new Projects(config, groups, this.logger);
-    const pipelines = new Pipelines(config, projects, this.logger);
-    const jobs = new Jobs(config, projects, pipelines, this.logger);
+    const gitlab = Gitlab.instance(config);
+    const groups = new Groups(config, gitlab, this.logger);
+    const projects = new Projects(config, gitlab, groups, this.logger);
+    const pipelines = new Pipelines(config, gitlab, projects, this.logger);
+    const jobs = new Jobs(config, gitlab, projects, pipelines, this.logger);
+
     return [groups, projects, pipelines, jobs];
   }
 }

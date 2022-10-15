@@ -1,5 +1,9 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {AirbyteLogger} from 'faros-airbyte-cdk/lib';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Gitlab, GitlabConfig, Pipeline} from '../gitlab';
@@ -10,6 +14,7 @@ type StreamSlice = {projectPath?: string} | undefined;
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     readonly config: GitlabConfig,
+    readonly gitlab: Gitlab,
     readonly projects: Projects,
     readonly logger: AirbyteLogger
   ) {
@@ -41,7 +46,6 @@ export class Pipelines extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Pipeline> {
-    const gitlab = Gitlab.instance(this.config, this.logger);
     const cutoff = streamState?.cutoff;
     if (cutoff > Date.now()) {
       this.logger.info(`Last cutoff ${cutoff} is greater than current time`);
@@ -49,11 +53,7 @@ export class Pipelines extends AirbyteStreamBase {
     }
     const lastUpdated = syncMode === SyncMode.INCREMENTAL ? cutoff : undefined;
 
-    yield* gitlab.getPipelines(
-      streamSlice.projectPath,
-      this.config,
-      lastUpdated
-    );
+    yield* this.gitlab.getPipelines(streamSlice.projectPath, lastUpdated);
   }
 
   getUpdatedState(

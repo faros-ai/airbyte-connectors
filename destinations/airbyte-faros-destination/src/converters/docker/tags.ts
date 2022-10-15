@@ -13,7 +13,6 @@ import {
 } from './common';
 
 export class Tags extends DockerConverter {
-  readonly logger = new AirbyteLogger();
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Artifact',
     'cicd_ArtifactCommitAssociation',
@@ -66,7 +65,7 @@ export class Tags extends DockerConverter {
       tag.imageManifest?.schemaVersion !==
       DockerCommon.ALLOWED_MANIFEST_SCHEMA_VERSION
     ) {
-      this.logger.info(
+      ctx.logger.info(
         `Image schema version is not supported: ${tag.imageManifest.schemaVersion} != expected ${DockerCommon.ALLOWED_MANIFEST_SCHEMA_VERSION} ${imageInfo}`
       );
       return res;
@@ -109,7 +108,7 @@ export class Tags extends DockerConverter {
         });
       }
     } else {
-      this.logger.info(
+      ctx.logger.info(
         `Skipped artifact in repo ${repositoryKey.uid} (uid: ${tag.name})`
       );
     }

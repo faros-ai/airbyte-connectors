@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -44,8 +44,6 @@ interface StatusChange {
 }
 
 export class Issues extends JiraConverter {
-  private logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskProjectRelationship',
@@ -280,7 +278,10 @@ export class Issues extends JiraConverter {
     return sprints[0]?.id;
   }
 
-  private getPoints(issue: Dictionary<any>): number | undefined {
+  private getPoints(
+    issue: Dictionary<any>,
+    ctx: StreamContext
+  ): number | undefined {
     for (const fieldName of JiraCommon.POINTS_FIELD_NAMES) {
       const fieldIds = this.fieldIdsByName[fieldName] ?? [];
       for (const fieldId of fieldIds) {
@@ -290,7 +291,7 @@ export class Issues extends JiraConverter {
         try {
           points = Utils.parseFloatFixedPoint(pointsString);
         } catch (err: any) {
-          this.logger.warn(
+          ctx.logger.warn(
             `Failed to get story points for issue ${issue.key}: ${err.message}`
           );
         }
@@ -412,7 +413,7 @@ export class Issues extends JiraConverter {
         });
       }
     } catch (err: any) {
-      this.logger.warn(
+      ctx.logger.warn(
         `Failed to get pull requests for issue ${issueId}: ${err.message}`
       );
     }
@@ -601,7 +602,7 @@ export class Issues extends JiraConverter {
             this.retrieveAdditionalFieldValue(ctx, name, value)
           );
         } catch (err) {
-          this.logger.warn(
+          ctx.logger.warn(
             `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
           );
         }
@@ -652,7 +653,7 @@ export class Issues extends JiraConverter {
       updatedAt: Utils.toDate(issue.fields.updated),
       statusChangedAt: statusChanged,
       statusChangelog,
-      points: this.getPoints(issue) ?? null,
+      points: this.getPoints(issue, ctx) ?? null,
       creator: creator ? {uid: creator, source} : null,
       parent: parent?.key ? {uid: parent.key, source} : null,
       epic: epicKey ? {uid: epicKey, source} : null,

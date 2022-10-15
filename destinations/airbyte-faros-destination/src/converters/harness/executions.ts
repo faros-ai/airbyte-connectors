@@ -1,8 +1,8 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
 
 import {Common} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   CICDArtifact,
   CICDBuild,
@@ -21,8 +21,6 @@ const DEFAULT_EXECUTION_TAG_ARTIFACT_SOURCE = 'faros_artifact_source';
 const DEFAULT_EXECUTION_TAG_ARTIFACT_REPO = 'faros_artifact_repo';
 
 export class Executions extends HarnessConverter {
-  private readonly logger = new AirbyteLogger();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_ArtifactDeployment',
     'cicd_Build',
@@ -33,7 +31,8 @@ export class Executions extends HarnessConverter {
   private seenApplications = new Set<string>();
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const executionRaw = record.record.data;
     const source = this.streamName.source;
@@ -87,7 +86,7 @@ export class Executions extends HarnessConverter {
     }
 
     if (execution.artifact) {
-      this.logger.debug(
+      ctx.logger.debug(
         `Writing Artifact ${execution.artifact.uid} deployment association`
       );
 

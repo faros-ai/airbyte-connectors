@@ -15,6 +15,7 @@ type StreamSlice = {projectPath?: string; pipelineId?: number} | undefined;
 export class Jobs extends AirbyteStreamBase {
   constructor(
     readonly config: GitlabConfig,
+    readonly gitlab: Gitlab,
     readonly projects: Projects,
     readonly pipelines: Pipelines,
     readonly logger: AirbyteLogger
@@ -51,8 +52,6 @@ export class Jobs extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Job> {
-    const gitlab = Gitlab.instance(this.config, this.logger);
-
-    yield* gitlab.getJobs(streamSlice.projectPath, streamSlice.pipelineId);
+    yield* this.gitlab.getJobs(streamSlice.projectPath, streamSlice.pipelineId);
   }
 }

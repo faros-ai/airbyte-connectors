@@ -48,7 +48,7 @@ describe('index', () => {
     Gitlab.instance = jest.fn().mockImplementation(() => {
       return new Gitlab(
         {Version: {show: jest.fn().mockResolvedValue({})}},
-        logger
+        config
       );
     });
 
@@ -81,7 +81,7 @@ describe('index', () => {
             ),
           },
         },
-        logger
+        config
       );
     });
     const source = new sut.GitlabCiSource(logger);
@@ -116,7 +116,7 @@ describe('index', () => {
               .mockResolvedValue(readTestResourceFile('groups.json')),
           },
         },
-        logger
+        config
       );
     });
     const source = new sut.GitlabCiSource(logger);
@@ -146,7 +146,7 @@ describe('index', () => {
             }),
           },
         },
-        logger
+        config
       );
     });
     const source = new sut.GitlabCiSource(logger);
@@ -180,7 +180,7 @@ describe('index', () => {
             }),
           },
         },
-        logger
+        config
       );
     });
     const source = new sut.GitlabCiSource(logger);
@@ -223,7 +223,7 @@ describe('index', () => {
             }),
           },
         },
-        logger
+        config
       );
     });
     const source = new sut.GitlabCiSource(logger);
