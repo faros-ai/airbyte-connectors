@@ -31,7 +31,7 @@ interface WriteOp {
 }
 
 export class GraphQLClient {
-  private readonly logger = new AirbyteLogger();
+  private readonly logger: AirbyteLogger;
   private readonly schemaLoader: SchemaLoader;
   private readonly backend: GraphQLBackend;
   private schema: Schema;
@@ -40,10 +40,12 @@ export class GraphQLClient {
   private readonly writeBuffer: WriteOp[] = [];
 
   constructor(
+    logger: AirbyteLogger,
     schemaLoader: SchemaLoader,
     backend: GraphQLBackend,
     batchSize = 1
   ) {
+    this.logger = logger;
     this.schemaLoader = schemaLoader;
     this.backend = backend;
     this.batchSize = batchSize;
@@ -195,6 +197,7 @@ export class GraphQLClient {
     const queries = this.writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
+      this.logger.debug(`executing graphql query: ${gql}`);
       const res = await this.backend.postQuery(gql);
       if (res.errors) {
         this.logger.warn(
