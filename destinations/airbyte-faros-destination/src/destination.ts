@@ -125,6 +125,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         config.edition_configs.hasura_admin_secret
       );
       this.graphQLClient = new GraphQLClient(
+        this.logger,
         schemaLoader,
         backend,
         config.edition_configs.community_graphql_batch_size
@@ -221,6 +222,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         },
       };
       this.graphQLClient = new GraphQLClient(
+        this.logger,
         schemaLoader,
         backend,
         config.edition_configs.cloud_graphql_batch_size
