@@ -31,19 +31,19 @@ export class Events extends GoogleCalendarConverter {
       calendar: {uid: event.calendarId, source},
     };
 
-    for (const attender of event.attendees ?? []) {
-      const uid = this.userUid(attender);
+    for (const attendee of event.attendees ?? []) {
+      const uid = this.userUid(attendee);
       if (!uid) continue;
 
-      const attenderRef = {uid, source};
+      const attendeeRef = {uid, source};
       if (!this.usersSeen.has(uid)) {
         this.usersSeen.add(uid);
         res.push({
           model: 'cal_User',
           record: {
-            ...attenderRef,
-            email: attender.email,
-            displayName: attender.displayName,
+            ...attendeeRef,
+            email: attendee.email,
+            displayName: attendee.displayName,
           },
         });
       }
@@ -51,9 +51,9 @@ export class Events extends GoogleCalendarConverter {
         model: 'cal_EventGuestAssociation',
         record: {
           event: eventRef,
-          guest: attenderRef,
+          guest: attendeeRef,
           status: GoogleCalendarCommon.EventGuestStatus(
-            attender.responseStatus
+            attendee.responseStatus
           ),
         },
       });
