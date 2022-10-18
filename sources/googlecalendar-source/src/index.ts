@@ -29,9 +29,12 @@ export class GooglecalendarSource extends AirbyteSourceBase<GoogleCalendarConfig
   ): Promise<[boolean, VError]> {
     try {
       const googleCalendar = await Googlecalendar.instance(config, this.logger);
-      await googleCalendar.checkConnection();
+      await googleCalendar.getCalendar();
     } catch (error: any) {
-      return [false, error];
+      const err = new VError(
+        `Please verify your private_key and client_email are correct. Error: ${error?.message}`
+      );
+      return [false, err];
     }
     return [true, undefined];
   }
