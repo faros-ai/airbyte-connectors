@@ -1,5 +1,6 @@
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {calendar_v3, google} from 'googleapis';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 const DEFAULT_CALENDAR_ID = 'primary';
@@ -10,10 +11,9 @@ const DEFAULT_CALENDAR_LIST_MAX_RESULTS = 250;
  * request contain only entries that have changed since then */
 export interface Event extends calendar_v3.Schema$Event {
   nextSyncToken?: string;
+  calendarId?: string;
 }
-export interface Calendar extends calendar_v3.Schema$CalendarListEntry {
-  nextSyncToken?: string;
-}
+export type Calendar = calendar_v3.Schema$Calendar;
 
 export interface GoogleCalendarConfig extends AirbyteConfig {
   readonly client_email: string;
@@ -88,14 +88,7 @@ export class Googlecalendar {
     return Googlecalendar.googleCalendar;
   }
 
-  async checkConnection(): Promise<void> {
-    await this.errorWrapper<calendar_v3.Schema$CalendarList>(
-      () => this.client.calendarList.list() as any,
-      'Please verify your private_key and client_email are correct. Error: '
-    );
-  }
-
-  private async errorWrapper<T>(
+  private async invokeCallWithErrorWrapper<T>(
     func: ErrorWrapperReqFunc<T>,
     message = '',
     pageToken?: string,
@@ -106,31 +99,35 @@ export class Googlecalendar {
       res = await func(pageToken, lastSyncToken);
     } catch (err: any) {
       if (err?.status === 410) {
-        this.errorWrapper(func, message, pageToken);
+        this.invokeCallWithErrorWrapper(func, message, pageToken);
       }
-
-      if (err.error_code || err.error_info) {
-        throw new VError(`${err.error_code}: ${err.error_info}`);
-      }
-      let errorMessage = message;
-      try {
-        errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
-      } catch (wrapError: any) {
-        errorMessage += wrapError.message;
-      }
-      throw new VError(errorMessage);
+      this.wrapAndThrow(err, message);
     }
     return res;
   }
 
+  private wrapAndThrow(err: any, message = ''): void {
+    if (err.error_code || err.error_info) {
+      throw new VError(`${err.error_code}: ${err.error_info}`);
+    }
+    let errorMessage = message;
+    try {
+      errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
+    } catch (wrapError: any) {
+      errorMessage += wrapError.message;
+    }
+    throw new VError(errorMessage);
+  }
+
   private async *paginate(
     func: PaginationReqFunc,
-    lastSyncToken?: string
+    lastSyncToken?: string,
+    calendarId?: string
   ): AsyncGenerator {
     let nextPageToken: string | undefined;
 
     do {
-      const response = await this.errorWrapper(
+      const response = await this.invokeCallWithErrorWrapper(
         func,
         undefined,
         nextPageToken,
@@ -142,17 +139,19 @@ export class Googlecalendar {
       }
       const nextSyncToken = response?.data?.nextSyncToken;
       for (const item of response?.data.items ?? []) {
-        yield {...item, nextSyncToken};
+        yield {...item, nextSyncToken, calendarId};
       }
 
       nextPageToken = response?.data?.nextPageToken;
     } while (nextPageToken);
   }
 
-  getEvents(lastSyncToken?: string): AsyncGenerator<Event> {
+  async *getEvents(lastSyncToken?: string): AsyncGenerator<Event> {
+    const calendar = await this.getCalendar();
+
     const func = (pageToken?: string, syncToken?: string): Promise<Event> => {
       const params: calendar_v3.Params$Resource$Events$List = {
-        calendarId: this.calendarId,
+        calendarId: calendar.id,
         pageToken,
         maxResults: this.maxResults.events,
       };
@@ -165,17 +164,18 @@ export class Googlecalendar {
       return this.client.events.list(params) as any;
     };
 
-    return this.paginate(func, lastSyncToken);
+    for await (const res of this.paginate(func, lastSyncToken, calendar.id)) {
+      yield res;
+    }
   }
 
-  getCalendars(lastSyncToken?: string): AsyncGenerator<Calendar> {
-    const func = (pageToken?: string, syncToken?: string): Promise<Calendar> =>
-      this.client.calendarList.list({
-        pageToken,
-        syncToken,
-        maxResults: this.maxResults.calendars,
-      }) as any;
-
-    return this.paginate(func, lastSyncToken);
+  @Memoize((calendarId: string) => calendarId)
+  async getCalendar(calendarId = this.calendarId): Promise<Calendar> {
+    try {
+      const response = await this.client.calendars.get({calendarId});
+      return response.data;
+    } catch (err: any) {
+      this.wrapAndThrow(err);
+    }
   }
 }

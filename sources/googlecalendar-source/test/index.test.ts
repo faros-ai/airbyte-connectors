@@ -44,7 +44,7 @@ describe('index', () => {
   test('check connection', async () => {
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
       return new Googlecalendar(
-        {calendarList: {list: jest.fn().mockResolvedValue({})}} as any,
+        {calendars: {get: jest.fn().mockResolvedValue({})}} as any,
         'primary',
         {events: 100, calendars: 100},
         logger
@@ -63,7 +63,7 @@ describe('index', () => {
   test('check connection - incorrect config', async () => {
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
       return new Googlecalendar(
-        {calendarList: {list: jest.fn().mockRejectedValue('some text')}} as any,
+        {calendars: {get: jest.fn().mockRejectedValue('some text')}} as any,
         'primary',
         {events: 100, calendars: 100},
         logger
@@ -89,8 +89,8 @@ describe('index', () => {
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
       return new Googlecalendar(
         {
-          calendarList: {
-            list: calendarsList.mockResolvedValue({
+          calendars: {
+            get: calendarsList.mockResolvedValue({
               data: readTestResourceFile('calendars.json'),
             }),
           },
@@ -113,20 +113,21 @@ describe('index', () => {
       calendars.push(calendarEntry);
     }
     expect(calendarsList).toHaveBeenCalledTimes(1);
-    expect(calendars).toStrictEqual(
-      readTestResourceFile('calendars.json').items.map((c) => ({
-        ...c,
-        nextSyncToken: 'sync-token',
-      }))
-    );
+    expect(calendars).toStrictEqual([readTestResourceFile('calendars.json')]);
   });
 
   test('streams - events, use full_refresh sync mode', async () => {
+    const calendarsList = jest.fn();
     const eventsList = jest.fn();
 
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
       return new Googlecalendar(
         {
+          calendars: {
+            get: calendarsList.mockResolvedValue({
+              data: readTestResourceFile('calendars.json'),
+            }),
+          },
           events: {
             list: eventsList.mockResolvedValue({
               data: readTestResourceFile('events.json'),
@@ -150,6 +151,7 @@ describe('index', () => {
     for await (const event of eventsIter) {
       events.push(event);
     }
+    expect(calendarsList).toHaveBeenCalledTimes(1);
     expect(eventsList).toHaveBeenCalledTimes(1);
     expect(events).toStrictEqual(
       readTestResourceFile('events.json').items.map((c) => ({
@@ -160,11 +162,18 @@ describe('index', () => {
   });
 
   test('streams - events, use incremental sync mode', async () => {
+    const calendarsList = jest.fn();
+
     const eventsList = jest.fn();
 
     Googlecalendar.instance = jest.fn().mockImplementation(() => {
       return new Googlecalendar(
         {
+          calendars: {
+            get: calendarsList.mockResolvedValue({
+              data: readTestResourceFile('calendars.json'),
+            }),
+          },
           events: {
             list: eventsList.mockImplementation(
               async ({updatedMin}: {updatedMin?: string}) => {
@@ -201,6 +210,7 @@ describe('index', () => {
     for await (const event of eventsIter) {
       events.push(event);
     }
+    expect(calendarsList).toHaveBeenCalledTimes(1);
     expect(eventsList).toHaveBeenCalledTimes(1);
     expect(events).toStrictEqual([]);
   });

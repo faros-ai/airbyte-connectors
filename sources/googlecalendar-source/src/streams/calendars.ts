@@ -27,9 +27,6 @@ export class Calendars extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
-  get cursorField(): string | string[] {
-    return 'nextSyncToken';
-  }
 
   async *readRecords(
     syncMode: SyncMode,
@@ -41,21 +38,6 @@ export class Calendars extends AirbyteStreamBase {
       this.config,
       this.logger
     );
-    const syncToken =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastSyncToken
-        : undefined;
-
-    yield* googleCalendar.getCalendars(syncToken);
-  }
-
-  getUpdatedState(
-    currentStreamState: CalendarsState,
-    latestRecord: Calendar
-  ): CalendarsState {
-    return {
-      lastSyncToken:
-        latestRecord?.nextSyncToken || currentStreamState?.lastSyncToken,
-    };
+    yield await googleCalendar.getCalendar();
   }
 }

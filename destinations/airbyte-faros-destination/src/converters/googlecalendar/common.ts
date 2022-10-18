@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
-import {Schema$CalendarListEntry, Schema$Event} from './calendar_models';
+import {Schema$Calendar, Schema$Event} from './calendar_models';
 
 export type Event = Schema$Event;
-export type Calendar = Schema$CalendarListEntry;
+export type Calendar = Schema$Calendar;
 
 export interface CategoryRef {
   category: string;

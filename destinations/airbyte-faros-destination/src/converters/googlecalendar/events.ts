@@ -8,6 +8,8 @@ export class Events extends GoogleCalendarConverter {
   // Locations cache to avoid querying the API for the same location
   private locationsCache = new Map<string, Location>();
 
+  private usersSeen = new Set<string>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cal_Event',
     'cal_EventGuestAssociation',
@@ -23,41 +25,57 @@ export class Events extends GoogleCalendarConverter {
     const source = this.streamName.source;
     const event = record.record.data as Event;
     const res: DestinationRecord[] = [];
-    const eventRef = {uid: event.id, calendar: {uid: event.id, source}};
 
-    event.attendees?.forEach((attender) => {
-      const attenderRef = {uid: attender.id, source};
-      res.push({
-        model: 'cal_User',
-        record: {
-          ...attenderRef,
-          email: attender.email,
-          displayName: attender.displayName,
-        },
-      });
+    const eventRef = {
+      uid: event.id,
+      calendar: {uid: event.calendarId, source},
+    };
+
+    for (const attendee of event.attendees ?? []) {
+      const uid = this.userUid(attendee);
+      if (!uid) continue;
+
+      const attendeeRef = {uid, source};
+      if (!this.usersSeen.has(uid)) {
+        this.usersSeen.add(uid);
+        res.push({
+          model: 'cal_User',
+          record: {
+            ...attendeeRef,
+            email: attendee.email,
+            displayName: attendee.displayName,
+          },
+        });
+      }
       res.push({
         model: 'cal_EventGuestAssociation',
         record: {
           event: eventRef,
-          guest: attenderRef,
+          guest: attendeeRef,
           status: GoogleCalendarCommon.EventGuestStatus(
-            attender.responseStatus
+            attendee.responseStatus
           ),
         },
       });
-    });
+    }
 
-    let organizer = null;
-    if (event.organizer) {
-      organizer = {uid: event.organizer?.id || event.organizer?.email, source};
-      res.push({
-        model: 'cal_User',
-        record: {
-          ...organizer,
-          email: event.organizer?.email,
-          displayName: event.organizer?.displayName,
-        },
-      });
+    let organizerRef = null;
+    const organizerUid = this.userUid(event.organizer);
+
+    if (organizerUid) {
+      organizerRef = {uid: organizerUid, source};
+
+      if (!this.usersSeen.has(organizerUid)) {
+        this.usersSeen.add(organizerUid);
+        res.push({
+          model: 'cal_User',
+          record: {
+            ...organizerRef,
+            email: event.organizer?.email,
+            displayName: event.organizer?.displayName,
+          },
+        });
+      }
     }
 
     const start = Utils.toDate(
@@ -124,7 +142,7 @@ export class Events extends GoogleCalendarConverter {
         durationMs,
         url: event.htmlLink,
         location,
-        organizer,
+        organizer: organizerRef,
         type: GoogleCalendarCommon.EventType(event.eventType),
         visibility: GoogleCalendarCommon.EventVisibility(event.transparency),
         privacy: GoogleCalendarCommon.EventPrivacy(event.visibility),
@@ -132,5 +150,9 @@ export class Events extends GoogleCalendarConverter {
       },
     });
     return res;
+  }
+
+  private userUid(user: any): string | undefined {
+    return user?.id || user?.email;
   }
 }
