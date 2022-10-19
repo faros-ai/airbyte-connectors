@@ -154,7 +154,11 @@ export class Events extends GoogleCalendarConverter {
         url: event.htmlLink,
         location,
         organizer: organizerRef,
-        type: GoogleCalendarCommon.EventType(event.eventType),
+        type: GoogleCalendarCommon.EventType(
+          event.recurringEventId,
+          event.recurrence,
+          event.eventType
+        ),
         visibility: GoogleCalendarCommon.EventVisibility(event.transparency),
         privacy: GoogleCalendarCommon.EventPrivacy(event.visibility),
         status: GoogleCalendarCommon.EventStatus(event.status),

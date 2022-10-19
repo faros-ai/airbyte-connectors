@@ -49,15 +49,24 @@ export class GoogleCalendarCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  static EventType(type: string): CategoryRef {
+  static EventType(
+    recurringEventId: string | null,
+    recurrence: string[] | null,
+    type: string | null
+  ): CategoryRef {
+    if (recurringEventId || recurrence) {
+      const detail = Array.isArray(recurrence)
+        ? recurrence.join(';;')
+        : recurrence;
+      return {category: EventTypeCategory.RECURRING, detail};
+    }
+
     const detail = type?.toLowerCase();
     if (!detail) return {category: EventTypeCategory.CUSTOM, detail: 'unknown'};
 
     switch (detail) {
       case 'default':
         return {category: EventTypeCategory.REGULAR, detail};
-      case 'focusTime':
-        return {category: EventTypeCategory.RECURRING, detail};
       default:
         return {category: EventTypeCategory.CUSTOM, detail};
     }
