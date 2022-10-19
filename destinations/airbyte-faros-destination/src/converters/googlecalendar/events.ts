@@ -94,7 +94,7 @@ export class Events extends GoogleCalendarConverter {
     }
 
     let location = null;
-    if (event.location) {
+    if (event.location && !event.location.startsWith('http')) {
       const cachedLocation = this.locationsCache.get(event.location);
       if (cachedLocation) {
         location = {uid: cachedLocation.uid};
@@ -125,6 +125,16 @@ export class Events extends GoogleCalendarConverter {
       }
     }
 
+    let conferenceUrl = event?.hangoutLink;
+    if (!conferenceUrl) {
+      for (const entryPoint of event.conferenceData?.entryPoints ?? []) {
+        if (entryPoint?.entryPointType === 'video' && entryPoint?.uri) {
+          conferenceUrl = entryPoint?.uri;
+          break;
+        }
+      }
+    }
+
     res.push({
       model: 'cal_Event',
       record: {
@@ -139,6 +149,7 @@ export class Events extends GoogleCalendarConverter {
         ),
         start,
         end,
+        timeZone: event?.start?.timeZone ?? event?.end?.timeZone ?? null,
         durationMs,
         url: event.htmlLink,
         location,
@@ -147,6 +158,7 @@ export class Events extends GoogleCalendarConverter {
         visibility: GoogleCalendarCommon.EventVisibility(event.transparency),
         privacy: GoogleCalendarCommon.EventPrivacy(event.visibility),
         status: GoogleCalendarCommon.EventStatus(event.status),
+        conferenceUrl,
       },
     });
     return res;
