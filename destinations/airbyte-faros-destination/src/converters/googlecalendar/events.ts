@@ -15,6 +15,7 @@ export class Events extends GoogleCalendarConverter {
     'cal_EventGuestAssociation',
     'cal_User',
     'geo_Address',
+    'geo_Coordinates',
     'geo_Location',
   ];
 
