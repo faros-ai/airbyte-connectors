@@ -133,6 +133,8 @@ export class Events extends GoogleCalendarConverter {
           break;
         }
       }
+    } else if (event.location && event.location.startsWith('http')) {
+      conferenceUrl = event.location;
     }
 
     res.push({
