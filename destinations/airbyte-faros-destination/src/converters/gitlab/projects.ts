@@ -28,7 +28,7 @@ export class Projects extends GitlabConverter {
     res.push(
       ...GitlabCommon.tms_ProjectBoard_with_TaskBoard(
         {uid: `${project.id}`, source},
-        project.name,
+        project.path?.toLowerCase(),
         project.body,
         project.created_at,
         project.updated_at
