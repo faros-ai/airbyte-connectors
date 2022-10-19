@@ -67,7 +67,10 @@ export class BitbucketServer {
       throw new VError(errorMessage);
     }
 
-    const client = new Client({baseUrl: config.server_url}) as ExtendedClient;
+    const baseUrl = config.server_url.endsWith('/')
+      ? config.server_url.replace(/\/$/, '')
+      : config.server_url;
+    const client = new Client({baseUrl}) as ExtendedClient;
     client.addPlugin(MoreEndpointMethodsPlugin);
     const auth = config.token
       ? {type: 'token', token: config.token}
