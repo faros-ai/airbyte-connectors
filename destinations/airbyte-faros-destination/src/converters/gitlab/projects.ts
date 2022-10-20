@@ -28,7 +28,7 @@ export class Projects extends GitlabConverter {
     res.push(
       ...GitlabCommon.tms_ProjectBoard_with_TaskBoard(
         {uid: `${project.id}`, source},
-        project.path?.toLowerCase(),
+        repository.name,
         project.body,
         project.created_at,
         project.updated_at
@@ -37,8 +37,8 @@ export class Projects extends GitlabConverter {
     res.push({
       model: 'cicd_Pipeline',
       record: {
-        uid: project.path?.toLowerCase(),
-        name: project.name,
+        uid: repository.uid,
+        name: repository.name,
         description: project.description?.substring(
           0,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
@@ -51,8 +51,8 @@ export class Projects extends GitlabConverter {
     res.push({
       model: 'vcs_Repository',
       record: {
-        name: project.path?.toLowerCase(),
-        uid: project.path?.toLowerCase(),
+        name: repository.name,
+        uid: repository.uid,
         fullName: project.name_with_namespace,
         private: project.visibility === 'private',
         description: project.description?.substring(
