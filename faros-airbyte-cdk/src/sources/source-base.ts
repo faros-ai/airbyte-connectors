@@ -185,7 +185,7 @@ export abstract class AirbyteSourceBase<
     let streamState = connectorState[streamName] ?? {};
     if (streamState) {
       this.logger.info(
-        `Setting state of ${streamName} stream to ${JSON.stringify(
+        `Setting initial state of ${streamName} stream to ${JSON.stringify(
           streamState
         )}`
       );
@@ -259,7 +259,9 @@ export abstract class AirbyteSourceBase<
     recordCounter: number
   ): AirbyteStateMessage {
     this.logger.info(
-      `Setting state of ${streamName} stream to ${JSON.stringify(streamState)}`
+      `Setting checkpoint state of ${streamName} stream to ${JSON.stringify(
+        streamState
+      )}`
     );
     this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
     connectorState[streamName] = streamState;
