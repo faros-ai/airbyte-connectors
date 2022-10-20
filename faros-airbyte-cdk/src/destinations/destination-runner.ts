@@ -72,9 +72,8 @@ export class AirbyteDestinationRunner<
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const {catalog, spec, config} = await this.loadConfig(opts);
-          this.logger.info('config: ' + redactConfig(config, spec));
-          this.logger.info('catalog: ' + JSON.stringify(catalog));
-          this.logger.info('dryRun: ' + opts.dryRun);
+          this.logger.info(`Config: ${redactConfig(config, spec)}`);
+          this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
           try {
             process.stdin.setEncoding('utf-8');
