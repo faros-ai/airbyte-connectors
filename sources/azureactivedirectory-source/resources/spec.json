@@ -4,11 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Active Directory Spec",
     "type": "object",
-    "required": [
-      "client_id",
-      "client_secret",
-      "tenant_id"
-    ],
+    "required": ["client_id", "client_secret", "tenant_id"],
     "additionalProperties": true,
     "properties": {
       "client_id": {

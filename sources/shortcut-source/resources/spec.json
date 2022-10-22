@@ -4,11 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "shortcut Spec",
     "type": "object",
-    "required": [
-      "base_url",
-      "version",
-      "token"
-    ],
+    "required": ["base_url", "version", "token"],
     "additionalProperties": true,
     "properties": {
       "base_url": {
@@ -16,18 +12,14 @@
         "title": "Base API URL",
         "description": "The Base API URL for fetching data from Shortcut",
         "default": "https://api.app.shortcut.com",
-        "examples": [
-          "https://api.app.shortcut.com"
-        ]
+        "examples": ["https://api.app.shortcut.com"]
       },
       "version": {
         "type": "string",
         "title": "API Version",
         "description": "Shortcut API Version",
         "default": "v3",
-        "examples": [
-          "v3"
-        ]
+        "examples": ["v3"]
       },
       "token": {
         "type": "string",

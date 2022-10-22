@@ -60,9 +60,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "raw"
-              ]
+              "required": ["raw"]
             }
           },
           "required": [
@@ -91,10 +89,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "id",
-            "phid"
-          ]
+          "required": ["id", "phid"]
         },
         "path": {
           "type": "string"
@@ -135,4 +130,3 @@
     "fields"
   ]
 }
-

@@ -390,10 +390,7 @@
           "type": "string"
         },
         "clean": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "checkoutSubmodules": {
           "type": "boolean"
@@ -407,10 +404,7 @@
       "type": "boolean"
     },
     "triggeredByBuild": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "artifacts": {
       "type": "array",
@@ -424,10 +418,7 @@
             "type": "string"
           },
           "source": {
-            "type": [
-              "object",
-              "null"
-            ]
+            "type": ["object", "null"]
           },
           "resource": {
             "type": "object",
@@ -439,10 +430,7 @@
                 "type": "string"
               },
               "properties": {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               },
               "type": {
                 "type": "string"
@@ -451,10 +439,7 @@
                 "type": "string"
               },
               "_links": {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               }
             }
           }
@@ -483,28 +468,16 @@
             "type": "string"
           },
           "startTime": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "finishTime": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "currentOperation": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "percentComplete": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "state": {
             "type": "string"
@@ -513,10 +486,7 @@
             "type": "string"
           },
           "resultCode": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "changeId": {
             "type": "number"
@@ -525,10 +495,7 @@
             "type": "string"
           },
           "workerName": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "queueId": {
             "type": "number"
@@ -537,10 +504,7 @@
             "type": "number"
           },
           "details": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "errorCount": {
             "type": "number"
@@ -549,22 +513,13 @@
             "type": "number"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "log": {
-            "type": [
-              "object",
-              "null"
-            ]
+            "type": ["object", "null"]
           },
           "task": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "attempt": {
             "type": "number"
@@ -581,10 +536,7 @@
                   "type": "string"
                 },
                 "category": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "message": {
                   "type": "string"

@@ -75,7 +75,18 @@
             "type": "string"
           }
         },
-        "required": ["_class", "building", "displayName", "duration", "fullDisplayName", "id", "number", "result", "timestamp", "url"]
+        "required": [
+          "_class",
+          "building",
+          "displayName",
+          "duration",
+          "fullDisplayName",
+          "id",
+          "number",
+          "result",
+          "timestamp",
+          "url"
+        ]
       }
     },
     "builds": {
@@ -139,7 +150,18 @@
             "type": "string"
           }
         },
-        "required": ["_class", "building", "displayName", "duration", "fullDisplayName", "id", "number", "result", "timestamp", "url"]
+        "required": [
+          "_class",
+          "building",
+          "displayName",
+          "duration",
+          "fullDisplayName",
+          "id",
+          "number",
+          "result",
+          "timestamp",
+          "url"
+        ]
       }
     },
     "lastCompletedBuild": {

@@ -30,10 +30,7 @@
           "type": "string"
         },
         "description": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       }
     },
@@ -42,21 +39,20 @@
       "properties": {
         "logo": {
           "type": "array",
-          "items": 
-            {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "href": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string"
-                }
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "href": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
               }
-            } 
+            }
+          }
         },
         "users": {
           "type": "object",

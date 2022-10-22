@@ -51,11 +51,7 @@
               "items": {}
             }
           },
-          "required": [
-            "fetchRules",
-            "trackRules",
-            "permanentRefRules"
-          ]
+          "required": ["fetchRules", "trackRules", "permanentRefRules"]
         },
         "defaultBranch": {
           "type": "string"
@@ -67,9 +63,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "raw"
-          ]
+          "required": ["raw"]
         },
         "spacePHID": {
           "type": "null"
@@ -93,11 +87,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "view",
-            "edit",
-            "diffusion.push"
-          ]
+          "required": ["view", "edit", "diffusion.push"]
         }
       },
       "required": [
@@ -130,9 +120,7 @@
               }
             }
           },
-          "required": [
-            "projectPHIDs"
-          ]
+          "required": ["projectPHIDs"]
         },
         "uris": {
           "type": "object",
@@ -194,11 +182,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -213,11 +197,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -235,10 +215,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -260,12 +237,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 },
                 {
                   "type": "object",
@@ -321,11 +293,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -340,11 +308,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -362,10 +326,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -387,12 +348,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 },
                 {
                   "type": "object",
@@ -448,11 +404,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -467,11 +419,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -489,10 +437,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -514,12 +459,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 },
                 {
                   "type": "object",
@@ -575,11 +515,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -594,11 +530,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -616,10 +548,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -641,12 +570,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 },
                 {
                   "type": "object",
@@ -702,11 +626,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -721,11 +641,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -743,10 +659,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -768,12 +681,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 },
                 {
                   "type": "object",
@@ -829,11 +737,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "display": {
                           "type": "object",
@@ -848,11 +752,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "raw",
-                            "default",
-                            "effective"
-                          ]
+                          "required": ["raw", "default", "effective"]
                         },
                         "credentialPHID": {
                           "type": "null"
@@ -870,10 +770,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "protocol",
-                            "identifier"
-                          ]
+                          "required": ["protocol", "identifier"]
                         },
                         "dateCreated": {
                           "type": "string"
@@ -895,19 +792,12 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "type",
-                    "phid",
-                    "fields"
-                  ]
+                  "required": ["id", "type", "phid", "fields"]
                 }
               ]
             }
           },
-          "required": [
-            "uris"
-          ]
+          "required": ["uris"]
         },
         "metrics": {
           "type": "object",
@@ -1008,12 +898,7 @@
                       "type": "null"
                     }
                   },
-                  "required": [
-                    "value",
-                    "name",
-                    "closed",
-                    "color.ansi"
-                  ]
+                  "required": ["value", "name", "closed", "color.ansi"]
                 },
                 "message": {
                   "type": "string"
@@ -1031,24 +916,11 @@
               ]
             }
           },
-          "required": [
-            "commitCount",
-            "recentCommit"
-          ]
+          "required": ["commitCount", "recentCommit"]
         }
       },
-      "required": [
-        "projects",
-        "uris",
-        "metrics"
-      ]
+      "required": ["projects", "uris", "metrics"]
     }
   },
-  "required": [
-    "id",
-    "type",
-    "phid",
-    "fields",
-    "attachments"
-  ]
+  "required": ["id", "type", "phid", "fields", "attachments"]
 }

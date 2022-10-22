@@ -4,10 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "fireHydrant Spec",
     "type": "object",
-    "required": [
-      "token",
-      "cutoff_days"
-    ],
+    "required": ["token", "cutoff_days"],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -33,9 +30,7 @@
         "title": "API Version",
         "description": "Firehydrant API Version",
         "default": "v1",
-        "examples": [
-          "v1"
-        ]
+        "examples": ["v1"]
       }
     }
   }

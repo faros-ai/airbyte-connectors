@@ -92,10 +92,7 @@
           "type": "string"
         }
       },
-      "type": [
-        "object",
-        "null"
-      ]
+      "type": ["object", "null"]
     },
     "scope": {
       "description": "Metric scope, comma separated list of tags.",

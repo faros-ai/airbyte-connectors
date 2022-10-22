@@ -42,11 +42,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "id",
-            "phid",
-            "name"
-          ]
+          "required": ["id", "phid", "name"]
         },
         "icon": {
           "type": "object",
@@ -61,11 +57,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "key",
-            "name",
-            "icon"
-          ]
+          "required": ["key", "name", "icon"]
         },
         "color": {
           "type": "object",
@@ -77,10 +69,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "key",
-            "name"
-          ]
+          "required": ["key", "name"]
         },
         "spacePHID": {
           "type": "null"
@@ -104,11 +93,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "view",
-            "edit",
-            "join"
-          ]
+          "required": ["view", "edit", "join"]
         },
         "description": {
           "type": "null"
@@ -146,9 +131,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "phid"
-                  ]
+                  "required": ["phid"]
                 },
                 {
                   "type": "object",
@@ -157,16 +140,12 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "phid"
-                  ]
+                  "required": ["phid"]
                 }
               ]
             }
           },
-          "required": [
-            "members"
-          ]
+          "required": ["members"]
         },
         "ancestors": {
           "type": "object",
@@ -187,18 +166,12 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id",
-                    "phid",
-                    "name"
-                  ]
+                  "required": ["id", "phid", "name"]
                 }
               ]
             }
           },
-          "required": [
-            "ancestors"
-          ]
+          "required": ["ancestors"]
         },
         "watchers": {
           "type": "object",
@@ -213,30 +186,16 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "phid"
-                  ]
+                  "required": ["phid"]
                 }
               ]
             }
           },
-          "required": [
-            "watchers"
-          ]
+          "required": ["watchers"]
         }
       },
-      "required": [
-        "members",
-        "ancestors",
-        "watchers"
-      ]
+      "required": ["members", "ancestors", "watchers"]
     }
   },
-  "required": [
-    "id",
-    "type",
-    "phid",
-    "fields",
-    "attachments"
-  ]
+  "required": ["id", "type", "phid", "fields", "attachments"]
 }

@@ -34,16 +34,16 @@
       "type": "number"
     },
     "completed_at_override": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "productboard_plugin_id": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "started_at": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "completed_at": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "name": {
       "type": "string"
@@ -52,16 +52,16 @@
       "type": "boolean"
     },
     "productboard_url": {
-      "type":["string","null"]
+      "type": ["string", "null"]
     },
     "planned_start_date": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "state": {
       "type": "string"
     },
     "milestone_id": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "requested_by_id": {
       "type": "string"
@@ -74,10 +74,10 @@
       "items": {}
     },
     "started_at_override": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "group_id": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "updated_at": {
       "type": "string"
@@ -87,14 +87,14 @@
       "items": {}
     },
     "productboard_id": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "owner_ids": {
       "type": "array",
       "items": {}
     },
     "external_id": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "id": {
       "type": "number"
@@ -103,10 +103,10 @@
       "type": "number"
     },
     "productboard_name": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "deadline": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "stats": {
       "type": "object",
@@ -124,7 +124,7 @@
           "type": "number"
         },
         "last_story_update": {
-          "type": ["string","null"]
+          "type": ["string", "null"]
         },
         "num_points_started": {
           "type": "number"
@@ -144,7 +144,7 @@
         "num_stories_done": {
           "type": "number"
         }
-      } 
+      }
     },
     "created_at": {
       "type": "string"

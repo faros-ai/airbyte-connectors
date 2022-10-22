@@ -4,11 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Harness Spec",
     "type": "object",
-    "required": [
-      "api_key",
-      "account_id",
-      "cutoff_days"
-    ],
+    "required": ["api_key", "account_id", "cutoff_days"],
     "additionalProperties": true,
     "properties": {
       "api_key": {
@@ -26,9 +22,7 @@
         "title": "API URL",
         "description": "The API URL for fetching data from Harness",
         "default": "https://app.harness.io",
-        "examples": [
-          "https://my-harness-server.example.com"
-        ]
+        "examples": ["https://my-harness-server.example.com"]
       },
       "cutoff_days": {
         "type": "integer",
