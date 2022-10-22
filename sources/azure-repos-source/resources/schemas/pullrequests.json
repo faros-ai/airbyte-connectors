@@ -85,7 +85,7 @@
       "type": "string"
     },
     "closedDate": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "title": {
       "type": "string"
@@ -224,17 +224,17 @@
               }
             }
           },
-          "changeCounts":{
+          "changeCounts": {
             "type": "object",
             "properties": {
               "Edit": {
-                "type": ["number","null"]
+                "type": ["number", "null"]
               },
               "Add": {
-                "type": ["number","null"]
+                "type": ["number", "null"]
               },
               "Delete": {
-                "type": ["number","null"]
+                "type": ["number", "null"]
               }
             }
           }

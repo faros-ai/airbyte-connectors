@@ -41,10 +41,7 @@
       }
     },
     "monitoring_at": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "name": {
       "type": "string"
@@ -53,10 +50,7 @@
       "type": "string"
     },
     "resolved_at": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "shortlink": {
       "type": "string"

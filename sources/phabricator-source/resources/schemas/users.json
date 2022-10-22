@@ -42,10 +42,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "view",
-            "edit"
-          ]
+          "required": ["view", "edit"]
         }
       },
       "required": [
@@ -61,11 +58,5 @@
       "type": "object"
     }
   },
-  "required": [
-    "id",
-    "type",
-    "phid",
-    "fields",
-    "attachments"
-  ]
+  "required": ["id", "type", "phid", "fields", "attachments"]
 }

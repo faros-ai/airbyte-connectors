@@ -1,79 +1,76 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "additionalProperties": true,
-    "properties": {
-        "type": {
-            "type": "string"
-        },
-        "uuid": {
-            "type": "string"
-        },
-        "label": {
-            "type": ["string","null"]
-        }, 
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "label": {
+      "type": ["string", "null"]
+    },
+    "createdAt": {
+      "type": ["string", "null"]
+    },
+    "startedAt": {
+      "type": ["string", "null"]
+    },
+    "finishedAt": {
+      "type": ["string", "null"]
+    },
+    "triggered": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "properties": {
         "createdAt": {
-            "type":["string","null"]
+          "type": ["string", "null"]
         },
         "startedAt": {
-            "type": ["string","null"]
+          "type": ["string", "null"]
         },
         "finishedAt": {
-            "type": ["string","null"]
-        },
-        "triggered": {
-            "type": [
-                "object",
-                "null"
-            ],
-            "additionalProperties": true,
-            "properties": {
-                "createdAt": {
-                    "type":["string","null"]
-                },
-                "startedAt": {
-                    "type": ["string","null"]
-                },
-                "finishedAt": {
-                    "type": ["string","null"]
-                }
-            }
-        },
-        "unblockedAt": {
-            "type": "string"
-        },
-        "url": {
-            "type":  ["string","null"]
-        },
-        "command": {
-            "type": "string"
-        },
-        "build": {
-            "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string"
-                },
-                "pipeline": {
-                    "type": "object",
-                    "properties": {
-                        "slug": {
-                            "type": "string"
-                        },
-                        "organization": {
-                            "type": "object",
-                            "properties": {
-                                "slug": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "cursor": {
-            "type": ["string","null"]
+          "type": ["string", "null"]
         }
+      }
+    },
+    "unblockedAt": {
+      "type": "string"
+    },
+    "url": {
+      "type": ["string", "null"]
+    },
+    "command": {
+      "type": "string"
+    },
+    "build": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string"
+        },
+        "pipeline": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string"
+            },
+            "organization": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cursor": {
+      "type": ["string", "null"]
     }
+  }
 }

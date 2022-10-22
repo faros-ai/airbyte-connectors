@@ -238,10 +238,7 @@
           }
         },
         "mergeCommit": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": ["array", "null"],
           "items": {
             "type": "object",
             "properties": {

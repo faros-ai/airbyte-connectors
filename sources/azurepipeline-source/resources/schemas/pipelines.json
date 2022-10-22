@@ -33,16 +33,10 @@
       "type": "string"
     },
     "folder": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "url": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "runs": {
       "type": "array",

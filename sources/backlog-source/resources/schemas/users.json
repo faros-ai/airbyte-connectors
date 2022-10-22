@@ -15,22 +15,22 @@
       "type": "number"
     },
     "lang": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "mailAddress": {
       "type": "string"
     },
     "nulabAccount": {
-      "type": ["object","null"],
+      "type": ["object", "null"],
       "properties": {
         "nulabId": {
-          "type": ["string","null"]
+          "type": ["string", "null"]
         },
         "name": {
-          "type":  ["string","null"]
+          "type": ["string", "null"]
         },
         "uniqueId": {
-          "type":  ["string","null"]
+          "type": ["string", "null"]
         }
       }
     },

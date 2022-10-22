@@ -20,10 +20,7 @@
         "type": "object",
         "properties": {
           "created_at": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "deleted": {
             "type": "boolean"
@@ -32,10 +29,7 @@
             "type": "string"
           },
           "id": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           },
           "merged_branch_ids": {
             "type": "array",
@@ -144,16 +138,10 @@
             }
           },
           "repository_id": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           },
           "updated_at": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           },
           "url": {
             "type": "string"

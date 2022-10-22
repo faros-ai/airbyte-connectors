@@ -4,11 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "SemaphoreCI Spec",
     "type": "object",
-    "required": [
-      "organization",
-      "token",
-      "startDate"
-    ],
+    "required": ["organization", "token", "startDate"],
     "properties": {
       "organization": {
         "order": 0,
@@ -47,10 +43,7 @@
         },
         "title": "VCS Branch Name (Optional)",
         "description": "List of branch names to filter the dataset. If not set, all data will be pulled from all branches.",
-        "default": [
-          "master",
-          "main"
-        ]
+        "default": ["master", "main"]
       },
       "timeout": {
         "order": 5,

@@ -33,28 +33,16 @@
       "type": "number"
     },
     "component": {
-      "type": [
-        "object",
-        "null"
-      ]
+      "type": ["object", "null"]
     },
     "version": {
-      "type": [
-        "object",
-        "null"
-      ]
+      "type": ["object", "null"]
     },
     "editedOn": {
-      "type": [
-        "object",
-        "null"
-      ]
+      "type": ["object", "null"]
     },
     "milestone": {
-      "type": [
-        "object",
-        "null"
-      ]
+      "type": ["object", "null"]
     },
     "repository": {
       "type": "object",

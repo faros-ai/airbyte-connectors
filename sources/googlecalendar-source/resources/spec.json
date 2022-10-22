@@ -4,19 +4,14 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Google Calendar Spec",
     "type": "object",
-    "required": [
-      "client_email",
-      "private_key"
-    ],
+    "required": ["client_email", "private_key"],
     "additionalProperties": true,
     "properties": {
       "client_email": {
         "type": "string",
         "title": "Client Email",
         "description": "Google Calendar API Client Email",
-        "examples": [
-          "https://my-google-calendar-server.example.com"
-        ]
+        "examples": ["https://my-google-calendar-server.example.com"]
       },
       "private_key": {
         "type": "string",

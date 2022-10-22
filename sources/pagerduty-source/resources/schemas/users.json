@@ -24,13 +24,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "id",
-    "type",
-    "summary",
-    "self",
-    "html_url",
-    "email",
-    "name"
-  ]
+  "required": ["id", "type", "summary", "self", "html_url", "email", "name"]
 }
