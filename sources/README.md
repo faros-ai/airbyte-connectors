@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* NodeJS >= 14.x
+* NodeJS >= 16.x
 * Docker
 * [Lerna](https://lerna.js.org/) -- Install with `npm i -g lerna`
 
