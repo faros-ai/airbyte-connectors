@@ -123,7 +123,9 @@ export class Issues extends JiraConverter {
         const data = r.record.data;
         return {
           detail: data.name,
-          category: data.statusCategory.name,
+          category: statusCategories.get(
+            JiraCommon.normalize(data.statusCategory.name)
+          ),
         } as Status;
       }),
       (s) => s.detail
