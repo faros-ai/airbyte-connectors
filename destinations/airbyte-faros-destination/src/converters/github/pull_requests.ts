@@ -36,7 +36,9 @@ export class PullRequests extends GitHubConverter {
     let author: DestinationRecord | undefined = undefined;
     if (pr.user) {
       author = GitHubCommon.vcs_User(pr.user, source);
-      res.push(author);
+      if (author) {
+        res.push(author);
+      }
     }
 
     const stateDetail = pr?.draft ? 'DRAFT' : pr.state;
