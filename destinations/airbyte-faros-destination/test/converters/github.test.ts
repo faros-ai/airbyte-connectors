@@ -34,19 +34,7 @@ describe('github', () => {
   });
 
   test('build vcsUser', async () => {
-    expect(GitHubCommon.vcs_User({type: 'Bot'}, 'mysource')).toStrictEqual({
-      model: 'vcs_User',
-      record: {
-        uid: 'mysource-bot',
-        name: null,
-        htmlUrl: null,
-        type: {
-          category: 'Bot',
-          detail: 'bot',
-        },
-        source: 'mysource',
-      },
-    });
+    expect(GitHubCommon.vcs_User({type: 'Bot'}, 'mysource')).toBeUndefined();
   });
 
   test('process and write records', async () => {

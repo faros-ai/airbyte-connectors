@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {toLower} from 'lodash';
+import {camelCase, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {RepoKey} from '../common/vcs';
@@ -10,13 +10,15 @@ import {Converter, DestinationRecord} from '../converter';
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
-  static readonly BOT_USER_TYPE = 'Bot';
 
   static vcs_User_with_Membership(
     user: Dictionary<any>,
     source: string
   ): DestinationRecord[] {
     const vcsUser = GitHubCommon.vcs_User(user, source);
+
+    if (!vcsUser) return [];
+
     const repository = GitHubCommon.parseRepositoryKey(user.repository, source);
 
     if (!repository) return [vcsUser];
@@ -42,7 +44,7 @@ export class GitHubCommon {
       case 'user':
         return {category: 'User', detail: userTypeLower};
       case 'bot':
-        return {category: GitHubCommon.BOT_USER_TYPE, detail: userTypeLower};
+        return {category: 'Bot', detail: userTypeLower};
       case 'organization':
         return {category: 'Organization', detail: userTypeLower};
       case 'mannequin':
@@ -52,16 +54,18 @@ export class GitHubCommon {
     }
   }
 
-  static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
+  static vcs_User(
+    user: Dictionary<any>,
+    source: string
+  ): DestinationRecord | undefined {
     const type = GitHubCommon.vcs_UserType(user);
+    if (!user.login) {
+      return undefined;
+    }
     return {
       model: 'vcs_User',
       record: {
-        uid:
-          user.login ??
-          (type.category === GitHubCommon.BOT_USER_TYPE
-            ? `${source.toLowerCase()}-bot`
-            : null),
+        uid: user.login,
         name: user.name ?? user.login ?? null,
         htmlUrl: user.html_url ?? null,
         type,
