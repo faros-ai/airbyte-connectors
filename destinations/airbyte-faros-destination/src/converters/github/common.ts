@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-feeds-sdk';
-import {camelCase, toLower} from 'lodash';
+import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {RepoKey} from '../common/vcs';
@@ -58,10 +58,11 @@ export class GitHubCommon {
     user: Dictionary<any>,
     source: string
   ): DestinationRecord | undefined {
-    const type = GitHubCommon.vcs_UserType(user);
+    // don't create a user w/ undefined uid
     if (!user.login) {
       return undefined;
     }
+    const type = GitHubCommon.vcs_UserType(user);
     return {
       model: 'vcs_User',
       record: {
