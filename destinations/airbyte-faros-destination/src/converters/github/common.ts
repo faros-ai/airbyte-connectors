@@ -10,6 +10,7 @@ import {Converter, DestinationRecord} from '../converter';
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
+  static readonly BOT_USER_TYPE = 'Bot';
 
   static vcs_User_with_Membership(
     user: Dictionary<any>,
@@ -41,7 +42,7 @@ export class GitHubCommon {
       case 'user':
         return {category: 'User', detail: userTypeLower};
       case 'bot':
-        return {category: 'Bot', detail: userTypeLower};
+        return {category: GitHubCommon.BOT_USER_TYPE, detail: userTypeLower};
       case 'organization':
         return {category: 'Organization', detail: userTypeLower};
       case 'mannequin':
@@ -56,7 +57,11 @@ export class GitHubCommon {
     return {
       model: 'vcs_User',
       record: {
-        uid: user.login,
+        uid:
+          user.login ??
+          (type.category === GitHubCommon.BOT_USER_TYPE
+            ? `${source.toLowerCase()}-bot`
+            : null),
         name: user.name ?? user.login ?? null,
         htmlUrl: user.html_url ?? null,
         type,

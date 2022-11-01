@@ -4,6 +4,7 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {InvalidRecordStrategy} from '../../src';
+import {GitHubCommon} from '../../src/converters/github/common';
 import {CLI, read} from '../cli';
 import {
   initMockttp,
@@ -30,6 +31,22 @@ describe('github', () => {
 
   afterEach(async () => {
     await mockttp.stop();
+  });
+
+  test('build vcsUser', async () => {
+    expect(GitHubCommon.vcs_User({type: 'Bot'}, 'mysource')).toStrictEqual({
+      model: 'vcs_User',
+      record: {
+        uid: 'mysource-bot',
+        name: null,
+        htmlUrl: null,
+        type: {
+          category: 'Bot',
+          detail: 'bot',
+        },
+        source: 'mysource',
+      },
+    });
   });
 
   test('process and write records', async () => {
