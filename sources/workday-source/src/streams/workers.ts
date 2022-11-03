@@ -22,8 +22,6 @@ export class Workers extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Worker> {
     const workday = await Workday.instance(this.cfg, this.logger);
-    for await (const item of workday.workers()) {
-      yield item;
-    }
+    yield* workday.workers();
   }
 }

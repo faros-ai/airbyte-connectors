@@ -22,8 +22,6 @@ export class OrgCharts extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<SupervisoryOrganizationOrgChart> {
     const workday = await Workday.instance(this.cfg, this.logger);
-    for await (const item of workday.orgCharts()) {
-      yield item;
-    }
+    yield* workday.orgCharts();
   }
 }

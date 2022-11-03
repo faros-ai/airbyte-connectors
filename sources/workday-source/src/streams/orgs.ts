@@ -22,8 +22,6 @@ export class Orgs extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<SupervisoryOrganization> {
     const workday = await Workday.instance(this.cfg, this.logger);
-    for await (const item of workday.orgs()) {
-      yield item;
-    }
+    yield* workday.orgs();
   }
 }
