@@ -28,7 +28,7 @@ export class Okta {
     if (Okta.okta) return Okta.okta;
 
     if (!config.token) {
-      throw new VError('Token must not be an empty string');
+      throw new VError('token must not be an empty string');
     }
     const version = config.version ?? DEFAULT_VERSION;
     const httpClient = axios.create({
