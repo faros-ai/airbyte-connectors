@@ -56,7 +56,7 @@ export class Squadcast {
     if (Squadcast.squadcast) return Squadcast.squadcast;
 
     if (!config.token) {
-      throw new VError('token must be a not empty string');
+      throw new VError('token must not be an empty string');
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');

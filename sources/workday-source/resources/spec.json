@@ -1,0 +1,50 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Workday Spec",
+    "type": "object",
+    "required": ["org", "clientId", "privateKey"],
+    "additionalProperties": true,
+    "properties": {
+      "tenant": {
+        "type": "string",
+        "title": "Tenant",
+        "description": "Workday tenant name",
+        "examples": ["acme"]
+      },
+      "clientId": {
+        "type": "string",
+        "title": "Client ID",
+        "description": "Workday client id"
+      },
+      "privateKey": {
+        "type": "string",
+        "title": "Client Secret",
+        "description": "Workday client secret",
+        "airbyte_secret": true
+      },
+      "refreshToken": {
+        "type": "string",
+        "title": "Refresh Token",
+        "description": "Workday API refresh token",
+        "airbyte_secret": true
+      },
+      "baseUrl": {
+        "type": "string",
+        "title": "REST/Auth API base URL",
+        "default": "https://wd2-impl-services1.workday.com/ccx/",
+        "description": "Workday REST/Auth API base URL. Example: if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenantName}' then strip 'api/v2/{tenantName}' and just use 'https://wd2-impl-services1.workday.com/ccx/'",
+        "examples": ["https://wd2-impl-services1.workday.com/ccx/"]
+      },
+      "limit": {
+        "type": "number",
+        "title": "Page Limit",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20,
+        "description": "The maximum number of objects in a single response."
+      }
+    }
+  }
+}

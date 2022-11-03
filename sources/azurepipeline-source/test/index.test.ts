@@ -49,7 +49,7 @@ describe('index', () => {
       } as any)
     ).resolves.toStrictEqual([
       false,
-      new VError('access_token must be a not empty string'),
+      new VError('access_token must not be an empty string'),
     ]);
   });
 

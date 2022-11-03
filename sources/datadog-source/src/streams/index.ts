@@ -1,4 +1,4 @@
-import {Incidents} from './incident';
+import {Incidents} from './incidents';
 import {Metrics} from './metrics';
 import {Users} from './users';
 

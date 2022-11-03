@@ -63,22 +63,22 @@ export class Agileaccelerator {
       return Agileaccelerator.agileaccelerator;
 
     if (!config.server_url) {
-      throw new VError('server_url must be a not empty string');
+      throw new VError('server_url must not be an empty string');
     }
     if (!config.client_id) {
-      throw new VError('client_id must be a not empty string');
+      throw new VError('client_id must not be an empty string');
     }
     if (!config.client_secret) {
-      throw new VError('client_secret must be a not empty string');
+      throw new VError('client_secret must not be an empty string');
     }
     if (!config.username) {
-      throw new VError('username must be a not empty string');
+      throw new VError('username must not be an empty string');
     }
     if (!config.password) {
-      throw new VError('password must be a not empty string');
+      throw new VError('password must not be an empty string');
     }
     if (!config.api_token) {
-      throw new VError('api_token must be a not empty string');
+      throw new VError('api_token must not be an empty string');
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');

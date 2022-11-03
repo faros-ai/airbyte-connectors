@@ -46,15 +46,15 @@ export class AzureRepo {
     if (AzureRepo.azureRepo) return AzureRepo.azureRepo;
 
     if (!config.access_token) {
-      throw new VError('access_token must be a not empty string');
+      throw new VError('access_token must not be an empty string');
     }
 
     if (!config.organization) {
-      throw new VError('organization must be a not empty string');
+      throw new VError('organization must not be an empty string');
     }
 
     if (!config.project) {
-      throw new VError('project must be a not empty string');
+      throw new VError('project must not be an empty string');
     }
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
