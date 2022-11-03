@@ -1,4 +1,9 @@
-import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteSpec,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
@@ -102,5 +107,101 @@ describe('index', () => {
         refreshToken: 'baz',
       })
     ).resolves.toStrictEqual([true, undefined]);
+  });
+
+  test('streams - orgs', async () => {
+    const fnListOrgs = jest.fn();
+    const expected = readTestResourceFile('orgs.json');
+    const limit = 2;
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnListOrgs.mockResolvedValue({data: expected}),
+        } as any,
+        limit,
+        'base-url'
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const [orgChars, orgs, people, workers] = source.streams({
+      tenant: 'acme',
+      clientId: 'foo',
+      clientSecret: 'bar',
+      refreshToken: 'baz',
+    });
+    const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
+    expect(items).toStrictEqual([...expected.data, ...expected.data]);
+  });
+
+  test('streams - people', async () => {
+    const fnListOrgs = jest.fn();
+    const expected = readTestResourceFile('people.json');
+    const limit = 2;
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnListOrgs.mockResolvedValue({data: expected}),
+        } as any,
+        limit,
+        'base-url'
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const [orgChars, orgs, people, workers] = source.streams({
+      tenant: 'acme',
+      clientId: 'foo',
+      clientSecret: 'bar',
+      refreshToken: 'baz',
+    });
+    const iter = people.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
+    expect(items).toStrictEqual([...expected.data, ...expected.data]);
+  });
+
+  test('streams - workers', async () => {
+    const fnListOrgs = jest.fn();
+    const expected = readTestResourceFile('workers.json');
+    const limit = 2;
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnListOrgs.mockResolvedValue({data: expected}),
+        } as any,
+        limit,
+        'base-url'
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const [orgChars, orgs, people, workers] = source.streams({
+      tenant: 'acme',
+      clientId: 'foo',
+      clientSecret: 'bar',
+      refreshToken: 'baz',
+    });
+    const iter = workers.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
+    expect(items).toStrictEqual([...expected.data, ...expected.data]);
   });
 });

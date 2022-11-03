@@ -4,13 +4,13 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Workday Spec",
     "type": "object",
-    "required": ["org", "clientId", "privateKey"],
+    "required": ["tenant", "clientId", "clientSecret", "refreshToken"],
     "additionalProperties": true,
     "properties": {
       "tenant": {
         "type": "string",
         "title": "Tenant",
-        "description": "Workday tenant name",
+        "description": "Workday tenant name.",
         "examples": ["acme"]
       },
       "clientId": {
@@ -18,7 +18,7 @@
         "title": "Client ID",
         "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
       },
-      "privateKey": {
+      "clientSecret": {
         "type": "string",
         "title": "Client Secret",
         "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
@@ -34,7 +34,7 @@
         "type": "string",
         "title": "REST/Auth API base URL",
         "default": "https://wd2-impl-services1.workday.com/ccx/",
-        "description": "Workday REST/Auth API base URL. Example: if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenantName}' then strip 'api/v2/{tenantName}' and just use 'https://wd2-impl-services1.workday.com/ccx/'",
+        "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenantName}' then strip 'api/v2/{tenantName}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
         "examples": ["https://wd2-impl-services1.workday.com/ccx/"]
       },
       "limit": {
