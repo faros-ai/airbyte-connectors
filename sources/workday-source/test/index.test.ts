@@ -26,6 +26,8 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const config = readTestResourceFile('config.json');
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -49,10 +51,8 @@ describe('index', () => {
     ]);
     await expect(
       source.checkConnection({
-        tenant: 'acme',
+        ...config,
         clientId: '',
-        clientSecret: 'bar',
-        refreshToken: 'baz',
       })
     ).resolves.toStrictEqual([
       false,
@@ -60,10 +60,8 @@ describe('index', () => {
     ]);
     await expect(
       source.checkConnection({
-        tenant: 'acme',
-        clientId: 'foo',
+        ...config,
         clientSecret: '',
-        refreshToken: 'baz',
       })
     ).resolves.toStrictEqual([
       false,
@@ -71,9 +69,7 @@ describe('index', () => {
     ]);
     await expect(
       source.checkConnection({
-        tenant: 'acme',
-        clientId: 'foo',
-        clientSecret: 'bar',
+        ...config,
         refreshToken: '',
       })
     ).resolves.toStrictEqual([
@@ -99,14 +95,10 @@ describe('index', () => {
       );
     });
     const source = new sut.WorkdaySource(logger);
-    await expect(
-      source.checkConnection({
-        tenant: 'acme',
-        clientId: 'foo',
-        clientSecret: 'bar',
-        refreshToken: 'baz',
-      })
-    ).resolves.toStrictEqual([true, undefined]);
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 
   test('streams - orgs', async () => {
@@ -126,12 +118,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const [orgChars, orgs, people, workers] = source.streams({
-      tenant: 'acme',
-      clientId: 'foo',
-      clientSecret: 'bar',
-      refreshToken: 'baz',
-    });
+    const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -158,12 +145,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const [orgChars, orgs, people, workers] = source.streams({
-      tenant: 'acme',
-      clientId: 'foo',
-      clientSecret: 'bar',
-      refreshToken: 'baz',
-    });
+    const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = people.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -190,12 +172,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const [orgChars, orgs, people, workers] = source.streams({
-      tenant: 'acme',
-      clientId: 'foo',
-      clientSecret: 'bar',
-      refreshToken: 'baz',
-    });
+    const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
