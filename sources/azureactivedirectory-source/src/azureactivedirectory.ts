@@ -32,15 +32,15 @@ export class AzureActiveDirectory {
       return AzureActiveDirectory.azureActiveDirectory;
 
     if (!config.client_id) {
-      throw new VError('client_id must be a not empty string');
+      throw new VError('client_id must not be an empty string');
     }
 
     if (!config.client_secret) {
-      throw new VError('client_secret must be a not empty string');
+      throw new VError('client_secret must not be an empty string');
     }
 
     if (!config.tenant_id) {
-      throw new VError('tenant_id must be a not empty string');
+      throw new VError('tenant_id must not be an empty string');
     }
 
     const version = config.version ?? DEFAULT_VERSION;

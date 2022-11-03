@@ -1,0 +1,6 @@
+{
+  "tenant": "acme",
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "refreshToken": "baz"
+}

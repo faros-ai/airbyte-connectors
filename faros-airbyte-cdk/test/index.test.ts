@@ -243,19 +243,19 @@ describe('utils', () => {
   const spec = new AirbyteSpec(testSpec);
 
   interface DestinationConfig extends AirbyteConfig {
-    dry_run?: boolean;
-    jsonata_mode?: string;
-    edition_configs: {
-      edition: string;
-      api_url: string;
-      api_key: string;
-      graph: string;
-      check_tenant?: boolean;
-      origin?: string;
-      cloud_graphql_batch_size?: number;
+    readonly dry_run?: boolean;
+    readonly jsonata_mode?: string;
+    readonly edition_configs: {
+      readonly edition: string;
+      readonly api_url: string;
+      readonly api_key: string;
+      readonly graph: string;
+      readonly check_tenant?: boolean;
+      readonly origin?: string;
+      readonly cloud_graphql_batch_size?: number;
     };
-    invalid_record_strategy: string;
-    origin?: string;
+    readonly invalid_record_strategy: string;
+    readonly origin?: string;
   }
 
   const config: DestinationConfig = {

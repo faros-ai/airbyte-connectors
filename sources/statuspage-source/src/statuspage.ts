@@ -48,10 +48,10 @@ export class Statuspage {
     if (Statuspage.statuspage) return Statuspage.statuspage;
 
     if (!config.api_key) {
-      throw new VError('api_key must be a not empty string');
+      throw new VError('api_key must not be an empty string');
     }
     if (!config.page_id) {
-      throw new VError('page_id must be a not empty string');
+      throw new VError('page_id must not be an empty string');
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');
