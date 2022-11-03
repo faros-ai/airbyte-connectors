@@ -115,8 +115,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [orgChars, orgs, people, workers] = source.streams(config);
+    const orgs = source.streams(config)[1];
     const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -143,8 +142,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [orgChars, orgs, people, workers] = source.streams(config);
+    const people = source.streams(config)[2];
     const iter = people.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -171,8 +169,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [orgChars, orgs, people, workers] = source.streams(config);
+    const workers = source.streams(config)[3];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
