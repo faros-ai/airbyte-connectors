@@ -1,13 +1,9 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {WorkdayConfig} from '..';
 import {SupervisoryOrganizationOrgChart} from '../types';
+import {Workday} from '../workday';
 
 export class OrgCharts extends AirbyteStreamBase {
   constructor(
@@ -24,12 +20,10 @@ export class OrgCharts extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: Dictionary<any, string>
-  ): AsyncGenerator<SupervisoryOrganizationOrgChart> {
-    yield null;
+  async *readRecords(): AsyncGenerator<SupervisoryOrganizationOrgChart> {
+    const workday = await Workday.instance(this.cfg, this.logger);
+    for await (const item of workday.orgCharts()) {
+      yield item;
+    }
   }
 }

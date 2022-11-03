@@ -127,7 +127,6 @@ export class Workday {
     );
   }
 
-  // TODO: consider creating a single intance of this class and memoizing the 'orgs' response
   orgs(
     limit = this.limit,
     maxPages = Infinity

@@ -1,4 +1,5 @@
 {
-  "org":"acme",
-  "clientId":"foo"
+  "tenant": "acme",
+  "clientId": "foo",
+  "clientSecret": "bar"
 }
