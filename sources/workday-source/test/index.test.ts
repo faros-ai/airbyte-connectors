@@ -84,10 +84,7 @@ describe('index', () => {
         logger,
         {
           get: jest.fn().mockResolvedValue({
-            data: {
-              data: [],
-              total: 0,
-            },
+            data: readTestResourceFile('workers.json'),
           }),
         } as any,
         20,
@@ -118,6 +115,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -145,6 +143,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = people.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
@@ -172,6 +171,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [orgChars, orgs, people, workers] = source.streams(config);
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];

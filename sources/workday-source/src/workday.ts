@@ -102,8 +102,11 @@ export class Workday {
 
   async checkConnection(): Promise<void> {
     const res = [];
-    for await (const org of this.orgs(1, 1)) {
+    for await (const org of this.workers(1, 1)) {
       res.push(org);
+    }
+    if (res.length <= 0) {
+      throw new VError('No workers were found');
     }
   }
 
