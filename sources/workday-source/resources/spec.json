@@ -16,18 +16,18 @@
       "clientId": {
         "type": "string",
         "title": "Client ID",
-        "description": "Workday client id"
+        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
       },
       "privateKey": {
         "type": "string",
         "title": "Client Secret",
-        "description": "Workday client secret",
+        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
         "airbyte_secret": true
       },
       "refreshToken": {
         "type": "string",
         "title": "Refresh Token",
-        "description": "Workday API refresh token",
+        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
         "airbyte_secret": true
       },
       "baseUrl": {
