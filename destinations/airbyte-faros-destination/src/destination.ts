@@ -22,6 +22,8 @@ import {
   Schema,
   withEntryUploader,
 } from 'faros-feeds-sdk';
+import http from 'http';
+import https from 'https';
 import {difference, keyBy, sortBy, uniq} from 'lodash';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -52,6 +54,11 @@ import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 interface FarosDestinationState {
   readonly lastSynced: string;
+}
+
+export interface HttpAgents {
+  httpAgent?: http.Agent;
+  httpsAgent?: https.Agent;
 }
 
 /** Faros destination implementation. */
@@ -111,6 +118,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     });
   }
 
+  private makeHttpAgents(keepAlive?: boolean): HttpAgents {
+    return keepAlive
+      ? {
+          httpAgent: new http.Agent({keepAlive: true}),
+          httpsAgent: new https.Agent({keepAlive: true}),
+        }
+      : {};
+  }
+
   private async initCommunity(config: DestinationConfig): Promise<void> {
     if (!config.edition_configs.hasura_url) {
       throw new VError('Community Edition Hasura URL is not set');
@@ -118,7 +134,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     try {
       const backend = new HasuraBackend(
         config.edition_configs.hasura_url,
-        config.edition_configs.hasura_admin_secret
+        config.edition_configs.hasura_admin_secret,
+        this.makeHttpAgents(config.keep_alive)
       );
       const schemaLoader = new HasuraSchemaLoader(
         config.edition_configs.hasura_url,
@@ -173,7 +190,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         apiKey: config.edition_configs.api_key,
         useGraphQLV2,
       };
-      this.farosClient = new FarosClient(this.farosClientConfig);
+
+      const axiosConfig = {
+        timeout: 60000,
+        ...this.makeHttpAgents(config.keep_alive),
+      };
+      this.farosClient = new FarosClient(
+        this.farosClientConfig,
+        this.logger.asPino('info'),
+        axiosConfig
+      );
     } catch (e) {
       throw new VError(`Failed to initialize Faros Client. Error: ${e}`);
     }

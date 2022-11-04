@@ -22,6 +22,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly jsonata_mode?: JSONataApplyMode;
   readonly origin?: string;
   readonly source_specific_configs?: Dictionary<any>;
+  readonly keep_alive?: boolean;
 }
 
 export enum Operation {

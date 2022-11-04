@@ -1,17 +1,19 @@
 import axios, {AxiosInstance} from 'axios';
 
 import {GraphQLBackend} from '../common/graphql-client';
+import {HttpAgents} from '../destination';
 
 export class HasuraBackend implements GraphQLBackend {
   private readonly api: AxiosInstance;
 
-  constructor(url: string, adminSecret?: string) {
+  constructor(url: string, adminSecret?: string, httpAgents?: HttpAgents) {
     this.api = axios.create({
       baseURL: url,
       headers: {
         'X-Hasura-Role': 'admin',
         ...(adminSecret && {'X-Hasura-Admin-Secret': adminSecret}),
       },
+      ...httpAgents,
     });
   }
 

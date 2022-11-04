@@ -709,6 +709,13 @@
             }
           }
         ]
+      },
+      "keep_alive": {
+        "order": 8,
+        "type": "boolean",
+        "title": "HTTP Keep Alive",
+        "description": "Maintains a connection between a client and your server",
+        "default": false
       }
     }
   }
