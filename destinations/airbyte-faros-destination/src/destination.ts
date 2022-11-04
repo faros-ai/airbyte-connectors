@@ -85,12 +85,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   getFarosClient(): FarosClient {
     if (this.farosClient) return this.farosClient;
-    throw new VError('Faros client is not initialized');
+    throw new VError('Faros Client is not initialized');
   }
 
   getGraphQLClient(): GraphQLClient {
     if (this.graphQLClient) return this.graphQLClient;
-    throw new VError('GraphQL client is not initialized');
+    throw new VError('GraphQL Client is not initialized');
   }
 
   async spec(): Promise<AirbyteSpec> {
