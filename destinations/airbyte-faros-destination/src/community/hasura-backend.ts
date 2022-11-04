@@ -8,12 +8,12 @@ export class HasuraBackend implements GraphQLBackend {
 
   constructor(url: string, adminSecret?: string, httpAgents?: HttpAgents) {
     this.api = axios.create({
+      ...httpAgents,
       baseURL: url,
       headers: {
         'X-Hasura-Role': 'admin',
         ...(adminSecret && {'X-Hasura-Admin-Secret': adminSecret}),
       },
-      ...httpAgents,
     });
   }
 
