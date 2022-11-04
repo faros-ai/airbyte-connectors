@@ -714,7 +714,7 @@
         "order": 8,
         "type": "boolean",
         "title": "HTTP Keep Alive",
-        "description": "Maintains a connection between a client and your server",
+        "description": "Should keep connection between client and server alive",
         "default": false
       }
     }
