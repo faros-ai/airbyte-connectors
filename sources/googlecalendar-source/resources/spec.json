@@ -32,12 +32,11 @@
         "default": 2500,
         "max": 2500
       },
-      "calendars_max_results": {
+      "cutoff_days": {
         "type": "integer",
-        "title": "Calendars Max Results",
-        "description": "Maximum number of entries returned on one result page",
-        "default": 250,
-        "max": 250
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Fetch events created within the specified number of days"
       }
     }
   }
