@@ -162,7 +162,7 @@ export class Googlecalendar {
 
       if (syncToken) {
         this.logger.debug(
-          `Incrementally sync events from syncToken: ${syncToken}`
+          `Incrementally syncing events with sync token ${syncToken}`
         );
         params.syncToken = syncToken;
       }
@@ -170,9 +170,7 @@ export class Googlecalendar {
       return this.client.events.list(params) as any;
     };
 
-    for await (const res of this.paginate(func, lastSyncToken, calendar.id)) {
-      yield res;
-    }
+    yield* this.paginate(func, lastSyncToken, calendar.id);
   }
 
   @Memoize((calendarId: string) => calendarId)
