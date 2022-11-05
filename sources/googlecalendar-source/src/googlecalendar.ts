@@ -5,7 +5,7 @@ import {VError} from 'verror';
 
 const DEFAULT_CALENDAR_ID = 'primary';
 const DEFAULT_EVENT_MAX_RESULTS = 2500;
-const DEFAULT_CALENDAR_LIST_MAX_RESULTS = 250;
+const DEFAULT_CUTOFF_DAYS = 90;
 
 /** SyncToken point to last variable. It makes the result of this list
  * request contain only entries that have changed since then */
@@ -20,12 +20,7 @@ export interface GoogleCalendarConfig extends AirbyteConfig {
   readonly private_key: string;
   readonly calendar_id?: string;
   readonly events_max_results?: number;
-  readonly calendars_max_results?: number;
-}
-
-interface MaxResults {
-  readonly events: number;
-  readonly calendars: number;
+  readonly cutoff_days?: number;
 }
 
 type PaginationReqFunc = (pageToken?: string) => Promise<any>;
@@ -37,7 +32,8 @@ export class Googlecalendar {
   constructor(
     private readonly client: calendar_v3.Calendar,
     private readonly calendarId: string,
-    private readonly maxResults: MaxResults,
+    private readonly eventsMaxResults: number,
+    private readonly cutoffDays: number,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -73,16 +69,17 @@ export class Googlecalendar {
       typeof config?.calendar_id === 'string'
         ? config.calendar_id
         : DEFAULT_CALENDAR_ID;
-    const maxResults = {
-      events: config.events_max_results ?? DEFAULT_EVENT_MAX_RESULTS,
-      calendars:
-        config.calendars_max_results ?? DEFAULT_CALENDAR_LIST_MAX_RESULTS,
-    };
+
+    const eventsMaxResults =
+      config.events_max_results ?? DEFAULT_EVENT_MAX_RESULTS;
+
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
     Googlecalendar.googleCalendar = new Googlecalendar(
       calendar,
       calendarId,
-      maxResults,
+      eventsMaxResults,
+      cutoffDays,
       logger
     );
     return Googlecalendar.googleCalendar;
@@ -98,7 +95,10 @@ export class Googlecalendar {
     try {
       res = await func(pageToken, lastSyncToken);
     } catch (err: any) {
+      // A 410 status code, "Gone", indicates that the sync token is invalid.
+      // Read more - https://developers.google.com/calendar/api/guides/sync
       if (err?.status === 410) {
+        this.logger.debug('Invalid sync token, starting a full sync.');
         this.invokeCallWithErrorWrapper(func, message, pageToken);
       }
       this.wrapAndThrow(err, message);
@@ -129,7 +129,7 @@ export class Googlecalendar {
     do {
       const response = await this.invokeCallWithErrorWrapper(
         func,
-        undefined,
+        '',
         nextPageToken,
         lastSyncToken
       );
@@ -149,24 +149,28 @@ export class Googlecalendar {
   async *getEvents(lastSyncToken?: string): AsyncGenerator<Event> {
     const calendar = await this.getCalendar();
 
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - this.cutoffDays);
+
     const func = (pageToken?: string, syncToken?: string): Promise<Event> => {
       const params: calendar_v3.Params$Resource$Events$List = {
         calendarId: calendar.id,
         pageToken,
-        maxResults: this.maxResults.events,
+        maxResults: this.eventsMaxResults,
+        timeMin: startDate.toISOString(),
       };
 
       if (syncToken) {
-        this.logger.debug('Sync Events by syncToken column');
+        this.logger.debug(
+          `Incrementally syncing events with sync token ${syncToken}`
+        );
         params.syncToken = syncToken;
       }
 
       return this.client.events.list(params) as any;
     };
 
-    for await (const res of this.paginate(func, lastSyncToken, calendar.id)) {
-      yield res;
-    }
+    yield* this.paginate(func, lastSyncToken, calendar.id);
   }
 
   @Memoize((calendarId: string) => calendarId)

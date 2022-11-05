@@ -90,8 +90,11 @@ export class GoogleCalendarCommon {
 
   static EventVisibility(visibility: string): CategoryRef {
     const detail = visibility?.toLowerCase();
-    if (!detail)
-      return {category: EventVisibilityCategory.CUSTOM, detail: 'unknown'};
+    if (!detail) {
+      // We default to Busy, since Google Calendar doesn't return visibility value
+      // for "opaque" events
+      return {category: EventVisibilityCategory.BUSY, detail: 'unknown'};
+    }
 
     switch (detail) {
       case 'opaque':
