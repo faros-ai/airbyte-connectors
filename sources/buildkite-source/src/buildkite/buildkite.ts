@@ -343,13 +343,11 @@ export class Buildkite {
     cursor?: string,
     createdAtFrom?: Date
   ): AsyncGenerator<Build> {
-    const res = await this.restClient.get<PipelineSlug[]>(
-      `organizations/${organization}/pipelines`
-    );
-    for (const item of res.data) {
+    const pipelines = this.getPipelines();
+    for await (const pipeline of pipelines) {
       yield* this.fetchOrganizationPipelineBuilds(
         organization,
-        item.slug,
+        pipeline.slug,
         cursor,
         createdAtFrom
       );
