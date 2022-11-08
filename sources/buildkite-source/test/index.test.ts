@@ -143,22 +143,29 @@ describe('index', () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {
       return new Buildkite(
         {
-          request: fnBuildsList.mockResolvedValue({
-            pipeline: {
-              builds: {
-                edges: readTestResourceFile('builds_input.json'),
-                pageInfo: {
-                  endCursor: undefined,
+          request: fnBuildsList
+            .mockResolvedValueOnce({
+              organization: {
+                pipelines: {
+                  edges: readTestResourceFile('pipelines_input.json'),
+                  pageInfo: {
+                    endCursor: undefined,
+                  },
                 },
               },
-            },
-          }),
+            })
+            .mockResolvedValueOnce({
+              pipeline: {
+                builds: {
+                  edges: readTestResourceFile('builds_input.json'),
+                  pageInfo: {
+                    endCursor: undefined,
+                  },
+                },
+              },
+            }),
         } as any,
-        {
-          get: fnBuildsList.mockResolvedValue({
-            data: readTestResourceFile('pipelines_all.json'),
-          }),
-        } as any,
+        null,
         new Date('2010-03-27T14:03:51-0800'),
         1000,
         'devcube'
