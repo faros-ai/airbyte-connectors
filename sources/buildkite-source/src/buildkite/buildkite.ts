@@ -318,7 +318,9 @@ export class Buildkite {
           const jobs = e.node.jobs?.edges.map((ee) => {
             return ee.node;
           });
-          e.node.jobs = jobs;
+          if (jobs) {
+            e.node.jobs = jobs;
+          }
           return this.setCursor(e);
         }),
         pageInfo: data.pipeline?.builds.pageInfo,
