@@ -20,7 +20,9 @@ enum PullRequestStateCategory {
 
 export class PullRequests extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_Membership',
     'vcs_PullRequest',
+    'vcs_User',
   ];
 
   id(record: AirbyteRecord): string {
