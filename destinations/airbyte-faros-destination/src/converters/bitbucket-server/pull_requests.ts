@@ -3,7 +3,6 @@ import {PullRequest, selfHRef} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {CategoryRef} from '../bitbucket/common';
-import {UserKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
