@@ -55,7 +55,7 @@ describe('bitbucket-server', () => {
     const writtenByModel = {
       vcs_Commit: 7,
       vcs_File: 3,
-      vcs_Membership: 3,
+      vcs_Membership: 4,
       vcs_Organization: 1,
       vcs_PullRequest: 3,
       vcs_PullRequestComment: 5,
@@ -63,7 +63,7 @@ describe('bitbucket-server', () => {
       vcs_PullRequestReview: 5,
       vcs_PullRequest__Update: 5,
       vcs_Repository: 1,
-      vcs_User: 3,
+      vcs_User: 4,
     };
 
     const processedTotal = _(processedByStream).values().sum();

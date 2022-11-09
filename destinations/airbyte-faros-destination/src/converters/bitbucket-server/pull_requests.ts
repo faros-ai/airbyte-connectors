@@ -1,8 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {PullRequest, selfHRef} from 'faros-airbyte-common/bitbucket-server';
+import {
+  PullRequest,
+  selfHRef,
+  User,
+} from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-feeds-sdk';
 
 import {CategoryRef} from '../bitbucket/common';
+import {UserKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
@@ -22,6 +27,11 @@ export class PullRequests extends BitbucketServerConverter {
     const pr = record?.record?.data as PullRequest;
     return `${pr.computedProperties.repository.fullName};${pr.id}`;
   }
+
+  users: Record<
+    string,
+    {record: DestinationRecord; ref: UserKey; projectKeys: Set<string>}
+  > = {};
 
   async convert(
     record: AirbyteRecord
@@ -52,6 +62,37 @@ export class PullRequests extends BitbucketServerConverter {
       },
     });
 
+    if (!this.users[author.uid]) {
+      this.users[author.uid] = {
+        record: user,
+        ref: author,
+        projectKeys: new Set(),
+      };
+    }
+    const projectKey = pr.toRef?.repository?.project?.key;
+    if (projectKey) {
+      this.users[author.uid].projectKeys.add(projectKey);
+    }
+
+    return res;
+  }
+
+  override async onProcessingComplete(): Promise<
+    ReadonlyArray<DestinationRecord>
+  > {
+    const res: DestinationRecord[] = [];
+    for (const {record, ref, projectKeys} of Object.values(this.users)) {
+      res.push(record);
+      for (const projectKey of projectKeys) {
+        res.push({
+          model: 'vcs_Membership',
+          record: {
+            user: ref,
+            organization: this.vcsOrgKey(projectKey),
+          },
+        });
+      }
+    }
     return res;
   }
 }

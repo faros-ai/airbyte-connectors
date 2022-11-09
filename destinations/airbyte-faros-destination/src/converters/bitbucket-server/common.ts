@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {selfHRef, User} from 'faros-airbyte-common/bitbucket-server';
 
 import {UserTypeCategory} from '../bitbucket/common';
-import {OrgKey, RepoKey} from '../common/vcs';
+import {OrgKey, RepoKey, UserKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
 export abstract class BitbucketServerConverter extends Converter {
@@ -12,10 +12,7 @@ export abstract class BitbucketServerConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected vcsUser(user?: User): {
-    record?: DestinationRecord;
-    ref?: {uid: string; source: string};
-  } {
+  protected vcsUser(user?: User): {record?: DestinationRecord; ref?: UserKey} {
     if (!user?.slug) return {record: undefined, ref: undefined};
     const source = this.streamName.source;
     return {
