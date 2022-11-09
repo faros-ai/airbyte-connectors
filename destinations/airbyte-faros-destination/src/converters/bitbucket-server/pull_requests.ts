@@ -26,7 +26,7 @@ export class PullRequests extends BitbucketServerConverter {
     return `${pr.computedProperties.repository.fullName};${pr.id}`;
   }
 
-  users: Record<string, {user: UserKey; projectKeys: Set<string>}> = {};
+  projectKeysByUser: Record<string, Set<string>> = {};
 
   async convert(
     record: AirbyteRecord
@@ -57,14 +57,11 @@ export class PullRequests extends BitbucketServerConverter {
       },
     });
 
-    if (!this.users[author.uid]) {
+    if (!this.projectKeysByUser[author.uid]) {
       res.push(user);
-      this.users[author.uid] = {
-        user: author,
-        projectKeys: new Set(),
-      };
+      this.projectKeysByUser[author.uid] = new Set();
     }
-    const projectKeys = this.users[author.uid].projectKeys;
+    const projectKeys = this.projectKeysByUser[author.uid];
     const projectKey = pr.toRef?.repository?.project?.key;
     if (projectKey && !projectKeys.has(projectKey)) {
       res.push({
