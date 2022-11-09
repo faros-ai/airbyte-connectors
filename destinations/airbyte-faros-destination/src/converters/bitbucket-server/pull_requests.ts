@@ -26,10 +26,7 @@ export class PullRequests extends BitbucketServerConverter {
     return `${pr.computedProperties.repository.fullName};${pr.id}`;
   }
 
-  users: Record<
-    string,
-    {record: DestinationRecord; ref: UserKey; projectKeys: Set<string>}
-  > = {};
+  users: Record<string, {user: UserKey; projectKeys: Set<string>}> = {};
 
   async convert(
     record: AirbyteRecord
@@ -61,36 +58,25 @@ export class PullRequests extends BitbucketServerConverter {
     });
 
     if (!this.users[author.uid]) {
+      res.push(user);
       this.users[author.uid] = {
-        record: user,
-        ref: author,
+        user: author,
         projectKeys: new Set(),
       };
     }
+    const projectKeys = this.users[author.uid].projectKeys;
     const projectKey = pr.toRef?.repository?.project?.key;
-    if (projectKey) {
-      this.users[author.uid].projectKeys.add(projectKey);
+    if (projectKey && !projectKeys.has(projectKey)) {
+      res.push({
+        model: 'vcs_Membership',
+        record: {
+          user: author,
+          organization: this.vcsOrgKey(projectKey),
+        },
+      });
+      projectKeys.add(projectKey);
     }
 
-    return res;
-  }
-
-  override async onProcessingComplete(): Promise<
-    ReadonlyArray<DestinationRecord>
-  > {
-    const res: DestinationRecord[] = [];
-    for (const {record, ref, projectKeys} of Object.values(this.users)) {
-      res.push(record);
-      for (const projectKey of projectKeys) {
-        res.push({
-          model: 'vcs_Membership',
-          record: {
-            user: ref,
-            organization: this.vcsOrgKey(projectKey),
-          },
-        });
-      }
-    }
     return res;
   }
 }
