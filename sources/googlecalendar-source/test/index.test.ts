@@ -46,7 +46,8 @@ describe('index', () => {
       return new Googlecalendar(
         {calendars: {get: jest.fn().mockResolvedValue({})}} as any,
         'primary',
-        {events: 100, calendars: 100},
+        100,
+        90,
         logger
       );
     });
@@ -65,7 +66,8 @@ describe('index', () => {
       return new Googlecalendar(
         {calendars: {get: jest.fn().mockRejectedValue('some text')}} as any,
         'primary',
-        {events: 100, calendars: 100},
+        100,
+        90,
         logger
       );
     });
@@ -96,7 +98,8 @@ describe('index', () => {
           },
         } as any,
         'primary',
-        {events: 100, calendars: 100},
+        100,
+        90,
         logger
       );
     });
@@ -135,7 +138,8 @@ describe('index', () => {
           },
         } as any,
         'primary',
-        {events: 100, calendars: 100},
+        100,
+        90,
         logger
       );
     });
@@ -187,7 +191,8 @@ describe('index', () => {
           },
         } as any,
         'primary',
-        {events: 100, calendars: 100},
+        100,
+        90,
         logger
       );
     });

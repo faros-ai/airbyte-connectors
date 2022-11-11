@@ -87,7 +87,7 @@ describe('index', () => {
       source.checkConnection({token: '', cutoff_days: 90})
     ).resolves.toStrictEqual([
       false,
-      new VError('token must be a not empty string'),
+      new VError('token must not be an empty string'),
     ]);
   });
 

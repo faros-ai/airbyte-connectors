@@ -12,7 +12,7 @@ import VError from 'verror';
 import {Builds} from './streams';
 
 interface SourceConfig extends AirbyteConfig {
-  user: string;
+  readonly user: string;
 }
 
 /** The main entry point. */
@@ -23,7 +23,7 @@ export function mainCommand(): Command {
 }
 
 /** Example source implementation. */
-class ExampleSource extends AirbyteSourceBase<SourceConfig> {
+export class ExampleSource extends AirbyteSourceBase<SourceConfig> {
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

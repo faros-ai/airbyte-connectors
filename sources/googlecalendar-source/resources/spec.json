@@ -4,19 +4,14 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Google Calendar Spec",
     "type": "object",
-    "required": [
-      "client_email",
-      "private_key"
-    ],
+    "required": ["client_email", "private_key"],
     "additionalProperties": true,
     "properties": {
       "client_email": {
         "type": "string",
         "title": "Client Email",
         "description": "Google Calendar API Client Email",
-        "examples": [
-          "https://my-google-calendar-server.example.com"
-        ]
+        "examples": ["https://my-google-calendar-server.example.com"]
       },
       "private_key": {
         "type": "string",
@@ -34,15 +29,16 @@
         "type": "integer",
         "title": "Events Max Results",
         "description": "Maximum number of events returned on one result page. The number of events in the resulting page may be less than this value, or none at all, even if there are more events matching the query. Incomplete pages can be detected by a non-empty nextPageToken field in the response",
-        "default": 2500,
-        "max": 2500
+        "default": 500,
+        "minimum": 1,
+        "maximum": 2500
       },
-      "calendars_max_results": {
+      "cutoff_days": {
         "type": "integer",
-        "title": "Calendars Max Results",
-        "description": "Maximum number of entries returned on one result page",
-        "default": 250,
-        "max": 250
+        "title": "Cutoff Days",
+        "default": 90,
+        "minimum": 1,
+        "description": "Fetch events created within the specified number of days"
       }
     }
   }

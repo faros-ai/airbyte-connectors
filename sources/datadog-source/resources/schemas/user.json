@@ -1,9 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": [
-    "id"
-  ],
+  "required": ["id"],
   "properties": {
     "attributes": {
       "type": "object",
@@ -53,15 +51,11 @@
       "properties": {
         "org": {
           "type": "object",
-          "required": [
-            "data"
-          ],
+          "required": ["data"],
           "properties": {
             "data": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"

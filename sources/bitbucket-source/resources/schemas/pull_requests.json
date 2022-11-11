@@ -35,9 +35,7 @@
       "type": "number"
     },
     "taskCount": {
-      "type": [
-        "number"
-      ]
+      "type": ["number"]
     },
     "calculatedActivity": {
       "type": "object",
@@ -278,10 +276,7 @@
       }
     },
     "mergeCommit": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "links": {
           "type": "object",
@@ -301,10 +296,7 @@
       }
     },
     "closedBy": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "displayName": {
           "type": "string"

@@ -16,6 +16,9 @@ export class GitHubCommon {
     source: string
   ): DestinationRecord[] {
     const vcsUser = GitHubCommon.vcs_User(user, source);
+
+    if (!vcsUser) return [];
+
     const repository = GitHubCommon.parseRepositoryKey(user.repository, source);
 
     if (!repository) return [vcsUser];
@@ -51,7 +54,14 @@ export class GitHubCommon {
     }
   }
 
-  static vcs_User(user: Dictionary<any>, source: string): DestinationRecord {
+  static vcs_User(
+    user: Dictionary<any>,
+    source: string
+  ): DestinationRecord | undefined {
+    // don't create a user w/ undefined uid
+    if (!user.login) {
+      return undefined;
+    }
     const type = GitHubCommon.vcs_UserType(user);
     return {
       model: 'vcs_User',

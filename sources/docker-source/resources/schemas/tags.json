@@ -9,19 +9,13 @@
       "type": "string"
     },
     "imageConfig": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "config": {
           "type": "object",
           "properties": {
             "Labels": {
-              "type": [
-                "object",
-                "null"
-              ],
+              "type": ["object", "null"],
               "additionalProperties": true,
               "additionalItems": true
             }
@@ -33,10 +27,7 @@
       }
     },
     "imageManifest": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "schemaVersion": {
           "type": "number"
@@ -80,17 +71,11 @@
           }
         },
         "indexDigest": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "description": "Optional for backwards compatibility. This field is not directly returned by the container registry, it is appended before returning the ImageManifest. It is only applicable to multi-platform images."
         },
         "manifestDigest": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "description": "Optional for backwards compatibility. This field is not directly returned by the container registry, it is appended before returning the ImageManifest."
         }
       }

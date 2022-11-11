@@ -84,6 +84,9 @@ export interface PullRequest {
   readonly state: string;
   readonly createdDate: number;
   readonly updatedDate: number;
+  readonly toRef: {
+    readonly repository: Repository;
+  };
   readonly properties: {readonly commentCount: number};
   readonly links: HRefs;
   readonly computedProperties: {

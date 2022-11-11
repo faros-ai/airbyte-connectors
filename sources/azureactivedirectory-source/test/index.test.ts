@@ -48,7 +48,7 @@ describe('index', () => {
       } as any)
     ).resolves.toStrictEqual([
       false,
-      new VError('client_secret must be a not empty string'),
+      new VError('client_secret must not be an empty string'),
     ]);
   });
 

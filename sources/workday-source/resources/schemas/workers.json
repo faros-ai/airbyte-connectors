@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "primaryJob": {
+      "type": "object",
+      "properties": {
+        "businessTitle": {
+          "type": "string"
+        },
+        "supervisoryOrganization": {
+          "type": "object",
+          "properties": {
+            "descriptor": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "jobType": {
+          "type": "object",
+          "properties": {
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "jobProfile": {
+          "type": "object",
+          "properties": {
+            "descriptor": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "object",
+              "properties": {
+                "descriptor": {
+                  "type": "string"
+                }
+              }
+            },
+            "id": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "workSpace": {
+          "type": "object",
+          "properties": {
+            "locationChain": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "descriptor": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "person": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalJobs": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "businessTitle": {
+              "type": "string"
+            },
+            "supervisoryOrganization": {
+              "type": "object",
+              "properties": {
+                "descriptor": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "jobType": {
+              "type": "object",
+              "properties": {
+                "descriptor": {
+                  "type": "string"
+                }
+              }
+            },
+            "jobProfile": {
+              "type": "object",
+              "properties": {
+                "descriptor": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "location": {
+              "type": "object",
+              "properties": {
+                "country": {
+                  "type": "object",
+                  "properties": {
+                    "descriptor": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "id": {
+                  "type": "string"
+                },
+                "descriptor": {
+                  "type": "string"
+                }
+              }
+            },
+            "workSpace": {
+              "type": "object",
+              "properties": {
+                "locationChain": {
+                  "type": "string"
+                },
+                "descriptor": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "descriptor": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "descriptor": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    }
+  }
+}
+

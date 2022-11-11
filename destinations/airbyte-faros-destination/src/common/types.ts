@@ -14,14 +14,15 @@ export enum InvalidRecordStrategy {
 }
 
 export interface DestinationConfig extends AirbyteConfig {
-  edition_configs: Dictionary<any>;
-  dry_run?: boolean;
-  invalid_record_strategy?: InvalidRecordStrategy;
-  jsonata_destination_models?: ReadonlyArray<string>;
-  jsonata_expression?: string;
-  jsonata_mode?: JSONataApplyMode;
-  origin?: string;
-  source_specific_configs?: Dictionary<any>;
+  readonly edition_configs: Dictionary<any>;
+  readonly dry_run?: boolean;
+  readonly invalid_record_strategy?: InvalidRecordStrategy;
+  readonly jsonata_destination_models?: ReadonlyArray<string>;
+  readonly jsonata_expression?: string;
+  readonly jsonata_mode?: JSONataApplyMode;
+  readonly origin?: string;
+  readonly source_specific_configs?: Dictionary<any>;
+  readonly keep_alive?: boolean;
 }
 
 export enum Operation {

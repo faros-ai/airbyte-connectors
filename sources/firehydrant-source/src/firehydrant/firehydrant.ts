@@ -14,12 +14,14 @@ import {
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_VERSION = 'v1';
 const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
+const DEFAULT_TIMEOUT_MS = 30_000;
 
 export interface FireHydrantConfig {
   readonly token: string;
   readonly cutoff_days: number;
   readonly page_size?: number;
   readonly version?: string;
+  readonly timeout?: number;
 }
 
 export class FireHydrant {
@@ -49,7 +51,7 @@ export class FireHydrant {
     const version = config.version ?? DEFAULT_VERSION;
     const httpClient = axios.create({
       baseURL: `${DEFAULT_BASE_URL}${version}`,
-      timeout: 5000,
+      timeout: config.timeout ?? DEFAULT_TIMEOUT_MS,
       headers: {authorization: auth},
     });
 

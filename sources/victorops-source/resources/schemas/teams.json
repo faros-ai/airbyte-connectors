@@ -1,10 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": [
-    "name",
-    "slug"
-  ],
+  "required": ["name", "slug"],
   "properties": {
     "name": {
       "type": "string"
@@ -32,6 +29,6 @@
     },
     "isDefaultTeam": {
       "type": "boolean"
-    } 
+    }
   }
 }

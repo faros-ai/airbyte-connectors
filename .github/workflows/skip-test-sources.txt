@@ -17,3 +17,4 @@ semaphoreci-source
 servicenow-source
 squadcast-source
 victorops-source
+workday-source

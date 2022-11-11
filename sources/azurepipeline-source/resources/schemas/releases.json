@@ -15,10 +15,10 @@
       "type": "string"
     },
     "modifiedOn": {
-      "type": ["string","null"]
+      "type": ["string", "null"]
     },
     "modifiedBy": {
-      "type": ["object","null"],
+      "type": ["object", "null"],
       "properties": {
         "id": {
           "type": "string"

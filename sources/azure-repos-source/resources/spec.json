@@ -4,11 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Repos Spec",
     "type": "object",
-    "required": [
-      "access_token",
-      "organization",
-      "project"
-    ],
+    "required": ["access_token", "organization", "project"],
     "additionalProperties": true,
     "properties": {
       "access_token": {

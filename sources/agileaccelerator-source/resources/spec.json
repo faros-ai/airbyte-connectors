@@ -18,9 +18,7 @@
       "server_url": {
         "type": "string",
         "title": "Server URL",
-        "example": [
-          "https://test.my.salesforce.com"
-        ],
+        "example": ["https://test.my.salesforce.com"],
         "description": "The API URL for fetching data from AgileAccelerator"
       },
       "client_id": {

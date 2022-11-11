@@ -1,82 +1,61 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "verified": {
-            "type": "boolean"
-        },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "blocked": {
+      "type": "boolean"
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "id": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "fullName": {
+      "type": "string"
+    },
+    "role": {
+      "type": "object",
+      "properties": {
         "id": {
-            "type": "string"
+          "type": "string"
         },
-        "username": {
-            "type": "string"
-        },
-        "fullName": {
-            "type": "string"
-        },
-        "role": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "timeZone": {
-            "type": [
-                "string",
-                "null"
-            ]
-        },
-        "locale": {
-            "type": [
-                "string",
-                "null"
-            ]
-        },
-        "userAddress": {
-            "type": "object",
-            "properties": {
-                "country": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
-                "state": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
-                "city": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
-                "line": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
-                "zipCode": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                }
-            }
-        },
-        "createdAt": {
-            "type": "string"
+        "name": {
+          "type": "string"
         }
+      }
+    },
+    "timeZone": {
+      "type": ["string", "null"]
+    },
+    "locale": {
+      "type": ["string", "null"]
+    },
+    "userAddress": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": ["string", "null"]
+        },
+        "state": {
+          "type": ["string", "null"]
+        },
+        "city": {
+          "type": ["string", "null"]
+        },
+        "line": {
+          "type": ["string", "null"]
+        },
+        "zipCode": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string"
     }
+  }
 }

@@ -2,9 +2,9 @@
 
 ## Requirements
 
-* NodeJS >= 14.x
-* Docker
-* [Lerna](https://lerna.js.org/) -- Install with `npm i -g lerna`
+- NodeJS >= 16.x
+- Docker
+- [Lerna](https://lerna.js.org/) -- Install with `npm i -g lerna`
 
 ## Helpful Documentation
 
@@ -68,6 +68,7 @@ Each stream has a JSON-Schema object defining the schema of the records that
 this stream will fetch. This is done in the streams' `getJsonSchema()` method.
 The source combines the results of calling this method on every stream to
 create the Airbyte Catalog for the source's `discover` command.
+Tip: use [json-to-schema-converter](https://www.liquid-technologies.com/online-json-to-schema-converter) to help with generate the JSON-Schema files for your streams.
 
 The `primaryKey` property defines one or more fields of the record schema that
 make up the unique key of each record.
@@ -94,11 +95,10 @@ Slicing](https://docs.airbyte.io/connector-development/cdk-python/stream-slices)
 by overriding the `streamSlices()` method, but for most cases, setting a
 checkpoint interval should be sufficient.
 
-
 ## Testing
 
 Each source must be tested against an Airbyte-provided docker image that runs a
-series of tests to validate all the commands of a source.  Pull this image by
+series of tests to validate all the commands of a source. Pull this image by
 running `docker pull airbyte/source-acceptance-test`.
 
 This test suite requires several json files defining a valid source

@@ -6,16 +6,10 @@
       "type": "string"
     },
     "deletedDateTime": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "classification": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "creationOptions": {
       "type": "array",
@@ -24,10 +18,7 @@
       }
     },
     "createdDateTime": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "description": {
       "type": "string"
@@ -36,10 +27,7 @@
       "type": "string"
     },
     "expirationDateTime": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "groupTypes": {
       "type": "array",
@@ -48,34 +36,19 @@
       }
     },
     "mail": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "mailEnabled": {
-      "type": [
-        "boolean",
-        "null"
-      ]
+      "type": ["boolean", "null"]
     },
     "mailNickname": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "membershipRule": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "membershipRuleProcessingState": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "members": {
       "type": "array",

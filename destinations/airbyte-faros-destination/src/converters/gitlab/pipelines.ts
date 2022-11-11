@@ -37,6 +37,7 @@ export class Pipelines extends GitlabConverter {
       number: pipeline.id,
       pipeline: pipelineKey,
       status,
+      name: repository.name,
       url: pipeline.web_url,
       createdAt: Utils.toDate(pipeline.created_at),
       startedAt: Utils.toDate(pipeline.created_at),

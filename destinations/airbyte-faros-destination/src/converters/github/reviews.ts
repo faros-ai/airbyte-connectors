@@ -35,7 +35,9 @@ export class Reviews extends GitHubConverter {
     let author: DestinationRecord | undefined = undefined;
     if (review.user) {
       author = GitHubCommon.vcs_User(review.user, source);
-      res.push(author);
+      if (author) {
+        res.push(author);
+      }
     }
 
     // Parse the PR number from the pull request url

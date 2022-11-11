@@ -1,55 +1,55 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "additionalProperties": true,
-    "properties": {
-        "id": {
-            "type": "string"
-        },
-        "uuid": {
-            "type": "string"
-        },
-        "slug": {
-            "type": "string"
-        },
-        "name": {
-            "type": "string"
-        },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "repository": {
+      "type": ["object", "null"],
+      "properties": {
         "url": {
-            "type": "string"
+          "type": "string"
         },
-        "description": {
-            "type": ["string","null"]
-        },
-        "repository": {
-            "type": ["object","null"],
-            "properties": {
-                "url": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        }
-                    }
-                }
+        "provider": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
             }
-        },
-        "createdAt": {
-            "type": ["string","null"]
-        },
-        "organization": {
-            "type": "object",
-            "properties": {
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
-        "cursor": {
-            "type": ["string","null"]
+          }
         }
+      }
+    },
+    "createdAt": {
+      "type": ["string", "null"]
+    },
+    "organization": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        }
+      }
+    },
+    "cursor": {
+      "type": ["string", "null"]
     }
+  }
 }

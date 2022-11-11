@@ -15,13 +15,17 @@ enum PullRequestStateCategory {
 
 export class PullRequests extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_Membership',
     'vcs_PullRequest',
+    'vcs_User',
   ];
 
   id(record: AirbyteRecord): string {
     const pr = record?.record?.data as PullRequest;
     return `${pr.computedProperties.repository.fullName};${pr.id}`;
   }
+
+  projectKeysByUser: Record<string, Set<string>> = {};
 
   async convert(
     record: AirbyteRecord
@@ -51,6 +55,23 @@ export class PullRequests extends BitbucketServerConverter {
         author,
       },
     });
+
+    if (!this.projectKeysByUser[author.uid]) {
+      res.push(user);
+      this.projectKeysByUser[author.uid] = new Set();
+    }
+    const projectKeys = this.projectKeysByUser[author.uid];
+    const projectKey = pr.toRef?.repository?.project?.key;
+    if (projectKey && !projectKeys.has(projectKey)) {
+      res.push({
+        model: 'vcs_Membership',
+        record: {
+          user: author,
+          organization: this.vcsOrgKey(projectKey),
+        },
+      });
+      projectKeys.add(projectKey);
+    }
 
     return res;
   }

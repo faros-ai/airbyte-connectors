@@ -82,7 +82,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
-      new VError('api_key must be a not empty string'),
+      new VError('api_key must not be an empty string'),
     ]);
   });
 

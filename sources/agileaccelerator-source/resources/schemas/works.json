@@ -21,52 +21,28 @@
       "type": "string"
     },
     "agf__Story_Points__c": {
-      "type": [
-        "number",
-        "null"
-      ]
+      "type": ["number", "null"]
     },
     "agf__Priority__c": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "agf__Description__c": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "agf__Parent_ID__c": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "CreatedById": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "agf__Epic__c": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "agf__Sprint__c": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "CreatedBy": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "Id": {
           "type": "string"
@@ -83,10 +59,7 @@
       }
     },
     "agf__Epic__r": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "Id": {
           "type": "string"
@@ -95,10 +68,7 @@
           "type": "string"
         },
         "agf__Description__c": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "agf__Health__c": {
           "type": "string"
@@ -129,10 +99,7 @@
       }
     },
     "agf__Sprint__r": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "Id": {
           "type": "string"
@@ -150,19 +117,13 @@
           "type": "string"
         },
         "agf__Committed_Points__c": {
-          "type": [
-            "number",
-            "null"
-          ]
+          "type": ["number", "null"]
         },
         "agf__Committed_Story_Points_Completed__c": {
           "type": "number"
         },
         "agf__Completed_Story_Points__c": {
-          "type": [
-            "number",
-            "null"
-          ]
+          "type": ["number", "null"]
         },
         "agf__Completion_Committed_Story_Points__c": {
           "type": "number"

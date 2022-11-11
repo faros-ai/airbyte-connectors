@@ -4,20 +4,14 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Phabricator Spec",
     "type": "object",
-    "required": [
-      "server_url",
-      "token",
-      "cutoff_days"
-    ],
+    "required": ["server_url", "token", "cutoff_days"],
     "additionalProperties": true,
     "properties": {
       "server_url": {
         "type": "string",
         "title": "Phabricator Conduit API URL",
         "description": "The API URL for fetching data from Phabricator",
-        "examples": [
-          "https://my-phabricator-server.example.com"
-        ]
+        "examples": ["https://my-phabricator-server.example.com"]
       },
       "token": {
         "type": "string",
@@ -37,10 +31,7 @@
           "type": "string"
         },
         "title": "Repositories",
-        "examples": [
-          "repo-1",
-          "repo-2"
-        ],
+        "examples": ["repo-1", "repo-2"],
         "description": "List of Phabricator repositories, e.g. `repo-1,repo-2`. If none provided would sync all repositories."
       },
       "projects": {
@@ -49,10 +40,7 @@
           "type": "string"
         },
         "title": "Projects",
-        "examples": [
-          "my_project_1",
-          "my_project_2"
-        ],
+        "examples": ["my_project_1", "my_project_2"],
         "description": "List of Phabricator projects slugs, e.g. `my_project_1,my_project_2`. Slugs are the same as project hashtags. If none provided would sync all projects."
       },
       "limit": {
