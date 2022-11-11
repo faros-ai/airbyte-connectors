@@ -22,7 +22,8 @@
       "tenant_id": {
         "type": "string",
         "title": "tenantID",
-        "description": "Azure Active Directory TenantID"
+        "description": "Azure Active Directory TenantID",
+        "airbyte_secret": true
       },
       "auth_version": {
         "type": "string",
