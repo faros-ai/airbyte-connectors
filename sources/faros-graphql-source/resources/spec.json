@@ -1,0 +1,57 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GraphQL Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "api_url",
+      "graph"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "api_url": {
+        "order": 0,
+        "type": "string",
+        "title": "API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai",
+        "examples": [
+          "https://prod.api.faros.ai"
+        ]
+      },
+      "api_key": {
+        "order": 1,
+        "title": "API Key",
+        "type": "string",
+        "description": "The Faros API key to use to access the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "order": 2,
+        "type": "string",
+        "title": "Graph name",
+        "description": "The graph name."
+      },
+      "graphql_api": {
+        "order": 3,
+        "type": "string",
+        "title": "GraphQL API",
+        "description": "The version of GraphQL API for reads.",
+        "default": "v1",
+        "enum": [
+          "v1",
+          "v2"
+        ]
+      },
+      "query": {
+        "order": 4,
+        "type": "string",
+        "title": "GraphQL query",
+        "description": "The query to execute.",
+        "multiline": true
+      }
+    }
+  }
+}
