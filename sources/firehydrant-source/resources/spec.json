@@ -31,6 +31,12 @@
         "description": "Firehydrant API Version",
         "default": "v1",
         "examples": ["v1"]
+      },
+      "timeout": {
+        "type": "integer",
+        "title": "Timeout",
+        "description": "Client timeout in milliseconds when retrieving data from FireHydrant API",
+        "default": 30000
       }
     }
   }
