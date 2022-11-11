@@ -4,10 +4,15 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {GraphQLVersion} from '../src/index';
+
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
 
 let graphExists = false;
 const nodes = [{k1: 'v1'}, {k2: 'v2'}];
@@ -93,7 +98,7 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;
     const iter = source
-      .streams({} as any)[0]
+      .streams({query: 'foo'} as any)[0]
       .readRecords(SyncMode.FULL_REFRESH, undefined, undefined);
 
     const records = [];

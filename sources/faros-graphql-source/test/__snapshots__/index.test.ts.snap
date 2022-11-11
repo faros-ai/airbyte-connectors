@@ -1,3 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`index full_refresh sync mode 1`] = `Array []`;
+exports[`index full_refresh sync mode 1`] = `
+Array [
+  Object {
+    "k1": "v1",
+  },
+  Object {
+    "k2": "v2",
+  },
+]
+`;
