@@ -21,7 +21,6 @@ export interface GraphQLConfig extends AirbyteConfig {
   api_key: string;
   api_url: string;
   graph: string;
-  tenant: string;
   graphql_api?: GraphQLVersion;
   query?: string;
 }
