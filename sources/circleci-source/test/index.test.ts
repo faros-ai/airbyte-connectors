@@ -6,6 +6,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../src/circleci/circleci';
 import * as sut from '../src/index';
@@ -136,10 +137,13 @@ describe('index', () => {
       {repoName: 'repoName'}
     );
     const pipelines = [];
+    let state: Dictionary<{lastUpdatedAt?: string}> = {};
     for await (const pipeline of pipelinesIter) {
       pipelines.push(pipeline);
+      state = pipelinesStream.getUpdatedState(state, pipeline);
     }
     expect(fnPipelinesList).toHaveBeenCalledTimes(3);
     expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+    expect(state).toStrictEqual(readTestResourceFile('pipelines_state.json'));
   });
 });
