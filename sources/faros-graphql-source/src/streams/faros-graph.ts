@@ -4,8 +4,14 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {paginatedQuery, paginatedQueryV2} from 'faros-js-client';
+import {
+  paginatedQuery,
+  paginatedQueryV2,
+  toIncrementalV1,
+  toIncrementalV2,
+} from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
+import {max} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
@@ -13,6 +19,8 @@ import {GraphQLConfig, GraphQLVersion} from '..';
 
 // TODO: Make this part of the spec?
 const PAGE_SIZE = 100;
+const INFINITY = 8640000000000000;
+const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
   [query: string]: {refreshedAtMillis: number};
@@ -34,12 +42,11 @@ export class FarosGraph extends AirbyteStreamBase {
   }
 
   get supportsIncremental(): boolean {
-    // TODO: Support incremental
-    return false;
+    return true;
   }
 
   get stateCheckpointInterval(): number | undefined {
-    return undefined;
+    return 1000;
   }
 
   async *readRecords(
@@ -64,18 +71,38 @@ export class FarosGraph extends AirbyteStreamBase {
         refreshedAtMillis = this.state[this.config.query].refreshedAtMillis;
       }
 
-      // TODO: Filter based on refreshedAtMillis
+      let query = this.config.query;
+      const args: Map<string, any> = new Map<string, any>();
+
+      if (syncMode === SyncMode.INCREMENTAL) {
+        if (this.config.graphql_api === GraphQLVersion.V1) {
+          query = toIncrementalV1(query);
+          args.set('from', refreshedAtMillis);
+          args.set('to', INFINITY);
+        } else {
+          query = toIncrementalV2(query);
+          args.set('from', new Date(refreshedAtMillis).toISOString());
+          args.set('to', INFINITY_ISO_STRING);
+        }
+      }
+
       const nodes = faros.nodeIterable(
         this.config.graph,
-        this.config.query,
+        query,
         PAGE_SIZE,
         this.config.graphql_api === GraphQLVersion.V1
           ? paginatedQuery
-          : paginatedQueryV2
+          : paginatedQueryV2,
+        args
       );
 
       for await (const item of nodes) {
-        // TODO: Update refreshedAtMillis
+        const recordRefreshedAtMillis =
+          this.config.graphql_api === GraphQLVersion.V1
+            ? Number(item['metadata']['refreshedAt']) || 0
+            : new Date(item['refreshedAt']).getTime() || 0;
+        refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
+
         this.state = {...this.state, [this.config.query]: {refreshedAtMillis}};
         yield item;
       }

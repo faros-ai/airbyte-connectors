@@ -15,7 +15,7 @@ function readResourceFile(fileName: string): any {
 }
 
 let graphExists = false;
-const nodes = [{k1: 'v1'}, {k2: 'v2'}];
+let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
 jest.mock('faros-js-client', () => {
   return {
     FarosClient: jest.fn().mockImplementation(() => {
@@ -34,6 +34,8 @@ jest.mock('faros-js-client', () => {
         },
       };
     }),
+    toIncrementalV1: jest.fn(),
+    toIncrementalV2: jest.fn(),
   };
 });
 
@@ -107,5 +109,63 @@ describe('index', () => {
     }
 
     expect(records).toMatchSnapshot();
+  });
+
+  test('incremental sync mode - V1', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      {k1: 'v1', metadata: {refreshedAt: 12}},
+      {k2: 'v2', metadata: {refreshedAt: 23}},
+    ];
+    const stream = source.streams({
+      query: 'foo',
+      graphql_api: GraphQLVersion.V1,
+    } as any)[0];
+    const iter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {foo: {refreshedAtMillis: 1}}
+    );
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      foo: {refreshedAtMillis: 23},
+    });
+  });
+
+  test('incremental sync mode - V2', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      {k1: 'v1', refreshedAt: '2022-10-19T22:02:14.483165+00:00'},
+      {k2: 'v2', refreshedAt: '2023-11-14T22:13:20.000Z'},
+    ];
+    const stream = source.streams({
+      query: 'foo',
+      graphql_api: GraphQLVersion.V2,
+    } as any)[0];
+    const iter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {foo: {refreshedAtMillis: 1}}
+    );
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      foo: {refreshedAtMillis: 1700000000000},
+    });
   });
 });
