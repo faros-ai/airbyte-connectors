@@ -12,7 +12,11 @@ import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
-import {GraphQLBackend, GraphQLClient} from '../src/common/graphql-client';
+import {
+  ForeignKeyCache,
+  GraphQLBackend,
+  GraphQLClient,
+} from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig} from './testing-tools';
@@ -290,31 +294,88 @@ describe('graphql-client', () => {
 });
 
 describe('graphql-client write', () => {
+  const res1 = JSON.parse(`
+  {
+    "data": {
+    "insert_vcs_Organization": {
+      "returning": [
+        {
+          "id": "t1|gql-e2e-v2|GitHub|faros-ai",
+          "uid": "faros-ai",
+          "source": "GitHub"
+          }
+        ]
+      }
+    }
+  }`);
+  const res2 = JSON.parse(`
+  {
+    "data": {
+      "insert_vcs_Repository": {
+        "returning": [
+          {
+            "id": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
+            "name": "metis"
+          },
+          {
+            "id": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+            "name": "hermes"
+          }
+        ]
+      }
+    }
+  }`);
+  const res3 = JSON.parse(`
+  {
+    "data": {
+      "insert_vcs_Branch": {
+        "returning": [
+          {
+            "id": "t1|gql-e2e-v2|foo|t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
+            "name": "foo"
+          },
+          {
+            "id": "t1|gql-e2e-v2|main|t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+            "name": "main"
+          }
+        ]
+      }
+    }
+  }`);
+  const record1 = JSON.parse(
+    '{"name":"foo","uid":"foo","repository":{"name":"metis","uid":"metis","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+  );
+  const record2 = JSON.parse(
+    '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+  );
   test('basic batch mutation', async () => {
-    const r1 = JSON.parse(
-      '{"name":"foo","uid":"foo","repository":{"name":"metis","uid":"metis","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
-    );
-    const r2 = JSON.parse(
-      '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
-    );
+    let queries = 0;
     const backend: GraphQLBackend = {
       healthCheck() {
         return Promise.resolve();
       },
       postQuery(query: any) {
-        console.log(query);
-        return Promise.resolve('foo');
+        expect(query).toMatchSnapshot();
+        queries++;
+        if (query.startsWith('mutation { insert_vcs_Organization')) {
+          return Promise.resolve(res1);
+        } else if (query.startsWith('mutation { insert_vcs_Repository')) {
+          return Promise.resolve(res2);
+        } else if (query.startsWith('mutation { insert_vcs_Branch')) {
+          return Promise.resolve(res3);
+        } else {
+          throw new Error('unexpected query ' + query);
+        }
       },
     };
-    const schemaPath =
-      '/Users/ted/workspace/airbyte-connectors/destinations/airbyte-faros-destination/test/resources/graphql-schema.json';
+    const schemaPath = 'test/resources/graphql-schema.json';
     if (!(await fs.pathExists(schemaPath))) {
       const faros = new FarosClient({
         apiKey: 'k1',
         url: 'http://localhost:8081',
         useGraphQLV2: true,
       });
-      console.log('writing schema');
+      console.log('writing schema to %s', schemaPath);
       await fs.writeJSON(schemaPath, await faros.gqlSchema(), {
         encoding: 'utf-8',
       });
@@ -328,11 +389,30 @@ describe('graphql-client write', () => {
       new AirbyteLogger(AirbyteLogLevel.INFO),
       schemaLoader,
       backend,
-      5
+      10
     );
     await client.loadSchema();
-    await client.writeRecord('vcs_Branch', r1, 'mytestsource');
-    await client.writeRecord('vcs_Branch', r2, 'mytestsource');
+    await client.writeRecord('vcs_Branch', record1, 'mytestsource');
+    await client.writeRecord('vcs_Branch', record2, 'mytestsource');
     await client.flush();
+    expect(queries).toEqual(3);
+  });
+});
+
+describe('foreign key cache', () => {
+  test('round trip', async () => {
+    const cache = new ForeignKeyCache();
+    expect(cache.get('foo', {a: '1', b: '1'})).toBeUndefined();
+    cache.add('foo', {id: '1', a: '1', b: '1'});
+    cache.add('foo', {id: '2', b: '3', a: '4'});
+    cache.add('bar', {id: '3', b: '3', a: '5'});
+    cache.add('bar', {id: '1', b: '1', a: '1'});
+    expect(cache.get('foo', {a: '1', b: '1'})).toEqual('1');
+    expect(cache.get('foo', {b: '1', a: '1'})).toEqual('1');
+    expect(cache.get('foo', {a: '4', b: '3'})).toEqual('2');
+    expect(cache.get('foo', {c: '4'})).toBeUndefined();
+    expect(cache.get('bar', {a: '5', b: '3'})).toEqual('3');
+    expect(cache.get('bar', {a: '1', b: '1'})).toEqual('1');
+    expect(cache.get('bar', {c: '4'})).toBeUndefined();
   });
 });
