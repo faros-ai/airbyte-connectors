@@ -6,6 +6,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../src/circleci/circleci';
 import * as sut from '../src/index';
@@ -115,12 +116,19 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         {
-          get: fnPipelinesList.mockResolvedValue({
-            data: {
-              items: readTestResourceFile('pipelines_input.json'),
-              next_page_token: null,
-            },
-          }),
+          get: fnPipelinesList
+            .mockResolvedValueOnce({
+              data: {
+                items: readTestResourceFile('pipelines_input.json'),
+                next_page_token: null,
+              },
+            })
+            .mockResolvedValue({
+              data: {
+                items: [],
+                next_page_token: null,
+              },
+            }),
         } as any,
         ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
@@ -136,10 +144,13 @@ describe('index', () => {
       {repoName: 'repoName'}
     );
     const pipelines = [];
+    let state: Dictionary<{lastUpdatedAt?: string}> = {};
     for await (const pipeline of pipelinesIter) {
       pipelines.push(pipeline);
+      state = pipelinesStream.getUpdatedState(state, pipeline);
     }
-    expect(fnPipelinesList).toHaveBeenCalledTimes(3);
+    expect(fnPipelinesList).toHaveBeenCalledTimes(5); // fetchPipelines once + 1 fetchWorkflows per pipeline
     expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+    expect(state).toStrictEqual(readTestResourceFile('pipelines_state.json'));
   });
 });

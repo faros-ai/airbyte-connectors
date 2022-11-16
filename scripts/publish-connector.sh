@@ -29,6 +29,7 @@ docker manifest inspect $version_tag > /dev/null
 if [ "$?" == 1 ]; then
   docker build . \
     --build-arg path=$connector_path \
+    --pull \
     -t $latest_tag \
     -t $version_tag \
     --label "io.airbyte.version=$connector_version" \

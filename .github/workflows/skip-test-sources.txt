@@ -6,6 +6,7 @@ bitbucket-server-source
 circleci-source
 datadog-source
 docker-source
+faros-graphql-source
 gitlab-ci-source
 googlecalendar-source
 harness-source

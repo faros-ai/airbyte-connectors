@@ -9,9 +9,8 @@ type StreamSlice = {
   repoName: string;
 };
 
-interface PipelineState {
-  lastUpdatedAt: string;
-}
+type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
+
 export class Pipelines extends AirbyteStreamBase {
   constructor(
     logger: AirbyteLogger,
@@ -48,7 +47,7 @@ export class Pipelines extends AirbyteStreamBase {
   ): AsyncGenerator<Pipeline, any, unknown> {
     const lastUpdatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastUpdatedAt
+        ? streamState?.[streamSlice.repoName]?.lastUpdatedAt
         : undefined;
     const circleCI = CircleCI.instance(this.config, this.axios);
     yield* circleCI.fetchPipelines(streamSlice.repoName, lastUpdatedAt);
@@ -57,12 +56,16 @@ export class Pipelines extends AirbyteStreamBase {
     currentStreamState: PipelineState,
     latestRecord: Pipeline
   ): PipelineState {
-    const lastUpdatedAt: Date = new Date(latestRecord.updated_at);
-    return {
+    const repoName = latestRecord.project_slug;
+    const repoState = currentStreamState[repoName] ?? {};
+
+    const newRepoState = {
       lastUpdatedAt:
-        lastUpdatedAt >= new Date(currentStreamState?.lastUpdatedAt || 0)
+        new Date(latestRecord.updated_at) >
+        new Date(repoState.lastUpdatedAt ?? 0)
           ? latestRecord.updated_at
-          : currentStreamState.lastUpdatedAt,
+          : repoState.lastUpdatedAt,
     };
+    return {...currentStreamState, [repoName]: newRepoState};
   }
 }
