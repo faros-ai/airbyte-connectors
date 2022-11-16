@@ -56,10 +56,11 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
   }
 
   validateConfig(config: GraphQLConfig): void {
-    if (!config.api_url) throw new VError('Missing api_url');
-    if (!config.api_key) throw new VError('Missing api_key');
-    if (!config.graphql_api) throw new VError('Missing graphql_api');
-    if (!config.graph) throw new VError('Missing graph');
+    if (!config.api_url) throw new VError('Faros API url was not provided');
+    if (!config.api_key) throw new VError('Faros API key was not provided');
+    if (!config.graphql_api)
+      throw new VError('Faros GraphQL API version was not set');
+    if (!config.graph) throw new VError('Faros graph name was not provided');
   }
 
   makeFarosClient(config: GraphQLConfig): FarosClient {

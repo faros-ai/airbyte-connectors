@@ -19,7 +19,8 @@ import {Dictionary} from 'ts-essentials';
 import {GraphQLConfig, GraphQLVersion} from '..';
 
 const DEFAULT_PAGE_SIZE = 100;
-const INFINITY = 8640000000000000;
+// January 1, 2200
+const INFINITY = 7258118400000;
 const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
@@ -77,10 +78,7 @@ export class FarosGraph extends AirbyteStreamBase {
     streamState?: GraphQLState
   ): AsyncGenerator<Dictionary<any, string>, any, undefined> {
     const {query, incremental} = streamSlice;
-    this.logger.debug(`Processing query "${query}"`);
-    this.logger.debug(
-      `Query is ${incremental ? 'already' : 'not'} incremental`
-    );
+    this.logger.debug(`Processing query: "${query}"`);
 
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
     let refreshedAtMillis = 0;
@@ -91,22 +89,38 @@ export class FarosGraph extends AirbyteStreamBase {
     const args: Map<string, any> = new Map<string, any>();
     let modifiedQuery = undefined;
 
-    if (syncMode === SyncMode.INCREMENTAL || incremental) {
-      if (this.config.graphql_api === GraphQLVersion.V1) {
-        modifiedQuery = incremental ? undefined : toIncrementalV1(query);
-        args.set('from', refreshedAtMillis);
-        args.set('to', INFINITY);
+    if (syncMode === SyncMode.INCREMENTAL) {
+      if (incremental) {
+        this.logger.debug(
+          `Query is in incremental format, no conversion is needed`
+        );
       } else {
-        modifiedQuery = incremental ? undefined : toIncrementalV2(query);
-        args.set('from', new Date(refreshedAtMillis).toISOString());
-        args.set('to', INFINITY_ISO_STRING);
+        this.logger.debug(
+          `Query is not in incremental format, it will be converted`
+        );
+
+        if (this.config.graphql_api === GraphQLVersion.V1) {
+          modifiedQuery = toIncrementalV1(query);
+        } else {
+          modifiedQuery = toIncrementalV2(query);
+        }
+
+        this.logger.debug(
+          `Query was converted to incremental format: "${modifiedQuery}"`
+        );
       }
     }
 
-    if (modifiedQuery) {
-      this.logger.debug(
-        `Query was converted to incremental: "${modifiedQuery}"`
-      );
+    // We need set the filter variables regardless
+    // of syncMode if the query is incremental
+    if (syncMode === SyncMode.INCREMENTAL || incremental) {
+      if (this.config.graphql_api === GraphQLVersion.V1) {
+        args.set('from', refreshedAtMillis);
+        args.set('to', INFINITY);
+      } else {
+        args.set('from', new Date(refreshedAtMillis).toISOString());
+        args.set('to', INFINITY_ISO_STRING);
+      }
     }
 
     const nodes = this.faros.nodeIterable(

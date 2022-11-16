@@ -66,21 +66,30 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
-      new VError('Missing api_url'),
+      new VError('Faros API url was not provided'),
     ]);
     await expect(
       source.checkConnection({api_url: 'x'} as any)
-    ).resolves.toStrictEqual([false, new VError('Missing api_key')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros API key was not provided'),
+    ]);
     await expect(
       source.checkConnection({api_url: 'x', api_key: 'y'} as any)
-    ).resolves.toStrictEqual([false, new VError('Missing graphql_api')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros GraphQL API version was not set'),
+    ]);
     await expect(
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
         graphql_api: GraphQLVersion.V1,
       } as any)
-    ).resolves.toStrictEqual([false, new VError('Missing graph')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros graph name was not provided'),
+    ]);
     await expect(
       source.checkConnection({
         api_url: 'x',
