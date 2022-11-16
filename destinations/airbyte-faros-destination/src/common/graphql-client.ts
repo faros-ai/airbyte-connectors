@@ -2,9 +2,23 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-feeds-sdk';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, intersection, isNil, pick} from 'lodash';
+import {
+  clone,
+  difference,
+  get,
+  intersection,
+  isEmpty,
+  isEqual,
+  isNil,
+  keys,
+  omit,
+  pick,
+  reduce,
+  reverse,
+  uniqWith,
+} from 'lodash';
 import traverse from 'traverse';
-import {Dictionary} from 'ts-essentials';
+import {assert, Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {
@@ -47,41 +61,59 @@ class UpsertBuffer {
     string,
     Upsert[]
   >();
-  private numUpserts = 0;
 
-  add(upsert: Upsert): number {
+  add(upsert: Upsert): void {
     if (!this.upsertBuffer.has(upsert.model)) {
       this.upsertBuffer.set(upsert.model, []);
     }
     const modelBuffer = this.upsertBuffer.get(upsert.model);
     modelBuffer.push(upsert);
-    return this.numUpserts++;
   }
 
-  // ops(clear = false): WriteOp[] {
-  //   const result = [];
-  //   for (const [model, modelUpserts] of this.upsertBuffer) {
-  //     const all = modelUpserts.map((u) => u.object);
-  //     const objects = _.uniqWith(all, _.isEqual);
-  //     const mutation = {
-  //       mutation: {
-  //         [`insert_${model}`]: {
-  //           __args: {objects, on_conflict: modelUpserts[0].on_conflict},
-  //           returning: {id: true},
-  //         },
-  //       },
-  //     };
-  //     result.push({
-  //       query: mutation,
-  //       errorMsg: `Failed to write upsert for ${model}`,
-  //     });
-  //   }
-  //   if (clear) {
-  //     this.numUpserts = 0;
-  //     this.upsertBuffer.clear();
-  //   }
-  //   return result;
-  // }
+  size(): number {
+    return Array.from(this.upsertBuffer.entries()).reduce(
+      (sum, kvTuple) => sum + kvTuple[1].length,
+      0
+    );
+  }
+
+  get(model: string, remove = true): Upsert[] | undefined {
+    if (this.upsertBuffer.has(model)) {
+      const modelUpserts = this.upsertBuffer.get(model);
+      if (remove) {
+        this.upsertBuffer.delete(model);
+      }
+      return modelUpserts;
+    }
+    return undefined;
+  }
+}
+
+interface KeyedObject extends Dictionary<any> {
+  id: string;
+}
+
+export class ForeignKeyCache {
+  private readonly byModelAndKey: Map<string, Map<string, string>> = new Map();
+  private serialize(obj: any): string {
+    return keys(obj)
+      .sort()
+      .map((k) => `${k}:${obj[k]}`)
+      .join('|');
+  }
+  add(model: string, object: KeyedObject): void {
+    if (!this.byModelAndKey.has(model)) {
+      this.byModelAndKey.set(model, new Map());
+    }
+    const modelKeys = this.byModelAndKey.get(model);
+    modelKeys.set(this.serialize(omit(object, ['id'])), object.id);
+  }
+  get(model: string, object: Dictionary<any>): string | undefined {
+    if (this.byModelAndKey.has(model)) {
+      return this.byModelAndKey.get(model).get(this.serialize(object));
+    }
+    return undefined;
+  }
 }
 
 export class GraphQLClient {
@@ -93,6 +125,7 @@ export class GraphQLClient {
   private readonly batchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
+  private readonly foreignKeys = new ForeignKeyCache();
 
   constructor(
     logger: AirbyteLogger,
@@ -177,9 +210,31 @@ export class GraphQLClient {
     if (!this.tableNames.has(model)) {
       throw new VError(`Table ${model} does not exist`);
     }
-
     this.addUpsert(model, origin, record);
-    // TODO: postQuery
+    if (this.upsertBuffer.size() >= this.batchSize) {
+      await this.flushUpsertBuffer();
+    }
+  }
+
+  async flushUpsertBuffer(): Promise<void> {
+    console.log('flushing upserts');
+    //TODO: cache reversed list
+    for (const model of reverse(this.schema.sortedModelDependencies)) {
+      const ops = this.toWriteOp(model);
+      if (ops) {
+        const opGql = jsonToGraphQLQuery(ops.query);
+        // TODO: handle errors
+        const opRes = await this.backend.postQuery(opGql);
+        const paths = keys(opRes.data);
+        assert(paths.length === 1, `expected one element in ${paths}`);
+        const nextKey = paths[0];
+        const objects = get(opRes.data, `${nextKey}.returning`);
+        assert(Array.isArray(objects), `expected array`);
+        for (const obj of objects) {
+          this.foreignKeys.add(model, obj);
+        }
+      }
+    }
   }
 
   async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
@@ -235,36 +290,22 @@ export class GraphQLClient {
     await this.postQuery({mutation}, `Failed to delete ${record.model} record`);
   }
 
-  private async postQuery(
-    query: any,
-    errorMsg: string
-    //upsert?: Upsert
-  ): Promise<void> {
-    // if (upsert) {
-    //   const bufferSize = this.upsertBuffer.add(upsert);
-    //   if (bufferSize >= this.batchSize) {
-    //     await this.doFlush(this.upsertBuffer.ops(true));
-    //   }
-    //   return;
-    // }
+  private async postQuery(query: any, errorMsg: string): Promise<void> {
     this.writeBuffer.push({
       query,
       errorMsg,
     });
+    // TODO separate this from upsert batching
     if (this.writeBuffer.length >= this.batchSize) {
-      await this.doFlush(this.writeBuffer);
+      await this.flush();
     }
   }
 
   async flush(): Promise<void> {
-    await Promise.all([
-      this.doFlush(this.writeBuffer),
-      //this.doFlush(this.upsertBuffer.ops(true)),
-    ]);
+    await Promise.all([this.flushWriteBuffer(), this.flushUpsertBuffer()]);
   }
-
-  async doFlush(writeBuffer: WriteOp[]): Promise<void> {
-    const queries = writeBuffer.map((op) => op.query);
+  async flushWriteBuffer(): Promise<void> {
+    const queries = this.writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
       this.logger.debug(`executing graphql query: ${gql}`);
@@ -276,10 +317,10 @@ export class GraphQLClient {
           )}. Query: ${gql}`
         );
         // now try mutations individually and fail on the first bad one
-        for (const op of writeBuffer) {
+        for (const op of this.writeBuffer) {
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
-          writeBuffer.shift();
+          this.writeBuffer.shift();
           if (opRes.errors) {
             throw new VError(
               `${op.errorMsg} with query '${opGql}': ${JSON.stringify(
@@ -290,7 +331,7 @@ export class GraphQLClient {
         }
       } else {
         // truncate the buffer
-        writeBuffer.splice(0);
+        this.writeBuffer.splice(0);
       }
     }
   }
@@ -399,8 +440,7 @@ export class GraphQLClient {
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
       if (nestedModel && value) {
-        const fk = this.addUpsert(nestedModel.model, origin, value);
-        foreignKeys[field] = fk;
+        foreignKeys[field] = this.addUpsert(nestedModel.model, origin, value);
       } else {
         const val = this.formatFieldValue(model, field, value);
         if (!isNil(val)) object[field] = val;
@@ -416,6 +456,64 @@ export class GraphQLClient {
       model,
       keys: pick(object, this.schema.primaryKeys[model]),
     };
+  }
+
+  withForeignKeys(upsert: Upsert): Dictionary<any> {
+    if (isEmpty(upsert.foreignKeys)) {
+      return upsert.object;
+    }
+    const result = clone(upsert.object);
+    for (const [name, fk] of Object.entries(upsert.foreignKeys)) {
+      // TODO: make this work for CE where FKs are named differently
+      // TODO: validate FK field
+      const key = this.foreignKeys.get(fk.model, fk.keys);
+      assert(!isNil(key), `failed to resolve key for ${JSON.stringify(fk)}`);
+      result[`${name}Id`] = key;
+    }
+    return result;
+  }
+
+  toWriteOp(model: string): WriteOp | undefined {
+    const modelUpserts = this.upsertBuffer.get(model);
+    if (modelUpserts) {
+      const all = modelUpserts.map((u) => this.withForeignKeys(u));
+      const objects = uniqWith(all, isEqual);
+      // find all unique key names in the data
+      const keys = reduce(
+        modelUpserts,
+        (result, value) => {
+          Object.keys(value.object).forEach((k) => result.add(k));
+          return result;
+        },
+        new Set<string>()
+      );
+      const primaryKeys = intersection(
+        Array.from(keys.keys()),
+        this.schema.primaryKeys[model]
+      );
+      const keyObj = primaryKeys
+        .sort()
+        .reduce((a, v) => ({...a, [v]: true}), {});
+      const mutation = {
+        mutation: {
+          [`insert_${model}`]: {
+            __args: {
+              objects,
+              on_conflict: this.createConflictClause(model, false),
+            },
+            returning: {
+              id: true,
+              ...keyObj,
+            },
+          },
+        },
+      };
+      return {
+        query: mutation,
+        errorMsg: `Failed to write upsert for ${model}`,
+      };
+    }
+    return undefined;
   }
 
   private formatFieldValue(model: string, field: string, value: any): any {
