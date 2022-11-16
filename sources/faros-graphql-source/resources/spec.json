@@ -51,6 +51,13 @@
         "title": "GraphQL query",
         "description": "The query to execute.",
         "multiline": true
+      },
+      "page_size": {
+        "order": 5,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Page size to use when paginating through query results.",
+        "default": 100
       }
     }
   }
