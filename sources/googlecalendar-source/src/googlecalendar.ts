@@ -59,6 +59,9 @@ export class Googlecalendar {
         private_key: config.private_key.replace(/\\n/g, '\n'),
         client_email: config.client_email,
       },
+      clientOptions: {
+        subject: config.calendar_id
+      }
     });
 
     // Acquire an auth client, and bind it to all future calls
