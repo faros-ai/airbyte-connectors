@@ -2,7 +2,7 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-feeds-sdk';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {difference, intersection, isNil} from 'lodash';
+import {difference, intersection, isNil, pick} from 'lodash';
 import traverse from 'traverse';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -22,12 +22,66 @@ interface ConflictClause {
 
 export interface GraphQLBackend {
   healthCheck(): Promise<void>;
+
   postQuery(query: any): Promise<any>;
 }
 
 interface WriteOp {
-  query: string;
+  query: any;
   errorMsg: string;
+}
+
+interface ForeignKey {
+  model: string;
+  keys: Dictionary<any>;
+}
+
+interface Upsert {
+  model: string;
+  object: Dictionary<any>;
+  foreignKeys: Dictionary<ForeignKey>;
+}
+
+class UpsertBuffer {
+  private readonly upsertBuffer: Map<string, Upsert[]> = new Map<
+    string,
+    Upsert[]
+  >();
+  private numUpserts = 0;
+
+  add(upsert: Upsert): number {
+    if (!this.upsertBuffer.has(upsert.model)) {
+      this.upsertBuffer.set(upsert.model, []);
+    }
+    const modelBuffer = this.upsertBuffer.get(upsert.model);
+    modelBuffer.push(upsert);
+    return this.numUpserts++;
+  }
+
+  // ops(clear = false): WriteOp[] {
+  //   const result = [];
+  //   for (const [model, modelUpserts] of this.upsertBuffer) {
+  //     const all = modelUpserts.map((u) => u.object);
+  //     const objects = _.uniqWith(all, _.isEqual);
+  //     const mutation = {
+  //       mutation: {
+  //         [`insert_${model}`]: {
+  //           __args: {objects, on_conflict: modelUpserts[0].on_conflict},
+  //           returning: {id: true},
+  //         },
+  //       },
+  //     };
+  //     result.push({
+  //       query: mutation,
+  //       errorMsg: `Failed to write upsert for ${model}`,
+  //     });
+  //   }
+  //   if (clear) {
+  //     this.numUpserts = 0;
+  //     this.upsertBuffer.clear();
+  //   }
+  //   return result;
+  // }
 }
 
 export class GraphQLClient {
@@ -38,6 +92,7 @@ export class GraphQLClient {
   private tableNames: Set<string>;
   private readonly batchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
+  private readonly upsertBuffer = new UpsertBuffer();
 
   constructor(
     logger: AirbyteLogger,
@@ -123,11 +178,8 @@ export class GraphQLClient {
       throw new VError(`Table ${model} does not exist`);
     }
 
-    const obj = this.createMutationObject(model, origin, record);
-    const mutation = {
-      [`insert_${model}_one`]: {__args: obj, id: true},
-    };
-    await this.postQuery({mutation}, `Failed to write ${model} record`);
+    this.addUpsert(model, origin, record);
+    // TODO: postQuery
   }
 
   async writeTimestampedRecord(record: TimestampedRecord): Promise<void> {
@@ -183,18 +235,36 @@ export class GraphQLClient {
     await this.postQuery({mutation}, `Failed to delete ${record.model} record`);
   }
 
-  private async postQuery(query: any, errorMsg: string): Promise<void> {
+  private async postQuery(
+    query: any,
+    errorMsg: string
+    //upsert?: Upsert
+  ): Promise<void> {
+    // if (upsert) {
+    //   const bufferSize = this.upsertBuffer.add(upsert);
+    //   if (bufferSize >= this.batchSize) {
+    //     await this.doFlush(this.upsertBuffer.ops(true));
+    //   }
+    //   return;
+    // }
     this.writeBuffer.push({
       query,
       errorMsg,
     });
     if (this.writeBuffer.length >= this.batchSize) {
-      await this.flush();
+      await this.doFlush(this.writeBuffer);
     }
   }
 
   async flush(): Promise<void> {
-    const queries = this.writeBuffer.map((op) => op.query);
+    await Promise.all([
+      this.doFlush(this.writeBuffer),
+      //this.doFlush(this.upsertBuffer.ops(true)),
+    ]);
+  }
+
+  async doFlush(writeBuffer: WriteOp[]): Promise<void> {
+    const queries = writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
       this.logger.debug(`executing graphql query: ${gql}`);
@@ -206,10 +276,10 @@ export class GraphQLClient {
           )}. Query: ${gql}`
         );
         // now try mutations individually and fail on the first bad one
-        for (const op of this.writeBuffer) {
+        for (const op of writeBuffer) {
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
-          this.writeBuffer.shift();
+          writeBuffer.shift();
           if (opRes.errors) {
             throw new VError(
               `${op.errorMsg} with query '${opGql}': ${JSON.stringify(
@@ -220,7 +290,7 @@ export class GraphQLClient {
         }
       } else {
         // truncate the buffer
-        this.writeBuffer.splice(0);
+        writeBuffer.splice(0);
       }
     }
   }
@@ -316,6 +386,35 @@ export class GraphQLClient {
     return {
       [nested ? 'data' : 'object']: obj,
       on_conflict: this.createConflictClause(model, nested),
+    };
+  }
+
+  private addUpsert(
+    model: string,
+    origin: string,
+    record: Dictionary<any>
+  ): ForeignKey {
+    const object = {};
+    const foreignKeys: Dictionary<ForeignKey> = {};
+    for (const [field, value] of Object.entries(record)) {
+      const nestedModel = this.schema.references[model][field];
+      if (nestedModel && value) {
+        const fk = this.addUpsert(nestedModel.model, origin, value);
+        foreignKeys[field] = fk;
+      } else {
+        const val = this.formatFieldValue(model, field, value);
+        if (!isNil(val)) object[field] = val;
+      }
+    }
+    object['origin'] = origin;
+    this.upsertBuffer.add({
+      model,
+      object,
+      foreignKeys: foreignKeys,
+    });
+    return {
+      model,
+      keys: pick(object, this.schema.primaryKeys[model]),
     };
   }
 
