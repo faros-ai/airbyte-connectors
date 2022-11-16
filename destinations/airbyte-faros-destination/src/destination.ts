@@ -239,6 +239,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           await client.graphExists(graph);
         },
         async postQuery(query: any): Promise<any> {
+          // TODO: fix error handling now that clio returns 400
           return await client.rawGql(graph, query);
         },
       };

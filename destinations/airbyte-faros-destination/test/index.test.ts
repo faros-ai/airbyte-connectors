@@ -3,13 +3,16 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteLogger,
+  AirbyteLogLevel,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
+import {FarosClient, Schema} from 'faros-feeds-sdk/lib';
+import fs from 'fs-extra';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
-import {GraphQLClient} from '../src/common/graphql-client';
+import {GraphQLBackend, GraphQLClient} from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig} from './testing-tools';
@@ -283,5 +286,53 @@ describe('graphql-client', () => {
       },
     ];
     expect(GraphQLClient.batchMutation(json)).toBeUndefined();
+  });
+});
+
+describe('graphql-client write', () => {
+  test('basic batch mutation', async () => {
+    const r1 = JSON.parse(
+      '{"name":"foo","uid":"foo","repository":{"name":"metis","uid":"metis","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+    );
+    const r2 = JSON.parse(
+      '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+    );
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        console.log(query);
+        return Promise.resolve('foo');
+      },
+    };
+    const schemaPath =
+      '/Users/ted/workspace/airbyte-connectors/destinations/airbyte-faros-destination/test/resources/graphql-schema.json';
+    if (!(await fs.pathExists(schemaPath))) {
+      const faros = new FarosClient({
+        apiKey: 'k1',
+        url: 'http://localhost:8081',
+        useGraphQLV2: true,
+      });
+      console.log('writing schema');
+      await fs.writeJSON(schemaPath, await faros.gqlSchema(), {
+        encoding: 'utf-8',
+      });
+    }
+    const schemaLoader = {
+      async loadSchema(): Promise<Schema> {
+        return await fs.readJson(schemaPath, {encoding: 'utf-8'});
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      5
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_Branch', r1, 'mytestsource');
+    await client.writeRecord('vcs_Branch', r2, 'mytestsource');
+    await client.flush();
   });
 });
