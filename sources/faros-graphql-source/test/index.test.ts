@@ -14,16 +14,24 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
+const BASE_CONFIG = {
+  query: 'foo',
+  api_url: 'x',
+  api_key: 'y',
+  graphql_api: GraphQLVersion.V1,
+  graph: 'default',
+};
+
 let graphExists = false;
 let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
 jest.mock('faros-js-client', () => {
   return {
     FarosClient: jest.fn().mockImplementation(() => {
       return {
-        graphExists: () => {
+        graphExists: (): any => {
           return graphExists;
         },
-        nodeIterable: () => {
+        nodeIterable: (): any => {
           return {
             async *[Symbol.asyncIterator](): AsyncIterator<any> {
               for (const item of nodes) {
@@ -58,21 +66,30 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
-      new VError('Missing api_url'),
+      new VError('Faros API url was not provided'),
     ]);
     await expect(
       source.checkConnection({api_url: 'x'} as any)
-    ).resolves.toStrictEqual([false, new VError('Missing api_key')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros API key was not provided'),
+    ]);
     await expect(
       source.checkConnection({api_url: 'x', api_key: 'y'} as any)
-    ).resolves.toStrictEqual([false, new VError('Missing graphql_api')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros GraphQL API version was not set'),
+    ]);
     await expect(
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
         graphql_api: GraphQLVersion.V1,
       } as any)
-    ).resolves.toStrictEqual([false, new VError('Missing graph')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Faros graph name was not provided'),
+    ]);
     await expect(
       source.checkConnection({
         api_url: 'x',
@@ -80,7 +97,10 @@ describe('index', () => {
         graphql_api: GraphQLVersion.V1,
         graph: 'default',
       } as any)
-    ).resolves.toStrictEqual([false, new VError('Graph does not exist!')]);
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Graph default does not exist!'),
+    ]);
   });
 
   test('check connection success', async () => {
@@ -100,8 +120,8 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;
     const iter = source
-      .streams({query: 'foo'} as any)[0]
-      .readRecords(SyncMode.FULL_REFRESH, undefined, undefined);
+      .streams(BASE_CONFIG)[0]
+      .readRecords(SyncMode.FULL_REFRESH, undefined, {query: 'foo'});
 
     const records = [];
     for await (const record of iter) {
@@ -118,14 +138,11 @@ describe('index', () => {
       {k1: 'v1', metadata: {refreshedAt: 12}},
       {k2: 'v2', metadata: {refreshedAt: 23}},
     ];
-    const stream = source.streams({
-      query: 'foo',
-      graphql_api: GraphQLVersion.V1,
-    } as any)[0];
+    const stream = source.streams(BASE_CONFIG)[0];
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      undefined,
+      {query: 'foo'},
       {foo: {refreshedAtMillis: 1}}
     );
 
@@ -148,13 +165,13 @@ describe('index', () => {
       {k2: 'v2', refreshedAt: '2023-11-14T22:13:20.000Z'},
     ];
     const stream = source.streams({
-      query: 'foo',
+      ...BASE_CONFIG,
       graphql_api: GraphQLVersion.V2,
     } as any)[0];
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      undefined,
+      {query: 'foo'},
       {foo: {refreshedAtMillis: 1}}
     );
 

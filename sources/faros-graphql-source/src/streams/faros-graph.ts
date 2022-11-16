@@ -5,6 +5,8 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {
+  createIncrementalQueriesV1,
+  createIncrementalQueriesV2,
   paginatedQuery,
   paginatedQueryV2,
   toIncrementalV1,
@@ -13,23 +15,28 @@ import {
 import {FarosClient} from 'faros-js-client';
 import {max} from 'lodash';
 import {Dictionary} from 'ts-essentials';
-import VError from 'verror';
 
 import {GraphQLConfig, GraphQLVersion} from '..';
 
-// TODO: Make this part of the spec?
-const PAGE_SIZE = 100;
-const INFINITY = 8640000000000000;
+const DEFAULT_PAGE_SIZE = 100;
+// January 1, 2200
+const INFINITY = 7258118400000;
 const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
   [query: string]: {refreshedAtMillis: number};
 };
 
+type StreamSlice = {query: string; incremental: boolean};
+
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
 
-  constructor(readonly config: GraphQLConfig, readonly logger: AirbyteLogger) {
+  constructor(
+    readonly config: GraphQLConfig,
+    readonly logger: AirbyteLogger,
+    readonly faros: FarosClient
+  ) {
     super(logger);
   }
 
@@ -45,8 +52,23 @@ export class FarosGraph extends AirbyteStreamBase {
     return true;
   }
 
-  get stateCheckpointInterval(): number | undefined {
-    return 1000;
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    if (this.config.query) {
+      this.logger.debug('Single query specified');
+      yield {query: this.config.query, incremental: false};
+    } else {
+      const schema = await this.faros.introspect(this.config.graph);
+      const queries =
+        this.config.graphql_api === GraphQLVersion.V1
+          ? createIncrementalQueriesV1(schema, false)
+          : createIncrementalQueriesV2(schema, false);
+      this.logger.debug(
+        `No query specified. Will execute ${queries.length} queries to fetch all models`
+      );
+      for (const query of queries) {
+        yield {query: query.gql, incremental: true};
+      }
+    }
   }
 
   async *readRecords(
@@ -55,66 +77,75 @@ export class FarosGraph extends AirbyteStreamBase {
     streamSlice?: Dictionary<any, string>,
     streamState?: GraphQLState
   ): AsyncGenerator<Dictionary<any, string>, any, undefined> {
-    const faros = new FarosClient({
-      url: this.config.api_url,
-      apiKey: this.config.api_key,
-      useGraphQLV2: this.config.graphql_api === GraphQLVersion.V2,
-    });
-    if (!(await faros.graphExists(this.config.graph))) {
-      throw new VError('Graph does not exist!');
+    const {query, incremental} = streamSlice;
+    this.logger.debug(`Processing query: "${query}"`);
+
+    this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
+    let refreshedAtMillis = 0;
+    if (this.state[query]) {
+      refreshedAtMillis = this.state[query].refreshedAtMillis;
     }
 
-    if (this.config.query) {
-      this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
-      let refreshedAtMillis = 0;
-      if (this.state[this.config.query]) {
-        refreshedAtMillis = this.state[this.config.query].refreshedAtMillis;
-      }
+    const args: Map<string, any> = new Map<string, any>();
+    let modifiedQuery = undefined;
 
-      let query = this.config.query;
-      const args: Map<string, any> = new Map<string, any>();
+    if (syncMode === SyncMode.INCREMENTAL) {
+      if (incremental) {
+        this.logger.debug(
+          `Query is in incremental format, no conversion is needed`
+        );
+      } else {
+        this.logger.debug(
+          `Query is not in incremental format, it will be converted`
+        );
 
-      if (syncMode === SyncMode.INCREMENTAL) {
         if (this.config.graphql_api === GraphQLVersion.V1) {
-          query = toIncrementalV1(query);
-          args.set('from', refreshedAtMillis);
-          args.set('to', INFINITY);
+          modifiedQuery = toIncrementalV1(query);
         } else {
-          query = toIncrementalV2(query);
-          args.set('from', new Date(refreshedAtMillis).toISOString());
-          args.set('to', INFINITY_ISO_STRING);
+          modifiedQuery = toIncrementalV2(query);
         }
-      }
 
-      const nodes = faros.nodeIterable(
-        this.config.graph,
-        query,
-        PAGE_SIZE,
+        this.logger.debug(
+          `Query was converted to incremental format: "${modifiedQuery}"`
+        );
+      }
+    }
+
+    // We need set the filter variables regardless
+    // of syncMode if the query is incremental
+    if (syncMode === SyncMode.INCREMENTAL || incremental) {
+      if (this.config.graphql_api === GraphQLVersion.V1) {
+        args.set('from', refreshedAtMillis);
+        args.set('to', INFINITY);
+      } else {
+        args.set('from', new Date(refreshedAtMillis).toISOString());
+        args.set('to', INFINITY_ISO_STRING);
+      }
+    }
+
+    const nodes = this.faros.nodeIterable(
+      this.config.graph,
+      modifiedQuery || query,
+      this.config.page_size || DEFAULT_PAGE_SIZE,
+      this.config.graphql_api === GraphQLVersion.V1
+        ? paginatedQuery
+        : paginatedQueryV2,
+      args
+    );
+
+    for await (const item of nodes) {
+      const recordRefreshedAtMillis =
         this.config.graphql_api === GraphQLVersion.V1
-          ? paginatedQuery
-          : paginatedQueryV2,
-        args
-      );
+          ? Number(item.metadata?.refreshedAt) || 0
+          : new Date(item.refreshedAt).getTime() || 0;
+      refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
 
-      for await (const item of nodes) {
-        const recordRefreshedAtMillis =
-          this.config.graphql_api === GraphQLVersion.V1
-            ? Number(item['metadata']['refreshedAt']) || 0
-            : new Date(item['refreshedAt']).getTime() || 0;
-        refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
-
-        this.state = {...this.state, [this.config.query]: {refreshedAtMillis}};
-        yield item;
-      }
-    } else {
-      // TODO: Query all models
+      this.state = {...this.state, [query]: {refreshedAtMillis}};
+      yield item;
     }
   }
 
-  getUpdatedState(
-    currentStreamState: GraphQLState,
-    latestRecord: Dictionary<any>
-  ): GraphQLState {
+  getUpdatedState(): GraphQLState {
     return this.state;
   }
 }
