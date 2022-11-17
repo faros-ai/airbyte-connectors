@@ -8,6 +8,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {
   Calendar,
+  DEFAULT_CALENDAR_ID,
   Googlecalendar,
   GoogleCalendarConfig,
 } from '../googlecalendar';
@@ -34,10 +35,15 @@ export class Calendars extends AirbyteStreamBase {
     streamSlice?: Dictionary<any, string>,
     streamState?: CalendarsState
   ): AsyncGenerator<Calendar> {
-    const googleCalendar = await Googlecalendar.instance(
-      this.config,
-      this.logger
-    );
-    yield await googleCalendar.getCalendar();
+    const calendars = this.config.calendar_ids ?? [DEFAULT_CALENDAR_ID];
+
+    for (const calendarId of calendars) {
+      const googleCalendar = await Googlecalendar.instance(
+        this.config,
+        this.logger,
+        calendarId
+      );
+      yield await googleCalendar.getCalendar();
+    }
   }
 }

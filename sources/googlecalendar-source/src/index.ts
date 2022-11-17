@@ -8,7 +8,11 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Googlecalendar, GoogleCalendarConfig} from './googlecalendar';
+import {
+  DEFAULT_CALENDAR_ID,
+  Googlecalendar,
+  GoogleCalendarConfig,
+} from './googlecalendar';
 import {Calendars, Events} from './streams';
 
 /** The main entry point. */
@@ -27,15 +31,26 @@ export class GooglecalendarSource extends AirbyteSourceBase<GoogleCalendarConfig
   async checkConnection(
     config: GoogleCalendarConfig
   ): Promise<[boolean, VError]> {
-    try {
-      const googleCalendar = await Googlecalendar.instance(config, this.logger);
-      await googleCalendar.getCalendar();
-    } catch (error: any) {
-      const err = new VError(
-        `Please verify your private_key and client_email are correct. Error: ${error?.message}`
-      );
-      return [false, err];
+    const calendars = config.calendar_ids ?? [DEFAULT_CALENDAR_ID];
+
+    for (const calendarId of calendars) {
+      try {
+        config;
+        const googleCalendar = await Googlecalendar.instance(
+          config,
+          this.logger,
+          calendarId
+        );
+        await googleCalendar.getCalendar();
+      } catch (error: any) {
+        const err = new VError(
+          `Please verify your private_key and client_email are correct and have access to '${calendarId}' calendar. ` +
+            `Error: ${error?.message}`
+        );
+        return [false, err];
+      }
     }
+
     return [true, undefined];
   }
   streams(config: GoogleCalendarConfig): AirbyteStreamBase[] {
