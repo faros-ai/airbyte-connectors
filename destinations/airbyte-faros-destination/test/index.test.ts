@@ -397,6 +397,37 @@ describe('graphql-client write', () => {
     await client.flush();
     expect(queries).toEqual(3);
   });
+  const users = [
+    {
+      uid: 'tovbinm',
+      name: 'tovbinm',
+      htmlUrl: 'https://github.com/tovbinm',
+      type: {category: 'User', detail: 'user'},
+      source: 'GitHub',
+      origin: 'mytestsource',
+    },
+    {uid: 'tovbinm', source: 'GitHub', origin: 'mytestsource2'},
+    {
+      uid: 'vitalyg',
+      name: 'vitalyg',
+      htmlUrl: 'https://github.com/vitalyg',
+      type: {category: 'User', detail: 'user'},
+      source: 'GitHub',
+      origin: 'mytestsource',
+    },
+    {
+      uid: 'vitalyg',
+      source: 'GitHub',
+      origin: 'mytestsource',
+      type: {foo: 'bar'},
+    },
+  ];
+  const primaryKeys = ['uid', 'source'];
+  test('unique objects', async () => {
+    expect(
+      GraphQLClient.mergeByPrimaryKey(users, primaryKeys)
+    ).toMatchSnapshot();
+  });
 });
 
 describe('foreign key cache', () => {

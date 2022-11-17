@@ -6,16 +6,15 @@ import {
   clone,
   difference,
   get,
+  groupBy,
   intersection,
   isEmpty,
-  isEqual,
   isNil,
   keys,
   omit,
   pick,
   reduce,
   reverse,
-  uniqWith,
 } from 'lodash';
 import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
@@ -67,6 +66,7 @@ class UpsertBuffer {
       this.upsertBuffer.set(upsert.model, []);
     }
     const modelBuffer = this.upsertBuffer.get(upsert.model);
+    console.log('buffer.add: %s', JSON.stringify(upsert));
     modelBuffer.push(upsert);
   }
 
@@ -93,24 +93,25 @@ interface KeyedObject extends Dictionary<any> {
   id: string;
 }
 
+function serialize(obj: any): string {
+  return keys(obj)
+    .sort()
+    .map((k) => `${k}:${obj[k]}`)
+    .join('|');
+}
+
 export class ForeignKeyCache {
   private readonly byModelAndKey: Map<string, Map<string, string>> = new Map();
-  private serialize(obj: any): string {
-    return keys(obj)
-      .sort()
-      .map((k) => `${k}:${obj[k]}`)
-      .join('|');
-  }
   add(model: string, object: KeyedObject): void {
     if (!this.byModelAndKey.has(model)) {
       this.byModelAndKey.set(model, new Map());
     }
     const modelKeys = this.byModelAndKey.get(model);
-    modelKeys.set(this.serialize(omit(object, ['id'])), object.id);
+    modelKeys.set(serialize(omit(object, ['id'])), object.id);
   }
   get(model: string, object: Dictionary<any>): string | undefined {
     if (this.byModelAndKey.has(model)) {
-      return this.byModelAndKey.get(model).get(this.serialize(object));
+      return this.byModelAndKey.get(model).get(serialize(object));
     }
     return undefined;
   }
@@ -220,9 +221,11 @@ export class GraphQLClient {
     console.log('flushing upserts');
     //TODO: cache reversed list
     for (const model of reverse(this.schema.sortedModelDependencies)) {
+      console.log('processing %s', model);
       const ops = this.toWriteOp(model);
       if (ops) {
         const opGql = jsonToGraphQLQuery(ops.query);
+        console.log(opGql);
         // TODO: handle errors
         const opRes = await this.backend.postQuery(opGql);
         const paths = keys(opRes.data);
@@ -458,7 +461,7 @@ export class GraphQLClient {
     };
   }
 
-  withForeignKeys(upsert: Upsert): Dictionary<any> {
+  objectWithForeignKeys(upsert: Upsert): Dictionary<any> {
     if (isEmpty(upsert.foreignKeys)) {
       return upsert.object;
     }
@@ -473,12 +476,20 @@ export class GraphQLClient {
     return result;
   }
 
+  static mergeByPrimaryKey(objects: any[], primaryKeys: string[]): any[] {
+    const byPK = groupBy(objects, (o) => serialize(pick(o, primaryKeys)));
+    return Object.values(byPK).map((arr) =>
+      arr.reduce((acc, obj) => ({...acc, ...obj}), {})
+    );
+  }
+
   toWriteOp(model: string): WriteOp | undefined {
     const modelUpserts = this.upsertBuffer.get(model);
     if (modelUpserts) {
-      const all = modelUpserts.map((u) => this.withForeignKeys(u));
-      const objects = uniqWith(all, isEqual);
-      // find all unique key names in the data
+      const all = modelUpserts.map((u) => this.objectWithForeignKeys(u));
+      const modelPrimaryKeys = this.schema.primaryKeys[model];
+      const objects = GraphQLClient.mergeByPrimaryKey(all, modelPrimaryKeys);
+      // find all unique key names in the data before
       const keys = reduce(
         modelUpserts,
         (result, value) => {
@@ -489,7 +500,7 @@ export class GraphQLClient {
       );
       const primaryKeys = intersection(
         Array.from(keys.keys()),
-        this.schema.primaryKeys[model]
+        modelPrimaryKeys
       );
       const keyObj = primaryKeys
         .sort()
