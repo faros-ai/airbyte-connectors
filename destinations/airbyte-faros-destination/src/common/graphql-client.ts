@@ -99,6 +99,20 @@ function serialize(obj: any): string {
     .join('|');
 }
 
+/**
+ * Groups objects by primary key and then merges all related objects into
+ * a single object where last-wins for overlapping properties.
+ */
+export function mergeByPrimaryKey(
+  objects: any[],
+  primaryKeys: string[]
+): any[] {
+  const byPK = groupBy(objects, (o) => serialize(pick(o, primaryKeys)));
+  return Object.values(byPK).map((arr) =>
+    arr.reduce((acc, obj) => ({...acc, ...obj}), {})
+  );
+}
+
 export class ForeignKeyCache {
   private readonly byModelAndKey: Map<string, Map<string, string>> = new Map();
   add(model: string, object: KeyedObject): void {
@@ -474,19 +488,12 @@ export class GraphQLClient {
     return result;
   }
 
-  static mergeByPrimaryKey(objects: any[], primaryKeys: string[]): any[] {
-    const byPK = groupBy(objects, (o) => serialize(pick(o, primaryKeys)));
-    return Object.values(byPK).map((arr) =>
-      arr.reduce((acc, obj) => ({...acc, ...obj}), {})
-    );
-  }
-
   toWriteOp(model: string): WriteOp | undefined {
     const modelUpserts = this.upsertBuffer.get(model);
     if (modelUpserts) {
       const all = modelUpserts.map((u) => this.objectWithForeignKeys(u));
       const modelPrimaryKeys = this.schema.primaryKeys[model];
-      const objects = GraphQLClient.mergeByPrimaryKey(all, modelPrimaryKeys);
+      const objects = mergeByPrimaryKey(all, modelPrimaryKeys);
       // find all unique key names in the data before
       const keys = reduce(
         modelUpserts,
