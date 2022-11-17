@@ -63,7 +63,7 @@ In order to build a Docker image for a connector run the `docker build` command 
 For example for Faros Destination connector run:
 
 ```sh
-docker build . --build-arg path=destinations/airbyte-faros-destination -t airbyte-faros-destination
+docker build . --build-arg path=destinations/airbyte-faros-destination --build-arg path=0.0.1 -t airbyte-faros-destination
 ```
 
 And then run it:
