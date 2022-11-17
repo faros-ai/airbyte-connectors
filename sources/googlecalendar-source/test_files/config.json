@@ -1,5 +1,5 @@
 {
   "private_key": "PRIVATE_KEY",
   "client_email": "CLIENT_EMAIL",
-  "calendar_id": "CALENDAR_ID"
+  "calendar_ids": ["CALENDAR_ID"]
 }
