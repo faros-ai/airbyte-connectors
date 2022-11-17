@@ -6,7 +6,7 @@ import {
   AirbyteLogLevel,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
-import {FarosClient, Schema} from 'faros-feeds-sdk/lib';
+import {Schema} from 'faros-feeds-sdk/lib';
 import fs from 'fs-extra';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -16,6 +16,7 @@ import {
   ForeignKeyCache,
   GraphQLBackend,
   GraphQLClient,
+  mergeByPrimaryKey,
 } from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
 import {CLI, read} from './cli';
@@ -368,21 +369,11 @@ describe('graphql-client write', () => {
         }
       },
     };
-    const schemaPath = 'test/resources/graphql-schema.json';
-    if (!(await fs.pathExists(schemaPath))) {
-      const faros = new FarosClient({
-        apiKey: 'k1',
-        url: 'http://localhost:8081',
-        useGraphQLV2: true,
-      });
-      console.log('writing schema to %s', schemaPath);
-      await fs.writeJSON(schemaPath, await faros.gqlSchema(), {
-        encoding: 'utf-8',
-      });
-    }
     const schemaLoader = {
       async loadSchema(): Promise<Schema> {
-        return await fs.readJson(schemaPath, {encoding: 'utf-8'});
+        return await fs.readJson('test/resources/graphql-schema.json', {
+          encoding: 'utf-8',
+        });
       },
     };
     const client = new GraphQLClient(
@@ -423,10 +414,8 @@ describe('graphql-client write', () => {
     },
   ];
   const primaryKeys = ['uid', 'source'];
-  test('unique objects', async () => {
-    expect(
-      GraphQLClient.mergeByPrimaryKey(users, primaryKeys)
-    ).toMatchSnapshot();
+  test('mergeByPrimaryKey', async () => {
+    expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
   });
 });
 
