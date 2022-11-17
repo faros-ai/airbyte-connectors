@@ -3,7 +3,6 @@
 if [ -z "$1" ]; then
   error "Connector path not specified"
 fi
-
 if [ -z "$2" ]; then
   error "Connector version not specified"
 fi
@@ -29,6 +28,7 @@ docker manifest inspect $version_tag > /dev/null
 if [ "$?" == 1 ]; then
   docker build . \
     --build-arg path=$connector_path \
+    --build-arg version=$connector_version \
     --pull \
     -t $latest_tag \
     -t $version_tag \
