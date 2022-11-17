@@ -9,6 +9,7 @@ acceptance_tests_logs/
 .DS_Store
 acceptance-test-*.log
 *.code-workspace
+lerna-debug.log
 
 faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json
