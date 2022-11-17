@@ -35,7 +35,6 @@ export class GooglecalendarSource extends AirbyteSourceBase<GoogleCalendarConfig
 
     for (const calendarId of calendars) {
       try {
-        config;
         const googleCalendar = await Googlecalendar.instance(
           config,
           this.logger,
