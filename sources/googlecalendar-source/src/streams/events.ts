@@ -47,30 +47,31 @@ export class Events extends AirbyteStreamBase {
     streamState?: EventsState
   ): AsyncGenerator<Event> {
     const calendarId = streamSlice.calendarId;
-    const googleCalendar = await Googlecalendar.instance(
-      this.config,
-      this.logger,
-      calendarId
-    );
-    const syncToken =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[calendarId]?.lastSyncToken
-        : undefined;
+    if (calendarId) {
+      const googleCalendar = await Googlecalendar.instance(
+        this.config,
+        this.logger,
+        calendarId
+      );
+      const syncToken =
+        syncMode === SyncMode.INCREMENTAL
+          ? streamState?.[calendarId]?.lastSyncToken
+          : undefined;
 
-    yield* googleCalendar.getEvents(syncToken);
+      yield* googleCalendar.getEvents(syncToken);
+    }
   }
 
   getUpdatedState(
     currentStreamState: EventsState,
     latestRecord: Event
   ): EventsState {
-    if (latestRecord?.nextSyncToken) {
+    if (latestRecord?.calendarId && latestRecord?.nextSyncToken) {
       return {
         ...currentStreamState,
         [latestRecord.calendarId]: {lastSyncToken: latestRecord?.nextSyncToken},
       };
-    } else {
-      return currentStreamState;
     }
+    return currentStreamState;
   }
 }
