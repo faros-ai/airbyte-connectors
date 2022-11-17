@@ -163,7 +163,6 @@ export class Googlecalendar {
         calendarId: calendar.id,
         pageToken,
         maxResults: this.eventsMaxResults,
-        timeMin: startDate.toISOString(),
       };
 
       if (syncToken) {
@@ -171,6 +170,9 @@ export class Googlecalendar {
           `Incrementally syncing events with sync token ${syncToken}`
         );
         params.syncToken = syncToken;
+      } else {
+        // Time bounds should only be set when sync token is not specified
+        params.timeMin = startDate.toISOString();
       }
 
       return this.client.events.list(params) as any;
