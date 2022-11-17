@@ -66,7 +66,6 @@ class UpsertBuffer {
       this.upsertBuffer.set(upsert.model, []);
     }
     const modelBuffer = this.upsertBuffer.get(upsert.model);
-    console.log('buffer.add: %s', JSON.stringify(upsert));
     modelBuffer.push(upsert);
   }
 
@@ -123,6 +122,7 @@ export class GraphQLClient {
   private readonly backend: GraphQLBackend;
   private schema: Schema;
   private tableNames: Set<string>;
+  private tableDependencies: string[];
   private readonly batchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
@@ -155,6 +155,8 @@ export class GraphQLClient {
   async loadSchema(): Promise<void> {
     this.schema = await this.schemaLoader.loadSchema();
     this.tableNames = new Set(this.schema.tableNames);
+    this.tableDependencies = [...this.schema.sortedModelDependencies];
+    reverse(this.tableDependencies);
   }
 
   private checkSchema(): void {
@@ -218,14 +220,10 @@ export class GraphQLClient {
   }
 
   async flushUpsertBuffer(): Promise<void> {
-    console.log('flushing upserts');
-    //TODO: cache reversed list
-    for (const model of reverse(this.schema.sortedModelDependencies)) {
-      console.log('processing %s', model);
+    for (const model of this.tableDependencies) {
       const ops = this.toWriteOp(model);
       if (ops) {
         const opGql = jsonToGraphQLQuery(ops.query);
-        console.log(opGql);
         // TODO: handle errors
         const opRes = await this.backend.postQuery(opGql);
         const paths = keys(opRes.data);
