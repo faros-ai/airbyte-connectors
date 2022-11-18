@@ -45,7 +45,7 @@ interface WriteOp {
 }
 
 interface UpsertOp {
-  op: WriteOp;
+  query: any;
   upsertsByKey: Map<string, Upsert[]>;
 }
 
@@ -83,6 +83,12 @@ export class UpsertBuffer {
       return modelUpserts;
     }
     return undefined;
+  }
+
+  clear(): number {
+    const size = this.size();
+    this.upsertBuffer.clear();
+    return size;
   }
 }
 
@@ -127,7 +133,8 @@ export class GraphQLClient {
   private tableNames: Set<string>;
   private fieldsByModel: Map<string, Set<string>>;
   private tableDependencies: string[];
-  private readonly batchSize: number;
+  private readonly mutationBatchSize: number;
+  private readonly upsertBatchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
 
@@ -135,16 +142,14 @@ export class GraphQLClient {
     logger: AirbyteLogger,
     schemaLoader: SchemaLoader,
     backend: GraphQLBackend,
-    batchSize = 1
+    upsertBatchSize = 1000,
+    mutationBatchSize = 1
   ) {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
     this.backend = backend;
-    this.batchSize = batchSize;
-  }
-
-  getBatchSize(): number {
-    return this.batchSize;
+    this.upsertBatchSize = upsertBatchSize;
+    this.mutationBatchSize = mutationBatchSize;
   }
 
   async healthCheck(): Promise<void> {
@@ -221,33 +226,52 @@ export class GraphQLClient {
       throw new VError(`Table ${model} does not exist`);
     }
     this.addUpsert(model, origin, record);
-    if (this.upsertBuffer.size() >= this.batchSize) {
+    if (this.upsertBuffer.size() >= this.upsertBatchSize) {
       await this.flushUpsertBuffer();
     }
   }
 
-  async flushUpsertBuffer(): Promise<void> {
+  private async flushUpsertBuffer(): Promise<void> {
+    try {
+      await this.doFlushUpsertBuffer();
+    } catch (e) {
+      const numRemoved = this.upsertBuffer.clear();
+      throw new VError(
+        e,
+        'failed to flush upsert buffer. abandoned %d records',
+        numRemoved
+      );
+    }
+  }
+
+  private async doFlushUpsertBuffer(): Promise<void> {
     for (const model of this.tableDependencies) {
-      const {op, upsertsByKey} = this.toUpsertOp(model);
-      if (op) {
-        const opGql = jsonToGraphQLQuery(op.query);
-        // TODO: handle errors
-        const opRes = await this.backend.postQuery(opGql);
-        const paths = keys(opRes.data);
-        assert(paths.length === 1, `expected one element in ${paths}`);
-        const nextKey = paths[0];
-        const objects = get(opRes.data, `${nextKey}.returning`);
-        assert(Array.isArray(objects), `expected array`);
-        // assign ids to all upserts related to this object
-        for (const obj of objects) {
-          const key = this.serializedPrimaryKey(model, obj);
-          const upserts = upsertsByKey.get(key);
-          assert(upserts, `failed to resolve upserts for ${model} and ${key}`);
-          assert(
-            obj.id,
-            `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
-          );
-          upserts.forEach((u) => (u.id = obj.id));
+      const {query, upsertsByKey} = this.toUpsertOp(model);
+      if (query) {
+        try {
+          const opGql = jsonToGraphQLQuery(query);
+          const opRes = await this.backend.postQuery(opGql);
+          const paths = keys(opRes.data);
+          assert(paths.length === 1, `expected one element in ${paths}`);
+          const nextKey = paths[0];
+          const objects = get(opRes.data, `${nextKey}.returning`);
+          assert(Array.isArray(objects), `expected array`);
+          // assign ids to all upserts related to this object
+          for (const obj of objects) {
+            const key = this.serializedPrimaryKey(model, obj);
+            const upserts = upsertsByKey.get(key);
+            assert(
+              upserts,
+              `failed to resolve upserts for ${model} and ${key}`
+            );
+            assert(
+              obj.id,
+              `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
+            );
+            upserts.forEach((u) => (u.id = obj.id));
+          }
+        } catch (e) {
+          throw new VError(e, `failed to write upserts for ${model}`);
         }
       }
     }
@@ -311,8 +335,7 @@ export class GraphQLClient {
       query,
       errorMsg,
     });
-    // TODO separate this from upsert batching
-    if (this.writeBuffer.length >= this.batchSize) {
+    if (this.writeBuffer.length >= this.mutationBatchSize) {
       await this.flush();
     }
   }
@@ -320,6 +343,7 @@ export class GraphQLClient {
   async flush(): Promise<void> {
     await Promise.all([this.flushWriteBuffer(), this.flushUpsertBuffer()]);
   }
+
   async flushWriteBuffer(): Promise<void> {
     const queries = this.writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
@@ -544,10 +568,7 @@ export class GraphQLClient {
         },
       };
       return {
-        op: {
-          query: mutation,
-          errorMsg: `Failed to write upsert for ${model}`,
-        },
+        query: mutation,
         upsertsByKey,
       };
     }
