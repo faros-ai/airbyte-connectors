@@ -13,10 +13,11 @@ import os from 'os';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {
-  ForeignKeyCache,
   GraphQLBackend,
   GraphQLClient,
   mergeByPrimaryKey,
+  serialize,
+  strictPick,
   UpsertBuffer,
 } from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
@@ -317,11 +318,13 @@ describe('graphql-client write', () => {
         "returning": [
           {
             "id": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "metis"
+            "name": "metis",
+            "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
           },
           {
             "id": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "hermes"
+            "name": "hermes",
+            "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
           }
         ]
       }
@@ -334,11 +337,13 @@ describe('graphql-client write', () => {
         "returning": [
           {
             "id": "t1|gql-e2e-v2|foo|t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "foo"
+            "name": "foo",
+            "repositoryId": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai"
           },
           {
             "id": "t1|gql-e2e-v2|main|t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "main"
+            "name": "main",
+            "repositoryId": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai"
           }
         ]
       }
@@ -420,24 +425,6 @@ describe('graphql-client write', () => {
   });
 });
 
-describe('foreign key cache', () => {
-  test('round trip', async () => {
-    const cache = new ForeignKeyCache();
-    expect(cache.get('foo', {a: '1', b: '1'})).toBeUndefined();
-    cache.add('foo', {id: '1', a: '1', b: '1'});
-    cache.add('foo', {id: '2', b: '3', a: '4'});
-    cache.add('bar', {id: '3', b: '3', a: '5'});
-    cache.add('bar', {id: '1', b: '1', a: '1'});
-    expect(cache.get('foo', {a: '1', b: '1'})).toEqual('1');
-    expect(cache.get('foo', {b: '1', a: '1'})).toEqual('1');
-    expect(cache.get('foo', {a: '4', b: '3'})).toEqual('2');
-    expect(cache.get('foo', {c: '4'})).toBeUndefined();
-    expect(cache.get('bar', {a: '5', b: '3'})).toEqual('3');
-    expect(cache.get('bar', {a: '1', b: '1'})).toEqual('1');
-    expect(cache.get('bar', {c: '4'})).toBeUndefined();
-  });
-});
-
 describe('upsert buffer', () => {
   test('basic', async () => {
     const buf = new UpsertBuffer();
@@ -453,5 +440,16 @@ describe('upsert buffer', () => {
     expect(buf.size()).toEqual(2);
     expect(buf.get('m2')?.length).toEqual(2);
     expect(buf.size()).toEqual(0);
+  });
+});
+
+describe('graphql-client utilities', () => {
+  test('serialize', async () => {
+    expect(serialize({z: 1, a: 'bar'})).toEqual('a:bar|z:1');
+    expect(serialize({})).toEqual('');
+  });
+  test('strictPick', async () => {
+    expect(strictPick({z: 1, a: 'bar'}, ['z', 'b'])).toEqual({z: 1, b: 'null'});
+    expect(strictPick({z: 1, a: 'bar'}, ['b'])).toEqual({b: 'null'});
   });
 });

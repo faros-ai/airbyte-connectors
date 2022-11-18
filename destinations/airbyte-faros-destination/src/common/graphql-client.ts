@@ -11,9 +11,7 @@ import {
   isEmpty,
   isNil,
   keys,
-  omit,
   pick,
-  reduce,
   reverse,
 } from 'lodash';
 import traverse from 'traverse';
@@ -27,6 +25,8 @@ import {
   UpdateRecord,
   UpsertRecord,
 } from './types';
+
+const MULTI_TENANT_FIELDS = ['tenantId', 'graphName'];
 
 interface ConflictClause {
   constraint: EnumType;
@@ -44,15 +44,16 @@ interface WriteOp {
   errorMsg: string;
 }
 
-interface ForeignKey {
-  model: string;
-  keys: Dictionary<any>;
+interface UpsertOp {
+  op: WriteOp;
+  upsertsByKey: Map<string, Upsert[]>;
 }
 
 interface Upsert {
+  id?: string; // will be set after object is inserted
   model: string;
   object: Dictionary<any>;
-  foreignKeys: Dictionary<ForeignKey>;
+  foreignKeys: Dictionary<Upsert>;
 }
 
 export class UpsertBuffer {
@@ -85,15 +86,23 @@ export class UpsertBuffer {
   }
 }
 
-interface KeyedObject extends Dictionary<any> {
-  id: string;
-}
-
-function serialize(obj: any): string {
+export function serialize(obj: any): string {
   return keys(obj)
     .sort()
     .map((k) => `${k}:${obj[k]}`)
     .join('|');
+}
+
+/**
+ * Like lodash pick but with null value replacement.
+ */
+export function strictPick(obj: any, keys: string[], nullValue = 'null'): any {
+  const result = {};
+  keys.forEach((key) => {
+    const v = obj[key];
+    result[key] = v ? v : nullValue;
+  });
+  return result;
 }
 
 /**
@@ -110,34 +119,17 @@ export function mergeByPrimaryKey(
   );
 }
 
-export class ForeignKeyCache {
-  private readonly byModelAndKey: Map<string, Map<string, string>> = new Map();
-  add(model: string, object: KeyedObject): void {
-    if (!this.byModelAndKey.has(model)) {
-      this.byModelAndKey.set(model, new Map());
-    }
-    const modelKeys = this.byModelAndKey.get(model);
-    modelKeys.set(serialize(omit(object, ['id'])), object.id);
-  }
-  get(model: string, object: Dictionary<any>): string | undefined {
-    if (this.byModelAndKey.has(model)) {
-      return this.byModelAndKey.get(model).get(serialize(object));
-    }
-    return undefined;
-  }
-}
-
 export class GraphQLClient {
   private readonly logger: AirbyteLogger;
   private readonly schemaLoader: SchemaLoader;
   private readonly backend: GraphQLBackend;
   private schema: Schema;
   private tableNames: Set<string>;
+  private fieldsByModel: Map<string, Set<string>>;
   private tableDependencies: string[];
   private readonly batchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
-  private readonly foreignKeys = new ForeignKeyCache();
 
   constructor(
     logger: AirbyteLogger,
@@ -166,6 +158,10 @@ export class GraphQLClient {
   async loadSchema(): Promise<void> {
     this.schema = await this.schemaLoader.loadSchema();
     this.tableNames = new Set(this.schema.tableNames);
+    this.fieldsByModel = new Map();
+    for (const [model, fields] of Object.entries(this.schema.scalars)) {
+      this.fieldsByModel.set(model, new Set(Object.keys(fields)));
+    }
     this.tableDependencies = [...this.schema.sortedModelDependencies];
     reverse(this.tableDependencies);
   }
@@ -232,9 +228,9 @@ export class GraphQLClient {
 
   async flushUpsertBuffer(): Promise<void> {
     for (const model of this.tableDependencies) {
-      const ops = this.toWriteOp(model);
-      if (ops) {
-        const opGql = jsonToGraphQLQuery(ops.query);
+      const {op, upsertsByKey} = this.toUpsertOp(model);
+      if (op) {
+        const opGql = jsonToGraphQLQuery(op.query);
         // TODO: handle errors
         const opRes = await this.backend.postQuery(opGql);
         const paths = keys(opRes.data);
@@ -242,8 +238,16 @@ export class GraphQLClient {
         const nextKey = paths[0];
         const objects = get(opRes.data, `${nextKey}.returning`);
         assert(Array.isArray(objects), `expected array`);
+        // assign ids to all upserts related to this object
         for (const obj of objects) {
-          this.foreignKeys.add(model, obj);
+          const key = this.serializedPrimaryKey(model, obj);
+          const upserts = upsertsByKey.get(key);
+          assert(upserts, `failed to resolve upserts for ${model} and ${key}`);
+          assert(
+            obj.id,
+            `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
+          );
+          upserts.forEach((u) => (u.id = obj.id));
         }
       }
     }
@@ -446,9 +450,9 @@ export class GraphQLClient {
     model: string,
     origin: string,
     record: Dictionary<any>
-  ): ForeignKey {
+  ): Upsert {
     const object = {};
-    const foreignKeys: Dictionary<ForeignKey> = {};
+    const foreignKeys: Dictionary<Upsert> = {};
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
       if (nestedModel && value) {
@@ -459,15 +463,14 @@ export class GraphQLClient {
       }
     }
     object['origin'] = origin;
-    this.upsertBuffer.add({
+    const upsert = {
       model,
       object,
       foreignKeys: foreignKeys,
-    });
-    return {
-      model,
-      keys: pick(object, this.schema.primaryKeys[model]),
     };
+    // index by model
+    this.upsertBuffer.add(upsert);
+    return upsert;
   }
 
   objectWithForeignKeys(upsert: Upsert): Dictionary<any> {
@@ -475,35 +478,54 @@ export class GraphQLClient {
       return upsert.object;
     }
     const result = clone(upsert.object);
-    for (const [name, fk] of Object.entries(upsert.foreignKeys)) {
-      // TODO: make this work for CE where FKs are named differently
-      // TODO: validate FK field
-      const key = this.foreignKeys.get(fk.model, fk.keys);
-      assert(!isNil(key), `failed to resolve key for ${JSON.stringify(fk)}`);
-      result[`${name}Id`] = key;
+    for (const [relName, fkUpsert] of Object.entries(upsert.foreignKeys)) {
+      const modelFields = this.fieldsByModel.get(upsert.model);
+      // check if relName is a column (CE case) otherwise suffix with id (SaaS case)
+      const fkField = modelFields.has(relName) ? relName : `${relName}Id`;
+      assert(
+        modelFields.has(fkField),
+        `invalid fk field for ${upsert.model}: ${fkField}`
+      );
+      const fkValue = fkUpsert.id;
+      assert(
+        !isNil(fkValue),
+        `failed to resolve fk value for ${relName} from ${JSON.stringify(
+          fkUpsert
+        )}`
+      );
+      result[fkField] = fkValue;
     }
     return result;
   }
 
-  toWriteOp(model: string): WriteOp | undefined {
+  /**
+   * returns serialized version of keys fields
+   */
+  private serializedPrimaryKey(model: string, obj: any): string {
+    return serialize(strictPick(obj, this.primaryKeys(model)));
+  }
+
+  private primaryKeys(model: string): string[] {
+    // we cannot access multi-tenant fields
+    // this should probably be removed from schema
+    return difference(this.schema.primaryKeys[model], MULTI_TENANT_FIELDS);
+  }
+
+  toUpsertOp(model: string): UpsertOp | undefined {
     const modelUpserts = this.upsertBuffer.get(model);
     if (modelUpserts) {
-      const all = modelUpserts.map((u) => this.objectWithForeignKeys(u));
-      const modelPrimaryKeys = this.schema.primaryKeys[model];
-      const objects = mergeByPrimaryKey(all, modelPrimaryKeys);
-      // find all unique key names in the data before
-      const keys = reduce(
-        modelUpserts,
-        (result, value) => {
-          Object.keys(value.object).forEach((k) => result.add(k));
-          return result;
-        },
-        new Set<string>()
-      );
-      const primaryKeys = intersection(
-        Array.from(keys.keys()),
-        modelPrimaryKeys
-      );
+      const upsertsByKey = new Map();
+      const all = modelUpserts.map((u) => {
+        const fullObj = this.objectWithForeignKeys(u);
+        const key = this.serializedPrimaryKey(model, fullObj);
+        if (!upsertsByKey.has(key)) {
+          upsertsByKey.set(key, []);
+        }
+        upsertsByKey.get(key).push(u);
+        return fullObj;
+      });
+      const primaryKeys = this.primaryKeys(model);
+      const objects = mergeByPrimaryKey(all, primaryKeys);
       const keysObj = primaryKeys
         .sort()
         .reduce((a, v) => ({...a, [v]: true}), {});
@@ -522,8 +544,11 @@ export class GraphQLClient {
         },
       };
       return {
-        query: mutation,
-        errorMsg: `Failed to write upsert for ${model}`,
+        op: {
+          query: mutation,
+          errorMsg: `Failed to write upsert for ${model}`,
+        },
+        upsertsByKey,
       };
     }
     return undefined;
