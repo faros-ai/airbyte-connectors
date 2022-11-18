@@ -17,6 +17,7 @@ import {
   GraphQLBackend,
   GraphQLClient,
   mergeByPrimaryKey,
+  UpsertBuffer,
 } from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
 import {CLI, read} from './cli';
@@ -371,7 +372,7 @@ describe('graphql-client write', () => {
     };
     const schemaLoader = {
       async loadSchema(): Promise<Schema> {
-        return await fs.readJson('test/resources/graphql-schema.json', {
+        return await fs.readJson('test/resources/hasura-schema.json', {
           encoding: 'utf-8',
         });
       },
@@ -434,5 +435,23 @@ describe('foreign key cache', () => {
     expect(cache.get('bar', {a: '5', b: '3'})).toEqual('3');
     expect(cache.get('bar', {a: '1', b: '1'})).toEqual('1');
     expect(cache.get('bar', {c: '4'})).toBeUndefined();
+  });
+});
+
+describe('upsert buffer', () => {
+  test('basic', async () => {
+    const buf = new UpsertBuffer();
+    buf.add({model: 'm1', object: {}, foreignKeys: {}});
+    expect(buf.size()).toEqual(1);
+    expect(buf.get('unknown')).toBeUndefined();
+    buf.add({model: 'm2', object: {}, foreignKeys: {}});
+    buf.add({model: 'm2', object: {}, foreignKeys: {}});
+    expect(buf.size()).toEqual(3);
+    expect(buf.get('m1')?.length).toEqual(1);
+    expect(buf.size()).toEqual(2);
+    expect(buf.get('m2', false)?.length).toEqual(2);
+    expect(buf.size()).toEqual(2);
+    expect(buf.get('m2')?.length).toEqual(2);
+    expect(buf.size()).toEqual(0);
   });
 });

@@ -55,11 +55,8 @@ interface Upsert {
   foreignKeys: Dictionary<ForeignKey>;
 }
 
-class UpsertBuffer {
-  private readonly upsertBuffer: Map<string, Upsert[]> = new Map<
-    string,
-    Upsert[]
-  >();
+export class UpsertBuffer {
+  private readonly upsertBuffer: Map<string, Upsert[]> = new Map();
 
   add(upsert: Upsert): void {
     if (!this.upsertBuffer.has(upsert.model)) {
@@ -70,8 +67,8 @@ class UpsertBuffer {
   }
 
   size(): number {
-    return Array.from(this.upsertBuffer.entries()).reduce(
-      (sum, kvTuple) => sum + kvTuple[1].length,
+    return Array.from(this.upsertBuffer.values()).reduce(
+      (sum, arr) => sum + arr.length,
       0
     );
   }
@@ -507,7 +504,7 @@ export class GraphQLClient {
         Array.from(keys.keys()),
         modelPrimaryKeys
       );
-      const keyObj = primaryKeys
+      const keysObj = primaryKeys
         .sort()
         .reduce((a, v) => ({...a, [v]: true}), {});
       const mutation = {
@@ -519,7 +516,7 @@ export class GraphQLClient {
             },
             returning: {
               id: true,
-              ...keyObj,
+              ...keysObj,
             },
           },
         },
