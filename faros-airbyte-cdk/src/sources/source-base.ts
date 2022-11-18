@@ -230,6 +230,11 @@ export abstract class AirbyteSourceBase<
         recordCounter
       );
     }
+    this.logger.info(
+      `Last recorded state of ${streamName} stream is ${JSON.stringify(
+        streamState
+      )}`
+    );
   }
 
   private async *readFullRefresh(
@@ -258,11 +263,6 @@ export abstract class AirbyteSourceBase<
     connectorState: AirbyteState,
     recordCounter: number
   ): AirbyteStateMessage {
-    this.logger.info(
-      `Setting checkpoint state of ${streamName} stream to ${JSON.stringify(
-        streamState
-      )}`
-    );
     this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
