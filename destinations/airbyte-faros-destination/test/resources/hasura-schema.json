@@ -1,42 +1,32 @@
 {
   "primaryKeys": {
     "vcs_Branch": [
-      "tenantId",
-      "graphName",
       "name",
       "repositoryId"
     ],
     "vcs_Organization": [
-      "tenantId",
-      "graphName",
       "source",
       "uid"
     ],
     "vcs_Repository": [
-      "tenantId",
-      "graphName",
       "name",
       "organizationId"
     ]
   },
   "scalars": {
     "vcs_Branch": {
-      "graphName": "String",
       "name": "String",
       "origin": "String",
       "refreshedAt": "timestamptz",
-      "repositoryId": "String",
-      "tenantId": "String"
+      "repositoryId": "String"
     },
     "vcs_Organization": {
       "createdAt": "timestamptz",
-      "graphName": "String",
       "htmlUrl": "String",
       "name": "String",
       "origin": "String",
       "refreshedAt": "timestamptz",
       "source": "String",
-      "tenantId": "String",
       "type": "jsonb",
       "uid": "String"
     },
@@ -44,7 +34,6 @@
       "createdAt": "timestamptz",
       "description": "String",
       "fullName": "String",
-      "graphName": "String",
       "htmlUrl": "String",
       "included": "Boolean",
       "language": "String",
@@ -55,7 +44,6 @@
       "private": "Boolean",
       "refreshedAt": "timestamptz",
       "size": "bigint",
-      "tenantId": "String",
       "topics": "jsonb",
       "updatedAt": "timestamptz"
     }
@@ -64,22 +52,26 @@
     "vcs_Branch": {
       "repositoryId": {
         "field": "repository",
-        "model": "vcs_Repository"
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
       },
       "repository": {
         "field": "repository",
-        "model": "vcs_Repository"
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
       }
     },
     "vcs_Organization": {},
     "vcs_Repository": {
       "organizationId": {
         "field": "organization",
-        "model": "vcs_Organization"
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
       },
       "organization": {
         "field": "organization",
-        "model": "vcs_Organization"
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
       }
     }
   },
