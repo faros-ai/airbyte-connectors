@@ -26,8 +26,6 @@ import {
   UpsertRecord,
 } from './types';
 
-const MULTI_TENANT_FIELDS = ['tenantId', 'graphName'];
-
 interface ConflictClause {
   constraint: EnumType;
   update_columns: EnumType[];
@@ -131,7 +129,6 @@ export class GraphQLClient {
   private readonly backend: GraphQLBackend;
   private schema: Schema;
   private tableNames: Set<string>;
-  private fieldsByModel: Map<string, Set<string>>;
   private tableDependencies: string[];
   private readonly mutationBatchSize: number;
   private readonly upsertBatchSize: number;
@@ -163,10 +160,6 @@ export class GraphQLClient {
   async loadSchema(): Promise<void> {
     this.schema = await this.schemaLoader.loadSchema();
     this.tableNames = new Set(this.schema.tableNames);
-    this.fieldsByModel = new Map();
-    for (const [model, fields] of Object.entries(this.schema.scalars)) {
-      this.fieldsByModel.set(model, new Set(Object.keys(fields)));
-    }
     this.tableDependencies = [...this.schema.sortedModelDependencies];
     reverse(this.tableDependencies);
   }
@@ -246,10 +239,10 @@ export class GraphQLClient {
 
   private async doFlushUpsertBuffer(): Promise<void> {
     for (const model of this.tableDependencies) {
-      const {query, upsertsByKey} = this.toUpsertOp(model);
-      if (query) {
+      const op = this.toUpsertOp(model);
+      if (op) {
         try {
-          const opGql = jsonToGraphQLQuery(query);
+          const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
           const paths = keys(opRes.data);
           assert(paths.length === 1, `expected one element in ${paths}`);
@@ -259,7 +252,7 @@ export class GraphQLClient {
           // assign ids to all upserts related to this object
           for (const obj of objects) {
             const key = this.serializedPrimaryKey(model, obj);
-            const upserts = upsertsByKey.get(key);
+            const upserts = op.upsertsByKey.get(key);
             assert(
               upserts,
               `failed to resolve upserts for ${model} and ${key}`
@@ -503,13 +496,8 @@ export class GraphQLClient {
     }
     const result = clone(upsert.object);
     for (const [relName, fkUpsert] of Object.entries(upsert.foreignKeys)) {
-      const modelFields = this.fieldsByModel.get(upsert.model);
-      // check if relName is a column (CE case) otherwise suffix with id (SaaS case)
-      const fkField = modelFields.has(relName) ? relName : `${relName}Id`;
-      assert(
-        modelFields.has(fkField),
-        `invalid fk field for ${upsert.model}: ${fkField}`
-      );
+      // foreign key was constructed w/ schema so the follow is safe
+      const fkField = this.schema.references[upsert.model][relName].foreignKey;
       const fkValue = fkUpsert.id;
       assert(
         !isNil(fkValue),
@@ -526,13 +514,7 @@ export class GraphQLClient {
    * returns serialized version of keys fields
    */
   private serializedPrimaryKey(model: string, obj: any): string {
-    return serialize(strictPick(obj, this.primaryKeys(model)));
-  }
-
-  private primaryKeys(model: string): string[] {
-    // we cannot access multi-tenant fields
-    // this should probably be removed from schema
-    return difference(this.schema.primaryKeys[model], MULTI_TENANT_FIELDS);
+    return serialize(strictPick(obj, this.schema.primaryKeys[model]));
   }
 
   toUpsertOp(model: string): UpsertOp | undefined {
@@ -548,7 +530,7 @@ export class GraphQLClient {
         upsertsByKey.get(key).push(u);
         return fullObj;
       });
-      const primaryKeys = this.primaryKeys(model);
+      const primaryKeys = this.schema.primaryKeys[model];
       const objects = mergeByPrimaryKey(all, primaryKeys);
       const keysObj = primaryKeys
         .sort()
