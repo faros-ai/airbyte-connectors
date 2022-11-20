@@ -113,5 +113,6 @@ export interface Pipeline {
   readonly working_directory: string;
   readonly yaml_file_name: string;
 
+  project: Project;
   jobs: Job[];
 }

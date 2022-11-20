@@ -16,6 +16,47 @@
         "pending_at": "2022-07-25T21:47:11.317Z",
         "ppl_id": "0f64a303-b156-4e82-a291-bafd58b671b7",
         "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
+        "project": {
+            "spec": {
+                "visibility": "private",
+                "schedulers": [],
+                "repository": {
+                    "whitelist": {
+                        "tags": [],
+                        "branches": []
+                    },
+                    "url": "git@github.com:organization/repository-one.git",
+                    "status": {
+                        "pipeline_files": [
+                            {
+                                "path": ".semaphore/semaphore.yml",
+                                "level": "block"
+                            }
+                        ]
+                    },
+                    "run_on": [
+                        "tags",
+                        "branches"
+                    ],
+                    "pipeline_file": ".semaphore/semaphore.yml",
+                    "owner": "organization",
+                    "name": "repository-one",
+                    "integration_type": "github_token",
+                    "forked_pull_requests": {
+                        "allowed_secrets": []
+                    }
+                }
+            },
+            "metadata": {
+                "owner_id": "a0a1ed8b-053c-490e-bcd0-c679a1e82fbf",
+                "org_id": "07b2d3c6-f626-4ef1-af08-71ecb6d0dca7",
+                "name": "repository-one",
+                "id": "40513a80-0de8-4b75-9690-16fae6542e58",
+                "description": "Project One Description"
+            },
+            "kind": "Project",
+            "apiVersion": "v1alpha"
+        },
         "promotion_of": "",
         "queuing_at": "2022-07-25T21:47:11.432Z",
         "repository_id": "",
@@ -196,6 +237,47 @@
         "pending_at": "2022-07-25T21:45:49.679Z",
         "ppl_id": "d85c0dce-1651-475b-9469-d38aad2c5c11",
         "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
+        "project": {
+            "spec": {
+                "visibility": "private",
+                "schedulers": [],
+                "repository": {
+                    "whitelist": {
+                        "tags": [],
+                        "branches": []
+                    },
+                    "url": "git@github.com:organization/repository-one.git",
+                    "status": {
+                        "pipeline_files": [
+                            {
+                                "path": ".semaphore/semaphore.yml",
+                                "level": "block"
+                            }
+                        ]
+                    },
+                    "run_on": [
+                        "tags",
+                        "branches"
+                    ],
+                    "pipeline_file": ".semaphore/semaphore.yml",
+                    "owner": "organization",
+                    "name": "repository-one",
+                    "integration_type": "github_token",
+                    "forked_pull_requests": {
+                        "allowed_secrets": []
+                    }
+                }
+            },
+            "metadata": {
+                "owner_id": "a0a1ed8b-053c-490e-bcd0-c679a1e82fbf",
+                "org_id": "07b2d3c6-f626-4ef1-af08-71ecb6d0dca7",
+                "name": "repository-one",
+                "id": "40513a80-0de8-4b75-9690-16fae6542e58",
+                "description": "Project One Description"
+            },
+            "kind": "Project",
+            "apiVersion": "v1alpha"
+        },
         "promotion_of": "",
         "queuing_at": "2022-07-25T21:45:50.111Z",
         "repository_id": "",
