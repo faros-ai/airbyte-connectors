@@ -162,8 +162,8 @@ export class SemaphoreCI {
     const res = await this.restClient.get<Project[]>('projects');
     const projects = res.data.filter((project) => {
       if (
-        this.projectIds.length &&
-        !this.projectIds.includes(project.metadata.id)
+        this.projectIds?.length &&
+        !this.projectIds?.includes(project.metadata.id)
       ) {
         return false;
       }
