@@ -80,7 +80,8 @@ describe('index', () => {
     ).resolves.toStrictEqual([
       false,
       new VError(
-        'Please verify your private_key and client_email are correct. Error: err must be an Error'
+        "Please verify your private_key and client_email are correct and have access to 'primary' calendar. " +
+          'Error: err must be an Error'
       ),
     ]);
   });
@@ -150,7 +151,13 @@ describe('index', () => {
     });
 
     const eventsStream = streams[1];
-    const eventsIter = eventsStream.readRecords(SyncMode.FULL_REFRESH);
+    const eventsIter = eventsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {
+        calendarId: 'test',
+      }
+    );
     const events = [];
     for await (const event of eventsIter) {
       events.push(event);
@@ -206,7 +213,9 @@ describe('index', () => {
     const eventsIter = eventsStream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      undefined,
+      {
+        calendarId: 'test',
+      },
       {
         cutoff: '2021-12-31T00:00:00',
       }

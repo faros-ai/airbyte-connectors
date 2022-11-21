@@ -6,10 +6,16 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Event, Googlecalendar, GoogleCalendarConfig} from '../googlecalendar';
+import {
+  DEFAULT_CALENDAR_ID,
+  Event,
+  Googlecalendar,
+  GoogleCalendarConfig,
+} from '../googlecalendar';
 
+type StreamSlice = {calendarId: string};
 interface EventsState {
-  lastSyncToken?: string;
+  [calendarId: string]: {lastSyncToken?: string};
 }
 
 export class Events extends AirbyteStreamBase {
@@ -27,31 +33,45 @@ export class Events extends AirbyteStreamBase {
     return 'nextSyncToken';
   }
 
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const calendars = this.config.calendar_ids ?? [DEFAULT_CALENDAR_ID];
+    for (const calendarId of calendars) {
+      yield {calendarId};
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
+    cursorField: string[],
+    streamSlice: StreamSlice,
     streamState?: EventsState
   ): AsyncGenerator<Event> {
-    const googleCalendar = await Googlecalendar.instance(
-      this.config,
-      this.logger
-    );
-    const syncToken =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastSyncToken
-        : undefined;
+    const calendarId = streamSlice.calendarId;
+    if (calendarId) {
+      const googleCalendar = await Googlecalendar.instance(
+        this.config,
+        this.logger,
+        calendarId
+      );
+      const syncToken =
+        syncMode === SyncMode.INCREMENTAL
+          ? streamState?.[calendarId]?.lastSyncToken
+          : undefined;
 
-    yield* googleCalendar.getEvents(syncToken);
+      yield* googleCalendar.getEvents(syncToken);
+    }
   }
 
   getUpdatedState(
     currentStreamState: EventsState,
     latestRecord: Event
   ): EventsState {
-    return {
-      lastSyncToken:
-        latestRecord?.nextSyncToken || currentStreamState?.lastSyncToken,
-    };
+    if (latestRecord?.calendarId && latestRecord?.nextSyncToken) {
+      return {
+        ...currentStreamState,
+        [latestRecord.calendarId]: {lastSyncToken: latestRecord?.nextSyncToken},
+      };
+    }
+    return currentStreamState;
   }
 }

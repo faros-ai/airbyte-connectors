@@ -203,6 +203,9 @@ export abstract class AirbyteSourceBase<
       streamState
     );
     for await (const slice of slices) {
+      this.logger.info(
+        `Started processing ${streamName} stream slice ${JSON.stringify(slice)}`
+      );
       let recordCounter = 0;
       const records = streamInstance.readRecords(
         SyncMode.INCREMENTAL,
@@ -215,55 +218,59 @@ export abstract class AirbyteSourceBase<
         yield AirbyteRecord.make(streamName, recordData);
         streamState = streamInstance.getUpdatedState(streamState, recordData);
         if (checkpointInterval && recordCounter % checkpointInterval === 0) {
-          yield this.checkpointState(
-            streamName,
-            streamState,
-            connectorState,
-            recordCounter
-          );
+          yield this.checkpointState(streamName, streamState, connectorState);
         }
       }
-      yield this.checkpointState(
-        streamName,
-        streamState,
-        connectorState,
-        recordCounter
+      yield this.checkpointState(streamName, streamState, connectorState);
+      this.logger.info(
+        `Finished processing ${streamName} stream slice ${JSON.stringify(
+          slice
+        )}. Read ${recordCounter} records`
       );
     }
+    this.logger.info(
+      `Last recorded state of ${streamName} stream is ${JSON.stringify(
+        streamState
+      )}`
+    );
   }
 
   private async *readFullRefresh(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream
   ): AsyncGenerator<AirbyteMessage> {
+    const streamName = configuredStream.stream.name;
     const slices = streamInstance.streamSlices(
       SyncMode.FULL_REFRESH,
       configuredStream.cursor_field
     );
     for await (const slice of slices) {
+      this.logger.info(
+        `Started processing ${streamName} stream slice ${JSON.stringify(slice)}`
+      );
+      let recordCounter = 0;
       const records = streamInstance.readRecords(
         SyncMode.FULL_REFRESH,
         configuredStream.cursor_field,
         slice
       );
       for await (const record of records) {
+        recordCounter++;
         yield AirbyteRecord.make(configuredStream.stream.name, record);
       }
+      this.logger.info(
+        `Finished processing ${streamName} stream slice ${JSON.stringify(
+          slice
+        )}. Read ${recordCounter} records`
+      );
     }
   }
 
   private checkpointState(
     streamName: string,
     streamState: any,
-    connectorState: AirbyteState,
-    recordCounter: number
+    connectorState: AirbyteState
   ): AirbyteStateMessage {
-    this.logger.info(
-      `Setting checkpoint state of ${streamName} stream to ${JSON.stringify(
-        streamState
-      )}`
-    );
-    this.logger.info(`Read ${recordCounter} records from ${streamName} stream`);
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
   }
