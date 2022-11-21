@@ -338,7 +338,12 @@ export class GraphQLClient {
   }
 
   async flush(): Promise<void> {
-    await Promise.all([this.flushWriteBuffer(), this.flushUpsertBuffer()]);
+    // sequentially flush upsert then write buffer
+    // we do this sequentially because we may have updates
+    // that operate on records in the upsert buffers and
+    // therefore need the upserts written first
+    await this.flushUpsertBuffer();
+    await this.flushWriteBuffer();
   }
 
   private async flushWriteBuffer(): Promise<void> {
