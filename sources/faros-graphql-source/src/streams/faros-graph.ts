@@ -20,7 +20,7 @@ import {max} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {GraphQLConfig, GraphQLVersion, PathToRecord} from '..';
+import {GraphQLConfig, GraphQLVersion, ResultModel} from '..';
 
 const DEFAULT_PAGE_SIZE = 100;
 // January 1, 2200
@@ -162,10 +162,11 @@ export class FarosGraph extends AirbyteStreamBase {
           : new Date(item.refreshedAt).getTime() || 0;
       refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
 
-      this.state = {...this.state, [query]: {refreshedAtMillis}};
+      this.state[query] = {refreshedAtMillis};
+
       yield _.set(
         {},
-        this.config.path_to_record === PathToRecord.PATH_TO_MODEL
+        this.config.result_model === ResultModel.NESTED
           ? // Return the record as a single element array at the given path
             // E.g., if path is ['vcs', 'pullRequests', 'nodes'] and the original record is {'number':1}, the returned record
             // will look like:

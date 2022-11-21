@@ -59,15 +59,15 @@
         "description": "Page size to use when paginating through query results.",
         "default": 100
       },
-      "path_to_record": {
+      "result_model": {
         "order": 6,
         "type": "string",
-        "title": "Path to record",
-        "description": "Where to place each of the query results in their corresponding output records.",
-        "default": "PATH_TO_MODEL",
+        "title": "Result model",
+        "description": "Where to place each of the query results in their corresponding output records. E.g Nested - { vcs { pullRequests { nodes: [<record>] } } }, Flat - { vcs_PullRequest: <record> }",
+        "default": "Nested",
         "enum": [
-          "PATH_TO_MODEL",
-          "MODEL_NAME"
+          "Nested",
+          "Flat"
         ]
       }
     }

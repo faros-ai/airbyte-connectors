@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
-import {GraphQLVersion, PathToRecord} from '../src/index';
+import {GraphQLVersion, ResultModel} from '../src/index';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -21,7 +21,7 @@ const BASE_CONFIG = {
   api_key: 'y',
   graphql_api: GraphQLVersion.V1,
   graph: 'default',
-  path_to_record: PathToRecord.PATH_TO_MODEL,
+  result_model: ResultModel.NESTED,
 };
 
 const PATH_TO_MODEL: PathToModel = {modelName: 'D', path: ['A', 'B', 'C']};
@@ -100,7 +100,18 @@ describe('index', () => {
         api_key: 'y',
         graphql_api: GraphQLVersion.V1,
         graph: 'default',
-        path_to_record: PathToRecord.PATH_TO_MODEL,
+      } as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Result model was not provided'),
+    ]);
+    await expect(
+      source.checkConnection({
+        api_url: 'x',
+        api_key: 'y',
+        graphql_api: GraphQLVersion.V1,
+        graph: 'default',
+        result_model: ResultModel.NESTED,
       } as any)
     ).resolves.toStrictEqual([
       false,
@@ -117,7 +128,7 @@ describe('index', () => {
         api_key: 'y',
         graphql_api: GraphQLVersion.V1,
         graph: 'default',
-        path_to_record: PathToRecord.PATH_TO_MODEL,
+        result_model: ResultModel.NESTED,
       } as any)
     ).resolves.toStrictEqual([true, undefined]);
   });
