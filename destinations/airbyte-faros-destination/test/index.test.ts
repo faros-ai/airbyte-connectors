@@ -296,66 +296,73 @@ describe('graphql-client', () => {
   });
 });
 
-describe('graphql-client write', () => {
-  const res1 = JSON.parse(`
-  {
-    "data": {
-    "insert_vcs_Organization": {
-      "returning": [
-        {
-          "id": "t1|gql-e2e-v2|GitHub|faros-ai",
-          "uid": "faros-ai",
-          "source": "GitHub"
-          }
-        ]
-      }
-    }
-  }`);
-  const res2 = JSON.parse(`
-  {
-    "data": {
-      "insert_vcs_Repository": {
+describe('graphql-client write batch upsert', () => {
+  const schemaLoader = {
+    async loadSchema(): Promise<Schema> {
+      return await fs.readJson('test/resources/hasura-schema.json', {
+        encoding: 'utf-8',
+      });
+    },
+  };
+  test('basic end-to-end', async () => {
+    const res1 = JSON.parse(`
+    {
+      "data": {
+      "insert_vcs_Organization": {
         "returning": [
           {
-            "id": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "metis",
-            "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
-          },
-          {
-            "id": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "hermes",
-            "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
-          }
-        ]
+            "id": "t1|gql-e2e-v2|GitHub|faros-ai",
+            "uid": "faros-ai",
+            "source": "GitHub"
+            }
+          ]
+        }
       }
-    }
-  }`);
-  const res3 = JSON.parse(`
-  {
-    "data": {
-      "insert_vcs_Branch": {
-        "returning": [
-          {
-            "id": "t1|gql-e2e-v2|foo|t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "foo",
-            "repositoryId": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai"
-          },
-          {
-            "id": "t1|gql-e2e-v2|main|t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
-            "name": "main",
-            "repositoryId": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai"
-          }
-        ]
+    }`);
+    const res2 = JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_Repository": {
+          "returning": [
+            {
+              "id": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "metis",
+              "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
+            },
+            {
+              "id": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "hermes",
+              "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
+            }
+          ]
+        }
       }
-    }
-  }`);
-  const record1 = JSON.parse(
-    '{"name":"foo","uid":"foo","repository":{"name":"metis","uid":"metis","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
-  );
-  const record2 = JSON.parse(
-    '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
-  );
-  test('basic batch mutation', async () => {
+    }`);
+    const res3 = JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_Branch": {
+          "returning": [
+            {
+              "id": "t1|gql-e2e-v2|foo|t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "foo",
+              "repositoryId": "t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai"
+            },
+            {
+              "id": "t1|gql-e2e-v2|main|t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "main",
+              "repositoryId": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai"
+            }
+          ]
+        }
+      }
+    }`);
+    const record1 = JSON.parse(
+      '{"name":"foo","uid":"foo","repository":{"name":"metis","uid":"metis","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+    );
+    const record2 = JSON.parse(
+      '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+    );
     let queries = 0;
     const backend: GraphQLBackend = {
       healthCheck() {
@@ -375,13 +382,6 @@ describe('graphql-client write', () => {
         }
       },
     };
-    const schemaLoader = {
-      async loadSchema(): Promise<Schema> {
-        return await fs.readJson('test/resources/hasura-schema.json', {
-          encoding: 'utf-8',
-        });
-      },
-    };
     const client = new GraphQLClient(
       new AirbyteLogger(AirbyteLogLevel.INFO),
       schemaLoader,
@@ -394,33 +394,76 @@ describe('graphql-client write', () => {
     await client.flush();
     expect(queries).toEqual(3);
   });
-  const users = [
+  test('record with null primary key field', async () => {
+    const res1 = JSON.parse(`
     {
-      uid: 'tovbinm',
-      name: 'tovbinm',
-      htmlUrl: 'https://github.com/tovbinm',
-      type: {category: 'User', detail: 'user'},
-      source: 'GitHub',
-      origin: 'mytestsource',
-    },
-    {uid: 'tovbinm', source: 'GitHub', origin: 'mytestsource2'},
-    {
-      uid: 'vitalyg',
-      name: 'vitalyg',
-      htmlUrl: 'https://github.com/vitalyg',
-      type: {category: 'User', detail: 'user'},
-      source: 'GitHub',
-      origin: 'mytestsource',
-    },
-    {
-      uid: 'vitalyg',
-      source: 'GitHub',
-      origin: 'mytestsource',
-      type: {foo: 'bar'},
-    },
-  ];
-  const primaryKeys = ['uid', 'source'];
+      "data": {
+      "insert_vcs_Organization": {
+        "returning": [
+          {
+            "id": "t1|gql-e2e-v2|GitHub|faros-ai",
+            "uid": "faros-ai",
+            "source": null
+            }
+          ]
+        }
+      }
+    }`);
+    // org without source (aka null primary key field)
+    const record1 = JSON.parse('{"uid":"faros-ai"}');
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        queries++;
+        if (query.startsWith('mutation { insert_vcs_Organization')) {
+          return Promise.resolve(res1);
+        } else {
+          throw new Error('unexpected query ' + query);
+        }
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_Organization', record1, 'mytestsource');
+    await client.flush();
+    expect(queries).toEqual(1);
+  });
   test('mergeByPrimaryKey', async () => {
+    const users = [
+      {
+        uid: 'tovbinm',
+        name: 'tovbinm',
+        htmlUrl: 'https://github.com/tovbinm',
+        type: {category: 'User', detail: 'user'},
+        source: 'GitHub',
+        origin: 'mytestsource',
+      },
+      {uid: 'tovbinm', source: 'GitHub', origin: 'mytestsource2'},
+      {
+        uid: 'vitalyg',
+        name: 'vitalyg',
+        htmlUrl: 'https://github.com/vitalyg',
+        type: {category: 'User', detail: 'user'},
+        source: 'GitHub',
+        origin: 'mytestsource',
+      },
+      {
+        uid: 'vitalyg',
+        source: 'GitHub',
+        origin: 'mytestsource',
+        type: {foo: 'bar'},
+      },
+    ];
+    const primaryKeys = ['uid', 'source'];
     expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
   });
 });

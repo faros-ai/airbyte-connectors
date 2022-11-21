@@ -13,6 +13,7 @@ import {
   keys,
   pick,
   reverse,
+  set,
 } from 'lodash';
 import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
@@ -101,12 +102,10 @@ export function serialize(obj: any): string {
  * Like lodash pick but with null value replacement.
  */
 export function strictPick(obj: any, keys: string[], nullValue = 'null'): any {
-  const result = {};
-  keys.forEach((key) => {
-    const v = obj[key];
-    result[key] = v ? v : nullValue;
-  });
-  return result;
+  return keys.reduce(
+    (result, key) => set(result, key, obj[key] || nullValue),
+    {}
+  );
 }
 
 /**
@@ -242,15 +241,20 @@ export class GraphQLClient {
       const op = this.toUpsertOp(model);
       if (op) {
         try {
+          // write batch
           const opGql = jsonToGraphQLQuery(op.query);
           const opRes = await this.backend.postQuery(opGql);
+          // extract ids of newly written records and set on upserts.
+          // the ids are used as foreign keys by subsequent batches
+          // step 1: access array of results
+          // will be at path 'opRes.data.insert_<model>.returning'
           const paths = keys(opRes.data);
           assert(paths.length === 1, `expected one element in ${paths}`);
-          const nextKey = paths[0];
-          const objects = get(opRes.data, `${nextKey}.returning`);
+          const objects = get(opRes.data, `${paths[0]}.returning`);
           assert(Array.isArray(objects), `expected array`);
-          // assign ids to all upserts related to this object
           for (const obj of objects) {
+            // step 2: assign id to all upserts related to this object
+            // construct key from returned result and lookup upsert by key
             const key = this.serializedPrimaryKey(model, obj);
             const upserts = op.upsertsByKey.get(key);
             assert(
@@ -337,7 +341,7 @@ export class GraphQLClient {
     await Promise.all([this.flushWriteBuffer(), this.flushUpsertBuffer()]);
   }
 
-  async flushWriteBuffer(): Promise<void> {
+  private async flushWriteBuffer(): Promise<void> {
     const queries = this.writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
@@ -490,13 +494,16 @@ export class GraphQLClient {
     return upsert;
   }
 
-  objectWithForeignKeys(upsert: Upsert): Dictionary<any> {
+  private objectWithForeignKeys(upsert: Upsert): Dictionary<any> {
     if (isEmpty(upsert.foreignKeys)) {
       return upsert.object;
     }
+    // for each FK, copy id of related upsert to FK field
+    // the upsert's id was populated after the associated batch
+    // was written in doFlushUpsertBuffer
     const result = clone(upsert.object);
     for (const [relName, fkUpsert] of Object.entries(upsert.foreignKeys)) {
-      // foreign key was constructed w/ schema so the follow is safe
+      // foreign key was constructed from schema so the following is safe to access
       const fkField = this.schema.references[upsert.model][relName].foreignKey;
       const fkValue = fkUpsert.id;
       assert(
@@ -521,6 +528,9 @@ export class GraphQLClient {
     const modelUpserts = this.upsertBuffer.get(model);
     if (modelUpserts) {
       const upsertsByKey = new Map();
+      // add FKs and index upsert by primary key
+      // the index is needed after write to find source
+      // upsert and set id
       const all = modelUpserts.map((u) => {
         const fullObj = this.objectWithForeignKeys(u);
         const key = this.serializedPrimaryKey(model, fullObj);
@@ -531,6 +541,8 @@ export class GraphQLClient {
         return fullObj;
       });
       const primaryKeys = this.schema.primaryKeys[model];
+      // there can be multiple records that represent the
+      // same object.  merge all records into one
       const objects = mergeByPrimaryKey(all, primaryKeys);
       const keysObj = primaryKeys
         .sort()
