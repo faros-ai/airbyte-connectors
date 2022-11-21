@@ -58,6 +58,17 @@
         "title": "Page Size",
         "description": "Page size to use when paginating through query results.",
         "default": 100
+      },
+      "path_to_record": {
+        "order": 6,
+        "type": "string",
+        "title": "Path to record",
+        "description": "Where to place each of the query results in their corresponding output records.",
+        "default": "PATH_TO_MODEL",
+        "enum": [
+          "PATH_TO_MODEL",
+          "MODEL_NAME"
+        ]
       }
     }
   }

@@ -9,14 +9,18 @@ import {
   createIncrementalQueriesV2,
   paginatedQuery,
   paginatedQueryV2,
+  PathToModel,
+  pathToModelV1,
+  pathToModelV2,
   toIncrementalV1,
   toIncrementalV2,
 } from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
 import {max} from 'lodash';
+import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {GraphQLConfig, GraphQLVersion} from '..';
+import {GraphQLConfig, GraphQLVersion, PathToRecord} from '..';
 
 const DEFAULT_PAGE_SIZE = 100;
 // January 1, 2200
@@ -27,7 +31,11 @@ type GraphQLState = {
   [query: string]: {refreshedAtMillis: number};
 };
 
-type StreamSlice = {query: string; incremental: boolean};
+type StreamSlice = {
+  query: string;
+  incremental: boolean;
+  pathToModel: PathToModel;
+};
 
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
@@ -53,11 +61,18 @@ export class FarosGraph extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
+    const schema = await this.faros.introspect(this.config.graph);
     if (this.config.query) {
       this.logger.debug('Single query specified');
-      yield {query: this.config.query, incremental: false};
+      yield {
+        query: this.config.query,
+        incremental: false,
+        pathToModel:
+          this.config.graphql_api === GraphQLVersion.V1
+            ? pathToModelV1(this.config.query, schema)
+            : pathToModelV2(this.config.query, schema),
+      };
     } else {
-      const schema = await this.faros.introspect(this.config.graph);
       const queries =
         this.config.graphql_api === GraphQLVersion.V1
           ? createIncrementalQueriesV1(schema, false)
@@ -66,7 +81,14 @@ export class FarosGraph extends AirbyteStreamBase {
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
       for (const query of queries) {
-        yield {query: query.gql, incremental: true};
+        yield {
+          query: query.gql,
+          incremental: true,
+          pathToModel:
+            this.config.graphql_api === GraphQLVersion.V1
+              ? pathToModelV1(query.gql, schema)
+              : pathToModelV2(query.gql, schema),
+        };
       }
     }
   }
@@ -74,10 +96,10 @@ export class FarosGraph extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
+    streamSlice?: StreamSlice,
     streamState?: GraphQLState
   ): AsyncGenerator<Dictionary<any, string>, any, undefined> {
-    const {query, incremental} = streamSlice;
+    const {query, incremental, pathToModel}: StreamSlice = streamSlice;
     this.logger.debug(`Processing query: "${query}"`);
 
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
@@ -141,7 +163,21 @@ export class FarosGraph extends AirbyteStreamBase {
       refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
 
       this.state = {...this.state, [query]: {refreshedAtMillis}};
-      yield item;
+      yield _.set(
+        {},
+        this.config.path_to_record === PathToRecord.PATH_TO_MODEL
+          ? // Return the record as a single element array at the given path
+            // E.g., if path is ['vcs', 'pullRequests', 'nodes'] and the original record is {'number':1}, the returned record
+            // will look like:
+            // "vcs": {
+            //   "pullRequests": {
+            //     "nodes": [{'number':1}]
+            //   }
+            // }
+            [...pathToModel.path, 0]
+          : pathToModel.modelName,
+        item
+      );
     }
   }
 

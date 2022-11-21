@@ -3,10 +3,26 @@
 exports[`index full_refresh sync mode 1`] = `
 Array [
   Object {
-    "k1": "v1",
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k1": "v1",
+          },
+        ],
+      },
+    },
   },
   Object {
-    "k2": "v2",
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k2": "v2",
+          },
+        ],
+      },
+    },
   },
 ]
 `;
@@ -14,15 +30,31 @@ Array [
 exports[`index incremental sync mode - V1 1`] = `
 Array [
   Object {
-    "k1": "v1",
-    "metadata": Object {
-      "refreshedAt": 12,
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k1": "v1",
+            "metadata": Object {
+              "refreshedAt": 12,
+            },
+          },
+        ],
+      },
     },
   },
   Object {
-    "k2": "v2",
-    "metadata": Object {
-      "refreshedAt": 23,
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k2": "v2",
+            "metadata": Object {
+              "refreshedAt": 23,
+            },
+          },
+        ],
+      },
     },
   },
 ]
@@ -31,12 +63,28 @@ Array [
 exports[`index incremental sync mode - V2 1`] = `
 Array [
   Object {
-    "k1": "v1",
-    "refreshedAt": "2022-10-19T22:02:14.483165+00:00",
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k1": "v1",
+            "refreshedAt": "2022-10-19T22:02:14.483165+00:00",
+          },
+        ],
+      },
+    },
   },
   Object {
-    "k2": "v2",
-    "refreshedAt": "2023-11-14T22:13:20.000Z",
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k2": "v2",
+            "refreshedAt": "2023-11-14T22:13:20.000Z",
+          },
+        ],
+      },
+    },
   },
 ]
 `;

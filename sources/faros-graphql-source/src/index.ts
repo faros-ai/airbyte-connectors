@@ -16,6 +16,11 @@ export enum GraphQLVersion {
   V2 = 'v2',
 }
 
+export enum PathToRecord {
+  PATH_TO_MODEL = 'PATH_TO_MODEL',
+  MODEL_NAME = 'MODEL_NAME',
+}
+
 export interface GraphQLConfig extends AirbyteConfig {
   api_key: string;
   api_url: string;
@@ -23,6 +28,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   graphql_api?: GraphQLVersion;
   page_size?: number;
   query?: string;
+  path_to_record?: PathToRecord;
 }
 
 export function mainCommand(): Command {
@@ -61,6 +67,8 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     if (!config.graphql_api)
       throw new VError('Faros GraphQL API version was not set');
     if (!config.graph) throw new VError('Faros graph name was not provided');
+    if (config.path_to_record === undefined)
+      throw new VError('Path to record was not provided');
   }
 
   makeFarosClient(config: GraphQLConfig): FarosClient {
