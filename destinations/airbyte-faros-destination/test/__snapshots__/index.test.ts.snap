@@ -36,6 +36,10 @@ Array [
 
 exports[`graphql-client write batch upsert record with null primary key field 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [createdAt, htmlUrl, name, origin, refreshedAt, type]}) { returning { id source uid } } }"`;
 
+exports[`graphql-client write batch upsert self-referent model 1`] = `"mutation { insert_org_Employee (objects: [{uid: \\"7\\", origin: \\"mytestsource\\"}, {uid: \\"9\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [additionalFields, departmentId, employmentType, identityId, ignored, inactive, joinedAt, level, locationId, managerId, origin, refreshedAt, reportingChain, role, terminatedAt, title]}) { returning { id uid } } }"`;
+
+exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation { insert_org_Employee (objects: [{uid: \\"10\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|7\\"}, {uid: \\"8\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}, {uid: \\"7\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [additionalFields, departmentId, employmentType, identityId, ignored, inactive, joinedAt, level, locationId, managerId, origin, refreshedAt, reportingChain, role, terminatedAt, title]}) { returning { id uid } } }"`;
+
 exports[`toLevels ignore other models 1`] = `
 Array [
   Array [

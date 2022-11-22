@@ -469,6 +469,78 @@ describe('graphql-client write batch upsert', () => {
     const primaryKeys = ['uid', 'source'];
     expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
   });
+  test('self-referent model', async () => {
+    const responses = [
+      // #1
+      JSON.parse(`  
+      {
+        "data": {
+          "insert_org_Employee": {
+            "returning": [
+              {
+                "id": "t1|gql-e2e-v2|7",
+                "uid": "7"
+              },
+              {
+                "id": "t1|gql-e2e-v2|9",
+                "uid": "9"
+              }
+            ]
+          }
+        }
+      }`),
+      // #2
+      JSON.parse(`
+      {
+        "data": {
+          "insert_org_Employee": {
+            "returning": [
+              {
+                "id": "t1|gql-e2e-v2|10",
+                "uid": "10"
+              },
+              {
+                "id": "t1|gql-e2e-v2|8",
+                "uid": "8"
+              },
+              {
+                "id": "t1|gql-e2e-v2|7",
+                "uid": "7"
+              }
+            ]
+          }
+        }
+      }`),
+    ];
+    const records = [
+      JSON.parse('{"uid":"10","manager":{"uid":"7"},"source":"BambooHR"}'),
+      JSON.parse('{"uid":"8","manager":{"uid":"9"},"source":"BambooHR"}'),
+      JSON.parse('{"uid":"7","manager":{"uid":"9"},"source":"BambooHR"}'),
+      JSON.parse('{"uid":"9","source":"BambooHR"}'),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10
+    );
+    await client.loadSchema();
+    for (const rec of records) {
+      await client.writeRecord('org_Employee', rec, 'mytestsource');
+    }
+    await client.flush();
+    expect(queries).toEqual(2);
+  });
 });
 
 describe('upsert buffer', () => {

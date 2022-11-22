@@ -11,6 +11,9 @@
     "vcs_Repository": [
       "name",
       "organizationId"
+    ],
+    "org_Employee": [
+      "uid"
     ]
   },
   "scalars": {
@@ -46,6 +49,25 @@
       "size": "bigint",
       "topics": "jsonb",
       "updatedAt": "timestamptz"
+    },
+    "org_Employee": {
+      "additionalFields": "jsonb",
+      "departmentId": "String",
+      "employmentType": "jsonb",
+      "identityId": "String",
+      "ignored": "Boolean",
+      "inactive": "Boolean",
+      "joinedAt": "timestamptz",
+      "level": "Int",
+      "locationId": "String",
+      "managerId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "reportingChain": "jsonb",
+      "role": "String",
+      "terminatedAt": "timestamptz",
+      "title": "String",
+      "uid": "String"
     }
   },
   "references": {
@@ -73,15 +95,59 @@
         "model": "vcs_Organization",
         "foreignKey": "organizationId"
       }
+    },
+    "org_Employee": {
+      "departmentId": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "department": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "locationId": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "location": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "managerId": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      },
+      "manager": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      }
     }
   },
   "backReferences": {},
   "sortedModelDependencies": [
+    "org_Employee",
     "vcs_Branch",
     "vcs_Repository",
     "vcs_Organization"
   ],
   "tableNames": [
+    "org_Employee",
     "vcs_Branch",
     "vcs_Organization",
     "vcs_Repository"
