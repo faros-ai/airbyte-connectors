@@ -13,11 +13,14 @@ import os from 'os';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {
+  batchIterator,
   GraphQLBackend,
   GraphQLClient,
   mergeByPrimaryKey,
   serialize,
   strictPick,
+  toLevels,
+  Upsert,
   UpsertBuffer,
 } from '../src/common/graphql-client';
 import {FarosDestination} from '../src/destination';
@@ -494,5 +497,134 @@ describe('graphql-client utilities', () => {
   test('strictPick', async () => {
     expect(strictPick({z: 1, a: 'bar'}, ['z', 'b'])).toEqual({z: 1, b: 'null'});
     expect(strictPick({z: 1, a: 'bar'}, ['b'])).toEqual({b: 'null'});
+  });
+});
+
+describe('toLevels', () => {
+  async function expectLevels(upserts: Upsert[]): Promise<void> {
+    const iterator = batchIterator(toLevels(upserts), (batch) => {
+      return Promise.resolve(batch.map((u) => u.id).sort());
+    });
+    const res = [];
+    for await (const result of iterator) {
+      res.push(result);
+    }
+    expect(res).toMatchSnapshot();
+  }
+
+  test('simple chain', async () => {
+    const u0: Upsert = {
+      id: 'u0',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u1: Upsert = {
+      id: 'u1',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        r: u0,
+      },
+    };
+    const u2: Upsert = {
+      id: 'u2',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        r: u1,
+      },
+    };
+    await expectLevels([u2]);
+    await expectLevels([u1]);
+    await expectLevels([u0]);
+  });
+  test('simple tree', async () => {
+    const u0: Upsert = {
+      id: 'u0',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u1: Upsert = {
+      id: 'u1',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u2: Upsert = {
+      id: 'u2',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        l: u0,
+        r: u1,
+      },
+    };
+    await expectLevels([u2]);
+  });
+  test('imbalanced tree', async () => {
+    const u0: Upsert = {
+      id: 'u0',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u3: Upsert = {
+      id: 'u3',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u1: Upsert = {
+      id: 'u1',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        r: u3,
+      },
+    };
+    const u2: Upsert = {
+      id: 'u2',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        l: u0,
+        r: u1,
+      },
+    };
+    await expectLevels([u2]);
+  });
+  test('ignore other models', async () => {
+    const u0: Upsert = {
+      id: 'u0',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u3: Upsert = {
+      id: 'u3',
+      model: 'm',
+      object: {},
+      foreignKeys: {},
+    };
+    const u1: Upsert = {
+      id: 'u1',
+      model: 'm2', // different model type
+      object: {},
+      foreignKeys: {
+        r: u3,
+      },
+    };
+    const u2: Upsert = {
+      id: 'u2',
+      model: 'm',
+      object: {},
+      foreignKeys: {
+        l: u0,
+        r: u1,
+      },
+    };
+    await expectLevels([u2]);
   });
 });

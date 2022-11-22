@@ -5,15 +5,18 @@ import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {
   clone,
   difference,
+  flatMap,
   get,
   groupBy,
   intersection,
   isEmpty,
   isNil,
   keys,
+  max,
   pick,
   reverse,
   set,
+  unzip,
 } from 'lodash';
 import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
@@ -39,20 +42,26 @@ export interface GraphQLBackend {
 }
 
 interface WriteOp {
-  query: any;
-  errorMsg: string;
+  readonly query: any;
+  readonly errorMsg: string;
 }
 
 interface UpsertOp {
-  query: any;
-  upsertsByKey: Map<string, Upsert[]>;
+  readonly query: any;
+  readonly upsertsByKey: Map<string, Upsert[]>;
 }
 
-interface Upsert {
+export interface Upsert {
   id?: string; // will be set after object is inserted
-  model: string;
-  object: Dictionary<any>;
-  foreignKeys: Dictionary<Upsert>;
+  readonly model: string;
+  readonly object: Dictionary<any>;
+  readonly foreignKeys: Dictionary<Upsert>;
+}
+
+interface UpsertResult {
+  readonly model: string;
+  readonly numObjects: number;
+  readonly durationMs: number;
 }
 
 export class UpsertBuffer {
@@ -122,6 +131,63 @@ export function mergeByPrimaryKey(
   );
 }
 
+/**
+ * Execute async callback for each batch of upserts.
+ */
+export function batchIterator<T>(
+  batches: Upsert[][],
+  callback: (batch: Upsert[]) => Promise<T>
+): AsyncIterable<T> {
+  return {
+    async *[Symbol.asyncIterator](): AsyncIterator<T> {
+      for (const batch of batches) {
+        yield await callback(batch);
+      }
+    },
+  };
+}
+
+/**
+ * Separates upserts into levels. Level 0 has no dependencies on other levels.
+ * Level 1 depends on Level 0, 2 on 1 and so on.
+ */
+export function toLevels(upserts: Upsert[]): Upsert[][] {
+  const withLevel: [Upsert, number][] = flatMap(upserts, (u) => addLevel(u));
+  const byLevel: Dictionary<[Upsert, number][]> = groupBy(
+    withLevel,
+    (tuple) => tuple[1]
+  );
+  const result = [];
+  Object.keys(byLevel)
+    .sort()
+    .forEach((level) => {
+      result.push(unzip(byLevel[level])[0]);
+    });
+  return result;
+}
+
+/**
+ * Converts an Upsert (which is a tree structure) into an array of tuples.
+ * Each tuple contains an Upsert and its level in the tree structure.
+ * The level indicates the number of steps from a leaf where leaves are level 0.
+ * If an Upsert has multiple paths to a leaf, the level is the maximum number of
+ * steps.
+ */
+function addLevel(u: Upsert, level = 0): [Upsert, number][] {
+  const result = [];
+  let maxAncestorLevel = 0;
+  for (const ancestor of Object.values(u.foreignKeys)) {
+    if (ancestor.model === u.model) {
+      const ancestorsWithLevels = addLevel(ancestor, level + 1);
+      maxAncestorLevel = max([ancestorsWithLevels[0][1], maxAncestorLevel]);
+      result.push(...ancestorsWithLevels);
+    }
+  }
+  const thisLevel = result.length ? maxAncestorLevel + 1 : 0;
+  result.unshift([u, thisLevel]);
+  return result;
+}
+
 export class GraphQLClient {
   private readonly logger: AirbyteLogger;
   private readonly schemaLoader: SchemaLoader;
@@ -133,6 +199,7 @@ export class GraphQLClient {
   private readonly upsertBatchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
+  private readonly selfReferentModels = new Set();
 
   constructor(
     logger: AirbyteLogger,
@@ -158,9 +225,18 @@ export class GraphQLClient {
 
   async loadSchema(): Promise<void> {
     this.schema = await this.schemaLoader.loadSchema();
+    // various derivative values of schema
     this.tableNames = new Set(this.schema.tableNames);
     this.tableDependencies = [...this.schema.sortedModelDependencies];
     reverse(this.tableDependencies);
+    // self-referent models
+    for (const [model, modelRefs] of Object.entries(this.schema.references)) {
+      for (const reference of Object.values(modelRefs)) {
+        if (reference.model === model) {
+          this.selfReferentModels.add(model);
+        }
+      }
+    }
   }
 
   private checkSchema(): void {
@@ -236,36 +312,57 @@ export class GraphQLClient {
     }
   }
 
+  private async execUpsert(model: string, op: UpsertOp): Promise<UpsertResult> {
+    // write batch
+    const opGql = jsonToGraphQLQuery(op.query);
+    const start = Date.now();
+    const opRes = await this.backend.postQuery(opGql);
+    const end = Date.now();
+    // extract ids of newly written records and set on upserts.
+    // the ids are used as foreign keys by subsequent batches
+    // step 1: access array of results
+    // will be at path 'opRes.data.insert_<model>.returning'
+    const paths = keys(opRes.data);
+    assert(paths.length === 1, `expected one element in ${paths}`);
+    const objects = get(opRes.data, `${paths[0]}.returning`);
+    assert(Array.isArray(objects), `expected array`);
+    for (const obj of objects) {
+      // step 2: assign id to all upserts related to this object
+      // construct key from returned result and lookup upsert by key
+      const key = this.serializedPrimaryKey(model, obj);
+      const upserts = op.upsertsByKey.get(key);
+      assert(upserts, `failed to resolve upserts for ${model} and ${key}`);
+      assert(
+        obj.id,
+        `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
+      );
+      upserts.forEach((u) => (u.id = obj.id));
+    }
+    return {
+      model,
+      numObjects: objects.length,
+      durationMs: end - start,
+    };
+  }
+
   private async doFlushUpsertBuffer(): Promise<void> {
     for (const model of this.tableDependencies) {
-      const op = this.toUpsertOp(model);
-      if (op) {
+      const modelUpserts = this.upsertBuffer.get(model);
+      if (modelUpserts) {
+        const withLevels = this.selfReferentModels.has(model)
+          ? toLevels(modelUpserts)
+          : [modelUpserts];
+        const iterator: AsyncIterable<UpsertResult> = batchIterator(
+          withLevels,
+          (batch) => {
+            return this.execUpsert(model, this.toUpsertOp(model, batch));
+          }
+        );
         try {
-          // write batch
-          const opGql = jsonToGraphQLQuery(op.query);
-          const opRes = await this.backend.postQuery(opGql);
-          // extract ids of newly written records and set on upserts.
-          // the ids are used as foreign keys by subsequent batches
-          // step 1: access array of results
-          // will be at path 'opRes.data.insert_<model>.returning'
-          const paths = keys(opRes.data);
-          assert(paths.length === 1, `expected one element in ${paths}`);
-          const objects = get(opRes.data, `${paths[0]}.returning`);
-          assert(Array.isArray(objects), `expected array`);
-          for (const obj of objects) {
-            // step 2: assign id to all upserts related to this object
-            // construct key from returned result and lookup upsert by key
-            const key = this.serializedPrimaryKey(model, obj);
-            const upserts = op.upsertsByKey.get(key);
-            assert(
-              upserts,
-              `failed to resolve upserts for ${model} and ${key}`
+          for await (const result of iterator) {
+            this.logger.debug(
+              `executed ${model} upsert with ${result.numObjects} object(s) in ${result.durationMs}ms`
             );
-            assert(
-              obj.id,
-              `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
-            );
-            upserts.forEach((u) => (u.id = obj.id));
           }
         } catch (e) {
           throw new VError(e, `failed to write upserts for ${model}`);
@@ -529,49 +626,45 @@ export class GraphQLClient {
     return serialize(strictPick(obj, this.schema.primaryKeys[model]));
   }
 
-  toUpsertOp(model: string): UpsertOp | undefined {
-    const modelUpserts = this.upsertBuffer.get(model);
-    if (modelUpserts) {
-      const upsertsByKey = new Map();
-      // add FKs and index upsert by primary key
-      // the index is needed after write to find source
-      // upsert and set id
-      const all = modelUpserts.map((u) => {
-        const fullObj = this.objectWithForeignKeys(u);
-        const key = this.serializedPrimaryKey(model, fullObj);
-        if (!upsertsByKey.has(key)) {
-          upsertsByKey.set(key, []);
-        }
-        upsertsByKey.get(key).push(u);
-        return fullObj;
-      });
-      const primaryKeys = this.schema.primaryKeys[model];
-      // there can be multiple records that represent the
-      // same object.  merge all records into one
-      const objects = mergeByPrimaryKey(all, primaryKeys);
-      const keysObj = primaryKeys
-        .sort()
-        .reduce((a, v) => ({...a, [v]: true}), {});
-      const mutation = {
-        mutation: {
-          [`insert_${model}`]: {
-            __args: {
-              objects,
-              on_conflict: this.createConflictClause(model, false),
-            },
-            returning: {
-              id: true,
-              ...keysObj,
-            },
+  private toUpsertOp(model: string, modelUpserts: Upsert[]): UpsertOp {
+    const upsertsByKey = new Map();
+    // add FKs and index upsert by primary key
+    // the index is needed after write to find source
+    // upsert and set id
+    const all = modelUpserts.map((u) => {
+      const fullObj = this.objectWithForeignKeys(u);
+      const key = this.serializedPrimaryKey(model, fullObj);
+      if (!upsertsByKey.has(key)) {
+        upsertsByKey.set(key, []);
+      }
+      upsertsByKey.get(key).push(u);
+      return fullObj;
+    });
+    const primaryKeys = this.schema.primaryKeys[model];
+    // there can be multiple records that represent the
+    // same object.  merge all records into one
+    const objects = mergeByPrimaryKey(all, primaryKeys);
+    const keysObj = primaryKeys
+      .sort()
+      .reduce((a, v) => ({...a, [v]: true}), {});
+    const mutation = {
+      mutation: {
+        [`insert_${model}`]: {
+          __args: {
+            objects,
+            on_conflict: this.createConflictClause(model, false),
+          },
+          returning: {
+            id: true,
+            ...keysObj,
           },
         },
-      };
-      return {
-        query: mutation,
-        upsertsByKey,
-      };
-    }
-    return undefined;
+      },
+    };
+    return {
+      query: mutation,
+      upsertsByKey,
+    };
   }
 
   private formatFieldValue(model: string, field: string, value: any): any {

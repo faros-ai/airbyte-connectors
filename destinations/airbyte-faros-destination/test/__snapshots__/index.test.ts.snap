@@ -35,3 +35,74 @@ Array [
 `;
 
 exports[`graphql-client write batch upsert record with null primary key field 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [createdAt, htmlUrl, name, origin, refreshedAt, type]}) { returning { id source uid } } }"`;
+
+exports[`toLevels ignore other models 1`] = `
+Array [
+  Array [
+    "u0",
+  ],
+  Array [
+    "u2",
+  ],
+]
+`;
+
+exports[`toLevels imbalanced tree 1`] = `
+Array [
+  Array [
+    "u0",
+    "u3",
+  ],
+  Array [
+    "u1",
+  ],
+  Array [
+    "u2",
+  ],
+]
+`;
+
+exports[`toLevels simple chain 1`] = `
+Array [
+  Array [
+    "u0",
+  ],
+  Array [
+    "u1",
+  ],
+  Array [
+    "u2",
+  ],
+]
+`;
+
+exports[`toLevels simple chain 2`] = `
+Array [
+  Array [
+    "u0",
+  ],
+  Array [
+    "u1",
+  ],
+]
+`;
+
+exports[`toLevels simple chain 3`] = `
+Array [
+  Array [
+    "u0",
+  ],
+]
+`;
+
+exports[`toLevels simple tree 1`] = `
+Array [
+  Array [
+    "u0",
+    "u1",
+  ],
+  Array [
+    "u2",
+  ],
+]
+`;
