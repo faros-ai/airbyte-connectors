@@ -166,7 +166,7 @@ export class FarosGraph extends AirbyteStreamBase {
 
       yield _.set(
         {},
-        this.config.result_model === ResultModel.NESTED
+        this.config.result_model === ResultModel.Nested
           ? // Return the record as a single element array at the given path
             // E.g., if path is ['vcs', 'pullRequests', 'nodes'] and the original record is {'number':1}, the returned record
             // will look like:

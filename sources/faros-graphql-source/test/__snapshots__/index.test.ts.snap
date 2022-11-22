@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index flat result model 1`] = `
+Array [
+  Object {
+    "D": Object {
+      "k1": "v1",
+      "metadata": Object {
+        "refreshedAt": 12,
+      },
+    },
+  },
+  Object {
+    "D": Object {
+      "k2": "v2",
+      "metadata": Object {
+        "refreshedAt": 23,
+      },
+    },
+  },
+]
+`;
+
 exports[`index full_refresh sync mode 1`] = `
 Array [
   Object {

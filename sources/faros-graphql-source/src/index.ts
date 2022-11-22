@@ -17,8 +17,8 @@ export enum GraphQLVersion {
 }
 
 export enum ResultModel {
-  NESTED = 'Nested',
-  FLAT = 'Flat',
+  Nested = 'Nested',
+  Flat = 'Flat',
 }
 
 export interface GraphQLConfig extends AirbyteConfig {
