@@ -58,6 +58,17 @@
         "title": "Page Size",
         "description": "Page size to use when paginating through query results.",
         "default": 100
+      },
+      "result_model": {
+        "order": 6,
+        "type": "string",
+        "title": "Result model",
+        "description": "Where to place each of the query results in their corresponding output records. E.g Nested - { vcs { pullRequests { nodes: [<record>] } } }, Flat - { vcs_PullRequest: <record> }",
+        "default": "Nested",
+        "enum": [
+          "Nested",
+          "Flat"
+        ]
       }
     }
   }

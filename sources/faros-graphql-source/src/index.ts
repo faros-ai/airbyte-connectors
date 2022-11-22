@@ -16,6 +16,11 @@ export enum GraphQLVersion {
   V2 = 'v2',
 }
 
+export enum ResultModel {
+  Nested = 'Nested',
+  Flat = 'Flat',
+}
+
 export interface GraphQLConfig extends AirbyteConfig {
   api_key: string;
   api_url: string;
@@ -23,6 +28,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   graphql_api?: GraphQLVersion;
   page_size?: number;
   query?: string;
+  result_model?: ResultModel;
 }
 
 export function mainCommand(): Command {
@@ -61,6 +67,8 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     if (!config.graphql_api)
       throw new VError('Faros GraphQL API version was not set');
     if (!config.graph) throw new VError('Faros graph name was not provided');
+    if (config.result_model === undefined)
+      throw new VError('Result model was not provided');
   }
 
   makeFarosClient(config: GraphQLConfig): FarosClient {
