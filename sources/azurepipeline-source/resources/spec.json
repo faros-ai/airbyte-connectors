@@ -4,7 +4,12 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Pipeline Spec",
     "type": "object",
-    "required": ["access_token", "organization", "project", "cutoff_days"],
+    "required": [
+      "access_token",
+      "organization",
+      "project_names",
+      "cutoff_days"
+    ],
     "additionalProperties": true,
     "properties": {
       "access_token": {
@@ -18,9 +23,12 @@
         "title": "Organization",
         "description": "Azure Organization"
       },
-      "project": {
-        "type": "string",
-        "title": "Project",
+      "project_names": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project Names",
         "description": "Azure Project"
       },
       "cutoff_days": {

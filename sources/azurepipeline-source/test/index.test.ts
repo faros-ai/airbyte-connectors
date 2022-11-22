@@ -54,6 +54,7 @@ describe('index', () => {
   });
 
   test('streams - pipelines, use full_refresh sync mode', async () => {
+    const projectNames = ['project'];
     const fnPipelinesFunc = jest.fn();
 
     AzurePipeline.instance = jest.fn().mockImplementation(() => {
@@ -65,14 +66,19 @@ describe('index', () => {
           }),
         } as any,
         null,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        projectNames
       );
     });
     const source = new sut.AzurePipelineSource(logger);
     const streams = source.streams({} as any);
 
     const pipelinesStream = streams[0];
-    const pipelineIter = pipelinesStream.readRecords(SyncMode.FULL_REFRESH);
+    const pipelineIter = pipelinesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {project: projectNames[0]}
+    );
     const pipelines = [];
     for await (const pipeline of pipelineIter) {
       pipelines.push(pipeline);
@@ -83,6 +89,7 @@ describe('index', () => {
   });
 
   test('streams - builds, use full_refresh sync mode', async () => {
+    const projectNames = ['project'];
     const fnBuildsFunc = jest.fn();
 
     AzurePipeline.instance = jest.fn().mockImplementation(() => {
@@ -94,14 +101,19 @@ describe('index', () => {
           }),
         } as any,
         null,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        projectNames
       );
     });
     const source = new sut.AzurePipelineSource(logger);
     const streams = source.streams({} as any);
 
     const buildsStream = streams[0];
-    const buildIter = buildsStream.readRecords(SyncMode.FULL_REFRESH);
+    const buildIter = buildsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {project: projectNames[0]}
+    );
     const builds = [];
     for await (const build of buildIter) {
       builds.push(build);
@@ -112,6 +124,7 @@ describe('index', () => {
   });
 
   test('streams - releases, use full_refresh sync mode', async () => {
+    const projectNames = ['project'];
     const fnReleasesFunc = jest.fn();
 
     AzurePipeline.instance = jest.fn().mockImplementation(() => {
@@ -123,14 +136,19 @@ describe('index', () => {
           }),
         } as any,
         null,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        projectNames
       );
     });
     const source = new sut.AzurePipelineSource(logger);
     const streams = source.streams({} as any);
 
     const releasesStream = streams[0];
-    const releaseIter = releasesStream.readRecords(SyncMode.FULL_REFRESH);
+    const releaseIter = releasesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {project: projectNames[0]}
+    );
     const releases = [];
     for await (const release of releaseIter) {
       releases.push(release);
