@@ -103,7 +103,7 @@ describe('index', () => {
     }
     expect(listIncidents.mock.calls.length).toBe(1);
     expect(listIncidents.mock.calls[0][1]).toBe(
-      `sys_updated_on>=${sys_updated_on}`
+      `sys_updated_on>${sys_updated_on}`
     );
     expect(getCmdbCi.mock.calls.length).toBe(1);
     expect(getCmdbCiService.mock.calls.length).toBe(1);

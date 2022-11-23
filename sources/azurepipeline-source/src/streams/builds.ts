@@ -13,6 +13,10 @@ interface BuildState {
   lastQueueTime: string;
 }
 
+type StreamSlice = {
+  project: string;
+};
+
 export class Builds extends AirbyteStreamBase {
   constructor(
     private readonly config: AzurePipelineConfig,
@@ -30,10 +34,17 @@ export class Builds extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'queueTime';
   }
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const project of this.config.project_names) {
+      yield {
+        project,
+      };
+    }
+  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
+    streamSlice?: StreamSlice,
     streamState?: BuildState
   ): AsyncGenerator<Build> {
     const lastQueueTime =
@@ -41,7 +52,7 @@ export class Builds extends AirbyteStreamBase {
         ? streamState?.lastQueueTime
         : undefined;
     const azurePipeline = AzurePipeline.instance(this.config);
-    yield* azurePipeline.getBuilds(lastQueueTime);
+    yield* azurePipeline.getBuilds(streamSlice.project, lastQueueTime);
   }
   getUpdatedState(
     currentStreamState: BuildState,

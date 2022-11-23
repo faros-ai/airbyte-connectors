@@ -13,6 +13,10 @@ interface ReleaseState {
   lastCreatedOn: string;
 }
 
+type StreamSlice = {
+  project: string;
+};
+
 export class Releases extends AirbyteStreamBase {
   constructor(
     private readonly config: AzurePipelineConfig,
@@ -30,10 +34,17 @@ export class Releases extends AirbyteStreamBase {
   get cursorField(): string | string[] {
     return 'createdOn';
   }
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const project of this.config.project_names) {
+      yield {
+        project,
+      };
+    }
+  }
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
+    streamSlice?: StreamSlice,
     streamState?: ReleaseState
   ): AsyncGenerator<Release> {
     const lastCreatedOn =
@@ -41,7 +52,7 @@ export class Releases extends AirbyteStreamBase {
         ? streamState?.lastCreatedOn
         : undefined;
     const azurePipeline = AzurePipeline.instance(this.config);
-    yield* azurePipeline.getReleases(lastCreatedOn);
+    yield* azurePipeline.getReleases(streamSlice.project, lastCreatedOn);
   }
   getUpdatedState(
     currentStreamState: ReleaseState,

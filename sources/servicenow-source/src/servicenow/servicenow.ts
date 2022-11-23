@@ -90,7 +90,7 @@ export class ServiceNow {
 
     if (sys_updated_on) {
       this.logger.info(`Syncing incidents updated since: ${sys_updated_on}`);
-      query = `sys_updated_on>=${sys_updated_on}`;
+      query = `sys_updated_on>${sys_updated_on}`;
     }
 
     const cmdb_ci_Map: Map<string, string> = new Map();

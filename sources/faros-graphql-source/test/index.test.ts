@@ -4,11 +4,12 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {PathToModel} from 'faros-js-client';
 import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
-import {GraphQLVersion} from '../src/index';
+import {GraphQLVersion, ResultModel} from '../src/index';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -20,7 +21,10 @@ const BASE_CONFIG = {
   api_key: 'y',
   graphql_api: GraphQLVersion.V1,
   graph: 'default',
+  result_model: ResultModel.Nested,
 };
+
+const PATH_TO_MODEL: PathToModel = {modelName: 'D', path: ['A', 'B', 'C']};
 
 let graphExists = false;
 let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
@@ -99,6 +103,18 @@ describe('index', () => {
       } as any)
     ).resolves.toStrictEqual([
       false,
+      new VError('Result model was not provided'),
+    ]);
+    await expect(
+      source.checkConnection({
+        api_url: 'x',
+        api_key: 'y',
+        graphql_api: GraphQLVersion.V1,
+        graph: 'default',
+        result_model: ResultModel.Nested,
+      } as any)
+    ).resolves.toStrictEqual([
+      false,
       new VError('Graph default does not exist!'),
     ]);
   });
@@ -112,6 +128,7 @@ describe('index', () => {
         api_key: 'y',
         graphql_api: GraphQLVersion.V1,
         graph: 'default',
+        result_model: ResultModel.Nested,
       } as any)
     ).resolves.toStrictEqual([true, undefined]);
   });
@@ -121,7 +138,10 @@ describe('index', () => {
     graphExists = true;
     const iter = source
       .streams(BASE_CONFIG)[0]
-      .readRecords(SyncMode.FULL_REFRESH, undefined, {query: 'foo'});
+      .readRecords(SyncMode.FULL_REFRESH, undefined, {
+        query: 'foo',
+        pathToModel: PATH_TO_MODEL,
+      });
 
     const records = [];
     for await (const record of iter) {
@@ -142,7 +162,7 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      {query: 'foo'},
+      {query: 'foo', pathToModel: PATH_TO_MODEL},
       {foo: {refreshedAtMillis: 1}}
     );
 
@@ -171,7 +191,7 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      {query: 'foo'},
+      {query: 'foo', pathToModel: PATH_TO_MODEL},
       {foo: {refreshedAtMillis: 1}}
     );
 
@@ -183,6 +203,35 @@ describe('index', () => {
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
       foo: {refreshedAtMillis: 1700000000000},
+    });
+  });
+
+  test('flat result model', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      {k1: 'v1', metadata: {refreshedAt: 12}},
+      {k2: 'v2', metadata: {refreshedAt: 23}},
+    ];
+    const stream = source.streams({
+      ...BASE_CONFIG,
+      result_model: ResultModel.Flat,
+    })[0];
+    const iter = stream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {query: 'foo', pathToModel: PATH_TO_MODEL},
+      {foo: {refreshedAtMillis: 1}}
+    );
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      foo: {refreshedAtMillis: 23},
     });
   });
 });
