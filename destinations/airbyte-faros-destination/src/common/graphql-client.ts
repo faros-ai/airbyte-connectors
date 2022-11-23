@@ -78,7 +78,10 @@ export class UpsertBuffer {
 
   size(): number {
     // the limiting factor is size of a single request
-    return max(Array.from(this.upsertBuffer.values()).map((arr) => arr.length));
+    return Array.from(this.upsertBuffer.values()).reduce(
+      (acc, arr) => max([acc, arr.length]),
+      0
+    );
   }
 
   pop(model: string): Upsert[] | undefined {

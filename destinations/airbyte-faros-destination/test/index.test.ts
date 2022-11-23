@@ -551,12 +551,12 @@ describe('upsert buffer', () => {
     expect(buf.pop('unknown')).toBeUndefined();
     buf.add({model: 'm2', object: {}, foreignKeys: {}});
     buf.add({model: 'm2', object: {}, foreignKeys: {}});
-    expect(buf.size()).toEqual(3);
-    expect(buf.pop('m1')?.length).toEqual(1);
-    expect(buf.size()).toEqual(2);
-    expect(buf.get('m2')?.length).toEqual(2);
     expect(buf.size()).toEqual(2);
     expect(buf.pop('m2')?.length).toEqual(2);
+    expect(buf.size()).toEqual(1);
+    expect(buf.get('m1')?.length).toEqual(1);
+    expect(buf.size()).toEqual(1);
+    expect(buf.pop('m1')?.length).toEqual(1);
     expect(buf.size()).toEqual(0);
   });
 });
