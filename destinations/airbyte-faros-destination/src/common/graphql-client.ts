@@ -68,10 +68,11 @@ export class UpsertBuffer {
   private readonly upsertBuffer: Map<string, Upsert[]> = new Map();
 
   add(upsert: Upsert): void {
-    if (!this.upsertBuffer.has(upsert.model)) {
-      this.upsertBuffer.set(upsert.model, []);
-    }
     const modelBuffer = this.upsertBuffer.get(upsert.model);
+    if (!modelBuffer) {
+      this.upsertBuffer.set(upsert.model, [upsert]);
+      return;
+    }
     modelBuffer.push(upsert);
   }
 
@@ -82,7 +83,15 @@ export class UpsertBuffer {
     );
   }
 
-  get(model: string, remove = true): Upsert[] | undefined {
+  pop(model: string): Upsert[] | undefined {
+    return this.getInternal(model, true);
+  }
+
+  get(model: string): Upsert[] | undefined {
+    return this.getInternal(model, false);
+  }
+
+  private getInternal(model: string, remove: boolean): Upsert[] | undefined {
     if (this.upsertBuffer.has(model)) {
       const modelUpserts = this.upsertBuffer.get(model);
       if (remove) {
@@ -347,7 +356,7 @@ export class GraphQLClient {
 
   private async doFlushUpsertBuffer(): Promise<void> {
     for (const model of this.tableDependencies) {
-      const modelUpserts = this.upsertBuffer.get(model);
+      const modelUpserts = this.upsertBuffer.pop(model);
       if (modelUpserts) {
         const withLevels = this.selfReferentModels.has(model)
           ? toLevels(modelUpserts)
@@ -634,10 +643,12 @@ export class GraphQLClient {
     const all = modelUpserts.map((u) => {
       const fullObj = this.objectWithForeignKeys(u);
       const key = this.serializedPrimaryKey(model, fullObj);
-      if (!upsertsByKey.has(key)) {
-        upsertsByKey.set(key, []);
+      const upsertsForKey = upsertsByKey.get(key);
+      if (!upsertsForKey) {
+        upsertsByKey.set(key, [u]);
+      } else {
+        upsertsForKey.push(u);
       }
-      upsertsByKey.get(key).push(u);
       return fullObj;
     });
     const primaryKeys = this.schema.primaryKeys[model];
