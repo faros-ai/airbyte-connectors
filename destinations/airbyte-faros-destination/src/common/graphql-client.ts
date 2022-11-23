@@ -198,6 +198,26 @@ function addLevel(u: Upsert): [Upsert, number][] {
   return result;
 }
 
+/**
+ * Client for writing records as GraphQL mutations.  The client supports 3
+ * kinds of writes: Upserts, Updates and Deletes.
+ *
+ * For upserts, the high-level algorithm is:
+ *
+ * > For each record, build a tree of Upserts. The tree has more than one node if the current record represents a
+ *   nested entity (e.g. branch record referencing repo which, in-turn, references org).
+ * > Buffer Upserts and index each by model (e.g. vcs_Branch)
+ * > When batch size limit is reached, execute a single insert mutation per model. Start with leaves of Upsert tree.
+ * > After inserting a batch, copy the id of each record back to the Upsert object. When inserting subsequent batches,
+ *   required foreign keys will be read from the Upsert tree and copied to the appropriate batch mutation.
+ *
+ * Note: there is a complication in this algorithm for self-referent models (i.e. org_Employee's manager relationship).
+ * For these models, we split the batch into "levels". The first level consists of records with no dependencies on
+ * records of the same type. The second depends on the first and so on.
+ *
+ * For Updates and Deletes (which are much less frequent) we have a separate write buffer.  This buffer is
+ * flushed if it reaches capacity.  There is no attempt to combine these into bulk mutations (as done w/ upserts).
+ */
 export class GraphQLClient {
   private readonly logger: AirbyteLogger;
   private readonly schemaLoader: SchemaLoader;
