@@ -110,7 +110,7 @@ export class UpsertBuffer {
   }
 }
 
-export function serialize(obj: any): string {
+export function serialize(obj: Dictionary<number | string>): string {
   return keys(obj)
     .sort()
     .map((k) => `${k}:${obj[k]}`)
