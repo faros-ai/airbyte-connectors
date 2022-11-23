@@ -39,10 +39,11 @@ export class SemaphoreCI {
     private readonly restClient: AxiosInstance,
     private readonly projectIds: ReadonlyArray<string>,
     private readonly startDate: Date,
-    public readonly branchNames: ReadonlyArray<string>,
     private readonly delay: number,
     private readonly includeJobs: boolean,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+
+    public readonly branchNames: ReadonlyArray<string>
   ) {}
 
   static instance(
@@ -91,10 +92,10 @@ export class SemaphoreCI {
       httpClient,
       config.projects,
       startDate,
-      config.branches,
       delay,
       config.includeJobs,
-      logger
+      logger,
+      config.branches
     );
     logger.debug('Created SemaphoreCI instance');
     return SemaphoreCI.semaphoreci;
@@ -162,8 +163,8 @@ export class SemaphoreCI {
     const res = await this.restClient.get<Project[]>('projects');
     const projects = res.data.filter((project) => {
       if (
-        this.projectIds.length &&
-        !this.projectIds.includes(project.metadata.id)
+        this.projectIds?.length &&
+        !this.projectIds?.includes(project.metadata.id)
       ) {
         return false;
       }
@@ -256,6 +257,7 @@ export class SemaphoreCI {
     branchName: string,
     since?: string
   ): AsyncGenerator<Pipeline> {
+    const projects = await this.getProjects();
     const startTime = new Date(since ?? 0);
     const startTimeMax =
       startTime > this.startDate ? startTime : this.startDate;
@@ -273,6 +275,9 @@ export class SemaphoreCI {
     );
 
     for (const pipeline of pipelines) {
+      const project = projects.find(
+        (p) => p.metadata.id === pipeline.project_id
+      );
       let pipelineJobs = [];
 
       if (this.includeJobs) {
@@ -283,6 +288,7 @@ export class SemaphoreCI {
       }
 
       pipeline.jobs = pipelineJobs;
+      pipeline.project = project;
 
       yield pipeline;
     }

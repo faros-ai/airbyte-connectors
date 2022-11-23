@@ -48,7 +48,7 @@ export class Pipelines extends AirbyteStreamBase {
     const branches = semaphore.branchNames;
 
     for await (const project of projects) {
-      if (branches.length) {
+      if (branches?.length) {
         for (const branch of branches) {
           yield {
             projectId: project.metadata.id,

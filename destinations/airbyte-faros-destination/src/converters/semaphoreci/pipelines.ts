@@ -17,12 +17,6 @@ export class Pipelines extends SemaphoreCIConverter {
     'cicd_BuildSteps',
   ];
 
-  private readonly projectsStream = new StreamName(this.source, 'projects');
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.projectsStream];
-  }
-
   id(record: AirbyteRecord): any {
     return record?.record?.data?.ppl_id;
   }
@@ -34,11 +28,8 @@ export class Pipelines extends SemaphoreCIConverter {
     const pipelineRecord = record.record.data as Pipeline;
     const source = this.streamName.source;
 
-    const project = ctx.get(
-      this.projectsStream.asString,
-      String(pipelineRecord.project_id)
-    );
-    const repository = project?.record?.data?.spec.repository as Repository;
+    const project = pipelineRecord.project;
+    const repository = project.spec.repository as Repository;
     const VCSSource = SemaphoreCICommon.getVCSSourceFromUrl(repository.url);
 
     /*
@@ -53,7 +44,7 @@ export class Pipelines extends SemaphoreCIConverter {
     const pipeline = {
       model: 'cicd_Pipeline',
       record: {
-        uid: `${project?.record?.data?.metadata.name}-${pipelineRecord.name}`,
+        uid: `${project.metadata.name}-${pipelineRecord.name}`,
         name: pipelineRecord.name,
         organization: organizationKey,
       },

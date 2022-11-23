@@ -18,9 +18,49 @@
       "type": "string",
       "format": "uuid"
     },
-    "project_id": {
-      "type": "string",
-      "format": "uuid"
+    "project": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "owner_id": {
+              "type": "string"
+            },
+            "org_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
     },
     "running_at": {
       "type": "string"

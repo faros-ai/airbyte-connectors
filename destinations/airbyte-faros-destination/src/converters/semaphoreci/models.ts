@@ -95,7 +95,6 @@ export interface Pipeline {
   readonly partially_rerun_by: string;
   readonly pending_at: string;
   readonly ppl_id: string;
-  readonly project_id: string;
   readonly promotion_of: string;
   readonly queuing_at: string;
   readonly repository_id: string;
@@ -113,6 +112,7 @@ export interface Pipeline {
   readonly working_directory: string;
   readonly yaml_file_name: string;
 
+  readonly project: Project;
   readonly jobs: Job[];
 }
 
