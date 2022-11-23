@@ -162,7 +162,7 @@ export function batchIterator<T>(
  * Level 1 depends on Level 0, 2 on 1 and so on.
  */
 export function toLevels(upserts: Upsert[]): Upsert[][] {
-  const withLevel: [Upsert, number][] = flatMap(upserts, (u) => sortByLevel(u));
+  const withLevel: [Upsert, number][] = flatMap(upserts, (u) => addLevel(u));
   const byLevel: Dictionary<[Upsert, number][]> = groupBy(
     withLevel,
     (tuple) => tuple[1]
@@ -183,12 +183,12 @@ export function toLevels(upserts: Upsert[]): Upsert[][] {
  * If an Upsert has multiple paths to a leaf, the level is the maximum number of
  * steps.
  */
-function sortByLevel(u: Upsert): [Upsert, number][] {
+function addLevel(u: Upsert): [Upsert, number][] {
   const result = [];
   let maxAncestorLevel = 0;
   for (const ancestor of Object.values(u.foreignKeys)) {
     if (ancestor.model === u.model) {
-      const ancestorsWithLevels = sortByLevel(ancestor);
+      const ancestorsWithLevels = addLevel(ancestor);
       maxAncestorLevel = max([ancestorsWithLevels[0][1], maxAncestorLevel]);
       result.push(...ancestorsWithLevels);
     }
