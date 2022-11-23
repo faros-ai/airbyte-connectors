@@ -1,6 +1,7 @@
 # Airbyte Connectors
 
-[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml)
+[![CI](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/ci.yml) [![Release](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/release.yml) [![CodeQL](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/faros-ai/airbyte-connectors/actions/workflows/codeql-analysis.yml) [![Tag](https://img.shields.io/github/v/release/faros-ai/airbyte-connectors?label=Latest%20Release)](https://github.com/faros-ai/airbyte-connectors/releases/latest)
+
 
 This repository contains [Airbyte](https://airbyte.io/) connectors used in [Faros](https://www.faros.ai) and [Faros Community Edition](https://github.com/faros-ai/faros-community-edition) platforms as well as Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript.
 
