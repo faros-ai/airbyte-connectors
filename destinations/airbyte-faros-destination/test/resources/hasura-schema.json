@@ -1,0 +1,155 @@
+{
+  "primaryKeys": {
+    "vcs_Branch": [
+      "name",
+      "repositoryId"
+    ],
+    "vcs_Organization": [
+      "source",
+      "uid"
+    ],
+    "vcs_Repository": [
+      "name",
+      "organizationId"
+    ],
+    "org_Employee": [
+      "uid"
+    ]
+  },
+  "scalars": {
+    "vcs_Branch": {
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String"
+    },
+    "vcs_Organization": {
+      "createdAt": "timestamptz",
+      "htmlUrl": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "vcs_Repository": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "fullName": "String",
+      "htmlUrl": "String",
+      "included": "Boolean",
+      "language": "String",
+      "mainBranch": "String",
+      "name": "String",
+      "organizationId": "String",
+      "origin": "String",
+      "private": "Boolean",
+      "refreshedAt": "timestamptz",
+      "size": "bigint",
+      "topics": "jsonb",
+      "updatedAt": "timestamptz"
+    },
+    "org_Employee": {
+      "additionalFields": "jsonb",
+      "departmentId": "String",
+      "employmentType": "jsonb",
+      "identityId": "String",
+      "ignored": "Boolean",
+      "inactive": "Boolean",
+      "joinedAt": "timestamptz",
+      "level": "Int",
+      "locationId": "String",
+      "managerId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "reportingChain": "jsonb",
+      "role": "String",
+      "terminatedAt": "timestamptz",
+      "title": "String",
+      "uid": "String"
+    }
+  },
+  "references": {
+    "vcs_Branch": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_Organization": {},
+    "vcs_Repository": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      }
+    },
+    "org_Employee": {
+      "departmentId": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "department": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "locationId": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "location": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "managerId": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      },
+      "manager": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      }
+    }
+  },
+  "backReferences": {},
+  "sortedModelDependencies": [
+    "org_Employee",
+    "vcs_Branch",
+    "vcs_Repository",
+    "vcs_Organization"
+  ],
+  "tableNames": [
+    "org_Employee",
+    "vcs_Branch",
+    "vcs_Organization",
+    "vcs_Repository"
+  ]
+}

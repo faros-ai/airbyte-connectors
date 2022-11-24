@@ -145,7 +145,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger,
         schemaLoader,
         backend,
-        config.edition_configs.community_graphql_batch_size
+        config.edition_configs.community_graphql_batch_size,
+        config.edition_configs.community_graphql_mutation_batch_size
       );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
@@ -251,7 +252,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger,
         schemaLoader,
         backend,
-        config.edition_configs.cloud_graphql_batch_size
+        config.edition_configs.cloud_graphql_batch_size,
+        config.edition_configs.cloud_graphql_mutation_batch_size
       );
     } catch (e) {
       throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
@@ -425,9 +427,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stats
         );
       } else if (this.graphQLClient) {
-        this.logger.info(
-          `Using GraphQLClient for write with batch size ${this.graphQLClient.getBatchSize()}`
-        );
+        this.logger.info(`Using GraphQLClient for writer`);
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
         await graphQLClient.resetData(origin, deleteModelEntries);
