@@ -73,10 +73,20 @@ export class FarosGraph extends AirbyteStreamBase {
             : pathToModelV2(this.config.query, schema),
       };
     } else {
+      let primaryKeys: Dictionary<ReadonlyArray<string>> = {};
+      if (this.config.graphql_api === GraphQLVersion.V1) {
+        for (const model of await this.faros.models(this.config.graph)) {
+          primaryKeys[model.name] = model.key;
+        }
+      } else {
+        primaryKeys = (await this.faros.gqlSchema(this.config.graph))
+          .primaryKeys;
+      }
+
       const queries =
         this.config.graphql_api === GraphQLVersion.V1
-          ? createIncrementalQueriesV1(schema, false)
-          : createIncrementalQueriesV2(schema, false);
+          ? createIncrementalQueriesV1(schema, primaryKeys, false)
+          : createIncrementalQueriesV2(schema, primaryKeys, false);
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
