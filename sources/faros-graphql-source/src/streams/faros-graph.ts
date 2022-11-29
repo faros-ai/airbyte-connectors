@@ -174,6 +174,10 @@ export class FarosGraph extends AirbyteStreamBase {
 
       this.state[query] = {refreshedAtMillis};
 
+      // Remove metadata/refreshedAt
+      // We only use these fields for updating the incremental state
+      const {metadata, refreshedAt, ...result} = item;
+
       yield _.set(
         {},
         this.config.result_model === ResultModel.Nested
@@ -187,7 +191,7 @@ export class FarosGraph extends AirbyteStreamBase {
             // }
             [...pathToModel.path, 0]
           : pathToModel.modelName,
-        item
+        result
       );
     }
   }
