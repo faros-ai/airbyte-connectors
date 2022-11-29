@@ -58,7 +58,7 @@
                 "type": "integer",
                 "title": "GraphQL upsert batch size",
                 "description": "Maximum number of records to execute in a single GraphQL upsert.",
-                "default": 1000
+                "default": 10000
               },
               "community_graphql_batch_size": {
                 "type": "integer",
@@ -117,7 +117,7 @@
                 "type": "integer",
                 "title": "GraphQL upsert batch size",
                 "description": "Maximum number of records to execute in a single GraphQL upsert.",
-                "default": 1000
+                "default": 10000
               },
               "cloud_graphql_batch_size": {
                 "type": "integer",

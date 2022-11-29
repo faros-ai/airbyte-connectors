@@ -232,7 +232,8 @@ describe('graphql-client write batch upsert', () => {
       new AirbyteLogger(AirbyteLogLevel.INFO),
       schemaLoader,
       backend,
-      10
+      10,
+      1
     );
     await client.loadSchema();
     await client.writeRecord('vcs_Branch', record1, 'mytestsource');
@@ -276,7 +277,8 @@ describe('graphql-client write batch upsert', () => {
       new AirbyteLogger(AirbyteLogLevel.INFO),
       schemaLoader,
       backend,
-      10
+      10,
+      1
     );
     await client.loadSchema();
     await client.writeRecord('vcs_Organization', record1, 'mytestsource');
@@ -375,7 +377,8 @@ describe('graphql-client write batch upsert', () => {
       new AirbyteLogger(AirbyteLogLevel.INFO),
       schemaLoader,
       backend,
-      10
+      10,
+      1
     );
     await client.loadSchema();
     for (const rec of records) {
