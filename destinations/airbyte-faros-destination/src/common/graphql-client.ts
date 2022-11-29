@@ -235,8 +235,8 @@ export class GraphQLClient {
     logger: AirbyteLogger,
     schemaLoader: SchemaLoader,
     backend: GraphQLBackend,
-    upsertBatchSize = 10000,
-    mutationBatchSize = 100
+    upsertBatchSize,
+    mutationBatchSize
   ) {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
