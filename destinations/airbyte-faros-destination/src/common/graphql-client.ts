@@ -241,16 +241,16 @@ export class GraphQLClient {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
     this.backend = backend;
+    this.upsertBatchSize = upsertBatchSize ?? 10000;
+    this.mutationBatchSize = mutationBatchSize ?? 100;
     assert(
-      upsertBatchSize >= 0,
-      `negative upsert batch size: ${upsertBatchSize}`
+      this.upsertBatchSize >= 0,
+      `negative upsert batch size: ${this.upsertBatchSize}`
     );
     assert(
-      mutationBatchSize > 0,
-      `non-positive mutation batch size: ${mutationBatchSize}`
+      this.mutationBatchSize > 0,
+      `non-positive mutation batch size: ${this.mutationBatchSize}`
     );
-    this.upsertBatchSize = upsertBatchSize;
-    this.mutationBatchSize = mutationBatchSize;
   }
 
   async healthCheck(): Promise<void> {
