@@ -16,7 +16,7 @@ import {
   toIncrementalV2,
 } from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
-import {max} from 'lodash';
+import {max, omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -174,6 +174,10 @@ export class FarosGraph extends AirbyteStreamBase {
 
       this.state[query] = {refreshedAtMillis};
 
+      // Remove metadata/refreshedAt
+      // We only use these fields for updating the incremental state
+      const result = omit(item, ['metadata', 'refreshedAt']);
+
       yield _.set(
         {},
         this.config.result_model === ResultModel.Nested
@@ -187,7 +191,7 @@ export class FarosGraph extends AirbyteStreamBase {
             // }
             [...pathToModel.path, 0]
           : pathToModel.modelName,
-        item
+        result
       );
     }
   }
