@@ -145,7 +145,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger,
         schemaLoader,
         backend,
-        config.edition_configs.community_graphql_upsert_batch_size,
+        0,
         config.edition_configs.community_graphql_batch_size
       );
     } catch (e) {

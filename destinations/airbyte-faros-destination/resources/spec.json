@@ -54,12 +54,6 @@
                 "description": "The User UUID with which to track events in Segment. If not present, then reporting is disabled. See https://community.faros.ai/docs/telemetry for more details.",
                 "format": "uuid"
               },
-              "community_graphql_upsert_batch_size": {
-                "type": "integer",
-                "title": "GraphQL upsert batch size",
-                "description": "Maximum number of records to execute in a single GraphQL upsert.",
-                "default": 10000
-              },
               "community_graphql_batch_size": {
                 "type": "integer",
                 "title": "GraphQL mutation batch size",

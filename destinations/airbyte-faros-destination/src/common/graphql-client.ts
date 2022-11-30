@@ -202,7 +202,7 @@ function addLevel(u: Upsert): [Upsert, number][] {
  * Client for writing records as GraphQL mutations.  The client supports 3
  * kinds of writes: Upserts, Updates and Deletes.
  *
- * For upserts, the high-level algorithm is:
+ * For upserts (when upsertBatchSize is greater than 0), the high-level algorithm is:
  *
  * > For each record, build a tree of Upserts. The tree has more than one node if the current record represents a
  *   nested entity (e.g. branch record referencing repo which, in-turn, references org).
@@ -241,8 +241,16 @@ export class GraphQLClient {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
     this.backend = backend;
-    this.upsertBatchSize = upsertBatchSize;
-    this.mutationBatchSize = mutationBatchSize;
+    this.upsertBatchSize = upsertBatchSize ?? 10000;
+    this.mutationBatchSize = mutationBatchSize ?? 100;
+    assert(
+      this.upsertBatchSize >= 0,
+      `negative upsert batch size: ${this.upsertBatchSize}`
+    );
+    assert(
+      this.mutationBatchSize > 0,
+      `non-positive mutation batch size: ${this.mutationBatchSize}`
+    );
   }
 
   async healthCheck(): Promise<void> {
@@ -323,9 +331,17 @@ export class GraphQLClient {
     if (!this.tableNames.has(model)) {
       throw new VError(`Table ${model} does not exist`);
     }
-    this.addUpsert(model, origin, record);
-    if (this.upsertBuffer.size() >= this.upsertBatchSize) {
-      await this.flushUpsertBuffer();
+    if (this.upsertBatchSize) {
+      this.addUpsert(model, origin, record);
+      if (this.upsertBuffer.size() >= this.upsertBatchSize) {
+        await this.flushUpsertBuffer();
+      }
+    } else {
+      const obj = this.createMutationObject(model, origin, record);
+      const mutation = {
+        [`insert_${model}_one`]: {__args: obj, id: true},
+      };
+      await this.postQuery({mutation}, `Failed to write ${model} record`);
     }
   }
 
