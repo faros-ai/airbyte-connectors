@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -12,11 +13,12 @@ import {
   PathToModel,
   pathToModelV1,
   pathToModelV2,
+  Schema,
   toIncrementalV1,
   toIncrementalV2,
 } from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
-import {max, omit} from 'lodash';
+import {omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -28,7 +30,7 @@ const INFINITY = 7258118400000;
 const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
-  [query: string]: {refreshedAtMillis: number};
+  [queryHashOrModelName: string]: {refreshedAtMillis: number};
 };
 
 type StreamSlice = {
@@ -73,20 +75,26 @@ export class FarosGraph extends AirbyteStreamBase {
             : pathToModelV2(this.config.query, schema),
       };
     } else {
-      let primaryKeys: Dictionary<ReadonlyArray<string>> = {};
+      const primaryKeys: Dictionary<ReadonlyArray<string>> = {};
+      let gqlSchemaV2: Schema;
+
       if (this.config.graphql_api === GraphQLVersion.V1) {
         for (const model of await this.faros.models(this.config.graph)) {
           primaryKeys[model.name] = model.key;
         }
       } else {
-        primaryKeys = (await this.faros.gqlSchema(this.config.graph))
-          .primaryKeys;
+        gqlSchemaV2 = await this.faros.gqlSchema(this.config.graph);
       }
 
       const queries =
         this.config.graphql_api === GraphQLVersion.V1
           ? createIncrementalQueriesV1(schema, primaryKeys, false)
-          : createIncrementalQueriesV2(schema, primaryKeys, false);
+          : createIncrementalQueriesV2(
+              schema,
+              gqlSchemaV2.primaryKeys,
+              gqlSchemaV2.references,
+              false
+            );
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
@@ -112,10 +120,18 @@ export class FarosGraph extends AirbyteStreamBase {
     const {query, incremental, pathToModel}: StreamSlice = streamSlice;
     this.logger.debug(`Processing query: "${query}"`);
 
+    let stateKey = pathToModel.modelName;
+    if (!incremental) {
+      stateKey = createHash('md5').update(query).digest('hex');
+      this.logger.debug(
+        `Used "${stateKey}" as key to state for query: "${query}"`
+      );
+    }
+
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
     let refreshedAtMillis = 0;
-    if (this.state[query]) {
-      refreshedAtMillis = this.state[query].refreshedAtMillis;
+    if (this.state[stateKey]) {
+      refreshedAtMillis = this.state[stateKey].refreshedAtMillis;
     }
 
     const args: Map<string, any> = new Map<string, any>();
@@ -170,9 +186,11 @@ export class FarosGraph extends AirbyteStreamBase {
         this.config.graphql_api === GraphQLVersion.V1
           ? Number(item.metadata?.refreshedAt) || 0
           : new Date(item.refreshedAt).getTime() || 0;
-      refreshedAtMillis = max([refreshedAtMillis, recordRefreshedAtMillis]);
 
-      this.state[query] = {refreshedAtMillis};
+      if (refreshedAtMillis < recordRefreshedAtMillis) {
+        refreshedAtMillis = recordRefreshedAtMillis;
+        this.state[stateKey] = {refreshedAtMillis};
+      }
 
       // Remove metadata/refreshedAt
       // We only use these fields for updating the incremental state
