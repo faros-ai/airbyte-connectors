@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
@@ -17,7 +18,7 @@ import {
   toIncrementalV2,
 } from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
-import {max, omit} from 'lodash';
+import {omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -29,7 +30,7 @@ const INFINITY = 7258118400000;
 const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
-  [queryOrModelName: string]: {refreshedAtMillis: number};
+  [queryHashOrModelName: string]: {refreshedAtMillis: number};
 };
 
 type StreamSlice = {
@@ -117,9 +118,15 @@ export class FarosGraph extends AirbyteStreamBase {
     streamState?: GraphQLState
   ): AsyncGenerator<Dictionary<any, string>, any, undefined> {
     const {query, incremental, pathToModel}: StreamSlice = streamSlice;
-    const stateKey = incremental ? pathToModel.modelName : query;
-
     this.logger.debug(`Processing query: "${query}"`);
+
+    let stateKey = pathToModel.modelName;
+    if (!incremental) {
+      stateKey = createHash('md5').update(query).digest('hex');
+      this.logger.debug(
+        `Used "${stateKey}" as key in state for query: "${query}"`
+      );
+    }
 
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
     let refreshedAtMillis = 0;
