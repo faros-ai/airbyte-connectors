@@ -15,6 +15,8 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
+const QUERY_HASH = 'acbd18db4cc2f85cedef654fccc4a4d8';
+
 const BASE_CONFIG = {
   query: 'foo',
   api_url: 'x',
@@ -163,7 +165,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {query: 'foo', pathToModel: PATH_TO_MODEL},
-      {foo: {refreshedAtMillis: 1}}
+      {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
     const records = [];
@@ -173,7 +175,7 @@ describe('index', () => {
 
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      foo: {refreshedAtMillis: 23},
+      [QUERY_HASH]: {refreshedAtMillis: 23},
     });
   });
 
@@ -192,7 +194,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {query: 'foo', pathToModel: PATH_TO_MODEL},
-      {foo: {refreshedAtMillis: 1}}
+      {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
     const records = [];
@@ -202,7 +204,7 @@ describe('index', () => {
 
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      foo: {refreshedAtMillis: 1700000000000},
+      [QUERY_HASH]: {refreshedAtMillis: 1700000000000},
     });
   });
 
@@ -221,7 +223,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {query: 'foo', pathToModel: PATH_TO_MODEL},
-      {foo: {refreshedAtMillis: 1}}
+      {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
     const records = [];
@@ -231,7 +233,7 @@ describe('index', () => {
 
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      foo: {refreshedAtMillis: 23},
+      [QUERY_HASH]: {refreshedAtMillis: 23},
     });
   });
 });
