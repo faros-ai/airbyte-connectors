@@ -124,7 +124,7 @@ export class FarosGraph extends AirbyteStreamBase {
     if (!incremental) {
       stateKey = createHash('md5').update(query).digest('hex');
       this.logger.debug(
-        `Used "${stateKey}" as key in state for query: "${query}"`
+        `Used "${stateKey}" as key to state for query: "${query}"`
       );
     }
 
