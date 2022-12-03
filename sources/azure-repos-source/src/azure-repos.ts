@@ -131,29 +131,33 @@ export class AzureRepo {
       const branchResponse = await this.get<BranchResponse>(
         `git/repositories/${item.id}/stats/branches`
       );
-      const branches: Branch[] = [];
-      for (const branch of branchResponse?.data?.value ?? []) {
-        const branchItem: Branch = branch;
-        const commitResponse = await this.get<CommitResponse>(
-          `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
-        );
-        branchItem.commits = commitResponse?.data?.value ?? [];
-        branches.push(branchItem);
+      if (branchResponse.status === 200) {
+        const branches: Branch[] = [];
+        for (const branch of branchResponse?.data?.value ?? []) {
+          const branchItem: Branch = branch;
+          const commitResponse = await this.get<CommitResponse>(
+            `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
+          );
+          branchItem.commits = commitResponse?.data?.value ?? [];
+          branches.push(branchItem);
+        }
+        item.branches = branches;
       }
-      item.branches = branches;
       const tagsResponse = await this.get<TagResponse>(
         `git/repositories/${item.id}/refs?filter=tags`
       );
-      const tags: Tag[] = [];
-      for (const tag of tagsResponse?.data?.value ?? []) {
-        const tagItem: Tag = tag;
-        const commitResponse = await this.get<TagCommit>(
-          `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
-        );
-        tagItem.commit = commitResponse?.data ?? null;
-        tags.push(tagItem);
+      if (tagsResponse.status === 200) {
+        const tags: Tag[] = [];
+        for (const tag of tagsResponse?.data?.value ?? []) {
+          const tagItem: Tag = tag;
+          const commitResponse = await this.get<TagCommit>(
+            `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
+          );
+          tagItem.commit = commitResponse?.data ?? null;
+          tags.push(tagItem);
+        }
+        item.tags = tags;
       }
-      item.tags = tags;
       yield item;
     }
   }
@@ -162,26 +166,29 @@ export class AzureRepo {
     const res = await this.get<PullRequestResponse>(
       'git/pullrequests?searchCriteria.status=all'
     );
-    for (const item of res.data.value) {
+    for (const item of res?.data?.value ?? []) {
       const commitResponse = await this.get<PullRequestCommitResponse>(
         `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
       );
-      const commits: PullRequestCommit[] = [];
-
-      for (const commit of commitResponse?.data?.value ?? []) {
-        const commitChangeCountsResponse =
-          await this.get<CommitChangeCountsResponse>(
-            `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
-          );
-        commit.changeCounts =
-          commitChangeCountsResponse?.data?.changeCounts ?? null;
-        commits.push(commit);
+      if (commitResponse.status === 200) {
+        const commits: PullRequestCommit[] = [];
+        for (const commit of commitResponse?.data?.value ?? []) {
+          const commitChangeCountsResponse =
+            await this.get<CommitChangeCountsResponse>(
+              `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
+            );
+          commit.changeCounts =
+            commitChangeCountsResponse?.data?.changeCounts ?? null;
+          commits.push(commit);
+        }
+        item.commits = commits;
       }
-      item.commits = commits;
       const threadResponse = await this.get<PullRequestThreadResponse>(
         `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
       );
-      item.threads = threadResponse?.data?.value ?? [];
+      if (threadResponse.status === 200) {
+        item.threads = threadResponse?.data?.value ?? [];
+      }
       yield item;
     }
   }
