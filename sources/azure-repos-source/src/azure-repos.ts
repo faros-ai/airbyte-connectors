@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
@@ -60,7 +60,7 @@ export class AzureRepo {
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: 10000, // default is `0` (no timeout)
+      timeout: 15000, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes
       params: {
         'api-version': version,
@@ -72,7 +72,7 @@ export class AzureRepo {
     const graphVersion = config.graph_version ?? DEFAULT_GRAPH_VERSION;
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
-      timeout: 10000, // default is `0` (no timeout)
+      timeout: 15000, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes
       params: {
         'api-version': graphVersion,
@@ -105,87 +105,90 @@ export class AzureRepo {
     }
   }
 
+  private get<T = any, R = AxiosResponse<T>>(
+    path: string
+  ): Promise<R | undefined> {
+    return this.handleNotFound<T, R>(() => this.httpClient.get<T, R>(path));
+  }
+
+  private async handleNotFound<T = any, R = AxiosResponse<T>>(
+    call: () => Promise<R>
+  ): Promise<R | undefined> {
+    try {
+      const res = await call();
+      return res;
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        return undefined;
+      }
+      throw err;
+    }
+  }
+
   async *getRepositories(): AsyncGenerator<Repository> {
-    const res = await this.httpClient.get<RepositoryResponse>(
-      'git/repositories'
-    );
-    for (const item of res.data.value) {
-      const branchResponse = await this.httpClient.get<BranchResponse>(
+    const res = await this.get<RepositoryResponse>('git/repositories');
+    for (const item of res?.data?.value ?? []) {
+      const branchResponse = await this.get<BranchResponse>(
         `git/repositories/${item.id}/stats/branches`
       );
-      if (branchResponse.status === 200) {
-        const branches: Branch[] = [];
-        for (const branch of branchResponse.data.value) {
-          const branchItem: Branch = branch;
-          const commitResponse = await this.httpClient.get<CommitResponse>(
-            `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
-          );
-          if (commitResponse.status === 200) {
-            branchItem.commits = commitResponse.data.value;
-          }
-          branches.push(branchItem);
-        }
-        item.branches = branches;
+      const branches: Branch[] = [];
+      for (const branch of branchResponse?.data?.value ?? []) {
+        const branchItem: Branch = branch;
+        const commitResponse = await this.get<CommitResponse>(
+          `git/repositories/${item.id}/commits?searchCriteria.itemVersion.version=${branch.name}`
+        );
+        branchItem.commits = commitResponse?.data?.value ?? [];
+        branches.push(branchItem);
       }
-      const tagsResponse = await this.httpClient.get<TagResponse>(
+      item.branches = branches;
+      const tagsResponse = await this.get<TagResponse>(
         `git/repositories/${item.id}/refs?filter=tags`
       );
-      if (tagsResponse.status === 200) {
-        const tags: Tag[] = [];
-        for (const tag of tagsResponse.data.value) {
-          const tagItem: Tag = tag;
-          const commitResponse = await this.httpClient.get<TagCommit>(
-            `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
-          );
-          if (commitResponse.status === 200) {
-            tagItem.commit = commitResponse.data;
-          }
-          tags.push(tagItem);
-        }
-        item.tags = tags;
+      const tags: Tag[] = [];
+      for (const tag of tagsResponse?.data?.value ?? []) {
+        const tagItem: Tag = tag;
+        const commitResponse = await this.get<TagCommit>(
+          `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
+        );
+        tagItem.commit = commitResponse?.data ?? null;
+        tags.push(tagItem);
       }
+      item.tags = tags;
       yield item;
     }
   }
 
   async *getPullRequests(): AsyncGenerator<PullRequest> {
-    const res = await this.httpClient.get<PullRequestResponse>(
+    const res = await this.get<PullRequestResponse>(
       'git/pullrequests?searchCriteria.status=all'
     );
     for (const item of res.data.value) {
-      const commitResponse =
-        await this.httpClient.get<PullRequestCommitResponse>(
-          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
-        );
-      if (commitResponse.status === 200) {
-        const commits: PullRequestCommit[] = [];
+      const commitResponse = await this.get<PullRequestCommitResponse>(
+        `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
+      );
+      const commits: PullRequestCommit[] = [];
 
-        for (const commit of commitResponse.data.value) {
-          const commitChangeCountsResponse =
-            await this.httpClient.get<CommitChangeCountsResponse>(
-              `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
-            );
-          if (commitChangeCountsResponse.status === 200) {
-            commit.changeCounts = commitChangeCountsResponse.data.changeCounts;
-          }
-          commits.push(commit);
-        }
-        item.commits = commits;
+      for (const commit of commitResponse?.data?.value ?? []) {
+        const commitChangeCountsResponse =
+          await this.get<CommitChangeCountsResponse>(
+            `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
+          );
+        commit.changeCounts =
+          commitChangeCountsResponse?.data?.changeCounts ?? null;
+        commits.push(commit);
       }
-      const threadResponse =
-        await this.httpClient.get<PullRequestThreadResponse>(
-          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
-        );
-      if (threadResponse.status === 200) {
-        item.threads = threadResponse.data.value;
-      }
+      item.commits = commits;
+      const threadResponse = await this.get<PullRequestThreadResponse>(
+        `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
+      );
+      item.threads = threadResponse?.data?.value ?? [];
       yield item;
     }
   }
 
   async *getUsers(): AsyncGenerator<User> {
     const res = await this.graphClient.get<UserResponse>('users');
-    for (const item of res.data.value) {
+    for (const item of res.data?.value ?? []) {
       yield item;
     }
   }
