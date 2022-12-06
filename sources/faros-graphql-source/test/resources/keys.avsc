@@ -1,0 +1,164 @@
+{
+  "schema": [
+    {
+      "name": "cicd_Organization__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "source",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        {
+          "name": "uid",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cicd_Repository__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "organization",
+          "type": [
+            "null",
+            "cicd_Organization__Key"
+          ]
+        },
+        {
+          "name": "uid",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cicd_Artifact__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "repository",
+          "type": [
+            "null",
+            "cicd_Repository__Key"
+          ]
+        },
+        {
+          "name": "uid",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "vcs_Organization__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "source",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        {
+          "name": "uid",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "vcs_Repository__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "name",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        {
+          "name": "organization",
+          "type": [
+            "null",
+            "vcs_Organization__Key"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "vcs_Commit__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "repository",
+          "type": [
+            "null",
+            "vcs_Repository__Key"
+          ]
+        },
+        {
+          "name": "sha",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cicd_ArtifactCommitAssociation__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "artifact",
+          "type": [
+            "null",
+            "cicd_Artifact__Key"
+          ]
+        },
+        {
+          "name": "commit",
+          "type": [
+            "null",
+            "vcs_Commit__Key"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cicd_Deployment__Key",
+      "type": "record",
+      "fields": [
+        {
+          "name": "source",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        {
+          "name": "uid",
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    }
+  ]
+}

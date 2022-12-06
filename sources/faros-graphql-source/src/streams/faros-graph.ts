@@ -13,16 +13,17 @@ import {
   PathToModel,
   pathToModelV1,
   pathToModelV2,
-  Schema,
   toIncrementalV1,
   toIncrementalV2,
 } from 'faros-js-client';
 import {FarosClient} from 'faros-js-client';
+import * as gql from 'graphql';
 import {omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {GraphQLConfig, GraphQLVersion, ResultModel} from '..';
+import {Nodes} from '../nodes';
 
 const DEFAULT_PAGE_SIZE = 100;
 // January 1, 2200
@@ -33,14 +34,20 @@ type GraphQLState = {
   [queryHashOrModelName: string]: {refreshedAtMillis: number};
 };
 
+interface QueryPaths {
+  readonly nodeIds: string[][];
+  readonly model: PathToModel;
+}
+
 type StreamSlice = {
   query: string;
   incremental: boolean;
-  pathToModel: PathToModel;
+  queryPaths: QueryPaths;
 };
 
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
+  private nodes: Nodes;
 
   constructor(
     readonly config: GraphQLConfig,
@@ -48,6 +55,33 @@ export class FarosGraph extends AirbyteStreamBase {
     readonly faros: FarosClient
   ) {
     super(logger);
+  }
+
+  private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
+    const modelPath =
+      this.config.graphql_api === GraphQLVersion.V1
+        ? pathToModelV1(query, schema)
+        : pathToModelV2(query, schema);
+    const nodeIdPaths: string[][] = [];
+    const fieldPath: string[] = [];
+    gql.visit(gql.parse(query), {
+      Field: {
+        enter(node) {
+          fieldPath.push(node.name.value);
+          if (_.isEqual(fieldPath, modelPath.path)) {
+            // Reset path once we're inside model path
+            fieldPath.length = 0;
+          }
+          if (_.last(fieldPath) === 'id') {
+            nodeIdPaths.push([...fieldPath]);
+          }
+        },
+        leave() {
+          fieldPath.pop();
+        },
+      },
+    });
+    return {nodeIds: nodeIdPaths, model: modelPath};
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -69,32 +103,26 @@ export class FarosGraph extends AirbyteStreamBase {
       yield {
         query: this.config.query,
         incremental: false,
-        pathToModel:
-          this.config.graphql_api === GraphQLVersion.V1
-            ? pathToModelV1(this.config.query, schema)
-            : pathToModelV2(this.config.query, schema),
+        queryPaths: this.queryPaths(this.config.query, schema),
       };
     } else {
-      const primaryKeys: Dictionary<ReadonlyArray<string>> = {};
-      let gqlSchemaV2: Schema;
-
+      const queries = [];
       if (this.config.graphql_api === GraphQLVersion.V1) {
-        for (const model of await this.faros.models(this.config.graph)) {
-          primaryKeys[model.name] = model.key;
-        }
+        // Don't pass in primary keys so that node IDs are used instead
+        // We'll decode them to primary keys as we iterate over the data
+        queries.push(...createIncrementalQueriesV1(schema, {}, false));
       } else {
-        gqlSchemaV2 = await this.faros.gqlSchema(this.config.graph);
+        const gqlSchemaV2 = await this.faros.gqlSchema(this.config.graph);
+        queries.push(
+          ...createIncrementalQueriesV2(
+            schema,
+            gqlSchemaV2.primaryKeys,
+            gqlSchemaV2.references,
+            false
+          )
+        );
       }
 
-      const queries =
-        this.config.graphql_api === GraphQLVersion.V1
-          ? createIncrementalQueriesV1(schema, primaryKeys, false)
-          : createIncrementalQueriesV2(
-              schema,
-              gqlSchemaV2.primaryKeys,
-              gqlSchemaV2.references,
-              false
-            );
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
@@ -102,10 +130,7 @@ export class FarosGraph extends AirbyteStreamBase {
         yield {
           query: query.gql,
           incremental: true,
-          pathToModel:
-            this.config.graphql_api === GraphQLVersion.V1
-              ? pathToModelV1(query.gql, schema)
-              : pathToModelV2(query.gql, schema),
+          queryPaths: this.queryPaths(query.gql, schema),
         };
       }
     }
@@ -117,15 +142,18 @@ export class FarosGraph extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: GraphQLState
   ): AsyncGenerator<Dictionary<any, string>, any, undefined> {
-    const {query, incremental, pathToModel}: StreamSlice = streamSlice;
+    const {query, incremental, queryPaths}: StreamSlice = streamSlice;
     this.logger.debug(`Processing query: "${query}"`);
 
-    let stateKey = pathToModel.modelName;
+    let stateKey = queryPaths.model.modelName;
     if (!incremental) {
       stateKey = createHash('md5').update(query).digest('hex');
       this.logger.debug(
         `Used "${stateKey}" as key to state for query: "${query}"`
       );
+    } else if (this.config.graphql_api === GraphQLVersion.V1) {
+      const entrySchema = await this.faros.entrySchema(this.config.graph);
+      this.nodes = new Nodes(entrySchema);
     }
 
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
@@ -192,6 +220,22 @@ export class FarosGraph extends AirbyteStreamBase {
         this.state[stateKey] = {refreshedAtMillis};
       }
 
+      if (this.nodes) {
+        // Replace node IDs with keys
+        const nodeIdPaths = queryPaths.nodeIds;
+        for (const nodeIdPath of nodeIdPaths) {
+          const nodeId = _.get(item, nodeIdPath);
+          if (nodeId) {
+            const key = this.nodes.decodeId(nodeId);
+            _.set(item, nodeIdPath.slice(0, -1), key);
+          }
+          // Keep root node ID, but remove others
+          if (!_.isEqual(nodeIdPath, ['id'])) {
+            _.unset(item, nodeIdPath);
+          }
+        }
+      }
+
       // Remove metadata/refreshedAt
       // We only use these fields for updating the incremental state
       const result = omit(item, ['metadata', 'refreshedAt']);
@@ -207,8 +251,8 @@ export class FarosGraph extends AirbyteStreamBase {
             //     "nodes": [{'number':1}]
             //   }
             // }
-            [...pathToModel.path, 0]
-          : pathToModel.modelName,
+            [...queryPaths.model.path, 0]
+          : queryPaths.model.modelName,
         result
       );
     }

@@ -4,16 +4,11 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {PathToModel} from 'faros-js-client';
-import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {GraphQLVersion, ResultModel} from '../src/index';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
+import {entrySchema, readResource} from './helpers';
 
 const QUERY_HASH = 'acbd18db4cc2f85cedef654fccc4a4d8';
 
@@ -26,7 +21,10 @@ const BASE_CONFIG = {
   result_model: ResultModel.Nested,
 };
 
-const PATH_TO_MODEL: PathToModel = {modelName: 'D', path: ['A', 'B', 'C']};
+const queryPaths = {
+  model: {modelName: 'D', path: ['A', 'B', 'C']},
+  nodeIds: [],
+};
 
 let graphExists = false;
 let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
@@ -34,10 +32,13 @@ jest.mock('faros-js-client', () => {
   return {
     FarosClient: jest.fn().mockImplementation(() => {
       return {
-        graphExists: (): any => {
+        entrySchema(): any {
+          return entrySchema;
+        },
+        graphExists(): any {
           return graphExists;
         },
-        nodeIterable: (): any => {
+        nodeIterable(): any {
           return {
             async *[Symbol.asyncIterator](): AsyncIterator<any> {
               for (const item of nodes) {
@@ -64,7 +65,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.FarosGraphSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResource('spec.json'))
     );
   });
 
@@ -142,7 +143,7 @@ describe('index', () => {
       .streams(BASE_CONFIG)[0]
       .readRecords(SyncMode.FULL_REFRESH, undefined, {
         query: 'foo',
-        pathToModel: PATH_TO_MODEL,
+        queryPaths,
       });
 
     const records = [];
@@ -164,7 +165,7 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      {query: 'foo', pathToModel: PATH_TO_MODEL},
+      {query: 'foo', queryPaths},
       {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
@@ -193,7 +194,7 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      {query: 'foo', pathToModel: PATH_TO_MODEL},
+      {query: 'foo', queryPaths},
       {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
@@ -222,7 +223,7 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
-      {query: 'foo', pathToModel: PATH_TO_MODEL},
+      {query: 'foo', queryPaths},
       {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
@@ -234,6 +235,47 @@ describe('index', () => {
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
       [QUERY_HASH]: {refreshedAtMillis: 23},
+    });
+  });
+
+  test('replace node IDs with model keys', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      {
+        id: 'PGNpY2RfQXJ0aWZhY3RDb21taXRBc3NvY2lhdGlvbnwCAgICCE1vY2sCEGZhcm9zLWFpAg5zb2xhcmlzAgIwAgICDnNvbGFyaXMCAghNb2NrAhBmYXJvcy1haQICMA==',
+        artifact: {
+          id: 'GmNpY2RfQXJ0aWZhY3Q8AgICCE1vY2sCEGZhcm9zLWFpAg5zb2xhcmlzAgIw',
+        },
+        commit: {
+          id: 'FHZjc19Db21taXQ8AgIOc29sYXJpcwICCE1vY2sCEGZhcm9zLWFpAgIw',
+        },
+        metadata: {refreshedAt: 12},
+      },
+    ];
+    const stream = source.streams({
+      ...BASE_CONFIG,
+      result_model: ResultModel.Flat,
+    })[0];
+    const iter = stream.readRecords(SyncMode.INCREMENTAL, undefined, {
+      incremental: true,
+      query: 'foo',
+      queryPaths: {
+        model: {
+          modelName: 'cicd_ArtifactCommit',
+          path: ['cicd', 'artifactCommits', 'nodes'],
+        },
+        nodeIds: [['id'], ['artifact', 'id'], ['commit', 'id']],
+      },
+    });
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+    expect(records).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      cicd_ArtifactCommit: {refreshedAtMillis: 12},
     });
   });
 });
