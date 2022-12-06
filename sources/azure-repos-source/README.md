@@ -1,8 +1,8 @@
-# Azure-Repo Source
+# Azure-Repos Source
 
-This is the repository for the Azure-Repo source connector, written in Typescript.
+This is the repository for the Azure-Repos source connector, written in Typescript.
 For information about how to use this connector within Airbyte, see [the
-documentation](https://docs.airbyte.io/integrations/sources/azure-repo).
+documentation](https://docs.airbyte.io/integrations/sources/azure-repos).
 
 ## Local development
 
@@ -22,10 +22,10 @@ npm run prepare
 ```
 
 This will install all required dependencies and build all included connectors,
-including the Azure-Repo source connector.
+including the Azure-Repos source connector.
 
-Now you can cd into the Azure-Repo connector directory, `sources/azure-repo-source`,
-and iterate on the Azure-Repo source connector. After making code changes, run:
+Now you can cd into the Azure-Repos connector directory, `sources/azure-repos-source`,
+and iterate on the Azure-Repos source connector. After making code changes, run:
 
 ```
 npm run build
@@ -34,10 +34,10 @@ npm run build
 #### Create credentials
 
 Follow the instructions in the
-[documentation](https://docs.airbyte.io/integrations/sources/azure-repo) to
+[documentation](https://docs.airbyte.io/integrations/sources/azure-repos) to
 generate the necessary credentials. Then create a file `secrets/config.json`
 conforming to the `resources/spec.json` file. Note that any directory named
-`secrets` is gitignored across the entire `airbyte-connectors` repo, so there is
+`secrets` is gitignored across the entire `airbyte-connectors` repos, so there is
 no danger of accidentally checking in sensitive information. See
 `test_files/config.json` for a sample config file.
 
@@ -58,26 +58,26 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/azure-repo-source -t azure-repo-source
+docker build . --build-arg path=sources/azure-repos-source --build-arg version=0.0.1 -t azure-repos-source
 ```
 
 #### Run
 
-Then return to the Azure-Repo connector directory and run any of the connector
+Then return to the Azure-Repos connector directory and run any of the connector
 commands as follows:
 
 ```
-docker run --rm azure-repo-source spec
-docker run --rm -v $(pwd)/secrets:/secrets azure-repo-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets azure-repo-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-repo-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm azure-repos-source spec
+docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-repos-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
 
 ### Unit Tests
 
-To run unit tests locally, from the Azure-Repo connector directory run:
+To run unit tests locally, from the Azure-Repos connector directory run:
 
 ```
 npm test
@@ -98,7 +98,7 @@ docker pull airbyte/source-acceptance-test
 To run the acceptance tests, from the root repository directory, run
 
 ```
-./scripts/source-acceptance-test.sh azure-repo-source
+./scripts/source-acceptance-test.sh azure-repos-source
 ```
 
 ## Dependency Management
