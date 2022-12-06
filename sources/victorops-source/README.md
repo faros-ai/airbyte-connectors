@@ -58,7 +58,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/victorops-source -t victorops-source
+docker build . --build-arg path=sources/victorops-source --build-arg version=0.0.1 -t victorops-source
 ```
 
 #### Run

@@ -75,7 +75,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/googlecalendar-source -t googlecalendar-source
+docker build . --build-arg path=sources/googlecalendar-source --build-arg version=0.0.1 -t googlecalendar-source
 ```
 
 #### Run

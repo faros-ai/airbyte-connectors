@@ -60,7 +60,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/semaphoreci-source -t semaphoreci-source
+docker build . --build-arg path=sources/semaphoreci-source --build-arg version=0.0.1 -t semaphoreci-source
 ```
 
 #### Run
