@@ -58,7 +58,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/opsgenie-source -t opsgenie-source
+docker build . --build-arg path=sources/opsgenie-source --build-arg version=0.0.1 -t opsgenie-source
 ```
 
 #### Run

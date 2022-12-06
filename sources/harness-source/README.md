@@ -58,7 +58,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/harness-source -t harness-source
+docker build . --build-arg path=sources/harness-source --build-arg version=0.0.1 -t harness-source
 ```
 
 #### Run
