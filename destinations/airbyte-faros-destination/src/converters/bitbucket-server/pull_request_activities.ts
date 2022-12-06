@@ -5,7 +5,7 @@ import {
   isPullRequestReview,
   PullRequestActivity,
 } from 'faros-airbyte-common/bitbucket-server';
-import {Utils} from 'faros-feeds-sdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';

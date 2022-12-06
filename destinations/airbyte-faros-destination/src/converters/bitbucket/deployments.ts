@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-feeds-sdk';
+import {Utils} from 'faros-js-client';
 
 import {Common} from '../common/common';
 import {

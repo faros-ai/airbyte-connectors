@@ -14,14 +14,13 @@ import {
   parseAirbyteMessage,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {
-  EntryUploaderConfig,
   FarosClient,
   FarosClientConfig,
   HasuraSchemaLoader,
   Schema,
-  withEntryUploader,
-} from 'faros-feeds-sdk';
+} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
 import {difference, keyBy, sortBy, uniq} from 'lodash';
@@ -245,7 +244,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       };
       const schemaLoader = {
         async loadSchema(): Promise<Schema> {
-          return await client.gqlSchema();
+          return await client.gqlSchema(graph);
         },
       };
       this.graphQLClient = new GraphQLClient(

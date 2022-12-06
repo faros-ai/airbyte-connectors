@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosGraphSchema} from 'faros-feeds-sdk';
+import {FarosGraphSchema} from 'faros-js-client';
 
 import {
   Converter,
