@@ -1,5 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-feeds-sdk';
+import {FarosClient} from 'faros-js-client';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';

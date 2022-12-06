@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Location, Utils} from 'faros-feeds-sdk';
+import {Location, Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Event, GoogleCalendarCommon, GoogleCalendarConverter} from './common';

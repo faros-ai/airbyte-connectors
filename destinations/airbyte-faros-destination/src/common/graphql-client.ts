@@ -1,6 +1,6 @@
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Schema, SchemaLoader} from 'faros-feeds-sdk';
+import {Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {
   clone,
