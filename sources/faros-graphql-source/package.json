@@ -32,7 +32,7 @@
     "avsc": "5.7.2",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",
-    "faros-js-client": "0.2.7",
+    "faros-js-client": "0.2.8",
     "verror": "^1.10.1"
   },
   "jest": {
