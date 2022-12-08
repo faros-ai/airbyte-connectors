@@ -60,11 +60,12 @@ export class PullRequests extends AzureReposConverter {
       }
     }
 
-    const mergeCommit = pullRequestItem.lastMergeCommit
+    const mergeCommitId = pullRequestItem.lastMergeCommit?.commitId;
+    const mergeCommit = mergeCommitId
       ? {
           repository,
-          sha: pullRequestItem.lastMergeCommit.commitId,
-          uid: pullRequestItem.lastMergeCommit.commitId,
+          sha: mergeCommitId,
+          uid: mergeCommitId,
         }
       : null;
 
