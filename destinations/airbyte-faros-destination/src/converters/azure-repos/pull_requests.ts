@@ -60,6 +60,14 @@ export class PullRequests extends AzureReposConverter {
       }
     }
 
+    const mergeCommit = pullRequestItem.lastMergeCommit
+      ? {
+          repository,
+          sha: pullRequestItem.lastMergeCommit.commitId,
+          uid: pullRequestItem.lastMergeCommit.commitId,
+        }
+      : null;
+
     res.push({
       model: 'vcs_PullRequest',
       record: {
@@ -75,11 +83,7 @@ export class PullRequests extends AzureReposConverter {
         commentCount: pullRequestItem.threads.length,
         diffStats,
         author: {uid: pullRequestItem.createdBy.uniqueName, source},
-        mergeCommit: {
-          sha: pullRequestItem.lastMergeCommit.commitId,
-          uid: pullRequestItem.lastMergeCommit.commitId,
-          repository,
-        },
+        mergeCommit,
         repository,
       },
     });

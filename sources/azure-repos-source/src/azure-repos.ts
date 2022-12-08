@@ -131,7 +131,7 @@ export class AzureRepo {
       const branchResponse = await this.get<BranchResponse>(
         `git/repositories/${item.id}/stats/branches`
       );
-      if (branchResponse.status === 200) {
+      if (branchResponse && branchResponse.status === 200) {
         const branches: Branch[] = [];
         for (const branch of branchResponse?.data?.value ?? []) {
           const branchItem: Branch = branch;
@@ -146,7 +146,7 @@ export class AzureRepo {
       const tagsResponse = await this.get<TagResponse>(
         `git/repositories/${item.id}/refs?filter=tags`
       );
-      if (tagsResponse.status === 200) {
+      if (tagsResponse && tagsResponse.status === 200) {
         const tags: Tag[] = [];
         for (const tag of tagsResponse?.data?.value ?? []) {
           const tagItem: Tag = tag;
