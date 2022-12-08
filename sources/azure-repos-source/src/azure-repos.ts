@@ -131,7 +131,7 @@ export class AzureRepo {
       const branchResponse = await this.get<BranchResponse>(
         `git/repositories/${item.id}/stats/branches`
       );
-      if (branchResponse && branchResponse.status === 200) {
+      if (branchResponse?.status === 200) {
         const branches: Branch[] = [];
         for (const branch of branchResponse?.data?.value ?? []) {
           const branchItem: Branch = branch;
@@ -146,7 +146,7 @@ export class AzureRepo {
       const tagsResponse = await this.get<TagResponse>(
         `git/repositories/${item.id}/refs?filter=tags`
       );
-      if (tagsResponse && tagsResponse.status === 200) {
+      if (tagsResponse?.status === 200) {
         const tags: Tag[] = [];
         for (const tag of tagsResponse?.data?.value ?? []) {
           const tagItem: Tag = tag;
@@ -170,7 +170,7 @@ export class AzureRepo {
       const commitResponse = await this.get<PullRequestCommitResponse>(
         `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
       );
-      if (commitResponse.status === 200) {
+      if (commitResponse?.status === 200) {
         const commits: PullRequestCommit[] = [];
         for (const commit of commitResponse?.data?.value ?? []) {
           const commitChangeCountsResponse =
@@ -186,7 +186,7 @@ export class AzureRepo {
       const threadResponse = await this.get<PullRequestThreadResponse>(
         `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
       );
-      if (threadResponse.status === 200) {
+      if (threadResponse?.status === 200) {
         item.threads = threadResponse?.data?.value ?? [];
       }
       yield item;
