@@ -41,6 +41,12 @@
         "title": "Max Commits per Branch",
         "description": "The max number of commits to retrieve per repository branch.",
         "default": 1000
+      },
+      "request_timeout": {
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
+        "default": 60000
       }
     }
   }

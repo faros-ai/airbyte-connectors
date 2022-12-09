@@ -26,6 +26,7 @@ const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_MAX_COMMITS_PER_BRANCH = 1000;
+export const DEFAULT_REQUEST_TIMEOUT = 60000;
 
 export interface AzureRepoConfig {
   readonly access_token: string;
@@ -35,6 +36,7 @@ export interface AzureRepoConfig {
   readonly graph_version?: string;
   readonly page_size?: number;
   readonly max_commits_per_branch?: number;
+  readonly request_timeout?: number;
 }
 
 export class AzureRepo {
@@ -60,29 +62,21 @@ export class AzureRepo {
       throw new VError('project must not be an empty string');
     }
 
-    const version = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: 15000, // default is `0` (no timeout)
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
-      },
-      headers: {
-        Authorization: `Basic ${config.access_token}`,
-      },
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
+      headers: {Authorization: `Basic ${config.access_token}`},
     });
-    const graphVersion = config.graph_version ?? DEFAULT_GRAPH_VERSION;
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
-      timeout: 15000, // default is `0` (no timeout)
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': graphVersion,
-      },
-      headers: {
-        Authorization: `Basic ${config.access_token}`,
-      },
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
+      headers: {Authorization: `Basic ${config.access_token}`},
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
