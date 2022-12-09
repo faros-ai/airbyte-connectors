@@ -47,7 +47,7 @@ export class Repositories extends AzureReposConverter {
     }
 
     let createdAt: Date = null;
-    for (const branch of repositoryItem.branches) {
+    for (const branch of repositoryItem.branches ?? []) {
       if (
         createdAt == null &&
         repositoryItem.defaultBranch.endsWith(branch.name)
@@ -76,7 +76,7 @@ export class Repositories extends AzureReposConverter {
       },
     });
 
-    for (const branch of repositoryItem.branches) {
+    for (const branch of repositoryItem.branches ?? []) {
       res.push({
         model: 'vcs_Branch',
         record: {
@@ -85,7 +85,7 @@ export class Repositories extends AzureReposConverter {
           repository,
         },
       });
-      for (const commit of branch.commits) {
+      for (const commit of branch.commits ?? []) {
         res.push({
           model: 'vcs_Commit',
           record: {
@@ -108,17 +108,20 @@ export class Repositories extends AzureReposConverter {
       }
     }
 
-    for (const tag of repositoryItem.tags) {
-      const commitId = tag.commit.taggedObject.objectId;
-      res.push({
-        model: 'vcs_Tag',
-        record: {
-          name: tag.name,
-          message: tag.commit.message,
-          commit: {sha: commitId, uid: commitId, repository},
-          repository,
-        },
-      });
+    for (const tag of repositoryItem.tags ?? []) {
+      const commitId = tag.commit?.taggedObject?.objectId;
+
+      if (commitId) {
+        res.push({
+          model: 'vcs_Tag',
+          record: {
+            name: tag.name,
+            message: tag.commit.message,
+            commit: {sha: commitId, uid: commitId, repository},
+            repository,
+          },
+        });
+      }
     }
     return res;
   }
