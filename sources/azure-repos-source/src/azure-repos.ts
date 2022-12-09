@@ -118,7 +118,7 @@ export class AzureRepo {
     return this.getHandleNotFound(path, {params});
   }
 
-  private async getAll<T = any, R = AxiosResponse<T>>(
+  private async getAll<T extends {value: any[]}, R = AxiosResponse<T>>(
     path: string,
     topParamName: string,
     skipParamName: string,
@@ -127,7 +127,7 @@ export class AzureRepo {
     maxTotal = Infinity
   ): Promise<ReadonlyArray<R>> {
     const res = [];
-    for await (const item of this.getGenerator(
+    for await (const item of this.getPaginated(
       path,
       topParamName,
       skipParamName,
@@ -140,7 +140,7 @@ export class AzureRepo {
     return res;
   }
 
-  private async *getGenerator<T = any>(
+  private async *getPaginated<T extends {value: any[]}>(
     path: string,
     topParamName: string,
     skipParamName: string,
@@ -157,12 +157,9 @@ export class AzureRepo {
       params[skipParamName] = skip;
       res = await this.getHandleNotFound(path, {params});
       if (res) yield res;
-      try {
-        resCount = res?.data?.['value'].length;
-        skip += resCount;
-        // eslint-disable-next-line no-empty
-      } catch (err) {}
-    } while (resCount >= top && skip < maxTotal);
+      resCount = (res?.data?.value ?? []).length;
+      skip += resCount;
+    } while (resCount >= top && skip <= maxTotal);
   }
 
   private async getHandleNotFound<T = any, R = AxiosResponse<T>, D = any>(
