@@ -23,12 +23,24 @@
       "api_version": {
         "type": "string",
         "title": "API Version",
-        "default": "6.0"
+        "default": "7.0"
       },
       "graph_version": {
         "type": "string",
         "title": "Graph API Version",
-        "default": "4.1-preview.1"
+        "default": "7.1-preview.1"
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of items to retrieve per call. Corresponds to 'top' parameter in Azure DevOps API.",
+        "default": 100
+      },
+      "max_commits_per_branch": {
+        "type": "integer",
+        "title": "Max Commits per Branch",
+        "description": "The max number of commits to retrieve per repository branch.",
+        "default": 1000
       }
     }
   }

@@ -7,7 +7,11 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {AzureRepo} from '../src/azure-repos';
+import {
+  AzureRepo,
+  DEFAULT_MAX_COMMITS_PER_BRANCH,
+  DEFAULT_PAGE_SIZE,
+} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepo.instance;
@@ -19,7 +23,7 @@ describe('index', () => {
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
-      : AirbyteLogLevel.FATAL
+      : AirbyteLogLevel.INFO
   );
 
   beforeEach(() => {
@@ -46,8 +50,10 @@ describe('index', () => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
       return new AzureRepo(
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
-          get: jest.fn().mockResolvedValue({
+          get: jest.fn().mockResolvedValueOnce({
             data: {value: repositoriesResource},
           }),
         } as any,
@@ -85,8 +91,10 @@ describe('index', () => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
       return new AzureRepo(
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
-          get: fnRepositoriesFunc.mockResolvedValue({
+          get: fnRepositoriesFunc.mockResolvedValueOnce({
             data: {value: repositoriesResource},
           }),
         } as any,
@@ -105,8 +113,8 @@ describe('index', () => {
       repositories.push(repository);
     }
     expect(fnRepositoriesFunc).toHaveBeenCalledTimes(3);
-    expect(repositories).toStrictEqual(
-      readTestResourceFile('repositories.json')
+    expect(repositories.map((r) => r.id)).toStrictEqual(
+      readTestResourceFile('repositories.json').map((r) => r.id)
     );
   });
   test('streams - pullrequests, use full_refresh sync mode', async () => {
@@ -116,10 +124,19 @@ describe('index', () => {
       const pullrequestsResource: any[] =
         readTestResourceFile('pullrequests.json');
       return new AzureRepo(
+        1,
+        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
-          get: fnPullrequestsFunc.mockResolvedValue({
-            data: {value: pullrequestsResource},
-          }),
+          get: fnPullrequestsFunc
+            .mockResolvedValueOnce({
+              data: {value: [pullrequestsResource[0]]},
+            })
+            .mockResolvedValueOnce({
+              data: {value: [pullrequestsResource[1]]},
+            })
+            .mockResolvedValueOnce({
+              data: {value: []},
+            }),
         } as any,
         null
       );
@@ -135,9 +152,9 @@ describe('index', () => {
     for await (const pullrequest of pullrequestIter) {
       pullrequests.push(pullrequest);
     }
-    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(5);
-    expect(pullrequests).toStrictEqual(
-      readTestResourceFile('pullrequests.json')
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(7);
+    expect(pullrequests.map((p) => p.pullRequestId)).toStrictEqual(
+      readTestResourceFile('pullrequests.json').map((p) => p.pullRequestId)
     );
   });
 
@@ -146,11 +163,16 @@ describe('index', () => {
 
     AzureRepo.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
-      return new AzureRepo(null, {
-        get: fnUsersFunc.mockResolvedValue({
-          data: {value: usersResource},
-        }),
-      } as any);
+      return new AzureRepo(
+        DEFAULT_PAGE_SIZE,
+        DEFAULT_MAX_COMMITS_PER_BRANCH,
+        null,
+        {
+          get: fnUsersFunc.mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any
+      );
     });
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams({} as any);
@@ -162,6 +184,8 @@ describe('index', () => {
       users.push(user);
     }
     expect(fnUsersFunc).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users.map((u) => u.principalName)).toStrictEqual(
+      readTestResourceFile('users.json').map((u) => u.principalName)
+    );
   });
 });
