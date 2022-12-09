@@ -43,7 +43,7 @@ export class PullRequests extends AzureReposConverter {
       diffStats.filesChanged += commit.changeCounts.Edit ?? 0;
     }
 
-    for (const thread of pullRequestItem.threads) {
+    for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
         res.push({
           model: 'vcs_PullRequestComment',
@@ -89,7 +89,7 @@ export class PullRequests extends AzureReposConverter {
       },
     });
 
-    for (const reviewer of pullRequestItem.reviewers) {
+    for (const reviewer of pullRequestItem.reviewers ?? []) {
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
