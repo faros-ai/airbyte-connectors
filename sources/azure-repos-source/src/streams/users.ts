@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepo, AzureRepoConfig} from '../azure-repos';
+import {AzureRepoConfig, AzureRepos} from '../azure-repos';
 import {User} from '../models';
 
 export class Users extends AirbyteStreamBase {
@@ -15,12 +15,13 @@ export class Users extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
+
   get primaryKey(): StreamKey {
     return 'principalName';
   }
 
   async *readRecords(): AsyncGenerator<User> {
-    const azureRepo = await AzureRepo.instance(this.config);
+    const azureRepo = await AzureRepos.make(this.config);
     yield* azureRepo.getUsers();
   }
 }
