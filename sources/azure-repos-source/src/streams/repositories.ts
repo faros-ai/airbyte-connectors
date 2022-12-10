@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepo, AzureRepoConfig} from '../azure-repos';
+import {AzureRepoConfig, AzureRepos} from '../azure-repos';
 import {Repository} from '../models';
 
 export class Repositories extends AirbyteStreamBase {
@@ -20,7 +20,7 @@ export class Repositories extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Repository> {
-    const azureRepo = await AzureRepo.instance(this.config);
+    const azureRepo = await AzureRepos.make(this.config);
     yield* azureRepo.getRepositories();
   }
 }

@@ -8,13 +8,13 @@ import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {
-  AzureRepo,
+  AzureRepos,
   DEFAULT_MAX_COMMITS_PER_BRANCH,
   DEFAULT_PAGE_SIZE,
 } from '../src/azure-repos';
 import * as sut from '../src/index';
 
-const azureRepo = AzureRepo.instance;
+const azureRepo = AzureRepos.make;
 
 jest.mock('axios');
 
@@ -27,7 +27,7 @@ describe('index', () => {
   );
 
   beforeEach(() => {
-    AzureRepo.instance = azureRepo;
+    AzureRepos.make = azureRepo;
   });
 
   function readResourceFile(fileName: string): any {
@@ -46,10 +46,10 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
-    AzureRepo.instance = jest.fn().mockImplementation(() => {
+    AzureRepos.make = jest.fn().mockImplementation(() => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
-      return new AzureRepo(
+      return new AzureRepos(
         DEFAULT_PAGE_SIZE,
         DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
@@ -87,10 +87,10 @@ describe('index', () => {
   test('streams - repositories, use full_refresh sync mode', async () => {
     const fnRepositoriesFunc = jest.fn();
 
-    AzureRepo.instance = jest.fn().mockImplementation(() => {
+    AzureRepos.make = jest.fn().mockImplementation(() => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
-      return new AzureRepo(
+      return new AzureRepos(
         DEFAULT_PAGE_SIZE,
         DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
@@ -120,10 +120,10 @@ describe('index', () => {
   test('streams - pullrequests, use full_refresh sync mode', async () => {
     const fnPullrequestsFunc = jest.fn();
 
-    AzureRepo.instance = jest.fn().mockImplementation(() => {
+    AzureRepos.make = jest.fn().mockImplementation(() => {
       const pullrequestsResource: any[] =
         readTestResourceFile('pullrequests.json');
-      return new AzureRepo(
+      return new AzureRepos(
         1,
         DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
@@ -161,9 +161,9 @@ describe('index', () => {
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
-    AzureRepo.instance = jest.fn().mockImplementation(() => {
+    AzureRepos.make = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
-      return new AzureRepo(
+      return new AzureRepos(
         DEFAULT_PAGE_SIZE,
         DEFAULT_MAX_COMMITS_PER_BRANCH,
         null,

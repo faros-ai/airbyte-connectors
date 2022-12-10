@@ -39,8 +39,8 @@ export interface AzureRepoConfig {
   readonly request_timeout?: number;
 }
 
-export class AzureRepo {
-  private static azureRepo: AzureRepo = null;
+export class AzureRepos {
+  private static instance: AzureRepos = null;
 
   constructor(
     private readonly top: number,
@@ -49,8 +49,8 @@ export class AzureRepo {
     private readonly graphClient: AxiosInstance
   ) {}
 
-  static async instance(config: AzureRepoConfig): Promise<AzureRepo> {
-    if (AzureRepo.azureRepo) return AzureRepo.azureRepo;
+  static async make(config: AzureRepoConfig): Promise<AzureRepos> {
+    if (AzureRepos.instance) return AzureRepos.instance;
 
     if (!config.access_token) {
       throw new VError('access_token must not be an empty string');
@@ -83,13 +83,13 @@ export class AzureRepo {
     const maxCommitsPerBranch =
       config.max_commits_per_branch ?? DEFAULT_MAX_COMMITS_PER_BRANCH;
 
-    AzureRepo.azureRepo = new AzureRepo(
+    AzureRepos.instance = new AzureRepos(
       top,
       maxCommitsPerBranch,
       httpClient,
       graphClient
     );
-    return AzureRepo.azureRepo;
+    return AzureRepos.instance;
   }
 
   async checkConnection(): Promise<void> {

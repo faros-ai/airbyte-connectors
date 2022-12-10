@@ -8,8 +8,9 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzureRepo, AzureRepoConfig} from './azure-repos';
+import {AzureRepoConfig, AzureRepos} from './azure-repos';
 import {PullRequests, Repositories, Users} from './streams';
+
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
@@ -25,8 +26,8 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   }
   async checkConnection(config: AzureRepoConfig): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = await AzureRepo.instance(config);
-      await azureActiveDirectory.checkConnection();
+      const ar = await AzureRepos.make(config);
+      await ar.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
