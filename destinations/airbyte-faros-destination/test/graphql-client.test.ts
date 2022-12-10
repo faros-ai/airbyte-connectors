@@ -1,5 +1,5 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import {Schema} from 'faros-feeds-sdk/lib';
+import {Schema} from 'faros-js-client';
 import fs from 'fs-extra';
 
 import {
