@@ -26,8 +26,8 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   }
   async checkConnection(config: AzureRepoConfig): Promise<[boolean, VError]> {
     try {
-      const ar = await AzureRepos.make(config);
-      await ar.checkConnection();
+      const azureRepos = await AzureRepos.make(config);
+      await azureRepos.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

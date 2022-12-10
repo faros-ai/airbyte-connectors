@@ -15,12 +15,13 @@ export class Repositories extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/repositories.json');
   }
+
   get primaryKey(): StreamKey {
     return 'id';
   }
 
   async *readRecords(): AsyncGenerator<Repository> {
-    const azureRepo = await AzureRepos.make(this.config);
-    yield* azureRepo.getRepositories();
+    const azureRepos = await AzureRepos.make(this.config);
+    yield* azureRepos.getRepositories();
   }
 }

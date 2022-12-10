@@ -15,15 +15,17 @@ export class PullRequests extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pullrequests.json');
   }
+
   get primaryKey(): StreamKey {
     return 'pullRequestId';
   }
+
   get cursorField(): string | string[] {
     return 'creationDate';
   }
 
   async *readRecords(): AsyncGenerator<PullRequest> {
-    const azureRepo = await AzureRepos.make(this.config);
-    yield* azureRepo.getPullRequests();
+    const azureRepos = await AzureRepos.make(this.config);
+    yield* azureRepos.getPullRequests();
   }
 }
