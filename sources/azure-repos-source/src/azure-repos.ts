@@ -200,7 +200,7 @@ export class AzureRepos {
       if (err?.response?.status === 429 && attempt <= this.maxRetries) {
         this.logger.warn(
           `Request to ${path} was rate limited. Retrying... ` +
-            `(attempt ${attempt} or ${this.maxRetries})`
+            `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.maybeSleepOnResponse(path, err?.response);
         return await this.getHandleNotFound(path, conf, attempt + 1);
