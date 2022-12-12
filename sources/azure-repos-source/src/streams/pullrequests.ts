@@ -25,7 +25,7 @@ export class PullRequests extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<PullRequest> {
-    const azureRepos = await AzureRepos.make(this.config);
+    const azureRepos = await AzureRepos.make(this.config, this.logger);
     yield* azureRepos.getPullRequests();
   }
 }

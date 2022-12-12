@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -27,6 +27,7 @@ const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_MAX_COMMITS_PER_BRANCH = 1000;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
+export const DEFAULT_MAX_RETRIES = 3;
 
 export interface AzureRepoConfig {
   readonly access_token: string;
@@ -37,6 +38,7 @@ export interface AzureRepoConfig {
   readonly page_size?: number;
   readonly max_commits_per_branch?: number;
   readonly request_timeout?: number;
+  readonly max_retries?: number;
 }
 
 export class AzureRepos {
@@ -46,10 +48,15 @@ export class AzureRepos {
     private readonly top: number,
     private readonly maxCommitsPerBranch: number,
     private readonly httpClient: AxiosInstance,
-    private readonly graphClient: AxiosInstance
+    private readonly graphClient: AxiosInstance,
+    private readonly maxRetries: number,
+    private readonly logger: AirbyteLogger
   ) {}
 
-  static async make(config: AzureRepoConfig): Promise<AzureRepos> {
+  static async make(
+    config: AzureRepoConfig,
+    logger: AirbyteLogger
+  ): Promise<AzureRepos> {
     if (AzureRepos.instance) return AzureRepos.instance;
 
     if (!config.access_token) {
@@ -83,11 +90,15 @@ export class AzureRepos {
     const maxCommitsPerBranch =
       config.max_commits_per_branch ?? DEFAULT_MAX_COMMITS_PER_BRANCH;
 
+    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+
     AzureRepos.instance = new AzureRepos(
       top,
       maxCommitsPerBranch,
       httpClient,
-      graphClient
+      graphClient,
+      maxRetries,
+      logger
     );
     return AzureRepos.instance;
   }
@@ -97,35 +108,25 @@ export class AzureRepos {
       const iter = this.getRepositories();
       await iter.next();
     } catch (err: any) {
-      let errorMessage = 'Please verify your access token is correct. Error: ';
-      if (err.error_code || err.error_info) {
-        errorMessage += `${err.error_code}: ${err.error_info}`;
-        throw new VError(errorMessage);
-      }
-      try {
-        errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
-      } catch (wrapError: any) {
-        errorMessage += wrapError.message;
-      }
-      throw new VError(errorMessage);
+      throw new VError(err, 'Please verify your access token is correct');
     }
   }
 
-  private get<T = any, R = AxiosResponse<T>>(
+  private get<T = any>(
     path: string,
     params: Dictionary<any> = {}
-  ): Promise<R | undefined> {
+  ): Promise<AxiosResponse<T> | undefined> {
     return this.getHandleNotFound(path, {params});
   }
 
-  private async getAll<T extends {value: any[]}, R = AxiosResponse<T>>(
+  private async getAll<T extends {value: any[]}>(
     path: string,
     topParamName: string,
     skipParamName: string,
     params: Dictionary<any> = {},
     top: number = this.top,
     maxTotal = Infinity
-  ): Promise<ReadonlyArray<R>> {
+  ): Promise<ReadonlyArray<AxiosResponse<T>>> {
     const res = [];
     for await (const item of this.getPaginated(
       path,
@@ -162,18 +163,52 @@ export class AzureRepos {
     } while (resCount >= top && skip <= maxTotal);
   }
 
-  private async getHandleNotFound<T = any, R = AxiosResponse<T>, D = any>(
+  private sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  // Read more: https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits?view=azure-devops#api-client-experience
+  private async maybeSleepOnResponse<T = any>(
     path: string,
-    conf?: AxiosRequestConfig<D>
-  ): Promise<R | undefined> {
+    res?: AxiosResponse<T>
+  ): Promise<boolean> {
+    const retryAfterSecs = res?.headers?.['retry-after'];
+    if (retryAfterSecs) {
+      const retryRemaining = res?.headers?.['x-ratelimit-remaining'];
+      const retryRatelimit = res?.headers?.['x-ratelimit-limit'];
+      this.logger.warn(
+        `'Retry-After' response header is detected when requesting ${path}. ` +
+          `Waiting for ${retryAfterSecs} seconds before making any requests. ` +
+          `(TSTUs remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
+      );
+      await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
+      return true;
+    }
+    return false;
+  }
+
+  private async getHandleNotFound<T = any, D = any>(
+    path: string,
+    conf?: AxiosRequestConfig<D>,
+    attempt = 1
+  ): Promise<AxiosResponse<T> | undefined> {
     try {
-      const res = this.httpClient.get<T, R>(path, conf);
+      const res = await this.httpClient.get<T, AxiosResponse<T>>(path, conf);
+      await this.maybeSleepOnResponse(path, res);
       return res;
     } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to ${path} was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.getHandleNotFound(path, conf, attempt + 1);
+      }
       if (err?.response?.status === 404) {
         return undefined;
       }
-      throw wrapApiError(err, `Failed to get ${path}`);
+      throw wrapApiError(err, `Failed to get ${path}. `);
     }
   }
 

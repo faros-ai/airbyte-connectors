@@ -21,7 +21,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<User> {
-    const azureRepo = await AzureRepos.make(this.config);
+    const azureRepo = await AzureRepos.make(this.config, this.logger);
     yield* azureRepo.getUsers();
   }
 }
