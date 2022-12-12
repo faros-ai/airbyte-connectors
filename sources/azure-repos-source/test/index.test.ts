@@ -58,6 +58,7 @@ describe('index', () => {
           }),
         } as any,
         null,
+        1,
         logger
       );
     });
@@ -100,6 +101,7 @@ describe('index', () => {
           }),
         } as any,
         null,
+        1,
         logger
       );
     });
@@ -141,6 +143,7 @@ describe('index', () => {
             }),
         } as any,
         null,
+        1,
         logger
       );
     });
@@ -175,6 +178,7 @@ describe('index', () => {
             data: {value: usersResource},
           }),
         } as any,
+        1,
         logger
       );
     });
