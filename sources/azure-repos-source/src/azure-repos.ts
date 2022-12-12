@@ -167,6 +167,7 @@ export class AzureRepos {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
+  // Read more: https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits?view=azure-devops#api-client-experience
   private async maybeSleepOnResponse<T = any>(
     path: string,
     res?: AxiosResponse<T>
@@ -175,7 +176,6 @@ export class AzureRepos {
     if (retryAfterSecs) {
       const retryRemaining = res?.headers?.['x-ratelimit-remaining'];
       const retryRatelimit = res?.headers?.['x-ratelimit-limit'];
-      // Read more: https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits?view=azure-devops#api-client-experience
       this.logger.warn(
         `'Retry-After' response header is detected when requesting ${path}. ` +
           `Waiting for ${retryAfterSecs} seconds before making any requests. ` +
