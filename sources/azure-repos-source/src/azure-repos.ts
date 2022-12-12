@@ -190,7 +190,7 @@ export class AzureRepos {
             `(TSTU remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
         );
         await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
-        await this.getHandleNotFound(path, conf);
+        return await this.getHandleNotFound(path, conf);
       }
       if (err?.response?.status === 404) {
         return undefined;
