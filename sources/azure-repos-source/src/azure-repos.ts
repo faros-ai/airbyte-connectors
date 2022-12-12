@@ -179,7 +179,7 @@ export class AzureRepos {
       this.logger.warn(
         `'Retry-After' response header is detected when requesting ${path}. ` +
           `Waiting for ${retryAfterSecs} seconds before making any requests. ` +
-          `(TSTU remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
+          `(TSTUs remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
       );
       await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
       return true;
