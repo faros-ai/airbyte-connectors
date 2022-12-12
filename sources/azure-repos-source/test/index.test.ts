@@ -57,7 +57,8 @@ describe('index', () => {
             data: {value: repositoriesResource},
           }),
         } as any,
-        null
+        null,
+        logger
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -98,7 +99,8 @@ describe('index', () => {
             data: {value: repositoriesResource},
           }),
         } as any,
-        null
+        null,
+        logger
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -138,7 +140,8 @@ describe('index', () => {
               data: {value: []},
             }),
         } as any,
-        null
+        null,
+        logger
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -171,7 +174,8 @@ describe('index', () => {
           get: fnUsersFunc.mockResolvedValue({
             data: {value: usersResource},
           }),
-        } as any
+        } as any,
+        logger
       );
     });
     const source = new sut.AzureRepoSource(logger);

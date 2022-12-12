@@ -21,7 +21,7 @@ export class Repositories extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Repository> {
-    const azureRepos = await AzureRepos.make(this.config);
+    const azureRepos = await AzureRepos.make(this.config, this.logger);
     yield* azureRepos.getRepositories();
   }
 }

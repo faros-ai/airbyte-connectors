@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -46,10 +46,14 @@ export class AzureRepos {
     private readonly top: number,
     private readonly maxCommitsPerBranch: number,
     private readonly httpClient: AxiosInstance,
-    private readonly graphClient: AxiosInstance
+    private readonly graphClient: AxiosInstance,
+    private readonly logger: AirbyteLogger
   ) {}
 
-  static async make(config: AzureRepoConfig): Promise<AzureRepos> {
+  static async make(
+    config: AzureRepoConfig,
+    logger: AirbyteLogger
+  ): Promise<AzureRepos> {
     if (AzureRepos.instance) return AzureRepos.instance;
 
     if (!config.access_token) {
@@ -87,7 +91,8 @@ export class AzureRepos {
       top,
       maxCommitsPerBranch,
       httpClient,
-      graphClient
+      graphClient,
+      logger
     );
     return AzureRepos.instance;
   }
@@ -162,6 +167,10 @@ export class AzureRepos {
     } while (resCount >= top && skip <= maxTotal);
   }
 
+  private sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
   private async getHandleNotFound<T = any, R = AxiosResponse<T>, D = any>(
     path: string,
     conf?: AxiosRequestConfig<D>
@@ -170,6 +179,19 @@ export class AzureRepos {
       const res = this.httpClient.get<T, R>(path, conf);
       return res;
     } catch (err: any) {
+      const retryAfterSecs = err?.response?.headers['retry-after'];
+      if (retryAfterSecs) {
+        const retryRemaining = err?.response?.headers['x-ratelimit-remaining'];
+        const retryRatelimit = err?.response?.headers['x-ratelimit-limit'];
+        // Read more: https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits?view=azure-devops#api-client-experience
+        this.logger.warn(
+          `Failed to get ${path} due to a rate limit. ` +
+            `Retrying in ${retryAfterSecs} seconds. ` +
+            `(TSTU remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
+        );
+        await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
+        await this.getHandleNotFound(path, conf);
+      }
       if (err?.response?.status === 404) {
         return undefined;
       }
