@@ -1,4 +1,5 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -91,6 +92,21 @@ export class AzureRepos {
       config.max_commits_per_branch ?? DEFAULT_MAX_COMMITS_PER_BRANCH;
 
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+
+    const retryConfig: IAxiosRetryConfig = {
+      retryDelay: axiosRetry.exponentialDelay,
+      shouldResetTimeout: true,
+      retries: maxRetries,
+      onRetry(retryCount, error, requestConfig) {
+        logger.info(
+          `Retrying request ${requestConfig.url} due to error: ${error.message} ` +
+            `(attempt ${retryCount} of ${maxRetries})`
+        );
+      },
+    };
+
+    axiosRetry(httpClient, retryConfig);
+    axiosRetry(graphClient, retryConfig);
 
     AzureRepos.instance = new AzureRepos(
       top,
