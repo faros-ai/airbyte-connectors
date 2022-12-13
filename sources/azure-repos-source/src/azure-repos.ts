@@ -99,7 +99,7 @@ export class AzureRepos {
       retries: maxRetries,
       onRetry(retryCount, error, requestConfig) {
         logger.info(
-          `Retrying request ${requestConfig.url} due to error: ${error.message} ` +
+          `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
             `(attempt ${retryCount} of ${maxRetries})`
         );
       },
