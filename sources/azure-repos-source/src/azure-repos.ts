@@ -1,5 +1,8 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
+import axiosRetry, {
+  IAxiosRetryConfig,
+  isNetworkOrIdempotentRequestError,
+} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -38,8 +41,10 @@ export interface AzureRepoConfig {
   readonly graph_version?: string;
   readonly page_size?: number;
   readonly max_commits_per_branch?: number;
+  readonly branch_pattern?: string;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly always_retry?: boolean;
 }
 
 export class AzureRepos {
@@ -51,7 +56,8 @@ export class AzureRepos {
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
     private readonly maxRetries: number,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly branchPattern?: RegExp
   ) {}
 
   static async make(
@@ -93,10 +99,17 @@ export class AzureRepos {
 
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
 
+    const retryCondition = config?.always_retry
+      ? (): boolean => {
+          return true;
+        }
+      : isNetworkOrIdempotentRequestError;
+
     const retryConfig: IAxiosRetryConfig = {
       retryDelay: axiosRetry.exponentialDelay,
       shouldResetTimeout: true,
       retries: maxRetries,
+      retryCondition,
       onRetry(retryCount, error, requestConfig) {
         logger.info(
           `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
@@ -108,13 +121,18 @@ export class AzureRepos {
     axiosRetry(httpClient, retryConfig);
     axiosRetry(graphClient, retryConfig);
 
+    const branchPattern = config.branch_pattern
+      ? new RegExp(config.branch_pattern)
+      : undefined;
+
     AzureRepos.instance = new AzureRepos(
       top,
       maxCommitsPerBranch,
       httpClient,
       graphClient,
       maxRetries,
-      logger
+      logger,
+      branchPattern
     );
     return AzureRepos.instance;
   }
@@ -237,6 +255,12 @@ export class AzureRepos {
       item.branches = [];
       if (branchResponse?.status === 200) {
         for (const branch of branchResponse?.data?.value ?? []) {
+          if (this.branchPattern && !this.branchPattern.test(branch.name)) {
+            this.logger.info(
+              `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
+            );
+            continue;
+          }
           item.branches.push(branch);
           branch.commits = [];
           // TODO: commits should be yielded in its own stream instead
