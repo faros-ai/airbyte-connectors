@@ -67,11 +67,21 @@ export class Builds extends AzurePipelineConverter {
     }
 
     for (const job of build.jobs) {
+      if (job.type != 'Job') {
+        continue;
+      }
       const jobCreatedAt = Utils.toDate(job.startTime);
       const jobStartedAt = Utils.toDate(job.startTime);
       const jobEndedAt = Utils.toDate(job.finishTime);
       const jobStatus = this.convertBuildStepState(job.result);
-      const jobType = this.convertBuildStepType(job.type);
+
+      // get the parent job
+      let parentJob = job;
+      while (parentJob.parentId)
+        parentJob = build.jobs.find((j) => j.id == parentJob.parentId);
+
+      // we put the parent stage as the detail
+      const jobType = this.convertBuildStepType(parentJob.name);
 
       res.push({
         model: 'cicd_BuildStep',

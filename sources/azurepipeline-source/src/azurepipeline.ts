@@ -153,7 +153,7 @@ export class AzurePipeline {
       const timelines = [];
       if (timeline.status === 200) {
         for (const item of timeline.data.records) {
-          if (item.type === 'Job') timelines.push(item);
+          timelines.push(item);
         }
       }
       item.jobs = timelines;
