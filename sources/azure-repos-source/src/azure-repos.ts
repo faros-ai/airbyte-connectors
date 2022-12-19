@@ -1,9 +1,10 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import axiosRetry, {
   IAxiosRetryConfig,
-  isNetworkOrIdempotentRequestError,
+  isIdempotentRequestError,
 } from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import isRetryAllowed from 'is-retry-allowed';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
@@ -44,7 +45,6 @@ export interface AzureRepoConfig {
   readonly branch_pattern?: string;
   readonly request_timeout?: number;
   readonly max_retries?: number;
-  readonly always_retry?: boolean;
 }
 
 export class AzureRepos {
@@ -99,11 +99,16 @@ export class AzureRepos {
 
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
 
-    const retryCondition = config?.always_retry
-      ? (): boolean => {
-          return true;
-        }
-      : isNetworkOrIdempotentRequestError;
+    const isNetworkError = (error): boolean => {
+      return (
+        !error.response &&
+        Boolean(error.code) && // Prevents retrying cancelled requests
+        isRetryAllowed(error) // Prevents retrying unsafe errors
+      );
+    };
+    const retryCondition = (error: Error): boolean => {
+      return isNetworkError(error) || isIdempotentRequestError(error);
+    };
 
     const retryConfig: IAxiosRetryConfig = {
       retryDelay: axiosRetry.exponentialDelay,

@@ -58,12 +58,6 @@
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
-      },
-      "always_retry": {
-        "type": "boolean",
-        "title": "Always Retry",
-        "description": "Should retry requests on any source error that occurs, e.g network issue, request timeout, unexpected response.",
-        "default": false
       }
     }
   }
