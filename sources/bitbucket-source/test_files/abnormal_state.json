@@ -1,26 +1,26 @@
 {
   "commits": {
-    "RomanKyrnis/geekhub2019": {
+    "faros-playground/test-repo-1": {
       "cutoff": "2025-01-01T00:00:00.000Z"
     }
   },
   "issues": {
-    "RomanKyrnis/geekhub2019": {
+    "faros-playground/test-repo-1": {
       "cutoff": "2025-01-01T00:00:00.000Z"
     }
   },
   "pipeline_steps": {
-    "RomanKyrnis/geekhub2019": {
+    "faros-playground/test-repo-1": {
       "cutoff": "2025-01-01T00:00:00.000Z"
     }
   },
   "pull_request_activities": {
-    "RomanKyrnis/geekhub2019": {
+    "faros-playground/test-repo-1": {
       "cutoff": "2025-01-01T00:00:00.000Z"
     }
   },
   "pull_requests": {
-    "RomanKyrnis/geekhub2019": {
+    "faros-playground/test-repo-1": {
       "cutoff": "2025-01-01T00:00:00.000Z"
     }
   }
