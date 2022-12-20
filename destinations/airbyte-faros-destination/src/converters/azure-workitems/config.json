@@ -1,0 +1,7 @@
+{
+    "edition_configs": {
+      "edition": "community",
+      "hasura_url": "http://localhost:8080",
+      "hasura_admin_secret": "admin"
+    }
+  }

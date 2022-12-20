@@ -1,0 +1,10 @@
+{
+    "streams": [
+      {
+        "stream": {
+          "name": "mydatasource__azureworkitems__workitems"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
+  }

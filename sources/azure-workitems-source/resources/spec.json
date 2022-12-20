@@ -1,0 +1,35 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Azure Workitems Spec",
+    "type": "object",
+    "required": ["access_token", "organization", "project"],
+    "additionalProperties": true,
+    "properties": {
+      "access_token": {
+        "type": "string",
+        "title": "Azure Access Token",
+        "airbyte_secret": true
+      },
+      "organization": {
+        "type": "string",
+        "title": "Azure Organization"
+      },
+      "project": {
+        "type": "string",
+        "title": "Azure Project"
+      },
+      "api_version": {
+        "type": "string",
+        "title": "API Version",
+        "default": "6.0"
+      },
+      "graph_version": {
+        "type": "string",
+        "title": "Graph API Version",
+        "default": "4.1-preview.1"
+      }
+    }
+  }
+}
