@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "computedProperties": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "orderindex": {
+      "type": "integer"
+    },
+    "content": {
+      "type": "string"
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "hide_label": {
+          "type": "boolean"
+        }
+      }
+    },
+    "priority": {
+      "type": "object",
+      "properties": {
+        "priority": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "assignee": {
+      "type": "null"
+    },
+    "task_count": {
+      "type": "null"
+    },
+    "due_date": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "null"
+    },
+    "folder": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "space": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "override_statuses": {
+      "type": "boolean"
+    },
+    "permission_level": {
+      "type": "string"
+    }
+  }
+}

@@ -46,11 +46,15 @@ export class Spaces extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Space> {
+    const workspaceId = streamSlice.workspaceId;
     for (const space of await this.clickup.spaces(
-      streamSlice.workspaceId,
+      workspaceId,
       this.cfg.fetch_archived ?? false
     )) {
-      yield space;
+      yield {
+        computedProperties: {workspace: {id: workspaceId}},
+        ...space,
+      };
     }
   }
 }
