@@ -85,38 +85,101 @@ export interface List {
   permission_level: string;
 }
 
-export interface Task {
-  id: string;
-  name: string;
-  status: Status;
-  orderindex: string;
-  date_created: string;
-  date_updated: string;
-  date_closed: null;
-  creator: {
-    id: number;
-    username: string;
-    color: string;
-    profilePicture: string;
-  };
-  assignees: any[];
-  checklists: any[];
-  tags: any[];
-  parent: null;
-  priority: null;
-  due_date: null;
-  start_date: null;
-  time_estimate: null;
-  time_spent: null;
-  list: {id: string};
-  folder: {id: string};
-  space: {id: string};
-  url: string;
-}
-
 interface Status {
   status: string;
   color: string;
   orderindex: number;
   type: string;
+}
+
+export interface Task {
+  id: string;
+  custom_id: null;
+  name: string;
+  text_content: string;
+  description: string;
+  status: Status;
+  orderindex: string;
+  date_created: string;
+  date_updated: string;
+  date_closed: string;
+  creator: Creator;
+  assignees: Creator[];
+  watchers: Creator[];
+  checklists: Checklist[];
+  tags: Tag[];
+  parent: string;
+  priority: number;
+  due_date: string;
+  start_date: string;
+  points: number;
+  time_estimate: number;
+  custom_fields: CustomField[];
+  dependencies: any[];
+  linked_tasks: any[];
+  team_id: string;
+  url: string;
+  permission_level: string;
+  list: FolderRef;
+  project: FolderRef;
+  folder: FolderRef;
+  space: SpaceRef;
+}
+
+interface Creator {
+  id: number;
+  username: string;
+  color: string;
+  email: string;
+  profilePicture: string;
+}
+
+interface Checklist {
+  id: string;
+  task_id: string;
+  name: string;
+  date_created: string;
+  orderindex: number;
+  creator: number;
+  resolved: number;
+  unresolved: number;
+  items: Item[];
+}
+
+interface Item {
+  id: string;
+  name: string;
+  orderindex: number;
+  assignee: null;
+  resolved: boolean;
+  parent: null;
+  date_created: string;
+  children: any[];
+}
+
+interface CustomField {
+  id: string;
+  name: string;
+  type: string;
+  type_config: Record<string, unknown>;
+  date_created: string;
+  hide_from_guests: boolean;
+  required: boolean;
+}
+
+interface FolderRef {
+  id: string;
+  name: string;
+  hidden?: boolean;
+  access: boolean;
+}
+
+interface SpaceRef {
+  id: string;
+}
+
+interface Tag {
+  name: string;
+  tag_fg: string;
+  tag_bg: string;
 }

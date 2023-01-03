@@ -18,7 +18,16 @@
     "id": {
       "type": "string"
     },
+    "custom_id": {
+      "type": "null"
+    },
     "name": {
+      "type": "string"
+    },
+    "text_content": {
+      "type": "string"
+    },
+    "description": {
       "type": "string"
     },
     "status": {
@@ -27,13 +36,13 @@
         "status": {
           "type": "string"
         },
-        "color": {
+        "type": {
           "type": "string"
         },
         "orderindex": {
           "type": "integer"
         },
-        "type": {
+        "color": {
           "type": "string"
         }
       }
@@ -48,7 +57,7 @@
       "type": "string"
     },
     "date_closed": {
-      "type": "null"
+      "type": "string"
     },
     "creator": {
       "type": "object",
@@ -62,6 +71,9 @@
         "color": {
           "type": "string"
         },
+        "email": {
+          "type": "string"
+        },
         "profilePicture": {
           "type": "string"
         }
@@ -69,39 +81,225 @@
     },
     "assignees": {
       "type": "array",
-      "items": {}
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "watchers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          }
+        }
+      }
     },
     "checklists": {
       "type": "array",
-      "items": {}
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "date_created": {
+            "type": "string"
+          },
+          "orderindex": {
+            "type": "integer"
+          },
+          "creator": {
+            "type": "integer"
+          },
+          "resolved": {
+            "type": "integer"
+          },
+          "unresolved": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "orderindex": {
+                  "type": "integer"
+                },
+                "assignee": {
+                  "type": "null"
+                },
+                "resolved": {
+                  "type": "boolean"
+                },
+                "parent": {
+                  "type": "null"
+                },
+                "date_created": {
+                  "type": "string"
+                },
+                "children": {
+                  "type": "array",
+                  "items": {}
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "tags": {
       "type": "array",
-      "items": {}
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tag_fg": {
+            "type": "string"
+          },
+          "tag_bg": {
+            "type": "string"
+          }
+        }
+      }
     },
     "parent": {
-      "type": "null"
+      "type": "string"
     },
     "priority": {
-      "type": "null"
+      "type": "integer"
     },
     "due_date": {
-      "type": "null"
+      "type": "string"
     },
     "start_date": {
-      "type": "null"
+      "type": "string"
+    },
+    "points": {
+      "type": "number"
     },
     "time_estimate": {
-      "type": "null"
+      "type": "number"
     },
-    "time_spent": {
-      "type": "null"
+    "custom_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "type_config": {
+            "type": "object",
+            "properties": {}
+          },
+          "date_created": {
+            "type": "string"
+          },
+          "hide_from_guests": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {}
+    },
+    "linked_tasks": {
+      "type": "array",
+      "items": {}
+    },
+    "team_id": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "permission_level": {
+      "type": "string"
     },
     "list": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "access": {
+          "type": "boolean"
         }
       }
     },
@@ -110,6 +308,15 @@
       "properties": {
         "id": {
           "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "access": {
+          "type": "boolean"
         }
       }
     },
@@ -120,9 +327,6 @@
           "type": "string"
         }
       }
-    },
-    "url": {
-      "type": "string"
     }
   }
 }
