@@ -4,7 +4,7 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Space} from 'faros-airbyte-common/clickup';
+import {Folder} from 'faros-airbyte-common/clickup';
 import {Dictionary} from 'ts-essentials';
 
 import {ClickUpConfig} from '..';
@@ -12,9 +12,10 @@ import {ClickUp} from '../clickup';
 
 interface StreamSlice {
   workspaceId: string;
+  spaceId: string;
 }
 
-export class Spaces extends AirbyteStreamBase {
+export class Folders extends AirbyteStreamBase {
   private clickup: ClickUp;
 
   constructor(
@@ -26,7 +27,7 @@ export class Spaces extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/spaces.json');
+    return require('../../resources/schemas/folders.json');
   }
 
   get primaryKey(): StreamKey {
@@ -35,9 +36,12 @@ export class Spaces extends AirbyteStreamBase {
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const workspace of await this.clickup.workspaces()) {
-      yield {
-        workspaceId: workspace.id,
-      };
+      for (const space of await this.clickup.spaces(
+        workspace.id,
+        this.cfg.fetch_archived
+      )) {
+        yield {workspaceId: workspace.id, spaceId: space.id};
+      }
     }
   }
 
@@ -45,15 +49,14 @@ export class Spaces extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice
-  ): AsyncGenerator<Space> {
-    const workspaceId = streamSlice.workspaceId;
-    for (const space of await this.clickup.spaces(
-      workspaceId,
+  ): AsyncGenerator<Folder> {
+    for (const folder of await this.clickup.folders(
+      streamSlice.spaceId,
       this.cfg.fetch_archived
     )) {
       yield {
-        computedProperties: {workspace: {id: workspaceId}},
-        ...space,
+        computedProperties: {workspace: {id: streamSlice.workspaceId}},
+        ...folder,
       };
     }
   }

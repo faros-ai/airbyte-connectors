@@ -57,6 +57,7 @@ interface DueDates {
 }
 
 export interface Folder {
+  computedProperties: {workspace: {id: string}};
   id: string;
   name: string;
   orderindex: number;

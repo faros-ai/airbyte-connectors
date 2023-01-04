@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Space, Workspace} from 'faros-airbyte-common/clickup';
+import {Folder, Space, Workspace} from 'faros-airbyte-common/clickup';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -56,24 +56,18 @@ export class ClickUp {
   @Memoize()
   async spaces(
     workspaceId: string,
-    archived: boolean
+    archived = false
   ): Promise<ReadonlyArray<Space>> {
-    const results: Space[] = [];
     const fetchSpaces = async (archived: boolean) => {
-      const spaces = await (
+      return await (
         await this.api.get(`/team/${workspaceId}/space`, {params: {archived}})
       ).data.spaces;
-      for (const space of spaces) {
-        results.push({
-          computedProperties: {workspace: {id: workspaceId}},
-          ...space,
-        });
-      }
     };
     try {
-      await fetchSpaces(false);
+      const results = [];
+      results.push(...(await fetchSpaces(false)));
       if (archived) {
-        await fetchSpaces(true);
+        results.push(...(await fetchSpaces(true)));
       }
       return results;
     } catch (err) {
@@ -81,6 +75,32 @@ export class ClickUp {
         wrapApiError(err as any),
         'Failed to fetch spaces for workspace id %s',
         workspaceId
+      );
+    }
+  }
+
+  @Memoize()
+  async folders(
+    spaceId: string,
+    archived = false
+  ): Promise<ReadonlyArray<Folder>> {
+    const fetchFolders = async (archived: boolean) => {
+      return await (
+        await this.api.get(`/space/${spaceId}/folder`, {params: {archived}})
+      ).data.folders;
+    };
+    try {
+      const results = [];
+      results.push(...(await fetchFolders(false)));
+      if (archived) {
+        results.push(...(await fetchFolders(true)));
+      }
+      return results;
+    } catch (err) {
+      throw new VError(
+        wrapApiError(err as any),
+        'Failed to fetch folders for space id %s',
+        spaceId
       );
     }
   }

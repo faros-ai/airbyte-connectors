@@ -19,6 +19,12 @@
         "description": "Fetch archived spaces, folders, lists, and tasks",
         "default": false
       },
+      "fetch_subtasks": {
+        "type": "boolean",
+        "title": "Fetch Subtasks",
+        "description": "Fetch subtasks in addition to regular tasks",
+        "default": false
+      },
       "cutoff_days": {
         "type": "integer",
         "title": "Cutoff Days",
