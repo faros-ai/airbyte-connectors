@@ -3,7 +3,7 @@ export interface Workspace {
   name: string;
   color: string;
   avatar: string;
-  members: Member[];
+  members: readonly Member[];
 }
 
 interface Member {
@@ -64,7 +64,7 @@ export interface Folder {
   hidden: boolean;
   space: {id: string; name: string; access: boolean};
   task_count: string;
-  lists: any[];
+  lists: readonly any[];
 }
 
 export interface List {
@@ -104,19 +104,19 @@ export interface Task {
   date_updated: string;
   date_closed: string;
   creator: Creator;
-  assignees: Creator[];
-  watchers: Creator[];
-  checklists: Checklist[];
-  tags: Tag[];
+  assignees: readonly Creator[];
+  watchers: readonly Creator[];
+  checklists: readonly Checklist[];
+  tags: readonly Tag[];
   parent: string;
   priority: number;
   due_date: string;
   start_date: string;
   points: number;
   time_estimate: number;
-  custom_fields: CustomField[];
-  dependencies: any[];
-  linked_tasks: any[];
+  custom_fields: readonly CustomField[];
+  dependencies: readonly any[];
+  linked_tasks: readonly any[];
   team_id: string;
   url: string;
   permission_level: string;
@@ -143,7 +143,7 @@ interface Checklist {
   creator: number;
   resolved: number;
   unresolved: number;
-  items: Item[];
+  items: readonly Item[];
 }
 
 interface Item {
@@ -154,7 +154,7 @@ interface Item {
   resolved: boolean;
   parent: null;
   date_created: string;
-  children: any[];
+  children: readonly any[];
 }
 
 interface CustomField {
@@ -182,4 +182,36 @@ interface Tag {
   name: string;
   tag_fg: string;
   tag_bg: string;
+}
+
+export interface Goal {
+  id: string;
+  name: string;
+  team_id: string;
+  date_created: string;
+  start_date: null;
+  due_date: string;
+  description: string;
+  private: boolean;
+  archived: boolean;
+  creator: number;
+  color: string;
+  pretty_id: string;
+  multiple_owners: boolean;
+  folder_id: null;
+  members: readonly any[];
+  owners: readonly Owner[];
+  key_results: readonly any[];
+  percent_completed: number;
+  history: readonly any[];
+  pretty_url: string;
+}
+
+interface Owner {
+  id: number;
+  username: string;
+  initials: string;
+  email: string;
+  color: string;
+  profilePicture: string;
 }
