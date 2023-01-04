@@ -69,6 +69,7 @@ export interface Folder {
 }
 
 export interface List {
+  computedProperties: {workspace: {id: string}};
   id: string;
   name: string;
   orderindex: number;

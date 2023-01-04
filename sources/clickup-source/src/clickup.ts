@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Folder, Space, Workspace} from 'faros-airbyte-common/clickup';
+import {Folder, List, Space, Workspace} from 'faros-airbyte-common/clickup';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -53,55 +53,98 @@ export class ClickUp {
     }
   }
 
-  @Memoize()
-  async spaces(
-    workspaceId: string,
-    archived = false
-  ): Promise<ReadonlyArray<Space>> {
-    const fetchSpaces = async (archived: boolean) => {
-      return await (
-        await this.api.get(`/team/${workspaceId}/space`, {params: {archived}})
-      ).data.spaces;
-    };
+  async fetchData<T>(
+    fetch: (archived: boolean) => Promise<ReadonlyArray<T>>,
+    fetchArchived: boolean,
+    errorMsg: string,
+    ...errorMsgParams: ReadonlyArray<any>
+  ): Promise<ReadonlyArray<T>> {
     try {
       const results = [];
-      results.push(...(await fetchSpaces(false)));
-      if (archived) {
-        results.push(...(await fetchSpaces(true)));
+      results.push(...(await fetch(false)));
+      if (fetchArchived) {
+        results.push(...(await fetch(true)));
       }
       return results;
     } catch (err) {
-      throw new VError(
-        wrapApiError(err as any),
-        'Failed to fetch spaces for workspace id %s',
-        workspaceId
-      );
+      throw new VError(wrapApiError(err as any), errorMsg, ...errorMsgParams);
     }
   }
 
-  @Memoize()
+  @Memoize(
+    (workspaceId: string, fetchArchived: boolean) =>
+      `${workspaceId};${fetchArchived}`
+  )
+  async spaces(
+    workspaceId: string,
+    fetchArchived = false
+  ): Promise<ReadonlyArray<Space>> {
+    return await this.fetchData(
+      async (archived) => {
+        return (
+          await this.api.get(`/team/${workspaceId}/space`, {params: {archived}})
+        ).data.spaces;
+      },
+      fetchArchived,
+      'Failed to fetch spaces for workspace id %s',
+      workspaceId
+    );
+  }
+
+  @Memoize(
+    (spaceId: string, fetchArchived: boolean) => `${spaceId};${fetchArchived}`
+  )
   async folders(
     spaceId: string,
-    archived = false
+    fetchArchived = false
   ): Promise<ReadonlyArray<Folder>> {
-    const fetchFolders = async (archived: boolean) => {
-      return await (
-        await this.api.get(`/space/${spaceId}/folder`, {params: {archived}})
-      ).data.folders;
-    };
-    try {
-      const results = [];
-      results.push(...(await fetchFolders(false)));
-      if (archived) {
-        results.push(...(await fetchFolders(true)));
-      }
-      return results;
-    } catch (err) {
-      throw new VError(
-        wrapApiError(err as any),
-        'Failed to fetch folders for space id %s',
-        spaceId
-      );
-    }
+    return await this.fetchData(
+      async (archived) => {
+        return (
+          await this.api.get(`/space/${spaceId}/folder`, {params: {archived}})
+        ).data.folders;
+      },
+      fetchArchived,
+      'Failed to fetch folders for space id %s',
+      spaceId
+    );
+  }
+
+  @Memoize(
+    (folderId: string, fetchArchived: boolean) => `${folderId};${fetchArchived}`
+  )
+  async listsInFolder(
+    folderId: string,
+    fetchArchived = false
+  ): Promise<ReadonlyArray<List>> {
+    return await this.fetchData(
+      async (archived) => {
+        return (
+          await this.api.get(`/folder/${folderId}/list`, {params: {archived}})
+        ).data.lists;
+      },
+      fetchArchived,
+      'Failed to fetch lists for folder id %s',
+      folderId
+    );
+  }
+
+  @Memoize(
+    (spaceId: string, fetchArchived: boolean) => `${spaceId};${fetchArchived}`
+  )
+  async listsInSpace(
+    spaceId: string,
+    fetchArchived = false
+  ): Promise<ReadonlyArray<List>> {
+    return await this.fetchData(
+      async (archived) => {
+        return (
+          await this.api.get(`/space/${spaceId}/list`, {params: {archived}})
+        ).data.lists;
+      },
+      fetchArchived,
+      'Failed to fetch lists for space id %s',
+      spaceId
+    );
   }
 }
