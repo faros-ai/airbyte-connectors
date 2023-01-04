@@ -203,9 +203,13 @@ export abstract class AirbyteSourceBase<
       streamState
     );
     for await (const slice of slices) {
-      this.logger.info(
-        `Started processing ${streamName} stream slice ${JSON.stringify(slice)}`
-      );
+      if (slice) {
+        this.logger.info(
+          `Started processing ${streamName} stream slice ${JSON.stringify(
+            slice
+          )}`
+        );
+      }
       let recordCounter = 0;
       const records = streamInstance.readRecords(
         SyncMode.INCREMENTAL,
@@ -222,11 +226,13 @@ export abstract class AirbyteSourceBase<
         }
       }
       yield this.checkpointState(streamName, streamState, connectorState);
-      this.logger.info(
-        `Finished processing ${streamName} stream slice ${JSON.stringify(
-          slice
-        )}. Read ${recordCounter} records`
-      );
+      if (slice) {
+        this.logger.info(
+          `Finished processing ${streamName} stream slice ${JSON.stringify(
+            slice
+          )}. Read ${recordCounter} records`
+        );
+      }
     }
     this.logger.info(
       `Last recorded state of ${streamName} stream is ${JSON.stringify(
