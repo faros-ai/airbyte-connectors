@@ -1,6 +1,12 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Folder, List, Space, Workspace} from 'faros-airbyte-common/clickup';
+import {
+  Folder,
+  List,
+  Space,
+  Task,
+  Workspace,
+} from 'faros-airbyte-common/clickup';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -12,14 +18,15 @@ const BASE_API_URL = 'https://api.clickup.com/api/v2';
 export class ClickUp {
   constructor(
     private readonly logger: AirbyteLogger,
-    private readonly api: AxiosInstance
+    private readonly api: AxiosInstance,
+    private readonly defaultStartDate: Date
   ) {}
 
   static instance(cfg: ClickUpConfig, logger: AirbyteLogger): ClickUp {
     if (!cfg.token) {
       throw new VError('api_token must not be an empty string');
     }
-    if (cfg.cutoff_days < 1) {
+    if (!Number.isInteger(cfg.cutoff_days) || cfg.cutoff_days < 1) {
       throw new VError('cutoff_days must be a positive number');
     }
     if (cfg.timeout < 1) {
@@ -34,7 +41,9 @@ export class ClickUp {
         'content-type': 'application/json',
       },
     });
-    return new ClickUp(logger, api);
+    const defaultStartDate = new Date();
+    defaultStartDate.setDate(defaultStartDate.getDate() - cfg.cutoff_days);
+    return new ClickUp(logger, api, defaultStartDate);
   }
 
   async checkConnection(): Promise<void> {
@@ -72,7 +81,7 @@ export class ClickUp {
   }
 
   @Memoize(
-    (workspaceId: string, fetchArchived: boolean) =>
+    (workspaceId: string, fetchArchived = false) =>
       `${workspaceId};${fetchArchived}`
   )
   async spaces(
@@ -92,7 +101,7 @@ export class ClickUp {
   }
 
   @Memoize(
-    (spaceId: string, fetchArchived: boolean) => `${spaceId};${fetchArchived}`
+    (spaceId: string, fetchArchived = false) => `${spaceId};${fetchArchived}`
   )
   async folders(
     spaceId: string,
@@ -111,7 +120,7 @@ export class ClickUp {
   }
 
   @Memoize(
-    (folderId: string, fetchArchived: boolean) => `${folderId};${fetchArchived}`
+    (folderId: string, fetchArchived = false) => `${folderId};${fetchArchived}`
   )
   async listsInFolder(
     folderId: string,
@@ -130,7 +139,7 @@ export class ClickUp {
   }
 
   @Memoize(
-    (spaceId: string, fetchArchived: boolean) => `${spaceId};${fetchArchived}`
+    (spaceId: string, fetchArchived = false) => `${spaceId};${fetchArchived}`
   )
   async listsInSpace(
     spaceId: string,
@@ -146,5 +155,41 @@ export class ClickUp {
       'Failed to fetch lists for space id %s',
       spaceId
     );
+  }
+
+  async *tasks(
+    listId: string,
+    lastUpdatedDate?: number,
+    fetchArchived = false
+  ): AsyncGenerator<Task> {
+    const fetch = async (archived: boolean) => {
+      return (
+        await this.api.get(`/list/${listId}/task`, {
+          params: {
+            archived,
+            date_updated_gt: lastUpdatedDate ?? this.defaultStartDate.getTime(),
+            include_closed: true,
+            order_by: 'updated',
+            subtasks: true,
+          },
+        })
+      ).data.tasks;
+    };
+    try {
+      for (const task of await fetch(false)) {
+        yield task;
+      }
+      if (fetchArchived) {
+        for (const task of await fetch(true)) {
+          yield task;
+        }
+      }
+    } catch (err) {
+      throw new VError(
+        wrapApiError(err as any),
+        'Failed to fetch tasks for list id',
+        listId
+      );
+    }
   }
 }

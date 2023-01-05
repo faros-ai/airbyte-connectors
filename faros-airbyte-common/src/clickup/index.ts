@@ -95,6 +95,7 @@ interface Status {
 }
 
 export interface Task {
+  computedProperties: {workspace: {id: string}};
   id: string;
   custom_id: null;
   name: string;
@@ -105,6 +106,7 @@ export interface Task {
   date_created: string;
   date_updated: string;
   date_closed: string;
+  archived: boolean;
   creator: Creator;
   assignees: readonly Creator[];
   watchers: readonly Creator[];
