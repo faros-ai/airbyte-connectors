@@ -43,7 +43,7 @@
         "description": "max time window when fetching metrics, in milliseconds. Defaults to 1 week.",
         "default": 604800000
       },
-      "site_url": {
+      "site": {
         "order": 5,
         "type": "string",
         "title": "Datadog Site",
