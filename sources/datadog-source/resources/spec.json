@@ -46,8 +46,8 @@
       "site_url": {
         "order": 5,
         "type": "string",
-        "title": "Datadog site URL",
-        "description": "Datadog site URL, e.g 'datadoghq.com'. See all available options here - https://docs.datadoghq.com/getting_started/site/",
+        "title": "Datadog Site",
+        "description": "Datadog Site parameter, e.g 'datadoghq.com'. See all available site options here - https://docs.datadoghq.com/getting_started/site/",
         "default": "datadoghq.com"
       }
     }
