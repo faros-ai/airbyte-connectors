@@ -66,7 +66,7 @@ export class Datadog {
 
     // Add ability to change sites to other regions.
     client.setServerVariables(clientConfig, {
-        site: config.site_url
+        site: config.site_url ?? 'app.datadoghq.com'
     });
 
 
