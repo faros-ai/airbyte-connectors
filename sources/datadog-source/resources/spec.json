@@ -42,6 +42,13 @@
         "title": "Metrics Max Window",
         "description": "max time window when fetching metrics, in milliseconds. Defaults to 1 week.",
         "default": 604800000
+      },
+      "site_url": {
+        "order": 5,
+        "type": "string",
+        "title": "Datadog site URL",
+        "description": "datadog site URL",
+        "default": "app.datadoghq.com"
       }
     }
   }
