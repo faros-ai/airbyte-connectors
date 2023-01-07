@@ -5,11 +5,16 @@ import axiosRetry, {
 } from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {
-  CommitChangeCountsResponse,
+  Branch,
+  Commit,
+  CommitRepository,
+  ProjectResponse,
   PullRequestThreadResponse,
   TagCommit,
   User,
@@ -19,7 +24,6 @@ import {
   BranchResponse,
   CommitResponse,
   PullRequest,
-  PullRequestCommitResponse,
   PullRequestResponse,
   Repository,
   RepositoryResponse,
@@ -30,19 +34,21 @@ import {
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 export const DEFAULT_PAGE_SIZE = 100;
-export const DEFAULT_MAX_COMMITS_PER_BRANCH = 1000;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 export const DEFAULT_MAX_RETRIES = 3;
+export const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_COMPLETED_PR_CUTOFF_DAYS = 3;
 
 export interface AzureRepoConfig {
   readonly access_token: string;
   readonly organization: string;
-  readonly project: string;
+  readonly projects?: string[];
+  readonly branch_pattern?: string;
+  readonly cutoff_days?: number;
+  readonly completed_pr_cutoff_days?: number;
   readonly api_version?: string;
   readonly graph_version?: string;
   readonly page_size?: number;
-  readonly max_commits_per_branch?: number;
-  readonly branch_pattern?: string;
   readonly request_timeout?: number;
   readonly max_retries?: number;
 }
@@ -52,11 +58,13 @@ export class AzureRepos {
 
   constructor(
     private readonly top: number,
-    private readonly maxCommitsPerBranch: number,
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
     private readonly maxRetries: number,
     private readonly logger: AirbyteLogger,
+    private projects: string[],
+    private readonly cutoffDays?: number,
+    private readonly completedPrCutoffDays?: number,
     private readonly branchPattern?: RegExp
   ) {}
 
@@ -72,16 +80,14 @@ export class AzureRepos {
     if (!config.organization) {
       throw new VError('organization must not be an empty string');
     }
-    if (!config.project) {
-      throw new VError('project must not be an empty string');
-    }
 
     const httpClient = axios.create({
-      baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
+      baseURL: `https://dev.azure.com/${config.organization}`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
+      // TODO: base64 encode access token?
       headers: {Authorization: `Basic ${config.access_token}`},
     });
     const graphClient = axios.create({
@@ -94,9 +100,6 @@ export class AzureRepos {
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
-    const maxCommitsPerBranch =
-      config.max_commits_per_branch ?? DEFAULT_MAX_COMMITS_PER_BRANCH;
-
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
 
     const isNetworkError = (error): boolean => {
@@ -130,24 +133,268 @@ export class AzureRepos {
       ? new RegExp(config.branch_pattern)
       : undefined;
 
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+
+    const completedPrCutoffDays =
+      config.completed_pr_cutoff_days ?? DEFAULT_COMPLETED_PR_CUTOFF_DAYS;
+
     AzureRepos.instance = new AzureRepos(
       top,
-      maxCommitsPerBranch,
       httpClient,
       graphClient,
       maxRetries,
       logger,
+      config.projects ?? [],
+      cutoffDays,
+      completedPrCutoffDays,
       branchPattern
     );
+
+    await AzureRepos.instance.initializeProjects();
+
     return AzureRepos.instance;
+  }
+
+  private async initializeProjects(): Promise<void> {
+    if (!this.projects) {
+      this.projects = await this.listProjects();
+    }
+
+    if (!Array.isArray(this.projects) || !this.projects.length) {
+      throw new VError(
+        'Projects were not provided and could not be initialized'
+      );
+    }
+
+    this.logger.info(
+      `Projects that will be synced: [${AzureRepos.instance.projects.join(
+        ', '
+      )}]`
+    );
   }
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getRepositories();
-      await iter.next();
+      await this.getRepositories().next();
+      await this.getUsers().next();
     } catch (err: any) {
       throw new VError(err, 'Please verify your access token is correct');
+    }
+  }
+
+  async *getRepositories(): AsyncGenerator<Repository> {
+    for (const project of this.projects) {
+      for (const repository of await this.listRepositories(project)) {
+        const item = {...repository}; // Don't modify memoized repo
+        item.branches = await this.listBranches(project, repository);
+        item.tags = await this.listRepositoryTags(project, repository);
+        yield item;
+      }
+    }
+  }
+
+  async *getPullRequests(): AsyncGenerator<PullRequest> {
+    for (const project of this.projects) {
+      for (const repository of await this.listRepositories(project)) {
+        for (const branch of await this.listBranches(project, repository)) {
+          yield* this.listPullRequests(project, repository, branch);
+        }
+      }
+    }
+  }
+
+  async *getCommits(since?: string): AsyncGenerator<Commit> {
+    for (const project of this.projects) {
+      for (const repository of await this.listRepositories(project)) {
+        for (const branch of await this.listBranches(project, repository)) {
+          for await (const commit of this.listCommits(
+            project,
+            repository,
+            branch,
+            since
+          )) {
+            commit.repository = repository as CommitRepository;
+            yield commit;
+          }
+        }
+      }
+    }
+  }
+
+  async *getUsers(): AsyncGenerator<User> {
+    let continuationToken: string;
+    do {
+      const res = await this.graphClient.get<UserResponse>('users', {
+        params: {subjectTypes: 'msa,aad,imp', continuationToken},
+      });
+      continuationToken = res.headers['X-MS-ContinuationToken'];
+      for (const item of res.data?.value ?? []) {
+        yield item;
+      }
+    } while (continuationToken);
+  }
+
+  private async listProjects(): Promise<string[]> {
+    const projects: string[] = [];
+    for await (const projectRes of this.getPaginated<ProjectResponse>(
+      '_apis/projects',
+      '$top',
+      '$skip',
+      {},
+      this.top
+    )) {
+      for (const project of projectRes?.data?.value ?? []) {
+        projects.push(project.name);
+      }
+    }
+    return projects;
+  }
+
+  @Memoize((project: string) => project)
+  private async listRepositories(project: string): Promise<Repository[]> {
+    const res = await this.get<RepositoryResponse>(
+      `${project}/_apis/git/repositories`
+    );
+    return res?.data?.value ?? [];
+  }
+
+  /**
+   * List all of the commits for a branch within a given repository and project.
+   * If 'since' provided, only commits after the specified date will be returned.
+   *
+   * @param project The project containing the repository
+   * @param repo    The repository containing the branch
+   * @param branch  The branch containing the commits
+   * @param since   Commits will be ignored before this date
+   * @returns       An AsyncGenerator of commits
+   */
+  private async *listCommits(
+    project: string,
+    repo: Repository,
+    branch: Branch,
+    since?: string
+  ): AsyncGenerator<Commit> {
+    const fromDate = since
+      ? DateTime.fromISO(since)
+      : DateTime.now().minus({day: this.cutoffDays});
+
+    for await (const commitRes of this.getPaginated<CommitResponse>(
+      `${project}/_apis/git/repositories/${repo.id}/commits`,
+      'searchCriteria.$top',
+      'searchCriteria.$skip',
+      {
+        'searchCriteria.itemVersion.version': branch.name,
+        'searchCriteria.fromDate': fromDate.toISO(),
+      },
+      this.top
+    )) {
+      for (const commit of commitRes?.data?.value ?? []) {
+        yield commit;
+      }
+    }
+  }
+
+  /**
+   * Lists all of the branches within a repository. If a branch pattern is provided then
+   * only those that match the pattern are returned.
+   *
+   * @param project The project containing the repository
+   * @param repo    The repository containing the branches
+   * @returns       The branches
+   */
+  @Memoize((project: string, repo: Repository) => `${project};${repo.id}`)
+  private async listBranches(
+    project: string,
+    repo: Repository
+  ): Promise<Branch[]> {
+    const branches = [];
+    const branchRes = await this.get<BranchResponse>(
+      `${project}/_apis/git/repositories/${repo.id}/stats/branches`
+    );
+    for (const branch of branchRes?.data?.value ?? []) {
+      if (this.branchPattern && !this.branchPattern.test(branch.name)) {
+        this.logger.info(
+          `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
+        );
+      } else {
+        branches.push(branch);
+      }
+    }
+    return branches;
+  }
+
+  /**
+   * Lists all of a repositories tags.
+   *
+   * @param project The project containing the repository
+   * @param repo    The repository
+   * @returns       The repositories tags
+   */
+  private async listRepositoryTags(
+    project: string,
+    repo: Repository
+  ): Promise<Tag[]> {
+    const tagRes = await this.get<TagResponse>(
+      `${project}/_apis/git/repositories/${repo.id}/refs`,
+      {filter: 'tags'}
+    );
+    const tags = [];
+    for (const tag of tagRes?.data?.value ?? []) {
+      const tagItem: Tag = tag;
+      const tagCommitRes = await this.get<TagCommit>(
+        `git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
+      );
+      tagItem.commit = tagCommitRes?.data ?? null;
+      tags.push(tagItem);
+    }
+    return tags;
+  }
+
+  /**
+   * Lists 'all' of the pull requests within a given project and repository
+   * whose target branch is the given branch.
+   *
+   * @param project         The project whose pull requests should be retrieved
+   * @param repo            The repository whose pull requests should be retrieved
+   * @param branch          The target branch of pull requests that should be retrieved
+   * @param completedSince  The date after which 'completed' pull requests are considered
+   * @returns               An AsyncGenerator of pull requests
+   */
+  private async *listPullRequests(
+    project: string,
+    repo: Repository,
+    branch: Branch
+  ): AsyncGenerator<PullRequest> {
+    const completedSince = DateTime.now().minus({
+      days: this.completedPrCutoffDays,
+    });
+
+    for await (const pullRequestRes of this.getPaginated<PullRequestResponse>(
+      `${project}/_apis/git/repositories/${repo.id}/pullrequests`,
+      '$top',
+      '$skip',
+      {
+        'searchCriteria.status': 'all',
+        'searchCriteria.targetRefName': `refs/heads/${branch.name}`,
+      }
+    )) {
+      for (const pullRequest of pullRequestRes?.data?.value ?? []) {
+        const closedDate = DateTime.fromISO(pullRequest.closedDate);
+        if (
+          pullRequest.status === 'completed' &&
+          closedDate <= completedSince
+        ) {
+          continue;
+        }
+
+        const threadResponse = await this.get<PullRequestThreadResponse>(
+          `${project}/_apis/git/repositories/${repo.id}/pullRequests/${pullRequest.pullRequestId}/threads`
+        );
+        pullRequest.threads = [];
+        const threads = threadResponse?.data?.value ?? [];
+        pullRequest.threads.push(...threads);
+        yield pullRequest;
+      }
     }
   }
 
@@ -158,35 +405,12 @@ export class AzureRepos {
     return this.getHandleNotFound(path, {params});
   }
 
-  private async getAll<T extends {value: any[]}>(
-    path: string,
-    topParamName: string,
-    skipParamName: string,
-    params: Dictionary<any> = {},
-    top: number = this.top,
-    maxTotal = Infinity
-  ): Promise<ReadonlyArray<AxiosResponse<T>>> {
-    const res = [];
-    for await (const item of this.getPaginated(
-      path,
-      topParamName,
-      skipParamName,
-      params,
-      top,
-      maxTotal
-    )) {
-      if (item) res.push(item);
-    }
-    return res;
-  }
-
   private async *getPaginated<T extends {value: any[]}>(
     path: string,
     topParamName: string,
     skipParamName: string,
     params: Dictionary<any>,
-    top: number,
-    maxTotal: number
+    top: number = this.top
   ): AsyncGenerator<AxiosResponse<T> | undefined> {
     let resCount = 0;
     let skip = 0;
@@ -199,7 +423,7 @@ export class AzureRepos {
       if (res) yield res;
       resCount = (res?.data?.value ?? []).length;
       skip += resCount;
-    } while (resCount >= top && skip <= maxTotal);
+    } while (resCount >= top);
   }
 
   private sleep(milliseconds: number): Promise<void> {
@@ -248,99 +472,6 @@ export class AzureRepos {
         return undefined;
       }
       throw wrapApiError(err, `Failed to get ${path}. `);
-    }
-  }
-
-  async *getRepositories(): AsyncGenerator<Repository> {
-    const res = await this.get<RepositoryResponse>('git/repositories');
-    for (const item of res?.data?.value ?? []) {
-      const branchResponse = await this.get<BranchResponse>(
-        `git/repositories/${item.id}/stats/branches`
-      );
-      item.branches = [];
-      if (branchResponse?.status === 200) {
-        for (const branch of branchResponse?.data?.value ?? []) {
-          if (this.branchPattern && !this.branchPattern.test(branch.name)) {
-            this.logger.info(
-              `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
-            );
-            continue;
-          }
-          item.branches.push(branch);
-          branch.commits = [];
-          // TODO: commits should be yielded in its own stream instead
-          for (const commitResponse of await this.getAll<CommitResponse>(
-            `git/repositories/${item.id}/commits`,
-            'searchCriteria.$top',
-            'searchCriteria.$skip',
-            {'searchCriteria.itemVersion.version': branch.name},
-            this.top,
-            this.maxCommitsPerBranch
-          )) {
-            const commits = commitResponse?.data?.value ?? [];
-            branch.commits.push(...commits);
-          }
-        }
-      }
-      const tagsResponse = await this.get<TagResponse>(
-        `git/repositories/${item.id}/refs`,
-        {filter: 'tags'}
-      );
-      item.tags = [];
-      if (tagsResponse?.status === 200) {
-        for (const tag of tagsResponse?.data?.value ?? []) {
-          const tagItem: Tag = tag;
-          const commitResponse = await this.get<TagCommit>(
-            `git/repositories/${item.id}/annotatedtags/${tag.objectId}`
-          );
-          tagItem.commit = commitResponse?.data ?? null;
-          item.tags.push(tagItem);
-        }
-      }
-      yield item;
-    }
-  }
-
-  async *getPullRequests(): AsyncGenerator<PullRequest> {
-    for await (const res of await this.getAll<PullRequestResponse>(
-      'git/pullrequests',
-      '$top',
-      '$skip',
-      {'searchCriteria.status': 'all'}
-    )) {
-      for (const item of res?.data?.value ?? []) {
-        const commitResponse = await this.get<PullRequestCommitResponse>(
-          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/commits`
-        );
-        item.commits = [];
-        if (commitResponse?.status === 200) {
-          for (const commit of commitResponse?.data?.value ?? []) {
-            const commitChangeCountsResponse =
-              await this.get<CommitChangeCountsResponse>(
-                `git/repositories/${item.repository.id}/commits/${commit.commitId}/changes`
-              );
-            commit.changeCounts =
-              commitChangeCountsResponse?.data?.changeCounts ?? null;
-            item.commits.push(commit);
-          }
-        }
-        const threadResponse = await this.get<PullRequestThreadResponse>(
-          `git/repositories/${item.repository.id}/pullRequests/${item.pullRequestId}/threads`
-        );
-        item.threads = [];
-        if (threadResponse?.status === 200) {
-          const threads = threadResponse?.data?.value ?? [];
-          item.threads.push(...threads);
-        }
-        yield item;
-      }
-    }
-  }
-
-  async *getUsers(): AsyncGenerator<User> {
-    const res = await this.graphClient.get<UserResponse>('users');
-    for (const item of res.data?.value ?? []) {
-      yield item;
     }
   }
 }

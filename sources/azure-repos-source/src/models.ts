@@ -1,4 +1,4 @@
-interface Project {
+export interface Project {
   id: string;
   name: string;
   url: string;
@@ -7,6 +7,11 @@ interface Project {
   revision: number;
   visibility: string;
   lastUpdateTime: string;
+}
+
+export interface ProjectResponse {
+  count: number;
+  value: Project[];
 }
 
 interface Creator {
@@ -50,7 +55,7 @@ export interface Tag {
   objectId: string;
   url: string;
   creator: Creator;
-  commit: TagCommit;
+  commit?: TagCommit;
 }
 
 export interface TagResponse {
@@ -172,8 +177,7 @@ export interface PullRequest {
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;
-  commits: PullRequestCommit[];
-  threads: PullRequestThread[];
+  threads?: PullRequestThread[];
 }
 
 export interface PullRequestResponse {
@@ -193,6 +197,13 @@ interface CommitChange {
   Delete: number;
 }
 
+export interface CommitRepository {
+  id: string;
+  name: string;
+  url: string;
+  project: Project;
+}
+
 export interface Commit {
   commitId: string;
   author: CommitAuthor;
@@ -201,6 +212,7 @@ export interface Commit {
   changeCounts: CommitChange;
   url: string;
   remoteUrl: string;
+  repository?: CommitRepository;
 }
 
 export interface CommitResponse {

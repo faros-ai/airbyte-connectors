@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "commitId": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        }
+      }
+    },
+    "committer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        }
+      }
+    },
+    "changeCounts": {
+      "type": "object",
+      "properties": {
+        "Edit": {
+          "type": ["number", "null"]
+        },
+        "Add": {
+          "type": ["number", "null"]
+        },
+        "Delete": {
+          "type": ["number", "null"]
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "visibility": {
+              "type": "string"
+            },
+            "lastUpdateTime": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

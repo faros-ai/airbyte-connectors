@@ -10,6 +10,7 @@ import VError from 'verror';
 
 import {AzureRepoConfig, AzureRepos} from './azure-repos';
 import {PullRequests, Repositories, Users} from './streams';
+import {Commits} from './streams/commits';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -20,6 +21,7 @@ export function mainCommand(): Command {
 
 /** AzureRepo source implementation. */
 export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
+  private readonly azureRepo: AzureRepos;
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
@@ -38,6 +40,7 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
       new Repositories(config, this.logger),
       new PullRequests(config, this.logger),
       new Users(config, this.logger),
+      new Commits(config, this.logger),
     ];
   }
 }
