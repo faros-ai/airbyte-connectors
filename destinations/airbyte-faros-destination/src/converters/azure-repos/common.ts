@@ -26,6 +26,14 @@ export abstract class AzureReposConverter extends Converter {
     return url.split('/')[3];
   }
 
+  /**
+   * Azure repos have an additional hierarchy called 'project'.
+   * Repository names are not unique across projects so we must include
+   * the project name to make sure there are no collisions.
+   *
+   * @param repository  The repository info which contains project info
+   * @returns           The identifier for a repo unique across projects
+   */
   getProjectRepo(repository: CommitRepository): string {
     return `${repository.project.name}_${repository.name}`;
   }
