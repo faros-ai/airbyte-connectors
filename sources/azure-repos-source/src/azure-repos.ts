@@ -156,11 +156,11 @@ export class AzureRepos {
   }
 
   private async initializeProjects(): Promise<void> {
-    if (!this.projects) {
+    if (!this.projects?.length) {
       this.projects = await this.listProjects();
     }
 
-    if (!Array.isArray(this.projects) || !this.projects.length) {
+    if (!Array.isArray(this.projects) || !this.projects?.length) {
       throw new VError(
         'Projects were not provided and could not be initialized'
       );
@@ -214,6 +214,7 @@ export class AzureRepos {
             since
           )) {
             commit.repository = repository as CommitRepository;
+            commit.branch = branch;
             yield commit;
           }
         }
@@ -324,7 +325,7 @@ export class AzureRepos {
   }
 
   /**
-   * Lists all of a repositories tags.
+   * Lists all of a repository's tags.
    *
    * @param project The project containing the repository
    * @param repo    The repository

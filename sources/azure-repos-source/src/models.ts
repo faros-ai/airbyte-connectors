@@ -28,7 +28,6 @@ export interface Branch {
   aheadCount: number;
   behindCount: number;
   isBaseVersion: boolean;
-  commits: Commit[];
 }
 
 export interface BranchResponse {
@@ -213,6 +212,7 @@ export interface Commit {
   url: string;
   remoteUrl: string;
   repository?: CommitRepository;
+  branch?: Branch;
 }
 
 export interface CommitResponse {

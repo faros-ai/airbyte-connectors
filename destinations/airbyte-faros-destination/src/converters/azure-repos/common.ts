@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
 import {
+  CommitRepository,
   PullRequestReviewState,
   PullRequestReviewStateCategory,
   PullRequestState,
@@ -23,6 +24,10 @@ export abstract class AzureReposConverter extends Converter {
 
   getOrganizationFromUrl(url: string): string {
     return url.split('/')[3];
+  }
+
+  getProjectRepo(repository: CommitRepository): string {
+    return `${repository.project.name}_${repository.name}`;
   }
 
   convertStringToNumber(str: string): number {

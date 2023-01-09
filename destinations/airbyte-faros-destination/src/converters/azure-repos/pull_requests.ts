@@ -22,9 +22,10 @@ export class PullRequests extends AzureReposConverter {
       pullRequestItem.repository.url
     );
     const organization = {uid: organizationName, source};
+    const projectRepo = this.getProjectRepo(pullRequestItem.repository);
     const repository = {
-      name: pullRequestItem.repository.name,
-      uid: pullRequestItem.repository.name,
+      name: projectRepo,
+      uid: projectRepo,
       organization,
     };
     const pullRequest = {
@@ -34,14 +35,6 @@ export class PullRequests extends AzureReposConverter {
     };
 
     const res: DestinationRecord[] = [];
-
-    const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
-
-    for (const commit of pullRequestItem.commits) {
-      diffStats.linesAdded += commit.changeCounts.Add ?? 0;
-      diffStats.linesDeleted += commit.changeCounts.Delete ?? 0;
-      diffStats.filesChanged += commit.changeCounts.Edit ?? 0;
-    }
 
     for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
@@ -80,9 +73,7 @@ export class PullRequests extends AzureReposConverter {
         createdAt: Utils.toDate(pullRequestItem.creationDate),
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
         mergedAt: Utils.toDate(pullRequestItem.closedDate),
-        commitCount: pullRequestItem.commits.length,
         commentCount: pullRequestItem.threads.length,
-        diffStats,
         author: {uid: pullRequestItem.createdBy.uniqueName, source},
         mergeCommit,
         repository,
