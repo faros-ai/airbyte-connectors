@@ -33,12 +33,6 @@
         "description": "The threshold after which data should be synced.",
         "default": 90
       },
-      "completed_pr_cutoff_days": {
-        "type": "integer",
-        "title": "Completed PullRequest Cutoff Days",
-        "description": "How many days after a PR is completed to check it for additional updates.",
-        "default": 3
-      },
       "page_size": {
         "type": "integer",
         "title": "Page Size",

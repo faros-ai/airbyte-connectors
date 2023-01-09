@@ -7,11 +7,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {
-  AzureRepos,
-  DEFAULT_MAX_COMMITS_PER_BRANCH,
-  DEFAULT_PAGE_SIZE,
-} from '../src/azure-repos';
+import {AzureRepos, DEFAULT_PAGE_SIZE} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepos.make;
@@ -49,17 +45,22 @@ describe('index', () => {
     AzureRepos.make = jest.fn().mockImplementation(() => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
+      const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
         DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
           get: jest.fn().mockResolvedValueOnce({
             data: {value: repositoriesResource},
           }),
         } as any,
-        null,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any,
         1,
-        logger
+        logger,
+        ['test']
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -94,7 +95,6 @@ describe('index', () => {
         readTestResourceFile('repositories.json');
       return new AzureRepos(
         DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
           get: fnRepositoriesFunc.mockResolvedValueOnce({
             data: {value: repositoriesResource},
@@ -102,7 +102,9 @@ describe('index', () => {
         } as any,
         null,
         1,
-        logger
+        logger,
+        ['test'],
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -123,28 +125,41 @@ describe('index', () => {
   });
   test('streams - pullrequests, use full_refresh sync mode', async () => {
     const fnPullrequestsFunc = jest.fn();
+    const repositoriesResource: any[] =
+      readTestResourceFile('repositories.json');
+    const branchesResource: any[] = readTestResourceFile('branches.json');
+    const pullrequestsResource: any[] =
+      readTestResourceFile('pullrequests.json');
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
-      const pullrequestsResource: any[] =
-        readTestResourceFile('pullrequests.json');
       return new AzureRepos(
         1,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
           get: fnPullrequestsFunc
+            .mockResolvedValue({
+              data: {value: []},
+            })
+            .mockResolvedValueOnce({
+              data: {value: repositoriesResource},
+            })
+            .mockResolvedValueOnce({
+              data: {value: branchesResource},
+            })
             .mockResolvedValueOnce({
               data: {value: [pullrequestsResource[0]]},
             })
             .mockResolvedValueOnce({
-              data: {value: [pullrequestsResource[1]]},
+              data: {value: []},
             })
             .mockResolvedValueOnce({
-              data: {value: []},
+              data: {value: [pullrequestsResource[1]]},
             }),
         } as any,
         null,
         1,
-        logger
+        logger,
+        ['test'],
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -158,9 +173,9 @@ describe('index', () => {
     for await (const pullrequest of pullrequestIter) {
       pullrequests.push(pullrequest);
     }
-    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(7);
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(8);
     expect(pullrequests.map((p) => p.pullRequestId)).toStrictEqual(
-      readTestResourceFile('pullrequests.json').map((p) => p.pullRequestId)
+      pullrequestsResource.map((p) => p.pullRequestId)
     );
   });
 
@@ -171,7 +186,6 @@ describe('index', () => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
         DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         null,
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -179,7 +193,8 @@ describe('index', () => {
           }),
         } as any,
         1,
-        logger
+        logger,
+        ['test']
       );
     });
     const source = new sut.AzureRepoSource(logger);

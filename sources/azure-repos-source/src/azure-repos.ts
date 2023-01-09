@@ -37,7 +37,6 @@ export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 export const DEFAULT_MAX_RETRIES = 3;
 export const DEFAULT_CUTOFF_DAYS = 90;
-export const DEFAULT_COMPLETED_PR_CUTOFF_DAYS = 3;
 
 export interface AzureRepoConfig {
   readonly access_token: string;
@@ -45,7 +44,6 @@ export interface AzureRepoConfig {
   readonly projects?: string[];
   readonly branch_pattern?: string;
   readonly cutoff_days?: number;
-  readonly completed_pr_cutoff_days?: number;
   readonly api_version?: string;
   readonly graph_version?: string;
   readonly page_size?: number;
@@ -64,7 +62,6 @@ export class AzureRepos {
     private readonly logger: AirbyteLogger,
     private projects: string[],
     private readonly cutoffDays?: number,
-    private readonly completedPrCutoffDays?: number,
     private readonly branchPattern?: RegExp
   ) {}
 
@@ -135,9 +132,6 @@ export class AzureRepos {
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
-    const completedPrCutoffDays =
-      config.completed_pr_cutoff_days ?? DEFAULT_COMPLETED_PR_CUTOFF_DAYS;
-
     AzureRepos.instance = new AzureRepos(
       top,
       httpClient,
@@ -146,7 +140,6 @@ export class AzureRepos {
       logger,
       config.projects ?? [],
       cutoffDays,
-      completedPrCutoffDays,
       branchPattern
     );
 
@@ -193,17 +186,33 @@ export class AzureRepos {
     }
   }
 
-  async *getPullRequests(): AsyncGenerator<PullRequest> {
+  async *getPullRequests(since?: string): AsyncGenerator<PullRequest> {
+    const cutoffDate = DateTime.now().minus({
+      days: this.cutoffDays,
+    });
+    const sinceDate = DateTime.fromISO(since);
+
+    const completedSince = sinceDate > cutoffDate ? sinceDate : cutoffDate;
+
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
         for (const branch of await this.listBranches(project, repository)) {
-          yield* this.listPullRequests(project, repository, branch);
+          yield* this.listPullRequests(
+            project,
+            repository,
+            branch,
+            completedSince
+          );
         }
       }
     }
   }
 
   async *getCommits(since?: string): AsyncGenerator<Commit> {
+    const sinceDate = since
+      ? DateTime.fromISO(since)
+      : DateTime.now().minus({day: this.cutoffDays});
+
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
         for (const branch of await this.listBranches(project, repository)) {
@@ -211,7 +220,7 @@ export class AzureRepos {
             project,
             repository,
             branch,
-            since
+            sinceDate
           )) {
             commit.repository = repository as CommitRepository;
             commit.branch = branch;
@@ -228,7 +237,7 @@ export class AzureRepos {
       const res = await this.graphClient.get<UserResponse>('users', {
         params: {subjectTypes: 'msa,aad,imp', continuationToken},
       });
-      continuationToken = res.headers['X-MS-ContinuationToken'];
+      continuationToken = res.headers?.['X-MS-ContinuationToken'];
       for (const item of res.data?.value ?? []) {
         yield item;
       }
@@ -273,19 +282,15 @@ export class AzureRepos {
     project: string,
     repo: Repository,
     branch: Branch,
-    since?: string
+    since?: DateTime
   ): AsyncGenerator<Commit> {
-    const fromDate = since
-      ? DateTime.fromISO(since)
-      : DateTime.now().minus({day: this.cutoffDays});
-
     for await (const commitRes of this.getPaginated<CommitResponse>(
       `${project}/_apis/git/repositories/${repo.id}/commits`,
       'searchCriteria.$top',
       'searchCriteria.$skip',
       {
         'searchCriteria.itemVersion.version': branch.name,
-        'searchCriteria.fromDate': fromDate.toISO(),
+        'searchCriteria.fromDate': since?.toISO(),
       },
       this.top
     )) {
@@ -364,12 +369,9 @@ export class AzureRepos {
   private async *listPullRequests(
     project: string,
     repo: Repository,
-    branch: Branch
+    branch: Branch,
+    since?: DateTime
   ): AsyncGenerator<PullRequest> {
-    const completedSince = DateTime.now().minus({
-      days: this.completedPrCutoffDays,
-    });
-
     for await (const pullRequestRes of this.getPaginated<PullRequestResponse>(
       `${project}/_apis/git/repositories/${repo.id}/pullrequests`,
       '$top',
@@ -381,10 +383,7 @@ export class AzureRepos {
     )) {
       for (const pullRequest of pullRequestRes?.data?.value ?? []) {
         const closedDate = DateTime.fromISO(pullRequest.closedDate);
-        if (
-          pullRequest.status === 'completed' &&
-          closedDate <= completedSince
-        ) {
+        if (pullRequest.status === 'completed' && closedDate <= since) {
           continue;
         }
 
