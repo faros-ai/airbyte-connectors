@@ -36,7 +36,7 @@
       "completed_pr_cutoff_days": {
         "type": "integer",
         "title": "Completed PullRequest Cutoff Days",
-        "description": "How many days after a completed PR is closed to check if for additional updates.",
+        "description": "How many days after a PR is completed to check it for additional updates.",
         "default": 3
       },
       "page_size": {
