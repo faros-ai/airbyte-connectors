@@ -187,12 +187,8 @@ export class AzureRepos {
   }
 
   async *getPullRequests(since?: string): AsyncGenerator<PullRequest> {
-    const cutoffDate = DateTime.now().minus({
-      days: this.cutoffDays,
-    });
+    const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
     const sinceDate = DateTime.fromISO(since);
-
-    const completedSince = sinceDate > cutoffDate ? sinceDate : cutoffDate;
 
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
@@ -201,7 +197,7 @@ export class AzureRepos {
             project,
             repository,
             branch,
-            completedSince
+            sinceDate > cutoffDate ? sinceDate : cutoffDate
           );
         }
       }
@@ -209,9 +205,8 @@ export class AzureRepos {
   }
 
   async *getCommits(since?: string): AsyncGenerator<Commit> {
-    const sinceDate = since
-      ? DateTime.fromISO(since)
-      : DateTime.now().minus({day: this.cutoffDays});
+    const cutoffDate = DateTime.now().minus({day: this.cutoffDays});
+    const sinceDate = DateTime.fromISO(since);
 
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
@@ -220,7 +215,7 @@ export class AzureRepos {
             project,
             repository,
             branch,
-            sinceDate
+            sinceDate > cutoffDate ? sinceDate : cutoffDate
           )) {
             commit.repository = repository as CommitRepository;
             commit.branch = branch;
