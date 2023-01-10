@@ -158,6 +158,19 @@ export function batchIterator<T>(
 }
 
 /**
+ * Separates each level (i.e. Upsert[]) into groups of upserts
+ * that all operate on the same fields.
+ */
+export function groupByAffectedFields(levels: Upsert[][]): Upsert[][] {
+  return flatMap(levels, (level) => {
+    const byObjKeyNames: Dictionary<Upsert[]> = groupBy(level, (u) =>
+      Object.keys(u.object).sort().join('|')
+    );
+    return Object.values(byObjKeyNames);
+  });
+}
+
+/**
  * Separates upserts into levels. Level 0 has no dependencies on other levels.
  * Level 1 depends on Level 0, 2 on 1 and so on.
  */
@@ -332,7 +345,7 @@ export class GraphQLClient {
       throw new VError(`Table ${model} does not exist`);
     }
     if (this.upsertBatchSize) {
-      this.addUpsert(model, origin, record);
+      this.addUpsert(model, record, origin);
       if (this.upsertBuffer.size() >= this.upsertBatchSize) {
         await this.flushUpsertBuffer();
       }
@@ -398,8 +411,9 @@ export class GraphQLClient {
         const withLevels = this.selfReferentModels.has(model)
           ? toLevels(modelUpserts)
           : [modelUpserts];
+        const byFieldsAndLevels = groupByAffectedFields(withLevels);
         const iterator: AsyncIterable<UpsertResult> = batchIterator(
-          withLevels,
+          byFieldsAndLevels,
           (batch) => {
             return this.execUpsert(model, this.toUpsertOp(model, batch));
           }
@@ -617,21 +631,23 @@ export class GraphQLClient {
 
   private addUpsert(
     model: string,
-    origin: string,
-    record: Dictionary<any>
+    record: Dictionary<any>,
+    origin?: string
   ): Upsert {
     const object = {};
     const foreignKeys: Dictionary<Upsert> = {};
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
       if (nestedModel && value) {
-        foreignKeys[field] = this.addUpsert(nestedModel.model, origin, value);
+        foreignKeys[field] = this.addUpsert(nestedModel.model, value);
       } else {
         const val = this.formatFieldValue(model, field, value);
         if (!isNil(val)) object[field] = val;
       }
     }
-    object['origin'] = origin;
+    if (origin) {
+      object['origin'] = origin;
+    }
     const upsert = {
       model,
       object,
@@ -695,12 +711,22 @@ export class GraphQLClient {
     const keysObj = primaryKeys
       .sort()
       .reduce((a, v) => ({...a, [v]: true}), {});
+    // all objects have same fields; pull out fields of first
+    // as mask for update columns
+    const updateColumnMask = objects?.length
+      ? new Set(Object.keys(objects[0]))
+      : undefined;
+    const onConflict = this.createConflictClause(
+      model,
+      false,
+      updateColumnMask
+    );
     const mutation = {
       mutation: {
         [`insert_${model}`]: {
           __args: {
             objects,
-            on_conflict: this.createConflictClause(model, false),
+            ...(onConflict && {on_conflict: onConflict}),
           },
           returning: {
             id: true,
@@ -737,18 +763,25 @@ export class GraphQLClient {
 
   private createConflictClause(
     model: string,
-    nested?: boolean
-  ): ConflictClause {
+    nested?: boolean,
+    updateFieldMask?: Set<string>
+  ): ConflictClause | undefined {
     const updateColumns = nested
       ? ['refreshedAt']
       : difference(
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
         );
-    return {
-      constraint: new EnumType(`${model}_pkey`),
-      update_columns: updateColumns.map((c) => new EnumType(c)),
-    };
+    const filteredUpdateFields = updateFieldMask
+      ? updateColumns.filter((c) => updateFieldMask.has(c))
+      : updateColumns;
+
+    return filteredUpdateFields.length
+      ? {
+          constraint: new EnumType(`${model}_pkey`),
+          update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
+        }
+      : undefined;
   }
 }
 
