@@ -597,6 +597,7 @@ export class GraphQLClient {
     return obj;
   }
 
+  // TODO: (1) set origin at root only (2) mask update fields
   private createMutationObject(
     model: string,
     origin: string,
@@ -688,6 +689,8 @@ export class GraphQLClient {
     return serialize(strictPick(obj, this.schema.primaryKeys[model]));
   }
 
+  // This method assumes all objects contain the same
+  // set of fields.
   private toUpsertOp(model: string, modelUpserts: Upsert[]): UpsertOp {
     const upsertsByKey = new Map();
     // add FKs and index upsert by primary key
@@ -712,7 +715,7 @@ export class GraphQLClient {
       .sort()
       .reduce((a, v) => ({...a, [v]: true}), {});
     // all objects have same fields due to groupByAffectedFields call
-    // pull out fields of first as mask for update columns to ensure
+    // pull out fields of first as mask for update fields to ensure
     // fields that aren't in the data are not modified by the upsert
     const updateColumnMask = objects?.length
       ? new Set(Object.keys(objects[0]))
