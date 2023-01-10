@@ -780,7 +780,7 @@ export class GraphQLClient {
       ? updateColumns.filter((c) => updateFieldMask.has(c))
       : updateColumns;
     // if empty, use model keys to ensure queries always return results
-    if (!filteredUpdateFields.length) {
+    if (isEmpty(filteredUpdateFields)) {
       filteredUpdateFields.push(...this.schema.primaryKeys[model]);
     }
     return {

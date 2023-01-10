@@ -2,9 +2,9 @@
 
 exports[`graphql-client basic batch mutation 1`] = `"mutation { m0: insert_vcs_Membership_one (object: {vcs_User: {data: {uid: \\"ashnet16\\", source: \\"GitHub\\", origin: \\"myghsrc\\"}, on_conflict: {constraint: {value: \\"vcs_User_pkey\\"}, update_columns: [{value: \\"refreshedAt\\"}]}}, vcs_Organization: {data: {uid: \\"faros-ai\\", source: \\"GitHub\\", origin: \\"myghsrc\\"}, on_conflict: {constraint: {value: \\"vcs_Organization_pkey\\"}, update_columns: [{value: \\"refreshedAt\\"}]}}, origin: \\"myghsrc\\"}, on_conflict: {constraint: {value: \\"vcs_Membership_pkey\\"}, update_columns: [{value: \\"origin\\"}, {value: \\"refreshedAt\\"}]}) { id } m1: insert_vcs_User_one (object: {uid: \\"betafood\\", type: {category: \\"User\\", detail: \\"user\\"}, source: \\"GitHub\\", origin: \\"myghsrc\\"}, on_conflict: {constraint: {value: \\"vcs_User_pkey\\"}, update_columns: [{value: \\"email\\"}, {value: \\"name\\"}, {value: \\"origin\\"}, {value: \\"refreshedAt\\"}, {value: \\"type\\"}, {value: \\"url\\"}]}) { id } }"`;
 
-exports[`graphql-client write batch upsert basic end-to-end 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", source: \\"GitHub\\"}]) { returning { id source uid } } }"`;
+exports[`graphql-client write batch upsert basic end-to-end 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", source: \\"GitHub\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}) { returning { id source uid } } }"`;
 
-exports[`graphql-client write batch upsert basic end-to-end 2`] = `"mutation { insert_vcs_Repository (objects: [{name: \\"metis\\", organizationId: \\"t1|gql-e2e-v2|GitHub|faros-ai\\"}, {name: \\"hermes\\", organizationId: \\"t1|gql-e2e-v2|GitHub|faros-ai\\"}]) { returning { id name organizationId } } }"`;
+exports[`graphql-client write batch upsert basic end-to-end 2`] = `"mutation { insert_vcs_Repository (objects: [{name: \\"metis\\", organizationId: \\"t1|gql-e2e-v2|GitHub|faros-ai\\"}, {name: \\"hermes\\", organizationId: \\"t1|gql-e2e-v2|GitHub|faros-ai\\"}], on_conflict: {constraint: vcs_Repository_pkey, update_columns: [name, organizationId]}) { returning { id name organizationId } } }"`;
 
 exports[`graphql-client write batch upsert basic end-to-end 3`] = `"mutation { insert_vcs_Branch (objects: [{name: \\"foo\\", origin: \\"mytestsource\\", repositoryId: \\"t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai\\"}, {name: \\"main\\", origin: \\"mytestsource\\", repositoryId: \\"t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai\\"}], on_conflict: {constraint: vcs_Branch_pkey, update_columns: [origin]}) { returning { id name repositoryId } } }"`;
 
@@ -36,7 +36,7 @@ Array [
 
 exports[`graphql-client write batch upsert record with null primary key field 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [origin]}) { returning { id source uid } } }"`;
 
-exports[`graphql-client write batch upsert self-referent model 1`] = `"mutation { insert_org_Employee (objects: [{uid: \\"7\\"}, {uid: \\"9\\"}]) { returning { id uid } } }"`;
+exports[`graphql-client write batch upsert self-referent model 1`] = `"mutation { insert_org_Employee (objects: [{uid: \\"7\\"}, {uid: \\"9\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [uid]}) { returning { id uid } } }"`;
 
 exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation { insert_org_Employee (objects: [{uid: \\"9\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [origin]}) { returning { id uid } } }"`;
 
