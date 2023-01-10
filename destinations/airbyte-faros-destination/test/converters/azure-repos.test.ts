@@ -37,9 +37,10 @@ describe('azure-repos', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      repositories: 1,
+      repositories: 5,
       pull_requests: 2,
-      users: 7,
+      users: 2,
+      commits: 7,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -49,17 +50,16 @@ describe('azure-repos', () => {
       .value();
 
     const writtenByModel = {
-      vcs_Branch: 2,
-      vcs_BranchCommitAssociation: 9,
-      vcs_Commit: 9,
-      vcs_Membership: 7,
+      vcs_Branch: 5,
+      vcs_BranchCommitAssociation: 7,
+      vcs_Commit: 7,
+      vcs_Membership: 2,
       vcs_Organization: 1,
       vcs_PullRequest: 2,
-      vcs_PullRequestComment: 6,
+      vcs_PullRequestComment: 8,
       vcs_PullRequestReview: 2,
-      vcs_Repository: 1,
-      vcs_Tag: 1,
-      vcs_User: 7,
+      vcs_Repository: 5,
+      vcs_User: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();
