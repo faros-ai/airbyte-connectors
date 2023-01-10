@@ -3,6 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {
+  Alert,
   Incident,
   IncidentTimeLinePaginateResponse,
   PaginateResponse,
@@ -136,6 +137,29 @@ export class OpsGenie {
           }
           incidentItem.impactedServices = serviceNames;
           yield incidentItem;
+        }
+      }
+      if (response?.data.totalCount > offset + this.pageSize)
+        offset += this.pageSize;
+      else break;
+    } while (true);
+  }
+
+  async *getAlerts(createdAt?: Date): AsyncGenerator<Alert> {
+    const startTimeMax =
+      createdAt > this.startDate ? createdAt : this.startDate;
+
+    let offset = 0;
+    do {
+      const params = {offset, limit: this.pageSize, sort: 'createdAt'};
+      const response = await this.retryApi<PaginateResponse<Alert>>(
+        `v2/alerts`,
+        params
+      );
+      for (const alert of response?.data?.data ?? []) {
+        if (new Date(alert.createdAt) >= startTimeMax) {
+          const alertItem = alert;
+          yield alertItem;
         }
       }
       if (response?.data.totalCount > offset + this.pageSize)
