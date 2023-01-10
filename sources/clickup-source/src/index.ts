@@ -11,6 +11,7 @@ import VError from 'verror';
 
 import {ClickUp} from './clickup';
 import {Folders} from './streams/folders';
+import {Goals} from './streams/goals';
 import {Lists} from './streams/lists';
 import {Spaces} from './streams/spaces';
 import {Tasks} from './streams/tasks';
@@ -47,7 +48,7 @@ export class ClickUpSource extends AirbyteSourceBase<ClickUpConfig> {
   }
 
   streams(config: ClickUpConfig): AirbyteStreamBase[] {
-    return [Folders, Lists, Spaces, Tasks, Workspaces].map(
+    return [Folders, Goals, Lists, Spaces, Tasks, Workspaces].map(
       (Stream) => new Stream(config, this.logger)
     );
   }

@@ -189,6 +189,7 @@ interface Tag {
 }
 
 export interface Goal {
+  computedProperties: {workspace: {id: string}};
   id: string;
   name: string;
   team_id: string;

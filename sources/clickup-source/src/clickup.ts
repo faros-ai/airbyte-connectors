@@ -2,6 +2,7 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Folder,
+  Goal,
   List,
   Space,
   Task,
@@ -189,6 +190,25 @@ export class ClickUp {
         wrapApiError(err as any),
         'Failed to fetch tasks for list id',
         listId
+      );
+    }
+  }
+
+  async *goals(workspaceId: string): AsyncGenerator<Goal> {
+    try {
+      const goals = (
+        await this.api.get(`/team/${workspaceId}/goal`, {
+          params: {include_completed: true},
+        })
+      ).data.goals;
+      for (const goal of goals) {
+        yield (await this.api.get(`/goal/${goal.id}`)).data.goal;
+      }
+    } catch (err) {
+      throw new VError(
+        wrapApiError(err as any),
+        'Failed to fetch goals for workspace id',
+        workspaceId
       );
     }
   }
