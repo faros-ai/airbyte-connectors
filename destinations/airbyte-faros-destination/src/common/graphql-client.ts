@@ -730,7 +730,7 @@ export class GraphQLClient {
         [`insert_${model}`]: {
           __args: {
             objects,
-            ...(onConflict && {on_conflict: onConflict}),
+            on_conflict: onConflict,
           },
           returning: {
             id: true,
@@ -769,7 +769,7 @@ export class GraphQLClient {
     model: string,
     nested?: boolean,
     updateFieldMask?: Set<string>
-  ): ConflictClause | undefined {
+  ): ConflictClause {
     const updateColumns = nested
       ? ['refreshedAt']
       : difference(
@@ -779,13 +779,14 @@ export class GraphQLClient {
     const filteredUpdateFields = updateFieldMask
       ? updateColumns.filter((c) => updateFieldMask.has(c))
       : updateColumns;
-
-    return filteredUpdateFields.length
-      ? {
-          constraint: new EnumType(`${model}_pkey`),
-          update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
-        }
-      : undefined;
+    // if empty, use model keys to ensure queries always return results
+    if (!filteredUpdateFields.length) {
+      filteredUpdateFields.push(...this.schema.primaryKeys[model]);
+    }
+    return {
+      constraint: new EnumType(`${model}_pkey`),
+      update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
+    };
   }
 }
 
