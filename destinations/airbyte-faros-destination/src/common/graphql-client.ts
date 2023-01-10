@@ -158,7 +158,7 @@ export function batchIterator<T>(
 }
 
 /**
- * Separates each level (i.e. Upsert[]) into groups of upserts
+ * Separates each level (i.e. Upsert[]) into arrays of upserts
  * that all operate on the same fields.
  */
 export function groupByAffectedFields(levels: Upsert[][]): Upsert[][] {
@@ -711,8 +711,9 @@ export class GraphQLClient {
     const keysObj = primaryKeys
       .sort()
       .reduce((a, v) => ({...a, [v]: true}), {});
-    // all objects have same fields; pull out fields of first
-    // as mask for update columns
+    // all objects have same fields due to groupByAffectedFields call
+    // pull out fields of first as mask for update columns to ensure
+    // fields that aren't in the data are not modified by the upsert
     const updateColumnMask = objects?.length
       ? new Set(Object.keys(objects[0]))
       : undefined;
