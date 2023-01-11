@@ -192,9 +192,7 @@ export class FarosGraph extends AirbyteStreamBase {
         // if it is going to be converted to V2 in the adapter.
         // We will convert to V2 incremental in the adapter
         if (!this.config.adapt_v1_query) {
-          if (
-            this.config.graphql_api === GraphQLVersion.V1
-          ) {
+          if (this.config.graphql_api === GraphQLVersion.V1) {
             modifiedQuery = toIncrementalV1(query);
           } else {
             modifiedQuery = toIncrementalV2(query);
