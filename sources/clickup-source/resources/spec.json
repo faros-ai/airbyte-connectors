@@ -22,22 +22,28 @@
       "cutoff_days": {
         "type": "integer",
         "title": "Cutoff Days",
-        "default": 90,
-        "description": "Only fetch data updated after cutoff"
+        "description": "Only fetch data updated after cutoff",
+        "default": 90
       },
       "timeout": {
         "type": "integer",
-        "minimum": 1000,
-        "default": 60000,
         "title": "Timeout",
-        "description": "Request timeout in milliseconds"
+        "description": "Request timeout in milliseconds",
+        "minimum": 1000,
+        "default": 60000
       },
       "max_content_length": {
         "type": "integer",
-        "minimum": 2000,
-        "default": 10000000,
         "title": "Max Content Length",
-        "description": "Max size of ClickUp API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error."
+        "description": "Max size of ClickUp API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error.",
+        "minimum": 2000,
+        "default": 10000000
+      },
+      "max_retries": {
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to Clickup API",
+        "default": 3
       }
     }
   }

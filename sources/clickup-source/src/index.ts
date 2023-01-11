@@ -23,6 +23,7 @@ export interface ClickUpConfig extends AirbyteConfig {
   cutoff_days?: number;
   timeout?: number;
   max_content_length?: number;
+  max_retries?: number;
 }
 
 /** The main entry point. */
