@@ -50,6 +50,9 @@ export class OpsGenie {
     });
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    if (Math.sign(pageSize) <= 0) {
+      throw new VError('Please add a positive value as page size');
+    }
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     OpsGenie.opsGenie = new OpsGenie(httpClient, startDate, pageSize, logger);
