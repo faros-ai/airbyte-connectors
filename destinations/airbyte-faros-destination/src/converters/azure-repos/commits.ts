@@ -33,8 +33,8 @@ export class Commits extends AzureReposConverter {
         uid: commitItem.commitId,
         message: commitItem.comment,
         htmlUrl: commitItem.remoteUrl,
-        createdAt: Utils.toDate(commitItem.committer.date),
-        author: {uid: commitItem.author.email, source},
+        createdAt: Utils.toDate(commitItem.committer?.date),
+        author: {uid: commitItem.author?.email, source},
         repository,
       },
     });
@@ -47,8 +47,8 @@ export class Commits extends AzureReposConverter {
           repository,
         },
         branch: {
-          name: commitItem.branch.name,
-          uid: commitItem.branch.name,
+          name: commitItem.branch?.name,
+          uid: commitItem.branch?.name,
           repository,
         },
       },

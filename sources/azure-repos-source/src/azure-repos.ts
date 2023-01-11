@@ -3,6 +3,7 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
+import {btoa} from 'buffer';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
@@ -78,14 +79,18 @@ export class AzureRepos {
       throw new VError('organization must not be an empty string');
     }
 
+    const base64EncodedAccessToken = Buffer.from(
+      `${':'}${config.access_token}`,
+      'binary'
+    ).toString('base64');
+
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
-      // TODO: base64 encode access token?
-      headers: {Authorization: `Basic ${config.access_token}`},
+      headers: {Authorization: `Basic ${base64EncodedAccessToken}`},
     });
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
@@ -93,7 +98,7 @@ export class AzureRepos {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
-      headers: {Authorization: `Basic ${config.access_token}`},
+      headers: {Authorization: `Basic ${base64EncodedAccessToken}`},
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;

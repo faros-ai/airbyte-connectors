@@ -22,11 +22,11 @@ export class Commits extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'pullRequestId';
+    return 'commitId';
   }
 
   get cursorField(): string | string[] {
-    return 'creationDate';
+    return ['committer', 'date'];
   }
 
   getUpdatedState(

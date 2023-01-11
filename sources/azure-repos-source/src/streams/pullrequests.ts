@@ -26,7 +26,7 @@ export class PullRequests extends AirbyteStreamBase {
   }
 
   get cursorField(): string | string[] {
-    return 'creationDate';
+    return 'closedDate';
   }
 
   getUpdatedState(
