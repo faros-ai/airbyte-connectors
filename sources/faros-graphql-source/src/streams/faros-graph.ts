@@ -13,6 +13,7 @@ import {
   PathToModel,
   pathToModelV1,
   pathToModelV2,
+  QueryAdapter,
   toIncrementalV1,
   toIncrementalV2,
 } from 'faros-js-client';
@@ -21,6 +22,7 @@ import * as gql from 'graphql';
 import {omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
+import zlib from 'zlib';
 
 import {GraphQLConfig, GraphQLVersion, ResultModel} from '..';
 import {Nodes} from '../nodes';
@@ -48,6 +50,7 @@ type StreamSlice = {
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
   private nodes: Nodes;
+  private legacyV1Schema: gql.GraphQLSchema;
 
   constructor(
     readonly config: GraphQLConfig,
@@ -55,11 +58,19 @@ export class FarosGraph extends AirbyteStreamBase {
     readonly faros: FarosClient
   ) {
     super(logger);
+
+    if (config.adapt_v1_query) {
+      const schemaAsString = zlib
+        .gunzipSync(Buffer.from(this.config.legacy_v1_schema, 'base64'))
+        .toString();
+      this.legacyV1Schema = gql.buildSchema(schemaAsString);
+    }
   }
 
   private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
     const modelPath =
-      this.config.graphql_api === GraphQLVersion.V1
+      this.config.graphql_api === GraphQLVersion.V1 ||
+      this.config.adapt_v1_query
         ? pathToModelV1(query, schema)
         : pathToModelV2(query, schema);
     const nodeIdPaths: string[][] = [];
@@ -103,7 +114,9 @@ export class FarosGraph extends AirbyteStreamBase {
       yield {
         query: this.config.query,
         incremental: false,
-        queryPaths: this.queryPaths(this.config.query, schema),
+        queryPaths: this.config.adapt_v1_query
+          ? this.queryPaths(this.config.query, this.legacyV1Schema)
+          : this.queryPaths(this.config.query, schema),
       };
     } else {
       const queries = [];
@@ -175,7 +188,13 @@ export class FarosGraph extends AirbyteStreamBase {
           `Query is not in incremental format, it will be converted`
         );
 
-        if (this.config.graphql_api === GraphQLVersion.V1) {
+        if (
+          this.config.graphql_api === GraphQLVersion.V1 &&
+          // No need to convert the V1 query to incremental
+          // if it is going to be converted to V2 in the adapter.
+          // We will convert to V2 incremental in the adapter
+          !this.config.adapt_v1_query
+        ) {
           modifiedQuery = toIncrementalV1(query);
         } else {
           modifiedQuery = toIncrementalV2(query);
@@ -199,15 +218,28 @@ export class FarosGraph extends AirbyteStreamBase {
       }
     }
 
-    const nodes = this.faros.nodeIterable(
-      this.config.graph,
-      modifiedQuery || query,
-      this.config.page_size || DEFAULT_PAGE_SIZE,
-      this.config.graphql_api === GraphQLVersion.V1
-        ? paginatedQuery
-        : paginatedQueryV2,
-      args
-    );
+    let nodes: AsyncIterable<any>;
+    if (this.config.adapt_v1_query) {
+      const adapter = new QueryAdapter(this.faros, this.legacyV1Schema);
+      nodes = adapter.nodes(
+        this.config.graph,
+        query,
+        this.config.page_size || DEFAULT_PAGE_SIZE,
+        args,
+        // Convert the resulting V2 query to incremental in the adapter
+        toIncrementalV2
+      );
+    } else {
+      nodes = this.faros.nodeIterable(
+        this.config.graph,
+        modifiedQuery || query,
+        this.config.page_size || DEFAULT_PAGE_SIZE,
+        this.config.graphql_api === GraphQLVersion.V1
+          ? paginatedQuery
+          : paginatedQueryV2,
+        args
+      );
+    }
 
     for await (const item of nodes) {
       const recordRefreshedAtMillis =

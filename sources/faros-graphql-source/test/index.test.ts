@@ -4,6 +4,7 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import _ from 'lodash';
 import VError from 'verror';
 
 import * as sut from '../src/index';
@@ -134,6 +135,48 @@ describe('index', () => {
         result_model: ResultModel.Nested,
       } as any)
     ).resolves.toStrictEqual([true, undefined]);
+  });
+
+  test('check adapter config', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    const config = {
+      api_url: 'x',
+      api_key: 'y',
+      graphql_api: GraphQLVersion.V2,
+      graph: 'default',
+      result_model: ResultModel.Nested,
+      query: 'query MyQuery { vcs { pullRequests { nodes { number } } } }',
+      adapt_v1_query: true,
+      legacy_v1_schema: 'XYZ',
+    } as any;
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
+    await expect(
+      source.checkConnection({
+        ...config,
+        graphql_api: GraphQLVersion.V1,
+      } as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "GraphQL API version should be v2 when 'Adapt V1 query' is enabled"
+      ),
+    ]);
+    await expect(
+      source.checkConnection(_.omit(config, ['query']) as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('GraphQL query was not provided'),
+    ]);
+    await expect(
+      source.checkConnection(_.omit(config, ['legacy_v1_schema']) as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Legacy V1 schema was not provided'),
+    ]);
   });
 
   test('full_refresh sync mode', async () => {
