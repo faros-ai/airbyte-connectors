@@ -188,16 +188,17 @@ export class FarosGraph extends AirbyteStreamBase {
           `Query is not in incremental format, it will be converted`
         );
 
-        if (
-          this.config.graphql_api === GraphQLVersion.V1 &&
-          // No need to convert the V1 query to incremental
-          // if it is going to be converted to V2 in the adapter.
-          // We will convert to V2 incremental in the adapter
-          !this.config.adapt_v1_query
-        ) {
-          modifiedQuery = toIncrementalV1(query);
-        } else {
-          modifiedQuery = toIncrementalV2(query);
+        // No need to convert the V1 query to incremental
+        // if it is going to be converted to V2 in the adapter.
+        // We will convert to V2 incremental in the adapter
+        if (!this.config.adapt_v1_query) {
+          if (
+            this.config.graphql_api === GraphQLVersion.V1
+          ) {
+            modifiedQuery = toIncrementalV1(query);
+          } else {
+            modifiedQuery = toIncrementalV2(query);
+          }
         }
 
         this.logger.debug(
