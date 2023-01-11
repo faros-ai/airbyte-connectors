@@ -350,7 +350,7 @@ export class GraphQLClient {
         await this.flushUpsertBuffer();
       }
     } else {
-      const obj = this.createMutationObject(model, origin, record);
+      const obj = this.createMutationObject(model, record, origin);
       const mutation = {
         [`insert_${model}_one`]: {__args: obj, id: true},
       };
@@ -460,8 +460,8 @@ export class GraphQLClient {
           where: this.createWhereClause(record.model, record.where),
           _set: this.createMutationObject(
             record.model,
-            record.origin,
-            record.patch
+            record.patch,
+            record.origin
           ).object,
         },
         returning: {
@@ -597,11 +597,10 @@ export class GraphQLClient {
     return obj;
   }
 
-  // TODO: (1) set origin at root only (2) mask update fields
   private createMutationObject(
     model: string,
-    origin: string,
     record: Dictionary<any>,
+    origin?: string,
     nested?: boolean
   ): {
     data?: Dictionary<any>;
@@ -614,8 +613,8 @@ export class GraphQLClient {
       if (nestedModel && value) {
         obj[nestedModel.field] = this.createMutationObject(
           nestedModel.model,
-          origin,
           value,
+          undefined,
           true
         );
       } else {
@@ -623,10 +622,16 @@ export class GraphQLClient {
         if (!isNil(val)) obj[field] = val;
       }
     }
-    obj['origin'] = origin;
+    if (origin) {
+      obj['origin'] = origin;
+    }
     return {
       [nested ? 'data' : 'object']: obj,
-      on_conflict: this.createConflictClause(model, nested),
+      on_conflict: this.createConflictClause(
+        model,
+        nested,
+        new Set(Object.keys(obj))
+      ),
     };
   }
 
