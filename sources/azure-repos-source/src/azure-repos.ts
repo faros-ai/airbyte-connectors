@@ -3,7 +3,6 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
-import {btoa} from 'buffer';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
