@@ -158,16 +158,19 @@ export class ClickUp {
     );
   }
 
-  async *tasks(
+  private async *fetchTasks(
     listId: string,
-    lastUpdatedDate?: number,
-    fetchArchived = false
+    archived: boolean,
+    lastUpdatedDate?: number
   ): AsyncGenerator<Task> {
-    const fetch = async (archived: boolean) => {
-      return (
+    let page = 0;
+    let morePages = true;
+    while (morePages) {
+      const tasks: Task[] = (
         await this.api.get(`/list/${listId}/task`, {
           params: {
             archived,
+            page,
             date_updated_gt: lastUpdatedDate ?? this.defaultStartDate.getTime(),
             include_closed: true,
             order_by: 'updated',
@@ -175,14 +178,26 @@ export class ClickUp {
           },
         })
       ).data.tasks;
-    };
-    try {
-      for (const task of await fetch(false)) {
+      for (const task of tasks) {
         yield task;
       }
+      page++;
+      morePages = tasks.length > 0;
+    }
+  }
+
+  async *tasks(
+    listId: string,
+    lastUpdatedDate?: number,
+    fetchArchived = false
+  ): AsyncGenerator<Task> {
+    try {
+      for await (const t of this.fetchTasks(listId, false, lastUpdatedDate)) {
+        yield t;
+      }
       if (fetchArchived) {
-        for (const task of await fetch(true)) {
-          yield task;
+        for await (const t of this.fetchTasks(listId, true, lastUpdatedDate)) {
+          yield t;
         }
       }
     } catch (err) {
