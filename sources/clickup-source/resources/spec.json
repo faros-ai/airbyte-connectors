@@ -31,6 +31,13 @@
         "default": 60000,
         "title": "Timeout",
         "description": "Request timeout in milliseconds"
+      },
+      "max_content_length": {
+        "type": "integer",
+        "minimum": 2000,
+        "default": 10000000,
+        "title": "Max Content Length",
+        "description": "Max size of ClickUp API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error."
       }
     }
   }

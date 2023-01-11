@@ -14,6 +14,7 @@ import {VError} from 'verror';
 import {ClickUpConfig} from '.';
 
 const DEFAULT_TIMEOUT = 60_000;
+const DEFAULT_MAX_CONTENT_LENGTH = 10_000_000;
 const BASE_API_URL = 'https://api.clickup.com/api/v2';
 
 export class ClickUp {
@@ -36,7 +37,7 @@ export class ClickUp {
     const api = axios.create({
       baseURL: BASE_API_URL,
       timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: 10_000_000,
+      maxContentLength: cfg.max_content_length ?? DEFAULT_MAX_CONTENT_LENGTH,
       headers: {
         authorization: cfg.token,
         'content-type': 'application/json',
