@@ -41,7 +41,7 @@ export class ClickUpSource extends AirbyteSourceBase<ClickUpConfig> {
 
   async checkConnection(config: ClickUpConfig): Promise<[boolean, VError]> {
     try {
-      const clickup = ClickUp.instance(config, this.logger);
+      const clickup = ClickUp.make(config, this.logger);
       await clickup.checkConnection();
     } catch (error: any) {
       return [false, error];

@@ -22,7 +22,7 @@ export class Workspaces extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Workspace> {
-    const clickup = ClickUp.instance(this.cfg, this.logger);
+    const clickup = ClickUp.make(this.cfg, this.logger);
     for (const workspace of await clickup.workspaces()) {
       yield workspace;
     }

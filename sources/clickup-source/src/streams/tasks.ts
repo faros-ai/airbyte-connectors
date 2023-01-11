@@ -25,7 +25,7 @@ export class Tasks extends AirbyteStreamBase {
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
-    this.clickup = ClickUp.instance(cfg, logger);
+    this.clickup = ClickUp.make(cfg, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
