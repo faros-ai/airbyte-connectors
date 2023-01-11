@@ -157,7 +157,7 @@ export class OpsGenie {
         params
       );
       for (const alert of response?.data?.data ?? []) {
-        if (new Date(alert.createdAt) >= startTimeMax) {
+        if (new Date(alert.createdAt) > startTimeMax) {
           const alertItem = alert;
           yield alertItem;
         }
