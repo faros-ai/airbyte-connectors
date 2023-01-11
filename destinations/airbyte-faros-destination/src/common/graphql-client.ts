@@ -158,6 +158,19 @@ export function batchIterator<T>(
 }
 
 /**
+ * Separates each level (i.e. Upsert[]) into arrays of upserts
+ * that all operate on the same fields.
+ */
+export function groupByAffectedFields(levels: Upsert[][]): Upsert[][] {
+  return flatMap(levels, (level) => {
+    const byObjKeyNames: Dictionary<Upsert[]> = groupBy(level, (u) =>
+      Object.keys(u.object).sort().join('|')
+    );
+    return Object.values(byObjKeyNames);
+  });
+}
+
+/**
  * Separates upserts into levels. Level 0 has no dependencies on other levels.
  * Level 1 depends on Level 0, 2 on 1 and so on.
  */
@@ -332,12 +345,12 @@ export class GraphQLClient {
       throw new VError(`Table ${model} does not exist`);
     }
     if (this.upsertBatchSize) {
-      this.addUpsert(model, origin, record);
+      this.addUpsert(model, record, origin);
       if (this.upsertBuffer.size() >= this.upsertBatchSize) {
         await this.flushUpsertBuffer();
       }
     } else {
-      const obj = this.createMutationObject(model, origin, record);
+      const obj = this.createMutationObject(model, record, origin);
       const mutation = {
         [`insert_${model}_one`]: {__args: obj, id: true},
       };
@@ -398,8 +411,9 @@ export class GraphQLClient {
         const withLevels = this.selfReferentModels.has(model)
           ? toLevels(modelUpserts)
           : [modelUpserts];
+        const byFieldsAndLevels = groupByAffectedFields(withLevels);
         const iterator: AsyncIterable<UpsertResult> = batchIterator(
-          withLevels,
+          byFieldsAndLevels,
           (batch) => {
             return this.execUpsert(model, this.toUpsertOp(model, batch));
           }
@@ -446,8 +460,8 @@ export class GraphQLClient {
           where: this.createWhereClause(record.model, record.where),
           _set: this.createMutationObject(
             record.model,
-            record.origin,
-            record.patch
+            record.patch,
+            record.origin
           ).object,
         },
         returning: {
@@ -585,8 +599,8 @@ export class GraphQLClient {
 
   private createMutationObject(
     model: string,
-    origin: string,
     record: Dictionary<any>,
+    origin?: string,
     nested?: boolean
   ): {
     data?: Dictionary<any>;
@@ -599,8 +613,8 @@ export class GraphQLClient {
       if (nestedModel && value) {
         obj[nestedModel.field] = this.createMutationObject(
           nestedModel.model,
-          origin,
           value,
+          undefined,
           true
         );
       } else {
@@ -608,30 +622,38 @@ export class GraphQLClient {
         if (!isNil(val)) obj[field] = val;
       }
     }
-    obj['origin'] = origin;
+    if (origin) {
+      obj['origin'] = origin;
+    }
     return {
       [nested ? 'data' : 'object']: obj,
-      on_conflict: this.createConflictClause(model, nested),
+      on_conflict: this.createConflictClause(
+        model,
+        nested,
+        new Set(Object.keys(obj))
+      ),
     };
   }
 
   private addUpsert(
     model: string,
-    origin: string,
-    record: Dictionary<any>
+    record: Dictionary<any>,
+    origin?: string
   ): Upsert {
     const object = {};
     const foreignKeys: Dictionary<Upsert> = {};
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
       if (nestedModel && value) {
-        foreignKeys[field] = this.addUpsert(nestedModel.model, origin, value);
+        foreignKeys[field] = this.addUpsert(nestedModel.model, value);
       } else {
         const val = this.formatFieldValue(model, field, value);
         if (!isNil(val)) object[field] = val;
       }
     }
-    object['origin'] = origin;
+    if (origin) {
+      object['origin'] = origin;
+    }
     const upsert = {
       model,
       object,
@@ -672,6 +694,8 @@ export class GraphQLClient {
     return serialize(strictPick(obj, this.schema.primaryKeys[model]));
   }
 
+  // This method assumes all objects contain the same
+  // set of fields.
   private toUpsertOp(model: string, modelUpserts: Upsert[]): UpsertOp {
     const upsertsByKey = new Map();
     // add FKs and index upsert by primary key
@@ -695,12 +719,23 @@ export class GraphQLClient {
     const keysObj = primaryKeys
       .sort()
       .reduce((a, v) => ({...a, [v]: true}), {});
+    // all objects have same fields due to groupByAffectedFields call
+    // pull out fields of first as mask for update fields to ensure
+    // fields that aren't in the data are not modified by the upsert
+    const updateColumnMask = objects?.length
+      ? new Set(Object.keys(objects[0]))
+      : undefined;
+    const onConflict = this.createConflictClause(
+      model,
+      false,
+      updateColumnMask
+    );
     const mutation = {
       mutation: {
         [`insert_${model}`]: {
           __args: {
             objects,
-            on_conflict: this.createConflictClause(model, false),
+            on_conflict: onConflict,
           },
           returning: {
             id: true,
@@ -737,7 +772,8 @@ export class GraphQLClient {
 
   private createConflictClause(
     model: string,
-    nested?: boolean
+    nested?: boolean,
+    updateFieldMask?: Set<string>
   ): ConflictClause {
     const updateColumns = nested
       ? ['refreshedAt']
@@ -745,9 +781,16 @@ export class GraphQLClient {
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
         );
+    const filteredUpdateFields = updateFieldMask
+      ? updateColumns.filter((c) => updateFieldMask.has(c))
+      : updateColumns;
+    // if empty, use model keys to ensure queries always return results
+    if (isEmpty(filteredUpdateFields)) {
+      filteredUpdateFields.push(...this.schema.primaryKeys[model]);
+    }
     return {
       constraint: new EnumType(`${model}_pkey`),
-      update_columns: updateColumns.map((c) => new EnumType(c)),
+      update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
     };
   }
 }
