@@ -169,6 +169,7 @@ interface CustomField {
   date_created: string;
   hide_from_guests: boolean;
   required: boolean;
+  value: any;
 }
 
 interface FolderRef {

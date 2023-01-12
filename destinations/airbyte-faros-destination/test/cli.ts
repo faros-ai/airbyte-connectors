@@ -39,6 +39,9 @@ export class CLI {
 
   /** Waits for the child process to terminate and returns the exit code. */
   async wait(): Promise<number> {
+    if (this.cp.exitCode !== null) {
+      return this.cp.exitCode;
+    }
     return new Promise((ok) => {
       this.cp.on('exit', ok);
     });
