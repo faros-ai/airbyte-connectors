@@ -70,11 +70,11 @@
           "Flat"
         ]
       },
-      "map_origin": {
+      "replace_origin_map": {
         "order": 7,
         "type": "string",
-        "title": "Map origin",
-        "description": "JSON map where each entry (origin1, origin2) indicates that the output records' origin should be replaced from 'origin1' by 'origin2'",
+        "title": "Replace Records Origin",
+        "description": "JSON map to replace records origin values, where each entry (origin1, origin2) indicates that the output records' origin property should be replaced from 'origin1' by 'origin2'",
         "multiline": true,
         "default": "{}",
         "examples": [

@@ -56,8 +56,8 @@ export class FarosGraph extends AirbyteStreamBase {
     readonly faros: FarosClient
   ) {
     super(logger);
-    if (config.map_origin) {
-      const originMap = JSON.parse(config.map_origin);
+    if (config.replace_origin_map) {
+      const originMap = JSON.parse(config.replace_origin_map);
       this.originRemapper = (origin: string) => {
         return originMap[origin] ?? origin;
       };
@@ -247,7 +247,7 @@ export class FarosGraph extends AirbyteStreamBase {
       // We only use these fields for updating the incremental state
       const result = omit(item, ['metadata', 'refreshedAt']);
 
-      if (_.has(result, 'origin')) {
+      if (this.originRemapper && _.has(result, 'origin')) {
         result['origin'] = this.originRemapper(result['origin']);
       }
 

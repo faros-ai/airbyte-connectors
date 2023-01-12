@@ -297,7 +297,7 @@ describe('index', () => {
     const iter = source
       .streams({
         ...BASE_CONFIG,
-        map_origin: "{ \"originA\": \"originB\" }"
+        replace_origin_map: "{ \"originA\": \"originB\" }"
       })[0]
       .readRecords(SyncMode.FULL_REFRESH, undefined, {
         query: 'foo',
