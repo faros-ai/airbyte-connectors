@@ -72,6 +72,19 @@ export async function tempConfig(
   return tempFile(JSON.stringify(conf), '.json');
 }
 
+export function sourceSpecificTempConfig(
+  url: string,
+  source_specific_configs: Dictionary<any>
+): Promise<string> {
+  return tempConfig(
+    url,
+    InvalidRecordStrategy.SKIP,
+    Edition.CLOUD,
+    {},
+    source_specific_configs
+  );
+}
+
 export async function initMockttp(mockttp: Mockttp): Promise<void> {
   await mockttp.start({startPort: 30000, endPort: 50000});
 
