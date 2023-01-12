@@ -3,6 +3,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_SITE = 'datadoghq.com'; // See - https://docs.datadoghq.com/getting_started/site/
 
 interface PagedResult<T> {
   data?: Array<T>;
@@ -39,6 +40,7 @@ export interface DatadogConfig {
   readonly page_size?: number;
   readonly metrics?: Array<string>;
   readonly metrics_max_window?: number;
+  readonly site?: string;
 }
 
 export interface DatadogClient {
@@ -63,6 +65,12 @@ export class Datadog {
     };
 
     const clientConfig = client.createConfiguration(configurationOpts);
+
+    // Add ability to change sites to other regions.
+    client.setServerVariables(clientConfig, {
+        site: config.site ?? DEFAULT_SITE
+    });
+
 
     // Beta endpoints are unstable and need to be explicitly enabled
     clientConfig.unstableOperations['v2.listIncidents'] = true;

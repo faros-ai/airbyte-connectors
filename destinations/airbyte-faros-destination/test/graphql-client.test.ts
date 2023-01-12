@@ -6,6 +6,7 @@ import {
   batchIterator,
   GraphQLBackend,
   GraphQLClient,
+  groupByAffectedFields,
   mergeByPrimaryKey,
   serialize,
   strictPick,
@@ -335,6 +336,20 @@ describe('graphql-client write batch upsert', () => {
         }
       }`),
       // #2
+      JSON.parse(`  
+      {
+        "data": {
+          "insert_org_Employee": {
+            "returning": [
+              {
+                "id": "t1|gql-e2e-v2|9",
+                "uid": "9"
+              }
+            ]
+          }
+        }
+      }`),
+      // #3
       JSON.parse(`
       {
         "data": {
@@ -385,7 +400,7 @@ describe('graphql-client write batch upsert', () => {
       await client.writeRecord('org_Employee', rec, 'mytestsource');
     }
     await client.flush();
-    expect(queries).toEqual(2);
+    expect(queries).toEqual(3);
   });
 });
 
@@ -544,5 +559,72 @@ describe('toLevels', () => {
       },
     };
     await expectLevels([u2]);
+  });
+});
+
+describe('groupByAffectedFields', () => {
+  const u0a: Upsert = {
+    id: 'u0a',
+    model: 'm',
+    object: {f1: 'f1a', f2: 'f2a', f3: 'f3a'},
+    foreignKeys: {},
+  };
+  const u0b: Upsert = {
+    id: 'u0b',
+    model: 'm',
+    object: {f1: 'f1b', f2: 'f2b', f3: 'f3b'},
+    foreignKeys: {},
+  };
+  const u1a: Upsert = {
+    id: 'u1a',
+    model: 'm',
+    object: {f1: 'f1a'},
+    foreignKeys: {},
+  };
+  const u1b: Upsert = {
+    id: 'u1b',
+    model: 'm',
+    object: {f1: 'f1b'},
+    foreignKeys: {},
+  };
+  const u2a: Upsert = {
+    id: 'u2a',
+    model: 'm',
+    object: {f3: 'f3'},
+    foreignKeys: {},
+  };
+  const u2b: Upsert = {
+    id: 'u2b',
+    model: 'm',
+    object: {f3: 'f3'},
+    foreignKeys: {},
+  };
+  async function expectGroupByAffectedFields(
+    upserts: Upsert[][]
+  ): Promise<void> {
+    const iterator = batchIterator(groupByAffectedFields(upserts), (batch) => {
+      return Promise.resolve(batch.map((u) => u.id).sort());
+    });
+    const res = [];
+    for await (const result of iterator) {
+      res.push(result);
+    }
+    expect(res).toMatchSnapshot();
+  }
+  test('one level', async () => {
+    await expectGroupByAffectedFields([[u0a, u0b, u1a, u1b, u2a, u2b]]);
+  });
+  test('two levels', async () => {
+    await expectGroupByAffectedFields([
+      [u0a, u0b, u1a],
+      [u1b, u2a, u2b],
+    ]);
+  });
+  test('noop', async () => {
+    await expectGroupByAffectedFields([
+      [u0a, u0b],
+      [u1a, u1b],
+      [u2a, u2b],
+    ]);
   });
 });

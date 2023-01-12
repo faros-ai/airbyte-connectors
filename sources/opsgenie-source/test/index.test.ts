@@ -153,7 +153,7 @@ describe('index', () => {
     const source = new sut.OpsGenieSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const teamsStream = streams[1];
+    const teamsStream = streams[2];
     const teamsIter = teamsStream.readRecords(SyncMode.FULL_REFRESH);
     const teams = [];
     for await (const team of teamsIter) {
@@ -183,7 +183,7 @@ describe('index', () => {
     const source = new sut.OpsGenieSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const usersStream = streams[2];
+    const usersStream = streams[3];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of usersIter) {
@@ -213,12 +213,71 @@ describe('index', () => {
     const source = new sut.OpsGenieSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const usersStream = streams[2];
+    const usersStream = streams[3];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of usersIter) {
       users.push(user);
     }
     expect(fnUsersList).toHaveBeenCalledTimes(2);
+  });
+
+  test('streams - alerts, use full_refresh sync mode', async () => {
+    const fnAlertsList = jest.fn();
+    OpsGenie.instance = jest.fn().mockImplementation(() => {
+      return new OpsGenie(
+        {
+          get: fnAlertsList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('alerts.json'),
+              totalCount: 2,
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        10,
+        logger
+      );
+    });
+    const source = new sut.OpsGenieSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const alertsStream = streams[1];
+    const alertssIter = alertsStream.readRecords(SyncMode.FULL_REFRESH);
+    const alerts = [];
+    for await (const alert of alertssIter) {
+      alerts.push(alert);
+    }
+    expect(fnAlertsList).toHaveBeenCalledTimes(1);
+    expect(alerts).toStrictEqual(readTestResourceFile('alerts.json'));
+  });
+
+  test('streams - alerts, paginate', async () => {
+    const fnAlertsList = jest.fn();
+    OpsGenie.instance = jest.fn().mockImplementation(() => {
+      return new OpsGenie(
+        {
+          get: fnAlertsList.mockResolvedValue({
+            data: {
+              data: readTestResourceFile('alerts.json'),
+              totalCount: 2,
+            },
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        logger
+      );
+    });
+    const source = new sut.OpsGenieSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const alertsStream = streams[1];
+    const alertssIter = alertsStream.readRecords(SyncMode.FULL_REFRESH);
+    const alerts = [];
+    for await (const alert of alertssIter) {
+      alerts.push(alert);
+    }
+    expect(fnAlertsList).toHaveBeenCalledTimes(2);
   });
 });
