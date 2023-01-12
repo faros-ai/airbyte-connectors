@@ -48,6 +48,7 @@ type StreamSlice = {
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
   private nodes: Nodes;
+  private originRemapper: (origin: string) => string;
 
   constructor(
     readonly config: GraphQLConfig,
@@ -55,6 +56,12 @@ export class FarosGraph extends AirbyteStreamBase {
     readonly faros: FarosClient
   ) {
     super(logger);
+    if (config.replace_origin_map) {
+      const originMap = JSON.parse(config.replace_origin_map);
+      this.originRemapper = (origin: string) => {
+        return originMap[origin] ?? origin;
+      };
+    }
   }
 
   private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
@@ -239,6 +246,10 @@ export class FarosGraph extends AirbyteStreamBase {
       // Remove metadata/refreshedAt
       // We only use these fields for updating the incremental state
       const result = omit(item, ['metadata', 'refreshedAt']);
+
+      if (this.originRemapper && _.has(result, 'origin')) {
+        result['origin'] = this.originRemapper(result['origin']);
+      }
 
       yield _.set(
         {},

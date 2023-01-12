@@ -96,6 +96,46 @@ Array [
 ]
 `;
 
+exports[`index remap origin 1`] = `
+Array [
+  Object {
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k1": "v1",
+            "origin": "originB",
+          },
+        ],
+      },
+    },
+  },
+  Object {
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k2": "v2",
+            "origin": "originC",
+          },
+        ],
+      },
+    },
+  },
+  Object {
+    "A": Object {
+      "B": Object {
+        "C": Array [
+          Object {
+            "k2": "v3",
+          },
+        ],
+      },
+    },
+  },
+]
+`;
+
 exports[`index replace node IDs with model keys 1`] = `
 Array [
   Object {

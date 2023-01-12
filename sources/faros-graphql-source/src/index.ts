@@ -29,6 +29,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   page_size?: number;
   query?: string;
   result_model?: ResultModel;
+  replace_origin_map?: string;
 }
 
 export function mainCommand(): Command {
