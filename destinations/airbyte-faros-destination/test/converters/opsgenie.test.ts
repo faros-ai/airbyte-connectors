@@ -53,6 +53,7 @@ describe('opsgenie', () => {
       incidents: 3,
       teams: 1,
       users: 2,
+      alerts: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -62,20 +63,46 @@ describe('opsgenie', () => {
       .value();
     const writtenByModel = {
       compute_Application: 1,
+      ims_Alert: 4,
+      ims_AlertIntegrationAssociation: 4,
+      ims_AlertReportAssociation: 4,
+      ims_AlertSourceAssociation: 4,
+      ims_AlertTag: 4,
       ims_Incident: 3,
       ims_IncidentApplicationImpact: 1,
       ims_IncidentAssignment: 5,
       ims_IncidentEvent: 21,
       ims_IncidentTag: 3,
-      ims_Label: 2,
+      ims_Label: 6,
       ims_Team: 1,
+      ims_TeamAlertAssociation: 4,
       ims_TeamIncidentAssociation: 2,
       ims_User: 2,
       tms_User: 2,
     };
 
+    // this is to make sure that the expected and received values are in same order
+    const orderedWrittenByModel = Object.keys(writtenByModel)
+      .sort()
+      .reduce((obj, key) => {
+        obj[key] = writtenByModel[key];
+        return obj;
+      }, {});
+
     const processedTotal = _(processedByStream).values().sum();
-    const writtenTotal = _(writtenByModel).values().sum();
+    const writtenTotal = _(orderedWrittenByModel).values().sum();
+
+    expect(stdout).toMatch(
+      JSON.stringify(
+        AirbyteLog.make(
+          AirbyteLogLevel.INFO,
+          `Would write records by model: ${JSON.stringify(
+            orderedWrittenByModel
+          )}`
+        )
+      )
+    );
+
     expect(stdout).toMatch(`Processed ${processedTotal} records`);
     expect(stdout).toMatch(`Would write ${writtenTotal} records`);
     expect(stdout).toMatch('Errored 0 records');
@@ -85,14 +112,6 @@ describe('opsgenie', () => {
         AirbyteLog.make(
           AirbyteLogLevel.INFO,
           `Processed records by stream: ${JSON.stringify(processed)}`
-        )
-      )
-    );
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Would write records by model: ${JSON.stringify(writtenByModel)}`
         )
       )
     );
@@ -110,11 +129,11 @@ describe('opsgenie', () => {
           event: 'Write Stats',
           messageId: expect.anything(),
           properties: {
-            messagesRead: 6,
+            messagesRead: 10,
             processedByStream: processed,
             recordsErrored: 0,
             recordsProcessed: processedTotal,
-            recordsRead: 6,
+            recordsRead: 10,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
             writtenByModel,

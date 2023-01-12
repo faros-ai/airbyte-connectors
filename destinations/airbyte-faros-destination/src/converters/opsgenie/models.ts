@@ -132,3 +132,87 @@ export enum IncidentPriorityCategory {
   Low = 'Low',
   Custom = 'Custom',
 }
+
+export interface Integration {
+  type: string;
+  id: string;
+  name: string;
+}
+
+export interface Report {
+  ackTime: number;
+  closeTime: number;
+  acknowledgedBy: string;
+  closedBy: string;
+}
+
+export interface Alert {
+  id: string;
+  tinyId: string;
+  alias: string;
+  message: string;
+  status: string;
+  acknowledged: boolean;
+  isSeen: boolean;
+  tags: string[];
+  snoozed: boolean;
+  snoozedUntil: string;
+  count: number;
+  lastOccurredAt: string;
+  createdAt: string;
+  updatedAt: string;
+  source: string;
+  owner: string;
+  priority: string;
+  responders: Responder[];
+  integration: Integration;
+  report: Report;
+}
+
+export enum OpsGenieAlertriority {
+  P1 = 'P1',
+  P2 = 'P2',
+  P3 = 'P3',
+  P4 = 'P4',
+  P5 = 'P5',
+}
+
+export interface AlertPriority {
+  category: AlertPriorityCategory;
+  detail: string;
+}
+
+export enum AlertPriorityCategory {
+  Critical = 'Critical',
+  High = 'High',
+  Moderate = 'Moderate',
+  Low = 'Low',
+  Informational = 'Informational',
+}
+
+export enum AlertStatus {
+  open = 'open',
+  closed = 'closed',
+}
+
+export interface AlertIntegrationType {
+  type: string;
+  name: string;
+}
+
+export enum AlertStatusCategory {
+  Open = 'Open',
+  Closed = 'Closed',
+}
+
+export interface AlertSourceAssociation {
+  source: string;
+  alert: string;
+}
+
+export interface AlertReportAssociation {
+  ackTime: number;
+  closeTime: number;
+  acknowledgedBy: string;
+  closedBy: string;
+}
