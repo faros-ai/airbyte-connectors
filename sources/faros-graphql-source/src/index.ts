@@ -8,7 +8,6 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-import { Dictionary } from 'ts-essentials';
 import VError from 'verror';
 
 import {FarosGraph} from './streams';

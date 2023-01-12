@@ -26,8 +26,8 @@ const queryPaths = {
   nodeIds: [],
 };
 
-let graphExists = false;
-let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
+let graphExists: boolean;
+let nodes: any[];
 jest.mock('faros-js-client', () => {
   return {
     FarosClient: jest.fn().mockImplementation(() => {
@@ -61,6 +61,11 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
+
+  beforeEach(() => {
+    graphExists = false;
+    nodes = [{k1: 'v1'}, {k2: 'v2'}];
+  });
 
   test('spec', async () => {
     const source = new sut.FarosGraphSource(logger);
