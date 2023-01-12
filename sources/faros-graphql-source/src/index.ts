@@ -8,6 +8,7 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+import { Dictionary } from 'ts-essentials';
 import VError from 'verror';
 
 import {FarosGraph} from './streams';
@@ -29,6 +30,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   page_size?: number;
   query?: string;
   result_model?: ResultModel;
+  map_origin?: string;
 }
 
 export function mainCommand(): Command {

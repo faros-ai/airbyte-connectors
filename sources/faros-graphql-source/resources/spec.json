@@ -69,6 +69,17 @@
           "Nested",
           "Flat"
         ]
+      },
+      "map_origin": {
+        "order": 7,
+        "type": "string",
+        "title": "Map origin",
+        "description": "JSON map where each entry (origin1, origin2) indicates that the output records' origin should be replaced from 'origin1' by 'origin2'",
+        "multiline": true,
+        "default": "{}",
+        "examples": [
+          "{ \"originA\": \"originB\" }"
+        ]
       }
     }
   }

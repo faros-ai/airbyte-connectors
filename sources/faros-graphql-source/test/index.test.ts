@@ -278,4 +278,32 @@ describe('index', () => {
       cicd_ArtifactCommit: {refreshedAtMillis: 12},
     });
   });
+
+  test('remap origin', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      // origin will be replaced
+      {k1: 'v1', origin: 'originA'},
+      // origin will be left unchanged
+      {k2: 'v2', origin: 'originC'},
+      {k2: 'v3'},
+    ];
+    const iter = source
+      .streams({
+        ...BASE_CONFIG,
+        map_origin: "{ \"originA\": \"originB\" }"
+      })[0]
+      .readRecords(SyncMode.FULL_REFRESH, undefined, {
+        query: 'foo',
+        queryPaths,
+      });
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
+  });
 });
