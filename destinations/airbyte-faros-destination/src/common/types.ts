@@ -21,6 +21,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly jsonata_expression?: string;
   readonly jsonata_mode?: JSONataApplyMode;
   readonly origin?: string;
+  readonly keep_records_origin?: boolean;
   readonly source_specific_configs?: Dictionary<any>;
   readonly keep_alive?: boolean;
 }

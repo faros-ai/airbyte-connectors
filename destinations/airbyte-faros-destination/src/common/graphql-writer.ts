@@ -1,4 +1,5 @@
 import {sortBy} from 'lodash';
+import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {GraphQLClient} from './graphql-client';
@@ -12,12 +13,16 @@ export interface RecordProcessorHandler {
   ) => Promise<void>;
 }
 
+export interface OriginProvider {
+  getOrigin: (record: Dictionary<any>) => string;
+}
+
 export class GraphQLWriter {
   private readonly timestampedRecords: TimestampedRecord[] = [];
 
   constructor(
     private readonly graphQLClient: GraphQLClient,
-    private readonly origin: string,
+    private readonly originProvider: OriginProvider,
     private readonly stats: WriteStats,
     private readonly recordProcessorHandler: RecordProcessorHandler
   ) {}
@@ -29,14 +34,14 @@ export class GraphQLWriter {
       await this.graphQLClient.writeRecord(
         result.model,
         result.record,
-        this.origin
+        this.originProvider.getOrigin(result.record)
       );
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
       this.timestampedRecords.push({
         model: baseModel,
         operation,
-        origin: this.origin,
+        origin: this.originProvider.getOrigin(result.record),
         ...result.record,
       } as TimestampedRecord);
       return true;

@@ -431,7 +431,18 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         await graphQLClient.loadSchema();
         await graphQLClient.resetData(origin, deleteModelEntries);
 
-        const writer = new GraphQLWriter(graphQLClient, origin, stats, this);
+        const writer = new GraphQLWriter(
+          graphQLClient,
+          config.keep_records_origin
+            ? {
+                getOrigin: (record: Dictionary<any>) => {
+                  return record.origin ?? origin;
+                },
+              }
+            : {getOrigin: () => origin},
+          stats,
+          this
+        );
 
         latestStateMessage = await this.writeEntries(
           streamContext,
