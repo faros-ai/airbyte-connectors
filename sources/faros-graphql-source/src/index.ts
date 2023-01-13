@@ -29,6 +29,8 @@ export interface GraphQLConfig extends AirbyteConfig {
   page_size?: number;
   query?: string;
   result_model?: ResultModel;
+  adapt_v1_query?: boolean;
+  legacy_v1_schema?: string;
   replace_origin_map?: string;
 }
 
@@ -70,6 +72,16 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     if (!config.graph) throw new VError('Faros graph name was not provided');
     if (config.result_model === undefined)
       throw new VError('Result model was not provided');
+    if (config.adapt_v1_query) {
+      if (!config.legacy_v1_schema)
+        throw new VError('Legacy V1 schema was not provided');
+      if (!config.query) throw new VError('GraphQL query was not provided');
+      if (config.graphql_api !== GraphQLVersion.V2)
+        throw new VError(
+          `GraphQL API version should be ${GraphQLVersion.V2}` +
+            " when 'Adapt V1 query' is enabled"
+        );
+    }
   }
 
   makeFarosClient(config: GraphQLConfig): FarosClient {

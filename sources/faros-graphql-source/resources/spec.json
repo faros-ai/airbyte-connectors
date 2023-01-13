@@ -70,8 +70,22 @@
           "Flat"
         ]
       },
-      "replace_origin_map": {
+      "adapt_v1_query": {
         "order": 7,
+        "type": "boolean",
+        "title": "Adapt V1 query",
+        "default": false,
+        "description": "Indicate that the input query conforms to the V1 schema provided in 'Legacy V1 schema' and should be translated into V2 to query the graph. Requires the 'query' and 'Legacy V1 schema' fields to be present and the 'GraphQL API' to be V2"
+      },
+      "legacy_v1_schema": {
+        "order": 8,
+        "type": "string",
+        "title": "Legacy V1 schema",
+        "description": "Legacy V1 schema as a gzip compressed, base 64 encoded text. Only used when 'Adapt V1 query' is enabled.",
+        "multiline": true
+      },
+      "replace_origin_map": {
+        "order": 9,
         "type": "string",
         "title": "Replace Records Origin",
         "description": "JSON map to replace records origin values, where each entry (origin1, origin2) indicates that the output records' origin property should be replaced from 'origin1' by 'origin2'",
