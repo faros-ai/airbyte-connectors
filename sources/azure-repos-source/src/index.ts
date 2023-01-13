@@ -10,6 +10,7 @@ import VError from 'verror';
 
 import {AzureRepoConfig, AzureRepos} from './azure-repos';
 import {PullRequests, Repositories, Users} from './streams';
+import {Commits} from './streams/commits';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -35,8 +36,9 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   }
   streams(config: AzureRepoConfig): AirbyteStreamBase[] {
     return [
-      new Repositories(config, this.logger),
+      new Commits(config, this.logger),
       new PullRequests(config, this.logger),
+      new Repositories(config, this.logger),
       new Users(config, this.logger),
     ];
   }

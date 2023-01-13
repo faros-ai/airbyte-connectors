@@ -182,65 +182,6 @@
     "supportsIterations": {
       "type": "boolean"
     },
-    "commits": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "commitId": {
-            "type": "string"
-          },
-          "comment": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          },
-          "author": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "date": {
-                "type": "string"
-              }
-            }
-          },
-          "committer": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "date": {
-                "type": "string"
-              }
-            }
-          },
-          "changeCounts": {
-            "type": "object",
-            "properties": {
-              "Edit": {
-                "type": ["number", "null"]
-              },
-              "Add": {
-                "type": ["number", "null"]
-              },
-              "Delete": {
-                "type": ["number", "null"]
-              }
-            }
-          }
-        }
-      }
-    },
     "threads": {
       "type": "array",
       "items": {

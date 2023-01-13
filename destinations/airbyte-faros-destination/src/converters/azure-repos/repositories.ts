@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
@@ -7,11 +6,9 @@ import {OrgTypeCategory, Repository} from './models';
 
 export class Repositories extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Branch',
-    'vcs_Commit',
-    'vcs_BranchCommitAssociation',
     'vcs_Organization',
     'vcs_Repository',
+    'vcs_Branch',
     'vcs_Tag',
   ];
 
@@ -25,9 +22,10 @@ export class Repositories extends AzureReposConverter {
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(repositoryItem.url);
     const organization = {uid: organizationName, source};
+    const projectRepo = this.getProjectRepo(repositoryItem);
     const repository = {
-      name: repositoryItem.name,
-      uid: repositoryItem.name,
+      name: projectRepo,
+      uid: projectRepo,
       organization,
     };
     if (!this.seenOrganizations.has(organizationName)) {
@@ -40,39 +38,21 @@ export class Repositories extends AzureReposConverter {
           htmlUrl: `https://dev.azure.com/${organizationName}`,
           type: {category: OrgTypeCategory.Organization, organizationName},
           description: organizationName,
-          createdAt: null,
           source,
         },
       });
     }
 
-    let createdAt: Date = null;
-    for (const branch of repositoryItem.branches ?? []) {
-      if (
-        createdAt == null &&
-        repositoryItem.defaultBranch.endsWith(branch.name)
-      ) {
-        createdAt = Utils.toDate(
-          branch.commits[branch.commits.length - 1].committer.date
-        );
-        break;
-      }
-    }
     res.push({
       model: 'vcs_Repository',
       record: {
-        name: repositoryItem.name,
-        uid: repositoryItem.name,
+        ...repository,
         fullName: repositoryItem.name,
         description: repositoryItem.name,
         private: repositoryItem.project.visibility == 'private',
-        language: null,
         size: repositoryItem.size,
         mainBranch: repositoryItem.defaultBranch,
         htmlUrl: repositoryItem.webUrl,
-        createdAt,
-        updatedAt: null,
-        organization,
       },
     });
 
@@ -85,27 +65,6 @@ export class Repositories extends AzureReposConverter {
           repository,
         },
       });
-      for (const commit of branch.commits ?? []) {
-        res.push({
-          model: 'vcs_Commit',
-          record: {
-            sha: commit.commitId,
-            uid: commit.commitId,
-            message: commit.comment,
-            htmlUrl: commit.remoteUrl,
-            createdAt: Utils.toDate(commit.committer.date),
-            author: {uid: commit.author.email, source},
-            repository,
-          },
-        });
-        res.push({
-          model: 'vcs_BranchCommitAssociation',
-          record: {
-            commit: {sha: commit.commitId, uid: commit.commitId, repository},
-            branch: {name: branch.name, uid: branch.name, repository},
-          },
-        });
-      }
     }
 
     for (const tag of repositoryItem.tags ?? []) {
