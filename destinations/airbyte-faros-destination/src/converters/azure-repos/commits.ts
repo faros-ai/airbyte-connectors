@@ -19,6 +19,9 @@ export class Commits extends AzureReposConverter {
     const res: DestinationRecord[] = [];
     const organizationName = this.getOrganizationFromUrl(commitItem.url);
     const organization = {uid: organizationName, source};
+
+    if (!commitItem.repository) return res;
+
     const projectRepo = this.getProjectRepo(commitItem.repository);
     const repository = {
       name: projectRepo,
