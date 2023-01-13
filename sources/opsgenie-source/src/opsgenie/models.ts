@@ -48,6 +48,42 @@ export interface Incident {
   timelines: IncidentTimeline[];
 }
 
+interface Integration {
+  type: string;
+  id: string;
+  name: string;
+}
+
+interface Report {
+  ackTime: number;
+  closeTime: number;
+  acknowledgedBy: string;
+  closedBy: string;
+}
+
+export interface Alert {
+  id: string;
+  tinyId: string;
+  alias: string;
+  message: string;
+  status: string;
+  acknowledged: boolean;
+  isSeen: boolean;
+  tags: string[];
+  snoozed: boolean;
+  snoozedUntil: string;
+  count: number;
+  lastOccurredAt: string;
+  createdAt: string;
+  updatedAt: string;
+  source: string;
+  owner: string;
+  priority: string;
+  responders: Responder[];
+  integration: Integration;
+  report: Report;
+}
+
 export interface Team {
   id: string;
   name: string;

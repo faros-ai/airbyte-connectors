@@ -31,6 +31,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   result_model?: ResultModel;
   adapt_v1_query?: boolean;
   legacy_v1_schema?: string;
+  replace_origin_map?: string;
 }
 
 export function mainCommand(): Command {

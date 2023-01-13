@@ -27,9 +27,9 @@ const queryPaths = {
   nodeIds: [],
 };
 
-let graphExists = false;
-let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
 const adapterNodes: any[] = [{k3: 'v3'}, {k4: 'v4'}];
+let graphExists: boolean;
+let nodes: any[];
 
 jest.mock('faros-js-client', () => {
   return {
@@ -77,6 +77,11 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
+
+  beforeEach(() => {
+    graphExists = false;
+    nodes = [{k1: 'v1'}, {k2: 'v2'}];
+  });
 
   test('spec', async () => {
     const source = new sut.FarosGraphSource(logger);
@@ -346,6 +351,34 @@ describe('index', () => {
         graphql_api: GraphQLVersion.V2,
         adapt_v1_query: true,
         legacy_v1_schema: legacyV1Schema,
+      })[0]
+      .readRecords(SyncMode.FULL_REFRESH, undefined, {
+        query: 'foo',
+        queryPaths,
+      });
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
+  });
+ 
+  test('remap origin', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      // origin will be replaced
+      {k1: 'v1', origin: 'originA'},
+      // origin will be left unchanged
+      {k2: 'v2', origin: 'originC'},
+      {k2: 'v3'},
+    ];
+    const iter = source
+      .streams({
+        ...BASE_CONFIG,
+        replace_origin_map: "{ \"originA\": \"originB\" }"
       })[0]
       .readRecords(SyncMode.FULL_REFRESH, undefined, {
         query: 'foo',
