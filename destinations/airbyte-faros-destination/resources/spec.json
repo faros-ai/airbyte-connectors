@@ -147,15 +147,33 @@
           "my-faros-destination"
         ]
       },
-      "dry_run": {
+      "accept_input_records_origin": {
         "order": 2,
+        "type": "boolean",
+        "title": "Accept input records origin",
+        "description": "Whether to accept the origin field (if present) of input records. If enabled, the input records origin will only be changed according to the replacements specified by 'Replace Records Origin'. Otherwise, the input records origin are ignored and overwritten.",
+        "default": false
+      },
+      "replace_origin_map": {
+        "order": 3,
+        "type": "string",
+        "title": "Replace Records Origin",
+        "description": "JSON map to replace records origin values, where each entry (origin1, origin2) indicates that the output records' origin property should be replaced from 'origin1' by 'origin2'",
+        "multiline": true,
+        "default": "{}",
+        "examples": [
+          "{ \"originA\": \"originB\" }"
+        ]
+      },
+      "dry_run": {
+        "order": 4,
         "type": "boolean",
         "title": "Dry run",
         "description": "Process all input records but avoid writing into Faros API",
         "default": false
       },
       "invalid_record_strategy": {
-        "order": 3,
+        "order": 5,
         "type": "string",
         "title": "Invalid record strategy",
         "description": "Strategy to follow to handle an invalid input record.",
@@ -166,13 +184,13 @@
         ]
       },
       "jsonata_expression": {
-        "order": 4,
+        "order": 6,
         "type": "string",
         "title": "JSONata expression",
         "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode."
       },
       "jsonata_mode": {
-        "order": 5,
+        "order": 7,
         "type": "string",
         "title": "JSONata apply mode",
         "description": "JSONata apply mode when converting input records.",
@@ -183,7 +201,7 @@
         ]
       },
       "jsonata_destination_models": {
-        "order": 6,
+        "order": 8,
         "type": "array",
         "items": {
           "type": "string"
@@ -196,7 +214,7 @@
         ]
       },
       "source_specific_configs": {
-        "order": 7,
+        "order": 9,
         "type": "object",
         "title": "Source-specific configs",
         "description": "Configuration options that apply to specific sources.",
@@ -717,7 +735,7 @@
         ]
       },
       "keep_alive": {
-        "order": 8,
+        "order": 10,
         "type": "boolean",
         "title": "HTTP Keep Alive",
         "description": "Should keep connection between client and server alive",
