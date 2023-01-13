@@ -69,17 +69,6 @@
           "Nested",
           "Flat"
         ]
-      },
-      "replace_origin_map": {
-        "order": 7,
-        "type": "string",
-        "title": "Replace Records Origin",
-        "description": "JSON map to replace records origin values, where each entry (origin1, origin2) indicates that the output records' origin property should be replaced from 'origin1' by 'origin2'",
-        "multiline": true,
-        "default": "{}",
-        "examples": [
-          "{ \"originA\": \"originB\" }"
-        ]
       }
     }
   }
