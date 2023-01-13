@@ -36,10 +36,10 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   }
   streams(config: AzureRepoConfig): AirbyteStreamBase[] {
     return [
-      new Repositories(config, this.logger),
-      new PullRequests(config, this.logger),
-      new Users(config, this.logger),
       new Commits(config, this.logger),
+      new PullRequests(config, this.logger),
+      new Repositories(config, this.logger),
+      new Users(config, this.logger),
     ];
   }
 }

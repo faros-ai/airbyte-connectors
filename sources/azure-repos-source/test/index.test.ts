@@ -87,18 +87,29 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - repositories, use full_refresh sync mode', async () => {
-    const fnRepositoriesFunc = jest.fn();
+  test('streams - commits, use full_refresh sync mode', async () => {
+    const fnPullrequestsFunc = jest.fn();
+    const repositoriesResource: any[] =
+      readTestResourceFile('repositories.json');
+    const branchesResource: any[] = readTestResourceFile('branches.json');
+    const commitsResource: any[] = readTestResourceFile('commits.json');
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
-      const repositoriesResource: any[] =
-        readTestResourceFile('repositories.json');
       return new AzureRepos(
-        DEFAULT_PAGE_SIZE,
+        1,
         {
-          get: fnRepositoriesFunc.mockResolvedValueOnce({
-            data: {value: repositoriesResource},
-          }),
+          get: fnPullrequestsFunc
+            .mockResolvedValue({
+              data: {value: []},
+            })
+            .mockResolvedValueOnce({
+              data: {value: repositoriesResource},
+            })
+            .mockResolvedValueOnce({
+              data: {value: branchesResource},
+            })
+            .mockResolvedValueOnce({data: {value: [commitsResource[0]]}})
+            .mockResolvedValueOnce({data: {value: [commitsResource[1]]}}),
         } as any,
         null,
         1,
@@ -110,19 +121,18 @@ describe('index', () => {
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams({} as any);
 
-    const repositoriesStream = streams[0];
-    const repositoryIter = repositoriesStream.readRecords(
-      SyncMode.FULL_REFRESH
-    );
-    const repositories = [];
-    for await (const repository of repositoryIter) {
-      repositories.push(repository);
+    const commitsStream = streams[0];
+    const commitIter = commitsStream.readRecords(SyncMode.FULL_REFRESH);
+    const commits = [];
+    for await (const pullrequest of commitIter) {
+      commits.push(pullrequest);
     }
-    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(3);
-    expect(repositories.map((r) => r.id)).toStrictEqual(
-      readTestResourceFile('repositories.json').map((r) => r.id)
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(6);
+    expect(commits.map((p) => p.commitId)).toStrictEqual(
+      commitsResource.map((c) => c.commitId)
     );
   });
+
   test('streams - pullrequests, use full_refresh sync mode', async () => {
     const fnPullrequestsFunc = jest.fn();
     const repositoriesResource: any[] =
@@ -179,6 +189,43 @@ describe('index', () => {
     );
   });
 
+  test('streams - repositories, use full_refresh sync mode', async () => {
+    const fnRepositoriesFunc = jest.fn();
+
+    AzureRepos.make = jest.fn().mockImplementation(() => {
+      const repositoriesResource: any[] =
+        readTestResourceFile('repositories.json');
+      return new AzureRepos(
+        DEFAULT_PAGE_SIZE,
+        {
+          get: fnRepositoriesFunc.mockResolvedValueOnce({
+            data: {value: repositoriesResource},
+          }),
+        } as any,
+        null,
+        1,
+        logger,
+        ['test'],
+        1
+      );
+    });
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams({} as any);
+
+    const repositoriesStream = streams[2];
+    const repositoryIter = repositoriesStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const repositories = [];
+    for await (const repository of repositoryIter) {
+      repositories.push(repository);
+    }
+    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(3);
+    expect(repositories.map((r) => r.id)).toStrictEqual(
+      readTestResourceFile('repositories.json').map((r) => r.id)
+    );
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
@@ -200,7 +247,7 @@ describe('index', () => {
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams({} as any);
 
-    const usersStream = streams[2];
+    const usersStream = streams[3];
     const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of userIter) {

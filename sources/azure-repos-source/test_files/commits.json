@@ -1,0 +1,46 @@
+[
+  {
+    "commitId": "00000000-0000-0000-0000-000000000003",
+    "author": {
+      "name": "Test Tester",
+      "email": "test@test.com",
+      "date": "2023-01-07T01:20:33Z"
+    },
+    "committer": {
+      "name": "Test Tester",
+      "email": "test@test.com",
+      "date": "2023-01-07T01:20:33Z"
+    },
+    "comment": "Merged PR 2: Updated AnotherFile.md",
+    "commentTruncated": true,
+    "changeCounts": {
+      "Add": 0,
+      "Edit": 1,
+      "Delete": 0
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000003",
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000003"
+  },
+  {
+    "commitId": "00000000-0000-0000-0000-000000000004",
+    "author": {
+      "name": "Test Tester",
+      "email": "test@test.com",
+      "date": "2023-01-05T18:05:31Z"
+    },
+    "committer": {
+      "name": "Test Tester",
+      "email": "test@test.com",
+      "date": "2023-01-05T18:05:31Z"
+    },
+    "comment": "Merged PR 1: Test PR 1",
+    "commentTruncated": true,
+    "changeCounts": {
+      "Add": 1,
+      "Edit": 1,
+      "Delete": 0
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000004",
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000004"
+  }
+]
