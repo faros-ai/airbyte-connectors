@@ -13,8 +13,8 @@ const POTENTIAL_MAX_DEPTH = 10;
 
 export interface JenkinsConfig extends AirbyteConfig {
   readonly server_url: string;
-  readonly user: string;
-  readonly token: string;
+  readonly user?: string;
+  readonly token?: string;
   readonly depth?: number;
   readonly pageSize?: number;
   readonly last100Builds?: boolean;
@@ -77,10 +77,10 @@ export class Jenkins {
     if (typeof config.server_url !== 'string') {
       throw new VError('server_url: must be a string');
     }
-    if (typeof config.user !== 'string') {
+    if (config.user && typeof config.user !== 'string') {
       throw new VError('user: must be a string');
     }
-    if (typeof config.token !== 'string') {
+    if (config.token && typeof config.token !== 'string') {
       throw new VError('token: must be a string');
     }
     const depthCheck = Jenkins.validateInteger(config.depth);
@@ -99,8 +99,10 @@ export class Jenkins {
       throw new VError('server_url: must be a valid url');
     }
 
-    jenkinsUrl.username = config.user;
-    jenkinsUrl.password = config.token;
+    if (config.user && config.token) {
+      jenkinsUrl.username = config.user;
+      jenkinsUrl.password = config.token;
+    }
 
     const client = jenkinsClient({
       baseUrl: jenkinsUrl.toString(),
