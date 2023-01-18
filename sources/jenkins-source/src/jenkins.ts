@@ -61,6 +61,34 @@ export class Jenkins {
     return str.replace(/%s/g, () => args[i++]);
   }
 
+  private static validateConfig(config: JenkinsConfig): void {
+    if (typeof config.server_url !== 'string') {
+      throw new VError('server_url: must be a string');
+    }
+
+    if (config.user || config.token) {
+      if (!config.user || !config.token) {
+        throw new VError('user and token must be both specified or both empty');
+      }
+
+      if (typeof config.user !== 'string') {
+        throw new VError('user: must be a string');
+      }
+      if (typeof config.token !== 'string') {
+        throw new VError('token: must be a string');
+      }
+    }
+
+    const depthCheck = Jenkins.validateInteger(config.depth);
+    if (!depthCheck[0]) {
+      throw new VError(depthCheck[1]);
+    }
+    const pageSizeCheck = Jenkins.validateInteger(config.pageSize);
+    if (!pageSizeCheck[0]) {
+      throw new VError(pageSizeCheck[1]);
+    }
+  }
+
   private static validateInteger(
     value: number
   ): [true | undefined, string | undefined] {
@@ -74,23 +102,7 @@ export class Jenkins {
   }
 
   static instance(config: JenkinsConfig, logger: AirbyteLogger): Jenkins {
-    if (typeof config.server_url !== 'string') {
-      throw new VError('server_url: must be a string');
-    }
-    if (config.user && typeof config.user !== 'string') {
-      throw new VError('user: must be a string');
-    }
-    if (config.token && typeof config.token !== 'string') {
-      throw new VError('token: must be a string');
-    }
-    const depthCheck = Jenkins.validateInteger(config.depth);
-    if (!depthCheck[0]) {
-      throw new VError(depthCheck[1]);
-    }
-    const pageSizeCheck = Jenkins.validateInteger(config.pageSize);
-    if (!pageSizeCheck[0]) {
-      throw new VError(pageSizeCheck[1]);
-    }
+    Jenkins.validateConfig(config);
 
     let jenkinsUrl: URL;
     try {
