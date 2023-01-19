@@ -215,7 +215,10 @@ export interface Goal {
   folder_id: any;
   members: readonly any[];
   owners: readonly Owner[];
-  key_results: readonly any[];
+  key_results: readonly {
+    task_ids: readonly string[];
+    subcategory_ids: readonly string[];
+  }[];
   percent_completed: number;
   history: readonly any[];
   pretty_url: string;

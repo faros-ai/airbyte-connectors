@@ -1,8 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Task} from 'faros-airbyte-common/clickup';
+import {Goal, Task} from 'faros-airbyte-common/clickup';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {ClickUpConverter} from './common';
+
+const GOAL_ID_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalId';
+const GOAL_NAME_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalName';
 
 export class Tasks extends ClickUpConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -14,6 +22,12 @@ export class Tasks extends ClickUpConverter {
     'tms_TaskProjectRelationship',
     'tms_TaskTag',
   ];
+
+  private readonly goalsStream = new StreamName('clickup', 'goals');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.goalsStream];
+  }
 
   private seenTags: Set<string> = new Set();
 
@@ -40,7 +54,7 @@ export class Tasks extends ClickUpConverter {
             ? task.priority
             : task.priority?.priority,
         status: null, // TODO
-        additionalFields: this.customFields(task), // goals
+        additionalFields: this.customFields(task, ctx), // goals
         createdAt: millisToDate(task.date_created),
         updatedAt: millisToDate(task.date_updated),
         statusChangedAt: null, // TODO
@@ -81,7 +95,7 @@ export class Tasks extends ClickUpConverter {
 
     for (const linkedTask of task.linked_tasks ?? []) {
       if (linkedTask.task_id !== task.id) {
-        continue;
+        continue; // linked_tasks is non-empty for both source and target task
       }
       results.push({
         model: 'tms_TaskDependency',
@@ -117,12 +131,31 @@ export class Tasks extends ClickUpConverter {
     return results;
   }
 
-  private customFields(task: Task): {name: string; value: string}[] {
-    return (task.custom_fields ?? [])
+  private customFields(
+    task: Task,
+    ctx: StreamContext
+  ): {name: string; value: string}[] {
+    const fields = (task.custom_fields ?? [])
       .filter((f) => f.value !== undefined)
       .map((f) => {
         return {name: f.name, value: `${f.value}`};
       });
+    for (const rec of Object.values(ctx.getAll(this.goalsStream.asString))) {
+      const goal = rec.record.data as Goal;
+      for (const target of goal.key_results ?? []) {
+        if (
+          (target.task_ids ?? []).includes(task.id) ||
+          (target.subcategory_ids ?? []).includes(task.list?.id)
+        ) {
+          fields.push(
+            {name: GOAL_ID_ADDITIONAL_FIELD_NAME, value: goal.id},
+            {name: GOAL_NAME_ADDITIONAL_FIELD_NAME, value: goal.name}
+          );
+          break; // Multiple targets in the same goal can include the same task
+        }
+      }
+    }
+    return fields;
   }
 }
 
