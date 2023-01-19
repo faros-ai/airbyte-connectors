@@ -68,7 +68,9 @@ export class Jenkins {
 
     if (config.user || config.token) {
       if (!config.user || !config.token) {
-        throw new VError('user and token must be both specified or both empty');
+        throw new VError(
+          'user and token must be either both specified or both empty'
+        );
       }
 
       if (typeof config.user !== 'string') {
