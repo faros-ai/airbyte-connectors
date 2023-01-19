@@ -28,7 +28,7 @@
       "type": "string"
     },
     "status": {
-      "type": "object",
+      "type": ["object", "null"],
       "properties": {
         "status": {
           "type": "string"
@@ -38,11 +38,14 @@
         },
         "hide_label": {
           "type": "boolean"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },
     "priority": {
-      "type": "object",
+      "type": ["object", "null"],
       "properties": {
         "priority": {
           "type": "string"
@@ -53,16 +56,16 @@
       }
     },
     "assignee": {
-      "type": "null"
+      "type": ["string", "null"]
     },
     "task_count": {
-      "type": "null"
+      "type": "integer"
     },
     "due_date": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "start_date": {
-      "type": "null"
+      "type": ["string", "null"]
     },
     "folder": {
       "type": "object",
@@ -99,7 +102,7 @@
       "type": "boolean"
     },
     "override_statuses": {
-      "type": "boolean"
+      "type": ["boolean", "null"]
     },
     "permission_level": {
       "type": "string"

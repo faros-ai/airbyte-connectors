@@ -44,7 +44,7 @@
           "type": "string"
         },
         "color": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "total_time": {
           "type": "object",
@@ -68,7 +68,7 @@
             "type": "string"
           },
           "color": {
-            "type": "string"
+            "type": ["string", "null"]
           },
           "type": {
             "type": "string"

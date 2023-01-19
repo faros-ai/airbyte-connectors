@@ -18,7 +18,6 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {ClickUpConfig} from '.';
-import {StatusHistories} from './streams/status_histories';
 
 const DEFAULT_TIMEOUT = 60_000;
 const DEFAULT_MAX_CONTENT_LENGTH = 10_000_000;
@@ -256,7 +255,7 @@ export class ClickUp {
   private async *fetchTasks(
     listId: string,
     archived: boolean,
-    lastUpdatedDate?: number
+    lastUpdatedDate?: string
   ): AsyncGenerator<Task> {
     let page = 0;
     let morePages = true;
@@ -280,12 +279,12 @@ export class ClickUp {
   }
 
   @Memoize(
-    (listId: string, lastUpdatedDate: number, fetchArchived: boolean) =>
+    (listId: string, lastUpdatedDate: string, fetchArchived: boolean) =>
       `${listId};${lastUpdatedDate};${fetchArchived}`
   )
   async tasks(
     listId: string,
-    lastUpdatedDate?: number,
+    lastUpdatedDate?: string,
     fetchArchived = false
   ): Promise<ReadonlyArray<Task>> {
     try {

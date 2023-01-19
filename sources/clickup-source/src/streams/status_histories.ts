@@ -16,7 +16,7 @@ interface StreamSlice {
   listId: string;
 }
 
-type StreamState = {[listId: string]: {lastUpdatedDate: number}};
+type StreamState = {[listId: string]: {lastUpdatedDate: string}};
 
 export class StatusHistories extends AirbyteStreamBase {
   private clickup: ClickUp;
@@ -129,7 +129,7 @@ export class StatusHistories extends AirbyteStreamBase {
     if (new Date(latestRecordUpdatedDate) > new Date(lastUpdatedDate ?? 0)) {
       return {
         ...currentStreamState,
-        [listId]: {lastUpdatedDate: latestRecordUpdatedDate},
+        [listId]: {lastUpdatedDate: `${latestRecordUpdatedDate}`},
       };
     }
     return currentStreamState;

@@ -20,8 +20,8 @@ import {Workspaces} from './streams/workspaces';
 
 export interface ClickUpConfig extends AirbyteConfig {
   token: string;
+  cutoff_days: number;
   fetch_archived?: boolean;
-  cutoff_days?: number;
   timeout?: number;
   max_content_length?: number;
   max_retries?: number;

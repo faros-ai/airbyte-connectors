@@ -28,10 +28,10 @@
       "type": "string"
     },
     "start_date": {
-      "type": "null"
+      "type": ["string", "null"]
     },
     "due_date": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "description": {
       "type": "string"
@@ -55,7 +55,7 @@
       "type": "boolean"
     },
     "folder_id": {
-      "type": "null"
+      "type": ["string", "null"]
     },
     "members": {
       "type": "array",
@@ -92,7 +92,7 @@
       "items": {}
     },
     "percent_completed": {
-      "type": "integer"
+      "type": "number"
     },
     "history": {
       "type": "array",

@@ -19,16 +19,16 @@
       "type": "string"
     },
     "custom_id": {
-      "type": "null"
+      "type": ["string", "null"]
     },
     "name": {
       "type": "string"
     },
     "text_content": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "description": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "status": {
       "type": "object",
@@ -57,7 +57,7 @@
       "type": "string"
     },
     "date_closed": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "creator": {
       "type": "object",
@@ -169,20 +169,19 @@
                   "type": "integer"
                 },
                 "assignee": {
-                  "type": "null"
+                  "type": "string"
                 },
                 "resolved": {
                   "type": "boolean"
                 },
                 "parent": {
-                  "type": "null"
+                  "type": "string"
                 },
                 "date_created": {
                   "type": "string"
                 },
                 "children": {
-                  "type": "array",
-                  "items": {}
+                  "type": "array"
                 }
               }
             }
@@ -208,22 +207,36 @@
       }
     },
     "parent": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "priority": {
-      "type": "integer"
+      "type": ["object", "null"],
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "orderindex": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        }
+      }
     },
     "due_date": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "start_date": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "points": {
-      "type": "number"
+      "type": ["integer", "null"]
     },
     "time_estimate": {
-      "type": "number"
+      "type": ["number", "null"]
     },
     "custom_fields": {
       "type": "array",
