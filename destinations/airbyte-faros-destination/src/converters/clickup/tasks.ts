@@ -10,6 +10,7 @@ export class Tasks extends ClickUpConverter {
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskBoardRelationship',
+    'tms_TaskDependency',
     'tms_TaskProjectRelationship',
     'tms_TaskTag',
   ];
@@ -58,14 +59,14 @@ export class Tasks extends ClickUpConverter {
       },
     });
 
-    for (const assignee of task.assignees) {
+    for (const assignee of task.assignees ?? []) {
       results.push({
         model: 'tms_TaskAssignment',
         record: {task: taskKey, assignee: {uid: `${assignee.id}`, source}},
       });
     }
 
-    for (const tag of task.tags) {
+    for (const tag of task.tags ?? []) {
       const label = {name: tag.name};
       results.push({
         model: 'tms_TaskTag',
@@ -76,6 +77,21 @@ export class Tasks extends ClickUpConverter {
       }
       results.push({model: 'tms_Label', record: label});
       this.seenTags.add(tag.name);
+    }
+
+    for (const linkedTask of task.linked_tasks ?? []) {
+      if (linkedTask.task_id !== task.id) {
+        continue;
+      }
+      results.push({
+        model: 'tms_TaskDependency',
+        record: {
+          dependentTask: taskKey,
+          fulfillingTask: {uid: linkedTask.link_id, source},
+          dependencyType: {category: 'RelatesTo'},
+          fulfillingType: {category: 'RelatesTo'},
+        },
+      });
     }
 
     const taskboardSources = this.taskboardSources(ctx);

@@ -65,6 +65,7 @@ describe('clickup', () => {
       tms_TaskBoard: 14,
       tms_TaskBoardProjectRelationship: 14,
       tms_TaskBoardRelationship: 27,
+      tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 9,
       tms_TaskTag: 2,
       tms_User: 3,
