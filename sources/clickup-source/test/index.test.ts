@@ -40,7 +40,7 @@ describe('index', () => {
       new VError('token must not be an empty string'),
     ]);
     await expect(
-      source.checkConnection({token: 'token'})
+      source.checkConnection({token: 'token', cutoff_days: -1})
     ).resolves.toStrictEqual([
       false,
       new VError('cutoff_days must be a positive number'),
@@ -69,7 +69,7 @@ describe('index', () => {
 
     const source = new sut.ClickUpSource(logger);
     await expect(
-      source.checkConnection({token: 'token'})
+      source.checkConnection({token: 'token', cutoff_days: 90})
     ).resolves.toStrictEqual([true, undefined]);
   });
 
@@ -91,7 +91,7 @@ describe('index', () => {
     });
 
     const source = new sut.ClickUpSource(logger);
-    const workspaces = source.streams(config)[5];
+    const workspaces = source.streams(config)[6];
     const iter = workspaces.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
