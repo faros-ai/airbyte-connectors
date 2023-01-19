@@ -1,4 +1,4 @@
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {ClickUpConverter} from './common';
 
 export class Goals extends ClickUpConverter {

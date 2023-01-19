@@ -63,9 +63,7 @@ export class Tasks extends ClickUpConverter {
         additionalFields: this.customFields(task, ctx),
         createdAt: millisToDate(task.date_created),
         updatedAt: millisToDate(task.date_updated),
-        statusChangedAt: null, // TODO
         resolvedAt: millisToDate(task.date_closed),
-        statusChangelog: null, // TODO
         parent: task.parent ? {uid: task.id, source} : null,
         creator: task.creator ? {uid: `${task.creator.id}`, source} : null,
       },
