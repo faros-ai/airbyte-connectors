@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Jenkins Spec",
     "type": "object",
-    "required": ["server_url", "user", "token"],
+    "required": ["server_url"],
     "additionalProperties": true,
     "properties": {
       "server_url": {
