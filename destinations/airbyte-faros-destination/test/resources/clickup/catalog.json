@@ -26,6 +26,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__clickup__status_histories"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__clickup__tasks"
       },
       "destination_sync_mode": "overwrite"

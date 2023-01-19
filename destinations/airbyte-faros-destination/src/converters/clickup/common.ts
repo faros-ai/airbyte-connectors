@@ -13,6 +13,27 @@ interface ClickUpConfig {
 const DEFAULT_TASKBOARD_SOURCES: ReadonlyArray<TaskBoardSource> = ['space'];
 const DEFAULT_TRUNCATE_LIMIT = 10_000;
 
+export class ClickUpCommon {
+  static normalize(str: string): string {
+    return str.replace(/\s/g, '').toLowerCase();
+  }
+
+  static statusCategory(status: string): string {
+    switch (this.normalize(status)) {
+      case 'open':
+        return 'Todo';
+      case 'todo':
+        return 'Todo';
+      case 'inprogress':
+        return 'InProgress';
+      case 'closed':
+        return 'Done';
+      default:
+        return 'Custom';
+    }
+  }
+}
+
 export abstract class ClickUpConverter extends Converter {
   source = 'ClickUp';
 

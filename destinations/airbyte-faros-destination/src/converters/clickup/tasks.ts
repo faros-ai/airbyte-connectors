@@ -7,7 +7,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {ClickUpConverter} from './common';
+import {ClickUpCommon, ClickUpConverter} from './common';
 
 const GOAL_ID_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalId';
 const GOAL_NAME_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalName';
@@ -53,7 +53,12 @@ export class Tasks extends ClickUpConverter {
           typeof task.priority === 'string'
             ? task.priority
             : task.priority?.priority,
-        status: null, // TODO
+        status: task.status?.status
+          ? {
+              category: ClickUpCommon.statusCategory(task.status.status),
+              detail: task.status.status,
+            }
+          : null,
         points: task.points,
         additionalFields: this.customFields(task, ctx),
         createdAt: millisToDate(task.date_created),

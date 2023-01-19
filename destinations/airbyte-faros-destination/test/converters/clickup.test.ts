@@ -47,6 +47,7 @@ describe('clickup', () => {
       goals: 2,
       lists: 5,
       spaces: 7,
+      status_histories: 9,
       tasks: 9,
       workspaces: 3,
     };
@@ -68,6 +69,7 @@ describe('clickup', () => {
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 9,
       tms_TaskTag: 2,
+      tms_Task__Update: 9,
       tms_User: 3,
     };
 
