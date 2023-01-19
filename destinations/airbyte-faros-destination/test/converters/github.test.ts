@@ -151,8 +151,8 @@ describe('github', () => {
       ) +
         os.EOL +
         JSON.stringify(
-          AirbyteRecord.make('mytestsource__github__something_else', {
-            foo: 'bar',
+          AirbyteRecord.make('mytestsource__github__assignees', {
+            login: 'xyz',
           })
         ) +
         os.EOL,
