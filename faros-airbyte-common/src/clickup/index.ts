@@ -232,3 +232,27 @@ interface Owner {
   color: string;
   profilePicture: string;
 }
+
+export interface StatusHistory {
+  computedProperties: {
+    task: {
+      id: string;
+      archived: boolean;
+      date_updated: string;
+      list: {id: string};
+      workspace: {id: string};
+    };
+  };
+  current_status: {
+    status: string;
+    color: string;
+    total_time: {by_minute: number; since: string};
+  };
+  status_history: readonly {
+    status: string;
+    color: string;
+    type: string;
+    total_time: {by_minute: string; since: string};
+    orderindex: number;
+  }[];
+}

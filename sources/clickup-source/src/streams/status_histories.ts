@@ -1,0 +1,137 @@
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
+import {StatusHistory} from 'faros-airbyte-common/clickup';
+import {chunk} from 'lodash';
+import {Dictionary} from 'ts-essentials';
+
+import {ClickUpConfig} from '..';
+import {ClickUp} from '../clickup';
+
+interface StreamSlice {
+  workspaceId: string;
+  listId: string;
+}
+
+type StreamState = {[listId: string]: {lastUpdatedDate: number}};
+
+export class StatusHistories extends AirbyteStreamBase {
+  private clickup: ClickUp;
+
+  constructor(
+    private readonly cfg: ClickUpConfig,
+    protected readonly logger: AirbyteLogger
+  ) {
+    super(logger);
+    this.clickup = ClickUp.instance(cfg, logger);
+  }
+
+  getJsonSchema(): Dictionary<any, string> {
+    return require('../../resources/schemas/status_histories.json');
+  }
+
+  get primaryKey(): StreamKey {
+    return ['computedProperties', 'task', 'id'];
+  }
+
+  get cursorField(): string | string[] {
+    return ['computedProperties', 'task', 'date_updated'];
+  }
+
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const workspace of await this.clickup.workspaces()) {
+      const baseSlice = {workspaceId: workspace.id};
+      for (const space of await this.clickup.spaces(
+        workspace.id,
+        this.cfg.fetch_archived
+      )) {
+        for (const list of await this.clickup.listsInSpace(
+          space.id,
+          this.cfg.fetch_archived
+        )) {
+          yield {...baseSlice, listId: list.id};
+        }
+        for (const folder of await this.clickup.folders(
+          space.id,
+          this.cfg.fetch_archived
+        )) {
+          for (const list of await this.clickup.listsInFolder(
+            folder.id,
+            this.cfg.fetch_archived
+          )) {
+            yield {...baseSlice, listId: list.id};
+          }
+        }
+      }
+    }
+  }
+
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: StreamSlice,
+    streamState?: StreamState
+  ): AsyncGenerator<StatusHistories> {
+    const listId = streamSlice.listId;
+    const lastUpdatedDate =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.[listId]?.lastUpdatedDate
+        : undefined;
+    const tasks = await this.clickup.tasks(
+      listId,
+      lastUpdatedDate,
+      this.cfg.fetch_archived
+    );
+    if (tasks.length === 0) {
+      return;
+    }
+    for (const taskChunk of chunk(tasks, 100)) {
+      const statusHistories = await this.clickup.statusHistories(
+        taskChunk.map((t) => t.id)
+      );
+      for (const [taskId, history] of Object.entries(statusHistories)) {
+        const task = taskChunk.find((t) => t.id === taskId);
+        yield {
+          computedProperties: {
+            task: {
+              id: taskId,
+              archived: task.archived,
+              date_updated: task.date_updated,
+              list: {id: listId},
+              workspace: {id: streamSlice.workspaceId},
+            },
+          },
+          ...history,
+        };
+      }
+    }
+  }
+
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: StatusHistory
+  ): StreamState {
+    // This stream fetches non-archived tasks first, then archived tasks. To
+    // avoid missing a time window of task updates, we only use non-archived
+    // tasks to update incremental state, at the cost of possibly re-fetching
+    // some archived tasks during the next sync.
+    if (latestRecord.computedProperties.task.archived) {
+      return currentStreamState;
+    }
+    const listId = latestRecord.computedProperties.task.list.id;
+    const lastUpdatedDate = currentStreamState[listId]?.lastUpdatedDate;
+    const latestRecordUpdatedDate = Number(
+      latestRecord.computedProperties.task.date_updated
+    );
+    if (new Date(latestRecordUpdatedDate) > new Date(lastUpdatedDate ?? 0)) {
+      return {
+        ...currentStreamState,
+        [listId]: {lastUpdatedDate: latestRecordUpdatedDate},
+      };
+    }
+    return currentStreamState;
+  }
+}

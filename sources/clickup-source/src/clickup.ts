@@ -18,6 +18,7 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {ClickUpConfig} from '.';
+import {StatusHistories} from './streams/status_histories';
 
 const DEFAULT_TIMEOUT = 60_000;
 const DEFAULT_MAX_CONTENT_LENGTH = 10_000_000;
@@ -114,7 +115,7 @@ export class ClickUp {
 
   private async getHandleNotFound<T = any, D = any>(
     path: string,
-    conf?: AxiosRequestConfig<D>,
+    conf: AxiosRequestConfig<D> = {},
     attempt = 1
   ): Promise<AxiosResponse<T> | undefined> {
     try {
@@ -139,9 +140,10 @@ export class ClickUp {
 
   private get<T = any>(
     path: string,
-    params: Dictionary<any> = {}
+    params: Dictionary<any> = {},
+    conf: AxiosRequestConfig<unknown> = {}
   ): Promise<AxiosResponse<T> | undefined> {
-    return this.getHandleNotFound(path, {params});
+    return this.getHandleNotFound(path, {params, ...conf});
   }
 
   async checkConnection(): Promise<void> {
@@ -322,4 +324,46 @@ export class ClickUp {
       );
     }
   }
+
+  async statusHistories(
+    taskIds: ReadonlyArray<string>
+  ): Promise<Dictionary<any>> {
+    try {
+      return (
+        await this.get(
+          `/task/bulk_time_in_status/task_ids`,
+          {
+            task_ids: taskIds,
+          },
+          {paramsSerializer: (params) => transformRequestOptions(params)}
+        )
+      ).data;
+    } catch (err) {
+      throw new VError(
+        wrapApiError(err as any),
+        'Failed to fetch status histories for tasks %o',
+        taskIds
+      );
+    }
+  }
+}
+
+// Format array parameters for GET requests
+// Src: https://github.com/axios/axios/issues/604#issuecomment-403035498
+function transformRequestOptions(params: Dictionary<any>): string {
+  let options = '';
+  for (const key in params) {
+    if (typeof params[key] !== 'object' && params[key]) {
+      options += `${key}=${params[key]}&`;
+    } else if (
+      typeof params[key] === 'object' &&
+      params[key] &&
+      params[key].length
+    ) {
+      params[key].forEach((el) => {
+        options += `${key}=${el}&`;
+      });
+    }
+  }
+  return options ? options.slice(0, -1) : options;
 }
