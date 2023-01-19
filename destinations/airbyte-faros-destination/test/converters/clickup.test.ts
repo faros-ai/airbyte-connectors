@@ -58,9 +58,15 @@ describe('clickup', () => {
       .value();
 
     const writtenByModel = {
+      tms_Label: 2,
       tms_Project: 3,
+      tms_Task: 9,
+      tms_TaskAssignment: 1,
       tms_TaskBoard: 14,
       tms_TaskBoardProjectRelationship: 14,
+      tms_TaskBoardRelationship: 27,
+      tms_TaskProjectRelationship: 9,
+      tms_TaskTag: 2,
       tms_User: 3,
     };
 

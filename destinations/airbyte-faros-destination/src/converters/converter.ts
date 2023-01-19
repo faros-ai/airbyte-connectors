@@ -79,6 +79,12 @@ export class StreamContext {
     readonly graph?: string
   ) {}
 
+  private _converterCache: Dictionary<any> = {};
+
+  get converterCache(): Dictionary<any> {
+    return this._converterCache;
+  }
+
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     {};
 

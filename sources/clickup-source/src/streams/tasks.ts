@@ -95,6 +95,10 @@ export class Tasks extends AirbyteStreamBase {
     currentStreamState: StreamState,
     latestRecord: Task
   ): StreamState {
+    // This stream fetches non-archived tasks first, then archived tasks. To
+    // avoid missing a time window of task updates, we only use non-archived
+    // tasks to update incremental state, at the cost of possibly re-fetching
+    // some archived tasks during the next sync.
     if (latestRecord.archived) {
       return currentStreamState;
     }

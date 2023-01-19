@@ -76,10 +76,10 @@ export interface List {
   content: string;
   status: {status: string; color: string; hide_label: boolean};
   priority: {priority: string; color: string};
-  assignee: null;
-  task_count: null;
+  assignee: any;
+  task_count: any;
   due_date: string;
-  start_date: null;
+  start_date: any;
   folder: {id: string; name: string; hidden?: boolean; access: boolean};
   space: {id: string; name: string; access: boolean};
   archived: boolean;
@@ -97,7 +97,7 @@ interface Status {
 export interface Task {
   computedProperties: {workspace: {id: string}};
   id: string;
-  custom_id: null;
+  custom_id: string;
   name: string;
   text_content: string;
   description: string;
@@ -113,14 +113,22 @@ export interface Task {
   checklists: readonly Checklist[];
   tags: readonly Tag[];
   parent: string;
-  priority: number;
+  priority:
+    | string
+    | {color: string; id: string; orderindex: string; priority: string};
   due_date: string;
   start_date: string;
   points: number;
   time_estimate: number;
   custom_fields: readonly CustomField[];
   dependencies: readonly any[];
-  linked_tasks: readonly any[];
+  linked_tasks: readonly {
+    task_id: string;
+    link_id: string;
+    date_created: string;
+    userid: string;
+    workspace_id: string;
+  }[];
   team_id: string;
   url: string;
   permission_level: string;
@@ -154,9 +162,9 @@ interface Item {
   id: string;
   name: string;
   orderindex: number;
-  assignee: null;
+  assignee: any;
   resolved: boolean;
-  parent: null;
+  parent: any;
   date_created: string;
   children: readonly any[];
 }
@@ -195,7 +203,7 @@ export interface Goal {
   name: string;
   team_id: string;
   date_created: string;
-  start_date: null;
+  start_date: any;
   due_date: string;
   description: string;
   private: boolean;
@@ -204,7 +212,7 @@ export interface Goal {
   color: string;
   pretty_id: string;
   multiple_owners: boolean;
-  folder_id: null;
+  folder_id: any;
   members: readonly any[];
   owners: readonly Owner[];
   key_results: readonly any[];
