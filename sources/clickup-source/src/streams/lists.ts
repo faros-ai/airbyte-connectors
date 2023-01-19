@@ -23,7 +23,7 @@ export class Lists extends AirbyteStreamBase {
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
-    this.clickup = ClickUp.make(cfg, logger);
+    this.clickup = ClickUp.instance(cfg, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {

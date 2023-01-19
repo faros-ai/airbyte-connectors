@@ -54,7 +54,7 @@ export class Tasks extends ClickUpConverter {
             ? task.priority
             : task.priority?.priority,
         status: null, // TODO
-        additionalFields: this.customFields(task, ctx), // goals
+        additionalFields: this.customFields(task, ctx),
         createdAt: millisToDate(task.date_created),
         updatedAt: millisToDate(task.date_updated),
         statusChangedAt: null, // TODO

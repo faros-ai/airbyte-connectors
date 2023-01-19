@@ -1,0 +1,12 @@
+{
+  "teams": [
+    {
+      "id": "workspace1",
+      "name": "Workspace 1"
+    },
+    {
+      "id": "workspace2",
+      "name": "Workspace 2"
+    }
+  ]
+}

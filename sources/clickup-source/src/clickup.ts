@@ -25,7 +25,7 @@ const DEFAULT_MAX_RETRIES = 3;
 const BASE_API_URL = 'https://api.clickup.com/api/v2';
 
 export class ClickUp {
-  private static instance: ClickUp = undefined;
+  private static clickup: ClickUp = undefined;
 
   constructor(
     private readonly logger: AirbyteLogger,
@@ -34,11 +34,11 @@ export class ClickUp {
     private readonly maxRetries: number
   ) {}
 
-  static make(cfg: ClickUpConfig, logger: AirbyteLogger): ClickUp {
-    if (ClickUp.instance) return ClickUp.instance;
+  static instance(cfg: ClickUpConfig, logger: AirbyteLogger): ClickUp {
+    if (ClickUp.clickup) return ClickUp.clickup;
 
     if (!cfg.token) {
-      throw new VError('api_token must not be an empty string');
+      throw new VError('token must not be an empty string');
     }
     if (!Number.isInteger(cfg.cutoff_days) || cfg.cutoff_days < 1) {
       throw new VError('cutoff_days must be a positive number');
@@ -85,8 +85,8 @@ export class ClickUp {
     const defaultStartDate = new Date();
     defaultStartDate.setDate(defaultStartDate.getDate() - cfg.cutoff_days);
 
-    ClickUp.instance = new ClickUp(logger, api, defaultStartDate, maxRetries);
-    return ClickUp.instance;
+    ClickUp.clickup = new ClickUp(logger, api, defaultStartDate, maxRetries);
+    return ClickUp.clickup;
   }
 
   private sleep(milliseconds: number): Promise<void> {
@@ -277,20 +277,26 @@ export class ClickUp {
     }
   }
 
-  async *tasks(
+  @Memoize(
+    (listId: string, lastUpdatedDate: number, fetchArchived: boolean) =>
+      `${listId};${lastUpdatedDate};${fetchArchived}`
+  )
+  async tasks(
     listId: string,
     lastUpdatedDate?: number,
     fetchArchived = false
-  ): AsyncGenerator<Task> {
+  ): Promise<ReadonlyArray<Task>> {
     try {
+      const results: Task[] = [];
       for await (const t of this.fetchTasks(listId, false, lastUpdatedDate)) {
-        yield t;
+        results.push(t);
       }
       if (fetchArchived) {
         for await (const t of this.fetchTasks(listId, true, lastUpdatedDate)) {
-          yield t;
+          results.push(t);
         }
       }
+      return results;
     } catch (err) {
       throw new VError(
         wrapApiError(err as any),

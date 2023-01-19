@@ -25,7 +25,7 @@ export class Tasks extends AirbyteStreamBase {
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
-    this.clickup = ClickUp.make(cfg, logger);
+    this.clickup = ClickUp.instance(cfg, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -79,7 +79,7 @@ export class Tasks extends AirbyteStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[listId]?.lastUpdatedDate
         : undefined;
-    for await (const task of this.clickup.tasks(
+    for (const task of await this.clickup.tasks(
       listId,
       lastUpdatedDate,
       this.cfg.fetch_archived
