@@ -144,6 +144,13 @@ export class Tasks extends ClickUpConverter {
       .map((f) => {
         return {name: f.name, value: `${f.value}`};
       });
+    // Note: Adding a ClickUp Task to a Goal does not count as a task update.
+    // Therefore, the goal will not be added to the tms_Task's additionalFields
+    // until some other update was applied to the task, forcing the task to be
+    // pulled by the next incremental sync. To resolve this limitation, we'd
+    // need to either always pull all tasks in the Airbyte Source, or always
+    // pull all tms_Tasks in the Destination to update their additionalFields.
+    // We don't have an "upsert-to-array-field" mutation type.
     for (const rec of Object.values(ctx.getAll(this.goalsStream.asString))) {
       const goal = rec.record.data as Goal;
       for (const target of goal.key_results ?? []) {
