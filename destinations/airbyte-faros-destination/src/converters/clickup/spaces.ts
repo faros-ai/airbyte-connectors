@@ -22,7 +22,7 @@ export class Spaces extends ClickUpConverter {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: space.name, source},
+          record: {uid, name: `${space.name} (space)`, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',

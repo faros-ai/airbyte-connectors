@@ -9,8 +9,8 @@ import {
 } from '../converter';
 import {ClickUpCommon, ClickUpConverter} from './common';
 
-const GOAL_ID_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalId';
-const GOAL_NAME_ADDITIONAL_FIELD_NAME = 'Faros__ClickUpGoalName';
+const GOAL_ID_ADDITIONAL_FIELD_NAME = 'faros__ClickUpGoalId';
+const GOAL_NAME_ADDITIONAL_FIELD_NAME = 'faros__ClickUpGoalName';
 
 export class Tasks extends ClickUpConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -113,23 +113,13 @@ export class Tasks extends ClickUpConverter {
     }
 
     const taskboardSources = this.taskboardSources(ctx);
-    if (task.list?.id && taskboardSources.includes('list')) {
-      results.push({
-        model: 'tms_TaskBoardRelationship',
-        record: {task: taskKey, board: {uid: task.list.id, source}},
-      });
-    }
-    if (task.folder?.id && taskboardSources.includes('folder')) {
-      results.push({
-        model: 'tms_TaskBoardRelationship',
-        record: {task: taskKey, board: {uid: task.folder.id, source}},
-      });
-    }
-    if (task.space?.id && taskboardSources.includes('space')) {
-      results.push({
-        model: 'tms_TaskBoardRelationship',
-        record: {task: taskKey, board: {uid: task.space.id, source}},
-      });
+    for (const tbSource of taskboardSources) {
+      if (task[tbSource]?.id) {
+        results.push({
+          model: 'tms_TaskBoardRelationship',
+          record: {task: taskKey, board: {uid: task[tbSource].id, source}},
+        });
+      }
     }
 
     return results;

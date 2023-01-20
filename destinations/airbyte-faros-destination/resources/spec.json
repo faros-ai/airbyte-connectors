@@ -264,7 +264,7 @@
                         "title": "TaskBoard Sources",
                         "description": "List of ClickUp task grouping types that will be mapped to tms_TaskBoards",
                         "default": ["space"],
-                        "examples": [["space", "folder", "list"]]
+                        "examples": ["space", "folder", "list"]
                       },
                       "truncate_limit": {
                         "type": "integer",

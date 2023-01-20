@@ -130,9 +130,6 @@ export class ClickUp {
         await this.maybeSleepOnResponse(path, err?.response);
         return await this.getHandleNotFound(path, conf, attempt + 1);
       }
-      if (err?.response?.status === 404) {
-        return undefined;
-      }
       throw wrapApiError(err, `Failed to get ${path}. `);
     }
   }

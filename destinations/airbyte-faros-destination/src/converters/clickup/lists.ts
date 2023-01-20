@@ -22,7 +22,7 @@ export class Lists extends ClickUpConverter {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: list.name, source},
+          record: {uid, name: `${list.name} (list)`, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',

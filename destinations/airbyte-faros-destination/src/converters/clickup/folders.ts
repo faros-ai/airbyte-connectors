@@ -22,7 +22,7 @@ export class Folders extends ClickUpConverter {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: folder.name, source},
+          record: {uid, name: `${folder.name} (folder)`, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',
