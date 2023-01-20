@@ -1,31 +1,15 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Folder} from 'faros-airbyte-common/clickup';
 import {Dictionary} from 'ts-essentials';
 
-import {ClickUpConfig} from '..';
-import {ClickUp} from '../clickup';
+import {StreamBase} from './common';
 
 interface StreamSlice {
   workspaceId: string;
   spaceId: string;
 }
 
-export class Folders extends AirbyteStreamBase {
-  private clickup: ClickUp;
-
-  constructor(
-    private readonly cfg: ClickUpConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-    this.clickup = ClickUp.instance(cfg, logger);
-  }
-
+export class Folders extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/folders.json');
   }

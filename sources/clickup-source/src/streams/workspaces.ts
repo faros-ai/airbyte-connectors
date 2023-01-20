@@ -1,18 +1,10 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
 import {Workspace} from 'faros-airbyte-common/clickup';
 import {Dictionary} from 'ts-essentials';
 
-import {ClickUpConfig} from '..';
-import {ClickUp} from '../clickup';
+import {StreamBase} from './common';
 
-export class Workspaces extends AirbyteStreamBase {
-  constructor(
-    private readonly cfg: ClickUpConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Workspaces extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/workspaces.json');
   }
@@ -22,8 +14,7 @@ export class Workspaces extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Workspace> {
-    const clickup = ClickUp.instance(this.cfg, this.logger);
-    for (const workspace of await clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces()) {
       yield workspace;
     }
   }
