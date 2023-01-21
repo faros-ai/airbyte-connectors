@@ -35,14 +35,15 @@ describe('index', () => {
 
   test('spec', async () => {
     const cli = await CLI.runWith(['spec']);
+    const maxCheckLength = 16384;
+    const expectedSpec =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
+      os.EOL;
     expect(await read(cli.stderr)).toBe('');
-    // TODO: fix unknown reason why spec is too long for test
-    // special behavior to handle spec longer than 16384 characters
-    // expect((await read(cli.stdout)).replace('\n', '')).toBe(
-    //   // eslint-disable-next-line @typescript-eslint/no-var-requires
-    //   JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
-    //     os.EOL
-    // );
+    expect((await read(cli.stdout)).substring(0, maxCheckLength)).toBe(
+      expectedSpec.substring(0, maxCheckLength)
+    );
     expect(await cli.wait()).toBe(0);
   });
 
