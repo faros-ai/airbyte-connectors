@@ -75,6 +75,115 @@ describe('index', () => {
 
   const config = {token: 'token', cutoff_days: 90, timeout: 1};
 
+  test('streams - folders', async () => {
+    const fnListFolders = jest.fn();
+    const expected = readTestResourceFile('folders.json');
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListFolders.mockResolvedValueOnce({data: expected}),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[0];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+      spaceId: 'space1',
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListFolders).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(
+      expected.folders.map((f) => {
+        return {computedProperties: {workspace: {id: 'workspace1'}}, ...f};
+      })
+    );
+  });
+
+  test('streams - goals', async () => {
+    const fnListGoals = jest.fn();
+    const expected = readTestResourceFile('goals.json');
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListGoals.mockImplementation(
+            async (path: string): Promise<any> => {
+              if (path.startsWith('/team/')) {
+                return {data: expected};
+              }
+              const goalId = path.replace('/goal/', '');
+              return {data: {goal: {id: goalId, name: goalId}}};
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[1];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListGoals).toHaveBeenCalledTimes(5);
+    const expectedGoals = [...expected.goals];
+    for (const folder of expected.folders) {
+      expectedGoals.push(...folder.goals);
+    }
+    expect(items).toStrictEqual(
+      expectedGoals.map((g) => {
+        return {computedProperties: {workspace: {id: 'workspace1'}}, ...g};
+      })
+    );
+  });
+
+  test('streams - spaces', async () => {
+    const fnListSpaces = jest.fn();
+    const expected = readTestResourceFile('spaces.json');
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListSpaces.mockResolvedValueOnce({data: expected}),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[3];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListSpaces).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(
+      expected.spaces.map((s) => {
+        return {computedProperties: {workspace: {id: 'workspace1'}}, ...s};
+      })
+    );
+  });
+
   test('streams - workspaces', async () => {
     const fnListWorkspaces = jest.fn();
     const expected = readTestResourceFile('workspaces.json');

@@ -306,11 +306,15 @@ export class ClickUp {
 
   async *goals(workspaceId: string): AsyncGenerator<Goal> {
     try {
-      const goals = (
+      const response = (
         await this.get(`/team/${workspaceId}/goal`, {include_completed: true})
-      ).data.goals;
-      for (const goal of goals) {
-        yield (await this.get(`/goal/${goal.id}`)).data.goal;
+      ).data;
+      const goalIds: string[] = response.goals.map((g) => g.id);
+      for (const folder of response.folders) {
+        goalIds.push(...folder.goals.map((g) => g.id));
+      }
+      for (const id of goalIds) {
+        yield (await this.get(`/goal/${id}`)).data.goal;
       }
     } catch (err) {
       throw new VError(

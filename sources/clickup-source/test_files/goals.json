@@ -1,0 +1,16 @@
+{
+  "goals": [
+    {"id": "goal1", "name": "goal1"},
+    {"id": "goal2", "name": "goal2"}
+  ],
+  "folders": [
+    {
+      "id": "goalfolder1",
+      "name": "Goal Folder 1",
+      "goals": [
+        {"id": "foldergoal1", "name": "foldergoal1"},
+        {"id": "foldergoal2", "name": "foldergoal2"}
+      ]
+    }
+  ]
+}

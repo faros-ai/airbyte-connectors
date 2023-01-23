@@ -9,7 +9,6 @@ import {
 } from '../converter';
 import {ClickUpCommon, ClickUpConverter} from './common';
 
-const GOAL_ID_ADDITIONAL_FIELD_NAME = 'faros__ClickUpGoalId';
 const GOAL_NAME_ADDITIONAL_FIELD_NAME = 'faros__ClickUpGoalName';
 
 export class Tasks extends ClickUpConverter {
@@ -148,10 +147,10 @@ export class Tasks extends ClickUpConverter {
           (target.task_ids ?? []).includes(task.id) ||
           (target.subcategory_ids ?? []).includes(task.list?.id)
         ) {
-          fields.push(
-            {name: GOAL_ID_ADDITIONAL_FIELD_NAME, value: goal.id},
-            {name: GOAL_NAME_ADDITIONAL_FIELD_NAME, value: goal.name}
-          );
+          fields.push({
+            name: GOAL_NAME_ADDITIONAL_FIELD_NAME,
+            value: goal.name,
+          });
           break; // Multiple targets in the same goal can include the same task
         }
       }
