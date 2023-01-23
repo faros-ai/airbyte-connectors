@@ -10,7 +10,7 @@ import {
   CustomerIONewsletter,
 } from './typings';
 
-const CUSTOMER_IO_BETA_API_URL = 'https://beta-api.customer.io/v1/api';
+const CUSTOMER_IO_BETA_API_URL = 'https://api.customer.io/v1';
 
 export interface CustomerIOConfig {
   app_api_key: string;
