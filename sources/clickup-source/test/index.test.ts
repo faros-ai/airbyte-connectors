@@ -167,6 +167,18 @@ describe('index', () => {
     );
   });
 
+  const fetchLists =
+    (expected: any) =>
+    async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+      return {
+        data: {
+          lists: expected.lists.filter(
+            (l) => l.archived === conf.params.archived ?? false
+          ),
+        },
+      };
+    };
+
   test('streams - lists', async () => {
     const fnListLists = jest.fn();
     const expected = {
@@ -180,21 +192,7 @@ describe('index', () => {
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
         logger,
-        {
-          get: fnListLists.mockImplementation(
-            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
-              {
-                return {
-                  data: {
-                    lists: expected.lists.filter(
-                      (l) => l.archived === conf.params.archived ?? false
-                    ),
-                  },
-                };
-              }
-            }
-          ),
-        } as any,
+        {get: fnListLists.mockImplementation(fetchLists(expected))} as any,
         new Date('2010-03-27T14:03:51-0800'),
         1
       );
@@ -233,21 +231,7 @@ describe('index', () => {
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
         logger,
-        {
-          get: fnListLists.mockImplementation(
-            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
-              {
-                return {
-                  data: {
-                    lists: expected.lists.filter(
-                      (l) => l.archived === conf.params.archived ?? false
-                    ),
-                  },
-                };
-              }
-            }
-          ),
-        } as any,
+        {get: fnListLists.mockImplementation(fetchLists(expected))} as any,
         new Date('2010-03-27T14:03:51-0800'),
         1
       );
@@ -438,6 +422,23 @@ describe('index', () => {
     expect(items).toStrictEqual([]);
   });
 
+  const fetchTasks =
+    (expected: any) =>
+    async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+      if (conf.params.page > 0) {
+        return {data: {tasks: []}};
+      }
+      return {
+        data: {
+          tasks: expected.tasks.filter(
+            (l) =>
+              new Date(Number(l.date_updated)) >
+              new Date(Number(conf.params.date_updated_gt))
+          ),
+        },
+      };
+    };
+
   test('streams - tasks, full sync mode', async () => {
     const fnListTasks = jest.fn();
     const expected = {
@@ -451,26 +452,7 @@ describe('index', () => {
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
         logger,
-        {
-          get: fnListTasks.mockImplementation(
-            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
-              {
-                if (conf.params.page > 0) {
-                  return {data: {tasks: []}};
-                }
-                return {
-                  data: {
-                    tasks: expected.tasks.filter(
-                      (l) =>
-                        new Date(Number(l.date_updated)) >
-                        new Date(Number(conf.params.date_updated_gt))
-                    ),
-                  },
-                };
-              }
-            }
-          ),
-        } as any,
+        {get: fnListTasks.mockImplementation(fetchTasks(expected))} as any,
         new Date('2010-03-27T14:03:51-0800'),
         1
       );
@@ -509,26 +491,7 @@ describe('index', () => {
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
         logger,
-        {
-          get: fnListTasks.mockImplementation(
-            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
-              {
-                if (conf.params.page > 0) {
-                  return {data: {tasks: []}};
-                }
-                return {
-                  data: {
-                    tasks: expected.tasks.filter(
-                      (l) =>
-                        new Date(Number(l.date_updated)) >
-                        new Date(Number(conf.params.date_updated_gt))
-                    ),
-                  },
-                };
-              }
-            }
-          ),
-        } as any,
+        {get: fnListTasks.mockImplementation(fetchTasks(expected))} as any,
         new Date('2010-03-27T14:03:51-0800'),
         1
       );
