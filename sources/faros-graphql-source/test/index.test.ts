@@ -4,11 +4,12 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import _ from 'lodash';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {GraphQLVersion, ResultModel} from '../src/index';
-import {entrySchema, readResource} from './helpers';
+import {entrySchema, legacyV1Schema, readResourceAsJSON} from './helpers';
 
 const QUERY_HASH = 'acbd18db4cc2f85cedef654fccc4a4d8';
 
@@ -26,8 +27,10 @@ const queryPaths = {
   nodeIds: [],
 };
 
-let graphExists = false;
-let nodes: any[] = [{k1: 'v1'}, {k2: 'v2'}];
+const adapterNodes: any[] = [{k3: 'v3'}, {k4: 'v4'}];
+let graphExists: boolean;
+let nodes: any[];
+
 jest.mock('faros-js-client', () => {
   return {
     FarosClient: jest.fn().mockImplementation(() => {
@@ -49,6 +52,19 @@ jest.mock('faros-js-client', () => {
         },
       };
     }),
+    QueryAdapter: jest.fn().mockImplementation(() => {
+      return {
+        nodes(): any {
+          return {
+            async *[Symbol.asyncIterator](): AsyncIterator<any> {
+              for (const item of adapterNodes) {
+                yield item;
+              }
+            },
+          };
+        },
+      };
+    }),
     toIncrementalV1: jest.fn(),
     toIncrementalV2: jest.fn(),
   };
@@ -62,10 +78,15 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  beforeEach(() => {
+    graphExists = false;
+    nodes = [{k1: 'v1'}, {k2: 'v2'}];
+  });
+
   test('spec', async () => {
     const source = new sut.FarosGraphSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResource('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -134,6 +155,48 @@ describe('index', () => {
         result_model: ResultModel.Nested,
       } as any)
     ).resolves.toStrictEqual([true, undefined]);
+  });
+
+  test('check adapter config', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    const config = {
+      api_url: 'x',
+      api_key: 'y',
+      graphql_api: GraphQLVersion.V2,
+      graph: 'default',
+      result_model: ResultModel.Nested,
+      query: 'query MyQuery { vcs { pullRequests { nodes { number } } } }',
+      adapt_v1_query: true,
+      legacy_v1_schema: 'XYZ',
+    } as any;
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
+    await expect(
+      source.checkConnection({
+        ...config,
+        graphql_api: GraphQLVersion.V1,
+      } as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        "GraphQL API version should be v2 when 'Adapt V1 query' is enabled"
+      ),
+    ]);
+    await expect(
+      source.checkConnection(_.omit(config, ['query']) as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('GraphQL query was not provided'),
+    ]);
+    await expect(
+      source.checkConnection(_.omit(config, ['legacy_v1_schema']) as any)
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Legacy V1 schema was not provided'),
+    ]);
   });
 
   test('full_refresh sync mode', async () => {
@@ -277,5 +340,28 @@ describe('index', () => {
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
       cicd_ArtifactCommit: {refreshedAtMillis: 12},
     });
+  });
+
+  test('adapt V1 query', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    const iter = source
+      .streams({
+        ...BASE_CONFIG,
+        graphql_api: GraphQLVersion.V2,
+        adapt_v1_query: true,
+        legacy_v1_schema: legacyV1Schema,
+      })[0]
+      .readRecords(SyncMode.FULL_REFRESH, undefined, {
+        query: 'foo',
+        queryPaths,
+      });
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+
+    expect(records).toMatchSnapshot();
   });
 });

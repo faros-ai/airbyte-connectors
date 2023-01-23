@@ -68,9 +68,8 @@ export class Datadog {
 
     // Add ability to change sites to other regions.
     client.setServerVariables(clientConfig, {
-        site: config.site ?? DEFAULT_SITE
+      site: config.site ?? DEFAULT_SITE,
     });
-
 
     // Beta endpoints are unstable and need to be explicitly enabled
     clientConfig.unstableOperations['v2.listIncidents'] = true;

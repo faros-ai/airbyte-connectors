@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Repos Spec",
     "type": "object",
-    "required": ["access_token", "organization", "project"],
+    "required": ["access_token", "organization"],
     "additionalProperties": true,
     "properties": {
       "access_token": {
@@ -16,9 +16,31 @@
         "type": "string",
         "title": "Azure Organization"
       },
-      "project": {
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Azure Projects",
+        "description": "Space-delimited list of projects. If empty or '*' all available projects will be processed."
+      },     
+      "branch_pattern": {
         "type": "string",
-        "title": "Azure Project"
+        "title": "Branch Name Pattern",
+        "description": "Regex pattern to match branch names.",
+        "default": "^main$"
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "The threshold after which data should be synced.",
+        "default": 90
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of items to retrieve per call. Corresponds to 'top' parameter in Azure DevOps API.",
+        "default": 100
       },
       "api_version": {
         "type": "string",
@@ -29,23 +51,6 @@
         "type": "string",
         "title": "Graph API Version",
         "default": "7.1-preview.1"
-      },
-      "page_size": {
-        "type": "integer",
-        "title": "Page Size",
-        "description": "The number of items to retrieve per call. Corresponds to 'top' parameter in Azure DevOps API.",
-        "default": 100
-      },
-      "max_commits_per_branch": {
-        "type": "integer",
-        "title": "Max Commits per Branch",
-        "description": "The max number of commits to retrieve per repository branch.",
-        "default": 1000
-      },
-      "branch_pattern": {
-        "type": "string",
-        "title": "Branch Name Pattern",
-        "description": "Regex pattern to match branch names."
       },
       "request_timeout": {
         "type": "integer",

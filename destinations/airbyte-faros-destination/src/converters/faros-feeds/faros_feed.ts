@@ -38,23 +38,7 @@ export class FarosFeed extends Converter {
     const [model, rec] = Object.entries(data).pop();
 
     if (this.schema) {
-      if (model.endsWith('__Update')) {
-        for (const key of ['mask', 'patch', 'where']) {
-          this.schema.fixTimestampFields(
-            rec[key],
-            model.replace('__Update', '')
-          );
-        }
-      } else if (model.endsWith('__Deletion')) {
-        this.schema.fixTimestampFields(
-          rec['where'],
-          model.replace('__Deletion', '')
-        );
-      } else if (model.endsWith('__Upsert')) {
-        this.schema.fixTimestampFields(rec, model.replace('__Upsert', ''));
-      } else {
-        this.schema.fixTimestampFields(rec, model);
-      }
+      this.schema.fixTimestampFields(rec, model);
     }
 
     return [{model, record: rec}];

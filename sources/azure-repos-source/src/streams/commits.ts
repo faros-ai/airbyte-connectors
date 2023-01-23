@@ -7,9 +7,9 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepoConfig, AzureRepos} from '../azure-repos';
-import {PullRequest} from '../models';
+import {Commit} from '../models';
 
-export class PullRequests extends AirbyteStreamBase {
+export class Commits extends AirbyteStreamBase {
   constructor(
     private readonly config: AzureRepoConfig,
     protected readonly logger: AirbyteLogger
@@ -18,34 +18,28 @@ export class PullRequests extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/pullrequests.json');
+    return require('../../resources/schemas/commits.json');
   }
 
   get primaryKey(): StreamKey {
-    return 'pullRequestId';
+    return 'commitId';
   }
 
   get cursorField(): string | string[] {
-    return 'closedDate';
+    return ['committer', 'date'];
   }
 
   getUpdatedState(
     currentStreamState: Dictionary<any>,
-    latestPR: PullRequest
+    latestCommit: Commit
   ): Dictionary<any> {
-    const newStreamState = currentStreamState;
-
-    if (latestPR.status === 'completed') {
-      return {
-        cutoff:
-          new Date(latestPR.closedDate) >
-          new Date(currentStreamState?.cutoff ?? 0)
-            ? latestPR.closedDate
-            : currentStreamState.cutoff,
-      };
-    }
-
-    return newStreamState;
+    return {
+      cutoff:
+        new Date(latestCommit.committer.date) >
+        new Date(currentStreamState?.cutoff ?? 0)
+          ? latestCommit.committer.date
+          : currentStreamState.cutoff,
+    };
   }
 
   async *readRecords(
@@ -53,13 +47,11 @@ export class PullRequests extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: any,
     streamState?: any
-  ): AsyncGenerator<PullRequest> {
+  ): AsyncGenerator<Commit> {
     const since =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCompletedPR
-        : undefined;
+      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
     const azureRepos = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepos.getPullRequests(since);
+    yield* azureRepos.getCommits(since);
   }
 }

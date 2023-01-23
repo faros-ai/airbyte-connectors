@@ -7,11 +7,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {
-  AzureRepos,
-  DEFAULT_MAX_COMMITS_PER_BRANCH,
-  DEFAULT_PAGE_SIZE,
-} from '../src/azure-repos';
+import {AzureRepos, DEFAULT_PAGE_SIZE} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepos.make;
@@ -49,17 +45,22 @@ describe('index', () => {
     AzureRepos.make = jest.fn().mockImplementation(() => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
+      const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
         DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
           get: jest.fn().mockResolvedValueOnce({
             data: {value: repositoriesResource},
           }),
         } as any,
-        null,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any,
         1,
-        logger
+        logger,
+        ['test']
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -86,65 +87,89 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - repositories, use full_refresh sync mode', async () => {
-    const fnRepositoriesFunc = jest.fn();
+  test('streams - commits, use full_refresh sync mode', async () => {
+    const fnPullrequestsFunc = jest.fn();
+    const repositoriesResource: any[] =
+      readTestResourceFile('repositories.json');
+    const branchesResource: any[] = readTestResourceFile('branches.json');
+    const commitsResource: any[] = readTestResourceFile('commits.json');
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
-      const repositoriesResource: any[] =
-        readTestResourceFile('repositories.json');
       return new AzureRepos(
-        DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
+        1,
         {
-          get: fnRepositoriesFunc.mockResolvedValueOnce({
-            data: {value: repositoriesResource},
-          }),
+          get: fnPullrequestsFunc
+            .mockResolvedValue({
+              data: {value: []},
+            })
+            .mockResolvedValueOnce({
+              data: {value: repositoriesResource},
+            })
+            .mockResolvedValueOnce({
+              data: {value: branchesResource},
+            })
+            .mockResolvedValueOnce({data: {value: [commitsResource[0]]}})
+            .mockResolvedValueOnce({data: {value: [commitsResource[1]]}}),
         } as any,
         null,
         1,
-        logger
+        logger,
+        ['test'],
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams({} as any);
 
-    const repositoriesStream = streams[0];
-    const repositoryIter = repositoriesStream.readRecords(
-      SyncMode.FULL_REFRESH
-    );
-    const repositories = [];
-    for await (const repository of repositoryIter) {
-      repositories.push(repository);
+    const commitsStream = streams[0];
+    const commitIter = commitsStream.readRecords(SyncMode.FULL_REFRESH);
+    const commits = [];
+    for await (const pullrequest of commitIter) {
+      commits.push(pullrequest);
     }
-    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(3);
-    expect(repositories.map((r) => r.id)).toStrictEqual(
-      readTestResourceFile('repositories.json').map((r) => r.id)
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(6);
+    expect(commits.map((p) => p.commitId)).toStrictEqual(
+      commitsResource.map((c) => c.commitId)
     );
   });
+
   test('streams - pullrequests, use full_refresh sync mode', async () => {
     const fnPullrequestsFunc = jest.fn();
+    const repositoriesResource: any[] =
+      readTestResourceFile('repositories.json');
+    const branchesResource: any[] = readTestResourceFile('branches.json');
+    const pullrequestsResource: any[] =
+      readTestResourceFile('pullrequests.json');
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
-      const pullrequestsResource: any[] =
-        readTestResourceFile('pullrequests.json');
       return new AzureRepos(
         1,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         {
           get: fnPullrequestsFunc
+            .mockResolvedValue({
+              data: {value: []},
+            })
+            .mockResolvedValueOnce({
+              data: {value: repositoriesResource},
+            })
+            .mockResolvedValueOnce({
+              data: {value: branchesResource},
+            })
             .mockResolvedValueOnce({
               data: {value: [pullrequestsResource[0]]},
             })
             .mockResolvedValueOnce({
-              data: {value: [pullrequestsResource[1]]},
+              data: {value: []},
             })
             .mockResolvedValueOnce({
-              data: {value: []},
+              data: {value: [pullrequestsResource[1]]},
             }),
         } as any,
         null,
         1,
-        logger
+        logger,
+        ['test'],
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -158,9 +183,46 @@ describe('index', () => {
     for await (const pullrequest of pullrequestIter) {
       pullrequests.push(pullrequest);
     }
-    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(7);
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(8);
     expect(pullrequests.map((p) => p.pullRequestId)).toStrictEqual(
-      readTestResourceFile('pullrequests.json').map((p) => p.pullRequestId)
+      pullrequestsResource.map((p) => p.pullRequestId)
+    );
+  });
+
+  test('streams - repositories, use full_refresh sync mode', async () => {
+    const fnRepositoriesFunc = jest.fn();
+
+    AzureRepos.make = jest.fn().mockImplementation(() => {
+      const repositoriesResource: any[] =
+        readTestResourceFile('repositories.json');
+      return new AzureRepos(
+        DEFAULT_PAGE_SIZE,
+        {
+          get: fnRepositoriesFunc.mockResolvedValueOnce({
+            data: {value: repositoriesResource},
+          }),
+        } as any,
+        null,
+        1,
+        logger,
+        ['test'],
+        1
+      );
+    });
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams({} as any);
+
+    const repositoriesStream = streams[2];
+    const repositoryIter = repositoriesStream.readRecords(
+      SyncMode.FULL_REFRESH
+    );
+    const repositories = [];
+    for await (const repository of repositoryIter) {
+      repositories.push(repository);
+    }
+    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(3);
+    expect(repositories.map((r) => r.id)).toStrictEqual(
+      readTestResourceFile('repositories.json').map((r) => r.id)
     );
   });
 
@@ -171,7 +233,6 @@ describe('index', () => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
         DEFAULT_PAGE_SIZE,
-        DEFAULT_MAX_COMMITS_PER_BRANCH,
         null,
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -179,13 +240,14 @@ describe('index', () => {
           }),
         } as any,
         1,
-        logger
+        logger,
+        ['test']
       );
     });
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams({} as any);
 
-    const usersStream = streams[2];
+    const usersStream = streams[3];
     const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of userIter) {

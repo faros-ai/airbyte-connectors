@@ -23,7 +23,6 @@ export interface Branch {
   aheadCount: number;
   behindCount: number;
   isBaseVersion: boolean;
-  commits: Commit[];
 }
 
 interface TagCommitObject {
@@ -167,6 +166,15 @@ export interface Commit {
   changeCounts: CommitChange;
   url: string;
   remoteUrl: string;
+  repository: CommitRepository;
+  branch: Branch;
+}
+
+export interface CommitRepository {
+  id: string;
+  name: string;
+  url: string;
+  project: Project;
 }
 
 interface Href {

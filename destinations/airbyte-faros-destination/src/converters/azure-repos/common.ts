@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
 import {
+  CommitRepository,
   PullRequestReviewState,
   PullRequestReviewStateCategory,
   PullRequestState,
@@ -23,6 +24,18 @@ export abstract class AzureReposConverter extends Converter {
 
   getOrganizationFromUrl(url: string): string {
     return url.split('/')[3];
+  }
+
+  /**
+   * Azure repos have an additional hierarchy called 'project'.
+   * Repository names are not unique across projects so we must include
+   * the project name to make sure there are no collisions.
+   *
+   * @param repository  The repository info which contains project info
+   * @returns           The identifier for a repo unique across projects
+   */
+  getProjectRepo(repository: CommitRepository): string {
+    return `${repository?.project?.name}_${repository?.name}`;
   }
 
   convertStringToNumber(str: string): number {
