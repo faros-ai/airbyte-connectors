@@ -77,6 +77,9 @@ export class AzureRepos {
     if (!config.organization) {
       throw new VError('organization must not be an empty string');
     }
+    if (config.projects?.length > 1 && config.projects?.includes('*')) {
+      throw new VError('Projects provided in addition to * keyword');
+    }
 
     const base64EncodedAccessToken = Buffer.from(
       `${':'}${config.access_token}`,
