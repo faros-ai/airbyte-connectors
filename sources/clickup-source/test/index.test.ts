@@ -1,3 +1,4 @@
+import {AxiosRequestConfig} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
@@ -12,10 +13,6 @@ import * as sut from '../src/index';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
 describe('index', () => {
@@ -58,9 +55,7 @@ describe('index', () => {
       return new ClickUp(
         logger,
         {
-          get: jest
-            .fn()
-            .mockResolvedValue({data: readTestResourceFile('workspaces.json')}),
+          get: jest.fn().mockResolvedValue({data: {teams: [{id: 'w1'}]}}),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
         1
@@ -77,7 +72,12 @@ describe('index', () => {
 
   test('streams - folders', async () => {
     const fnListFolders = jest.fn();
-    const expected = readTestResourceFile('folders.json');
+    const expected = {
+      folders: [
+        {id: 'folder1', name: 'Folder 1'},
+        {id: 'folder2', name: 'Folder 2'},
+      ],
+    };
 
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
@@ -110,7 +110,22 @@ describe('index', () => {
 
   test('streams - goals', async () => {
     const fnListGoals = jest.fn();
-    const expected = readTestResourceFile('goals.json');
+    const expected = {
+      goals: [
+        {id: 'goal1', name: 'goal1'},
+        {id: 'goal2', name: 'goal2'},
+      ],
+      folders: [
+        {
+          id: 'goalfolder1',
+          name: 'Goal Folder 1',
+          goals: [
+            {id: 'foldergoal1', name: 'foldergoal1'},
+            {id: 'foldergoal2', name: 'foldergoal2'},
+          ],
+        },
+      ],
+    };
 
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
@@ -152,9 +167,118 @@ describe('index', () => {
     );
   });
 
+  test('streams - lists', async () => {
+    const fnListLists = jest.fn();
+    const expected = {
+      lists: [
+        {id: 'list1', name: 'List 1', archived: false},
+        {id: 'list2', name: 'List 2', archived: false},
+        {id: 'list3', name: 'List 3', archived: true},
+      ],
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListLists.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                return {
+                  data: {
+                    lists: expected.lists.filter(
+                      (l) => l.archived === conf.params.archived ?? false
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[2];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+      parent: {type: 'space', id: 'space1'},
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListLists).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(
+      expected.lists
+        .filter((l) => l.archived === false)
+        .map((l) => {
+          return {computedProperties: {workspace: {id: 'workspace1'}}, ...l};
+        })
+    );
+  });
+
+  test('streams - lists, fetch archived', async () => {
+    const fnListLists = jest.fn();
+    const expected = {
+      lists: [
+        {id: 'list1', name: 'List 1', archived: false},
+        {id: 'list2', name: 'List 2', archived: false},
+        {id: 'list3', name: 'List 3', archived: true},
+      ],
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListLists.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                return {
+                  data: {
+                    lists: expected.lists.filter(
+                      (l) => l.archived === conf.params.archived ?? false
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams({...config, fetch_archived: true})[2];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+      parent: {type: 'space', id: 'space1'},
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListLists).toHaveBeenCalledTimes(2);
+    expect(items).toStrictEqual(
+      expected.lists.map((l) => {
+        return {computedProperties: {workspace: {id: 'workspace1'}}, ...l};
+      })
+    );
+  });
+
   test('streams - spaces', async () => {
     const fnListSpaces = jest.fn();
-    const expected = readTestResourceFile('spaces.json');
+    const expected = {
+      spaces: [
+        {id: 'space1', name: 'Space 1'},
+        {id: 'space2', name: 'Space 2'},
+      ],
+    };
 
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
@@ -184,9 +308,265 @@ describe('index', () => {
     );
   });
 
+  test('streams - status histories, full sync mode', async () => {
+    const fnListTasks = jest.fn();
+    const expectedTasks = {
+      tasks: [
+        {
+          id: 'task1',
+          name: 'Task 1',
+          archived: false,
+          date_updated: `${Date.now()}`,
+        },
+      ],
+    };
+    const expectedStatusHistories = {
+      task1: {status_history: [{status: 'open', total_time: {since: '0'}}]},
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListTasks.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                if (path.includes('bulk_time_in_status')) {
+                  return {data: expectedStatusHistories};
+                }
+                if (conf.params.page > 0) {
+                  return {data: {tasks: []}};
+                }
+                return {
+                  data: {
+                    tasks: expectedTasks.tasks.filter(
+                      (l) =>
+                        new Date(Number(l.date_updated)) >
+                        new Date(Number(conf.params.date_updated_gt))
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[4];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+      listId: 'list1',
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+
+    expect(fnListTasks).toHaveBeenCalledTimes(3);
+    expect(items).toStrictEqual([
+      {
+        computedProperties: {
+          task: {
+            id: 'task1',
+            archived: false,
+            date_updated: expectedTasks.tasks[0].date_updated,
+            list: {id: 'list1'},
+            workspace: {id: 'workspace1'},
+          },
+        },
+        status_history: expectedStatusHistories.task1.status_history,
+      },
+    ]);
+  });
+
+  test('streams - status histories, incremental sync mode', async () => {
+    const fnListTasks = jest.fn();
+    const expectedTasks = {
+      tasks: [
+        {id: 'task1', name: 'Task 1', archived: false, date_updated: `1`},
+      ],
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListTasks.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                return {
+                  data: {
+                    tasks: expectedTasks.tasks.filter(
+                      (l) =>
+                        new Date(Number(l.date_updated)) >
+                        new Date(Number(conf.params.date_updated_gt))
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[4];
+    const iter = spaces.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {
+        workspaceId: 'workspace1',
+        listId: 'list1',
+      },
+      {
+        list1: {lastUpdateDate: '1'},
+      }
+    );
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+
+    expect(fnListTasks).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual([]);
+  });
+
+  test('streams - tasks, full sync mode', async () => {
+    const fnListTasks = jest.fn();
+    const expected = {
+      tasks: [
+        {id: 'task1', name: 'Task 1', date_updated: '0'},
+        {id: 'task2', name: 'Task 2', date_updated: `${Date.now()}`},
+        {id: 'task3', name: 'Task 2', date_updated: `${Date.now()}`},
+      ],
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListTasks.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                if (conf.params.page > 0) {
+                  return {data: {tasks: []}};
+                }
+                return {
+                  data: {
+                    tasks: expected.tasks.filter(
+                      (l) =>
+                        new Date(Number(l.date_updated)) >
+                        new Date(Number(conf.params.date_updated_gt))
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[5];
+    const iter = spaces.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      workspaceId: 'workspace1',
+      listId: 'list1',
+    });
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListTasks).toHaveBeenCalledTimes(2);
+    expect(items).toStrictEqual(
+      expected.tasks
+        .filter((t) => t.date_updated > '0')
+        .map((s) => {
+          return {computedProperties: {workspace: {id: 'workspace1'}}, ...s};
+        })
+    );
+  });
+
+  test('streams - tasks, incremental sync mode', async () => {
+    const fnListTasks = jest.fn();
+    const expected = {
+      tasks: [
+        {id: 'task1', name: 'Task 1', date_updated: '1'},
+        {id: 'task2', name: 'Task 2', date_updated: '2'},
+        {id: 'task3', name: 'Task 2', date_updated: '3'},
+      ],
+    };
+
+    ClickUp.instance = jest.fn().mockImplementation(() => {
+      return new ClickUp(
+        logger,
+        {
+          get: fnListTasks.mockImplementation(
+            async (path: string, conf: AxiosRequestConfig): Promise<any> => {
+              {
+                if (conf.params.page > 0) {
+                  return {data: {tasks: []}};
+                }
+                return {
+                  data: {
+                    tasks: expected.tasks.filter(
+                      (l) =>
+                        new Date(Number(l.date_updated)) >
+                        new Date(Number(conf.params.date_updated_gt))
+                    ),
+                  },
+                };
+              }
+            }
+          ),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+
+    const source = new sut.ClickUpSource(logger);
+    const spaces = source.streams(config)[5];
+    const iter = spaces.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {
+        workspaceId: 'workspace1',
+        listId: 'list1',
+      },
+      {list1: {lastUpdatedDate: '1'}}
+    );
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListTasks).toHaveBeenCalledTimes(2);
+    expect(items).toStrictEqual(
+      expected.tasks
+        .filter((t) => t.date_updated > '1')
+        .map((s) => {
+          return {computedProperties: {workspace: {id: 'workspace1'}}, ...s};
+        })
+    );
+  });
+
   test('streams - workspaces', async () => {
     const fnListWorkspaces = jest.fn();
-    const expected = readTestResourceFile('workspaces.json');
+    const expected = {
+      teams: [
+        {id: 'workspace1', name: 'Workspace 1'},
+        {id: 'workspace2', name: 'Workspace 2'},
+      ],
+    };
 
     ClickUp.instance = jest.fn().mockImplementation(() => {
       return new ClickUp(
