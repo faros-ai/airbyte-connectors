@@ -25,6 +25,9 @@ export const bitbucketAllStreamsLog = readTestResourceFile(
 export const bitbucketServerAllStreamsLog = readTestResourceFile(
   'bitbucket-server/all-streams.log'
 );
+export const clickupAllStreamsLog = readTestResourceFile(
+  'clickup/all-streams.log'
+);
 export const dockerAllStreamsLog = readTestResourceFile(
   'docker/all-streams.log'
 );

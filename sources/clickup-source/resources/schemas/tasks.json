@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "computedProperties": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "id": {
+      "type": "string"
+    },
+    "custom_id": {
+      "type": ["string", "null"]
+    },
+    "name": {
+      "type": "string"
+    },
+    "text_content": {
+      "type": ["string", "null"]
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "orderindex": {
+          "type": "integer"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "orderindex": {
+      "type": "string"
+    },
+    "date_created": {
+      "type": "string"
+    },
+    "date_updated": {
+      "type": "string"
+    },
+    "date_closed": {
+      "type": ["string", "null"]
+    },
+    "creator": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "profilePicture": {
+          "type": "string"
+        }
+      }
+    },
+    "assignees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "watchers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "checklists": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "date_created": {
+            "type": "string"
+          },
+          "orderindex": {
+            "type": "integer"
+          },
+          "creator": {
+            "type": "integer"
+          },
+          "resolved": {
+            "type": "integer"
+          },
+          "unresolved": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "orderindex": {
+                  "type": "integer"
+                },
+                "assignee": {
+                  "type": "string"
+                },
+                "resolved": {
+                  "type": "boolean"
+                },
+                "parent": {
+                  "type": "string"
+                },
+                "date_created": {
+                  "type": "string"
+                },
+                "children": {
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tag_fg": {
+            "type": "string"
+          },
+          "tag_bg": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "parent": {
+      "type": ["string", "null"]
+    },
+    "priority": {
+      "type": ["object", "null"],
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "orderindex": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        }
+      }
+    },
+    "due_date": {
+      "type": ["string", "null"]
+    },
+    "start_date": {
+      "type": ["string", "null"]
+    },
+    "points": {
+      "type": ["integer", "null"]
+    },
+    "time_estimate": {
+      "type": ["number", "null"]
+    },
+    "custom_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "type_config": {
+            "type": "object",
+            "properties": {}
+          },
+          "date_created": {
+            "type": "string"
+          },
+          "hide_from_guests": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {}
+    },
+    "linked_tasks": {
+      "type": "array",
+      "items": {}
+    },
+    "team_id": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "permission_level": {
+      "type": "string"
+    },
+    "list": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "folder": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "space": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

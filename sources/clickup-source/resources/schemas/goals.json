@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "computedProperties": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "team_id": {
+      "type": "string"
+    },
+    "date_created": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": ["string", "null"]
+    },
+    "due_date": {
+      "type": ["string", "null"]
+    },
+    "description": {
+      "type": "string"
+    },
+    "private": {
+      "type": "boolean"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "creator": {
+      "type": "integer"
+    },
+    "color": {
+      "type": "string"
+    },
+    "pretty_id": {
+      "type": "string"
+    },
+    "multiple_owners": {
+      "type": "boolean"
+    },
+    "folder_id": {
+      "type": ["string", "null"]
+    },
+    "members": {
+      "type": "array",
+      "items": {}
+    },
+    "owners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "initials": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "key_results": {
+      "type": "array",
+      "items": {}
+    },
+    "percent_completed": {
+      "type": "number"
+    },
+    "history": {
+      "type": "array",
+      "items": {}
+    },
+    "pretty_url": {
+      "type": "string"
+    }
+  }
+}

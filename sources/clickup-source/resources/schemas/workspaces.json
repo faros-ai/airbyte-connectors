@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "avatar": {
+      "type": ["string", "null"]
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              },
+              "profilePicture": {
+                "type": "string"
+              },
+              "initials": {
+                "type": "string"
+              },
+              "role": {
+                "type": "integer"
+              },
+              "last_active": {
+                "type": "string"
+              },
+              "date_joined": {
+                "type": "string"
+              },
+              "date_invited": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

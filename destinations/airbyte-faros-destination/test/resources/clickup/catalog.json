@@ -1,0 +1,46 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__clickup__folders"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__goals"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__lists"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__spaces"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__status_histories"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__tasks"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__clickup__workspaces"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}
