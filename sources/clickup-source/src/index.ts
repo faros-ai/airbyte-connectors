@@ -21,6 +21,7 @@ import {Workspaces} from './streams/workspaces';
 export interface ClickUpConfig extends AirbyteConfig {
   token: string;
   cutoff_days: number;
+  workspaces?: ReadonlyArray<string>;
   fetch_archived?: boolean;
   timeout?: number;
   max_content_length?: number;
@@ -43,7 +44,7 @@ export class ClickUpSource extends AirbyteSourceBase<ClickUpConfig> {
   async checkConnection(config: ClickUpConfig): Promise<[boolean, VError]> {
     try {
       const clickup = ClickUp.instance(config, this.logger);
-      await clickup.checkConnection();
+      await clickup.checkConnection(config);
     } catch (error: any) {
       return [false, error];
     }

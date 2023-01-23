@@ -18,7 +18,9 @@ export class Goals extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const workspace of await this.clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces(
+      this.cfg.workspaces
+    )) {
       yield {
         workspaceId: workspace.id,
       };

@@ -142,17 +142,21 @@ export class ClickUp {
     return this.getHandleNotFound(path, {params, ...conf});
   }
 
-  async checkConnection(): Promise<void> {
-    const workspaces = await this.workspaces();
+  async checkConnection(config: ClickUpConfig): Promise<void> {
+    const workspaces = await this.workspaces(config.workspaces);
     if (workspaces.length <= 0) {
       throw new VError('No workspaces were found');
     }
   }
 
   @Memoize()
-  async workspaces(): Promise<ReadonlyArray<Workspace>> {
+  async workspaces(
+    include: ReadonlyArray<string> = []
+  ): Promise<ReadonlyArray<Workspace>> {
     try {
-      return (await this.get('/team')).data.teams;
+      return (await this.get('/team')).data.teams.filter(
+        (t) => include.length === 0 || include.includes(t.name)
+      );
     } catch (err) {
       throw new VError(wrapApiError(err as any), 'Failed to fetch workspaces');
     }

@@ -13,6 +13,13 @@
         "description": "ClickUp API Token. Follow the instructions at https://clickup.com/api/developer-portal/authentication#generate-your-personal-api-token to generate this token.",
         "airbyte_secret": true
       },
+      "workspaces": {
+        "type": "array",
+        "title": "Workspaces",
+        "items": {"type": "string"},
+        "description": "Names of ClickUp workspaces to sync. If left blank, all workspaces will be synced.",
+        "examples": ["My Workspace Name"]
+      },
       "fetch_archived": {
         "type": "boolean",
         "title": "Fetch Archived Data",

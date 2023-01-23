@@ -19,7 +19,9 @@ export class Folders extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const workspace of await this.clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces(
+      this.cfg.workspaces
+    )) {
       for (const space of await this.clickup.spaces(
         workspace.id,
         this.cfg.fetch_archived

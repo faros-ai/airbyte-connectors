@@ -19,7 +19,9 @@ export class Lists extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const workspace of await this.clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces(
+      this.cfg.workspaces
+    )) {
       const baseSlice = {workspaceId: workspace.id};
       for (const space of await this.clickup.spaces(
         workspace.id,

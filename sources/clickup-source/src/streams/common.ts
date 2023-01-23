@@ -23,7 +23,9 @@ export interface ListStreamSlice {
 // Base stream class that generates stream slices for all ClickUp task Lists
 export abstract class StreamWithListSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ListStreamSlice> {
-    for (const workspace of await this.clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces(
+      this.cfg.workspaces
+    )) {
       const baseSlice = {workspaceId: workspace.id};
       for (const space of await this.clickup.spaces(
         workspace.id,

@@ -14,7 +14,9 @@ export class Workspaces extends StreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Workspace> {
-    for (const workspace of await this.clickup.workspaces()) {
+    for (const workspace of await this.clickup.workspaces(
+      this.cfg.workspaces
+    )) {
       yield workspace;
     }
   }
