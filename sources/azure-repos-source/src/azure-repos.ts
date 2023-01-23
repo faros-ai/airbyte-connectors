@@ -153,7 +153,7 @@ export class AzureRepos {
   }
 
   private async initializeProjects(): Promise<void> {
-    if (!this.projects?.length) {
+    if (!this.projects?.length || this.projects[0] === '*') {
       this.projects = await this.listProjects();
     }
 

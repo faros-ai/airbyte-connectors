@@ -18,8 +18,11 @@
       },
       "projects": {
         "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Azure Projects",
-        "description": "Space-delimited list of projects. (e.g. documentation models). If empty all available projects will be processed."
+        "description": "Space-delimited list of projects. If empty or '*' all available projects will be processed."
       },     
       "branch_pattern": {
         "type": "string",
