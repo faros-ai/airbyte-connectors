@@ -34,7 +34,7 @@
       "type": ["string", "null"]
     },
     "description": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "private": {
       "type": "boolean"
