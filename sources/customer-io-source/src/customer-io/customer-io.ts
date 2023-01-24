@@ -10,7 +10,7 @@ import {
   CustomerIONewsletter,
 } from './typings';
 
-const CUSTOMER_IO_BETA_API_URL = 'https://api.customer.io/v1';
+const CUSTOMER_IO_API_URL = 'https://api.customer.io/v1';
 
 export interface CustomerIOConfig {
   app_api_key: string;
@@ -35,7 +35,7 @@ export class CustomerIO {
     return new CustomerIO(
       axiosInstance ??
         axios.create({
-          baseURL: CUSTOMER_IO_BETA_API_URL,
+          baseURL: CUSTOMER_IO_API_URL,
           timeout: 30000,
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},
