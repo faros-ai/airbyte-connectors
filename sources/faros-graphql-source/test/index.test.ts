@@ -342,6 +342,41 @@ describe('index', () => {
     });
   });
 
+  test('replace root node IDs with model keys', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    nodes = [
+      {
+        id: 'HmNpY2RfRGVwbG95bWVudCACDEdpdEh1YgIMMC4yNy4w',
+        metadata: {refreshedAt: 12},
+      },
+    ];
+    const stream = source.streams({
+      ...BASE_CONFIG,
+      result_model: ResultModel.Flat,
+    })[0];
+    const iter = stream.readRecords(SyncMode.INCREMENTAL, undefined, {
+      incremental: true,
+      query: 'foo',
+      queryPaths: {
+        model: {
+          modelName: 'cicd_Deployment',
+          path: ['cicd', 'deployments', 'nodes'],
+        },
+        nodeIds: [['id']],
+      },
+    });
+
+    const records = [];
+    for await (const record of iter) {
+      records.push(record);
+    }
+    expect(records).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      cicd_Deployment: {refreshedAtMillis: 12},
+    });
+  });
+
   test('adapt V1 query', async () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;

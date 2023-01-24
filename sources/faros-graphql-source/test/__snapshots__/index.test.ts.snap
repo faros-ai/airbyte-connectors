@@ -152,3 +152,15 @@ Array [
   },
 ]
 `;
+
+exports[`index replace root node IDs with model keys 1`] = `
+Array [
+  Object {
+    "cicd_Deployment": Object {
+      "id": "HmNpY2RfRGVwbG95bWVudCACDEdpdEh1YgIMMC4yNy4w",
+      "source": "GitHub",
+      "uid": "0.27.0",
+    },
+  },
+]
+`;

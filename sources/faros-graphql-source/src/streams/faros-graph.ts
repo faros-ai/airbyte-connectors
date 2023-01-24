@@ -256,12 +256,17 @@ export class FarosGraph extends AirbyteStreamBase {
         const nodeIdPaths = queryPaths.nodeIds;
         for (const nodeIdPath of nodeIdPaths) {
           const nodeId = _.get(item, nodeIdPath);
+          const rootNodeId = _.isEqual(nodeIdPath, ['id']);
           if (nodeId) {
             const key = this.nodes.decodeId(nodeId);
-            _.set(item, nodeIdPath.slice(0, -1), key);
+            if (!rootNodeId) {
+              _.set(item, nodeIdPath.slice(0, -1), key);
+            } else {
+              _.merge(item, _.omitBy(key, _.isFunction));
+            }
           }
           // Keep root node ID, but remove others
-          if (!_.isEqual(nodeIdPath, ['id'])) {
+          if (!rootNodeId) {
             _.unset(item, nodeIdPath);
           }
         }
