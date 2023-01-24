@@ -18,11 +18,11 @@ export class Spaces extends ClickUpConverter {
     const source = this.streamName.source;
     const uid = space.id;
     const results: DestinationRecord[] = [];
-    if (this.taskboardSources(ctx).includes('space')) {
+    if (this.taskboardSource(ctx) === 'space') {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: `${space.name} (space)`, source},
+          record: {uid, name: space.name, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',

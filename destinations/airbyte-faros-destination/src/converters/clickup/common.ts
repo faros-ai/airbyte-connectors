@@ -6,11 +6,11 @@ import {Converter, StreamContext} from '../converter';
 type TaskBoardSource = 'space' | 'folder' | 'list';
 
 interface ClickUpConfig {
-  taskboard_sources?: ReadonlyArray<TaskBoardSource>;
+  taskboard_source?: TaskBoardSource;
   truncate_limit?: number;
 }
 
-const DEFAULT_TASKBOARD_SOURCES: ReadonlyArray<TaskBoardSource> = ['space'];
+const DEFAULT_TASKBOARD_SOURCE: TaskBoardSource = 'space';
 const DEFAULT_TRUNCATE_LIMIT = 10_000;
 
 export class ClickUpCommon {
@@ -46,12 +46,8 @@ export abstract class ClickUpConverter extends Converter {
     return ctx.config.source_specific_configs?.clickup ?? {};
   }
 
-  protected taskboardSources(
-    ctx: StreamContext
-  ): ReadonlyArray<TaskBoardSource> {
-    return (
-      this.clickupConfig(ctx).taskboard_sources ?? DEFAULT_TASKBOARD_SOURCES
-    );
+  protected taskboardSource(ctx: StreamContext): TaskBoardSource {
+    return this.clickupConfig(ctx).taskboard_source ?? DEFAULT_TASKBOARD_SOURCE;
   }
 
   protected truncateLimit(ctx: StreamContext): number {

@@ -20,7 +20,7 @@ describe('clickup', () => {
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await sourceSpecificTempConfig(mockttp.url, {
-      clickup: {taskboard_sources: ['space', 'folder', 'list']},
+      clickup: {taskboard_source: 'space'},
     });
   });
 
@@ -63,9 +63,9 @@ describe('clickup', () => {
       tms_Project: 3,
       tms_Task: 9,
       tms_TaskAssignment: 1,
-      tms_TaskBoard: 14,
-      tms_TaskBoardProjectRelationship: 14,
-      tms_TaskBoardRelationship: 27,
+      tms_TaskBoard: 7,
+      tms_TaskBoardProjectRelationship: 7,
+      tms_TaskBoardRelationship: 9,
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 9,
       tms_TaskTag: 2,

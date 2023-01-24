@@ -18,11 +18,11 @@ export class Folders extends ClickUpConverter {
     const source = this.streamName.source;
     const uid = folder.id;
     const results: DestinationRecord[] = [];
-    if (this.taskboardSources(ctx).includes('folder')) {
+    if (this.taskboardSource(ctx) === 'folder') {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: `${folder.name} (folder)`, source},
+          record: {uid, name: folder.name, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',
