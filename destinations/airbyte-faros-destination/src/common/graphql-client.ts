@@ -760,6 +760,16 @@ export class GraphQLClient {
     if (type === 'timestamptz') {
       // The field value may already be a string. E.g., if coming from the Faros Feeds source.
       return typeof value === 'string' ? value : timestamptz(value);
+    } else if (type.startsWith('_') && typeof value !== 'string') {
+      if (!Array.isArray(value)) {
+        throw new Error(
+          `expected array for ${model}.${field} of type ${type}. Received: ${JSON.stringify(
+            value
+          )}`
+        );
+      }
+      // format array value as postgres literal
+      return `{${value.join(',')}}`;
     } else if (typeof value === 'object' || Array.isArray(value)) {
       return traverse(value).map(function (this, val) {
         if (val instanceof Date) {
