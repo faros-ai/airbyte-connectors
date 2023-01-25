@@ -4,13 +4,15 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "SquadCast Spec",
     "type": "object",
-    "required": ["token"],
+    "required": [
+      "token"
+    ],
     "additionalProperties": true,
     "properties": {
       "token": {
         "type": "string",
         "title": "Token",
-        "description": "Get API Refresh Token on https://app.squadcast.com/user/USER_ID where USER_ID is user's ID",
+        "description": "Get API Refresh Token https://support.squadcast.com/terraform-and-api-documentation/public-api-refresh-token",
         "airbyte_secret": true
       },
       "cutoff_days": {
