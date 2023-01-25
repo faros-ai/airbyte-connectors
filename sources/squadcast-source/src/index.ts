@@ -26,8 +26,7 @@ export class SquadcastSource extends AirbyteSourceBase<SquadcastConfig> {
   }
   async checkConnection(config: SquadcastConfig): Promise<[boolean, VError]> {
     try {
-      const squadcast = await Squadcast.instance(config, this.logger);
-      await squadcast.checkConnection();
+      await Squadcast.instance(config, this.logger);
     } catch (err: any) {
       return [false, err];
     }
