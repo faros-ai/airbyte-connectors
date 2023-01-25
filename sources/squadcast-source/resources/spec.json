@@ -32,7 +32,7 @@
           "type": "string"
         },
         "title": "Service Slugs",
-        "description": "List of service slugs, e.g payment-api-service. If empty or '*' all available services will be processed."
+        "description": "List of service slugs (e.g payment-api-service). If empty or '*' all available services will be processed."
       },
       "event_owner_id": {
         "type": "string",
