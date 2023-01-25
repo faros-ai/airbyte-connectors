@@ -84,7 +84,7 @@ export class Squadcast {
 
     if (services.length > 0) {
       logger.info(
-        'Only syncing the following SquadCast services: %s',
+        'Syncing the following SquadCast services: %s',
         services.join(',')
       );
     }
