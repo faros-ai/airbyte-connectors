@@ -31,7 +31,7 @@
         "items": {
           "type": "string"
         },
-        "title": "Services",
+        "title": "Service Slugs",
         "description": "Space-delimited list of service slugs, e.g payment-api-service. If empty or '*' all available services will be processed."
       },
       "event_owner_id": {
