@@ -17,7 +17,7 @@ import {
 } from './models';
 
 const API_URL = 'https://api.squadcast.com/v3/';
-const AUTH_URL = 'https://auth.squadcast.com/';
+export const AUTH_URL = 'https://auth.squadcast.com/';
 const AUTH_HEADER_NAME = 'X-Refresh-Token';
 const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();

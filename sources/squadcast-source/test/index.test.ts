@@ -6,9 +6,9 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
-
+import nock from 'nock';
 import * as sut from '../src/index';
-import {Squadcast} from '../src/squadcast';
+import {AUTH_URL, Squadcast} from '../src/squadcast';
 
 const SquadcastInstance = Squadcast.instance;
 
@@ -62,22 +62,18 @@ describe('index', () => {
   });
 
   test('check connection - incorrect token', async () => {
-    Squadcast.instance = jest.fn().mockImplementation(() => {
-      return new Squadcast(
-        {
-          get: jest.fn().mockRejectedValue(new Error('some error')),
-        } as any,
-        new Date('2010-03-27T14:03:51-0800'),
-        'incidentId'
-      );
-    });
+    const mock = nock(AUTH_URL)
+      .get('/oauth/access-token')
+      .reply(400);
+
     const source = new sut.SquadcastSource(logger);
     const res = await source.checkConnection(sourceConfig);
+    mock.done();
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
     expect(res[1].message).toMatch(
-      /Please verify your token is correct. Error: some error/
+      /Request failed with status code 400/
     );
   });
 
