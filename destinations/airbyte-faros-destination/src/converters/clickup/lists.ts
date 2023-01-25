@@ -18,11 +18,11 @@ export class Lists extends ClickUpConverter {
     const source = this.streamName.source;
     const uid = list.id;
     const results: DestinationRecord[] = [];
-    if (this.taskboardSources(ctx).includes('list')) {
+    if (this.taskboardSource(ctx) === 'list') {
       results.push(
         {
           model: 'tms_TaskBoard',
-          record: {uid, name: `${list.name} (list)`, source},
+          record: {uid, name: list.name, source},
         },
         {
           model: 'tms_TaskBoardProjectRelationship',

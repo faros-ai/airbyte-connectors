@@ -111,14 +111,12 @@ export class Tasks extends ClickUpConverter {
       });
     }
 
-    const taskboardSources = this.taskboardSources(ctx);
-    for (const tbSource of taskboardSources) {
-      if (task[tbSource]?.id) {
-        results.push({
-          model: 'tms_TaskBoardRelationship',
-          record: {task: taskKey, board: {uid: task[tbSource].id, source}},
-        });
-      }
+    const taskboardSource = this.taskboardSource(ctx);
+    if (task[taskboardSource]?.id) {
+      results.push({
+        model: 'tms_TaskBoardRelationship',
+        record: {task: taskKey, board: {uid: task[taskboardSource].id, source}},
+      });
     }
 
     return results;

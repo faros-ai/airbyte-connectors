@@ -273,16 +273,12 @@
                     "type": "object",
                     "title": "Configuration",
                     "properties": {
-                      "taskboard_sources": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "enum": ["space", "folder", "list"]
-                        },
-                        "title": "TaskBoard Sources",
-                        "description": "List of ClickUp task grouping types that will be mapped to tms_TaskBoards",
-                        "default": ["space"],
-                        "examples": ["space", "folder", "list"]
+                      "taskboard_source": {
+                        "type": "string",
+                        "title": "TaskBoard Source",
+                        "description": "ClickUp task grouping type that will be mapped to tms_TaskBoards",
+                        "default": "space",
+                        "enum": ["space", "folder", "list"]
                       },
                       "truncate_limit": {
                         "type": "integer",
