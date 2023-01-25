@@ -21,6 +21,7 @@ const AUTH_URL = 'https://auth.squadcast.com/';
 const AUTH_HEADER_NAME = 'X-Refresh-Token';
 const DEFAULT_INCIDENTS_START_DATE = '1970-01-01T00:00:00.000Z';
 const DEFAULT_INCIDENTS_END_DATE = new Date().toISOString();
+const DEFAULT_CUTOFF_DAYS = 90;
 
 export interface SquadcastConfig {
   readonly token: string;
@@ -58,9 +59,6 @@ export class Squadcast {
     if (!config.token) {
       throw new VError('token must not be an empty string');
     }
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
-    }
 
     const accessToken = await this.getAccessToken(config.token);
     const httpClient = axios.create({
@@ -72,7 +70,9 @@ export class Squadcast {
       },
     });
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    startDate.setDate(
+      startDate.getDate() - (config.cutoff_days || DEFAULT_CUTOFF_DAYS)
+    );
 
     Squadcast.squadcast = new Squadcast(
       httpClient,
@@ -85,25 +85,6 @@ export class Squadcast {
     logger.debug('Created SquadCast instance');
 
     return Squadcast.squadcast;
-  }
-
-  async checkConnection(): Promise<void> {
-    try {
-      const tenSecondsAgo = new Date(new Date().getTime() - 20000);
-      await this.getIncidents(tenSecondsAgo.toISOString());
-    } catch (err: any) {
-      let errorMessage = 'Please verify your token is correct. Error: ';
-      if (err.error_code || err.error_info) {
-        errorMessage += `${err.error_code}: ${err.error_info}`;
-        throw new VError(errorMessage);
-      }
-      try {
-        errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
-      } catch (wrapError: any) {
-        errorMessage += wrapError.message;
-      }
-      throw new VError(errorMessage);
-    }
   }
 
   private static async getAccessToken(token: string): Promise<string> {

@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "SquadCast Spec",
     "type": "object",
-    "required": ["token", "cutoff_days"],
+    "required": ["token"],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -17,7 +17,7 @@
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
-        "description": "Only fetch data updated after cutoff"
+        "description": "Only fetch data updated in the last number of days"
       },
       "incident_owner_id": {
         "type": "string",
