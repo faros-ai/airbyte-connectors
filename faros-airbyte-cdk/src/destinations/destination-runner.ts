@@ -4,6 +4,7 @@ import {Command} from 'commander';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
+import {helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
 import {Runner} from '../runner';
@@ -25,6 +26,7 @@ export class AirbyteDestinationRunner<
       .name('main')
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
+      .addCommand(this.specPrettyCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.writeCommand());
   }
@@ -100,6 +102,30 @@ export class AirbyteDestinationRunner<
           }
         }
       );
+  }
+
+  specPrettyCommand(): Command {
+    return new Command()
+      .command('spec-pretty')
+      .description('pretty spec command')
+      .action(async () => {
+        const spec = await this.destination.spec();
+        const rows = traverseObject(
+          spec.spec.connectionSpecification,
+          [
+            // Prefix argument names with --dst
+            '--dst',
+          ],
+          // Assign section = 0 to the root object's row, which
+          // will be removed, so that the remaining rows are
+          // numbered 1..N
+          0
+        );
+        // Drop the first row since it corresponds to the root
+        // (connectionSpecification) object
+        rows.shift();
+        console.log(helpTable(rows));
+      });
   }
 
   private async loadConfig(opts: {
