@@ -185,8 +185,11 @@ export class Squadcast {
     params.append('start_time', startTime.toISOString());
     params.append('end_time', endTime);
     params.append('owner_id', ownerID);
-    for (const service of this.services) {
-      params.append('service', service);
+
+    if (this.services.length > 0) {
+      for await (const service of this.getServices()) {
+        params.append('service', service.id);
+      }
     }
 
     const res = await this.httpClient.get<IncidentsResponse>(
@@ -267,6 +270,7 @@ export class Squadcast {
     yield* this.paginate(func);
   }
 
+  @Memoize()
   async *getServices(): AsyncGenerator<Service> {
     const res = await this.httpClient.get<ServiceResponse>('services');
     for (const item of res.data.data) {
