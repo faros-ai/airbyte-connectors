@@ -22,7 +22,7 @@
           "type": "string"
         },
         "title": "Azure Projects",
-        "description": "Space-delimited list of projects. If empty or '*' all available projects will be processed."
+        "description": "List of projects. If empty or '*' all available projects will be processed."
       },     
       "branch_pattern": {
         "type": "string",

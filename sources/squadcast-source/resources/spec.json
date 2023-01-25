@@ -26,6 +26,14 @@
         "title": "Incident Owner ID",
         "description": "Team ID or User ID"
       },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Service Slugs",
+        "description": "List of service slugs (e.g payment-api-service). If empty or '*' all available services will be processed."
+      },
       "event_owner_id": {
         "type": "string",
         "title": "Event Owner ID",

@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {isEmpty} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -26,6 +27,7 @@ const DEFAULT_CUTOFF_DAYS = 90;
 export interface SquadcastConfig {
   readonly token: string;
   readonly incident_owner_id?: string;
+  readonly services?: ReadonlyArray<string>;
   readonly event_owner_id?: string;
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
@@ -44,6 +46,7 @@ export class Squadcast {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly startDate: Date,
+    private readonly services: ReadonlyArray<string>,
     private readonly incident_owner_id?: string,
     private readonly event_owner_id?: string,
     private readonly eventIncidentId?: string,
@@ -74,15 +77,28 @@ export class Squadcast {
       startDate.getDate() - (config.cutoff_days || DEFAULT_CUTOFF_DAYS)
     );
 
+    const services =
+      !config.services || isEmpty(config.services) || config.services[0] === '*'
+        ? []
+        : config.services;
+
+    if (services.length > 0) {
+      logger.info(
+        'Syncing the following SquadCast services: %s',
+        services.join(',')
+      );
+    }
+
     Squadcast.squadcast = new Squadcast(
       httpClient,
       startDate,
+      services,
       config.incident_owner_id,
       config.event_owner_id,
       config.event_incident_id,
       config.event_deduped
     );
-    logger.debug('Created SquadCast instance');
+    logger.debug('Created  instance');
 
     return Squadcast.squadcast;
   }
@@ -168,19 +184,24 @@ export class Squadcast {
     const startTime = new Date(Math.max.apply(null, dates));
     const endTime =
       startTime > new Date(DEFAULT_INCIDENTS_END_DATE)
-        ? startTime
+        ? startTime.toISOString()
         : DEFAULT_INCIDENTS_END_DATE;
+
+    const params = new URLSearchParams();
+    params.append('type', 'json');
+    params.append('start_time', startTime.toISOString());
+    params.append('end_time', endTime);
+    params.append('owner_id', ownerID);
+
+    if (this.services.length > 0) {
+      for await (const service of this.getServices()) {
+        params.append('service', service.id);
+      }
+    }
 
     const res = await this.httpClient.get<IncidentsResponse>(
       'incidents/export',
-      {
-        params: {
-          type: 'json',
-          start_time: startTime,
-          end_time: endTime,
-          owner_id: ownerID,
-        },
-      }
+      {params}
     );
     for (const item of res.data.incidents) {
       incidents.push(item);
@@ -188,20 +209,20 @@ export class Squadcast {
     return incidents;
   }
 
-  async getIncidents(lastUpdatedAt?: string): Promise<ReadonlyArray<Incident>> {
-    const incidents: Incident[] = [];
-
+  async *getIncidents(lastUpdatedAt?: string): AsyncGenerator<Incident> {
     const ownerIDs = await this.listOwnerID(this.incident_owner_id);
     for (const ownerID of ownerIDs) {
-      const res = await this.fetchIncidentsWithOwnerID(ownerID, lastUpdatedAt);
-      incidents.push(...res);
+      for (const incident of await this.fetchIncidentsWithOwnerID(
+        ownerID,
+        lastUpdatedAt
+      )) {
+        yield incident;
+      }
     }
-
-    return incidents;
   }
 
   async *getEvents(): AsyncGenerator<Event> {
-    for (const incident of await this.getIncidents()) {
+    for await (const incident of this.getIncidents()) {
       if (this.eventIncidentId && incident.id === this.eventIncidentId) {
         yield* this.fetchOwnersEvents(incident);
         break;
@@ -256,10 +277,13 @@ export class Squadcast {
     yield* this.paginate(func);
   }
 
+  @Memoize()
   async *getServices(): AsyncGenerator<Service> {
     const res = await this.httpClient.get<ServiceResponse>('services');
     for (const item of res.data.data) {
-      yield item;
+      if (this.services.length === 0 || this.services.includes(item.slug)) {
+        yield item;
+      }
     }
   }
 

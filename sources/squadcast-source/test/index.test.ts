@@ -5,8 +5,9 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 import nock from 'nock';
+import {VError} from 'verror';
+
 import * as sut from '../src/index';
 import {AUTH_URL, Squadcast} from '../src/squadcast';
 
@@ -50,6 +51,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        [],
         'incidentId'
       );
     });
@@ -62,9 +64,7 @@ describe('index', () => {
   });
 
   test('check connection - incorrect token', async () => {
-    const mock = nock(AUTH_URL)
-      .get('/oauth/access-token')
-      .reply(400);
+    const mock = nock(AUTH_URL).get('/oauth/access-token').reply(400);
 
     const source = new sut.SquadcastSource(logger);
     const res = await source.checkConnection(sourceConfig);
@@ -72,9 +72,7 @@ describe('index', () => {
 
     expect(res[0]).toBe(false);
     expect(res[1]).toBeDefined();
-    expect(res[1].message).toMatch(
-      /Request failed with status code 400/
-    );
+    expect(res[1].message).toMatch(/Request failed with status code 400/);
   });
 
   test('check connection - incorrect variables', async () => {
@@ -110,7 +108,8 @@ describe('index', () => {
             return res;
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        []
       );
     });
     const source = new sut.SquadcastSource(logger);
@@ -143,6 +142,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        [],
         'incidentId-123'
       );
     });
@@ -171,6 +171,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        [],
         'incidentId'
       );
     });
@@ -188,6 +189,64 @@ describe('index', () => {
     expect(services).toStrictEqual(readTestResourceFile('services.json'));
   });
 
+  test('streams - services filtered', async () => {
+    const fnServicesFunc = jest.fn();
+
+    Squadcast.instance = jest.fn().mockImplementation(() => {
+      return new Squadcast(
+        {
+          get: fnServicesFunc.mockResolvedValue({
+            data: {data: readTestResourceFile('services.json')},
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        ['example-service', 'bogus-service'],
+        'incidentId'
+      );
+    });
+    const source = new sut.SquadcastSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const servicesStream = streams[2];
+    const servicesIter = servicesStream.readRecords(SyncMode.FULL_REFRESH);
+    const services = [];
+    for await (const service of servicesIter) {
+      services.push(service);
+    }
+
+    expect(fnServicesFunc).toHaveBeenCalledTimes(1);
+    expect(services).toStrictEqual(readTestResourceFile('services.json'));
+  });
+
+  test('streams - services all filtered out', async () => {
+    const fnServicesFunc = jest.fn();
+
+    Squadcast.instance = jest.fn().mockImplementation(() => {
+      return new Squadcast(
+        {
+          get: fnServicesFunc.mockResolvedValue({
+            data: {data: readTestResourceFile('services.json')},
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        ['bogus-service'],
+        'incidentId'
+      );
+    });
+    const source = new sut.SquadcastSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const servicesStream = streams[2];
+    const servicesIter = servicesStream.readRecords(SyncMode.FULL_REFRESH);
+    const services = [];
+    for await (const service of servicesIter) {
+      services.push(service);
+    }
+
+    expect(fnServicesFunc).toHaveBeenCalledTimes(1);
+    expect(services).toStrictEqual([]);
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
@@ -199,6 +258,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
+        [],
         'incidentId'
       );
     });

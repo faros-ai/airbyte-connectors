@@ -30,8 +30,11 @@
       },
       "projects": {
         "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Project Names",
-        "description": "Space-delimited list of projects. (e.g. documentation models)"
+        "description": "List of projects. (e.g. documentation models)"
       },
       "pageSize": {
         "type": "number",
