@@ -82,6 +82,13 @@ export class Squadcast {
         ? []
         : config.services;
 
+    if (services.length > 0) {
+      logger.info(
+        'Only syncing the following SquadCast services: %s',
+        services.join(',')
+      );
+    }
+
     Squadcast.squadcast = new Squadcast(
       httpClient,
       startDate,
@@ -91,7 +98,7 @@ export class Squadcast {
       config.event_incident_id,
       config.event_deduped
     );
-    logger.debug('Created SquadCast instance');
+    logger.debug('Created  instance');
 
     return Squadcast.squadcast;
   }
@@ -274,7 +281,7 @@ export class Squadcast {
   async *getServices(): AsyncGenerator<Service> {
     const res = await this.httpClient.get<ServiceResponse>('services');
     for (const item of res.data.data) {
-      if (this.services.length === 0 || this.services.includes(item.name)) {
+      if (this.services.length === 0 || this.services.includes(item.slug)) {
         yield item;
       }
     }

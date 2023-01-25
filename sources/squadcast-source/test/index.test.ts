@@ -200,7 +200,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        ['Example Service', 'Bogus Service'],
+        ['example-service', 'bogus-service'],
         'incidentId'
       );
     });
@@ -229,7 +229,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
-        ['Bogus Service'],
+        ['bogus-service'],
         'incidentId'
       );
     });
