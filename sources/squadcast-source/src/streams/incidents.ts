@@ -42,9 +42,7 @@ export class Incidents extends AirbyteStreamBase {
         ? streamState?.lastUpdatedAt
         : undefined;
     const squadcast = await Squadcast.instance(this.config, this.logger);
-    for (const incident of await squadcast.getIncidents(lastUpdatedAt)) {
-      yield incident;
-    }
+    yield* squadcast.getIncidents(lastUpdatedAt);
   }
 
   getUpdatedState(
