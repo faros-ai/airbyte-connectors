@@ -26,9 +26,9 @@ export class AirbyteDestinationRunner<
       .name('main')
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
+      .addCommand(this.specPrettyCommand())
       .addCommand(this.checkCommand())
-      .addCommand(this.writeCommand())
-      .addCommand(this.specPrettyCommand());
+      .addCommand(this.writeCommand());
   }
 
   specCommand(): Command {
@@ -107,7 +107,7 @@ export class AirbyteDestinationRunner<
   specPrettyCommand(): Command {
     return new Command()
       .command('spec-pretty')
-      .description('spec-pretty command')
+      .description('pretty spec command')
       .action(async () => {
         const spec = await this.destination.spec();
         const rows = traverseObject(

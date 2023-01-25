@@ -24,10 +24,10 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .name('main')
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
+      .addCommand(this.specPrettyCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.discoverCommand())
-      .addCommand(this.readCommand())
-      .addCommand(this.specPrettyCommand());
+      .addCommand(this.readCommand());
   }
 
   specCommand(): Command {
@@ -116,7 +116,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   specPrettyCommand(): Command {
     return new Command()
       .command('spec-pretty')
-      .description('spec-pretty command')
+      .description('pretty spec command')
       .action(async () => {
         const spec = await this.source.spec();
         const rows = traverseObject(
