@@ -76,12 +76,12 @@ export class GitlabCommon {
     const repositoryIndex = startIndex + 1;
 
     const orgRepo: ReadonlyArray<string> = webUrl.split('/');
-    if (orgRepo.length < repositoryIndex) return undefined;
+    if (orgRepo.length <= repositoryIndex) return undefined;
 
     const organization = orgRepo[startIndex];
-    const repositoryName = orgRepo[repositoryIndex];
+    const repositoryName = orgRepo.slice(repositoryIndex, orgRepo.length).join(' / ');
     return {
-      name: repositoryName?.toLowerCase(),
+      name: orgRepo[orgRepo.length - 1].toLowerCase(),
       uid: repositoryName?.toLowerCase(),
       organization: {uid: organization?.toLowerCase(), source},
     };
