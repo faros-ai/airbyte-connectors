@@ -11,6 +11,7 @@ import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {FarosGraph} from './streams';
+import {DEFAULT_BUCKET_ID, DEFAULT_BUCKET_TOTAL} from './streams/faros-graph';
 export enum GraphQLVersion {
   V1 = 'v1',
   V2 = 'v2',
@@ -31,6 +32,8 @@ export interface GraphQLConfig extends AirbyteConfig {
   result_model?: ResultModel;
   adapt_v1_query?: boolean;
   legacy_v1_schema?: string;
+  bucket_id?: number;
+  bucket_total?: number;
 }
 
 export function mainCommand(): Command {
@@ -81,6 +84,24 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
             " when 'Adapt V1 query' is enabled"
         );
     }
+
+    if (config.query) {
+      if (config.bucket_id !== undefined)
+        throw new VError('Bucket id cannot be used in combination with query');
+      if (config.bucket_total !== undefined)
+        throw new VError(
+          'Bucket total cannot be used in combination with query'
+        );
+    }
+
+    const bucket_id = config.bucket_id ?? DEFAULT_BUCKET_ID;
+    const bucket_total = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
+    if (bucket_id <= 0) throw new VError('Bucket id must be positive');
+    if (bucket_total <= 0) throw new VError('Bucket total must be positive');
+    if (bucket_id > bucket_total)
+      throw new VError(
+        `Bucket id (${bucket_id}) cannot be larger than Bucket total (${bucket_total})`
+      );
   }
 
   makeFarosClient(config: GraphQLConfig): FarosClient {
