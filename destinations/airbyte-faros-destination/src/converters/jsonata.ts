@@ -10,6 +10,7 @@ import {
   DestinationRecord,
   StreamContext,
 } from './converter';
+import { ALL_MODEL_NAMES } from './faros-feeds/model_names';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter extends Converter {
@@ -73,7 +74,11 @@ export class JSONataConverter extends Converter {
     }
     try {
       const jsonataExpr = jsonata(expression);
-      return new JSONataConverter(jsonataExpr, destinationModels);
+      if (destinationModels[0] === '*') {
+        return new JSONataConverter(jsonataExpr, ALL_MODEL_NAMES);
+      } else {
+        return new JSONataConverter(jsonataExpr, destinationModels);
+      }
     } catch (error: any) {
       throw new VError(
         error,

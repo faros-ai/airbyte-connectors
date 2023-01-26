@@ -181,7 +181,7 @@
           "type": "string"
         },
         "title": "JSONata destination models",
-        "description": "Destination models when using JSONata expression.",
+        "description": "Destination models when using JSONata expression. If '*' is provided we assume that all models are being modified.",
         "examples": ["ims_Incident", "vcs_Commit"]
       },
       "source_specific_configs": {
