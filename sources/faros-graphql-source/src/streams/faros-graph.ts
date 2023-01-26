@@ -27,6 +27,8 @@ import zlib from 'zlib';
 import {GraphQLConfig, GraphQLVersion, ResultModel} from '..';
 import {Nodes} from '../nodes';
 
+export const DEFAULT_BUCKET_ID = 1;
+export const DEFAULT_BUCKET_TOTAL = 1;
 const DEFAULT_PAGE_SIZE = 100;
 // January 1, 2200
 const INFINITY = 7258118400000;
@@ -51,6 +53,8 @@ export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
   private nodes: Nodes;
   private legacyV1Schema: gql.GraphQLSchema;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
 
   constructor(
     readonly config: GraphQLConfig,
@@ -65,6 +69,9 @@ export class FarosGraph extends AirbyteStreamBase {
         .toString();
       this.legacyV1Schema = gql.buildSchema(schemaAsString);
     }
+
+    this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
+    this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
   }
 
   private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
@@ -139,12 +146,27 @@ export class FarosGraph extends AirbyteStreamBase {
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
+
+      this.logger.debug(
+        `Processing bucket ${this.bucketId} of ${this.bucketTotal}`
+      );
+
       for (const query of queries) {
-        yield {
+        const slice = {
           query: query.gql,
           incremental: true,
           queryPaths: this.queryPaths(query.gql, schema),
         };
+
+        const hex = createHash('md5')
+          .update(slice.queryPaths.model.modelName)
+          .digest('hex')
+          .substring(0, 8);
+        const bucket = (parseInt(hex, 16) % this.bucketTotal) + 1;
+        if (bucket == this.bucketId) {
+          this.logger.debug(`Will fetch ${slice.queryPaths.model.modelName}`);
+          yield slice;
+        }
       }
     }
   }

@@ -199,6 +199,48 @@ describe('index', () => {
     ]);
   });
 
+  test('check buckets config', async () => {
+    const source = new sut.FarosGraphSource(logger);
+    graphExists = true;
+    const config = {
+      api_url: 'x',
+      api_key: 'y',
+      graphql_api: GraphQLVersion.V1,
+      graph: 'default',
+      result_model: ResultModel.Nested,
+    } as sut.GraphQLConfig;
+    await expect(
+      source.checkConnection({...config, bucket_id: 7, bucket_total: 10})
+    ).resolves.toStrictEqual([true, undefined]);
+    await expect(
+      source.checkConnection({...config, query: 'foo', bucket_id: 7})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Bucket id cannot be used in combination with query'),
+    ]);
+    await expect(
+      source.checkConnection({...config, query: 'foo', bucket_total: 10})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Bucket total cannot be used in combination with query'),
+    ]);
+    await expect(
+      source.checkConnection({...config, bucket_id: 0, bucket_total: 10})
+    ).resolves.toStrictEqual([false, new VError('Bucket id must be positive')]);
+    await expect(
+      source.checkConnection({...config, bucket_id: 7, bucket_total: -10})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Bucket total must be positive'),
+    ]);
+    await expect(
+      source.checkConnection({...config, bucket_id: 7, bucket_total: 4})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Bucket id (7) cannot be larger than Bucket total (4)'),
+    ]);
+  });
+
   test('full_refresh sync mode', async () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;
