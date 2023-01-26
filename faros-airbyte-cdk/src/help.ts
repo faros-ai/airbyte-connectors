@@ -4,8 +4,6 @@ import {upperFirst} from 'lodash';
 import {table} from 'table';
 import {Dictionary} from 'ts-essentials';
 
-const INF_ORDER = 1000;
-
 export interface TableRow {
   title: string;
   path: string;
@@ -83,9 +81,19 @@ export function traverseObject(
         examples: [],
       });
       const requiredProperties: string[] = curObject.required || [];
-      const cmp = (a, b) =>
-        (curObject.properties[a]['order'] ?? INF_ORDER) -
-        (curObject.properties[b]['order'] ?? INF_ORDER);
+      const cmp = function compareFn(a: string, b: string): number {
+        const aOrder = curObject.properties[a]['order'];
+        const bOrder = curObject.properties[b]['order'];
+        // Properties with 'order' should appear before than
+        // those without.
+        if (aOrder !== undefined && bOrder === undefined) return -1;
+        if (aOrder === undefined && bOrder !== undefined) return 1;
+        // At this point they're both undefined or both
+        // with order. Only return if they are not tied.
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        // Break the tie by comparing the property names.
+        return a.localeCompare(b);
+      };
       for (const propertyName of Object.keys(curObject.properties).sort(cmp)) {
         process.push([
           curObject.properties[propertyName],
