@@ -33,6 +33,15 @@ Array [
     },
     "uid": "vitalyg",
   },
+  Object {
+    "name": "vitality",
+    "origin": "mytestsource",
+    "source": null,
+    "type": Object {
+      "foo": "bar",
+    },
+    "uid": "vitalyg",
+  },
 ]
 `;
 

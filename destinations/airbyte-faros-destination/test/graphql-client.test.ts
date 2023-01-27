@@ -400,6 +400,17 @@ describe('graphql-client write batch upsert', () => {
         origin: 'mytestsource',
         type: {foo: 'bar'},
       },
+      {
+        uid: 'vitalyg',
+        source: null,
+        origin: 'mytestsource',
+        type: {foo: 'bar'},
+      },
+      {
+        uid: 'vitalyg',
+        source: null,
+        name: 'vitality',
+      },
     ];
     const primaryKeys = ['uid', 'source'];
     expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
