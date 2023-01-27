@@ -50,7 +50,39 @@ exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation 
 
 exports[`graphql-client write batch upsert self-referent model 3`] = `"mutation { insert_org_Employee (objects: [{uid: \\"10\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|7\\"}, {uid: \\"8\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}, {uid: \\"7\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [managerId, origin]}) { returning { id uid } } }"`;
 
-exports[`groupByKeys one level 1`] = `
+exports[`groupByKeys 1 group of 2 1`] = `
+Array [
+  Array [
+    "u0a",
+    "u0b",
+  ],
+]
+`;
+
+exports[`groupByKeys 2 groups of 1 1`] = `
+Array [
+  Array [
+    "u0a",
+  ],
+  Array [
+    "u1a",
+  ],
+]
+`;
+
+exports[`groupByKeys 2 groups of mix 1`] = `
+Array [
+  Array [
+    "u0a",
+  ],
+  Array [
+    "u1a",
+    "u1b",
+  ],
+]
+`;
+
+exports[`groupByKeys 3 groups of 2 1`] = `
 Array [
   Array [
     "u0a",

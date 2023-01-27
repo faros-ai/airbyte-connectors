@@ -669,7 +669,16 @@ describe('groupByKeys', () => {
     }
     expect(res).toMatchSnapshot();
   }
-  test('one level', async () => {
+  test('3 groups of 2', async () => {
     await expectGroupByKeys([u0a, u0b, u1a, u1b, u2a, u2b]);
+  });
+  test('1 group of 2', async () => {
+    await expectGroupByKeys([u0a, u0b]);
+  });
+  test('2 groups of 1', async () => {
+    await expectGroupByKeys([u0a, u1a]);
+  });
+  test('2 groups of mix', async () => {
+    await expectGroupByKeys([u0a, u1a, u1b]);
   });
 });
