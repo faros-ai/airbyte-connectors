@@ -489,7 +489,62 @@ describe('graphql-client write batch upsert', () => {
       await client.writeRecord('org_Employee', rec, 'mytestsource');
     }
     await client.flush();
-    expect(queries).toEqual(3);
+    expect(queries).toEqual(responses.length);
+  });
+});
+
+describe('graphql-client write batch updates', () => {
+  const schemaLoader = {
+    async loadSchema(): Promise<Schema> {
+      return await fs.readJson('test/resources/hasura-ce-schema.json', {
+        encoding: 'utf-8',
+      });
+    },
+  };
+
+  test('update_columns bug', async () => {
+    const responses = [
+      JSON.parse(`
+      {
+        "data": {
+          "insert_tms_Task_one": {
+            "returning": [
+              {
+                "id": "t1|gql-e2e-v2|7"
+              }
+            ]
+          }
+        }
+      }`),
+    ];
+    const records = [
+      JSON.parse('{"uid":"9","source":"jira"}'),
+      JSON.parse('{"uid":"7","source":"jira"}'),
+      JSON.parse('{"uid":"7","parent":{"uid":"9"},"source":"jira"}'),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      0,
+      5
+    );
+    await client.loadSchema();
+    for (const rec of records) {
+      await client.writeRecord('tms_Task', rec, 'mytestsource');
+    }
+    await client.flush();
+    expect(queries).toEqual(responses.length);
   });
 });
 
