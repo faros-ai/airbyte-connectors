@@ -6,7 +6,7 @@ import {
   batchIterator,
   GraphQLBackend,
   GraphQLClient,
-  groupByAffectedFields,
+  groupByKeys,
   mergeByPrimaryKey,
   serialize,
   strictPick,
@@ -241,6 +241,95 @@ describe('graphql-client write batch upsert', () => {
     await client.writeRecord('vcs_Branch', record2, 'mytestsource');
     await client.flush();
     expect(queries).toEqual(3);
+  });
+  test('on_conflict update_columns bug', async () => {
+    const responses = [
+      JSON.parse(`
+    {
+      "data": {
+      "insert_vcs_Organization": {
+        "returning": [
+          {
+            "id": "t1|gql-e2e-v2|GitHub|faros-ai",
+            "uid": "faros-ai",
+            "source": "GitHub"
+            }
+          ]
+        }
+      }
+    }`),
+      JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_Repository": {
+          "returning": [
+            {
+              "id": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "hermes",
+              "organizationId": "t1|gql-e2e-v2|GitHub|faros-ai"
+            }
+          ]
+        }
+      }
+    }`),
+      JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_Branch": {
+          "returning": [
+            {
+              "id": "t1|gql-e2e-v2|foo|t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "foo",
+              "repositoryId": null
+            }
+          ]
+        }
+      }
+    }`),
+      JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_Branch": {
+          "returning": [
+            {
+              "id": "t1|gql-e2e-v2|main|t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai",
+              "name": "main",
+              "repositoryId": "t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai"
+            }
+          ]
+        }
+      }
+    }`),
+    ];
+    const records = [
+      JSON.parse('{"name":"foo","uid":"foo"}'),
+      JSON.parse(
+        '{"name":"main","uid":"main","repository":{"name":"hermes","uid":"hermes","organization":{"uid":"faros-ai","source":"GitHub"}},"source":"GitHub"}'
+      ),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    for (const record of records) {
+      await client.writeRecord('vcs_Branch', record, 'mytestsource');
+    }
+    await client.flush();
+    expect(queries).toEqual(responses.length);
   });
   test('record with null primary key field', async () => {
     const res1 = JSON.parse(`
@@ -562,47 +651,16 @@ describe('toLevels', () => {
   });
 });
 
-describe('groupByAffectedFields', () => {
-  const u0a: Upsert = {
-    id: 'u0a',
-    model: 'm',
-    object: {f1: 'f1a', f2: 'f2a', f3: 'f3a'},
-    foreignKeys: {},
-  };
-  const u0b: Upsert = {
-    id: 'u0b',
-    model: 'm',
-    object: {f1: 'f1b', f2: 'f2b', f3: 'f3b'},
-    foreignKeys: {},
-  };
-  const u1a: Upsert = {
-    id: 'u1a',
-    model: 'm',
-    object: {f1: 'f1a'},
-    foreignKeys: {},
-  };
-  const u1b: Upsert = {
-    id: 'u1b',
-    model: 'm',
-    object: {f1: 'f1b'},
-    foreignKeys: {},
-  };
-  const u2a: Upsert = {
-    id: 'u2a',
-    model: 'm',
-    object: {f3: 'f3'},
-    foreignKeys: {},
-  };
-  const u2b: Upsert = {
-    id: 'u2b',
-    model: 'm',
-    object: {f3: 'f3'},
-    foreignKeys: {},
-  };
-  async function expectGroupByAffectedFields(
-    upserts: Upsert[][]
-  ): Promise<void> {
-    const iterator = batchIterator(groupByAffectedFields(upserts), (batch) => {
+describe('groupByKeys', () => {
+  const u0a = {id: 'u0a', f1: 'f1a', f2: 'f2a', f3: 'f3a'};
+  const u0b = {id: 'u0b', f1: 'f1b', f2: 'f2b', f3: 'f3b'};
+  const u1a = {id: 'u1a', f1: 'f1a'};
+  const u1b = {id: 'u1b', f1: 'f1b'};
+  const u2a = {id: 'u2a', f3: 'f3'};
+  const u2b = {id: 'u2b', f3: 'f3'};
+
+  async function expectGroupByKeys(objects: any[]): Promise<void> {
+    const iterator = batchIterator(groupByKeys(objects), (batch) => {
       return Promise.resolve(batch.map((u) => u.id).sort());
     });
     const res = [];
@@ -611,20 +669,16 @@ describe('groupByAffectedFields', () => {
     }
     expect(res).toMatchSnapshot();
   }
-  test('one level', async () => {
-    await expectGroupByAffectedFields([[u0a, u0b, u1a, u1b, u2a, u2b]]);
+  test('3 groups of 2', async () => {
+    await expectGroupByKeys([u0a, u0b, u1a, u1b, u2a, u2b]);
   });
-  test('two levels', async () => {
-    await expectGroupByAffectedFields([
-      [u0a, u0b, u1a],
-      [u1b, u2a, u2b],
-    ]);
+  test('1 group of 2', async () => {
+    await expectGroupByKeys([u0a, u0b]);
   });
-  test('noop', async () => {
-    await expectGroupByAffectedFields([
-      [u0a, u0b],
-      [u1a, u1b],
-      [u2a, u2b],
-    ]);
+  test('2 groups of 1', async () => {
+    await expectGroupByKeys([u0a, u1a]);
+  });
+  test('2 groups of mix', async () => {
+    await expectGroupByKeys([u0a, u1a, u1b]);
   });
 });
