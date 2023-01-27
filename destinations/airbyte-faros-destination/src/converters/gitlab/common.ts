@@ -74,16 +74,20 @@ export class GitlabCommon {
   ): undefined | RepositoryKey {
     if (!webUrl) return undefined;
     const repositoryIndex = startIndex + 1;
+    
+    const nameParts: ReadonlyArray<string> = webUrl.split('/');
+    if (nameParts.length <= repositoryIndex) return undefined;
 
-    const orgRepo: ReadonlyArray<string> = webUrl.split('/');
-    if (orgRepo.length <= repositoryIndex) return undefined;
-
-    const organization = orgRepo[startIndex];
-    const repositoryName = orgRepo.slice(repositoryIndex, orgRepo.length).join(' / ');
+    const endIndex = nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
+    
+    const organization = nameParts[startIndex].toLowerCase();
+    const repositoryUid = nameParts.slice(repositoryIndex, endIndex).join('/').toLowerCase();
+    const repositoryName = nameParts[endIndex - 1].toLowerCase()
+    
     return {
-      name: orgRepo[orgRepo.length - 1].toLowerCase(),
-      uid: repositoryName?.toLowerCase(),
-      organization: {uid: organization?.toLowerCase(), source},
+      name: repositoryName,
+      uid: repositoryUid,
+      organization: {uid: organization, source},
     };
   }
 
@@ -92,7 +96,7 @@ export class GitlabCommon {
       uid: String(pipelineId),
       pipeline: {
         organization: repository.organization,
-        uid: repository.name,
+        uid: repository.uid,
       },
     };
   }
