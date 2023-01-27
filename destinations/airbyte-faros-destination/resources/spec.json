@@ -164,7 +164,8 @@
         "order": 6,
         "type": "string",
         "title": "JSONata expression",
-        "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode."
+        "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode.",
+        "multiline": true
       },
       "jsonata_mode": {
         "order": 7,
