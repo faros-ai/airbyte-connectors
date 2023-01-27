@@ -158,16 +158,14 @@ export function batchIterator<T>(
 }
 
 /**
- * Separates each level (i.e. Upsert[]) into arrays of upserts
- * that all operate on the same fields.
+ * Separates objects into arrays of objects
+ * that all have the same keys.
  */
-export function groupByAffectedFields(levels: Upsert[][]): Upsert[][] {
-  return flatMap(levels, (level) => {
-    const byObjKeyNames: Dictionary<Upsert[]> = groupBy(level, (u) =>
-      Object.keys(u.object).sort().join('|')
-    );
-    return Object.values(byObjKeyNames);
-  });
+export function groupByKeys(objects: any[]): any[][] {
+  const byObjKeyNames: Dictionary<any[]> = groupBy(objects, (obj) =>
+    Object.keys(obj).sort().join('|')
+  );
+  return Object.values(byObjKeyNames);
 }
 
 /**
@@ -411,18 +409,20 @@ export class GraphQLClient {
         const withLevels = this.selfReferentModels.has(model)
           ? toLevels(modelUpserts)
           : [modelUpserts];
-        const byFieldsAndLevels = groupByAffectedFields(withLevels);
-        const iterator: AsyncIterable<UpsertResult> = batchIterator(
-          byFieldsAndLevels,
+        const iterator: AsyncIterable<UpsertResult[]> = batchIterator(
+          withLevels,
           (batch) => {
-            return this.execUpsert(model, this.toUpsertOp(model, batch));
+            const ops = this.toUpsertOps(model, batch);
+            return Promise.all(ops.map((op) => this.execUpsert(model, op)));
           }
         );
         try {
-          for await (const result of iterator) {
-            this.logger.debug(
-              `executed ${model} upsert with ${result.numObjects} object(s) in ${result.durationMs}ms`
-            );
+          for await (const results of iterator) {
+            for (const result of results) {
+              this.logger.debug(
+                `executed ${model} upsert with ${result.numObjects} object(s) in ${result.durationMs}ms`
+              );
+            }
           }
         } catch (e) {
           throw new VError(e, `failed to write upserts for ${model}`);
@@ -694,9 +694,8 @@ export class GraphQLClient {
     return serialize(strictPick(obj, this.schema.primaryKeys[model]));
   }
 
-  // This method assumes all objects contain the same
-  // set of fields.
-  private toUpsertOp(model: string, modelUpserts: Upsert[]): UpsertOp {
+  private toUpsertOps(model: string, modelUpserts: Upsert[]): UpsertOp[] {
+    // shared among all the results of this method
     const upsertsByKey = new Map();
     // add FKs and index upsert by primary key
     // the index is needed after write to find source
@@ -715,39 +714,43 @@ export class GraphQLClient {
     const primaryKeys = this.schema.primaryKeys[model];
     // there can be multiple records that represent the
     // same object.  merge all records into one
-    const objects = mergeByPrimaryKey(all, primaryKeys);
+    const allObjects = mergeByPrimaryKey(all, primaryKeys);
     const keysObj = primaryKeys
       .sort()
       .reduce((a, v) => ({...a, [v]: true}), {});
-    // all objects have same fields due to groupByAffectedFields call
-    // pull out fields of first as mask for update fields to ensure
-    // fields that aren't in the data are not modified by the upsert
-    const updateColumnMask = objects?.length
-      ? new Set(Object.keys(objects[0]))
-      : undefined;
-    const onConflict = this.createConflictClause(
-      model,
-      false,
-      updateColumnMask
-    );
-    const mutation = {
-      mutation: {
-        [`insert_${model}`]: {
-          __args: {
-            objects,
-            on_conflict: onConflict,
-          },
-          returning: {
-            id: true,
-            ...keysObj,
+    // for each set of unique keys, build an UpsertOp
+    const groups = groupByKeys(allObjects);
+    return groups.map((objects) => {
+      // all objects have same fields due to groupByKeys call
+      // pull out fields of first as mask for update fields to ensure
+      // fields that aren't in the data are not modified by the upsert
+      const updateColumnMask = objects?.length
+        ? new Set(Object.keys(objects[0]))
+        : undefined;
+      const onConflict = this.createConflictClause(
+        model,
+        false,
+        updateColumnMask
+      );
+      const mutation = {
+        mutation: {
+          [`insert_${model}`]: {
+            __args: {
+              objects,
+              on_conflict: onConflict,
+            },
+            returning: {
+              id: true,
+              ...keysObj,
+            },
           },
         },
-      },
-    };
-    return {
-      query: mutation,
-      upsertsByKey,
-    };
+      };
+      return {
+        query: mutation,
+        upsertsByKey,
+      };
+    });
   }
 
   private formatFieldValue(model: string, field: string, value: any): any {
