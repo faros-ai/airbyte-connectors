@@ -531,7 +531,9 @@ describe('graphql-client write batch updates', () => {
     const records = [
       JSON.parse('{"uid":"9","source":"jira"}'),
       JSON.parse('{"uid":"7","source":"jira"}'),
-      JSON.parse('{"uid":"7","parent":{"uid":"9"},"source":"jira"}'),
+      JSON.parse(
+        '{"uid":"7","parent":{"uid":"9", "source":"jira"},"source":"jira"}'
+      ),
     ];
     let queries = 0;
     const backend: GraphQLBackend = {
