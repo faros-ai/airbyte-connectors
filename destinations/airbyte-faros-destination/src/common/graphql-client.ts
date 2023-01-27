@@ -608,9 +608,11 @@ export class GraphQLClient {
     on_conflict: Dictionary<any>;
   } {
     const obj = {};
+    const foreignKeys = [];
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
       if (nestedModel && value) {
+        foreignKeys.push(nestedModel.foreignKey);
         obj[nestedModel.field] = this.createMutationObject(
           nestedModel.model,
           value,
@@ -630,7 +632,7 @@ export class GraphQLClient {
       on_conflict: this.createConflictClause(
         model,
         nested,
-        new Set(Object.keys(obj))
+        new Set(Object.keys(obj).concat(foreignKeys))
       ),
     };
   }
@@ -794,9 +796,10 @@ export class GraphQLClient {
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
         );
-    const filteredUpdateFields = updateFieldMask
-      ? updateColumns.filter((c) => updateFieldMask.has(c))
-      : updateColumns;
+    const filteredUpdateFields =
+      updateFieldMask && !nested
+        ? updateColumns.filter((c) => updateFieldMask.has(c))
+        : updateColumns;
     // if empty, use model keys to ensure queries always return results
     if (isEmpty(filteredUpdateFields)) {
       filteredUpdateFields.push(...this.schema.primaryKeys[model]);

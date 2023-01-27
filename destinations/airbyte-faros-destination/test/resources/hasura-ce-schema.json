@@ -1,0 +1,59 @@
+{
+  "primaryKeys": {
+    "tms_Task": [
+      "source",
+      "uid"
+    ]
+  },
+  "scalars": {
+    "tms_Task": {
+      "additionalFields": "jsonb",
+      "createdAt": "timestamptz",
+      "creator": "String",
+      "description": "String",
+      "epic": "String",
+      "name": "String",
+      "origin": "String",
+      "parent": "String",
+      "points": "Float",
+      "priority": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "sprint": "String",
+      "status": "jsonb",
+      "statusChangedAt": "timestamptz",
+      "statusChangelog": "jsonb",
+      "type": "jsonb",
+      "uid": "String",
+      "updatedAt": "timestamptz",
+      "url": "String"
+    }
+  },
+  "references": {
+    "tms_Task": {
+      "parent": {
+        "field": "tms_Task",
+        "model": "tms_Task",
+        "foreignKey": "parent"
+      },
+      "tms_Task": {
+        "field": "tms_Task",
+        "model": "tms_Task",
+        "foreignKey": "parent"
+      }
+    }
+  },
+  "backReferences": {
+    "tms_Task": [
+      {
+        "field": "tms_Tasks",
+        "model": "tms_Task"
+      }
+    ]
+  },
+  "sortedModelDependencies": [
+    "tms_Task"
+  ],
+  "tableNames": [
+    "tms_Task"
+  ]}
