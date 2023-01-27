@@ -12,7 +12,7 @@ connector_version=$2
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 
 org="rudderlabs"
-connector_name="$(echo $connector_path | cut -f2 -d'/')"
+connector_name="$(echo $connector_path | cut -f3 -d'/')"
 prefix=""
 if [[ "$connector_name" = $prefix* ]]; then
   image="$org/$connector_name"
