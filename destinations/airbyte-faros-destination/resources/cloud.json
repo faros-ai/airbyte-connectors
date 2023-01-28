@@ -1,64 +1,74 @@
 {
-    "type": "object",
-    "title": "Cloud Edition",
-    "required": ["api_key", "api_url"],
-    "properties": {
-      "edition": {
-        "type": "string",
-        "title": "Cloud Edition",
-        "description": "Cloud Edition",
-        "const": "cloud"
-      },
-      "api_url": {
-        "type": "string",
-        "title": "API URL",
-        "description": "The Faros API URL.",
-        "default": "https://prod.api.faros.ai",
-        "examples": ["https://prod.api.faros.ai"]
-      },
-      "api_key": {
-        "title": "API Key",
-        "type": "string",
-        "description": "The Faros API key to use to access the API.",
-        "airbyte_secret": true
-      },
-      "graph": {
-        "type": "string",
-        "title": "Graph name",
-        "description": "The Faros graph name.",
-        "default": "default"
-      },
-      "graphql_api": {
-        "type": "string",
-        "title": "GraphQL API",
-        "description": "The version of GraphQL API for writes.",
-        "default": "v1",
-        "enum": ["v1", "v2"]
-      },
-      "cloud_graphql_upsert_batch_size": {
-        "type": "integer",
-        "title": "GraphQL upsert batch size",
-        "description": "Maximum number of records to execute in a single GraphQL upsert.",
-        "default": 10000
-      },
-      "cloud_graphql_batch_size": {
-        "type": "integer",
-        "title": "GraphQL mutation batch size",
-        "description": "Maximum number of mutations to execute in a single request to GraphQL backend.",
-        "default": 100
-      },
-      "check_connection": {
-        "type": "boolean",
-        "title": "Check Faros API Connection",
-        "description": "Check Faros API connection on init.",
-        "default": true
-      },
-      "expiration": {
-        "type": "string",
-        "title": "Revision expiration",
-        "description": "The Faros graph revision expiration time.",
-        "default": "5 seconds",
-        "examples": ["5 seconds"]
-      }
+  "type": "object",
+  "title": "Cloud Edition",
+  "required": [
+    "api_key",
+    "api_url"
+  ],
+  "properties": {
+    "edition": {
+      "type": "string",
+      "title": "Cloud Edition",
+      "description": "Cloud Edition",
+      "const": "cloud"
+    },
+    "api_url": {
+      "type": "string",
+      "title": "API URL",
+      "description": "The Faros API URL.",
+      "default": "https://prod.api.faros.ai",
+      "examples": [
+        "https://prod.api.faros.ai"
+      ]
+    },
+    "api_key": {
+      "title": "API Key",
+      "type": "string",
+      "description": "The Faros API key to use to access the API.",
+      "airbyte_secret": true
+    },
+    "graph": {
+      "type": "string",
+      "title": "Graph name",
+      "description": "The Faros graph name.",
+      "default": "default"
+    },
+    "graphql_api": {
+      "type": "string",
+      "title": "GraphQL API",
+      "description": "The version of GraphQL API for writes.",
+      "default": "v1",
+      "enum": [
+        "v1",
+        "v2"
+      ]
+    },
+    "cloud_graphql_upsert_batch_size": {
+      "type": "integer",
+      "title": "GraphQL upsert batch size",
+      "description": "Maximum number of records to execute in a single GraphQL upsert.",
+      "default": 10000
+    },
+    "cloud_graphql_batch_size": {
+      "type": "integer",
+      "title": "GraphQL mutation batch size",
+      "description": "Maximum number of mutations to execute in a single request to GraphQL backend.",
+      "default": 100
+    },
+    "check_connection": {
+      "type": "boolean",
+      "title": "Check Faros API Connection",
+      "description": "Check Faros API connection on init.",
+      "default": true
+    },
+    "expiration": {
+      "type": "string",
+      "title": "Revision expiration",
+      "description": "The Faros graph revision expiration time.",
+      "default": "5 seconds",
+      "examples": [
+        "5 seconds"
+      ]
     }
   }
+}
