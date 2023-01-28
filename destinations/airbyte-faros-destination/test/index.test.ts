@@ -4,9 +4,11 @@ import {
   AirbyteConnectionStatusMessage,
   AirbyteLogger,
   AirbyteSpec,
+  SpecLoader,
 } from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
+import path from 'path';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {FarosDestination} from '../src/destination';
@@ -38,8 +40,11 @@ describe('index', () => {
     const maxCheckLength = 16384;
     const expectedSpec =
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      JSON.stringify(new AirbyteSpec(require('../resources/spec.json'))) +
-      os.EOL;
+      JSON.stringify(
+        await SpecLoader.loadSpec(
+          path.join(__dirname, '../resources/spec.json')
+        )
+      ) + os.EOL;
     expect(await read(cli.stderr)).toBe('');
     expect((await read(cli.stdout)).substring(0, maxCheckLength)).toBe(
       expectedSpec.substring(0, maxCheckLength)
