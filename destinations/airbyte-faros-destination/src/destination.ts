@@ -12,6 +12,7 @@ import {
   AirbyteStateMessage,
   DestinationSyncMode,
   parseAirbyteMessage,
+  SpecLoader,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
@@ -24,6 +25,7 @@ import {
 import http from 'http';
 import https from 'https';
 import {difference, keyBy, sortBy, uniq} from 'lodash';
+import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
@@ -50,6 +52,9 @@ import {
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
+
+const PACKAGE_ROOT = path.join(__dirname, '..');
+const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -94,8 +99,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   async spec(): Promise<AirbyteSpec> {
     if (this.specOverride) return this.specOverride;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return new AirbyteSpec(require('../resources/spec.json'));
+    return SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
   }
 
   async check(

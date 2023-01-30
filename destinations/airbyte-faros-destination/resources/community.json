@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "title": "Community Edition",
+  "required": [
+    "hasura_url"
+  ],
+  "properties": {
+    "edition": {
+      "type": "string",
+      "title": "Community Edition",
+      "description": "Community Edition",
+      "const": "community"
+    },
+    "hasura_admin_secret": {
+      "type": "string",
+      "title": "Hasura Admin Secret",
+      "description": "The Hasura Admin Secret.",
+      "airbyte_secret": true
+    },
+    "hasura_url": {
+      "type": "string",
+      "title": "Hasura URL",
+      "description": "The Community Edition Hasura URL.",
+      "default": "http://localhost:8080"
+    },
+    "segment_user_id": {
+      "type": "string",
+      "title": "Segment User Id",
+      "description": "The User UUID with which to track events in Segment. If not present, then reporting is disabled. See https://community.faros.ai/docs/telemetry for more details.",
+      "format": "uuid"
+    },
+    "community_graphql_batch_size": {
+      "type": "integer",
+      "title": "GraphQL mutation batch size",
+      "description": "Maximum number of mutations to execute in a single request to GraphQL backend.",
+      "default": 100
+    }
+  }
+}
