@@ -14,6 +14,6 @@ describe('spec loader', () => {
   test('throws when fails to resolve references', async () => {
     expect(() =>
       SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec-bad-ref.json'))
-    ).rejects.toThrowError(/^Failed to resolve references/);
+    ).rejects.toThrowError(/^Failed to load spec references/);
   });
 });

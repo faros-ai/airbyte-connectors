@@ -10,7 +10,10 @@ export class SpecLoader {
       const dereferenced = (await $RefParser.dereference(specPath)) as Spec;
       return new AirbyteSpec(dereferenced);
     } catch (err: any) {
-      throw new VError(err, `Failed to resolve references of '${specPath}'`);
+      throw new VError(
+        err,
+        `Failed to load spec references for path ${specPath}`
+      );
     }
   }
 }
