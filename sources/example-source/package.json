@@ -42,10 +42,6 @@
     ],
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      ".d.ts",
-      ".js"
-    ],
     "testTimeout": 10000,
     "globals": {
       "ts-jest": {
