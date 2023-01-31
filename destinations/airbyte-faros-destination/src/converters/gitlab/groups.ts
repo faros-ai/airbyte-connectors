@@ -8,6 +8,9 @@ export class Groups extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Organization',
     'vcs_Organization',
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
   ];
 
   async convert(
@@ -20,7 +23,7 @@ export class Groups extends GitlabConverter {
     res.push({
       model: 'cicd_Organization',
       record: {
-        uid: group.path,
+        uid: group.full_path,
         description: group.description?.substring(
           0,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
@@ -34,7 +37,7 @@ export class Groups extends GitlabConverter {
     res.push({
       model: 'vcs_Organization',
       record: {
-        uid: group.path,
+        uid: group.full_path,
         name: group.name,
         htmlUrl: group.web_url,
         type: {category: 'Group', detail: ''},
@@ -42,6 +45,17 @@ export class Groups extends GitlabConverter {
         source,
       },
     });
+
+    // GitLab can track tasks at a group level as well
+    res.push(
+      ...GitlabCommon.tms_ProjectBoard_with_TaskBoard(
+        {uid: group.full_path, source},
+        group.name,
+        group.description,
+        group.created_at,
+        null
+      )
+    );
 
     return res;
   }

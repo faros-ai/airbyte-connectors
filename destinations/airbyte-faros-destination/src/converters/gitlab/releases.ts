@@ -7,7 +7,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {GitlabConverter} from './common';
+import {GitlabCommon, GitlabConverter} from './common';
 
 export class Releases extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -29,19 +29,13 @@ export class Releases extends GitlabConverter {
     const release = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const [, owner, repo] = (
-      release.commit_path ||
-      release.tag_path ||
-      '/'
-    ).split('/');
-
-    if (!owner || !repo) {
+    if (!release._links || !release._links.self) {
       ctx.logger
-        .warn(`Could not find commit_path or tag_path from StreamContext for
-        this record: ${this.id}`);
+        .warn(`Could not find property for identifying release: ${this.id}`);
       return res;
     }
-
+    
+    const repository = GitlabCommon.parseRepositoryKey(release._links.self, source)
     const usersStream = this.usersStream.asString;
     const user = ctx.get(usersStream, String(release.author_id));
     const username = user?.record?.data?.username;
@@ -52,7 +46,7 @@ export class Releases extends GitlabConverter {
       record: {
         uid,
         name: release.name,
-        htmlUrl: release?._links?.self,
+        htmlUrl: release._links.self,
         description: release.description,
         createdAt: Utils.toDate(release.created_at),
         releasedAt: Utils.toDate(release.released_at),
@@ -67,11 +61,7 @@ export class Releases extends GitlabConverter {
         release: {uid, source},
         tag: {
           name: release.tag_name,
-          repository: {
-            name: repo?.toLowerCase(),
-            uid: repo?.toLowerCase(),
-            organization: {uid: owner?.toLowerCase(), source},
-          },
+          repository,
         },
       },
     });

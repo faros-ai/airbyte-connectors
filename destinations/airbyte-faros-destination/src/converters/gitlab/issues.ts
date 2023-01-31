@@ -20,7 +20,7 @@ export class Issues extends GitlabConverter {
   ];
 
   private readonly usersStream = new StreamName('gitlab', 'users');
-
+  
   override get dependencies(): ReadonlyArray<StreamName> {
     return [this.usersStream];
   }
@@ -36,7 +36,15 @@ export class Issues extends GitlabConverter {
 
     const uid = String(issue.id);
     const taskKey = {uid, source};
-    const projectRef = {uid: String(issue.project_id), source};
+    const repository = GitlabCommon.parseRepositoryKey(issue.web_url, source);
+    const projectRef = { uid: repository.uid, source };
+    const groups = repository.uid.split('/').flatMap((_, i, a) => {
+      return i == a.length - 1 ? [] : {
+        uid: a.slice(0, i + 1).join('/'),
+        source
+      };
+    });
+
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
         const assigneeUser = ctx.get(usersStream, String(assignee));
@@ -88,24 +96,47 @@ export class Issues extends GitlabConverter {
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
         url: issue.web_url,
+        // TODO: Link epics using either milestone or the first class epics in Gitlab Premium/Ultimate
         source,
       },
     });
 
-    res.push({
-      model: 'tms_TaskProjectRelationship',
-      record: {
-        task: taskKey,
-        project: projectRef,
+    res.push(
+      {
+        model: 'tms_TaskProjectRelationship',
+        record: {
+          task: taskKey,
+          project: projectRef,
+        },
       },
-    });
-    res.push({
-      model: 'tms_TaskBoardRelationship',
-      record: {
-        task: taskKey,
-        board: projectRef,
+      ...groups.map(groupRef => {
+        return {
+          model: 'tms_TaskProjectRelationship',
+          record: {
+            task: taskKey,
+            project: groupRef,
+          },
+        };
+      }),
+    );
+    res.push(
+      {
+        model: 'tms_TaskBoardRelationship',
+        record: {
+          task: taskKey,
+          board: projectRef,
+        },
       },
-    });
+      ...groups.map(groupRef => {
+        return {
+          model: 'tms_TaskBoardRelationship',
+          record: {
+            task: taskKey,
+            board: groupRef,
+          },
+        };
+      }),
+    );
     return res;
   }
 }

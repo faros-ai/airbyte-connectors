@@ -69,25 +69,51 @@ export class GitlabCommon {
 
   static parseRepositoryKey(
     webUrl: string | undefined,
-    source: string,
-    startIndex = 3
+    source: string,    
   ): undefined | RepositoryKey {
-    if (!webUrl) return undefined;
-    const repositoryIndex = startIndex + 1;
-    
-    const nameParts: ReadonlyArray<string> = webUrl.split('/');
-    if (nameParts.length <= repositoryIndex) return undefined;
+    if (!webUrl) {
+      return undefined;
+    }
+    return this.parseKeyFromUrl(webUrl, source, false);
+  }
 
+  static parseGroupKey(
+    webUrl: string | undefined,
+    source: string,    
+  ): undefined | OrgKey {
+    if (!webUrl) {
+      return undefined;
+    }
+    return this.parseKeyFromUrl(webUrl, source, true);
+  }
+
+  private static parseKeyFromUrl<B extends boolean>(
+    webUrl: string,
+    source: string,
+    hasGroupPrefix: B
+  ): B extends true ? OrgKey : RepositoryKey;
+
+  private static parseKeyFromUrl(
+    webUrl: string,
+    source: string,
+    hasGroupPrefix: boolean
+  ): OrgKey | RepositoryKey {
+    const startIndex = hasGroupPrefix ? 4 : 3;
+    const nameParts: ReadonlyArray<string> = webUrl.split('/');
     const endIndex = nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
+    const uid = nameParts.slice(startIndex, endIndex).join('/').toLowerCase();
     
-    const organization = nameParts[startIndex].toLowerCase();
-    const repositoryUid = nameParts.slice(repositoryIndex, endIndex).join('/').toLowerCase();
-    const repositoryName = nameParts[endIndex - 1].toLowerCase()
+    if (hasGroupPrefix) {
+      return { uid: uid, source };
+    }
     
+    const org = nameParts[startIndex].toLowerCase();
+    const name = nameParts[endIndex - 1].toLowerCase();
+
     return {
-      name: repositoryName,
-      uid: repositoryUid,
-      organization: {uid: organization, source},
+      organization: { uid: org, source },
+      uid,
+      name,
     };
   }
 

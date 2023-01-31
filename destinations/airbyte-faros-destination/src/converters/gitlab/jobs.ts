@@ -45,7 +45,7 @@ export class Jobs extends GitlabConverter {
       uid: String(pipelineId),
       pipeline: {
         organization: repository.organization,
-        uid: repository.name,
+        uid: repository.uid,
       },
     };
 

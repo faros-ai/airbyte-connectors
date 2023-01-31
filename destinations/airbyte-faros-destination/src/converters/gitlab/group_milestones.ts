@@ -11,12 +11,7 @@ export class GroupMilestones extends GitlabConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const milestone = record.record.data;
-
-    const repository = GitlabCommon.parseRepositoryKey(
-      milestone.web_url,
-      source,
-      4
-    );
+    const group = GitlabCommon.parseGroupKey(milestone.web_url, source);
 
     return [
       {
@@ -28,7 +23,7 @@ export class GroupMilestones extends GitlabConverter {
             0,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
-          project: repository ? {uid: repository.name, source} : null,
+          project: group,
           status: this.epicStatus(milestone.state),
           source,
         },
