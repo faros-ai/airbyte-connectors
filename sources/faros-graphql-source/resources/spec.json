@@ -88,14 +88,14 @@
         "order": 9,
         "type": "integer",
         "title": "Bucket Number",
-        "description": "Bucket number for this source to determine which portion of models to pull. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'",
+        "description": "Bucket number for this source to determine which portion of models to pull. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'. Please note that V1 graphs do not support opening multiple revisions at once, so only use buckets if writing to a V2 graph on the destination, or not writing at all.",
         "default": 1
       },
       "bucket_total": {
         "order": 10,
         "type": "integer",
         "title": "Total Number of Buckets",
-        "description": "Total number of buckets to distribute models across. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'",
+        "description": "Total number of buckets to distribute models across. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'. Please note that V1 graphs do not support opening multiple revisions at once, so only use buckets if writing to a V2 graph on the destination, or not writing at all.",
         "default": 1
       }
     }
