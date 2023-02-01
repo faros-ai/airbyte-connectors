@@ -141,10 +141,8 @@
         "lastModifiedByUser": {
           "type": "object",
           "properties": {
-            "properties": {
-              "id": {
-                "type": "string"
-              }
+            "id": {
+              "type": "string"
             }
           }
         }
