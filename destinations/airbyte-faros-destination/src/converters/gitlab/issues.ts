@@ -38,12 +38,6 @@ export class Issues extends GitlabConverter {
     const taskKey = {uid, source};
     const repository = GitlabCommon.parseRepositoryKey(issue.web_url, source);
     const projectRef = { uid: repository.uid, source };
-    const groups = repository.uid.split('/').flatMap((_, i, a) => {
-      return i == a.length - 1 ? [] : {
-        uid: a.slice(0, i + 1).join('/'),
-        source
-      };
-    });
 
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
@@ -108,34 +102,29 @@ export class Issues extends GitlabConverter {
           task: taskKey,
           project: projectRef,
         },
-      },
-      ...groups.map(groupRef => {
-        return {
-          model: 'tms_TaskProjectRelationship',
-          record: {
-            task: taskKey,
-            project: groupRef,
-          },
-        };
-      }),
+      }
     );
+
     res.push(
       {
         model: 'tms_TaskBoardRelationship',
         record: {
           task: taskKey,
-          board: projectRef,
+          board: repository.organization,
         },
       },
-      ...groups.map(groupRef => {
-        return {
-          model: 'tms_TaskBoardRelationship',
-          record: {
-            task: taskKey,
-            board: groupRef,
-          },
-        };
-      }),
+      ...GitlabCommon.mapRepositoryHierarchy<DestinationRecord>(
+        repository,
+        k => {
+          return {
+            model: 'tms_TaskBoardRelationship',
+            record: {
+              task: taskKey,
+              board: k,
+            },
+          };
+        }
+      ),
     );
     return res;
   }

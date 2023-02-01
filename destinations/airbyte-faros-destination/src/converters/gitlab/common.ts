@@ -29,13 +29,56 @@ export class GitlabCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  static tms_ProjectBoard_with_TaskBoard(
-    projectKey: ProjectKey,
+  static mapRepositoryHierarchy<T>(
+    repository: RepositoryKey,
+    callback: (k: ProjectKey) => T,
+  ): T[] {
+    return repository.uid.split('/').map((_, i, a) => {
+      const key = {
+        uid: a.slice(0, i + 1).join('/'),
+        source: repository.organization.source,
+      };
+      return callback(key);
+    })
+  }
+
+  static tms_TaskBoard(
+    boardKey: ProjectKey,
     name: string,
+  ): DestinationRecord {
+    return {
+      model: 'tms_TaskBoard',
+      record: {
+        ...boardKey,
+        name,
+      },
+    };
+  }
+
+  static tms_TaskBoardProjectRelationship(
+    boardKey: ProjectKey,
+    projectKey: ProjectKey,
+  ): DestinationRecord {
+    return {
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: boardKey,
+        project: projectKey,
+      },
+    };
+  }
+
+  static tms_ProjectBoard_with_TaskBoard(
+    repository: RepositoryKey,
     description: string | null,
     createdAt: string | null | undefined,
     updatedAt: string | null | undefined
   ): DestinationRecord[] {
+    const projectKey = {
+      uid: repository.uid,
+      source: repository.organization.source,
+    };
+    const name = repository.name;
     return [
       {
         model: 'tms_Project',
@@ -50,20 +93,13 @@ export class GitlabCommon {
           updatedAt: Utils.toDate(updatedAt),
         },
       },
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          ...projectKey,
-          name,
-        },
-      },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: projectKey,
-          project: projectKey,
-        },
-      },
+      this.tms_TaskBoard(projectKey, name),
+      this.tms_TaskBoardProjectRelationship(repository.organization, projectKey),
+      // traverse the hierarchy to link boards for the sub groups and the project itself
+      ...this.mapRepositoryHierarchy<DestinationRecord>(
+        repository,
+        key => this.tms_TaskBoardProjectRelationship(key, projectKey),
+      ),
     ];
   }
 
@@ -101,7 +137,7 @@ export class GitlabCommon {
     const startIndex = hasGroupPrefix ? 4 : 3;
     const nameParts: ReadonlyArray<string> = webUrl.split('/');
     const endIndex = nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
-    const uid = nameParts.slice(startIndex, endIndex).join('/').toLowerCase();
+    const uid = nameParts.slice(startIndex + 1, endIndex).join('/').toLowerCase();
     
     if (hasGroupPrefix) {
       return { uid: uid, source };

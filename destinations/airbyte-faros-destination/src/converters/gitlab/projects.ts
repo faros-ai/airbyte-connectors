@@ -27,8 +27,7 @@ export class Projects extends GitlabConverter {
     // Create a TMS Project/Board per repo that we sync
     res.push(
       ...GitlabCommon.tms_ProjectBoard_with_TaskBoard(
-        {uid: repository.uid, source},
-        repository.name,
+        repository,
         project.body,
         project.created_at,
         project.updated_at
