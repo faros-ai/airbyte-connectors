@@ -46,7 +46,7 @@ export class Releases extends GitlabConverter {
       record: {
         uid,
         name: release.name,
-        htmlUrl: release._links.self,
+        url: release._links.self,
         description: release.description,
         createdAt: Utils.toDate(release.created_at),
         releasedAt: Utils.toDate(release.released_at),
