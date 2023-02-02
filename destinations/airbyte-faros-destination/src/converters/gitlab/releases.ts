@@ -40,7 +40,7 @@ export class Releases extends GitlabConverter {
     const user = ctx.get(usersStream, String(release.author_id));
     const username = user?.record?.data?.username;
 
-    const uid = release.tag_name;
+    const uid = `${repository.uid}/${release.tag_name}`;
     res.push({
       model: 'cicd_Release',
       record: {
