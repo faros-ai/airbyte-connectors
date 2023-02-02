@@ -46,13 +46,6 @@ export class Groups extends GitlabConverter {
           source,
         },
       });
-
-      res.push(
-        GitlabCommon.tms_TaskBoard(
-          { uid: group.full_path, source },
-          group.name,
-        )
-      );
     } else {
       res.push(
         GitlabCommon.tms_TaskBoard(

@@ -94,7 +94,6 @@ export class GitlabCommon {
         },
       },
       this.tms_TaskBoard(projectKey, name),
-      this.tms_TaskBoardProjectRelationship(repository.organization, projectKey),
       // traverse the hierarchy to link boards for the sub groups and the project itself
       ...this.mapRepositoryHierarchy<DestinationRecord>(
         repository,

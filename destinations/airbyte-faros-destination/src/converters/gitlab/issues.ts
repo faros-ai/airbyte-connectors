@@ -106,13 +106,6 @@ export class Issues extends GitlabConverter {
     );
 
     res.push(
-      {
-        model: 'tms_TaskBoardRelationship',
-        record: {
-          task: taskKey,
-          board: repository.organization,
-        },
-      },
       ...GitlabCommon.mapRepositoryHierarchy<DestinationRecord>(
         repository,
         k => {
