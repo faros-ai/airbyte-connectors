@@ -29,13 +29,56 @@ export class GitlabCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  static tms_ProjectBoard_with_TaskBoard(
-    projectKey: ProjectKey,
+  static mapRepositoryHierarchy<T>(
+    repository: RepositoryKey,
+    callback: (k: ProjectKey) => T,
+  ): T[] {
+    return repository.uid.split('/').map((_, i, a) => {
+      const key = {
+        uid: a.slice(0, i + 1).join('/'),
+        source: repository.organization.source,
+      };
+      return callback(key);
+    })
+  }
+
+  static tms_TaskBoard(
+    boardKey: ProjectKey,
     name: string,
+  ): DestinationRecord {
+    return {
+      model: 'tms_TaskBoard',
+      record: {
+        ...boardKey,
+        name,
+      },
+    };
+  }
+
+  static tms_TaskBoardProjectRelationship(
+    boardKey: ProjectKey,
+    projectKey: ProjectKey,
+  ): DestinationRecord {
+    return {
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: boardKey,
+        project: projectKey,
+      },
+    };
+  }
+
+  static tms_ProjectBoard_with_TaskBoard(
+    repository: RepositoryKey,
     description: string | null,
     createdAt: string | null | undefined,
     updatedAt: string | null | undefined
   ): DestinationRecord[] {
+    const projectKey = {
+      uid: repository.uid,
+      source: repository.organization.source,
+    };
+    const name = repository.name;
     return [
       {
         model: 'tms_Project',
@@ -50,40 +93,62 @@ export class GitlabCommon {
           updatedAt: Utils.toDate(updatedAt),
         },
       },
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          ...projectKey,
-          name,
-        },
-      },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: projectKey,
-          project: projectKey,
-        },
-      },
+      this.tms_TaskBoard(projectKey, name),
+      // traverse the hierarchy to link boards for the sub groups and the project itself
+      ...this.mapRepositoryHierarchy<DestinationRecord>(
+        repository,
+        key => this.tms_TaskBoardProjectRelationship(key, projectKey),
+      ),
     ];
   }
 
   static parseRepositoryKey(
     webUrl: string | undefined,
-    source: string,
-    startIndex = 3
+    source: string,    
   ): undefined | RepositoryKey {
-    if (!webUrl) return undefined;
-    const repositoryIndex = startIndex + 1;
+    if (!webUrl) {
+      return undefined;
+    }
+    return this.parseKeyFromUrl(webUrl, source, false);
+  }
 
-    const orgRepo: ReadonlyArray<string> = webUrl.split('/');
-    if (orgRepo.length < repositoryIndex) return undefined;
+  static parseGroupKey(
+    webUrl: string | undefined,
+    source: string,    
+  ): undefined | OrgKey {
+    if (!webUrl) {
+      return undefined;
+    }
+    return this.parseKeyFromUrl(webUrl, source, true);
+  }
 
-    const organization = orgRepo[startIndex];
-    const repositoryName = orgRepo[repositoryIndex];
+  private static parseKeyFromUrl<B extends boolean>(
+    webUrl: string,
+    source: string,
+    hasGroupPrefix: B
+  ): B extends true ? OrgKey : RepositoryKey;
+
+  private static parseKeyFromUrl(
+    webUrl: string,
+    source: string,
+    hasGroupPrefix: boolean
+  ): OrgKey | RepositoryKey {
+    const startIndex = hasGroupPrefix ? 4 : 3;
+    const nameParts: ReadonlyArray<string> = webUrl.split('/');
+    const endIndex = nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
+    const uid = nameParts.slice(startIndex + 1, endIndex).join('/').toLowerCase();
+    
+    if (hasGroupPrefix) {
+      return { uid: uid, source };
+    }
+    
+    const org = nameParts[startIndex].toLowerCase();
+    const name = nameParts[endIndex - 1].toLowerCase();
+
     return {
-      name: repositoryName?.toLowerCase(),
-      uid: repositoryName?.toLowerCase(),
-      organization: {uid: organization?.toLowerCase(), source},
+      organization: { uid: org, source },
+      uid,
+      name,
     };
   }
 
@@ -92,7 +157,7 @@ export class GitlabCommon {
       uid: String(pipelineId),
       pipeline: {
         organization: repository.organization,
-        uid: repository.name,
+        uid: repository.uid,
       },
     };
   }

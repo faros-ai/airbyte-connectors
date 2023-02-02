@@ -29,7 +29,7 @@ export class Pipelines extends GitlabConverter {
 
     const pipelineKey = {
       organization: repository.organization,
-      uid: repository.name,
+      uid: repository.uid,
     };
 
     const build = {
