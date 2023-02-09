@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__notion__users"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__notion__pages"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}
