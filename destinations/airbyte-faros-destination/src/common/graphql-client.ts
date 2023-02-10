@@ -374,7 +374,6 @@ export class GraphQLClient {
   private async execUpsert(model: string, op: UpsertOp): Promise<UpsertResult> {
     // write batch
     const opGql = jsonToGraphQLQuery(op.query);
-    this.logger.debug(`executing graphql upsert query: ${opGql}`);
     const start = Date.now();
     const opRes = await this.backend.postQuery(opGql);
     const end = Date.now();
@@ -510,7 +509,6 @@ export class GraphQLClient {
     const queries = this.writeBuffer.map((op) => op.query);
     const gql = GraphQLClient.batchMutation(queries);
     if (gql) {
-      this.logger.debug(`executing graphql query: ${gql}`);
       const res = await this.backend.postQuery(gql);
       if (res.errors) {
         this.logger.warn(
