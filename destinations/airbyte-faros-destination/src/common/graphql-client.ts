@@ -331,6 +331,8 @@ export class GraphQLClient {
         `Failed to reset ${model} data for origin ${origin}`
       );
     }
+    // ensure deletes are executed prior processing records
+    await this.flush();
   }
 
   async writeRecord(
@@ -372,6 +374,7 @@ export class GraphQLClient {
   private async execUpsert(model: string, op: UpsertOp): Promise<UpsertResult> {
     // write batch
     const opGql = jsonToGraphQLQuery(op.query);
+    this.logger.debug(`executing graphql upsert query: ${opGql}`);
     const start = Date.now();
     const opRes = await this.backend.postQuery(opGql);
     const end = Date.now();
