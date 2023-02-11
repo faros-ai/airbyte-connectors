@@ -52,7 +52,6 @@ import {
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
-import {notionConfig} from './converters/notion/common';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
@@ -333,17 +332,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       throw new VError(
         'Jira Additional Fields Array Limit must be a non-negative number'
       );
-    }
-
-    // TODO: Validate source config early, but also generically.
-    // Similar to how we load converters from streams.
-    const notion_config = config.source_specific_configs?.notion;
-    if (notion_config) {
-      try {
-        notionConfig.parse(notion_config);
-      } catch (err) {
-        throw new VError(err, 'Invalid Notion configuration');
-      }
     }
 
     const objectTypeConfigKeys: [string, string][] = [
