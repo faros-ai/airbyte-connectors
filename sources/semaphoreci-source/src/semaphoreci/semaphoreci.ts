@@ -97,7 +97,6 @@ export class SemaphoreCI {
       logger,
       config.branches
     );
-    logger.debug('Created SemaphoreCI instance');
     return SemaphoreCI.semaphoreci;
   }
 

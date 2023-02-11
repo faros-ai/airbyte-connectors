@@ -20,7 +20,7 @@ export class Issues extends GitlabConverter {
   ];
 
   private readonly usersStream = new StreamName('gitlab', 'users');
-  
+
   override get dependencies(): ReadonlyArray<StreamName> {
     return [this.usersStream];
   }
@@ -37,7 +37,7 @@ export class Issues extends GitlabConverter {
     const uid = String(issue.id);
     const taskKey = {uid, source};
     const repository = GitlabCommon.parseRepositoryKey(issue.web_url, source);
-    const projectRef = { uid: repository.uid, source };
+    const projectRef = {uid: repository.uid, source};
 
     issue.assignees?.forEach((assignee: any) => {
       if (assignee) {
@@ -54,7 +54,7 @@ export class Issues extends GitlabConverter {
           });
         } else {
           ctx.logger.warn(
-            `Could not find assigneeUser from StreamContext for this record: ${this.id}:${assignee}`
+            `Could not find assignee ${assignee} from for record ${uid}`
           );
         }
       }
@@ -95,20 +95,18 @@ export class Issues extends GitlabConverter {
       },
     });
 
-    res.push(
-      {
-        model: 'tms_TaskProjectRelationship',
-        record: {
-          task: taskKey,
-          project: projectRef,
-        },
-      }
-    );
+    res.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: taskKey,
+        project: projectRef,
+      },
+    });
 
     res.push(
       ...GitlabCommon.mapRepositoryHierarchy<DestinationRecord>(
         repository,
-        k => {
+        (k) => {
           return {
             model: 'tms_TaskBoardRelationship',
             record: {
@@ -117,7 +115,7 @@ export class Issues extends GitlabConverter {
             },
           };
         }
-      ),
+      )
     );
     return res;
   }

@@ -86,10 +86,6 @@ export class Executions extends HarnessConverter {
     }
 
     if (execution.artifact) {
-      ctx.logger.debug(
-        `Writing Artifact ${execution.artifact.uid} deployment association`
-      );
-
       res.push({
         model: 'cicd_ArtifactDeployment',
         record: {

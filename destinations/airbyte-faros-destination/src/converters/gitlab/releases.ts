@@ -30,12 +30,14 @@ export class Releases extends GitlabConverter {
     const res: DestinationRecord[] = [];
 
     if (!release._links || !release._links.self) {
-      ctx.logger
-        .warn(`Could not find property for identifying release: ${this.id}`);
+      ctx.logger.warn('Could not find property for identifying release');
       return res;
     }
-    
-    const repository = GitlabCommon.parseRepositoryKey(release._links.self, source)
+
+    const repository = GitlabCommon.parseRepositoryKey(
+      release._links.self,
+      source
+    );
     const usersStream = this.usersStream.asString;
     const user = ctx.get(usersStream, String(release.author_id));
     const username = user?.record?.data?.username;

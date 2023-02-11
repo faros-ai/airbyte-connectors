@@ -36,9 +36,8 @@ export class Jobs extends GitlabConverter {
 
     if (!repository || !pipelineId) {
       const message = !pipelineId
-        ? `Could not find pipelineId from StreamContext for this record:
-          ${this.id}:${job.pipeline.id}`
-        : `Could not find repository from web_url: ${this.id}:${job.web_url}`;
+        ? `Could not find pipeline for id ${job.pipeline_id}`
+        : `Could not find repository from job web url ${job.web_url}`;
       ctx.logger.warn(message);
       return [];
     }

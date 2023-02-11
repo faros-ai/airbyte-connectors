@@ -56,7 +56,6 @@ export class OpsGenie {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     OpsGenie.opsGenie = new OpsGenie(httpClient, startDate, pageSize, logger);
-    logger.debug('Created OpsGenie instance');
     return OpsGenie.opsGenie;
   }
 

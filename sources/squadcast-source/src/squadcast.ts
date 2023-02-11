@@ -98,8 +98,6 @@ export class Squadcast {
       config.event_incident_id,
       config.event_deduped
     );
-    logger.debug('Created  instance');
-
     return Squadcast.squadcast;
   }
 

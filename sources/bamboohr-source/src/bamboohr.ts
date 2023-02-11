@@ -121,7 +121,7 @@ export class BambooHR {
         }
       } else {
         this.logger.warn(
-          `Could not fetch info for employee id ${employeeId}: Employee not found`
+          `Could not fetch info for employee id ${employeeId}: employee not found`
         );
       }
     }

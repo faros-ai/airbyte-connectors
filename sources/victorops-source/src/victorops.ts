@@ -146,8 +146,6 @@ export class Victorops {
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     Victorops.victorops = new Victorops(client, startDate);
-    logger.debug('Created VictorOps instance');
-
     return Victorops.victorops;
   }
 

@@ -115,12 +115,8 @@ export class Pagerduty {
     if (!config.token) {
       throw new VError('token must be not an empty string');
     }
-
     const client = api({token: config.token});
-
     Pagerduty.pagerduty = new Pagerduty(client, logger, config.max_retries);
-    logger.debug('Created Pagerduty instance');
-
     return Pagerduty.pagerduty;
   }
 

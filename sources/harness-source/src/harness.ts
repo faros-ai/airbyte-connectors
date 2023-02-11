@@ -57,8 +57,6 @@ export class Harness {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     Harness.harness = new Harness(client, pageSize, startDate, logger);
-    logger.debug('Created Harness instance');
-
     return Harness.harness;
   }
 

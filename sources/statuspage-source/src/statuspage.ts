@@ -73,8 +73,6 @@ export class Statuspage {
       startDate,
       config.org_id
     );
-    logger.debug('Created Statuspage instance');
-
     return Statuspage.statuspage;
   }
 

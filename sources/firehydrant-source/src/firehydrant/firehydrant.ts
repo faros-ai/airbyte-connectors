@@ -60,7 +60,6 @@ export class FireHydrant {
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
     FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
-    logger.debug('Created FireHydrant instance');
     return FireHydrant.fireHydrant;
   }
 
