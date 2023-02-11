@@ -109,8 +109,6 @@ export class Docker {
       options,
       auth
     );
-    logger.debug('Created Docker instance');
-
     return Docker.clients[config.projectName];
   }
 

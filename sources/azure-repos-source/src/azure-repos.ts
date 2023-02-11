@@ -168,7 +168,7 @@ export class AzureRepos {
 
     this.logger.info(
       `Projects that will be synced: [${AzureRepos.instance.projects.join(
-        ', '
+        ','
       )}]`
     );
   }

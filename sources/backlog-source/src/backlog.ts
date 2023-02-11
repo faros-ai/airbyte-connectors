@@ -49,7 +49,6 @@ export class Backlog {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
     Backlog.backlog = new Backlog(httpClient, config, startDate);
-    logger.debug('Created Backlog instance');
     return Backlog.backlog;
   }
 

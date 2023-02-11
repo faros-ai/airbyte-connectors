@@ -104,8 +104,6 @@ export class Agileaccelerator {
       pageSize,
       startDate
     );
-    logger.debug('Created Agileaccelerator instance');
-
     return Agileaccelerator.agileaccelerator;
   }
 

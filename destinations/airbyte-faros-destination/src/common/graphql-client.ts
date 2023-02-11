@@ -422,7 +422,7 @@ export class GraphQLClient {
           for await (const results of iterator) {
             for (const result of results) {
               this.logger.debug(
-                `executed ${model} upsert with ${result.numObjects} object(s) in ${result.durationMs}ms`
+                `Executed ${model} upsert with ${result.numObjects} object(s) in ${result.durationMs}ms`
               );
             }
           }

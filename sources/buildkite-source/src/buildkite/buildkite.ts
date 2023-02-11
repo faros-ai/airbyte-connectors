@@ -191,7 +191,6 @@ export class Buildkite {
       pageSize,
       config.organization
     );
-    logger.debug('Created Buildkite instance');
     return Buildkite.buildkite;
   }
 

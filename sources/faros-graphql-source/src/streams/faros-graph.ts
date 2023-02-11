@@ -142,11 +142,9 @@ export class FarosGraph extends AirbyteStreamBase {
           )
         );
       }
-
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
-
       this.logger.debug(
         `Processing bucket ${this.bucketId} of ${this.bucketTotal}`
       );

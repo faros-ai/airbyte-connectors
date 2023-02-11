@@ -523,7 +523,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
 
       if (this.analytics) {
-        this.logger.info('Sending write stats to Segment.');
+        this.logger.debug('Sending write stats to Segment');
         const fn = (callback: ((err: Error) => void) | undefined): void => {
           this.analytics
             .track(
@@ -724,7 +724,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
       const converter = this.getConverter(stream, (err: Error) => {
         if (err.message.includes('Cannot find module ')) {
-          this.logger.info(`No converter found for ${stream}`);
+          this.logger.warn(`No converter found for ${stream}`);
         } else {
           this.logger.error(err.message, err.stack);
         }

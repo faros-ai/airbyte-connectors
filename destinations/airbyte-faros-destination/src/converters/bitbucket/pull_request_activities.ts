@@ -74,7 +74,7 @@ export class PullRequestActivities extends BitbucketConverter {
     };
     if (!orgRef.uid || !repoRef.uid) {
       ctx.logger.info(
-        `PR Activity has no repo ref: ${JSON.stringify(prActivity)}`
+        `Pull request activity has no repo ref: ${JSON.stringify(prActivity)}`
       );
       return res;
     }
