@@ -410,8 +410,6 @@ export class Pages extends NotionConverter {
     extractor: TaskExtractor,
     page: Page
   ): DestinationRecord[] {
-    const results: DestinationRecord[] = [];
-
     const additionalProperties = extractor.additionalProperties(page);
     let additionalFields: {name: string; value: string}[];
     if (additionalProperties?.size) {
@@ -420,6 +418,8 @@ export class Pages extends NotionConverter {
         additionalFields.push({name, value});
       }
     }
+
+    const results: DestinationRecord[] = [];
     results.push({
       model: 'tms_Task',
       record: {
