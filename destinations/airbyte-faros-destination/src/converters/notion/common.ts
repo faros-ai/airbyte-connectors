@@ -46,6 +46,20 @@ const defaultTodo = ['Not started'];
 const defaultInProgress = ['In progress'];
 const defaultDone = ['Done'];
 
+/** Common validation for enum mappings, e.g., task status and type */
+function refineEnumMapping(
+  mapping: Record<string, string[]>,
+  ctx: z.RefinementCtx
+): void {
+  const values = Object.values(mapping).flat();
+  if (new Set(values).size !== values.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Enum mappings must have disjoint values',
+    });
+  }
+}
+
 /** Status type can be a string property or a property and enum mapping */
 const statusConfig = z.union([
   nonemptyString.transform((property) => ({
@@ -62,15 +76,7 @@ const statusConfig = z.union([
       todo: nonemptyStringArray.default(defaultTodo),
       in_progress: nonemptyStringArray.default(defaultInProgress),
       done: nonemptyStringArray.default(defaultDone),
-    }).superRefine((mapping, ctx) => {
-      const values = [...mapping.todo, ...mapping.in_progress, ...mapping.done];
-      if (new Set(values).size !== values.length) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Status mappings must have disjoint values',
-        });
-      }
-    }),
+    }).superRefine(refineEnumMapping),
   }),
 ]).default('Status');
 export type StatusConfig = z.infer<typeof statusConfig>;
@@ -114,19 +120,7 @@ export const notionConfig = z.object({
             active: nonemptyStringArray.default(defaultActive),
             closed: nonemptyStringArray.default(defaultClosed),
             future: nonemptyStringArray.default(defaultFuture),
-          }).superRefine((mapping, ctx) => {
-            const values = [
-              ...mapping.active,
-              ...mapping.closed,
-              ...mapping.future,
-            ];
-            if (new Set(values).size !== values.length) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: 'Sprint status mappings must have disjoint values',
-              });
-            }
-          }),
+          }).superRefine(refineEnumMapping),
         }),
       ]).default('Status'),
       started_at: defaultString('Started At'),
@@ -155,7 +149,7 @@ export const notionConfig = z.object({
             story: nonemptyStringArray.default(defaultStoryType),
             task: nonemptyStringArray.default(defaultTaskType),
             bug: nonemptyStringArray.default(defaultBugType),
-          }),
+          }).superRefine(refineEnumMapping),
         }),
       ]).default('Type'),
       project: defaultString('Project'),
