@@ -1,6 +1,6 @@
 import {AirbyteRecord, SyncMode} from 'faros-airbyte-cdk';
 import {FarosClient, paginatedQueryV2, Utils} from 'faros-js-client';
-import _, {result} from 'lodash';
+import {isNil} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Common} from '../common/common';
@@ -142,7 +142,7 @@ export class Incidents extends ServiceNowConverter {
       return incidentRecords;
     }
 
-    if (_.isNil(ctx.farosClient) || _.isNil(ctx.graph)) {
+    if (isNil(ctx.farosClient) || isNil(ctx.graph)) {
       return incidentRecords;
     }
 
