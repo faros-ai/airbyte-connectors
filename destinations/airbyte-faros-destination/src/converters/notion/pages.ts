@@ -321,82 +321,82 @@ export class Pages extends NotionConverter {
   ];
 
   private pageConfig(ctx: StreamContext): PageConfig {
-    if (!this.pageCfg) {
-      const cfg = this.notionConfig(ctx);
-      const {projects, epics, sprints, tasks} = cfg;
-      const additionalProperties = new Set<string>();
-      for (const propertyValue of Object.values(tasks.properties)) {
-        if (_.isString(propertyValue)) {
-          additionalProperties.add(propertyValue);
-        } else {
-          additionalProperties.add(propertyValue.property);
-        }
-      }
+    if (this.pageCfg) return this.pageCfg;
 
-      this.pageCfg = {
-        kindExtractor: selectExtractor(cfg.kind_property),
-        projects: {
-          kind: projects.kind,
-          extractors: {
-            name: titleExtractor(projects.properties.name),
-            description: textExtractor(projects.properties.description),
-          },
-        },
-        epics: {
-          kind: epics.kind,
-          extractors: {
-            name: titleExtractor(epics.properties.name),
-            description: textExtractor(epics.properties.description),
-            project: selectExtractor(epics.properties.project),
-            status: statusExtractor(epics.properties.status),
-          },
-        },
-        sprints: {
-          kind: sprints.kind,
-          extractors: {
-            name: titleExtractor(sprints.properties.name),
-            description: textExtractor(sprints.properties.description),
-            status: mapExtractor(
-              selectExtractor(sprints.properties.status.property),
-              (status): SprintStatus => {
-                const mapping = sprints.properties.status.mapping;
-                if (mapping.active.includes(status)) {
-                  return 'Active';
-                } else if (mapping.closed.includes(status)) {
-                  return 'Closed';
-                } else if (mapping.future.includes(status)) {
-                  return 'Future';
-                }
-                return undefined;
-              }
-            ),
-            startedAt: dateExtractor(sprints.properties.started_at),
-            endedAt: dateExtractor(sprints.properties.ended_at),
-            closedAt: dateExtractor(sprints.properties.closed_at),
-          },
-        },
-        tasks: {
-          kind: tasks.kind,
-          extractors: {
-            name: titleExtractor(tasks.properties.name),
-            description: textExtractor(tasks.properties.description),
-            type: typeExtractor(tasks.properties.type),
-            project: relationExtractor(tasks.properties.project),
-            epic: relationExtractor(tasks.properties.epic),
-            sprint: relationExtractor(tasks.properties.sprint),
-            status: statusExtractor(tasks.properties.status),
-            priority: selectExtractor(tasks.properties.priority),
-            points: numberExtractor(tasks.properties.points),
-            assignee: peopleExtractor(tasks.properties.assignee),
-            resolvedAt: dateExtractor(tasks.properties.resolved_at),
-            additionalProperties: additionalPropertiesExtractor(
-              tasks.include_additional_properties,
-              additionalProperties,
-            ),
-          },
-        },
-      };
+    const cfg = this.notionConfig(ctx);
+    const {projects, epics, sprints, tasks} = cfg;
+    const additionalProperties = new Set<string>();
+    for (const propertyValue of Object.values(tasks.properties)) {
+      if (_.isString(propertyValue)) {
+        additionalProperties.add(propertyValue);
+      } else {
+        additionalProperties.add(propertyValue.property);
+      }
     }
+
+    this.pageCfg = {
+      kindExtractor: selectExtractor(cfg.kind_property),
+      projects: {
+        kind: projects.kind,
+        extractors: {
+          name: titleExtractor(projects.properties.name),
+          description: textExtractor(projects.properties.description),
+        },
+      },
+      epics: {
+        kind: epics.kind,
+        extractors: {
+          name: titleExtractor(epics.properties.name),
+          description: textExtractor(epics.properties.description),
+          project: selectExtractor(epics.properties.project),
+          status: statusExtractor(epics.properties.status),
+        },
+      },
+      sprints: {
+        kind: sprints.kind,
+        extractors: {
+          name: titleExtractor(sprints.properties.name),
+          description: textExtractor(sprints.properties.description),
+          status: mapExtractor(
+            selectExtractor(sprints.properties.status.property),
+            (status): SprintStatus => {
+              const mapping = sprints.properties.status.mapping;
+              if (mapping.active.includes(status)) {
+                return 'Active';
+              } else if (mapping.closed.includes(status)) {
+                return 'Closed';
+              } else if (mapping.future.includes(status)) {
+                return 'Future';
+              }
+              return undefined;
+            }
+          ),
+          startedAt: dateExtractor(sprints.properties.started_at),
+          endedAt: dateExtractor(sprints.properties.ended_at),
+          closedAt: dateExtractor(sprints.properties.closed_at),
+        },
+      },
+      tasks: {
+        kind: tasks.kind,
+        extractors: {
+          name: titleExtractor(tasks.properties.name),
+          description: textExtractor(tasks.properties.description),
+          type: typeExtractor(tasks.properties.type),
+          project: relationExtractor(tasks.properties.project),
+          epic: relationExtractor(tasks.properties.epic),
+          sprint: relationExtractor(tasks.properties.sprint),
+          status: statusExtractor(tasks.properties.status),
+          priority: selectExtractor(tasks.properties.priority),
+          points: numberExtractor(tasks.properties.points),
+          assignee: peopleExtractor(tasks.properties.assignee),
+          resolvedAt: dateExtractor(tasks.properties.resolved_at),
+          additionalProperties: additionalPropertiesExtractor(
+            tasks.include_additional_properties,
+            additionalProperties,
+          ),
+        },
+      },
+    };
     return this.pageCfg;
   }
 
