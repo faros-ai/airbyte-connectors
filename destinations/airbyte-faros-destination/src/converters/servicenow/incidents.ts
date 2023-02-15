@@ -114,10 +114,10 @@ export class Incidents extends ServiceNowConverter {
         record: {incident: incidentKey, application},
       };
 
+      res.push(incAppImpact);
+
       if (this.shouldPostProcessIncidentApplicationImpacts(ctx)) {
         this.incAppImpacts[incidentKey.uid] = incAppImpact;
-      } else {
-        res.push(incAppImpact);
       }
     }
 
@@ -140,6 +140,26 @@ export class Incidents extends ServiceNowConverter {
     return true;
   }
 
+  private shouldDeleteRecord(incAppImpact: any): boolean {
+    if (incAppImpact.incident?.source !== this.streamName.source) {
+      return false;
+    }
+    const processedIncAppImpact =
+      this.incAppImpacts[incAppImpact.incident?.uid];
+    if (!processedIncAppImpact) {
+      return false;
+    }
+    const application = processedIncAppImpact.record?.application;
+    if (
+      application?.name === incAppImpact.application?.name &&
+      application?.platform === incAppImpact.application?.platform
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   // TODO: Support CE
   async onProcessingComplete(
     ctx: StreamContext
@@ -151,24 +171,18 @@ export class Incidents extends ServiceNowConverter {
     }
 
     if (ctx.farosClient.graphVersion === 'v1') {
-      incidentRecords.unshift(
-        ...(await this.cloudV1DeletionRecords(
-          ctx.farosClient,
-          ctx.graph,
-          ctx.origin
-        ))
+      return this.cloudV1DeletionRecords(
+        ctx.farosClient,
+        ctx.graph,
+        ctx.origin
       );
     } else {
-      incidentRecords.unshift(
-        ...(await this.cloudV2DeletionRecords(
-          ctx.farosClient,
-          ctx.graph,
-          ctx.origin
-        ))
+      return this.cloudV2DeletionRecords(
+        ctx.farosClient,
+        ctx.graph,
+        ctx.origin
       );
     }
-
-    return incidentRecords;
   }
 
   private async cloudV1DeletionRecords(
@@ -199,33 +213,20 @@ export class Incidents extends ServiceNowConverter {
 
     const results: DestinationRecord[] = [];
     for await (const incAppImpact of faros.nodeIterable(graph, query)) {
-      if (incAppImpact.metadata?.origin !== origin) {
-        continue;
-      }
-      if (incAppImpact.incident?.source !== this.streamName.source) {
-        continue;
-      }
-      const processedIncAppImpact =
-        this.incAppImpacts[incAppImpact.incident?.uid];
-      if (!processedIncAppImpact) {
-        continue;
-      }
-      const application = processedIncAppImpact.record?.application;
       if (
-        application?.name === incAppImpact.application?.name &&
-        application?.platform === incAppImpact.application?.platform
+        incAppImpact.metadata?.origin === origin &&
+        this.shouldDeleteRecord(incAppImpact)
       ) {
-        continue;
-      }
-      results.push({
-        model: 'ims_IncidentApplicationImpact__Deletion',
-        record: {
-          where: {
-            incident: incAppImpact.incident,
-            application: incAppImpact.application,
+        results.push({
+          model: 'ims_IncidentApplicationImpact__Deletion',
+          record: {
+            where: {
+              incident: incAppImpact.incident,
+              application: incAppImpact.application,
+            },
           },
-        },
-      });
+        });
+      }
     }
     return results;
   }
@@ -256,32 +257,19 @@ export class Incidents extends ServiceNowConverter {
       100,
       paginatedQueryV2
     )) {
-      if (incAppImpact.incident?.source !== this.streamName.source) {
-        continue;
-      }
-      const processedIncAppImpact =
-        this.incAppImpacts[incAppImpact.incident?.uid];
-      if (!processedIncAppImpact) {
-        continue;
-      }
-      const application = processedIncAppImpact.record?.application;
-      if (
-        application?.name === incAppImpact.application?.name &&
-        application?.platform === incAppImpact.application?.platform
-      ) {
-        continue;
-      }
-      results.push({
-        model: 'ims_IncidentApplicationImpact__Deletion',
-        record: {
-          where: {
-            incident: incAppImpact.incident,
-            application: incAppImpact.application,
-            origin,
+      if (this.shouldDeleteRecord(incAppImpact)) {
+        results.push({
+          model: 'ims_IncidentApplicationImpact__Deletion',
+          record: {
+            where: {
+              incident: incAppImpact.incident,
+              application: incAppImpact.application,
+              origin,
+            },
+            model: 'ims_IncidentApplicationImpact',
           },
-          model: 'ims_IncidentApplicationImpact',
-        },
-      });
+        });
+      }
     }
     return results;
   }
