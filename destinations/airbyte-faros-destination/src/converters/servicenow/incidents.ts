@@ -146,7 +146,7 @@ export class Incidents extends ServiceNowConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const incidentRecords = Object.values(this.incAppImpacts);
 
-    if (!incidentRecords) {
+    if (!incidentRecords.length) {
       return [];
     }
 
