@@ -1,4 +1,4 @@
-import {AirbyteRecord, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
 import {FarosClient, paginatedQueryV2, Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -28,6 +28,7 @@ export class Incidents extends ServiceNowConverter {
   ];
 
   private seenApplications = new Set<string>();
+  private incAppImpacts: Dictionary<DestinationRecord> = {};
 
   async convert(
     record: AirbyteRecord,
@@ -108,42 +109,45 @@ export class Incidents extends ServiceNowConverter {
         this.seenApplications.add(appKey);
       }
 
-      ctx.set(
-        this.streamName.asString,
-        incidentKey.uid,
-        AirbyteRecord.make(this.streamName.asString, {
-          model: 'ims_IncidentApplicationImpact',
-          record: {incident: incidentKey, application},
-        })
-      );
+      const incAppImpact = {
+        model: 'ims_IncidentApplicationImpact',
+        record: {incident: incidentKey, application},
+      };
+
+      if (this.shouldPostProcessIncidentApplicationImpacts(ctx)) {
+        this.incAppImpacts[incidentKey.uid] = incAppImpact;
+      } else {
+        res.push(incAppImpact);
+      }
     }
 
     return res;
+  }
+
+  private shouldPostProcessIncidentApplicationImpacts(
+    ctx: StreamContext
+  ): boolean {
+    if (
+      this.allowMultiAppsPerIncident(ctx) ||
+      ctx.streamsSyncMode[this.streamName.asString] ===
+        DestinationSyncMode.OVERWRITE ||
+      isNil(ctx.farosClient) ||
+      isNil(ctx.graph)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   // TODO: Support CE
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const incidents = ctx.getAll(this.streamName.asString);
+    const incidentRecords = Object.values(this.incAppImpacts);
 
-    if (!incidents) {
+    if (!incidentRecords) {
       return [];
-    }
-
-    const incidentRecords = [];
-    for (const incident of Object.values(incidents)) {
-      incidentRecords.push(incident.record.data);
-    }
-
-    if (
-      ctx.streamsSyncMode[this.streamName.asString] === SyncMode.FULL_REFRESH
-    ) {
-      return incidentRecords;
-    }
-
-    if (isNil(ctx.farosClient) || isNil(ctx.graph)) {
-      return incidentRecords;
     }
 
     if (ctx.farosClient.graphVersion === 'v1') {
@@ -151,8 +155,7 @@ export class Incidents extends ServiceNowConverter {
         ...(await this.cloudV1DeletionRecords(
           ctx.farosClient,
           ctx.graph,
-          ctx.origin,
-          incidents
+          ctx.origin
         ))
       );
     } else {
@@ -160,8 +163,7 @@ export class Incidents extends ServiceNowConverter {
         ...(await this.cloudV2DeletionRecords(
           ctx.farosClient,
           ctx.graph,
-          ctx.origin,
-          incidents
+          ctx.origin
         ))
       );
     }
@@ -172,8 +174,7 @@ export class Incidents extends ServiceNowConverter {
   private async cloudV1DeletionRecords(
     faros: FarosClient,
     graph: string,
-    origin: string,
-    incidents: Dictionary<AirbyteRecord, string>
+    origin: string
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const query = `
       {
@@ -204,25 +205,27 @@ export class Incidents extends ServiceNowConverter {
       if (incAppImpact.incident?.source !== this.streamName.source) {
         continue;
       }
-      const incident = incidents[incAppImpact.incident?.uid];
-      if (incident) {
-        const application = incident.record.data?.record?.application;
-        if (
-          application?.name !== incAppImpact.application?.name ||
-          application?.platform !== incAppImpact.application?.platform
-        ) {
-          results.push({
-            model: 'ims_IncidentApplicationImpact__Deletion',
-            record: {
-              where: {
-                incident: incAppImpact.incident,
-                application: incAppImpact.application,
-                metadata: {origin},
-              },
-            },
-          });
-        }
+      const processedIncAppImpact =
+        this.incAppImpacts[incAppImpact.incident?.uid];
+      if (!processedIncAppImpact) {
+        continue;
       }
+      const application = processedIncAppImpact.record?.application;
+      if (
+        application?.name === incAppImpact.application?.name &&
+        application?.platform === incAppImpact.application?.platform
+      ) {
+        continue;
+      }
+      results.push({
+        model: 'ims_IncidentApplicationImpact__Deletion',
+        record: {
+          where: {
+            incident: incAppImpact.incident,
+            application: incAppImpact.application,
+          },
+        },
+      });
     }
     return results;
   }
@@ -230,8 +233,7 @@ export class Incidents extends ServiceNowConverter {
   private async cloudV2DeletionRecords(
     faros: FarosClient,
     graph: string,
-    origin: string,
-    incidents: Dictionary<AirbyteRecord, string>
+    origin: string
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const query = `
     {
@@ -257,25 +259,29 @@ export class Incidents extends ServiceNowConverter {
       if (incAppImpact.incident?.source !== this.streamName.source) {
         continue;
       }
-      const incident = incidents[incAppImpact.incident?.uid];
-      if (incident) {
-        const application = incident.record.data?.record?.application;
-        if (
-          application?.name !== incAppImpact.application?.name ||
-          application?.platform !== incAppImpact.application?.platform
-        ) {
-          results.push({
-            model: 'ims_IncidentApplicationImpact__Deletion',
-            record: {
-              where: {
-                incident: incAppImpact.incident,
-                application: incAppImpact.application,
-                origin,
-              },
-            },
-          });
-        }
+      const processedIncAppImpact =
+        this.incAppImpacts[incAppImpact.incident?.uid];
+      if (!processedIncAppImpact) {
+        continue;
       }
+      const application = processedIncAppImpact.record?.application;
+      if (
+        application?.name === incAppImpact.application?.name &&
+        application?.platform === incAppImpact.application?.platform
+      ) {
+        continue;
+      }
+      results.push({
+        model: 'ims_IncidentApplicationImpact__Deletion',
+        record: {
+          where: {
+            incident: incAppImpact.incident,
+            application: incAppImpact.application,
+            origin,
+          },
+          model: 'ims_IncidentApplicationImpact',
+        },
+      });
     }
     return results;
   }

@@ -405,9 +405,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
-    const streamsSyncMode: Dictionary<SyncMode> = {};
+    const streamsSyncMode: Dictionary<DestinationSyncMode> = {};
     for (const stream of Object.keys(streams)) {
-      streamsSyncMode[stream] = streams[stream].sync_mode;
+      streamsSyncMode[stream] = streams[stream].destination_sync_mode;
     }
 
     let latestStateMessage: AirbyteStateMessage = undefined;

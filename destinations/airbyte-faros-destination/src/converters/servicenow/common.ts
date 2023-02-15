@@ -28,6 +28,7 @@ interface ServiceNowConfig {
   application_field?: string;
   default_severity?: IncidentSeverityCategory;
   default_priority?: IncidentPriorityCategory;
+  allow_multi_apps_per_incident?: boolean;
 }
 
 /** ServiceNow converter base */
@@ -53,5 +54,9 @@ export abstract class ServiceNowConverter extends Converter {
   }
   protected applicationField(ctx: StreamContext): string {
     return this.config(ctx).application_field ?? DEFAULT_APPLICATION_FIELD;
+  }
+
+  protected allowMultiAppsPerIncident(ctx: StreamContext): boolean {
+    return this.config(ctx).allow_multi_apps_per_incident ?? true;
   }
 }
