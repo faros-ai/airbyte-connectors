@@ -1,5 +1,7 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
+import {FarosClient, paginatedQueryV2, Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
+import {Dictionary} from 'ts-essentials';
 
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -26,6 +28,7 @@ export class Incidents extends ServiceNowConverter {
   ];
 
   private seenApplications = new Set<string>();
+  private incAppImpacts: Dictionary<DestinationRecord> = {};
 
   async convert(
     record: AirbyteRecord,
@@ -105,13 +108,182 @@ export class Incidents extends ServiceNowConverter {
         res.push({model: 'compute_Application', record: application});
         this.seenApplications.add(appKey);
       }
-      res.push({
+
+      const incAppImpact = {
         model: 'ims_IncidentApplicationImpact',
         record: {incident: incidentKey, application},
-      });
+      };
+
+      if (this.shouldPostProcessIncidentApplicationImpacts(ctx)) {
+        this.incAppImpacts[incidentKey.uid] = incAppImpact;
+      } else {
+        res.push(incAppImpact);
+      }
     }
 
     return res;
+  }
+
+  private shouldPostProcessIncidentApplicationImpacts(
+    ctx: StreamContext
+  ): boolean {
+    if (
+      this.allowMultiAppsPerIncident(ctx) ||
+      ctx.streamsSyncMode[this.streamName.asString] ===
+        DestinationSyncMode.OVERWRITE ||
+      isNil(ctx.farosClient) ||
+      isNil(ctx.graph)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // TODO: Support CE
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const incidentRecords = Object.values(this.incAppImpacts);
+
+    if (!incidentRecords.length) {
+      return [];
+    }
+
+    if (ctx.farosClient.graphVersion === 'v1') {
+      incidentRecords.unshift(
+        ...(await this.cloudV1DeletionRecords(
+          ctx.farosClient,
+          ctx.graph,
+          ctx.origin
+        ))
+      );
+    } else {
+      incidentRecords.unshift(
+        ...(await this.cloudV2DeletionRecords(
+          ctx.farosClient,
+          ctx.graph,
+          ctx.origin
+        ))
+      );
+    }
+
+    return incidentRecords;
+  }
+
+  private async cloudV1DeletionRecords(
+    faros: FarosClient,
+    graph: string,
+    origin: string
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const query = `
+      {
+        ims {
+          incidentApplicationImpacts {
+            nodes {
+              metadata {
+                origin
+              }
+              incident {
+                uid
+                source
+              }
+              application {
+                name
+                platform
+              }
+            }
+          }
+        }
+      }`;
+
+    const results: DestinationRecord[] = [];
+    for await (const incAppImpact of faros.nodeIterable(graph, query)) {
+      if (incAppImpact.metadata?.origin !== origin) {
+        continue;
+      }
+      if (incAppImpact.incident?.source !== this.streamName.source) {
+        continue;
+      }
+      const processedIncAppImpact =
+        this.incAppImpacts[incAppImpact.incident?.uid];
+      if (!processedIncAppImpact) {
+        continue;
+      }
+      const application = processedIncAppImpact.record?.application;
+      if (
+        application?.name === incAppImpact.application?.name &&
+        application?.platform === incAppImpact.application?.platform
+      ) {
+        continue;
+      }
+      results.push({
+        model: 'ims_IncidentApplicationImpact__Deletion',
+        record: {
+          where: {
+            incident: incAppImpact.incident,
+            application: incAppImpact.application,
+          },
+        },
+      });
+    }
+    return results;
+  }
+
+  private async cloudV2DeletionRecords(
+    faros: FarosClient,
+    graph: string,
+    origin: string
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const query = `
+    {
+      ims_IncidentApplicationImpact(where: {origin: {_eq: "${origin}"}}) {
+        incident {
+          uid
+          source
+        }
+        application {
+          name
+          platform
+        }
+      }
+    }`;
+
+    const results: DestinationRecord[] = [];
+    for await (const incAppImpact of faros.nodeIterable(
+      graph,
+      query,
+      100,
+      paginatedQueryV2
+    )) {
+      if (incAppImpact.incident?.source !== this.streamName.source) {
+        continue;
+      }
+      const processedIncAppImpact =
+        this.incAppImpacts[incAppImpact.incident?.uid];
+      if (!processedIncAppImpact) {
+        continue;
+      }
+      const application = processedIncAppImpact.record?.application;
+      if (
+        application?.name === incAppImpact.application?.name &&
+        application?.platform === incAppImpact.application?.platform
+      ) {
+        continue;
+      }
+      results.push({
+        model: 'ims_IncidentApplicationImpact__Deletion',
+        record: {
+          where: {
+            incident: incAppImpact.incident,
+            application: incAppImpact.application,
+            origin,
+          },
+          model: 'ims_IncidentApplicationImpact',
+        },
+      });
+    }
+    return results;
   }
 
   private getSeverity(

@@ -1,4 +1,8 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteRecord,
+  DestinationSyncMode,
+} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import {snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
@@ -76,7 +80,9 @@ export class StreamContext {
     readonly logger: AirbyteLogger,
     readonly config: DestinationConfig,
     readonly farosClient?: FarosClient,
-    readonly graph?: string
+    readonly graph?: string,
+    readonly origin?: string,
+    readonly streamsSyncMode?: Dictionary<DestinationSyncMode>
   ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =

@@ -351,6 +351,12 @@
                     "Low",
                     "Custom"
                   ]
+                },
+                "allow_multi_apps_per_incident": {
+                  "type": "boolean",
+                  "title": "Multi-app Incidents",
+                  "description": "Allow storing multiple impacted applications per incident",
+                  "default": true
                 }
               }
             }

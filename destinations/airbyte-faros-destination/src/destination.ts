@@ -405,6 +405,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
+    const streamsSyncMode: Dictionary<DestinationSyncMode> = {};
+    for (const stream of Object.keys(streams)) {
+      streamsSyncMode[stream] = streams[stream].destination_sync_mode;
+    }
+
     let latestStateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
 
@@ -416,7 +421,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger,
         config,
         this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient(),
-        this.farosGraph
+        this.farosGraph,
+        origin,
+        streamsSyncMode
       );
 
       if (dryRunEnabled) {
