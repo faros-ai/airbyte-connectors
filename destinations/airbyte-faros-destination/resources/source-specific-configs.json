@@ -352,11 +352,11 @@
                     "Custom"
                   ]
                 },
-                "allow_multi_apps_per_incident": {
+                "remove_previous_incident_application_impacts": {
                   "type": "boolean",
-                  "title": "Multi-app Incidents",
-                  "description": "Allow storing multiple impacted applications per incident",
-                  "default": true
+                  "title": "Remove previously stored incident-application association(s) for processed incident(s)",
+                  "description": "When enabled, ensures that previously stored incident-application association(s) are removed from the graph.",
+                  "default": false
                 }
               }
             }

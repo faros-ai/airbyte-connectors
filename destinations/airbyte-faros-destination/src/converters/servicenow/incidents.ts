@@ -28,7 +28,7 @@ export class Incidents extends ServiceNowConverter {
   ];
 
   private seenApplications = new Set<string>();
-  private incAppImpacts: Dictionary<DestinationRecord> = {};
+  private incAppImpacts: Dictionary<Set<string>> = {};
 
   async convert(
     record: AirbyteRecord,
@@ -117,7 +117,8 @@ export class Incidents extends ServiceNowConverter {
       res.push(incAppImpact);
 
       if (this.shouldPostProcessIncidentApplicationImpacts(ctx)) {
-        this.incAppImpacts[incidentKey.uid] = incAppImpact;
+        // Record that we processed this incident/application association
+        (this.incAppImpacts[incidentKey.uid] ??= new Set<string>()).add(appKey);
       }
     }
 
@@ -128,7 +129,7 @@ export class Incidents extends ServiceNowConverter {
     ctx: StreamContext
   ): boolean {
     if (
-      this.allowMultiAppsPerIncident(ctx) ||
+      !this.removePreviousIncidentApplicationImpacts(ctx) ||
       ctx.streamsSyncMode[this.streamName.asString] ===
         DestinationSyncMode.OVERWRITE ||
       isNil(ctx.farosClient) ||
@@ -144,20 +145,14 @@ export class Incidents extends ServiceNowConverter {
     if (incAppImpact.incident?.source !== this.streamName.source) {
       return false;
     }
-    const processedIncAppImpact =
-      this.incAppImpacts[incAppImpact.incident?.uid];
-    if (!processedIncAppImpact) {
-      return false;
-    }
-    const application = processedIncAppImpact.record?.application;
-    if (
-      application?.name === incAppImpact.application?.name &&
-      application?.platform === incAppImpact.application?.platform
-    ) {
-      return false;
-    }
 
-    return true;
+    const appKey = Common.computeApplication(
+      incAppImpact.application?.name,
+      incAppImpact.application?.platform
+    ).uid;
+
+    // We shouldn't delete if we processed this incident/application association
+    return !this.incAppImpacts[incAppImpact.incident?.uid].has(appKey);
   }
 
   // TODO: Support CE
