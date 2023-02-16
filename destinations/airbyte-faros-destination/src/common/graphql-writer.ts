@@ -28,7 +28,7 @@ export class GraphQLWriter {
   ) {}
 
   async write(result: any): Promise<boolean> {
-    const [baseModel, operation] = result.model.split('__', 2);
+    const [baseModel, operation] = (result.model as string).split('__', 2);
 
     if (!operation) {
       await this.graphQLClient.writeRecord(
@@ -39,10 +39,10 @@ export class GraphQLWriter {
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
       this.timestampedRecords.push({
+        ...result.record,
         model: baseModel,
         operation,
         origin: this.originProvider.getOrigin(result.record),
-        ...result.record,
       } as TimestampedRecord);
       return true;
     } else {

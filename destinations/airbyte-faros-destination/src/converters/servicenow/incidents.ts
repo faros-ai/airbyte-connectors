@@ -264,9 +264,7 @@ export class Incidents extends ServiceNowConverter {
             where: {
               incident: incAppImpact.incident,
               application: incAppImpact.application,
-              origin,
             },
-            model: 'ims_IncidentApplicationImpact',
           },
         });
       }
