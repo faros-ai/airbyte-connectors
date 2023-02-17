@@ -52,6 +52,7 @@ export interface TagCommit {
 export interface Tag {
   name: string;
   objectId: string;
+  peeledObjectId?: string;
   url: string;
   creator: Creator;
   commit?: TagCommit;
