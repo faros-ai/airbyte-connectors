@@ -352,11 +352,11 @@
                     "Custom"
                   ]
                 },
-                "allow_multi_apps_per_incident": {
+                "store_current_incidents_associations": {
                   "type": "boolean",
-                  "title": "Multi-app Incidents",
-                  "description": "Allow storing multiple impacted applications per incident",
-                  "default": true
+                  "title": "Only store current incidents associations",
+                  "description": "Only store current incidents associations in the graph.",
+                  "default": false
                 }
               }
             }
