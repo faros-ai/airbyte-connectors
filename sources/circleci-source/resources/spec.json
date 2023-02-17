@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "CircleCI Spec",
     "type": "object",
-    "required": ["token", "repo_names", "cutoff_days"],
+    "required": ["token", "project_names", "cutoff_days"],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -13,13 +13,13 @@
         "description": "CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
         "airbyte_secret": true
       },
-      "repo_names": {
+      "project_names": {
         "type": "array",
         "items": {
           "type": "string"
         },
-        "title": "Repository Names",
-        "description": "Names should be in the format \"project_type/organization_name/repository_name\""
+        "title": "Project Names",
+        "description": "Names should be in the format \"vcs-slug/org-name/repo-name\""
       },
       "cutoff_days": {
         "type": "integer",

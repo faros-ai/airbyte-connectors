@@ -37,7 +37,7 @@ describe('index', () => {
 
   const sourceConfig = {
     token: '',
-    repo_names: ['repo_names'],
+    project_names: ['project_names'],
     cutoff_days: 90,
     reject_unauthorized: true,
   };
@@ -54,7 +54,6 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -68,11 +67,7 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(
-        null,
-        ['gh/huongtn/sample-test'],
-        new Date('2010-03-27T14:03:51-0800')
-      );
+      return new CircleCI(null, new Date('2010-03-27T14:03:51-0800'));
     });
     const source = new sut.CircleCISource(logger);
     const res = await source.checkConnection(sourceConfig);
@@ -89,9 +84,9 @@ describe('index', () => {
         {
           get: fnProjectsList.mockResolvedValue({
             data: readTestResourceFile('projects.json'),
+            status: 200,
           }),
         } as any,
-        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -101,7 +96,7 @@ describe('index', () => {
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repoName: 'repoName'}
+      {projectName: 'projectName'}
     );
     const projects = [];
     for await (const project of projectsIter) {
@@ -122,15 +117,16 @@ describe('index', () => {
                 items: readTestResourceFile('pipelines_input.json'),
                 next_page_token: null,
               },
+              status: 200,
             })
             .mockResolvedValue({
               data: {
                 items: [],
                 next_page_token: null,
               },
+              status: 200,
             }),
         } as any,
-        ['gh/huongtn/sample-test'],
         new Date('2010-03-27T14:03:51-0800')
       );
     });
@@ -141,7 +137,7 @@ describe('index', () => {
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {repoName: 'repoName'}
+      {projectName: 'projectName'}
     );
     const pipelines = [];
     let state: Dictionary<{lastUpdatedAt?: string}> = {};

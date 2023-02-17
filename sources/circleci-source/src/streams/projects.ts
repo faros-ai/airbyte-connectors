@@ -5,7 +5,7 @@ import {Dictionary} from 'ts-essentials';
 import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 import {Project} from '../circleci/typings';
 type StreamSlice = {
-  repoName: string;
+  projectName: string;
 };
 
 export class Projects extends AirbyteStreamBase {
@@ -26,10 +26,8 @@ export class Projects extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const repoName of this.config.repo_names) {
-      yield {
-        repoName,
-      };
+    for (const projectName of this.config.project_names) {
+      yield {projectName};
     }
   }
 
@@ -39,6 +37,6 @@ export class Projects extends AirbyteStreamBase {
     streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
     const circleCI = CircleCI.instance(this.config, this.axios);
-    yield* circleCI.fetchProject(streamSlice.repoName);
+    yield* circleCI.fetchProject(streamSlice.projectName);
   }
 }

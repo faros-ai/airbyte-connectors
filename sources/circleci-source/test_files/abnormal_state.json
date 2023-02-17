@@ -1,5 +1,7 @@
 {
   "pipelines": {
-    "lastUpdatedAt": "2025-01-01 00:00:00"
+    "gh/faros-test-org1/test-repo1": {
+      "lastUpdatedAt": "2025-01-01 00:00:00"
+    }
   }
 }
