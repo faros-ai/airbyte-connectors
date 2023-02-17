@@ -344,16 +344,19 @@ export class AzureRepos {
   ): Promise<Tag[]> {
     const tagRes = await this.get<TagResponse>(
       `${project}/_apis/git/repositories/${repo.id}/refs`,
-      {filter: 'tags'}
+      {filter: 'tags', peelTags: 'true'}
     );
     const tags = [];
     for (const tag of tagRes?.data?.value ?? []) {
-      const tagItem: Tag = tag;
-      const tagCommitRes = await this.get<TagCommit>(
-        `git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
-      );
-      tagItem.commit = tagCommitRes?.data ?? null;
-      tags.push(tagItem);
+      // Per docs, annotated tags will populate the peeledObjectId property
+      if (tag.peeledObjectId) {
+        const tagItem: Tag = tag;
+        const tagCommitRes = await this.get<TagCommit>(
+          `git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
+        );
+        tagItem.commit = tagCommitRes?.data ?? null;
+        tags.push(tagItem);
+      }
     }
     return tags;
   }
