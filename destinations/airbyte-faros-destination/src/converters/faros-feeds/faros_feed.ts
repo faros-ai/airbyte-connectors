@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosGraphSchema} from 'faros-js-client';
 
+import {Edition} from '../../common/types';
 import {
   Converter,
   DestinationModel,
@@ -37,7 +38,10 @@ export class FarosFeed extends Converter {
 
     const [model, rec] = Object.entries(data).pop();
 
-    if (ctx.config.edition_configs.graphql_api !== 'v1') {
+    if (
+      ctx.config.edition_configs.edition === Edition.COMMUNITY ||
+      ctx.config.edition_configs.graphql_api === 'v2'
+    ) {
       // Ignore full model deletion records.
       // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
       // These are issued by the feed and are only applicable to the V1 API
