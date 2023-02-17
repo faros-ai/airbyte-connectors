@@ -37,6 +37,16 @@ export class FarosFeed extends Converter {
 
     const [model, rec] = Object.entries(data).pop();
 
+    if (ctx.config.edition_configs.graphql_api !== 'v1') {
+      // Ignore full model deletion records.
+      // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
+      // These are issued by the feed and are only applicable to the V1 API
+      if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
+        const [key, value] = Object.entries(rec).pop();
+        if (key === 'where' && typeof value == 'string') return [];
+      }
+    }
+
     if (this.schema) {
       this.schema.fixTimestampFields(rec, model);
     }
