@@ -28,7 +28,7 @@ interface ServiceNowConfig {
   application_field?: string;
   default_severity?: IncidentSeverityCategory;
   default_priority?: IncidentPriorityCategory;
-  remove_previous_incident_application_impacts?: boolean;
+  store_current_incidents_associations?: boolean;
 }
 
 /** ServiceNow converter base */
@@ -56,11 +56,11 @@ export abstract class ServiceNowConverter extends Converter {
     return this.config(ctx).application_field ?? DEFAULT_APPLICATION_FIELD;
   }
 
-  protected removePreviousIncidentApplicationImpacts(
+  protected onlyStoreCurrentIncidentsAssociations(
     ctx: StreamContext
   ): boolean {
     return (
-      this.config(ctx).remove_previous_incident_application_impacts ?? true
+      this.config(ctx).store_current_incidents_associations ?? false
     );
   }
 }

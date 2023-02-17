@@ -352,10 +352,10 @@
                     "Custom"
                   ]
                 },
-                "remove_previous_incident_application_impacts": {
+                "store_current_incidents_associations": {
                   "type": "boolean",
-                  "title": "Remove previously stored incident-application association(s) for processed incident(s)",
-                  "description": "When enabled, ensures that previously stored incident-application association(s) are removed from the graph.",
+                  "title": "Only store current incidents associations",
+                  "description": "Only store current incidents associations in the graph.",
                   "default": false
                 }
               }

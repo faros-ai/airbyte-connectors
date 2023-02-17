@@ -129,7 +129,7 @@ export class Incidents extends ServiceNowConverter {
     ctx: StreamContext
   ): boolean {
     if (
-      !this.removePreviousIncidentApplicationImpacts(ctx) ||
+      !this.onlyStoreCurrentIncidentsAssociations(ctx) ||
       ctx.streamsSyncMode[this.streamName.asString] ===
         DestinationSyncMode.OVERWRITE ||
       isNil(ctx.farosClient) ||
