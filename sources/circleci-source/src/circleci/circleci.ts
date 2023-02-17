@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosInstance} from 'axios';
+import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
 import https from 'https';
 import {VError} from 'verror';
 
@@ -8,18 +8,14 @@ const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 
 export interface CircleCIConfig {
   readonly token: string;
-  readonly repo_names: ReadonlyArray<string>;
+  readonly project_names: ReadonlyArray<string>;
   readonly reject_unauthorized: boolean;
   readonly cutoff_days: number;
   readonly url?: string;
 }
 
 export class CircleCI {
-  constructor(
-    readonly axios: AxiosInstance,
-    readonly repoNames: ReadonlyArray<string>,
-    readonly startDate: Date
-  ) {}
+  constructor(readonly axios: AxiosInstance, readonly startDate: Date) {}
 
   static instance(
     config: CircleCIConfig,
@@ -28,8 +24,8 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.repo_names || config.repo_names.length == 0) {
-      throw new VError('No repository names provided');
+    if (!config.project_names || config.project_names.length == 0) {
+      throw new VError('No project names provided');
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');
@@ -49,14 +45,13 @@ export class CircleCI {
           },
           httpsAgent: new https.Agent({rejectUnauthorized}),
         }),
-      config.repo_names,
       startDate
     );
   }
 
-  async checkConnection(): Promise<void> {
+  async checkConnection(config: CircleCIConfig): Promise<void> {
     try {
-      await this.axios.get(`/project/${this.repoNames[0]}`);
+      await this.axios.get(`/project/${config.project_names[0]}`);
     } catch (error) {
       if (
         (error as AxiosError).response &&
@@ -74,15 +69,18 @@ export class CircleCI {
   }
 
   private async iterate<V>(
-    requester: (params: any | undefined) => Promise<any>,
-    deserializer: (item: any) => any,
-    stopper?: (item: any) => boolean
+    requester: (params: any | undefined) => Promise<AxiosResponse<any>>,
+    deserializer: (item: any) => V,
+    stopper?: (item: V) => boolean
   ): Promise<V[]> {
     const list = [];
     let pageToken = undefined;
     let getNextPage = true;
     do {
-      const res: any = await requester({'page-token': pageToken});
+      const res = await requester({'page-token': pageToken});
+      if (res.status === 404) {
+        return list;
+      }
 
       const items = Array.isArray(res) ? res : res.data.items;
       for (const item of items ?? []) {
@@ -98,21 +96,21 @@ export class CircleCI {
     return list;
   }
 
-  async *fetchProject(repoName: string): AsyncGenerator<Project> {
-    const {data} = await this.axios.get(`/project/${repoName}`);
+  async *fetchProject(projectName: string): AsyncGenerator<Project> {
+    const {data} = await this.axios.get(`/project/${projectName}`);
     yield data;
   }
 
   async *fetchPipelines(
-    repoName: string,
+    projectName: string,
     since?: string
   ): AsyncGenerator<Pipeline> {
     const startTime = new Date(since ?? 0);
     const startTimeMax =
       startTime > this.startDate ? startTime : this.startDate;
-    const url = `/project/${repoName}/pipeline`;
+    const url = `/project/${projectName}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
-      (params) => this.axios.get(url, {params: params}),
+      (params) => this.axios.get(url, {params}),
       (item: any) => ({
         ...item,
         workflows: [],
@@ -129,10 +127,14 @@ export class CircleCI {
     }
   }
 
-  fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
+  async fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
     const url = `/pipeline/${pipelineId}/workflow`;
     return this.iterate(
-      (params) => this.axios.get(url, {params: params}),
+      (params) =>
+        this.axios.get(url, {
+          params: params,
+          validateStatus: validateNotFoundStatus,
+        }),
       (item: any) => ({
         ...item,
         jobs: [],
@@ -145,8 +147,14 @@ export class CircleCI {
       (params) =>
         this.axios.get(`/workflow/${workflowId}/job`, {
           params: params,
+          validateStatus: validateNotFoundStatus,
         }),
       (item: any) => item
     );
   }
+}
+
+// CircleCi API returns 404 if no workflows or jobs exist for a given pipeline
+function validateNotFoundStatus(status: number): boolean {
+  return status === 200 || status === 404;
 }

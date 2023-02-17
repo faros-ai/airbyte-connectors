@@ -3,7 +3,6 @@ azure-repos-source
 azurepipeline-source
 bamboohr-source
 bitbucket-server-source
-circleci-source
 datadog-source
 docker-source
 faros-graphql-source
