@@ -1,9 +1,8 @@
-import {AxiosInstance} from 'axios';
-import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 import {Pipeline} from '../circleci/typings';
+import {StreamBase} from './common';
 
 type StreamSlice = {
   projectName: string;
@@ -11,14 +10,7 @@ type StreamSlice = {
 
 type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
 
-export class Pipelines extends AirbyteStreamBase {
-  constructor(
-    logger: AirbyteLogger,
-    private readonly config: CircleCIConfig,
-    private readonly axios?: AxiosInstance
-  ) {
-    super(logger);
-  }
+export class Pipelines extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
   }
@@ -32,7 +24,7 @@ export class Pipelines extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.config.project_names) {
+    for (const projectName of this.cfg.project_names) {
       yield {projectName};
     }
   }
@@ -47,9 +39,9 @@ export class Pipelines extends AirbyteStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
         : undefined;
-    const circleCI = CircleCI.instance(this.config, this.axios);
-    yield* circleCI.fetchPipelines(streamSlice.projectName, lastUpdatedAt);
+    yield* this.circleCI.fetchPipelines(streamSlice.projectName, lastUpdatedAt);
   }
+
   getUpdatedState(
     currentStreamState: PipelineState,
     latestRecord: Pipeline

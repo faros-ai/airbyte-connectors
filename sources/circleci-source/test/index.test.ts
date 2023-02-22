@@ -51,10 +51,12 @@ describe('index', () => {
   test('check connection', async () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
+        logger,
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        1
       );
     });
 
@@ -67,7 +69,12 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(null, new Date('2010-03-27T14:03:51-0800'));
+      return new CircleCI(
+        logger,
+        null,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
     });
     const source = new sut.CircleCISource(logger);
     const res = await source.checkConnection(sourceConfig);
@@ -81,13 +88,15 @@ describe('index', () => {
     const fnProjectsList = jest.fn();
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
+        logger,
         {
           get: fnProjectsList.mockResolvedValue({
             data: readTestResourceFile('projects.json'),
             status: 200,
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        1
       );
     });
     const source = new sut.CircleCISource(logger);
@@ -108,32 +117,28 @@ describe('index', () => {
 
   test('streams - pipelines, use full_refresh sync mode', async () => {
     const fnPipelinesList = jest.fn();
-    CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(
-        {
-          get: fnPipelinesList
-            .mockResolvedValueOnce({
-              data: {
-                items: readTestResourceFile('pipelines_input.json'),
-                next_page_token: null,
-              },
-              status: 200,
-            })
-            .mockResolvedValue({
-              data: {
-                items: [],
-                next_page_token: null,
-              },
-              status: 200,
-            }),
-        } as any,
-        new Date('2010-03-27T14:03:51-0800')
-      );
-    });
+    const circleCI = new CircleCI(
+      logger,
+      {
+        get: fnPipelinesList
+          .mockResolvedValueOnce({
+            data: {
+              items: readTestResourceFile('pipelines_input.json'),
+              next_page_token: null,
+            },
+            status: 200,
+          })
+          .mockResolvedValue({
+            data: {items: [], next_page_token: null},
+            status: 200,
+          }),
+      } as any,
+      new Date('2010-03-27T14:03:51-0800'),
+      1
+    );
+    CircleCI.instance = jest.fn().mockReturnValue(circleCI);
     const source = new sut.CircleCISource(logger);
-    const streams = source.streams(sourceConfig);
-
-    const pipelinesStream = streams[1];
+    const pipelinesStream = source.streams(sourceConfig)[1];
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,

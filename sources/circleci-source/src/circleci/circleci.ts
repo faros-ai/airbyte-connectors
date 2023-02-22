@@ -1,10 +1,17 @@
-import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
 import {VError} from 'verror';
 
 import {Job, Pipeline, Project, Workflow} from './typings';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
+const DEFAULT_MAX_RETRIES = 3;
 
 export interface CircleCIConfig {
   readonly token: string;
@@ -12,15 +19,22 @@ export interface CircleCIConfig {
   readonly reject_unauthorized: boolean;
   readonly cutoff_days: number;
   readonly url?: string;
+  readonly max_retries?: number;
 }
 
 export class CircleCI {
-  constructor(readonly axios: AxiosInstance, readonly startDate: Date) {}
+  private static circleCI: CircleCI = undefined;
 
-  static instance(
-    config: CircleCIConfig,
-    axiosInstance?: AxiosInstance
-  ): CircleCI {
+  constructor(
+    private readonly logger: AirbyteLogger,
+    readonly axios: AxiosInstance,
+    readonly startDate: Date,
+    private readonly maxRetries: number
+  ) {}
+
+  static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
+    if (CircleCI.circleCI) return CircleCI.circleCI;
+
     if (!config.token) {
       throw new VError('No token provided');
     }
@@ -35,18 +49,21 @@ export class CircleCI {
 
     const rejectUnauthorized = config.reject_unauthorized ?? true;
     const url = config.url ?? DEFAULT_API_URL;
-    return new CircleCI(
-      axiosInstance ??
-        axios.create({
-          baseURL: url,
-          headers: {
-            accept: 'application/json',
-            'Circle-Token': config.token,
-          },
-          httpsAgent: new https.Agent({rejectUnauthorized}),
-        }),
-      startDate
+
+    CircleCI.circleCI = new CircleCI(
+      logger,
+      axios.create({
+        baseURL: url,
+        headers: {
+          accept: 'application/json',
+          'Circle-Token': config.token,
+        },
+        httpsAgent: new https.Agent({rejectUnauthorized}),
+      }),
+      startDate,
+      config.max_retries ?? DEFAULT_MAX_RETRIES
     );
+    return CircleCI.circleCI;
   }
 
   async checkConnection(config: CircleCIConfig): Promise<void> {
@@ -82,7 +99,7 @@ export class CircleCI {
         return list;
       }
 
-      const items = Array.isArray(res) ? res : res.data.items;
+      const items = Array.isArray(res) ? res : res.data?.items;
       for (const item of items ?? []) {
         const data = deserializer(item);
         if (stopper && stopper(data)) {
@@ -96,8 +113,50 @@ export class CircleCI {
     return list;
   }
 
+  private async maybeSleepOnResponse<T = any>(
+    path: string,
+    res?: AxiosResponse<T>
+  ): Promise<boolean> {
+    const retryAfterSecs = res?.headers?.['retry-after'];
+    if (retryAfterSecs) {
+      this.logger.warn(
+        `'Retry-After' response header is detected when requesting ${path}. ` +
+          `Waiting for ${retryAfterSecs} seconds before making any requests. `
+      );
+      await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
+      return true;
+    }
+    return false;
+  }
+
+  private sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  private async get<T = any, D = any>(
+    path: string,
+    conf: AxiosRequestConfig<D> = {},
+    attempt = 1
+  ): Promise<AxiosResponse<T> | undefined> {
+    try {
+      const res = await this.axios.get<T, AxiosResponse<T>>(path, conf);
+      await this.maybeSleepOnResponse(path, res);
+      return res;
+    } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to ${path} was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.get(path, conf, attempt + 1);
+      }
+      throw wrapApiError(err, `Failed to get ${path}. `);
+    }
+  }
+
   async *fetchProject(projectName: string): AsyncGenerator<Project> {
-    const {data} = await this.axios.get(`/project/${projectName}`);
+    const {data} = await this.get(`/project/${projectName}`);
     yield data;
   }
 
@@ -110,11 +169,8 @@ export class CircleCI {
       startTime > this.startDate ? startTime : this.startDate;
     const url = `/project/${projectName}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
-      (params) => this.axios.get(url, {params}),
-      (item: any) => ({
-        ...item,
-        workflows: [],
-      }),
+      (params) => this.get(url, {params}),
+      (item: any) => ({...item, workflows: []}),
       (item: Pipeline) =>
         item.updated_at && startTimeMax >= new Date(item.updated_at)
     );
@@ -131,22 +187,16 @@ export class CircleCI {
     const url = `/pipeline/${pipelineId}/workflow`;
     return this.iterate(
       (params) =>
-        this.axios.get(url, {
-          params: params,
-          validateStatus: validateNotFoundStatus,
-        }),
-      (item: any) => ({
-        ...item,
-        jobs: [],
-      })
+        this.get(url, {params, validateStatus: validateNotFoundStatus}),
+      (item: any) => ({...item, jobs: []})
     );
   }
 
   async fetchJobs(workflowId: string): Promise<Job[]> {
     return this.iterate(
       (params) =>
-        this.axios.get(`/workflow/${workflowId}/job`, {
-          params: params,
+        this.get(`/workflow/${workflowId}/job`, {
+          params,
           validateStatus: validateNotFoundStatus,
         }),
       (item: any) => item
