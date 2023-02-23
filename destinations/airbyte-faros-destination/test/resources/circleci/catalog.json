@@ -2,13 +2,19 @@
   "streams": [
     {
       "stream": {
+        "name": "mytestsource__circleci__pipelines"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__circleci__projects"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__circleci__pipelines"
+        "name": "mytestsource__circleci__workflows"
       },
       "destination_sync_mode": "append"
     }

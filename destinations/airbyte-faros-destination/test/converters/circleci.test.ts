@@ -37,8 +37,9 @@ describe('circleci', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      projects: 1,
       pipelines: 1,
+      projects: 1,
+      workflows: 3,
     };
     const processed = _(processedByStream)
       .toPairs()

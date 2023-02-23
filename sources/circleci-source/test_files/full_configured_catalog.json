@@ -2,11 +2,10 @@
   "streams": [
     {
       "stream": {
-        "name": "projects",
+        "name": "pipelines",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
+          "full_refresh"
         ],
         "source_defined_cursor": true,
         "source_defined_primary_key": [
@@ -20,7 +19,24 @@
     },
     {
       "stream": {
-        "name": "pipelines",
+        "name": "projects",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_cursor": true,
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "workflows",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
@@ -33,7 +49,7 @@
           ]
         ],
         "default_cursor_field": [
-          "updated_at"
+          "stopped_at"
         ]
       },
       "sync_mode": "full_refresh",

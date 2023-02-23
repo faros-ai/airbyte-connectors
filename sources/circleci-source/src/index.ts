@@ -1,4 +1,3 @@
-import {AxiosInstance} from 'axios';
 import {Command} from 'commander';
 import {
   AirbyteLogger,
@@ -10,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
-import {Pipelines, Projects} from './streams';
+import {Pipelines, Projects, Workflows} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -21,10 +20,6 @@ export function mainCommand(): Command {
 
 /** Customer.io source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
-  constructor(logger: AirbyteLogger, private readonly axios?: AxiosInstance) {
-    super(logger);
-  }
-
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
@@ -32,7 +27,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
 
   async checkConnection(config: CircleCIConfig): Promise<[boolean, VError]> {
     try {
-      const circleCI = CircleCI.instance(config, this.axios);
+      const circleCI = CircleCI.instance(config, this.logger);
       await circleCI.checkConnection(config);
     } catch (err: any) {
       return [false, err];
@@ -41,9 +36,8 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    return [
-      new Projects(this.logger, config, this.axios),
-      new Pipelines(this.logger, config, this.axios),
-    ];
+    return [Pipelines, Projects, Workflows].map(
+      (Stream) => new Stream(config, this.logger)
+    );
   }
 }
