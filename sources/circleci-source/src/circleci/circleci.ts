@@ -6,6 +6,7 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {Job, Pipeline, Project, Workflow} from './typings';
@@ -87,7 +88,7 @@ export class CircleCI {
 
   private async iterate<V>(
     requester: (params: any | undefined) => Promise<AxiosResponse<any>>,
-    deserializer: (item: any) => V,
+    deserializer?: (item: any) => V,
     stopper?: (item: V) => boolean
   ): Promise<V[]> {
     const list = [];
@@ -101,7 +102,7 @@ export class CircleCI {
 
       const items = Array.isArray(res) ? res : res.data?.items;
       for (const item of items ?? []) {
-        const data = deserializer(item);
+        const data = deserializer ? deserializer(item) : item;
         if (stopper && stopper(data)) {
           getNextPage = false;
           break;
@@ -155,41 +156,41 @@ export class CircleCI {
     }
   }
 
-  async *fetchProject(projectName: string): AsyncGenerator<Project> {
-    const {data} = await this.get(`/project/${projectName}`);
-    yield data;
+  @Memoize()
+  async fetchProject(projectName: string): Promise<Project> {
+    return (await this.get(`/project/${projectName}`)).data;
   }
 
-  async *fetchPipelines(
-    projectName: string,
-    since?: string
-  ): AsyncGenerator<Pipeline> {
-    const startTime = new Date(since ?? 0);
-    const startTimeMax =
-      startTime > this.startDate ? startTime : this.startDate;
+  @Memoize()
+  async fetchPipelines(projectName: string): Promise<Pipeline[]> {
     const url = `/project/${projectName}/pipeline`;
-    const pipelines = await this.iterate<Pipeline>(
-      (params) => this.get(url, {params}),
-      (item: any) => ({...item, workflows: []}),
-      (item: Pipeline) =>
-        item.updated_at && startTimeMax >= new Date(item.updated_at)
+    const pipelines = await this.iterate<Pipeline>((params) =>
+      this.get(url, {params})
     );
-    for (const pipeline of pipelines) {
-      pipeline.workflows = await this.fetchWorkflows(pipeline.id);
-      for (const workflow of pipeline.workflows) {
-        workflow.jobs = await this.fetchJobs(workflow.id);
-      }
-      yield pipeline;
-    }
+    return pipelines;
   }
 
-  async fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
+  async fetchWorkflows(
+    pipelineId: string,
+    since?: string
+  ): Promise<Workflow[]> {
+    const lastStoppedAt = since ? new Date(since) : this.startDate;
+    this.logger.info(
+      `Fetching completed workflows for pipeline ${pipelineId}` +
+        ` since ${lastStoppedAt}`
+    );
     const url = `/pipeline/${pipelineId}/workflow`;
-    return this.iterate(
+    const workflows = await this.iterate(
       (params) =>
         this.get(url, {params, validateStatus: validateNotFoundStatus}),
-      (item: any) => ({...item, jobs: []})
+      (item: any) => item,
+      (item: Workflow) =>
+        item.stopped_at && lastStoppedAt >= new Date(item.stopped_at)
     );
+    for (const workflow of workflows) {
+      workflow.jobs = await this.fetchJobs(workflow.id);
+    }
+    return workflows;
   }
 
   async fetchJobs(workflowId: string): Promise<Job[]> {

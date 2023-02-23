@@ -29,6 +29,6 @@ export class Projects extends StreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
-    yield* this.circleCI.fetchProject(streamSlice.projectName);
+    yield await this.circleCI.fetchProject(streamSlice.projectName);
   }
 }

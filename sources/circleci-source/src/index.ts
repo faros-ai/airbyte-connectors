@@ -10,6 +10,7 @@ import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
 import {Pipelines, Projects} from './streams';
+import {Workflows} from './streams/workflows';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -36,7 +37,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    return [Projects, Pipelines].map(
+    return [Pipelines, Projects, Workflows].map(
       (Stream) => new Stream(config, this.logger)
     );
   }

@@ -84,6 +84,38 @@ describe('index', () => {
     expect(res[1].message).toMatch(/CircleCI API request failed: Cannot read/);
   });
 
+  test('streams - pipelines, use full_refresh sync mode', async () => {
+    const fnPipelinesList = jest.fn();
+    const circleCI = new CircleCI(
+      logger,
+      {
+        get: fnPipelinesList.mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('pipelines_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        }),
+      } as any,
+      new Date('2010-03-27T14:03:51-0800'),
+      1
+    );
+    CircleCI.instance = jest.fn().mockReturnValue(circleCI);
+    const source = new sut.CircleCISource(logger);
+    const pipelinesStream = source.streams(sourceConfig)[0];
+    const pipelinesIter = pipelinesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {projectName: 'projectName'}
+    );
+    const pipelines = [];
+    for await (const pipeline of pipelinesIter) {
+      pipelines.push(pipeline);
+    }
+    expect(fnPipelinesList).toHaveBeenCalledTimes(1);
+    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+  });
+
   test('streams - projects, use full_refresh sync mode', async () => {
     const fnProjectsList = jest.fn();
     CircleCI.instance = jest.fn().mockImplementation(() => {
@@ -100,8 +132,7 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    const streams = source.streams(sourceConfig);
-    const projectsStream = streams[0];
+    const projectsStream = source.streams(sourceConfig)[1];
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
@@ -113,45 +144,5 @@ describe('index', () => {
     }
     expect(fnProjectsList).toHaveBeenCalledTimes(1);
     expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
-  });
-
-  test('streams - pipelines, use full_refresh sync mode', async () => {
-    const fnPipelinesList = jest.fn();
-    const circleCI = new CircleCI(
-      logger,
-      {
-        get: fnPipelinesList
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('pipelines_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          })
-          .mockResolvedValue({
-            data: {items: [], next_page_token: null},
-            status: 200,
-          }),
-      } as any,
-      new Date('2010-03-27T14:03:51-0800'),
-      1
-    );
-    CircleCI.instance = jest.fn().mockReturnValue(circleCI);
-    const source = new sut.CircleCISource(logger);
-    const pipelinesStream = source.streams(sourceConfig)[1];
-    const pipelinesIter = pipelinesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {projectName: 'projectName'}
-    );
-    const pipelines = [];
-    let state: Dictionary<{lastUpdatedAt?: string}> = {};
-    for await (const pipeline of pipelinesIter) {
-      pipelines.push(pipeline);
-      state = pipelinesStream.getUpdatedState(state, pipeline);
-    }
-    expect(fnPipelinesList).toHaveBeenCalledTimes(5); // fetchPipelines once + 1 fetchWorkflows per pipeline
-    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
-    expect(state).toStrictEqual(readTestResourceFile('pipelines_state.json'));
   });
 });
