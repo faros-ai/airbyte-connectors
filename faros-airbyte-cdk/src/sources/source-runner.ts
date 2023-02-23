@@ -4,7 +4,7 @@ import {Command} from 'commander';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
-import {helpTable, traverseObject} from '../help';
+import {buildArgs, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
@@ -25,6 +25,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.specPrettyCommand())
+      .addCommand(this.specWizardCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.discoverCommand())
       .addCommand(this.readCommand());
@@ -134,6 +135,25 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
         // (connectionSpecification) object
         rows.shift();
         console.log(helpTable(rows));
+      });
+  }
+
+  specWizardCommand(): Command {
+    return new Command()
+      .command('spec-wizard')
+      .description('spec wizard command')
+      .action(async () => {
+        const spec = await this.source.spec();
+        const rows = traverseObject(
+          spec.spec.connectionSpecification,
+          [
+            // Prefix argument names with --src
+            '--src',
+          ],
+          // Assign section = 0 to the root object's row
+          0
+        );
+        console.log(await buildArgs(rows));
       });
   }
 }
