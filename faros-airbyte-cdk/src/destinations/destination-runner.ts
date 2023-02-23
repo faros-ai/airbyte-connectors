@@ -146,7 +146,11 @@ export class AirbyteDestinationRunner<
           // Assign section = 0 to the root object's row
           0
         );
-        console.log(await buildArgs(rows));
+        console.log(
+          '\n\nThe arguments below can be used when running this destination' +
+            ' via the Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli)' +
+            `\n\n${await buildArgs(rows)}`
+        );
       });
   }
 
