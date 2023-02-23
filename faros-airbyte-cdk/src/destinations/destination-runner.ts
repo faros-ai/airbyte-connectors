@@ -132,7 +132,9 @@ export class AirbyteDestinationRunner<
   specWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
-      .description('airbyte local cli wizard command')
+      .description(
+        'Run a wizard command to prepare arguments for Airbyte Local CLI'
+      )
       .action(async () => {
         const spec = await this.destination.spec();
         const rows = traverseObject(
