@@ -140,8 +140,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
   specWizardCommand(): Command {
     return new Command()
-      .command('spec-wizard')
-      .description('spec wizard command')
+      .command('airbyte-local-cli-wizard')
+      .description('airbyte local cli wizard command')
       .action(async () => {
         const spec = await this.source.spec();
         const rows = traverseObject(
