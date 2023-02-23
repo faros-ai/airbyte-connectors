@@ -6,10 +6,10 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../src/circleci/circleci';
 import * as sut from '../src/index';
+import {StreamState} from '../src/streams/workflows';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -38,7 +38,7 @@ describe('index', () => {
   const sourceConfig = {
     token: '',
     project_names: ['project_names'],
-    cutoff_days: 90,
+    cutoff_days: 1000,
     reject_unauthorized: true,
   };
 
@@ -91,7 +91,7 @@ describe('index', () => {
       {
         get: fnPipelinesList.mockResolvedValueOnce({
           data: {
-            items: readTestResourceFile('pipelines_input.json'),
+            items: readTestResourceFile('pipelines.json'),
             next_page_token: null,
           },
           status: 200,
@@ -102,14 +102,12 @@ describe('index', () => {
     );
     CircleCI.instance = jest.fn().mockReturnValue(circleCI);
     const source = new sut.CircleCISource(logger);
-    const pipelinesStream = source.streams(sourceConfig)[0];
-    const pipelinesIter = pipelinesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {projectName: 'projectName'}
-    );
+    const stream = source.streams(sourceConfig)[0];
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      projectName: 'projectName',
+    });
     const pipelines = [];
-    for await (const pipeline of pipelinesIter) {
+    for await (const pipeline of iter) {
       pipelines.push(pipeline);
     }
     expect(fnPipelinesList).toHaveBeenCalledTimes(1);
@@ -132,17 +130,86 @@ describe('index', () => {
       );
     });
     const source = new sut.CircleCISource(logger);
-    const projectsStream = source.streams(sourceConfig)[1];
-    const projectsIter = projectsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {projectName: 'projectName'}
-    );
+    const stream = source.streams(sourceConfig)[1];
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      projectName: 'projectName',
+    });
     const projects = [];
-    for await (const project of projectsIter) {
+    for await (const project of iter) {
       projects.push(project);
     }
     expect(fnProjectsList).toHaveBeenCalledTimes(1);
     expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
+  });
+
+  test('streams - workflows, use full_refresh sync mode', async () => {
+    const fnGet = jest.fn();
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        logger,
+        {
+          get: fnGet.mockImplementation(async (path: string): Promise<any> => {
+            const file = path.endsWith('/job')
+              ? 'jobs_input.json'
+              : 'workflows_input.json';
+            return {
+              data: {items: readTestResourceFile(file), next_page_token: null},
+              status: 200,
+            };
+          }),
+        } as any,
+        new Date('2010-03-27T14:03:51-0800'),
+        1
+      );
+    });
+    const source = new sut.CircleCISource(logger);
+    const stream = source.streams(sourceConfig)[2];
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      pipelineId: '2b2a3332-6b7f-47e2-a121-fdc600298175',
+    });
+    const workflows = [];
+    for await (const workflow of iter) {
+      workflows.push(workflow);
+    }
+    expect(fnGet).toHaveBeenCalledTimes(3);
+    expect(workflows).toStrictEqual(readTestResourceFile('workflows.json'));
+  });
+
+  test('streams - workflows, use incremental sync mode', async () => {
+    const fnGet = jest.fn();
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        logger,
+        {
+          get: fnGet.mockImplementation(async (path: string): Promise<any> => {
+            const file = path.endsWith('/job')
+              ? 'jobs_input.json'
+              : 'workflows_input.json';
+            return {
+              data: {items: readTestResourceFile(file), next_page_token: null},
+              status: 200,
+            };
+          }),
+        } as any,
+        new Date('2023-01-02T14:03:51-0800'),
+        1
+      );
+    });
+    const source = new sut.CircleCISource(logger);
+    const stream = source.streams(sourceConfig)[2];
+    const iter = stream.readRecords(SyncMode.INCREMENTAL, undefined, {
+      pipelineId: '2b2a3332-6b7f-47e2-a121-fdc600298175',
+    });
+    const workflows = [];
+    let state: StreamState = {};
+    for await (const workflow of iter) {
+      workflows.push(workflow);
+      state = stream.getUpdatedState(state, workflow);
+    }
+    expect(fnGet).toHaveBeenCalledTimes(2);
+    expect(workflows).toStrictEqual(
+      readTestResourceFile('workflows_incremental.json')
+    );
+    expect(state).toStrictEqual(readTestResourceFile('workflows_state.json'));
   });
 });

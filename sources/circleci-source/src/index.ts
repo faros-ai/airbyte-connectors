@@ -9,8 +9,7 @@ import {
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
-import {Pipelines, Projects} from './streams';
-import {Workflows} from './streams/workflows';
+import {Pipelines, Projects, Workflows} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {

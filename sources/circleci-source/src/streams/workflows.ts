@@ -8,7 +8,7 @@ type StreamSlice = {
   pipelineId: string;
 };
 
-type StreamState = {[pipelineId: string]: {lastStoppedAt: string}};
+export type StreamState = {[pipelineId: string]: {lastStoppedAt: string}};
 
 export class Workflows extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {

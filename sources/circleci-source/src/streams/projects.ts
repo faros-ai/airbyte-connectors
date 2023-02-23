@@ -1,7 +1,6 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI} from '../circleci/circleci';
 import {Project} from '../circleci/typings';
 import {StreamBase} from './common';
 
