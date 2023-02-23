@@ -275,7 +275,7 @@ async function promptLeaf(row: TableRow) {
     }
   }
 
-  let choice = '__Enter';
+  let choice = 'Will use your own value.';
   if (choices.length) {
     choices.push({
       message: 'Enter your own value',
