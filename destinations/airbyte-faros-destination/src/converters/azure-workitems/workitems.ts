@@ -1,12 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Command} from 'commander';
+
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {WorkItem} from './models';
-import {FarosDestinationRunner} from '../../destination-runner'
 
 export class Workitems extends AzureWorkitemsConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Task'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Task',
+    'tms_TaskAssignment',
+  ];
 
   async convert(
     record: AirbyteRecord
@@ -17,24 +19,41 @@ export class Workitems extends AzureWorkitemsConverter {
       {
         model: 'tms_Task',
         record: {
+          uid: String(WorkItem.id),
           id: String(WorkItem.id),
           url: WorkItem.url,
-          type: WorkItem.fields.System.WorkItemType,
-          createdAt: new Date(WorkItem.fields.System.CreatedDate),
-          parent: WorkItem.fields.System.parent,
+          type: {category: String(WorkItem.fields['System.WorkItemType'])},
+          name: WorkItem.fields['System.Title'],
+          createdAt: new Date(WorkItem.fields['System.CreatedDate']),
+          parent: {uid: String(WorkItem.fields['System.Parent']), source},
+          description: WorkItem.fields['System.Description'],
+          status: {category: WorkItem.fields['System.State']},
+          statusChangedAt: new Date(
+            WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
+          ),
+          updatedAt: new Date(
+            WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
+          ),
+          creator: {
+            uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
+            source,
+          },
+          sprint: {uid: String(WorkItem.fields['System.IterationId']), source},
+          source,
+        },
+      },
+      {
+        model: 'tms_TaskAssignment',
+        record: {
+          task: {uid: String(WorkItem.id), source},
+          assignee: {
+            uid:
+              WorkItem.fields['System.AssignedTo']?.uniqueName || 'Unassigned',
+            source,
+          },
+          source,
         },
       },
     ];
   }
-}
-
-export function mainCommand(): Command {
-  const destinationRunner = new FarosDestinationRunner();
-
-  // Register your custom converter(s)
-  destinationRunner.registerConverters(
-    new Workitems()
-    );
-
-  return destinationRunner.program;
 }

@@ -1,7 +1,7 @@
 {
-  "name": "azure-tasks-source",
+  "name": "azure-workitems-source",
   "version": "0.0.1",
-  "description": "Example Airbyte source",
+  "description": "Source to get Azure-Workitems",
   "keywords": [
     "airbyte",
     "source",

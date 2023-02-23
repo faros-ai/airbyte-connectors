@@ -1,10 +1,28 @@
 {
-    "streams": [
-      {
-        "stream": {
-          "name": "mydatasource__azureworkitems__workitems"
-        },
-        "destination_sync_mode": "append"
-      }
-    ]
-  }
+  "streams": [
+    {
+      "stream": {
+        "name": "mydatasource__azure-workitems__workitems"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mydatasource__azure-workitems__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mydatasource__azure-workitems__iterations"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mydatasource__azure-workitems__boards"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

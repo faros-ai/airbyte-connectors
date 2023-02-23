@@ -2,9 +2,9 @@ import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
-import {WorkItem} from '../models';
+import {Iteration} from '../models';
 
-export class Workitems extends AirbyteStreamBase {
+export class Iterations extends AirbyteStreamBase {
   constructor(
     private readonly config: AzureWorkitemsConfig,
     protected readonly logger: AirbyteLogger
@@ -13,14 +13,14 @@ export class Workitems extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/workitems.json');
+    return require('../../resources/schemas/iterations.json');
   }
   get primaryKey(): StreamKey {
     return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<WorkItem> {
+  async *readRecords(): AsyncGenerator<Iteration> {
     const azureWorkitem = await AzureWorkitems.instance(this.config);
-    yield* azureWorkitem.getWorkitems();
+    yield* azureWorkitem.getIterations();
   }
 }

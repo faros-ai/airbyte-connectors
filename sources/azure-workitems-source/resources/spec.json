@@ -16,19 +16,10 @@
         "type": "string",
         "title": "Azure Organization"
       },
-      "project": {
-        "type": "string",
-        "title": "Azure Project"
-      },
       "api_version": {
         "type": "string",
         "title": "API Version",
-        "default": "6.0"
-      },
-      "graph_version": {
-        "type": "string",
-        "title": "Graph API Version",
-        "default": "4.1-preview.1"
+        "default": "7.0"
       }
     }
   }

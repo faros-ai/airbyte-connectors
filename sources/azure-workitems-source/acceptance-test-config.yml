@@ -1,4 +1,4 @@
-connector_image: example-source
+connector_image: azure-workitems-source
 tests:
   spec:
     - config_path: "test_files/config.json"

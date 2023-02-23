@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
@@ -10,11 +9,8 @@ import {
 import VError from 'verror';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
-import { Workitems } from './streams/workitems';
-
-interface SourceConfig extends AirbyteConfig {
-  readonly user: string;
-}
+import {Boards, Iterations, Users} from './streams';
+import {Workitems} from './streams/workitems';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -29,7 +25,9 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AzureWorkitemsConfig): Promise<[boolean, VError]> {
+  async checkConnection(
+    config: AzureWorkitemsConfig
+  ): Promise<[boolean, VError]> {
     try {
       const azureActiveDirectory = await AzureWorkitems.instance(config);
       await azureActiveDirectory.checkConnection();
@@ -39,6 +37,11 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     return [true, undefined];
   }
   streams(config: AzureWorkitemsConfig): AirbyteStreamBase[] {
-    return [new Workitems(config, this.logger)];
+    return [
+      new Workitems(config, this.logger),
+      new Users(config, this.logger),
+      new Iterations(config, this.logger),
+      new Boards(config, this.logger),
+    ];
   }
 }
