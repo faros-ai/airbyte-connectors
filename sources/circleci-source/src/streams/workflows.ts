@@ -2,7 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Workflow} from '../circleci/typings';
-import {StreamBase} from './common';
+import {CircleCIStreamBase} from './common';
 
 type StreamSlice = {
   pipelineId: string;
@@ -10,7 +10,7 @@ type StreamSlice = {
 
 export type StreamState = {[pipelineId: string]: {lastStoppedAt: string}};
 
-export class Workflows extends StreamBase {
+export class Workflows extends CircleCIStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/workflows.json');
   }
