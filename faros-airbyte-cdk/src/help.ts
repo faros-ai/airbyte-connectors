@@ -275,11 +275,11 @@ async function promptLeaf(row: TableRow) {
     }
   }
 
-  let choice = 'Will use your own value.';
+  let choice = ' ';
   if (choices.length) {
     choices.push({
       message: 'Enter your own value',
-      value: 'Will use your own value.',
+      value: ' ',
     });
     choice = await runSelect({
       name: 'leaf',
@@ -293,7 +293,7 @@ async function promptLeaf(row: TableRow) {
       return undefined;
     case 'Used default.':
       return row.default;
-    case 'Will use your own value.':
+    case ' ':
       return await promptValue(row);
     default:
       return choiceAsType(row, choice);
