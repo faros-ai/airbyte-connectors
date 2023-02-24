@@ -25,7 +25,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.specPrettyCommand())
-      .addCommand(this.specWizardCommand())
+      .addCommand(this.airbyteLocalCLIWizardCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.discoverCommand())
       .addCommand(this.readCommand());
@@ -138,7 +138,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       });
   }
 
-  specWizardCommand(): Command {
+  airbyteLocalCLIWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
       .description(

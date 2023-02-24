@@ -27,7 +27,7 @@ export class AirbyteDestinationRunner<
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.specPrettyCommand())
-      .addCommand(this.specWizardCommand())
+      .addCommand(this.airbyteLocalCLIWizardCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.writeCommand());
   }
@@ -129,7 +129,7 @@ export class AirbyteDestinationRunner<
       });
   }
 
-  specWizardCommand(): Command {
+  airbyteLocalCLIWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
       .description(
