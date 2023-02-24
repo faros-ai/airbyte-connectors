@@ -20,12 +20,6 @@
     "name": {
       "type": "string"
     },
-    "auto_resolve_timeout": {
-      "type": "integer"
-    },
-    "acknowledgement_timeout": {
-      "type": "integer"
-    },
     "created_at": {
       "type": "string"
     },
@@ -135,29 +129,6 @@
             "urgency": {
               "type": "string"
             }
-          }
-        }
-      }
-    },
-    "support_hours": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "time_zone": {
-          "type": "string"
-        },
-        "start_time": {
-          "type": "string"
-        },
-        "end_time": {
-          "type": "string"
-        },
-        "days_of_week": {
-          "type": "array",
-          "items": {
-            "type": "integer"
           }
         }
       }

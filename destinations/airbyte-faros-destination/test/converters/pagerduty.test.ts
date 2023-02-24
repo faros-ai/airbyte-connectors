@@ -6,7 +6,6 @@ import {CLI, read} from '../cli';
 import {
   initMockttp,
   sourceSpecificTempConfig,
-  tempConfig,
   testLogger,
 } from '../testing-tools';
 import {pagerdutyAllStreamsLog} from './data';
