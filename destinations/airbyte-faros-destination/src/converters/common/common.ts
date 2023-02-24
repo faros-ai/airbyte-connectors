@@ -1,9 +1,16 @@
 /** Common functions shared across converters */
+
+export interface ComputeApplication {
+  name: string;
+  platform: string;
+  uid: string;
+}
+
 export class Common {
   static computeApplication(
     name: string,
     platform?: string
-  ): {name: string; platform: string; uid: string} {
+  ): ComputeApplication {
     return {
       name,
       platform: platform ?? '',

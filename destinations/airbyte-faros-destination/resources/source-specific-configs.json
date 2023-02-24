@@ -271,6 +271,12 @@
                     "Sev5",
                     "Custom"
                   ]
+                },
+                "associate_applications_to_teams": {
+                  "type": "boolean",
+                  "title": "Associate Applications to Teams",
+                  "description": "Associate applications to org teams based on PagerDuty team names",
+                  "default": false
                 }
               }
             }
@@ -564,7 +570,9 @@
             {
               "type": "object",
               "title": "Configuration",
-              "required": ["kind_property"],
+              "required": [
+                "kind_property"
+              ],
               "properties": {
                 "kind_property": {
                   "type": "string",
@@ -579,7 +587,9 @@
                     {
                       "type": "object",
                       "title": "Project Configuration",
-                      "required": ["kind"],
+                      "required": [
+                        "kind"
+                      ],
                       "properties": {
                         "kind": {
                           "type": "string",
@@ -617,7 +627,9 @@
                     {
                       "type": "object",
                       "title": "Epic Configuration",
-                      "required": ["kind"],
+                      "required": [
+                        "kind"
+                      ],
                       "properties": {
                         "kind": {
                           "type": "string",
@@ -667,7 +679,9 @@
                     {
                       "type": "object",
                       "title": "Sprint Configuration",
-                      "required": ["kind"],
+                      "required": [
+                        "kind"
+                      ],
                       "properties": {
                         "kind": {
                           "type": "string",
@@ -729,7 +743,9 @@
                     {
                       "type": "object",
                       "title": "Task Configuration",
-                      "required": ["kind"],
+                      "required": [
+                        "kind"
+                      ],
                       "properties": {
                         "kind": {
                           "type": "string",
