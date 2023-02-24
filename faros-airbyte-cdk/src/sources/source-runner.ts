@@ -156,8 +156,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           0
         );
         console.log(
-          '\n\nThe arguments below can be used when running this source' +
-            ' via the Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli)' +
+          '\n\nUse the arguments below when running this source' +
+            ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
             `\n\n${await buildArgs(rows)}`
         );
       });

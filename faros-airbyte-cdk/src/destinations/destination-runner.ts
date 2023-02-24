@@ -147,8 +147,8 @@ export class AirbyteDestinationRunner<
           0
         );
         console.log(
-          '\n\nThe arguments below can be used when running this destination' +
-            ' via the Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli)' +
+          '\n\nUse the arguments below when running this destination' +
+            ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
             `\n\n${await buildArgs(rows)}`
         );
       });
