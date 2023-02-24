@@ -4,7 +4,7 @@ import {Command} from 'commander';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
-import {helpTable, traverseObject} from '../help';
+import {buildArgs, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
 import {Runner} from '../runner';
@@ -27,6 +27,7 @@ export class AirbyteDestinationRunner<
       .version('v' + PACKAGE_VERSION)
       .addCommand(this.specCommand())
       .addCommand(this.specPrettyCommand())
+      .addCommand(this.airbyteLocalCLIWizardCommand())
       .addCommand(this.checkCommand())
       .addCommand(this.writeCommand());
   }
@@ -125,6 +126,31 @@ export class AirbyteDestinationRunner<
         // (connectionSpecification) object
         rows.shift();
         console.log(helpTable(rows));
+      });
+  }
+
+  airbyteLocalCLIWizardCommand(): Command {
+    return new Command()
+      .command('airbyte-local-cli-wizard')
+      .description(
+        'Run a wizard command to prepare arguments for Airbyte Local CLI'
+      )
+      .action(async () => {
+        const spec = await this.destination.spec();
+        const rows = traverseObject(
+          spec.spec.connectionSpecification,
+          [
+            // Prefix argument names with --dst
+            '--dst',
+          ],
+          // Assign section = 0 to the root object's row
+          0
+        );
+        console.log(
+          '\n\nUse the arguments below when running this destination' +
+            ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
+            `\n\n${await buildArgs(rows)}`
+        );
       });
   }
 
