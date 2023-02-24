@@ -194,7 +194,7 @@ async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
   if (!row.required) {
     choices.push({
       message: 'Skip this section',
-      value: 'Skipping this section.',
+      value: 'Skipped.',
     });
   }
   const choice = await runSelect({
@@ -203,7 +203,7 @@ async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
     choices,
   });
 
-  if (choice === 'Skipping this section.') {
+  if (choice === 'Skipped.') {
     return undefined;
   }
 
@@ -258,13 +258,13 @@ async function promptLeaf(row: TableRow) {
   if (!row.required) {
     choices.push({
       message: 'Skip this section',
-      value: 'Skipping this section.',
+      value: 'Skipped.',
     });
   }
   if (row.default !== undefined) {
     choices.push({
       message: `Use default (${row.default})`,
-      value: 'Using default.',
+      value: 'Used default.',
     });
   }
   if (row.examples?.length) {
@@ -289,9 +289,9 @@ async function promptLeaf(row: TableRow) {
   }
 
   switch (choice) {
-    case 'Skipping this section.':
+    case 'Skipped.':
       return undefined;
-    case 'Using default.':
+    case 'Used default.':
       return row.default;
     case 'Will use your own value.':
       return await promptValue(row);
