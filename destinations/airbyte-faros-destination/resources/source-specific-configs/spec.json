@@ -1,0 +1,71 @@
+{
+  "order": 9,
+  "type": "object",
+  "title": "Source-specific configs",
+  "description": "Configuration options that apply to specific sources.",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configurations",
+      "properties": {
+        "agileaccelerator": {
+          "$ref": "agileaccelerator.json"
+        },
+        "azurepipeline": {
+          "$ref": "azurepipeline.json"
+        },
+        "backlog": {
+          "$ref": "backlog.json"
+        },
+        "bamboohr": {
+          "$ref": "bamboohr.json"
+        },
+        "bitbucket": {
+          "$ref": "bitbucket.json"
+        },
+        "clickup": {
+          "$ref": "clickup.json"
+        },
+        "datadog": {
+          "$ref": "datadog.json"
+        },
+        "docker": {
+          "$ref": "docker.json"
+        },
+        "firehydrant": {
+          "$ref": "firehydrant.json"
+        },
+        "jenkins": {
+          "$ref": "jenkins.json"
+        },
+        "jira": {
+          "$ref": "jira.json"
+        },
+        "notion": {
+          "$ref": "notion.json"
+        },
+        "opsgenie": {
+          "$ref": "opsgenie.json"
+        },
+        "pagerduty": {
+          "$ref": "pagerduty.json"
+        },
+        "phabricator": {
+          "$ref": "phabricator.json"
+        },
+        "servicenow": {
+          "$ref": "servicenow.json"
+        },
+        "squadcast": {
+          "$ref": "squadcast.json"
+        },
+        "statuspage": {
+          "$ref": "statuspage.json"
+        },
+        "victorops": {
+          "$ref": "victorops.json"
+        }
+      }
+    }
+  ]
+}
