@@ -81,6 +81,15 @@ export function traverseObject(
     if (curObject.properties) {
       const children = Object.keys(curObject.properties).length;
       if (!children) {
+        result.push({
+          title: curObject.title,
+          path: curPath.join('.'),
+          section: idx,
+          description: 'Skip this section',
+          required: false,
+          type: 'empty_object',
+          examples: [],
+        });
         continue;
       }
       result.push({
@@ -188,14 +197,14 @@ export function helpTable(rows: ReadonlyArray<TableRow>): string {
 
 async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
   const choices = [];
-  for (const child of row.children) {
-    choices.push({message: sections.get(child).title, value: child});
-  }
   if (!row.required) {
     choices.push({
       message: 'Skip this section',
       value: 'Skipped.',
     });
+  }
+  for (const child of row.children) {
+    choices.push({message: sections.get(child).title, value: child});
   }
   const choice = await runSelect({
     name: 'oneOf',
@@ -251,6 +260,9 @@ function formatArg(row: TableRow, choice: boolean | number | string) {
 }
 
 async function promptLeaf(row: TableRow) {
+  if (row.type === 'empty_object') {
+    return undefined;
+  }
   const choices = [];
   if (row.constValue !== undefined) {
     return row.constValue;
