@@ -31,7 +31,6 @@ export interface System {
   WorkItemType: string;
   parent: string | null;
   Description: string;
-  //  childOf: string | null
 }
 
 export interface user {

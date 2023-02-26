@@ -16,6 +16,21 @@
         "type": "string",
         "title": "Azure Organization"
       },
+      "project": {
+        "type": "string",
+        "title": "Azure Project"
+      },
+      "graph_version": {
+        "type": "string",
+        "title": "Graph API Version",
+        "default": "7.1-preview.1"
+      },
+      "request_timeout": {
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
+        "default": 60000
+      },
       "api_version": {
         "type": "string",
         "title": "API Version",
