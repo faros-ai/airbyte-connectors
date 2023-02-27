@@ -56,7 +56,7 @@ export class PullRequests extends AirbyteStreamBase {
   ): AsyncGenerator<PullRequest> {
     const since =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCompletedPR
+        ? streamState?.cutoff
         : undefined;
 
     const azureRepos = await AzureRepos.make(this.config, this.logger);
