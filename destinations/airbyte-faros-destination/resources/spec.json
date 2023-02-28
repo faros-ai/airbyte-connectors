@@ -91,7 +91,7 @@
         "examples": ["ims_Incident", "vcs_Commit"]
       },
       "source_specific_configs": {
-        "$ref": "source-specific-configs.json"
+        "$ref": "source-specific-configs/spec.json"
       },
       "keep_alive": {
         "order": 10,

@@ -3,11 +3,21 @@ import _ from 'lodash';
 import {upperFirst} from 'lodash';
 import {table} from 'table';
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
+
+import {
+  runBooleanPrompt,
+  runNumberPrompt,
+  runSelect,
+  runStringPrompt,
+} from './prompts';
 
 export interface TableRow {
   title: string;
   path: string;
   section: number;
+  children?: ReadonlyArray<number>;
+  oneOf?: boolean;
   description?: string;
   required: boolean;
   constValue?: string;
@@ -16,6 +26,7 @@ export interface TableRow {
   airbyte_secret?: boolean;
   multiline?: boolean;
   type: string;
+  items_type?: string;
 }
 
 function visitLeaf(
@@ -37,7 +48,8 @@ function visitLeaf(
     constValue: o.const,
     multiline: o.multiline,
     examples: o.examples,
-    type: o.type === 'array' ? `array of ${o.items.type}` : o.type,
+    type: o.type,
+    items_type: o.items?.type,
   };
 
   return leaf;
@@ -68,11 +80,24 @@ export function traverseObject(
 
     if (curObject.properties) {
       const children = Object.keys(curObject.properties).length;
-      ok(children > 0);
+      if (!children) {
+        result.push({
+          title: curObject.title,
+          path: curPath.join('.'),
+          section: idx,
+          description: 'Skip this section',
+          required: false,
+          type: 'empty_object',
+          examples: [],
+        });
+        continue;
+      }
       result.push({
         title: curObject.title,
         path: curPath.join('.'),
         section: idx,
+        children: _.range(newIdx, newIdx + children),
+        oneOf: false,
         description: `Please configure argument${
           children > 1 ? 's' : ''
         } ${_.range(newIdx, newIdx + children).join()} as needed`,
@@ -109,6 +134,8 @@ export function traverseObject(
         title: curObject.title,
         path: curPath.join('.'),
         section: idx,
+        children: _.range(newIdx, newIdx + children),
+        oneOf: true,
         description:
           children > 1
             ? `Please select and configure a single argument from ${_.range(
@@ -166,4 +193,156 @@ export function helpTable(rows: ReadonlyArray<TableRow>): string {
   }
 
   return table(data, config);
+}
+
+async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
+  const choices = [];
+  if (!row.required) {
+    choices.push({
+      message: 'Skip this section',
+      value: 'Skipped.',
+    });
+  }
+  for (const child of row.children) {
+    choices.push({message: sections.get(child).title, value: child});
+  }
+  const choice = await runSelect({
+    name: 'oneOf',
+    message: row.title,
+    choices,
+  });
+
+  if (choice === 'Skipped.') {
+    return undefined;
+  }
+
+  return +choice;
+}
+
+async function promptValue(row: TableRow) {
+  const type = row.items_type ?? row.type;
+  ok(type);
+
+  switch (type) {
+    case 'boolean':
+      return await runBooleanPrompt({message: row.title});
+    case 'integer':
+      return await runNumberPrompt({message: row.title});
+    case 'string':
+      return await runStringPrompt({message: row.title});
+  }
+
+  throw new VError(`Unexpected type: ${type}`);
+}
+
+function choiceAsType(row: TableRow, choice: string) {
+  const type = row.items_type ?? row.type;
+  ok(type);
+
+  switch (type) {
+    case 'boolean':
+      return choice === 'true';
+    case 'integer':
+      return +choice;
+    case 'string':
+      return choice;
+  }
+
+  throw new VError(`Unexpected type: ${type}`);
+}
+
+function formatArg(row: TableRow, choice: boolean | number | string) {
+  let formattedChoice = typeof choice === 'string' ? `"${choice}"` : choice;
+  if (row.type === 'array') {
+    formattedChoice = `'[${formattedChoice}]'`;
+  }
+  return `${row.path} ${formattedChoice}`;
+}
+
+async function promptLeaf(row: TableRow) {
+  if (row.type === 'empty_object') {
+    return undefined;
+  }
+  const choices = [];
+  if (row.constValue !== undefined) {
+    return row.constValue;
+  }
+  if (!row.required) {
+    choices.push({
+      message: 'Skip this section',
+      value: 'Skipped.',
+    });
+  }
+  if (row.default !== undefined) {
+    choices.push({
+      message: `Use default (${row.default})`,
+      value: 'Used default.',
+    });
+  }
+  if (row.examples?.length) {
+    let idx = 0;
+    for (const example of row.examples) {
+      idx++;
+      choices.push({message: `example ${idx} (${example})`, value: example});
+    }
+  }
+
+  let choice = ' ';
+  if (choices.length) {
+    choices.push({
+      message: 'Enter your own value',
+      value: ' ',
+    });
+    choice = await runSelect({
+      name: 'leaf',
+      message: `${row.title}: ${row.description}`,
+      choices,
+    });
+  }
+
+  switch (choice) {
+    case 'Skipped.':
+      return undefined;
+    case 'Used default.':
+      return row.default;
+    case ' ':
+      return await promptValue(row);
+    default:
+      return choiceAsType(row, choice);
+  }
+}
+
+export async function buildArgs(
+  rows: ReadonlyArray<TableRow>
+): Promise<string> {
+  const sections: Map<number, TableRow> = new Map(
+    rows.map((row) => [row.section, row])
+  );
+  const result = [];
+  // Stack of sections to process in DFS
+  const process = [0];
+  const processed = [];
+  while (process.length) {
+    const section = process.pop();
+    processed.push(section);
+    const row = sections.get(section);
+    if (row.children?.length) {
+      if (row.oneOf) {
+        const choice = await promptOneOf(row, sections);
+        if (choice) {
+          process.push(choice);
+        }
+      } else {
+        for (let idx = row.children.length - 1; idx >= 0; idx--) {
+          process.push(row.children[idx]);
+        }
+      }
+    } else {
+      const choice = await promptLeaf(row);
+      if (choice !== undefined) {
+        result.push(formatArg(row, choice));
+      }
+    }
+  }
+  return result.join(' \\\n');
 }
