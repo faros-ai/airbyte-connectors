@@ -60,11 +60,10 @@
     },
     {
       "stream": {
-        "name": "users",
+        "name": "services",
         "json_schema": {},
         "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
+          "full_refresh"
         ],
         "source_defined_cursor": false,
         "source_defined_primary_key": [
@@ -78,12 +77,11 @@
     },
     {
       "stream": {
-        "name": "teams",
+        "name": "users",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh"
         ],
-        "source_defined_cursor": false,
         "source_defined_primary_key": [
           [
             "id"

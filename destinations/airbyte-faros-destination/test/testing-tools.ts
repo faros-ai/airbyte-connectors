@@ -47,6 +47,7 @@ export async function tempConfig(
           api_url: url,
           api_key: 'test-api-key',
           graph: 'test-graph',
+          graphql_api: 'v1',
         }
       : {
           edition,

@@ -13,6 +13,7 @@ import {
   IncidentLogEntries,
   Incidents,
   PrioritiesResource,
+  Services,
   Teams,
   Users,
 } from './streams';
@@ -41,11 +42,12 @@ export class PagerdutySource extends AirbyteSourceBase<PagerdutyConfig> {
   }
   streams(config: PagerdutyConfig): AirbyteStreamBase[] {
     return [
-      new IncidentLogEntries(config, this.logger),
-      new Incidents(config, this.logger),
-      new PrioritiesResource(config, this.logger),
-      new Users(config, this.logger),
-      new Teams(config, this.logger),
-    ];
+      IncidentLogEntries,
+      Incidents,
+      PrioritiesResource,
+      Services,
+      Teams,
+      Users,
+    ].map((Stream) => new Stream(config, this.logger));
   }
 }

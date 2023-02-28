@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {Common, ComputeApplication} from '../common/common';
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 export interface PagerdutyObject {
@@ -23,6 +24,7 @@ type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 interface PagerDutyConfig {
   application_mapping?: ApplicationMapping;
+  associate_applications_to_teams?: boolean;
   default_severity?: IncidentSeverityCategory;
 }
 
@@ -50,9 +52,16 @@ export abstract class PagerDutyConverter extends Converter {
     );
   }
 
-  protected defaultSeverity(
-    ctx: StreamContext
-  ): IncidentSeverityCategory | null {
-    return this.pagerdutyConfig(ctx).default_severity ?? null;
+  protected computeApplication(
+    ctx: StreamContext,
+    serviceSummary: string
+  ): ComputeApplication {
+    const applicationMapping = this.applicationMapping(ctx);
+    const mappedApp = applicationMapping[serviceSummary];
+    const application = Common.computeApplication(
+      mappedApp?.name ?? serviceSummary,
+      mappedApp?.platform
+    );
+    return application;
   }
 }

@@ -17,6 +17,12 @@
             "{ \"Aion\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
           ]
         },
+        "associate_applications_to_teams": {
+          "type": "boolean",
+          "title": "Associate Applications to Teams",
+          "description": "Associate applications to org teams based on PagerDuty team names",
+          "default": false
+        },
         "default_severity": {
           "type": "string",
           "title": "Default Severity",

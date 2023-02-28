@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "self": {
+      "type": "string"
+    },
+    "html_url": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "alert_creation": {
+      "type": "string"
+    },
+    "alert_grouping_parameters": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "self": {
+            "type": "string"
+          },
+          "html_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "escalation_policy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "self": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
+        }
+      }
+    },
+    "teams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "self": {
+            "type": "string"
+          },
+          "html_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "incident_urgency_rule": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "during_support_hours": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "urgency": {
+              "type": "string"
+            }
+          }
+        },
+        "outside_support_hours": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "urgency": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "scheduled_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "at": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "to_urgency": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "auto_pause_notifications_parameters": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "timeout": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

@@ -47,7 +47,7 @@ export class PrioritiesResource extends PagerDutyConverter {
     const incident = ctx.get(incidentsStream, String(priorityResource.id));
     const incidentPriority = incident?.record?.data?.priority;
 
-    const defaultSeverity = this.defaultSeverity(ctx);
+    const defaultSeverity = this.pagerdutyConfig(ctx).default_severity;
     const severity = this.incidentSeverity(
       priorityResource,
       incidentPriority,
