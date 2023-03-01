@@ -28,7 +28,10 @@
         "type": "string",
         "title": "Branch Name Pattern",
         "description": "Regex pattern to match branch names.",
-        "default": "^main$"
+        "default": "^main$",
+        "examples": [
+          ".*"
+        ]
       },
       "cutoff_days": {
         "type": "integer",
