@@ -351,7 +351,7 @@ export class AzureRepos {
       if (tag.peeledObjectId) {
         const tagItem: Tag = tag;
         const tagCommitRes = await this.get<TagCommit>(
-          `git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
+          `${project}/_apis/git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
         );
         tagItem.commit = tagCommitRes?.data ?? null;
         tags.push(tagItem);
