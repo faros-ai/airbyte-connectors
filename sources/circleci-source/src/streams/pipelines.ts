@@ -8,6 +8,8 @@ type StreamSlice = {
   projectName: string;
 };
 
+type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
+
 export class Pipelines extends CircleCIStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
@@ -15,6 +17,10 @@ export class Pipelines extends CircleCIStreamBase {
 
   get primaryKey(): string {
     return 'id';
+  }
+
+  get cursorField(): string[] {
+    return ['computedProperties', 'updatedAt'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -26,12 +32,30 @@ export class Pipelines extends CircleCIStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice
+    streamSlice?: StreamSlice,
+    streamState?: PipelineState
   ): AsyncGenerator<Pipeline, any, unknown> {
-    for (const pipeline of await this.circleCI.fetchPipelines(
-      streamSlice.projectName
-    )) {
-      yield pipeline;
-    }
+    const since =
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
+        : undefined;
+    yield* this.circleCI.fetchPipelines(streamSlice.projectName, since);
+  }
+
+  getUpdatedState(
+    currentStreamState: PipelineState,
+    latestRecord: Pipeline
+  ): PipelineState {
+    const projectName = latestRecord.project_slug;
+    const projectState = currentStreamState[projectName] ?? {};
+
+    const newProjectState = {
+      lastUpdatedAt:
+        new Date(latestRecord.computedProperties.updatedAt) >
+        new Date(projectState.lastUpdatedAt ?? 0)
+          ? latestRecord.computedProperties.updatedAt
+          : projectState.lastUpdatedAt,
+    };
+    return {...currentStreamState, [projectName]: newProjectState};
   }
 }

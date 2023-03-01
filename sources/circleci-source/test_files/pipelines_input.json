@@ -21,10 +21,6 @@
       "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
       "provider_name": "GitHub",
       "branch": "circleci-project-setup"
-    },
-    "workflows": [],
-    "computedProperties": {
-      "updatedAt": "2022-04-19T01:31:51.131Z"
     }
   },
   {
@@ -49,10 +45,6 @@
       "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
       "provider_name": "GitHub",
       "branch": "circleci-project-setup"
-    },
-    "workflows": [],
-    "computedProperties": {
-      "updatedAt": "2022-04-20T01:31:51.131Z"
     }
   },
   {
@@ -77,10 +69,6 @@
       "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
       "provider_name": "GitHub",
       "branch": "circleci-project-setup"
-    },
-    "workflows": [],
-    "computedProperties": {
-      "updatedAt": "2022-04-21T01:31:51.131Z"
     }
   },
   {
@@ -105,10 +93,6 @@
       "revision": "4bb2547c19b752c1260fbae2891145faeed63670",
       "provider_name": "GitHub",
       "branch": "circleci-project-setup"
-    },
-    "workflows": [],
-    "computedProperties": {
-      "updatedAt": "2022-04-20T01:31:51.131Z"
     }
   }
 ]

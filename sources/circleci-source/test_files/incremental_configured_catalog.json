@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "workflows",
+        "name": "pipelines",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
@@ -15,7 +15,8 @@
           ]
         ],
         "default_cursor_field": [
-          "stopped_at"
+          "computedProperties",
+          "updatedAt"
         ]
       },
       "sync_mode": "incremental",

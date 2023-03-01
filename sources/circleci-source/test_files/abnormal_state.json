@@ -1,7 +1,7 @@
 {
-  "workflows": {
-    "d55b1fc0-788c-48cc-a33e-0d24ff3338dc": {
-      "lastStoppedAt": "2025-01-01 00:00:00"
+  "pipelines": {
+    "gh/faros-test-org1/test-repo1": {
+      "lastUpdatedAt": "2025-01-01 00:00:00"
     }
   }
 }
