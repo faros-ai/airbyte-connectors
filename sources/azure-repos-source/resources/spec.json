@@ -27,7 +27,7 @@
       "branch_pattern": {
         "type": "string",
         "title": "Branch Name Pattern",
-        "description": "Regex pattern to match branch names.",
+        "description": "Regex pattern to match branch names. If you would like to match all branches, use '.*'",
         "default": "^main$",
         "examples": [
           ".*"
