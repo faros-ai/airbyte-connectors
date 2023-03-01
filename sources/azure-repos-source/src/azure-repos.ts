@@ -32,6 +32,7 @@ import {
 } from './models';
 
 const DEFAULT_API_VERSION = '7.0';
+export const DEFAULT_BRANCH_PATTERN = '^main$';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -61,8 +62,8 @@ export class AzureRepos {
     private readonly maxRetries: number,
     private readonly logger: AirbyteLogger,
     private projects: string[],
-    private readonly cutoffDays?: number,
-    private readonly branchPattern?: RegExp
+    private readonly cutoffDays: number,
+    private readonly branchPattern: RegExp
   ) {}
 
   static async make(
@@ -133,9 +134,7 @@ export class AzureRepos {
     axiosRetry(httpClient, retryConfig);
     axiosRetry(graphClient, retryConfig);
 
-    const branchPattern = config.branch_pattern
-      ? new RegExp(config.branch_pattern)
-      : undefined;
+    const branchPattern = new RegExp(config.branch_pattern || DEFAULT_BRANCH_PATTERN);
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
@@ -320,7 +319,7 @@ export class AzureRepos {
       `${project}/_apis/git/repositories/${repo.id}/stats/branches`
     );
     for (const branch of branchRes?.data?.value ?? []) {
-      if (this.branchPattern && !this.branchPattern.test(branch.name)) {
+      if (!this.branchPattern.test(branch.name)) {
         this.logger.info(
           `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
         );

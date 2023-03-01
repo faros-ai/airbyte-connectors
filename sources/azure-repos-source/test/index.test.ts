@@ -7,10 +7,11 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {AzureRepos, DEFAULT_PAGE_SIZE} from '../src/azure-repos';
+import {AzureRepos, DEFAULT_CUTOFF_DAYS, DEFAULT_PAGE_SIZE} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepos.make;
+const ALL_BRANCHES_RE = new RegExp('.*');
 
 jest.mock('axios');
 
@@ -60,7 +61,9 @@ describe('index', () => {
         } as any,
         1,
         logger,
-        ['test']
+        ['test'],
+        DEFAULT_CUTOFF_DAYS,
+        ALL_BRANCHES_RE
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -115,7 +118,8 @@ describe('index', () => {
         1,
         logger,
         ['test'],
-        1
+        1,
+        ALL_BRANCHES_RE
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -169,7 +173,8 @@ describe('index', () => {
         1,
         logger,
         ['test'],
-        1
+        1,
+        ALL_BRANCHES_RE
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -206,7 +211,8 @@ describe('index', () => {
         1,
         logger,
         ['test'],
-        1
+        1,
+        ALL_BRANCHES_RE
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -241,7 +247,9 @@ describe('index', () => {
         } as any,
         1,
         logger,
-        ['test']
+        ['test'],
+        1,
+        ALL_BRANCHES_RE
       );
     });
     const source = new sut.AzureRepoSource(logger);
