@@ -37,6 +37,9 @@ export interface Pipeline {
   trigger: Trigger;
   vcs: Vcs;
   workflows: Workflow[];
+  computedProperties: {
+    updatedAt: string;
+  };
 }
 
 export interface Workflow {
