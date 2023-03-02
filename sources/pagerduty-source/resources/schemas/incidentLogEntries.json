@@ -15,7 +15,7 @@
       "type": "string"
     },
     "html_url": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "created_at": {
       "type": "string"

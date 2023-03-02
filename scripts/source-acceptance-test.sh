@@ -54,12 +54,13 @@ write_test_config $tag $test_config_env_var
 echo Building source image $tag
 version=$(jq -r '.version' lerna.json)
 docker build . --build-arg path=$path --build-arg version=$version --pull -t $tag
+docker pull airbyte/source-acceptance-test:latest
 echo Running source acceptance tests against $tag
 docker run --rm -t \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /tmp:/tmp \
   -v $(pwd)/$path:/test_input \
-  airbyte/source-acceptance-test \
+  airbyte/source-acceptance-test:latest \
   --acceptance-test-config /test_input > $log
   cat $log
   if grep -q -e FAILED -e ERROR -e pytest.outcomes.Exit "$log"; then
