@@ -280,7 +280,10 @@ export class Buildkite {
         pageSize: this.pageSize,
         after: pageInfo ? pageInfo.endCursor : cursor,
       };
-      const data = await this.graphClient.request(PIPELINES_QUERY, variables);
+      const data: any = await this.graphClient.request(
+        PIPELINES_QUERY,
+        variables
+      );
 
       return {
         data: data.organization.pipelines?.edges.map((e) => {
@@ -308,7 +311,7 @@ export class Buildkite {
         maxJobsPerBuild: 500,
         createdAtFrom,
       };
-      const data = await this.graphClient.request(
+      const data: any = await this.graphClient.request(
         PIPELINES_BUILDS_QUERY,
         variables
       );
