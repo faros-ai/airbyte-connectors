@@ -41,6 +41,7 @@ export class Statuspage {
     private readonly clientV2: StatuspageClient,
     private readonly httpClient: AxiosInstance,
     private readonly startDate: Date,
+    private readonly logger: AirbyteLogger,
     private readonly orgId?: string
   ) {}
 
@@ -71,6 +72,7 @@ export class Statuspage {
       clientV2,
       httpClient,
       startDate,
+      logger,
       config.org_id
     );
     return Statuspage.statuspage;
@@ -130,19 +132,15 @@ export class Statuspage {
     return results;
   }
 
-  async *getUsers(cutoff?: Date): AsyncGenerator<User> {
-    const startTime = cutoff > this.startDate ? cutoff : this.startDate;
+  async *getUsers(): AsyncGenerator<User> {
     const usersResource = `/organizations/${this.orgId}/users`;
-
     if (this.orgId) {
       const response: AxiosResponse = await this.httpClient.get(usersResource);
       for (const user of response.data) {
-        if (new Date(user.updated_at) > startTime) {
-          yield user;
-        }
+        yield user;
       }
     } else {
-      return undefined;
+      this.logger.warn('Org_id not provided. Cannot fetch Statuspage users.');
     }
   }
 }

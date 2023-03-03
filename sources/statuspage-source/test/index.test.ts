@@ -46,7 +46,8 @@ describe('index', () => {
       return new Statuspage(
         {api: {incidents: {getAll: jest.fn().mockResolvedValue({})}}} as any,
         {get: jest.fn().mockResolvedValue({})} as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
 
@@ -68,7 +69,8 @@ describe('index', () => {
           },
         } as any,
         {get: jest.fn().mockResolvedValue({})} as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -103,7 +105,8 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        new Date('1970-01-01T00:00:00-0000')
+        new Date('1970-01-01T00:00:00-0000'),
+        logger
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -137,7 +140,8 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -181,7 +185,8 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as any,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -216,6 +221,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
+        logger,
         'orgid'
       );
     });
