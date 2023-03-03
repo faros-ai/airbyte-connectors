@@ -30,6 +30,11 @@ describe('index', () => {
 
   beforeEach(() => {
     Statuspage.instance = statusPageInstance;
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   test('spec', async () => {
@@ -39,7 +44,12 @@ describe('index', () => {
     );
   });
 
-  const sourceConfig = {api_key: '', page_id: 'page_id', cutoff_days: 90};
+  const sourceConfig = {
+    api_key: '',
+    page_ids: ['page_id'],
+    cutoff_days: 90,
+    org_id: 'org_id',
+  };
 
   test('check connection', async () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -68,7 +78,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
       false,
-      new VError('Please verify your token are correct. Error: some error'),
+      new VError('Please verify your token is correct. Error: some error'),
     ]);
   });
 
@@ -86,8 +96,8 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {
-          get: jest.fn().mockResolvedValue({
-            incidents: readTestResourceFile('incidents.json'),
+          get: fnIncidentsFunc.mockResolvedValue({
+            data: readTestResourceFile('incidents.json'),
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
@@ -98,7 +108,11 @@ describe('index', () => {
     const streams = source.streams(sourceConfig);
 
     const incidentsStream = streams[0];
-    const incidentsIter = incidentsStream.readRecords(SyncMode.FULL_REFRESH);
+    const incidentsIter = incidentsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      null,
+      {pageId: 'page_id'}
+    );
     const incidents = [];
     for await (const incident of incidentsIter) {
       incidents.push(incident);
@@ -108,90 +122,18 @@ describe('index', () => {
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
-  test('streams - incidentUpdates, use incremental sync mode', async () => {
-    const mockFunc = jest.fn();
-
-    Statuspage.instance = jest.fn().mockImplementation(() => {
-      return new Statuspage(
-        {
-          get: jest.fn().mockResolvedValue({
-            incidents: readTestResourceFile('incidents.json'),
-          }),
-        } as any,
-        new Date('2010-03-27T14:03:51-0800'),
-        logger
-      );
-    });
-    const source = new sut.StatuspageSource(logger);
-    const streams = source.streams(sourceConfig);
-    const specificStream = streams[1];
-    const cutoff = '2021-11-10T15:55:51.144Z';
-    const iter = specificStream.readRecords(
-      SyncMode.INCREMENTAL,
-      undefined,
-      undefined,
-      {cutoff}
-    );
-    const list = [];
-    for await (const item of iter) {
-      list.push(item);
-    }
-
-    expect(mockFunc).toHaveBeenCalledTimes(1);
-    expect(list).toHaveLength(3);
-    expect(list).toStrictEqual(
-      readTestResourceFile('incidentUpdates.json').filter(
-        (u) => new Date(u.updated_at) > new Date(cutoff)
-      )
-    );
-  });
-
-  test('streams - incidentUpdates, use full_refresh sync mode', async () => {
-    const mockFunc = jest.fn();
-
-    Statuspage.instance = jest.fn().mockImplementation(() => {
-      return new Statuspage(
-        {
-          get: jest.fn().mockResolvedValue({
-            incidents: readTestResourceFile('incidents.json'),
-          }),
-        } as any,
-        new Date('2010-03-27T14:03:51-0800'),
-        logger
-      );
-    });
-    const source = new sut.StatuspageSource(logger);
-    const streams = source.streams(sourceConfig);
-    const specificStream = streams[1];
-    const iter = specificStream.readRecords(SyncMode.FULL_REFRESH);
-    const list = [];
-    for await (const item of iter) {
-      list.push(item);
-    }
-
-    expect(mockFunc).toHaveBeenCalledTimes(1);
-    expect(list).toStrictEqual(readTestResourceFile('incidentUpdates.json'));
-  });
-
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
-
-    Statuspage.instance = jest.fn().mockImplementation(() => {
-      return new Statuspage(
-        {
-          get: fnUsersFunc.mockImplementation(async (path: string) => {
-            const isPathMatch = path.match(/^\/organizations\/orgid\/users/);
-            if (isPathMatch) {
-              return {
-                data: readTestResourceFile('users.json'),
-              };
-            }
-          }),
-        } as any,
-        new Date('1970-01-01T00:00:00-0000'),
-        logger
-      );
-    });
+    const sp = new Statuspage(
+      {
+        get: fnUsersFunc.mockResolvedValueOnce({
+          data: readTestResourceFile('users.json'),
+        }),
+      } as any,
+      new Date('1970-01-01T00:00:00-0000'),
+      logger
+    );
+    Statuspage.instance = jest.fn().mockReturnValue(sp);
     const source = new sut.StatuspageSource(logger);
     const streams = source.streams(sourceConfig);
 

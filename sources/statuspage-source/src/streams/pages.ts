@@ -1,17 +1,10 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Statuspage, StatuspageConfig} from '../statuspage';
 import {Page} from '../types';
+import {StatuspageStreamBase} from './common';
 
-export class Pages extends AirbyteStreamBase {
-  constructor(
-    private readonly config: StatuspageConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Pages extends StatuspageStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
@@ -21,7 +14,6 @@ export class Pages extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Page> {
-    const statuspage = Statuspage.instance(this.config, this.logger);
-    yield* statuspage.getPages(this.config.page_ids);
+    yield* this.statuspage.getPages(this.cfg.page_ids);
   }
 }
