@@ -6,7 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {IncidentUpdate, Statuspage, StatuspageConfig} from '../statuspage';
+import {Statuspage, StatuspageConfig} from '../statuspage';
+import {IncidentUpdate} from '../types';
 
 interface IncidentUpdatesState {
   cutoff: string;

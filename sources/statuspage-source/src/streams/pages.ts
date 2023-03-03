@@ -2,9 +2,9 @@ import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Statuspage, StatuspageConfig} from '../statuspage';
-import {User} from '../types';
+import {Page} from '../types';
 
-export class Users extends AirbyteStreamBase {
+export class Pages extends AirbyteStreamBase {
   constructor(
     private readonly config: StatuspageConfig,
     protected readonly logger: AirbyteLogger
@@ -20,8 +20,8 @@ export class Users extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<Page> {
     const statuspage = Statuspage.instance(this.config, this.logger);
-    yield* statuspage.getUsers(this.config.org_id);
+    yield* statuspage.getPages(this.config.page_ids);
   }
 }

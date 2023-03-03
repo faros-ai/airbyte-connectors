@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Statuspage, StatuspageConfig} from './statuspage';
-import {Incidents, IncidentUpdates, Users} from './streams';
+import {Incidents, IncidentUpdates, Pages, Users} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -34,10 +34,8 @@ export class StatuspageSource extends AirbyteSourceBase<StatuspageConfig> {
     return [true, undefined];
   }
   streams(config: StatuspageConfig): AirbyteStreamBase[] {
-    return [
-      new Incidents(config, this.logger),
-      new IncidentUpdates(config, this.logger),
-      new Users(config, this.logger),
-    ];
+    return [Incidents, IncidentUpdates, Pages, Users].map(
+      (Stream) => new Stream(config, this.logger)
+    );
   }
 }

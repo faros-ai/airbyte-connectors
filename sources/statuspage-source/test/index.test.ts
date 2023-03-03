@@ -44,7 +44,6 @@ describe('index', () => {
   test('check connection', async () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
-        {api: {incidents: {getAll: jest.fn().mockResolvedValue({})}}} as any,
         {get: jest.fn().mockResolvedValue({})} as any,
         new Date('2010-03-27T14:03:51-0800'),
         logger
@@ -61,14 +60,7 @@ describe('index', () => {
   test('check connection - incorrect page_id', async () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
-        {
-          api: {
-            incidents: {
-              getAll: jest.fn().mockRejectedValue(new Error('some error')),
-            },
-          },
-        } as any,
-        {get: jest.fn().mockResolvedValue({})} as any,
+        {get: jest.fn().mockRejectedValue(new Error('some error'))} as any,
         new Date('2010-03-27T14:03:51-0800'),
         logger
       );
@@ -94,16 +86,9 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {
-          api: {
-            incidents: {
-              getAll: fnIncidentsFunc.mockResolvedValue({
-                incidents: readTestResourceFile('incidents.json'),
-              }),
-            },
-          },
-        } as any,
-        {
-          get: jest.fn().mockResolvedValue({}),
+          get: jest.fn().mockResolvedValue({
+            incidents: readTestResourceFile('incidents.json'),
+          }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
         logger
@@ -129,16 +114,9 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {
-          api: {
-            incidents: {
-              getAll: mockFunc.mockResolvedValue({
-                incidents: readTestResourceFile('incidents.json'),
-              }),
-            },
-          },
-        } as any,
-        {
-          get: jest.fn().mockResolvedValue({}),
+          get: jest.fn().mockResolvedValue({
+            incidents: readTestResourceFile('incidents.json'),
+          }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
         logger
@@ -174,16 +152,9 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {
-          api: {
-            incidents: {
-              getAll: mockFunc.mockResolvedValue({
-                incidents: readTestResourceFile('incidents.json'),
-              }),
-            },
-          },
-        } as any,
-        {
-          get: jest.fn().mockResolvedValue({}),
+          get: jest.fn().mockResolvedValue({
+            incidents: readTestResourceFile('incidents.json'),
+          }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
         logger
@@ -208,9 +179,6 @@ describe('index', () => {
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
         {
-          api: {incidents: {getAll: jest.fn().mockResolvedValue({})}},
-        } as any,
-        {
           get: fnUsersFunc.mockImplementation(async (path: string) => {
             const isPathMatch = path.match(/^\/organizations\/orgid\/users/);
             if (isPathMatch) {
@@ -221,8 +189,7 @@ describe('index', () => {
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
-        logger,
-        'orgid'
+        logger
       );
     });
     const source = new sut.StatuspageSource(logger);
