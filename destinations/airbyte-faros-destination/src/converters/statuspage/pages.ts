@@ -1,5 +1,3 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-
 import {DestinationModel, DestinationRecord} from '../converter';
 import {StatuspageConverter} from './common';
 
