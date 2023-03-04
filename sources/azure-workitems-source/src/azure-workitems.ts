@@ -42,7 +42,7 @@ export class AzureWorkitems {
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: 60000, // default is `0` (no timeout)
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity, //default is 2000 bytes
       params: {
         'api-version': version,
