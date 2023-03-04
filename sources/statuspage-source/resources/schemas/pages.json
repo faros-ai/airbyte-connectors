@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "page_description": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "headline": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "branding": {
+      "type": "string"
+    },
+    "subdomain": {
+      "type": "string"
+    },
+    "domain": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "support_url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "hidden_from_search": {
+      "type": "boolean"
+    },
+    "allow_page_subscribers": {
+      "type": "boolean"
+    },
+    "allow_incident_subscribers": {
+      "type": "boolean"
+    },
+    "allow_email_subscribers": {
+      "type": "boolean"
+    },
+    "allow_sms_subscribers": {
+      "type": "boolean"
+    },
+    "allow_rss_atom_feeds": {
+      "type": "boolean"
+    },
+    "allow_webhook_subscribers": {
+      "type": "boolean"
+    },
+    "notifications_from_email": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "notifications_email_footer": {
+      "type": "string"
+    },
+    "activity_score": {
+      "type": "integer"
+    },
+    "twitter_username": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "viewers_must_be_team_members": {
+      "type": "boolean"
+    },
+    "ip_restrictions": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "city": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "state": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "country": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "time_zone": {
+      "type": "string"
+    },
+    "css_body_background_color": {
+      "type": "string"
+    },
+    "css_font_color": {
+      "type": "string"
+    },
+    "css_light_font_color": {
+      "type": "string"
+    },
+    "css_greens": {
+      "type": "string"
+    },
+    "css_yellows": {
+      "type": "string"
+    },
+    "css_oranges": {
+      "type": "string"
+    },
+    "css_blues": {
+      "type": "string"
+    },
+    "css_reds": {
+      "type": "string"
+    },
+    "css_border_color": {
+      "type": "string"
+    },
+    "css_graph_color": {
+      "type": "string"
+    },
+    "css_link_color": {
+      "type": "string"
+    },
+    "css_no_data": {
+      "type": "string"
+    },
+    "favicon_logo": {
+      "type": "object",
+      "properties": {
+        "updated_at": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "size": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "transactional_logo": {
+      "type": "object",
+      "properties": {
+        "updated_at": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "original_url": {
+          "type": "string"
+        },
+        "size": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "normal_url": {
+          "type": "string"
+        },
+        "retina_url": {
+          "type": "string"
+        }
+      }
+    },
+    "hero_cover": {
+      "type": "object",
+      "properties": {
+        "updated_at": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "original_url": {
+          "type": "string"
+        },
+        "size": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "normal_url": {
+          "type": "string"
+        },
+        "retina_url": {
+          "type": "string"
+        }
+      }
+    },
+    "email_logo": {
+      "type": "object",
+      "properties": {
+        "updated_at": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "original_url": {
+          "type": "string"
+        },
+        "size": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "normal_url": {
+          "type": "string"
+        },
+        "retina_url": {
+          "type": "string"
+        }
+      }
+    },
+    "twitter_logo": {
+      "type": "object",
+      "properties": {
+        "updated_at": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "size": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

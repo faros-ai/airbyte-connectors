@@ -6,7 +6,7 @@ import {StatuspageStreamBase} from './common';
 
 export class Pages extends StatuspageStreamBase {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/users.json');
+    return require('../../resources/schemas/pages.json');
   }
 
   get primaryKey(): StreamKey {

@@ -46,7 +46,7 @@ describe('index', () => {
 
   const sourceConfig = {
     api_key: '',
-    page_ids: ['page_id'],
+    page_ids: ['n3wb7hf336hn', 'mz1ms2kfwq1s'],
     cutoff_days: 90,
     org_id: 'org_id',
   };
@@ -120,6 +120,34 @@ describe('index', () => {
 
     expect(fnIncidentsFunc).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+  });
+
+  test('streams - pages, use full_refresh sync mode', async () => {
+    const fnPagesFunc = jest.fn();
+
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnPagesFunc.mockResolvedValue({
+            data: readTestResourceFile('pages.json'),
+          }),
+        } as any,
+        new Date('1970-01-01T00:00:00-0000'),
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const pagesStream = streams[1];
+    const pagesIter = pagesStream.readRecords(SyncMode.FULL_REFRESH);
+    const pages = [];
+    for await (const page of pagesIter) {
+      pages.push(page);
+    }
+
+    expect(fnPagesFunc).toHaveBeenCalledTimes(1);
+    expect(pages).toStrictEqual(readTestResourceFile('pages.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
