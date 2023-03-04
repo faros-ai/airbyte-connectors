@@ -5,13 +5,16 @@ import {VError} from 'verror';
 import {Incident, Page, User} from './types';
 
 const BASE_URL = 'https://api.statuspage.io/v1/';
+const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_PAGE_SIZE = 100;
+const RATE_LIMIT_INTERVAL_SECS = 60;
 
 export interface StatuspageConfig {
   readonly api_key: string;
   readonly cutoff_days: number;
   readonly org_id?: string;
   readonly page_ids?: ReadonlyArray<string>;
+  readonly max_retries?: number;
   readonly page_size?: number;
 }
 
@@ -22,6 +25,7 @@ export class Statuspage {
     private readonly api: AxiosInstance,
     private readonly startDate: Date,
     private readonly logger: AirbyteLogger,
+    private readonly maxRetries: number = DEFAULT_MAX_RETRIES,
     private readonly pageSize: number = DEFAULT_PAGE_SIZE
   ) {}
 
@@ -48,6 +52,7 @@ export class Statuspage {
       httpClient,
       startDate,
       logger,
+      config.max_retries,
       config.page_size
     );
     return Statuspage.statuspage;
@@ -71,6 +76,33 @@ export class Statuspage {
     }
   }
 
+  private sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  private async rateLimitGet<T = any>(
+    path: string,
+    attempt = 1
+  ): Promise<AxiosResponse<T> | undefined> {
+    try {
+      return await this.api.get(path);
+    } catch (err: any) {
+      if (
+        (err?.response?.status === 420 || err?.response?.status === 429) &&
+        attempt <= this.maxRetries
+      ) {
+        this.logger.warn(
+          `Request to ${path} was rate limited. ` +
+            `Retrying in ${RATE_LIMIT_INTERVAL_SECS} seconds...` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(RATE_LIMIT_INTERVAL_SECS * 1000);
+        return await this.rateLimitGet(path, attempt + 1);
+      }
+      throw wrapApiError(err, `Failed to get ${path}. `);
+    }
+  }
+
   private async *paginate<T>(
     resource: string,
     pageSizeParam: string
@@ -82,7 +114,7 @@ export class Statuspage {
         page: `${page}`,
         [pageSizeParam]: `${this.pageSize}`,
       });
-      const response: AxiosResponse<T[]> = await this.api.get(
+      const response: AxiosResponse<T[]> = await this.rateLimitGet(
         `${resource}?${params}`
       );
       for (const item of response.data) {
@@ -111,7 +143,7 @@ export class Statuspage {
 
   async *getPages(pageIds?: ReadonlyArray<string>): AsyncGenerator<Page> {
     // this API does not paginated results
-    const response: AxiosResponse<Page[]> = await this.api.get('/pages');
+    const response: AxiosResponse<Page[]> = await this.rateLimitGet('/pages');
     for (const page of response.data) {
       if (pageIds && pageIds.length > 0 && !pageIds.includes(page.id)) {
         continue;

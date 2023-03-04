@@ -43,6 +43,12 @@
         "default": 100,
         "minimum": 1,
         "maximum": 100
+      },
+      "max_retries": {
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to Statuspage API",
+        "default": 3
       }
     }
   }
