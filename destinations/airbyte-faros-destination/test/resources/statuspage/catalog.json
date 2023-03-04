@@ -8,7 +8,7 @@
     },
     {
       "stream": {
-        "name": "mytestsource__statuspage__incident_updates"
+        "name": "mytestsource__statuspage__pages"
       },
       "destination_sync_mode": "append"
     },
