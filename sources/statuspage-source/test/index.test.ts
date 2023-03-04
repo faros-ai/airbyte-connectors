@@ -92,12 +92,14 @@ describe('index', () => {
 
   test('streams - incidents, use full_refresh sync mode', async () => {
     const fnIncidentsFunc = jest.fn();
-
+    const inputIncidents: any[] = readTestResourceFile('incidents.json');
     Statuspage.instance = jest.fn().mockImplementation(() => {
+      let idx = 0;
       return new Statuspage(
         {
-          get: fnIncidentsFunc.mockResolvedValue({
-            data: readTestResourceFile('incidents.json'),
+          get: fnIncidentsFunc.mockImplementation(() => {
+            const incident = inputIncidents[idx++];
+            return Promise.resolve({data: incident ? [incident] : []});
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
@@ -118,7 +120,7 @@ describe('index', () => {
       incidents.push(incident);
     }
 
-    expect(fnIncidentsFunc).toHaveBeenCalledTimes(1);
+    expect(fnIncidentsFunc).toHaveBeenCalledTimes(4);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
@@ -154,9 +156,11 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
     const sp = new Statuspage(
       {
-        get: fnUsersFunc.mockResolvedValueOnce({
-          data: readTestResourceFile('users.json'),
-        }),
+        get: fnUsersFunc
+          .mockResolvedValueOnce({
+            data: readTestResourceFile('users.json'),
+          })
+          .mockResolvedValue({data: []}),
       } as any,
       new Date('1970-01-01T00:00:00-0000'),
       logger
@@ -172,7 +176,7 @@ describe('index', () => {
       users.push(user);
     }
 
-    expect(fnUsersFunc).toHaveBeenCalledTimes(1);
+    expect(fnUsersFunc).toHaveBeenCalledTimes(2);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 });

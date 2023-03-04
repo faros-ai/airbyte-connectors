@@ -5,12 +5,14 @@ import {VError} from 'verror';
 import {Incident, Page, User} from './types';
 
 const BASE_URL = 'https://api.statuspage.io/v1/';
+const DEFAULT_PAGE_SIZE = 100;
 
 export interface StatuspageConfig {
   readonly api_key: string;
   readonly cutoff_days: number;
   readonly org_id?: string;
   readonly page_ids?: ReadonlyArray<string>;
+  readonly page_size?: number;
 }
 
 export class Statuspage {
@@ -19,7 +21,8 @@ export class Statuspage {
   constructor(
     private readonly api: AxiosInstance,
     private readonly startDate: Date,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly pageSize: number = DEFAULT_PAGE_SIZE
   ) {}
 
   static instance(config: StatuspageConfig, logger: AirbyteLogger): Statuspage {
@@ -41,7 +44,12 @@ export class Statuspage {
     });
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Statuspage.statuspage = new Statuspage(httpClient, startDate, logger);
+    Statuspage.statuspage = new Statuspage(
+      httpClient,
+      startDate,
+      logger,
+      config.page_size
+    );
     return Statuspage.statuspage;
   }
 
@@ -63,16 +71,38 @@ export class Statuspage {
     }
   }
 
+  private async *paginate<T>(
+    resource: string,
+    pageSizeParam: string
+  ): AsyncGenerator<T> {
+    let page = 1;
+    let morePages: boolean;
+    do {
+      const params = new URLSearchParams({
+        page: `${page}`,
+        [pageSizeParam]: `${this.pageSize}`,
+      });
+      const response: AxiosResponse<T[]> = await this.api.get(
+        `${resource}?${params}`
+      );
+      for (const item of response.data) {
+        yield item;
+      }
+      page++;
+      morePages = response.data.length > 0;
+    } while (morePages);
+  }
+
   async *getIncidents(
     pageId: string,
     lastUpdatedAt?: Date
   ): AsyncGenerator<Incident> {
     const startTime =
       lastUpdatedAt > this.startDate ? lastUpdatedAt : this.startDate;
-    const response: AxiosResponse<Incident[]> = await this.api.get(
-      `/pages/${pageId}/incidents`
-    );
-    for (const incident of response.data) {
+    for await (const incident of this.paginate<Incident>(
+      `/pages/${pageId}/incidents`,
+      'limit'
+    )) {
       if (new Date(incident.updated_at ?? 0) > startTime) {
         yield incident;
       }
@@ -80,6 +110,7 @@ export class Statuspage {
   }
 
   async *getPages(pageIds?: ReadonlyArray<string>): AsyncGenerator<Page> {
+    // this API does not paginated results
     const response: AxiosResponse<Page[]> = await this.api.get('/pages');
     for (const page of response.data) {
       if (pageIds && pageIds.length > 0 && !pageIds.includes(page.id)) {
@@ -91,10 +122,10 @@ export class Statuspage {
 
   async *getUsers(orgId?: string): AsyncGenerator<User> {
     if (orgId) {
-      const response: AxiosResponse<User[]> = await this.api.get(
-        `/organizations/${orgId}/users`
-      );
-      for (const user of response.data) {
+      for await (const user of this.paginate<User>(
+        `/organizations/${orgId}/users`,
+        'per_page'
+      )) {
         yield user;
       }
     } else {

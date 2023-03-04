@@ -35,6 +35,14 @@
         "type": "string",
         "title": "Organization ID",
         "description": "Statuspage Organization ID. Required to fetch Statuspage users."
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of items to fetch per Statuspage API call",
+        "default": 100,
+        "minimum": 1,
+        "maximum": 100
       }
     }
   }
