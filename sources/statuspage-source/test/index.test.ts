@@ -88,6 +88,28 @@ describe('index', () => {
       false,
       new VError('api_key must not be an empty string'),
     ]);
+    await expect(
+      source.checkConnection({
+        ...sourceConfig,
+        api_key: 'key',
+        cutoff_days: null,
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError('cutoff_days must be an integer greater than 0'),
+    ]);
+    await expect(
+      source.checkConnection({...sourceConfig, api_key: 'key', max_retries: -1})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('max_retries must be an integer greater than 0'),
+    ]);
+    await expect(
+      source.checkConnection({...sourceConfig, api_key: 'key', page_size: 1.5})
+    ).resolves.toStrictEqual([
+      false,
+      new VError('page_size must be an integer between 1 and 100'),
+    ]);
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
@@ -103,7 +125,9 @@ describe('index', () => {
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
-        logger
+        logger,
+        3,
+        1
       );
     });
     const source = new sut.StatuspageSource(logger);
@@ -156,11 +180,9 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
     const sp = new Statuspage(
       {
-        get: fnUsersFunc
-          .mockResolvedValueOnce({
-            data: readTestResourceFile('users.json'),
-          })
-          .mockResolvedValue({data: []}),
+        get: fnUsersFunc.mockResolvedValueOnce({
+          data: readTestResourceFile('users.json'),
+        }),
       } as any,
       new Date('1970-01-01T00:00:00-0000'),
       logger
@@ -176,7 +198,7 @@ describe('index', () => {
       users.push(user);
     }
 
-    expect(fnUsersFunc).toHaveBeenCalledTimes(2);
+    expect(fnUsersFunc).toHaveBeenCalledTimes(1);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 });

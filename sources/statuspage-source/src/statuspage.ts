@@ -1,12 +1,13 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {Incident, Page, User} from './types';
 
 const BASE_URL = 'https://api.statuspage.io/v1/';
 const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 100;
 const RATE_LIMIT_INTERVAL_SECS = 60;
 
 export interface StatuspageConfig {
@@ -26,7 +27,7 @@ export class Statuspage {
     private readonly startDate: Date,
     private readonly logger: AirbyteLogger,
     private readonly maxRetries: number = DEFAULT_MAX_RETRIES,
-    private readonly pageSize: number = DEFAULT_PAGE_SIZE
+    private readonly pageSize: number = MAX_PAGE_SIZE
   ) {}
 
   static instance(config: StatuspageConfig, logger: AirbyteLogger): Statuspage {
@@ -35,13 +36,23 @@ export class Statuspage {
     if (!config.api_key) {
       throw new VError('api_key must not be an empty string');
     }
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
+    if (!(Number.isInteger(config.cutoff_days) && config.cutoff_days > 0)) {
+      throw new VError('cutoff_days must be an integer greater than 0');
+    }
+    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    if (!(Number.isInteger(maxRetries) && maxRetries > 0)) {
+      throw new VError(`max_retries must be an integer greater than 0`);
+    }
+    const pageSize = config.page_size ?? MAX_PAGE_SIZE;
+    if (!(Number.isInteger(pageSize) && pageSize >= 1 && pageSize <= 100)) {
+      throw new VError(
+        `page_size must be an integer between 1 and ${MAX_PAGE_SIZE}`
+      );
     }
     const httpClient = axios.create({
       baseURL: BASE_URL,
-      timeout: 5000, // default is `0` (no timeout)
-      maxContentLength: 20000, //default is 2000 bytes
+      timeout: 30000, // default is `0` (no timeout)
+      maxContentLength: 200000, //default is 2000 bytes
       headers: {
         Authorization: `OAuth ${config.api_key}`,
       },
@@ -53,7 +64,7 @@ export class Statuspage {
       startDate,
       logger,
       config.max_retries,
-      config.page_size
+      pageSize
     );
     return Statuspage.statuspage;
   }
@@ -121,7 +132,7 @@ export class Statuspage {
         yield item;
       }
       page++;
-      morePages = response.data.length > 0;
+      morePages = response.data.length === this.pageSize;
     } while (morePages);
   }
 
@@ -141,15 +152,18 @@ export class Statuspage {
     }
   }
 
-  async *getPages(pageIds?: ReadonlyArray<string>): AsyncGenerator<Page> {
-    // this API does not paginated results
+  @Memoize()
+  async getPages(pageIds?: ReadonlyArray<string>): Promise<Page[]> {
+    // this API does not paginate results
     const response: AxiosResponse<Page[]> = await this.rateLimitGet('/pages');
+    const results = [];
     for (const page of response.data) {
       if (pageIds && pageIds.length > 0 && !pageIds.includes(page.id)) {
         continue;
       }
-      yield page;
+      results.push(page);
     }
+    return results;
   }
 
   async *getUsers(orgId?: string): AsyncGenerator<User> {

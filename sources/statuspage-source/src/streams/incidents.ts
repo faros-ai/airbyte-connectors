@@ -24,7 +24,7 @@ export class Incidents extends StatuspageStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for await (const page of this.statuspage.getPages(this.cfg.page_ids)) {
+    for (const page of await this.statuspage.getPages(this.cfg.page_ids)) {
       yield {pageId: page.id};
     }
   }
@@ -42,12 +42,7 @@ export class Incidents extends StatuspageStreamBase {
       ? new Date(state?.lastUpdatedAt)
       : undefined;
 
-    for await (const incident of this.statuspage.getIncidents(
-      pageId,
-      lastUpdatedAt
-    )) {
-      yield incident;
-    }
+    yield* this.statuspage.getIncidents(pageId, lastUpdatedAt);
   }
 
   getUpdatedState(

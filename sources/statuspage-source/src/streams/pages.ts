@@ -14,6 +14,8 @@ export class Pages extends StatuspageStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Page> {
-    yield* this.statuspage.getPages(this.cfg.page_ids);
+    for (const page of await this.statuspage.getPages(this.cfg.page_ids)) {
+      yield page;
+    }
   }
 }
