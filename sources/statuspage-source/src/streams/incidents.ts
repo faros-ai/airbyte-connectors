@@ -1,65 +1,67 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Incident, Statuspage, StatuspageConfig} from '../statuspage';
+import {Incident} from '../types';
+import {StatuspageStreamBase} from './common';
 
-interface IncidentsState {
-  cutoff: string;
+interface StreamSlice {
+  pageId: string;
 }
 
-export class Incidents extends AirbyteStreamBase {
-  constructor(
-    private readonly config: StatuspageConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
+type IncidentState = Dictionary<{lastUpdatedAt?: string}>;
 
+export class Incidents extends StatuspageStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/incidents.json');
   }
+
   get primaryKey(): StreamKey {
     return 'id';
   }
+
   get cursorField(): string | string[] {
     return 'updated_at';
+  }
+
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const page of await this.statuspage.getPages(this.cfg.page_ids)) {
+      yield {pageId: page.id};
+    }
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: IncidentsState
+    streamSlice?: StreamSlice,
+    streamState?: IncidentState
   ): AsyncGenerator<Incident> {
-    const statuspage = Statuspage.instance(this.config, this.logger);
-    const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
-    const cutoff: Date = state?.cutoff ? new Date(state?.cutoff) : undefined;
+    const pageId = streamSlice.pageId;
+    const state =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.[pageId] : undefined;
+    const lastUpdatedAt: Date = state?.lastUpdatedAt
+      ? new Date(state?.lastUpdatedAt)
+      : undefined;
 
-    for (const incident of await statuspage.getIncidents(cutoff)) {
-      yield incident;
-    }
+    yield* this.statuspage.getIncidents(pageId, lastUpdatedAt);
   }
 
   getUpdatedState(
-    currentStreamState: IncidentsState,
+    currentStreamState: IncidentState,
     latestRecord: Incident
-  ): IncidentsState {
-    const lastUpdatedAt =
-      new Date(latestRecord.resolved_at ?? 0) >
-      new Date(latestRecord.updated_at)
-        ? latestRecord.resolved_at
-        : latestRecord.updated_at;
+  ): IncidentState {
+    const pageId = latestRecord.page_id;
+    const currentPageState = currentStreamState[pageId] ?? {};
+    const newPageState = {
+      lastUpdatedAt:
+        new Date(latestRecord.updated_at ?? 0) >
+        new Date(currentPageState.lastUpdatedAt ?? 0)
+          ? latestRecord.updated_at
+          : currentPageState.lastUpdatedAt,
+    };
 
     return {
-      cutoff:
-        new Date(lastUpdatedAt) > new Date(currentStreamState?.cutoff ?? 0)
-          ? lastUpdatedAt
-          : currentStreamState?.cutoff,
+      ...currentStreamState,
+      [pageId]: newPageState,
     };
   }
 }

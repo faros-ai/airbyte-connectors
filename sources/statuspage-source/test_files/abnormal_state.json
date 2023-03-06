@@ -1,11 +1,7 @@
 {
   "incidents": {
-    "cutoff": "2025-01-01T08:00:00.000Z"
-  },
-  "incident_updates": {
-    "cutoff": "2025-01-01T08:00:00.000Z"
-  },
-  "users": {
-    "cutoff": "2025-01-01T08:00:00.000Z"
+    "mz1ms2kfwq1s": {
+      "lastUpdatedAt": "2030-03-03T20:34:17.481Z"
+    }
   }
 }

@@ -38,7 +38,7 @@ describe('statuspage', () => {
 
     const processedByStream = {
       incidents: 3,
-      incident_updates: 10,
+      pages: 1,
       users: 3,
     };
     const processed = _(processedByStream)

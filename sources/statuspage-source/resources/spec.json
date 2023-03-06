@@ -4,13 +4,19 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Statuspage Spec",
     "type": "object",
-    "required": ["page_id", "api_key", "cutoff_days"],
+    "required": [
+      "api_key",
+      "cutoff_days"
+    ],
     "additionalProperties": true,
     "properties": {
-      "page_id": {
-        "type": "string",
-        "title": "Page ID",
-        "description": "Statuspage Page ID",
+      "page_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Page IDs",
+        "description": "List of Statuspage Page IDs. If empty, all pages will be fetched.",
         "airbyte_secret": true
       },
       "api_key": {
@@ -23,12 +29,26 @@
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
-        "description": "Only fetch data updated after cutoff"
+        "description": "Only fetch incidents updated after cutoff"
       },
       "org_id": {
         "type": "string",
         "title": "Organization ID",
-        "description": "Statuspage Organization ID"
+        "description": "Statuspage Organization ID. Required to fetch Statuspage users."
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of items to fetch per Statuspage API call",
+        "default": 100,
+        "minimum": 1,
+        "maximum": 100
+      },
+      "max_retries": {
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to Statuspage API",
+        "default": 3
       }
     }
   }

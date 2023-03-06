@@ -5,6 +5,8 @@ import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   ComponentStatus,
+  IncidentEventType,
+  IncidentEventTypeCategory,
   IncidentPriority,
   IncidentPriorityCategory,
   IncidentSeverity,
@@ -73,6 +75,19 @@ export class Incidents extends StatuspageConverter {
         status: this.getIncidentStatus(incident.status),
       },
     });
+
+    for (const update of incident.incident_updates) {
+      res.push({
+        model: 'ims_IncidentEvent',
+        record: {
+          uid: update.id,
+          type: this.eventType(update.status),
+          createdAt: Utils.toDate(update.created_at),
+          detail: update.body,
+          incident: {uid: update.incident_id, source},
+        },
+      });
+    }
 
     if (incident.components) {
       const applicationMapping = this.applicationMapping(ctx);
@@ -150,6 +165,22 @@ export class Incidents extends StatuspageConverter {
         return {category: IncidentStatusCategory.Resolved, detail};
       default:
         return {category: IncidentStatusCategory.Custom, detail};
+    }
+  }
+
+  private eventType(updateStatus: StatuspageIncidentStatus): IncidentEventType {
+    const detail: string = updateStatus;
+    switch (updateStatus) {
+      case StatuspageIncidentStatus.Investigating:
+        return {category: IncidentEventTypeCategory.Created, detail};
+      case StatuspageIncidentStatus.Identified:
+        return {category: IncidentEventTypeCategory.Acknowledged, detail};
+      case StatuspageIncidentStatus.Resolved:
+        return {category: IncidentEventTypeCategory.Resolved, detail};
+      case StatuspageIncidentStatus.Monitoring:
+      case StatuspageIncidentStatus.Postmortem:
+      default:
+        return {category: IncidentEventTypeCategory.Custom, detail};
     }
   }
 }
