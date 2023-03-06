@@ -5,6 +5,7 @@ import {VError} from 'verror';
 import {User, UserResponse, WorkItemResponse} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
+const MAX_BATCH_SIZE = 200;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 
 export interface AzureWorkitemsConfig {
@@ -128,7 +129,7 @@ export class AzureWorkitems {
     const ids2: string[] = [];
     const userStories = [];
     for (const id of ids) {
-      if (ids2.length == 200) {
+      if (ids2.length == MAX_BATCH_SIZE) {
         userStories.push(
           await this.get<WorkItemResponse>(
             `wit/workitems?ids=${ids2}&$expand=all`
@@ -164,7 +165,7 @@ export class AzureWorkitems {
     const ids2: string[] = [];
     const workitems = [];
     for (const id of ids) {
-      if (ids2.length == 200) {
+      if (ids2.length == MAX_BATCH_SIZE) {
         workitems.push(
           await this.get<WorkItemResponse>(
             `wit/workitems?ids=${ids2}&$expand=all`
