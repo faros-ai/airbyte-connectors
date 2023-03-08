@@ -113,7 +113,7 @@ describe('index', () => {
     for await (const logEntry of incidentLogEntriesIter) {
       incidentLogEntries.push(logEntry);
     }
-    expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(1);
+    expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(90);
     expect(incidentLogEntries).toStrictEqual(
       readTestResourceFile('incidentLogEntries.json')
     );

@@ -272,7 +272,11 @@ export class Pagerduty {
         params.set('service_ids[]', service.id);
       }
 
-      const diff = since.diff(until, 'days');
+      const diff = until.diff(since, 'days');
+      this.logger.debug(
+        `Fetching Incidents in range ${since} - ${until}. Total of ${diff.days} days.`
+      );
+
       for (let d = 0; d < diff.days; d++) {
         params.set('since', until.minus({days: d + 1}).toISO());
         params.set('until', until.minus({days: d}).toISO());
@@ -296,7 +300,11 @@ export class Pagerduty {
       time_zone: 'UTC',
     });
 
-    const diff = since.diff(until, 'days');
+    const diff = until.diff(since, 'days');
+    this.logger.debug(
+      `Fetching Log Entries in range ${since} - ${until}. Total of ${diff.days} days.`
+    );
+
     for (let d = 0; d < diff.days; d++) {
       params.set('since', until.minus({days: d + 1}).toISO());
       params.set('until', until.minus({days: d}).toISO());
