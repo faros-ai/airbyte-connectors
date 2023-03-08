@@ -1,6 +1,7 @@
 import {api} from '@pagerduty/pdjs';
 import {PartialCall} from '@pagerduty/pdjs/build/src/api';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -150,6 +151,18 @@ export class Pagerduty {
         errorMessage = wrapError.message;
       }
       errorMessage = `Error from ${url}. Message: ${errorMessage}`;
+
+      // Deal with PagerDuty 10000 records response limit
+      if (
+        errorMessage.includes('Bad Request') &&
+        errorMessage.includes('Offset must be less than')
+      ) {
+        this.logger.warn(
+          `Reached PagerDuty API response size limit of 10000 records. Error: ${errorMessage}`
+        );
+        return undefined;
+      }
+
       if (++retries > this.maxRetries) {
         throw new VError('%s', errorMessage);
       } else {
@@ -224,19 +237,12 @@ export class Pagerduty {
   }
 
   async *getIncidents(
-    since?: string,
+    since: DateTime,
+    until: DateTime,
     limit = this.pageSize,
     exclude_services: ReadonlyArray<string> = []
   ): AsyncGenerator<Incident> {
     const params = new URLSearchParams({limit: `${limit}`, time_zone: 'UTC'});
-    let until: Date;
-    if (since) {
-      until = new Date(since);
-      until.setMonth(new Date(since).getMonth() + 5); //default time window is 1 month, setting to max
-      until.setHours(0, 0, 0); //rounding down to whole day
-      params.append('since', since);
-      params.append('until', until.toISOString());
-    }
 
     const services: (Service | undefined)[] = [];
     if (exclude_services?.length > 0) {
@@ -265,15 +271,22 @@ export class Pagerduty {
         );
         params.set('service_ids[]', service.id);
       }
-      const resource = `/incidents?${params}`;
-      this.logger.debug(`Fetching Incidents at ${resource}`);
-      yield* this.paginate<Incident>(() => this.client.get(resource));
+
+      const diff = since.diff(until, 'days');
+      for (let d = 0; d < diff.days; d++) {
+        params.set('since', until.minus({days: d + 1}).toISO());
+        params.set('until', until.minus({days: d}).toISO());
+
+        const resource = `/incidents?${params}`;
+        this.logger.debug(`Fetching Incidents at ${resource}`);
+        yield* this.paginate<Incident>(() => this.client.get(resource));
+      }
     }
   }
 
   async *getIncidentLogEntries(
-    since?: string,
-    until?: Date,
+    since: DateTime,
+    until: DateTime,
     limit: number = this.pageSize,
     isOverview = DEFAULT_OVERVIEW
   ): AsyncGenerator<LogEntry> {
@@ -282,16 +295,16 @@ export class Pagerduty {
       is_overview: `${isOverview}`,
       time_zone: 'UTC',
     });
-    if (since) {
-      params.append('since', since);
-    }
-    if (until) {
-      params.append('until', until.toISOString());
-    }
 
-    const resource = `/log_entries?${params}`;
-    this.logger.debug(`Fetching Log Entries at ${resource}`);
-    yield* this.paginate<LogEntry>(() => this.client.get(resource));
+    const diff = since.diff(until, 'days');
+    for (let d = 0; d < diff.days; d++) {
+      params.set('since', until.minus({days: d + 1}).toISO());
+      params.set('until', until.minus({days: d}).toISO());
+
+      const resource = `/log_entries?${params}`;
+      this.logger.debug(`Fetching Log Entries at ${resource}`);
+      yield* this.paginate<LogEntry>(() => this.client.get(resource));
+    }
   }
 
   async *getPrioritiesResource(): AsyncGenerator<Priority> {

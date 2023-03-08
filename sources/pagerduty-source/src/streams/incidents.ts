@@ -42,16 +42,17 @@ export class Incidents extends AirbyteStreamBase {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
 
     const now = DateTime.now();
-    const cutoffTimestamp = now
-      .minus({days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS})
-      .toJSDate();
-    const since =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastSynced ?? cutoffTimestamp.toISOString()
-        : undefined;
+    const lastSynced = streamState?.lastSynced;
+    const cutoffTimestamp = now.minus({
+      days: this.config.cutoff_days || DEFAULT_CUTOFF_DAYS,
+    });
+    const since = lastSynced
+      ? DateTime.fromJSDate(new Date(lastSynced))
+      : cutoffTimestamp;
 
     yield* pagerduty.getIncidents(
       since,
+      now,
       this.config.page_size,
       this.config.exclude_services
     );
