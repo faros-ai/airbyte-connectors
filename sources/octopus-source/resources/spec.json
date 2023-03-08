@@ -1,0 +1,33 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Octopus Spec",
+    "type": "object",
+    "required": ["apiKey", "apiUrl"],
+    "additionalProperties": true,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "title": "Octopus Api Key",
+        "airbyte_secret": true
+      },
+      "apiUrl": {
+        "type": "string",
+        "title": "Octopus Instance Url",
+        "examples": ["https://my-instance.octopus.app"]
+      },
+      "spaceNames": {
+        "type": "array",
+        "title": "Octopus Spaces to Sync.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "pageSize": {
+        "type": "number",
+        "title": "Page Size"
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "Id": "Spaces-1",
+    "Name": "Default",
+    "Slug": "default",
+    "Description": null,
+    "IsDefault": true,
+    "IsPrivate": false,
+    "TaskQueueStopped": false,
+    "SpaceManagersTeams": [
+      "teams-administrators",
+      "teams-managers",
+      "teams-spacemanagers-Spaces-1"
+    ],
+    "SpaceManagersTeamMembers": [],
+    "Icon": null,
+    "ExtensionSettings": [],
+    "LastModifiedOn": "0001-01-01T00:00:00.000+00:00",
+    "Links": {
+      "Self": "/api/spaces/Spaces-1",
+      "SpaceHome": "/api/Spaces-1",
+      "Web": "/app#/spaces/Spaces-1",
+      "Logo": "/api/spaces/Spaces-1/logo?cb=2023.2.1191-hotfix.1386",
+      "Search": "/api/spaces/Spaces-1/search"
+    }
+  },
+  {
+    "Id": "Spaces-2",
+    "Name": "Test",
+    "Slug": "test",
+    "Description": null,
+    "IsDefault": true,
+    "IsPrivate": false,
+    "TaskQueueStopped": false,
+    "SpaceManagersTeams": [
+      "teams-administrators",
+      "teams-managers",
+      "teams-spacemanagers-Spaces-2"
+    ],
+    "SpaceManagersTeamMembers": [],
+    "Icon": null,
+    "ExtensionSettings": [],
+    "LastModifiedOn": "0001-01-01T00:00:00.000+00:00",
+    "Links": {
+      "Self": "/api/spaces/Spaces-2",
+      "SpaceHome": "/api/Spaces-2",
+      "Web": "/app#/spaces/Spaces-2",
+      "Logo": "/api/spaces/Spaces-2/logo?cb=2023.2.1191-hotfix.1387",
+      "Search": "/api/spaces/Spaces-2/search"
+    }
+  }
+]

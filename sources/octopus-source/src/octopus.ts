@@ -1,0 +1,145 @@
+import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {VError} from 'verror';
+
+import {Artifact, Deployment, Release} from './models';
+import {OctopusClient} from './octopusClient';
+
+export interface OctopusConfig {
+  readonly apiKey: string;
+  readonly instanceUrl: string;
+  readonly spaceNames?: string[];
+  readonly pageSize?: number;
+  readonly maxRetries?: number;
+}
+
+/**
+ * Contains the logic of the octopus source
+ */
+export class Octopus {
+  private static inst: Octopus = null;
+  private spaces: Record<string, string> = {};
+
+  constructor(
+    private readonly client: OctopusClient,
+    private readonly logger: AirbyteLogger
+  ) {}
+
+  static async instance(
+    config: OctopusConfig,
+    logger: AirbyteLogger
+  ): Promise<Octopus> {
+    if (Octopus.inst) return Octopus.inst;
+    if (!config.apiKey) {
+      throw new VError('api key must be provided');
+    }
+    if (!config.instanceUrl) {
+      throw new VError('instance url must be provided');
+    }
+
+    const client = new OctopusClient({
+      instanceUrl: config.instanceUrl,
+      apiKey: config.apiKey,
+      pageSize: config.pageSize,
+      maxRetries: config.maxRetries,
+    });
+
+    Octopus.inst = new Octopus(client, logger);
+    await Octopus.inst.initialize(config.spaceNames);
+    return Octopus.inst;
+  }
+
+  /**
+   * Initialize by resolving provided Space names to ids.
+   * If no spaceNames are provided, all spaces will be included.
+   * @param spaceNames The Space names to resolve to ids
+   */
+  async initialize(spaceNames: string[] = []): Promise<void> {
+    this.logger.debug('Initializing Octopus');
+
+    const unresolvedNames =
+      spaceNames.length > 0 ? new Set(spaceNames) : undefined;
+    const resolvedNames = [];
+    for await (const space of this.client.listSpaces()) {
+      if (unresolvedNames?.has(space.Name)) {
+        this.spaces[space.Id] = space.Name;
+        resolvedNames.push(space.Name);
+        unresolvedNames.delete(space.Name);
+        if (unresolvedNames.size == 0) {
+          break;
+        }
+      } else if (!unresolvedNames) {
+        this.spaces[space.Id] = space.Name;
+        resolvedNames.push(space.Name);
+      }
+    }
+    if (unresolvedNames?.size > 0) {
+      const unresolvedNamesStr = Array.from(unresolvedNames.values()).join(
+        ', '
+      );
+      this.logger.warn(
+        `The following spaces could not be resolved: ${unresolvedNamesStr}`
+      );
+    }
+    if (resolvedNames.length > 0) {
+      this.logger.info(
+        `Octopus initialized to sync spaces: ${resolvedNames.join(', ')}`
+      );
+    }
+    if (resolvedNames.length == 0) {
+      throw new VError('No spaces could be resolved.');
+    }
+  }
+
+  // TODO: get this working
+  async checkConnection(): Promise<void> {
+    try {
+      const iter = this.client.listSpaces();
+      await iter.next();
+    } catch (err: any) {
+      throw new VError(err, 'Error verifying connection');
+    }
+  }
+
+  async *getDeployments(): AsyncGenerator<Deployment> {
+    for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      for await (const deployment of this.client.listDeployments(spaceId)) {
+        const environment = await this.client.getEnvironment(
+          spaceId,
+          deployment.EnvironmentId
+        );
+        const project = await this.client.getProject(
+          spaceId,
+          deployment.ProjectId
+        );
+        yield {
+          ...deployment,
+          SpaceName: spaceName,
+          ProjectName: project.Name,
+          EnvironmentName: environment.Name,
+        };
+      }
+    }
+  }
+
+  async *getReleases(): AsyncGenerator<Release> {
+    for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      for await (const release of this.client.listReleases(spaceId)) {
+        const project = await this.client.getProject(
+          spaceId,
+          release.ProjectId
+        );
+        yield {
+          ...release,
+          SpaceName: spaceName,
+          ProjectName: project.Name,
+        };
+      }
+    }
+  }
+
+  async *getArtifacts(): AsyncGenerator<Artifact> {
+    for (const spaceId of Object.keys(this.spaces)) {
+      yield* this.client.listArtifacts(spaceId);
+    }
+  }
+}

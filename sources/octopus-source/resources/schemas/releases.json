@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "spaceid": {
+      "type": "string"
+    },
+    "projectid": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number"
+    },
+    "channelid": {
+      "type": "string"
+    },
+    "releasenotes": {
+      "type": "string"
+    },
+    "ignorechannelrules": {
+      "type": "boolean"
+    },
+    "buildinformation": {
+      "type": "array"
+    },
+    "assembled": {
+      "type": "string"
+    },
+    "libraryvariablesetsnapshotids": {
+      "type": "array"
+    },
+    "selectedpackages": {
+      "type": "array"
+    },
+    "projectvariablesetsnapshotid": {
+      "type": "string"
+    },
+    "versioncontrolreference": {
+      "type": "string"
+    },
+    "Link": {
+      "type": "object"
+    }
+  }
+}
