@@ -86,16 +86,11 @@ describe('index', () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnIncidentLogEntriesList.mockImplementation(
-            async (path: string) => {
-              const isPathMatch = path.match(/^\/log_entries/);
-              if (isPathMatch) {
-                return {
-                  resource: readTestResourceFile('incidentLogEntries.json'),
-                };
-              }
-            }
-          ),
+          get: fnIncidentLogEntriesList
+            .mockResolvedValueOnce({
+              resource: readTestResourceFile('incidentLogEntries.json'),
+            })
+            .mockResolvedValue({resouce: []}),
         } as unknown as PartialCall,
         logger
       );
@@ -113,7 +108,7 @@ describe('index', () => {
     for await (const logEntry of incidentLogEntriesIter) {
       incidentLogEntries.push(logEntry);
     }
-    expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(1);
+    expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(90);
     expect(incidentLogEntries).toStrictEqual(
       readTestResourceFile('incidentLogEntries.json')
     );
@@ -125,14 +120,11 @@ describe('index', () => {
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
-          get: fnIncidentsList.mockImplementation(async (path: string) => {
-            const isPathMatch = path.match(/^\/incidents/);
-            if (isPathMatch) {
-              return {
-                resource: readTestResourceFile('incidents.json'),
-              };
-            }
-          }),
+          get: fnIncidentsList
+            .mockResolvedValueOnce({
+              resource: readTestResourceFile('incidents.json'),
+            })
+            .mockResolvedValue({resouce: []}),
         } as unknown as PartialCall,
         logger
       );
@@ -149,12 +141,13 @@ describe('index', () => {
       incidents.push(incident);
     }
 
-    expect(fnIncidentsList).toHaveBeenCalledTimes(1);
+    expect(fnIncidentsList).toHaveBeenCalledTimes(90);
     expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
   });
 
   test('streams - incidents, exclude services', async () => {
     const fnList = jest.fn();
+    let returnedIncidents = false;
 
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
@@ -166,6 +159,10 @@ describe('index', () => {
                 .split('&')
                 .filter((p) => p.startsWith('service_ids[]='))
                 .map((p) => p.split('=')[1]);
+              if (returnedIncidents) {
+                return {resource: []};
+              }
+              returnedIncidents = true;
               return {
                 resource: (
                   readTestResourceFile('incidents.json') as Incident[]
@@ -196,7 +193,7 @@ describe('index', () => {
       incidents.push(incident);
     }
 
-    expect(fnList).toHaveBeenCalledTimes(2);
+    expect(fnList).toHaveBeenCalledTimes(91); // list services once + 90 days
     expect(incidents).toStrictEqual(
       (readTestResourceFile('incidents.json') as Incident[]).filter(
         (i) => i.service.summary !== 'Service2'
