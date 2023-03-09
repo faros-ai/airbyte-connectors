@@ -5,7 +5,6 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {
-  Artifact,
   cleanProcess,
   DeploymentProcess,
   DeploymentProcessResponse,
@@ -73,10 +72,6 @@ export class OctopusClient {
 
   async *listDeployments(spaceId: string): AsyncGenerator<DeploymentResponse> {
     yield* this.paginate(`/${spaceId}/deployments`);
-  }
-
-  async *listArtifacts(spaceId: string): AsyncGenerator<Artifact> {
-    yield* this.paginate(`/${spaceId}/artifacts`);
   }
 
   async *listReleases(spaceId: string): AsyncGenerator<Release> {
