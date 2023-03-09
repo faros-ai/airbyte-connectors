@@ -7,24 +7,24 @@
     "required": ["apiKey", "apiUrl"],
     "additionalProperties": true,
     "properties": {
-      "apiKey": {
+      "api_key": {
         "type": "string",
         "title": "Octopus Api Key",
         "airbyte_secret": true
       },
-      "apiUrl": {
+      "instance_url": {
         "type": "string",
         "title": "Octopus Instance Url",
         "examples": ["https://my-instance.octopus.app"]
       },
-      "spaceNames": {
+      "space_names": {
         "type": "array",
         "title": "Octopus Spaces to Sync.",
         "items": {
           "type": "string"
         }
       },
-      "pageSize": {
+      "page_size": {
         "type": "number",
         "title": "Page Size"
       }

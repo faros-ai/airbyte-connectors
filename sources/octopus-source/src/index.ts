@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Octopus, OctopusConfig} from './octopus';
-import {Artifacts, Deployments, Releases} from './streams';
+import {Deployments, Releases} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {

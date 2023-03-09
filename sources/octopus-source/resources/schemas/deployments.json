@@ -63,11 +63,67 @@
     "Created": {
       "type": "string"
     },
-    "EnvironmentName": {
-      "type": "string"
-    },
-    "ProjectName": {
-      "type": "string"
+    "_extra": {
+      "SpaceName": {
+        "type": "string"
+      },
+      "ProjectName": {
+        "type": "string"
+      },
+      "EnvironmentName": {
+        "type": "string"
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "State": {
+            "type": "string"
+          },
+          "ErrorMessage": {
+            "type": "string"
+          },
+          "QueueTime": {
+            "type": "string"
+          },
+          "StartTime": {
+            "type": "string"
+          },
+          "CompletedTime": {
+            "type": "string"
+          }
+        }
+      },
+      "Process": {
+        "type": "object",
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string"
+              },
+              "Properties": {
+                "type": "object"
+              },
+              "Actions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {
+                      "type": "string"
+                    },
+                    "Properties": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

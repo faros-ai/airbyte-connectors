@@ -5,10 +5,10 @@ import {Artifact, Deployment, Release} from './models';
 import {OctopusClient} from './octopusClient';
 
 export interface OctopusConfig {
-  readonly apiKey: string;
-  readonly instanceUrl: string;
-  readonly spaceNames?: string[];
-  readonly pageSize?: number;
+  readonly api_key: string;
+  readonly instance_url: string;
+  readonly space_names?: string[];
+  readonly page_size?: number;
   readonly maxRetries?: number;
 }
 
@@ -29,22 +29,22 @@ export class Octopus {
     logger: AirbyteLogger
   ): Promise<Octopus> {
     if (Octopus.inst) return Octopus.inst;
-    if (!config.apiKey) {
+    if (!config.api_key) {
       throw new VError('api key must be provided');
     }
-    if (!config.instanceUrl) {
+    if (!config.instance_url) {
       throw new VError('instance url must be provided');
     }
 
     const client = new OctopusClient({
-      instanceUrl: config.instanceUrl,
-      apiKey: config.apiKey,
-      pageSize: config.pageSize,
+      instanceUrl: config.instance_url,
+      apiKey: config.api_key,
+      pageSize: config.page_size,
       maxRetries: config.maxRetries,
     });
 
     Octopus.inst = new Octopus(client, logger);
-    await Octopus.inst.initialize(config.spaceNames);
+    await Octopus.inst.initialize(config.space_names);
     return Octopus.inst;
   }
 
