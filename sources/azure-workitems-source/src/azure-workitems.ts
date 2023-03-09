@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {wrapApiError} from 'faros-airbyte-cdk';
+import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
 import {User, UserResponse, WorkItemResponse} from './models';
@@ -152,50 +153,33 @@ export class AzureWorkitems {
   }
 
   async *getWorkitems(): AsyncGenerator<any> {
-    const ids: string[] = [];
-    const promises: Promise<any>[] = [
-      this.getIdsFromAWorkItemType("'Task'"),
-      this.getIdsFromAWorkItemType("'User Story'"),
-      this.getIdsFromAWorkItemType("'BUG'"),
-      this.getIdsFromAWorkItemType("'Feature'"),
-      this.getIdsFromAWorkItemType("'Epic'"),
-      this.getIdsFromAWorkItemType("'Issue'"),
-      this.getIdsFromAWorkItemType("'Product Backlog Item'"),
-      this.getIdsFromAWorkItemType("'Requirement'"),
-    ];
+    const promises = [
+      "'Task'",
+      "'User Story'",
+      "'BUG'",
+      "'Feature'",
+      "'Epic'",
+      "'Issue'",
+      "'Product Backlog Item'",
+      "'Requirement'",
+    ].map((n) => this.getIdsFromAWorkItemType(n));
 
-    ids.push(...(await Promise.all(promises)));
-    const ids2: string[] = [];
-    const workitems = [];
-    for (const promise of ids) {
-      for (const id of promise) {
-        if (ids2.length == MAX_BATCH_SIZE) {
-          workitems.push(
-            await this.get<WorkItemResponse>(
-              `wit/workitems?ids=${ids2}&$expand=all`
-            )
-          );
-          ids2.splice(0);
-        }
-        ids2.push(id);
-      }
-    }
-    if (ids2.length > 0) {
-      workitems.push(
-        await this.get<WorkItemResponse>(
-          `wit/workitems?ids=${ids2}&$expand=all`
-        )
+    const results = await Promise.all(promises);
+    const ids: ReadonlyArray<string> = flatten(results);
+
+    for (const c of chunk(ids, MAX_BATCH_SIZE)) {
+      const res = await this.get<WorkItemResponse>(
+        `wit/workitems?ids=${c}&$expand=all`
       );
-    }
-
-    for (const array of workitems) {
-      for (const item of array?.data?.value ?? []) {
+      for (const item of res?.data?.value ?? []) {
         yield item;
       }
     }
   }
 
-  async getIdsFromAWorkItemType(workItemsType: string): Promise<string[]> {
+  async getIdsFromAWorkItemType(
+    workItemsType: string
+  ): Promise<ReadonlyArray<string>> {
     const data = {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
@@ -203,7 +187,7 @@ export class AzureWorkitems {
         ' order by [id] asc',
     };
     const list = await this.post<any>('wit/wiql', data);
-    const ids: string[] = [];
+    const ids = [];
     for (let i = 0; i < list.data.workItems.length; i++) {
       ids.push(list.data.workItems[i].id);
     }
