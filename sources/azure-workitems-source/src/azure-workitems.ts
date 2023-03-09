@@ -153,27 +153,32 @@ export class AzureWorkitems {
 
   async *getWorkitems(): AsyncGenerator<any> {
     const ids: string[] = [];
-    ids.push(...(await this.getIdsFromAWorkItemType("'Task'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'User Story'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'BUG'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'Feature'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'Epic'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'Issue'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'Product Backlog Item'")));
-    ids.push(...(await this.getIdsFromAWorkItemType("'Requirement'")));
+    const promises: Promise<any>[] = [
+      this.getIdsFromAWorkItemType("'Task'"),
+      this.getIdsFromAWorkItemType("'User Story'"),
+      this.getIdsFromAWorkItemType("'BUG'"),
+      this.getIdsFromAWorkItemType("'Feature'"),
+      this.getIdsFromAWorkItemType("'Epic'"),
+      this.getIdsFromAWorkItemType("'Issue'"),
+      this.getIdsFromAWorkItemType("'Product Backlog Item'"),
+      this.getIdsFromAWorkItemType("'Requirement'"),
+    ];
 
+    ids.push(...(await Promise.all(promises)));
     const ids2: string[] = [];
     const workitems = [];
-    for (const id of ids) {
-      if (ids2.length == MAX_BATCH_SIZE) {
-        workitems.push(
-          await this.get<WorkItemResponse>(
-            `wit/workitems?ids=${ids2}&$expand=all`
-          )
-        );
-        ids2.splice(0);
+    for (const promise of ids) {
+      for (const id of promise) {
+        if (ids2.length == MAX_BATCH_SIZE) {
+          workitems.push(
+            await this.get<WorkItemResponse>(
+              `wit/workitems?ids=${ids2}&$expand=all`
+            )
+          );
+          ids2.splice(0);
+        }
+        ids2.push(id);
       }
-      ids2.push(id);
     }
     if (ids2.length > 0) {
       workitems.push(
