@@ -35,7 +35,7 @@
     "@octopusdeploy/api-client": "^3.0.6",
     "typescript-memoize": "^1.1.0",
     "commander": "^9.3.0",
-    "faros-airbyte-cdk": "0.4.81",
+    "faros-airbyte-cdk": "0.0.1",
     "verror": "^1.10.1"
   },
   "jest": {
