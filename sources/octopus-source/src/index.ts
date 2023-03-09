@@ -33,7 +33,6 @@ export class OctopusSource extends AirbyteSourceBase<OctopusConfig> {
     return [
       new Deployments(config, this.logger),
       new Releases(config, this.logger),
-      new Artifacts(config, this.logger),
     ];
   }
 }
