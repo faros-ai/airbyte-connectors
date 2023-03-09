@@ -16,7 +16,8 @@ import {AxiosResponse} from 'axios';
 
 /**
  * Only some of the needed models are available from the Octopus api-client,
- * the ones that are missing are added here.
+ * the ones that are missing are added here. Some are augmented with additional
+ * information that is needed along with the result returned from Octopus.
  */
 
 export type Space = OctopusSpace;

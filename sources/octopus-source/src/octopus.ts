@@ -9,7 +9,7 @@ export interface OctopusConfig {
   readonly instance_url: string;
   readonly space_names?: string[];
   readonly page_size?: number;
-  readonly maxRetries?: number;
+  readonly max_retries?: number;
 }
 
 /**
@@ -40,7 +40,7 @@ export class Octopus {
       instanceUrl: config.instance_url,
       apiKey: config.api_key,
       pageSize: config.page_size,
-      maxRetries: config.maxRetries,
+      maxRetries: config.max_retries,
     });
 
     Octopus.inst = new Octopus(client, logger);
@@ -143,12 +143,6 @@ export class Octopus {
           },
         };
       }
-    }
-  }
-
-  async *getArtifacts(): AsyncGenerator<Artifact> {
-    for (const spaceId of Object.keys(this.spaces)) {
-      yield* this.client.listArtifacts(spaceId);
     }
   }
 }
