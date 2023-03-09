@@ -24,8 +24,12 @@ export class OctopusSource extends AirbyteSourceBase<OctopusConfig> {
   }
   async checkConnection(config: OctopusConfig): Promise<[boolean, VError]> {
     const octopus = await Octopus.instance(config, this.logger);
-    await octopus.checkConnection();
-    return;
+    try {
+      await octopus.checkConnection();
+    } catch (error: any) {
+      return [false, error];
+    }
+    return [true, undefined];
   }
   streams(config: OctopusConfig): AirbyteStreamBase[] {
     return [

@@ -6,13 +6,10 @@ import {VError} from 'verror';
 
 import {
   Artifact,
-  DeploymentAction,
-  DeploymentActionResponse,
+  cleanProcess,
   DeploymentProcess,
   DeploymentProcessResponse,
   DeploymentResponse,
-  DeploymentStep,
-  DeploymentStepResponse,
   Environment,
   PagedResponse,
   PagingParams,
@@ -98,8 +95,7 @@ export class OctopusClient {
     const process = await this.get<DeploymentProcessResponse>(
       `projects/${projectId}/deploymentprocesses`
     );
-
-    return this.cleanProcess(process);
+    return cleanProcess(process);
   }
 
   @Memoize((id) => id)
@@ -144,58 +140,5 @@ export class OctopusClient {
       const errorMessage = wrapApiError(err).message;
       throw new VError(errorMessage);
     }
-  }
-
-  private cleanProcess(process: DeploymentProcessResponse): DeploymentProcess {
-    return {Steps: this.cleanSteps(process.Steps)};
-  }
-
-  private cleanSteps(steps: DeploymentStepResponse[]): DeploymentStep[] {
-    const cleanSteps = [];
-    for (const step of steps) {
-      const cleanStep = {
-        Name: step.Name,
-        Properties: {},
-        Actions: [],
-      };
-
-      if (step.Properties) {
-        const cleanProperties = Object.entries(step.Properties).filter(
-          ([key]) => this.nonOctopusProp(key)
-        );
-        for (const [key, val] of cleanProperties) {
-          cleanStep.Properties[key] = val;
-        }
-      }
-
-      for (const action of step.Actions) {
-        cleanStep.Actions.push(this.cleanAction(action));
-      }
-
-      cleanSteps.push(cleanStep);
-    }
-    return cleanSteps;
-  }
-
-  private cleanAction(action: DeploymentActionResponse): DeploymentAction {
-    const cleanAction = {
-      Name: action.Name,
-      Properties: {},
-    };
-
-    if (action.Properties) {
-      const cleanProperties = Object.entries(action.Properties).filter(
-        ([key]) => this.nonOctopusProp(key)
-      );
-      for (const [key, val] of cleanProperties) {
-        cleanAction.Properties[key] = val;
-      }
-    }
-
-    return cleanAction;
-  }
-
-  private nonOctopusProp(prop: string): boolean {
-    return !new RegExp(/^Octopus.*$/).test(prop);
   }
 }

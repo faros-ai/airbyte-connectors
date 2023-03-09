@@ -19,12 +19,16 @@ import {AxiosResponse} from 'axios';
  * the ones that are missing are added here. Some are augmented with additional
  * information that is needed along with the result returned from Octopus.
  */
-
-export type Space = OctopusSpace;
-
-export type Project = OctopusProject;
-
 export type DeploymentResponse = OctopusDeployment;
+export type DeploymentProcessResponse = OctopusDeploymentProcess;
+export type DeploymentStepResponse = OctopusDeploymentStep;
+export type DeploymentActionResponse = OctopusDeploymentAction;
+export type Environment = DeploymentEnvironment;
+export type PagedResponse<T> = AxiosResponse<ResourceCollection<T>>;
+export type PagingParams = ListArgs;
+export type Project = OctopusProject;
+export type Space = OctopusSpace;
+export type Task = ServerTask;
 
 export interface Deployment extends OctopusDeployment {
   readonly _extra: {
@@ -42,30 +46,20 @@ export interface Deployment extends OctopusDeployment {
   };
 }
 
-export type DeploymentProcessResponse = OctopusDeploymentProcess;
-export type DeploymentStepResponse = OctopusDeploymentStep;
-export type DeploymentActionResponse = OctopusDeploymentAction;
-
 export interface DeploymentProcess {
   Steps: DeploymentStep[];
 }
 
-export interface DeploymentStep {
+interface DeploymentStep {
   Name: string;
   Properties: ActionProperties;
   Actions: DeploymentAction[];
 }
 
-export interface DeploymentAction {
+interface DeploymentAction {
   Name: string;
   Properties: ActionProperties;
 }
-
-export interface Artifact {
-  readonly Id: number;
-}
-
-export type Environment = DeploymentEnvironment;
 
 export interface Release {
   readonly Id: string;
@@ -91,7 +85,57 @@ export interface Release {
   };
 }
 
-export type Task = ServerTask;
+export function cleanProcess(
+  process: DeploymentProcessResponse
+): DeploymentProcess {
+  return {Steps: cleanSteps(process.Steps)};
+}
 
-export type PagedResponse<T> = AxiosResponse<ResourceCollection<T>>;
-export type PagingParams = ListArgs;
+function cleanSteps(steps: DeploymentStepResponse[]): DeploymentStep[] {
+  const cleanSteps = [];
+  for (const step of steps) {
+    const cleanStep = {
+      Name: step.Name,
+      Properties: {},
+      Actions: [],
+    };
+
+    if (step.Properties) {
+      const cleanProperties = Object.entries(step.Properties).filter(([key]) =>
+        nonOctopusProp(key)
+      );
+      for (const [key, val] of cleanProperties) {
+        cleanStep.Properties[key] = val;
+      }
+    }
+
+    for (const action of step.Actions) {
+      cleanStep.Actions.push(cleanAction(action));
+    }
+
+    cleanSteps.push(cleanStep);
+  }
+  return cleanSteps;
+}
+
+function cleanAction(action: DeploymentActionResponse): DeploymentAction {
+  const cleanAction = {
+    Name: action.Name,
+    Properties: {},
+  };
+
+  if (action.Properties) {
+    const cleanProperties = Object.entries(action.Properties).filter(([key]) =>
+      nonOctopusProp(key)
+    );
+    for (const [key, val] of cleanProperties) {
+      cleanAction.Properties[key] = val;
+    }
+  }
+
+  return cleanAction;
+}
+
+function nonOctopusProp(prop: string): boolean {
+  return !new RegExp(/^Octopus.*$/).test(prop);
+}

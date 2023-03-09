@@ -70,7 +70,12 @@ describe('index', () => {
     );
   });
 
-  // TODO: Test check connection
+  test('check connection', async () => {
+    const source = new sut.OctopusSource(logger);
+    await expect(
+      source.checkConnection({api_key: 'key', instance_url: 'url'})
+    ).resolves.toStrictEqual([true, undefined]);
+  });
 
   test('streams - deployments, use full_refresh sync mode', async () => {
     mockListDeployments.mockReturnValue(

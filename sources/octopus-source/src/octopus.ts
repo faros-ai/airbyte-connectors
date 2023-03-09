@@ -1,7 +1,7 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
-import {Artifact, Deployment, Release} from './models';
+import {Deployment, Release} from './models';
 import {OctopusClient} from './octopusClient';
 
 export interface OctopusConfig {
@@ -90,7 +90,6 @@ export class Octopus {
     }
   }
 
-  // TODO: get this working
   async checkConnection(): Promise<void> {
     try {
       const iter = this.client.listSpaces();
