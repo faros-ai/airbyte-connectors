@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "subjectKind": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "principalName": {
+      "type": "string"
+    },
+    "mailAddress": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    },
+    "originId": {
+      "type": ["string", "null"]
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "descriptor": {
+      "type": "string"
+    },
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "memberships": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "membershipState": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "storageKey": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "avatar": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

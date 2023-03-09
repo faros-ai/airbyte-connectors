@@ -1,0 +1,352 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "rev": {
+      "type": "integer"
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "System.Id": {
+          "type": "integer"
+        },
+        "System.AreaId": {
+          "type": "integer"
+        },
+        "System.AreaPath": {
+          "type": "string"
+        },
+        "System.TeamProject": {
+          "type": "string"
+        },
+        "System.NodeName": {
+          "type": "string"
+        },
+        "System.AreaLevel1": {
+          "type": "string"
+        },
+        "System.Rev": {
+          "type": "integer"
+        },
+        "System.AuthorizedDate": {
+          "type": "string"
+        },
+        "System.RevisedDate": {
+          "type": "string"
+        },
+        "System.IterationId": {
+          "type": "integer"
+        },
+        "System.IterationPath": {
+          "type": "string"
+        },
+        "System.IterationLevel1": {
+          "type": "string"
+        },
+        "System.IterationLevel2": {
+          "type": "string"
+        },
+        "System.IterationLevel3": {
+          "type": "string"
+        },
+        "System.WorkItemType": {
+          "type": "string"
+        },
+        "System.State": {
+          "type": "string"
+        },
+        "System.Reason": {
+          "type": "string"
+        },
+        "System.AssignedTo": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "System.CreatedDate": {
+          "type": "string"
+        },
+        "System.CreatedBy": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "System.ChangedDate": {
+          "type": "string"
+        },
+        "System.ChangedBy": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "System.AuthorizedAs": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "System.PersonId": {
+          "type": "integer"
+        },
+        "System.Watermark": {
+          "type": "integer"
+        },
+        "System.CommentCount": {
+          "type": "integer"
+        },
+        "System.Title": {
+          "type": "string"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "type": "string"
+        },
+        "Microsoft.VSTS.Common.ActivatedDate": {
+          "type": "string"
+        },
+        "Microsoft.VSTS.Common.ActivatedBy": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "Microsoft.VSTS.Common.ClosedDate": {
+          "type": "string"
+        },
+        "Microsoft.VSTS.Common.ClosedBy": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "uniqueName": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "descriptor": {
+              "type": "string"
+            }
+          }
+        },
+        "Microsoft.VSTS.Common.Priority": {
+          "type": "integer"
+        },
+        "System.Parent": {
+          "type": "integer"
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "rel": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rel": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rel": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rel": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "workItemUpdates": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "workItemRevisions": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "workItemComments": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "html": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "workItemType": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}
