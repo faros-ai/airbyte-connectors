@@ -6,13 +6,20 @@ import {VError} from 'verror';
 
 import {
   Artifact,
+  DeploymentAction,
+  DeploymentActionResponse,
+  DeploymentProcess,
+  DeploymentProcessResponse,
   DeploymentResponse,
+  DeploymentStep,
+  DeploymentStepResponse,
   Environment,
   PagedResponse,
   PagingParams,
   Project,
   Release,
   Space,
+  Task,
 } from './models';
 
 const DEFAULT_PAGE_SIZE = 1;
@@ -79,14 +86,29 @@ export class OctopusClient {
     yield* this.paginate(`/${spaceId}/releases`);
   }
 
-  @Memoize((spaceId, id) => `${spaceId}-${id}`)
-  async getProject(spaceId: string, id: string): Promise<Project> {
-    return await this.get(`/${spaceId}/projects/${id}`);
+  @Memoize((id) => id)
+  async getProject(id: string): Promise<Project> {
+    return this.get(`/projects/${id}`);
   }
 
-  @Memoize((spaceId, id) => `${spaceId}-${id}`)
-  async getEnvironment(spaceId: string, id: string): Promise<Environment> {
-    return this.get(`/${spaceId}/environments/${id}`);
+  @Memoize((projectId) => projectId)
+  async getProjectDeploymentProcess(
+    projectId: string
+  ): Promise<DeploymentProcess> {
+    const process = await this.get<DeploymentProcessResponse>(
+      `projects/${projectId}/deploymentprocesses`
+    );
+
+    return this.cleanProcess(process);
+  }
+
+  @Memoize((id) => id)
+  async getEnvironment(id: string): Promise<Environment> {
+    return this.get(`/environments/${id}`);
+  }
+
+  async getTask(id: string): Promise<Task> {
+    return this.get(`/tasks/${id}`);
   }
 
   private async *paginate<T>(
@@ -122,5 +144,58 @@ export class OctopusClient {
       const errorMessage = wrapApiError(err).message;
       throw new VError(errorMessage);
     }
+  }
+
+  private cleanProcess(process: DeploymentProcessResponse): DeploymentProcess {
+    return {Steps: this.cleanSteps(process.Steps)};
+  }
+
+  private cleanSteps(steps: DeploymentStepResponse[]): DeploymentStep[] {
+    const cleanSteps = [];
+    for (const step of steps) {
+      const cleanStep = {
+        Name: step.Name,
+        Properties: {},
+        Actions: [],
+      };
+
+      if (step.Properties) {
+        const cleanProperties = Object.entries(step.Properties).filter(
+          ([key]) => this.nonOctopusProp(key)
+        );
+        for (const [key, val] of cleanProperties) {
+          cleanStep.Properties[key] = val;
+        }
+      }
+
+      for (const action of step.Actions) {
+        cleanStep.Actions.push(this.cleanAction(action));
+      }
+
+      cleanSteps.push(cleanStep);
+    }
+    return cleanSteps;
+  }
+
+  private cleanAction(action: DeploymentActionResponse): DeploymentAction {
+    const cleanAction = {
+      Name: action.Name,
+      Properties: {},
+    };
+
+    if (action.Properties) {
+      const cleanProperties = Object.entries(action.Properties).filter(
+        ([key]) => this.nonOctopusProp(key)
+      );
+      for (const [key, val] of cleanProperties) {
+        cleanAction.Properties[key] = val;
+      }
+    }
+
+    return cleanAction;
+  }
+
+  private nonOctopusProp(prop: string): boolean {
+    return !new RegExp(/^Octopus.*$/).test(prop);
   }
 }

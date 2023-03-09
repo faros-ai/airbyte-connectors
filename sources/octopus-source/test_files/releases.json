@@ -32,8 +32,10 @@
       "DeploymentPreviews": "/api/Spaces-1/releases/Releases-2/deployments/previews/",
       "Variables": "/api/Spaces-1/projects/Projects-1/releases/Releases-2/variables"
     },
-    "SpaceName": "Test",
-    "ProjectName": "Test"
+    "_extra": {
+      "SpaceName": "Test",
+      "ProjectName": "Test"
+    }
   },
   {
     "Id": "Releases-1",
@@ -68,7 +70,9 @@
       "DeploymentPreviews": "/api/Spaces-1/releases/Releases-1/deployments/previews/",
       "Variables": "/api/Spaces-1/projects/Projects-1/releases/Releases-1/variables"
     },
-    "SpaceName": "Test",
-    "ProjectName": "Test"
+    "_extra": {
+      "SpaceName": "Test",
+      "ProjectName": "Test"
+    }
   }
 ]

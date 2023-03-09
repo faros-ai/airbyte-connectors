@@ -60,9 +60,36 @@
       "DeploymentProcess": "/api/Spaces-1/deploymentprocesses/deploymentprocess-Projects-1-s-3-5E28G",
       "Variables": "/api/Spaces-1/variables/variableset-Deployments-2"
     },
-    "SpaceName": "Test",
-    "EnvironmentName": "Prod",
-    "ProjectName": "Test"
+    "_extra": {
+      "SpaceName": "Test",
+      "ProjectName": "Test",
+      "EnvironmentName": "Staging",
+      "Task": {
+        "State": "Success",
+        "ErrorMessage": null,
+        "QueueTime": "2023-03-06T21:47:17.740+00:00",
+        "StartTime": "2023-03-06T21:47:18.347+00:00",
+        "CompletedTime": "2023-03-06T21:47:42.775+00:00"
+      },
+      "Process": {
+        "Steps": [
+          {
+            "Name": "Hello world (using Bash)",
+            "Properties": {
+              "custom1": "custom1"
+            },
+            "Actions": [
+              {
+                "Name": "Hello world (using Bash)",
+                "Properties": {
+                  "repo": "repo1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "Id": "Deployments-1",
@@ -117,8 +144,35 @@
       "Interruptions": "/api/Spaces-1/interruptions?regarding=Deployments-1",
       "DeploymentProcess": "/api/Spaces-1/deploymentprocesses/deploymentprocess-Projects-1-s-3-5E28G"
     },
-    "SpaceName": "Test",
-    "ProjectName": "Test",
-    "EnvironmentName": "Prod"
+    "_extra": {
+      "SpaceName": "Test",
+      "ProjectName": "Test",
+      "EnvironmentName": "Staging",
+      "Task": {
+        "State": "Failed",
+        "ErrorMessage": "The deployment failed because one or more steps failed. Please see the deployment log for details.",
+        "QueueTime": "2023-03-06T21:47:16.740+00:00",
+        "StartTime": "2023-03-06T21:47:17.347+00:00",
+        "CompletedTime": "2023-03-06T21:47:41.775+00:00"
+      },
+      "Process": {
+        "Steps": [
+          {
+            "Name": "Hello world (using Bash)",
+            "Properties": {
+              "custom1": "custom1"
+            },
+            "Actions": [
+              {
+                "Name": "Hello world (using Bash)",
+                "Properties": {
+                  "repo": "repo1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
   }
 ]

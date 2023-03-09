@@ -72,6 +72,90 @@ describe('index', () => {
       ])
     );
   });
+
+  test('client cleans deployment process', async () => {
+    mockGet.mockResolvedValueOnce({
+      data: {
+        Steps: [
+          {
+            Name: 'Step1',
+            Other: 'ignored',
+            Properties: {
+              'Octopus.Action.Package.DownloadOnTentacle': 'False',
+              custom1: 'Custom1',
+            },
+            Actions: [
+              {
+                Name: 'Action1',
+                Other: 'ignored',
+                Properties: {
+                  'Octopus.Action.Package.DownloadOnTentacle': 'False',
+                  'Octopus.Action.Script.ScriptSource': 'Package',
+                  custom1: 'Custom1',
+                  custom2: 'Custom2',
+                },
+              },
+              {
+                Name: 'Action2',
+                Other: 'ignored',
+                Properties: {
+                  'Octopus.Action.Package.DownloadOnTentacle': 'False',
+                  'Octopus.Action.Script.ScriptSource': 'Package',
+                  custom1: 'Custom1',
+                  custom2: 'Custom2',
+                },
+              },
+            ],
+          },
+          {
+            Name: 'Step2',
+            Other: 'ignored',
+            Actions: [
+              {
+                Name: 'Action1',
+                Properties: {
+                  'Octopus.Action.Package.DownloadOnTentacle': 'False',
+                  'Octopus.Action.Script.ScriptSource': 'Package',
+                  custom1: 'Custom1',
+                  custom2: 'Custom2',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+    const client = new sut.OctopusClient(config);
+    const process = await client.getProjectDeploymentProcess('test');
+    expect(process).toEqual({
+      Steps: [
+        {
+          Name: 'Step1',
+          Properties: {custom1: 'Custom1'},
+          Actions: [
+            {
+              Name: 'Action1',
+              Properties: {custom1: 'Custom1', custom2: 'Custom2'},
+            },
+            {
+              Name: 'Action2',
+              Properties: {custom1: 'Custom1', custom2: 'Custom2'},
+            },
+          ],
+        },
+        {
+          Name: 'Step2',
+          Properties: {},
+          Actions: [
+            {
+              Name: 'Action1',
+              Properties: {custom1: 'Custom1', custom2: 'Custom2'},
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
 
 async function toArray<T>(asyncIterator: AsyncGenerator<T>): Promise<T[]> {

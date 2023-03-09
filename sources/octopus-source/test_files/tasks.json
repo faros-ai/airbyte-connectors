@@ -1,0 +1,82 @@
+[
+  {
+    "Id": "ServerTasks-446",
+    "SpaceId": "Spaces-1",
+    "Name": "Deploy",
+    "Description": "Deploy Test release 0.0.2 to Staging",
+    "Arguments": {
+      "DeploymentId": "Deployments-2"
+    },
+    "State": "Success",
+    "Completed": "Monday, 06 March 2023 9:47:42 PM +00:00",
+    "QueueTime": "2023-03-06T21:47:17.740+00:00",
+    "QueueTimeExpiry": null,
+    "StartTime": "2023-03-06T21:47:18.347+00:00",
+    "LastUpdatedTime": "2023-03-06T21:47:42.775+00:00",
+    "CompletedTime": "2023-03-06T21:47:42.775+00:00",
+    "ServerNode": "OctopusServerNodes-octopus-i058281-7d5cf4cd48-ljdk8",
+    "Duration": "24 seconds",
+    "ErrorMessage": null,
+    "HasBeenPickedUpByProcessor": true,
+    "IsCompleted": true,
+    "FinishedSuccessfully": true,
+    "HasPendingInterruptions": false,
+    "CanRerun": false,
+    "HasWarningsOrErrors": true,
+    "UnmetPreconditions": null,
+    "Links": {
+      "Self": "/api/tasks/ServerTasks-445",
+      "Web": "/app#/Spaces-1/tasks/ServerTasks-445",
+      "Raw": "/api/tasks/ServerTasks-445/raw",
+      "Rerun": "/api/tasks/rerun/ServerTasks-445",
+      "Cancel": "/api/tasks/ServerTasks-445/cancel",
+      "State": "/api/tasks/ServerTasks-445/state",
+      "BlockedBy": "/api/tasks/ServerTasks-445/blockedby",
+      "QueuedBehind": "/api/tasks/ServerTasks-445/queued-behind{?skip,take}",
+      "Details": "/api/tasks/ServerTasks-445/details{?verbose,tail}",
+      "StatusMessages": "/api/tasks/ServerTasks-445/status/messages",
+      "Artifacts": "/api/Spaces-1/artifacts?regarding=ServerTasks-445",
+      "Interruptions": "/api/Spaces-1/interruptions?regarding=ServerTasks-445"
+    }
+  },
+  {
+    "Id": "ServerTasks-445",
+    "SpaceId": "Spaces-1",
+    "Name": "Deploy",
+    "Description": "Deploy Test release 0.0.1 to Staging",
+    "Arguments": {
+      "DeploymentId": "Deployments-1"
+    },
+    "State": "Failed",
+    "Completed": "Monday, 06 March 2023 9:47:41 PM +00:00",
+    "QueueTime": "2023-03-06T21:47:16.740+00:00",
+    "QueueTimeExpiry": null,
+    "StartTime": "2023-03-06T21:47:17.347+00:00",
+    "LastUpdatedTime": "2023-03-06T21:47:41.775+00:00",
+    "CompletedTime": "2023-03-06T21:47:41.775+00:00",
+    "ServerNode": "OctopusServerNodes-octopus-i058281-7d5cf4cd48-ljdk8",
+    "Duration": "24 seconds",
+    "ErrorMessage": "The deployment failed because one or more steps failed. Please see the deployment log for details.",
+    "HasBeenPickedUpByProcessor": true,
+    "IsCompleted": true,
+    "FinishedSuccessfully": false,
+    "HasPendingInterruptions": false,
+    "CanRerun": false,
+    "HasWarningsOrErrors": true,
+    "UnmetPreconditions": null,
+    "Links": {
+      "Self": "/api/tasks/ServerTasks-445",
+      "Web": "/app#/Spaces-1/tasks/ServerTasks-445",
+      "Raw": "/api/tasks/ServerTasks-445/raw",
+      "Rerun": "/api/tasks/rerun/ServerTasks-445",
+      "Cancel": "/api/tasks/ServerTasks-445/cancel",
+      "State": "/api/tasks/ServerTasks-445/state",
+      "BlockedBy": "/api/tasks/ServerTasks-445/blockedby",
+      "QueuedBehind": "/api/tasks/ServerTasks-445/queued-behind{?skip,take}",
+      "Details": "/api/tasks/ServerTasks-445/details{?verbose,tail}",
+      "StatusMessages": "/api/tasks/ServerTasks-445/status/messages",
+      "Artifacts": "/api/Spaces-1/artifacts?regarding=ServerTasks-445",
+      "Interruptions": "/api/Spaces-1/interruptions?regarding=ServerTasks-445"
+    }
+  }
+]

@@ -1,8 +1,8 @@
 {
     "Id": "Environments-2",
     "SpaceId": "Spaces-1",
-    "Slug": "prod",
-    "Name": "Prod",
+    "Slug": "staging",
+    "Name": "Staging",
     "Description": "",
     "SortOrder": 0,
     "UseGuidedFailure": false,

@@ -23,18 +23,23 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const spacesResource = readTestResourceFile('spaces.json');
-  const mockListSpaces = jest.fn().mockReturnValue(iterArray(spacesResource));
+  const mockListSpaces = jest
+    .fn()
+    .mockReturnValue(iterArray(readTestResourceFile('spaces.json')));
   const mockListDeployments = jest.fn();
   const mockListReleases = jest.fn();
-  const mockGetProject = jest.fn();
   const mockGetEnvironment = jest.fn();
+  const mockGetProject = jest.fn();
+  const mockGetTask = jest.fn();
+  const mockGetProjectDeploymentProcess = jest.fn();
   const mockOctopusClient = {
     listSpaces: mockListSpaces,
     listDeployments: mockListDeployments,
     listReleases: mockListReleases,
-    getProject: mockGetProject,
     getEnvironment: mockGetEnvironment,
+    getProject: mockGetProject,
+    getTask: mockGetTask,
+    getProjectDeploymentProcess: mockGetProjectDeploymentProcess,
   } as any;
 
   beforeAll(async () => {
@@ -43,6 +48,11 @@ describe('index', () => {
     Octopus.instance = jest.fn().mockImplementation(() => {
       return Promise.resolve(octopus);
     });
+  });
+
+  beforeEach(() => {
+    mockGetProject.mockReset();
+    mockGetProject.mockResolvedValue(readTestResourceFile('project.json'));
   });
 
   function readResourceFile(fileName: string): any {
@@ -64,11 +74,16 @@ describe('index', () => {
 
   test('streams - deployments, use full_refresh sync mode', async () => {
     mockListDeployments.mockReturnValue(
-      iterArray(readTestResourceFile('deploymentsResponse.json'))
+      iterArray(readTestResourceFile('deployments_response.json'))
     );
-    mockGetProject.mockResolvedValue(readTestResourceFile('project.json'));
     mockGetEnvironment.mockResolvedValue(
       readTestResourceFile('environment.json')
+    );
+    const tasks = readTestResourceFile('tasks.json');
+    mockGetTask.mockResolvedValueOnce(tasks[0]);
+    mockGetTask.mockResolvedValueOnce(tasks[1]);
+    mockGetProjectDeploymentProcess.mockResolvedValue(
+      readTestResourceFile('project_deployment_process.json')
     );
 
     const source = new sut.OctopusSource(logger);
@@ -84,14 +99,16 @@ describe('index', () => {
     }
 
     expect(mockListDeployments).toBeCalledTimes(1);
-    expect(mockGetEnvironment).toBeCalledTimes(2);
     expect(mockGetProject).toBeCalledTimes(2);
+    expect(mockGetEnvironment).toBeCalledTimes(2);
+    expect(mockGetTask).toBeCalledTimes(2);
+    expect(mockGetProjectDeploymentProcess).toBeCalledTimes(2);
     expect(deployments).toStrictEqual(readTestResourceFile('deployments.json'));
   });
 
   test('streams - releases, use full_refresh sync mode', async () => {
     mockListReleases.mockReturnValue(
-      iterArray(readTestResourceFile('releases.json'))
+      iterArray(readTestResourceFile('releases_response.json'))
     );
 
     const source = new sut.OctopusSource(logger);
@@ -105,6 +122,7 @@ describe('index', () => {
     }
 
     expect(mockListReleases).toBeCalledTimes(1);
+    expect(mockGetProject).toBeCalledTimes(2);
     expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
   });
 });

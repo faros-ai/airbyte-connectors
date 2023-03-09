@@ -1,0 +1,18 @@
+{
+  "Steps": [
+    {
+      "Name": "Hello world (using Bash)",
+      "Properties": {
+        "custom1": "custom1"
+      },
+      "Actions": [
+        {
+          "Name": "Hello world (using Bash)",
+          "Properties": {
+            "repo": "repo1"
+          }
+        }
+      ]
+    }
+  ]
+}

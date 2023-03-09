@@ -103,19 +103,29 @@ export class Octopus {
   async *getDeployments(): AsyncGenerator<Deployment> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
       for await (const deployment of this.client.listDeployments(spaceId)) {
+        const project = await this.client.getProject(deployment.ProjectId);
         const environment = await this.client.getEnvironment(
-          spaceId,
           deployment.EnvironmentId
         );
-        const project = await this.client.getProject(
-          spaceId,
+        const task = await this.client.getTask(deployment.TaskId);
+        const process = await this.client.getProjectDeploymentProcess(
           deployment.ProjectId
         );
         yield {
           ...deployment,
-          SpaceName: spaceName,
-          ProjectName: project.Name,
-          EnvironmentName: environment.Name,
+          _extra: {
+            SpaceName: spaceName,
+            ProjectName: project.Name,
+            EnvironmentName: environment.Name,
+            Task: {
+              State: task.State,
+              ErrorMessage: task.ErrorMessage,
+              QueueTime: task.QueueTime,
+              StartTime: task.StartTime,
+              CompletedTime: task.CompletedTime,
+            },
+            Process: process,
+          },
         };
       }
     }
@@ -124,14 +134,13 @@ export class Octopus {
   async *getReleases(): AsyncGenerator<Release> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
       for await (const release of this.client.listReleases(spaceId)) {
-        const project = await this.client.getProject(
-          spaceId,
-          release.ProjectId
-        );
+        const project = await this.client.getProject(release.ProjectId);
         yield {
           ...release,
-          SpaceName: spaceName,
-          ProjectName: project.Name,
+          _extra: {
+            SpaceName: spaceName,
+            ProjectName: project.Name,
+          },
         };
       }
     }
