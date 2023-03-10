@@ -18,7 +18,7 @@
         "kind_property": {
           "type": "string",
           "title": "Kind Property",
-          "description": "The name of the page property whose value determines what kind of object the page is, i.e., a project, epic, sprint, or task. It must have a select type in Notion. It's expected that each kind of page has a unique, fixed value, which must be provided in the kind-specific configuration sections."
+          "description": "The name of the page property whose value determines what kind of object a page is, i.e., a project, epic, sprint, or task. It must have a select type in Notion. It's expected that each kind of page has a unique, fixed value, which must be provided in the kind-specific configuration sections."
         },
         "projects": {
           "type": "object",
