@@ -30,10 +30,10 @@ export class Octopus {
   ): Promise<Octopus> {
     if (Octopus.inst) return Octopus.inst;
     if (!config.api_key) {
-      throw new VError('api key must be provided');
+      throw new VError('API Key must be provided');
     }
     if (!config.instance_url) {
-      throw new VError('instance url must be provided');
+      throw new VError('Instance URL must be provided');
     }
 
     const client = new OctopusClient({
@@ -86,7 +86,7 @@ export class Octopus {
       );
     }
     if (resolvedNames.length == 0) {
-      throw new VError('No spaces could be resolved.');
+      this.logger.warn('No spaces could be resolved');
     }
   }
 
@@ -102,14 +102,13 @@ export class Octopus {
   async *getDeployments(): AsyncGenerator<Deployment> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
       for await (const deployment of this.client.listDeployments(spaceId)) {
-        const project = await this.client.getProject(deployment.ProjectId);
-        const environment = await this.client.getEnvironment(
-          deployment.EnvironmentId
-        );
-        const task = await this.client.getTask(deployment.TaskId);
-        const process = await this.client.getProjectDeploymentProcess(
-          deployment.ProjectId
-        );
+        const [project, environment, task, process] = await Promise.all([
+          this.client.getProject(deployment.ProjectId),
+          this.client.getEnvironment(deployment.EnvironmentId),
+          this.client.getTask(deployment.TaskId),
+          this.client.getProjectDeploymentProcess(deployment.ProjectId),
+        ]);
+
         yield {
           ...deployment,
           _extra: {

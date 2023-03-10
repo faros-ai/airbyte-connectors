@@ -18,7 +18,7 @@ import {
   Task,
 } from './models';
 
-const DEFAULT_PAGE_SIZE = 1;
+const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_MAX_RETRIES = 3;
 
 export interface OctopusClientConfig {

@@ -61,16 +61,16 @@ export class Deployments extends OctopusConverter {
     }`;
 
     switch (status) {
-      case 'Canceled':
-      case 'Cancelling':
+      case 'canceled':
+      case 'cancelling':
         return {category: 'Canceled', detail};
-      case 'Executing':
+      case 'executing':
         return {category: 'Running', detail};
-      case 'Failed':
+      case 'failed':
         return {category: 'Failed', detail};
-      case 'Success':
+      case 'success':
         return {category: 'Success', detail};
-      case 'Queued':
+      case 'queued':
         return {category: 'Queued', detail};
       default:
         return {category: 'Custom', detail};
@@ -85,25 +85,26 @@ export class Deployments extends OctopusConverter {
       return {category: 'Unknown', detail: 'undefined'};
     }
     const env = octopusEnv?.toLowerCase();
+    const detail = octopusEnv;
 
     switch (env) {
       case 'production':
       case 'prod':
-        return {category: 'Prod', detail: env};
+        return {category: 'Prod', detail};
       case 'staging':
-        return {category: 'Staging', detail: env};
+        return {category: 'Staging', detail};
       case 'qa':
-        return {category: 'QA', detail: env};
+        return {category: 'QA', detail};
       case 'development':
       case 'develop':
       case 'dev':
-        return {category: 'Dev', detail: env};
+        return {category: 'Dev', detail};
       case 'sandbox':
-        return {category: 'Sandbox', detail: env};
+        return {category: 'Sandbox', detail};
       case 'canary':
-        return {category: 'Canary', detail: env};
+        return {category: 'Canary', detail};
       default:
-        return {category: 'Custom', detail: env};
+        return {category: 'Custom', detail};
     }
   }
 }

@@ -9,7 +9,7 @@
     "properties": {
       "api_key": {
         "type": "string",
-        "title": "Octopus Api Key",
+        "title": "Octopus API Key",
         "airbyte_secret": true
       },
       "instance_url": {
@@ -19,14 +19,15 @@
       },
       "space_names": {
         "type": "array",
-        "title": "Octopus Spaces to Sync.",
+        "title": "Octopus Spaces to Sync",
         "items": {
           "type": "string"
         }
       },
       "page_size": {
         "type": "number",
-        "title": "Page Size"
+        "title": "Page Size",
+        "default": 3
       }
     }
   }
