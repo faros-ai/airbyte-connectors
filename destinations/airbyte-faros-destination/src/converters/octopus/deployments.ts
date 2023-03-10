@@ -69,7 +69,7 @@ export class Deployments extends OctopusConverter {
       case 'Failed':
         return {category: 'Failed', detail};
       case 'Success':
-        return {category: 'Failed', detail};
+        return {category: 'Success', detail};
       case 'Queued':
         return {category: 'Queued', detail};
       default:
@@ -95,6 +95,7 @@ export class Deployments extends OctopusConverter {
       case 'qa':
         return {category: 'QA', detail: env};
       case 'development':
+      case 'develop':
       case 'dev':
         return {category: 'Dev', detail: env};
       case 'sandbox':
