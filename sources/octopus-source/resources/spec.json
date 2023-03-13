@@ -27,6 +27,11 @@
       "page_size": {
         "type": "number",
         "title": "Page Size",
+        "default": 100
+      },
+      "max_retries": {
+        "type": "number",
+        "title": "Max Retries",
         "default": 3
       }
     }

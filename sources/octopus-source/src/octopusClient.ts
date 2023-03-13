@@ -7,16 +7,18 @@ import {VError} from 'verror';
 import {
   cleanProcess,
   DeploymentProcess,
-  DeploymentProcessResponse,
-  DeploymentResponse,
-  Environment,
   PagedResponse,
   PagingParams,
-  Project,
-  Release,
-  Space,
-  Task,
 } from './models';
+import {
+  Deployment as OctopusDeployment,
+  DeploymentEnvironment as OctopusDeploymentEnvironment,
+  DeploymentProcess as OctopusDeploymentProcess,
+  Project as OctopusProject,
+  Release as OctopusRelease,
+  ServerTask as OctopusServerTask,
+  Space as OctopusSpace,
+} from './octopusModels';
 
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_MAX_RETRIES = 3;
@@ -66,20 +68,20 @@ export class OctopusClient {
     }
   }
 
-  async *listSpaces(): AsyncGenerator<Space> {
+  async *listSpaces(): AsyncGenerator<OctopusSpace> {
     yield* this.paginate('/spaces');
   }
 
-  async *listDeployments(spaceId: string): AsyncGenerator<DeploymentResponse> {
+  async *listDeployments(spaceId: string): AsyncGenerator<OctopusDeployment> {
     yield* this.paginate(`/${spaceId}/deployments`);
   }
 
-  async *listReleases(spaceId: string): AsyncGenerator<Release> {
+  async *listReleases(spaceId: string): AsyncGenerator<OctopusRelease> {
     yield* this.paginate(`/${spaceId}/releases`);
   }
 
   @Memoize((id) => id)
-  async getProject(id: string): Promise<Project> {
+  async getProject(id: string): Promise<OctopusProject> {
     return this.get(`/projects/${id}`);
   }
 
@@ -87,18 +89,18 @@ export class OctopusClient {
   async getProjectDeploymentProcess(
     projectId: string
   ): Promise<DeploymentProcess> {
-    const process = await this.get<DeploymentProcessResponse>(
+    const process = await this.get<OctopusDeploymentProcess>(
       `projects/${projectId}/deploymentprocesses`
     );
     return cleanProcess(process);
   }
 
   @Memoize((id) => id)
-  async getEnvironment(id: string): Promise<Environment> {
+  async getEnvironment(id: string): Promise<OctopusDeploymentEnvironment> {
     return this.get(`/environments/${id}`);
   }
 
-  async getTask(id: string): Promise<Task> {
+  async getTask(id: string): Promise<OctopusServerTask> {
     return this.get(`/tasks/${id}`);
   }
 

@@ -1,34 +1,19 @@
+import {AxiosResponse} from 'axios';
+
 import {
   ActionProperties,
   Deployment as OctopusDeployment,
   DeploymentAction as OctopusDeploymentAction,
-  DeploymentEnvironment,
   DeploymentProcess as OctopusDeploymentProcess,
   DeploymentStep as OctopusDeploymentStep,
   ListArgs,
-  Project as OctopusProject,
+  Release as OctopusRelease,
   ResourceCollection,
-  ServerTask,
-  Space as OctopusSpace,
   TaskState,
-} from '@octopusdeploy/api-client';
-import {AxiosResponse} from 'axios';
+} from './octopusModels';
 
-/**
- * Only some of the needed models are available from the Octopus api-client,
- * the ones that are missing are added here. Some are augmented with additional
- * information that is needed along with the result returned from Octopus.
- */
-export type DeploymentResponse = OctopusDeployment;
-export type DeploymentProcessResponse = OctopusDeploymentProcess;
-export type DeploymentStepResponse = OctopusDeploymentStep;
-export type DeploymentActionResponse = OctopusDeploymentAction;
-export type Environment = DeploymentEnvironment;
 export type PagedResponse<T> = AxiosResponse<ResourceCollection<T>>;
 export type PagingParams = ListArgs;
-export type Project = OctopusProject;
-export type Space = OctopusSpace;
-export type Task = ServerTask;
 
 export interface Deployment extends OctopusDeployment {
   readonly _extra: {
@@ -43,6 +28,13 @@ export interface Deployment extends OctopusDeployment {
       readonly CompletedTime: string;
     };
     readonly Process: DeploymentProcess;
+  };
+}
+
+export interface Release extends OctopusRelease {
+  readonly _extra: {
+    readonly SpaceName: string;
+    readonly ProjectName: string;
   };
 }
 
@@ -61,37 +53,13 @@ interface DeploymentAction {
   Properties: ActionProperties;
 }
 
-export interface Release {
-  readonly Id: string;
-  readonly ProjectId: string;
-  readonly SpaceId: string;
-  readonly ChannelId: string;
-  readonly Version: string;
-  readonly ReleaseNotes: string;
-  readonly ProjectDeploymentProcessSnapshotId: boolean;
-  readonly IgnoreChannelRules: boolean;
-  readonly BuildInformation: object;
-  readonly Assembled: boolean;
-  readonly LibraryVariableSetSnapshotIds: object;
-  readonly SelectedPackages: object;
-  readonly ProjectVariableSetSnapshotId: object;
-  readonly VersionControlReference: object;
-  readonly LastModifiedBy: object;
-  readonly LastModifiedOn: object;
-  readonly Link: object;
-  readonly _extra: {
-    readonly SpaceName: string;
-    readonly ProjectName: string;
-  };
-}
-
 export function cleanProcess(
-  process: DeploymentProcessResponse
+  process: OctopusDeploymentProcess
 ): DeploymentProcess {
   return {Steps: cleanSteps(process.Steps)};
 }
 
-function cleanSteps(steps: DeploymentStepResponse[]): DeploymentStep[] {
+function cleanSteps(steps: OctopusDeploymentStep[]): DeploymentStep[] {
   const cleanSteps = [];
   for (const step of steps) {
     const cleanStep = {
@@ -118,7 +86,7 @@ function cleanSteps(steps: DeploymentStepResponse[]): DeploymentStep[] {
   return cleanSteps;
 }
 
-function cleanAction(action: DeploymentActionResponse): DeploymentAction {
+function cleanAction(action: OctopusDeploymentAction): DeploymentAction {
   const cleanAction = {
     Name: action.Name,
     Properties: {},
