@@ -585,6 +585,7 @@ describe('graphql-client utilities', () => {
     expect(serialize({})).toEqual('');
   });
   test('strictPick', async () => {
+    expect(strictPick({z: 0, a: 'bar'}, ['z', 'b'])).toEqual({z: 0, b: 'null'});
     expect(strictPick({z: 1, a: 'bar'}, ['z', 'b'])).toEqual({z: 1, b: 'null'});
     expect(strictPick({z: 1, a: 'bar'}, ['b'])).toEqual({b: 'null'});
   });

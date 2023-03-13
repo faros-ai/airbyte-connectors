@@ -122,7 +122,7 @@ export function serialize(obj: Dictionary<number | string>): string {
  */
 export function strictPick(obj: any, keys: string[], nullValue = 'null'): any {
   return keys.reduce(
-    (result, key) => set(result, key, obj[key] || nullValue),
+    (result, key) => set(result, key, obj[key] ?? nullValue),
     {}
   );
 }
