@@ -43,8 +43,8 @@ describe('index', () => {
   } as any;
 
   beforeAll(async () => {
-    const octopus = new Octopus(mockOctopusClient, 1, logger);
-    await octopus.initialize(['Test']);
+    const octopus = new Octopus(mockOctopusClient, logger, undefined, 1);
+    await octopus.initialize(['Default']);
     Octopus.instance = jest.fn().mockImplementation(() => {
       return Promise.resolve(octopus);
     });
@@ -137,7 +137,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       undefined,
-      {lastDeployment: 'Deployments-2'}
+      {Default: {lastDeploymentId: 'Deployments-2'}}
     );
     const deployments = [];
 
@@ -187,7 +187,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       undefined,
-      {lastRelease: 'Releases-2'}
+      {Default: {lastReleaseId: 'Releases-2'}}
     );
     const releases = [];
 

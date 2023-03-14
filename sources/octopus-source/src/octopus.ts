@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 import {Deployment, Release} from './models';
@@ -8,6 +9,7 @@ export interface OctopusConfig {
   readonly api_key: string;
   readonly instance_url: string;
   readonly space_names?: string[];
+  readonly cutoff_days?: number;
   readonly look_back_depth?: number;
   readonly page_size?: number;
   readonly max_retries?: number;
@@ -19,12 +21,18 @@ export interface OctopusConfig {
 export class Octopus {
   private static inst: Octopus = null;
   private spaces: Record<string, string> = {};
+  private cutoff?: DateTime;
 
   constructor(
     private readonly client: OctopusClient,
-    private readonly lookBackDepth = 0,
-    private readonly logger: AirbyteLogger
-  ) {}
+    private readonly logger: AirbyteLogger,
+    cutoffDays?: number,
+    private readonly lookBackDepth = 0
+  ) {
+    this.cutoff = cutoffDays
+      ? DateTime.now().minus({days: cutoffDays})
+      : undefined;
+  }
 
   static async instance(
     config: OctopusConfig,
@@ -45,7 +53,12 @@ export class Octopus {
       maxRetries: config.max_retries,
     });
 
-    Octopus.inst = new Octopus(client, config.look_back_depth, logger);
+    Octopus.inst = new Octopus(
+      client,
+      logger,
+      config.cutoff_days,
+      config.look_back_depth
+    );
     await Octopus.inst.initialize(config.space_names);
     return Octopus.inst;
   }
@@ -101,18 +114,29 @@ export class Octopus {
     }
   }
 
-  async *getDeployments(since?: string): AsyncGenerator<Deployment> {
+  async *getDeployments(
+    checkpoints?: Record<string, {lastDeploymentId: string}>
+  ): AsyncGenerator<Deployment> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      const since = checkpoints?.[spaceName]?.lastDeploymentId;
       let lookingBack = false;
       let lookedBack = 0;
+
       for await (const deployment of this.client.listDeployments(spaceId)) {
+        if (this.cutoff && DateTime.fromISO(deployment.Created) < this.cutoff) {
+          this.logger.info(
+            `Cutoff reached for deployments in space: ${spaceName}`
+          );
+          break;
+        }
+
         if (since && deployment.Id === since) {
           lookingBack = true;
         }
         if (lookingBack) {
           if (lookedBack >= this.lookBackDepth) {
             this.logger.info(
-              `Including '${since}', looked back ${lookedBack} deployment(s)`
+              `Including '${since}', looked back ${lookedBack} deployment(s) in space: ${spaceName}`
             );
             break;
           }
@@ -146,18 +170,29 @@ export class Octopus {
     }
   }
 
-  async *getReleases(since?: string): AsyncGenerator<Release> {
+  async *getReleases(
+    checkpoints?: Record<string, {lastReleaseId: string}>
+  ): AsyncGenerator<Release> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      const since = checkpoints?.[spaceName]?.lastReleaseId;
       let lookingBack = false;
       let lookedBack = 0;
+
       for await (const release of this.client.listReleases(spaceId)) {
+        if (this.cutoff && DateTime.fromISO(release.Assembled) < this.cutoff) {
+          this.logger.info(
+            `Cutoff reached for releases in space: ${spaceName}`
+          );
+          break;
+        }
+
         if (since && release.Id === since) {
           lookingBack = true;
         }
         if (lookingBack) {
           if (lookedBack >= this.lookBackDepth) {
             this.logger.info(
-              `Including '${since}', looked back ${lookedBack} release(s)`
+              `Including '${since}', looked back ${lookedBack} release(s) in space: ${spaceName}`
             );
             break;
           }

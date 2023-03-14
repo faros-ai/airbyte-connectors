@@ -33,7 +33,7 @@
       "Variables": "/api/Spaces-1/projects/Projects-1/releases/Releases-2/variables"
     },
     "_extra": {
-      "SpaceName": "Test",
+      "SpaceName": "Default",
       "ProjectName": "Test"
     }
   },
@@ -71,7 +71,7 @@
       "Variables": "/api/Spaces-1/projects/Projects-1/releases/Releases-1/variables"
     },
     "_extra": {
-      "SpaceName": "Test",
+      "SpaceName": "Default",
       "ProjectName": "Test"
     }
   }

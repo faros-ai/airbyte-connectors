@@ -10,7 +10,9 @@ import {Deployment} from '../models';
 import {Octopus, OctopusConfig} from '../octopus';
 
 interface DeploymentState {
-  lastDeploymentId: string;
+  [spaceName: string]: {
+    lastDeploymentId: string;
+  };
 }
 
 export class Deployments extends AirbyteStreamBase {
@@ -40,23 +42,25 @@ export class Deployments extends AirbyteStreamBase {
     streamState?: DeploymentState
   ): AsyncGenerator<Deployment> {
     const octopus = await Octopus.instance(this.config, this.logger);
-    const since =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastDeploymentId
-        : undefined;
-    yield* octopus.getDeployments(since);
+    const checkpoints =
+      syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
+    yield* octopus.getDeployments(checkpoints);
   }
 
   getUpdatedState(
     currentStreamState: DeploymentState,
     latestRecord: Deployment
   ): DeploymentState {
-    const currentIdNum = currentStreamState.lastDeploymentId
-      ? +currentStreamState.lastDeploymentId.match(this.idNumRegex)[1]
-      : 0;
+    const spaceName = latestRecord._extra.SpaceName;
+    const lastId = currentStreamState[spaceName]?.lastDeploymentId;
+    const currentIdNum = lastId ? +lastId.match(this.idNumRegex)[1] : 0;
     const latestIdNum = +latestRecord.Id.match(this.idNumRegex)[1];
-    return currentIdNum >= latestIdNum
-      ? currentStreamState
-      : {lastDeploymentId: latestRecord.Id};
+    if (currentIdNum < latestIdNum) {
+      return {
+        ...currentStreamState,
+        [spaceName]: {lastDeploymentId: latestRecord.Id},
+      };
+    }
+    return currentStreamState;
   }
 }

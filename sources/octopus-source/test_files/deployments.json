@@ -61,7 +61,7 @@
       "Variables": "/api/Spaces-1/variables/variableset-Deployments-2"
     },
     "_extra": {
-      "SpaceName": "Test",
+      "SpaceName": "Default",
       "ProjectName": "Test",
       "EnvironmentName": "Staging",
       "Task": {
@@ -145,7 +145,7 @@
       "DeploymentProcess": "/api/Spaces-1/deploymentprocesses/deploymentprocess-Projects-1-s-3-5E28G"
     },
     "_extra": {
-      "SpaceName": "Test",
+      "SpaceName": "Default",
       "ProjectName": "Test",
       "EnvironmentName": "Staging",
       "Task": {

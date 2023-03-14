@@ -24,6 +24,11 @@
           "type": "string"
         }
       },
+      "cutoff_days": {
+        "type": "number",
+        "title": "Cutoff Days",
+        "default": 90
+      },
       "look_back_depth": {
         "type": "number",
         "title": "Look Back Depth",

@@ -10,8 +10,10 @@ import {Release} from '../models';
 import {Octopus, OctopusConfig} from '../octopus';
 
 interface ReleaseState {
-  lastReleaseId: string;
+  [spaceName: string]: {lastReleaseId: string};
 }
+
+type StreamSlice = {spaceName: string};
 
 export class Releases extends AirbyteStreamBase {
   idNumRegex = new RegExp(/^Releases-(.*)$/);
@@ -36,27 +38,25 @@ export class Releases extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: any,
+    streamSlice?: StreamSlice,
     streamState?: ReleaseState
   ): AsyncGenerator<Release> {
     const octopus = await Octopus.instance(this.config, this.logger);
-    const since =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastReleaseId
-        : undefined;
-    yield* octopus.getReleases(since);
+    const checkpoints =
+      syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
+    yield* octopus.getReleases(checkpoints);
   }
 
   getUpdatedState(
     currentStreamState: ReleaseState,
     latestRecord: Release
   ): ReleaseState {
-    const currentIdNum = currentStreamState.lastReleaseId
-      ? +currentStreamState.lastReleaseId.match(this.idNumRegex)[1]
-      : 0;
+    const spaceName = latestRecord._extra.SpaceName;
+    const lastId = currentStreamState[spaceName]?.lastReleaseId;
+    const currentIdNum = lastId ? +lastId.match(this.idNumRegex)[1] : 0;
     const latestIdNum = +latestRecord.Id.match(this.idNumRegex)[1];
-    return currentIdNum >= latestIdNum
-      ? currentStreamState
-      : {lastReleaseId: latestRecord.Id};
+    return currentIdNum < latestIdNum
+      ? {...currentStreamState, [spaceName]: {lastReleaseId: latestRecord.Id}}
+      : currentStreamState;
   }
 }
