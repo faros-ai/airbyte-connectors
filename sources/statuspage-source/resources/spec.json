@@ -16,8 +16,7 @@
           "type": "string"
         },
         "title": "Page IDs",
-        "description": "List of Statuspage Page IDs. If empty, all pages will be fetched.",
-        "airbyte_secret": true
+        "description": "List of Statuspage Page IDs. If empty, all pages will be fetched."
       },
       "api_key": {
         "type": "string",
