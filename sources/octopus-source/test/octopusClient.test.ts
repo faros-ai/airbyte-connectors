@@ -28,12 +28,30 @@ describe('index', () => {
     request: jest.fn(),
   } as any;
 
-  beforeAll(() => {
+  beforeEach(() => {
+    mockedAxios.create.mockReset();
     mockedAxios.create.mockReturnValue(mockApi);
   });
 
   afterEach(() => {
     mockGet.mockReset();
+  });
+
+  test('client fails malformed instance URL', async () => {
+    const badInstanceUrl = 'https://test.octopus.app//';
+    const t = (): void => {
+      new sut.OctopusClient({...config, instanceUrl: badInstanceUrl});
+    };
+    expect(t).toThrow(`Malformed Instance Url: ${badInstanceUrl}`);
+  });
+
+  test('client strips "/" suffix from instance URL if provided', async () => {
+    const instanceUrl = 'https://test.octopus.app';
+    const instanceUrlWithSuffix = `${instanceUrl}/`;
+    new sut.OctopusClient({...config, instanceUrl: instanceUrlWithSuffix});
+    expect(mockedAxios.create).toBeCalledWith(
+      expect.objectContaining({baseURL: `${instanceUrl}/api`})
+    );
   });
 
   test('client correctly paginates', async () => {
