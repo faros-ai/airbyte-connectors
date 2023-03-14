@@ -27,7 +27,7 @@ export class Octopus {
     private readonly client: OctopusClient,
     private readonly logger: AirbyteLogger,
     cutoffDays?: number,
-    private readonly lookBackDepth = 0
+    private readonly lookBackDepth = 10
   ) {
     this.cutoff = cutoffDays
       ? DateTime.now().minus({days: cutoffDays})
