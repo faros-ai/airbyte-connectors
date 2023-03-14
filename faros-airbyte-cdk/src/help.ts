@@ -223,13 +223,15 @@ async function promptValue(row: TableRow) {
   const type = row.items_type ?? row.type;
   ok(type);
 
+  const message = `${row.title}: ${row.description || ''}`;
+
   switch (type) {
     case 'boolean':
-      return await runBooleanPrompt({message: row.title});
+      return await runBooleanPrompt({message});
     case 'integer':
-      return await runNumberPrompt({message: row.title});
+      return await runNumberPrompt({message});
     case 'string':
-      return await runStringPrompt({message: row.title});
+      return await runStringPrompt({message});
   }
 
   throw new VError(`Unexpected type: ${type}`);
@@ -295,7 +297,7 @@ async function promptLeaf(row: TableRow) {
     });
     choice = await runSelect({
       name: 'leaf',
-      message: `${row.title}: ${row.description}`,
+      message: `${row.title}: ${row.description || ''}`,
       choices,
     });
   }
