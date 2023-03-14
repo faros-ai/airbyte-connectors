@@ -48,7 +48,7 @@ export class AzureActiveDirectory {
     const httpClient = axios.create({
       baseURL: `https://graph.microsoft.com/${version}`,
       timeout: 10000, // default is `0` (no timeout)
-      maxContentLength: 500000, //default is 2000 bytes
+      maxContentLength: Infinity, //default is 2000 bytes
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

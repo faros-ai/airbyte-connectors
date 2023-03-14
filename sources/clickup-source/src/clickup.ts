@@ -49,7 +49,7 @@ export class ClickUp {
     const api = axios.create({
       baseURL: BASE_API_URL,
       timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: cfg.max_content_length ?? DEFAULT_MAX_CONTENT_LENGTH,
+      maxContentLength: Infinity,
       headers: {
         authorization: cfg.token,
         'content-type': 'application/json',

@@ -15,7 +15,6 @@ export interface VictoropsConfig {
   readonly apiId: string;
   readonly apiKey: string;
   readonly cutoff_days: number;
-  readonly maxContentLength?: number;
 }
 
 export interface VictoropsState {
@@ -122,7 +121,7 @@ export class Victorops {
       apiId: config.apiId,
       apiKey: config.apiKey,
       maxBodyLength: 50000,
-      maxContentLength: config.maxContentLength || DEFAULT_CONTENT_LENGTH,
+      maxContentLength: Infinity,
       timeout: 65000, // wait for axios-retry on rate limiting (upto 62 seconds)
     });
 

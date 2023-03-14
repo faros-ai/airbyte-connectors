@@ -60,7 +60,7 @@ export class Workday {
     const accessToken = await Workday.getAccessToken(baseURL, cfg, logger);
     const api = axios.create({
       timeout: 30000, // default is `0` (no timeout)
-      maxContentLength: 10000000, //default is 2000 bytes,
+      maxContentLength: Infinity, //default is 2000 bytes,
       headers: {
         authorization: `Bearer ${accessToken}`,
         'content-type': 'application/json',

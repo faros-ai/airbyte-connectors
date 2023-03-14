@@ -24,7 +24,6 @@ export interface ClickUpConfig extends AirbyteConfig {
   workspaces?: ReadonlyArray<string>;
   fetch_archived?: boolean;
   timeout?: number;
-  max_content_length?: number;
   max_retries?: number;
 }
 
