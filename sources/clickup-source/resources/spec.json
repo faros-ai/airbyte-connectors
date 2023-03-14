@@ -4,7 +4,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "ClickUp Spec",
     "type": "object",
-    "required": ["token", "cutoff_days"],
+    "required": [
+      "token",
+      "cutoff_days"
+    ],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -16,9 +19,13 @@
       "workspaces": {
         "type": "array",
         "title": "Workspaces",
-        "items": {"type": "string"},
+        "items": {
+          "type": "string"
+        },
         "description": "Names of ClickUp workspaces to sync. If left blank, all workspaces will be synced.",
-        "examples": ["My Workspace Name"]
+        "examples": [
+          "My Workspace Name"
+        ]
       },
       "fetch_archived": {
         "type": "boolean",
@@ -38,13 +45,6 @@
         "description": "Request timeout in milliseconds",
         "minimum": 1000,
         "default": 60000
-      },
-      "max_content_length": {
-        "type": "integer",
-        "title": "Max Content Length",
-        "description": "Max size of ClickUp API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error.",
-        "minimum": 2000,
-        "default": 10000000
       },
       "max_retries": {
         "type": "integer",

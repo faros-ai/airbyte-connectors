@@ -52,7 +52,7 @@ export class Statuspage {
     const httpClient = axios.create({
       baseURL: BASE_URL,
       timeout: 30000, // default is `0` (no timeout)
-      maxContentLength: 200000, //default is 2000 bytes
+      maxContentLength: Infinity, //default is 2000 bytes
       headers: {
         Authorization: `OAuth ${config.api_key}`,
       },

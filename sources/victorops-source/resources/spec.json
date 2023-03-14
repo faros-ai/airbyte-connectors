@@ -4,7 +4,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "VictorOps Spec",
     "type": "object",
-    "required": ["apiId", "apiKey", "cutoff_days"],
+    "required": [
+      "apiId",
+      "apiKey",
+      "cutoff_days"
+    ],
     "additionalProperties": true,
     "properties": {
       "apiId": {
@@ -24,12 +28,6 @@
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
-      },
-      "maxContentLength": {
-        "type": "integer",
-        "title": "VictorOps Content Length",
-        "description": "VictorOps API response content length limit, try increasing if 'RequestError' is encountered.",
-        "default": 500000
       },
       "pageLimit": {
         "type": "integer",

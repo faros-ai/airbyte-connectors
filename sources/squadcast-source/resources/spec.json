@@ -48,12 +48,6 @@
         "type": "string",
         "title": "Events Incident ID",
         "description": "If set it will pull all events from only this Incident. If no it pull all events from all incidents"
-      },
-      "max_content_length": {
-        "type": "integer",
-        "title": "Max Content Length",
-        "description": "Max size of Squadcast API response content in bytes. Increase this value if you get a \"maxContentLength exceeded\" error",
-        "default": 20000
       }
     }
   }

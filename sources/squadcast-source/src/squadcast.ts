@@ -32,7 +32,6 @@ export interface SquadcastConfig {
   readonly event_deduped?: boolean;
   readonly event_incident_id?: string;
   readonly cutoff_days: number;
-  readonly max_content_length?: number;
 }
 
 interface PaginateResponse<T> {
@@ -67,7 +66,7 @@ export class Squadcast {
     const httpClient = axios.create({
       baseURL: API_URL,
       timeout: 5000, // default is `0` (no timeout)
-      maxContentLength: config.max_content_length ?? 20000, //default is 2000 bytes
+      maxContentLength: Infinity,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

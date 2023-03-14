@@ -90,7 +90,7 @@ export class Agileaccelerator {
     const httpClient = axios.create({
       baseURL: `${config.server_url}/services/data/${apiVersion}`,
       timeout: 5000, // default is `0` (no timeout)
-      maxContentLength: 20000, //default is 2000 bytes
+      maxContentLength: Infinity, //default is 2000 bytes
       headers: {
         Authorization: `${authParams.tokenType} ${authParams.accessToken}`,
       },
@@ -115,7 +115,7 @@ export class Agileaccelerator {
         {
           baseURL: config.server_url,
           timeout: 5000, // default is `0` (no timeout)
-          maxContentLength: 20000, //default is 2000 bytes
+          maxContentLength: Infinity, //default is 2000 bytes
           params: {
             grant_type: 'password',
             client_id: config.client_id,

@@ -6,7 +6,6 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 import VictorOpsApiClient from 'victorops-api-client';
 
-const DEFAULT_CONTENT_LENGTH = 500000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_LIMIT = 100;
 const DEFAULT_CURRENT_PHASE = 'triggered,acknowledged,resolved';
@@ -15,7 +14,6 @@ export interface VictoropsConfig {
   readonly apiId: string;
   readonly apiKey: string;
   readonly cutoff_days: number;
-  readonly maxContentLength?: number;
 }
 
 export interface VictoropsState {
@@ -122,7 +120,7 @@ export class Victorops {
       apiId: config.apiId,
       apiKey: config.apiKey,
       maxBodyLength: 50000,
-      maxContentLength: config.maxContentLength || DEFAULT_CONTENT_LENGTH,
+      maxContentLength: Infinity,
       timeout: 65000, // wait for axios-retry on rate limiting (upto 62 seconds)
     });
 
