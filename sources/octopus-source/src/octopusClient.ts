@@ -45,8 +45,16 @@ export class OctopusClient {
     const retries = config.maxRetries ?? DEFAULT_MAX_RETRIES;
     const logger = this.logger; // for axios-retry
 
+    const instanceUrlRegex = new RegExp(/^((https|http):\/\/[^/]*)\/?$/);
+    const urlRegexMatch = config.instanceUrl.match(instanceUrlRegex);
+
+    if (!urlRegexMatch) {
+      throw new VError(`Malformed Instance Url: ${config.instanceUrl}`);
+    }
+    const cleanInstanceUrl = urlRegexMatch[1];
+
     this.api = axios.create({
-      baseURL: `${config.instanceUrl}/api`,
+      baseURL: `${cleanInstanceUrl}/api`,
       headers: {
         'X-Octopus-ApiKey': config.apiKey,
       },
