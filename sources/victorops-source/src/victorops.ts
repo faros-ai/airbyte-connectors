@@ -6,7 +6,6 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 import VictorOpsApiClient from 'victorops-api-client';
 
-const DEFAULT_CONTENT_LENGTH = 500000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_LIMIT = 100;
 const DEFAULT_CURRENT_PHASE = 'triggered,acknowledged,resolved';
