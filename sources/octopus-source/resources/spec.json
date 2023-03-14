@@ -24,6 +24,11 @@
           "type": "string"
         }
       },
+      "look_back_depth": {
+        "type": "number",
+        "title": "Look Back Depth",
+        "default": 10
+      },
       "page_size": {
         "type": "number",
         "title": "Page Size",

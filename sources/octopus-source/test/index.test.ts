@@ -43,7 +43,7 @@ describe('index', () => {
   } as any;
 
   beforeAll(async () => {
-    const octopus = new Octopus(mockOctopusClient, logger);
+    const octopus = new Octopus(mockOctopusClient, 1, logger);
     await octopus.initialize(['Test']);
     Octopus.instance = jest.fn().mockImplementation(() => {
       return Promise.resolve(octopus);
@@ -53,6 +53,11 @@ describe('index', () => {
   beforeEach(() => {
     mockGetProject.mockReset();
     mockGetProject.mockResolvedValue(readTestResourceFile('project.json'));
+    mockListDeployments.mockReset();
+    mockGetEnvironment.mockReset();
+    mockGetTask.mockReset();
+    mockGetProjectDeploymentProcess.mockReset();
+    mockListReleases.mockReset();
   });
 
   function readResourceFile(fileName: string): any {
@@ -111,6 +116,45 @@ describe('index', () => {
     expect(deployments).toStrictEqual(readTestResourceFile('deployments.json'));
   });
 
+  test('streams - deployments, use incremental sync mode', async () => {
+    mockListDeployments.mockReturnValue(
+      iterArray(readTestResourceFile('deployments_response.json'))
+    );
+    mockGetEnvironment.mockResolvedValue(
+      readTestResourceFile('environment.json')
+    );
+    const tasks = readTestResourceFile('tasks.json');
+    mockGetTask.mockResolvedValueOnce(tasks[0]);
+    mockGetTask.mockResolvedValueOnce(tasks[1]);
+    mockGetProjectDeploymentProcess.mockResolvedValue(
+      readTestResourceFile('project_deployment_process.json')
+    );
+
+    const source = new sut.OctopusSource(logger);
+    const streams = source.streams({} as any);
+    const deploymentsStream = streams[0];
+    const deploymentsIter = deploymentsStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {lastDeployment: 'Deployments-2'}
+    );
+    const deployments = [];
+
+    for await (const deployment of deploymentsIter) {
+      deployments.push(deployment);
+    }
+
+    expect(mockListDeployments).toBeCalledTimes(1);
+    expect(mockGetProject).toBeCalledTimes(1);
+    expect(mockGetEnvironment).toBeCalledTimes(1);
+    expect(mockGetTask).toBeCalledTimes(1);
+    expect(mockGetProjectDeploymentProcess).toBeCalledTimes(1);
+    expect(deployments).toStrictEqual([
+      readTestResourceFile('deployments.json')[0],
+    ]);
+  });
+
   test('streams - releases, use full_refresh sync mode', async () => {
     mockListReleases.mockReturnValue(
       iterArray(readTestResourceFile('releases_response.json'))
@@ -129,5 +173,30 @@ describe('index', () => {
     expect(mockListReleases).toBeCalledTimes(1);
     expect(mockGetProject).toBeCalledTimes(2);
     expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
+  });
+
+  test('streams - releases, use incremental sync mode', async () => {
+    mockListReleases.mockReturnValue(
+      iterArray(readTestResourceFile('releases_response.json'))
+    );
+
+    const source = new sut.OctopusSource(logger);
+    const streams = source.streams({} as any);
+    const releasesStream = streams[1];
+    const releasesIter = releasesStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      undefined,
+      {lastRelease: 'Releases-2'}
+    );
+    const releases = [];
+
+    for await (const release of releasesIter) {
+      releases.push(release);
+    }
+
+    expect(mockListReleases).toBeCalledTimes(1);
+    expect(mockGetProject).toBeCalledTimes(1);
+    expect(releases).toStrictEqual([readTestResourceFile('releases.json')[0]]);
   });
 });

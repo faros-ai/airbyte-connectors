@@ -347,10 +347,10 @@ export interface Release {
   readonly ChannelId: string;
   readonly Version: string;
   readonly ReleaseNotes: string;
-  readonly ProjectDeploymentProcessSnapshotId: boolean;
+  readonly ProjectDeploymentProcessSnapshotId: string;
   readonly IgnoreChannelRules: boolean;
   readonly BuildInformation: object;
-  readonly Assembled: boolean;
+  readonly Assembled: string;
   readonly LibraryVariableSetSnapshotIds: object;
   readonly SelectedPackages: object;
   readonly ProjectVariableSetSnapshotId: object;

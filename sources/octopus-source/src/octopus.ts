@@ -8,6 +8,7 @@ export interface OctopusConfig {
   readonly api_key: string;
   readonly instance_url: string;
   readonly space_names?: string[];
+  readonly look_back_depth?: number;
   readonly page_size?: number;
   readonly max_retries?: number;
 }
@@ -21,6 +22,7 @@ export class Octopus {
 
   constructor(
     private readonly client: OctopusClient,
+    private readonly lookBackDepth = 0,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -43,7 +45,7 @@ export class Octopus {
       maxRetries: config.max_retries,
     });
 
-    Octopus.inst = new Octopus(client, logger);
+    Octopus.inst = new Octopus(client, config.look_back_depth, logger);
     await Octopus.inst.initialize(config.space_names);
     return Octopus.inst;
   }
@@ -99,9 +101,24 @@ export class Octopus {
     }
   }
 
-  async *getDeployments(): AsyncGenerator<Deployment> {
+  async *getDeployments(since?: string): AsyncGenerator<Deployment> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      let lookingBack = false;
+      let lookedBack = 0;
       for await (const deployment of this.client.listDeployments(spaceId)) {
+        if (since && deployment.Id === since) {
+          lookingBack = true;
+        }
+        if (lookingBack) {
+          if (lookedBack >= this.lookBackDepth) {
+            this.logger.info(
+              `Including '${since}', looked back ${lookedBack} deployment(s)`
+            );
+            break;
+          }
+          lookedBack++;
+        }
+
         const [project, environment, task, process] = await Promise.all([
           this.client.getProject(deployment.ProjectId),
           this.client.getEnvironment(deployment.EnvironmentId),
@@ -129,10 +146,26 @@ export class Octopus {
     }
   }
 
-  async *getReleases(): AsyncGenerator<Release> {
+  async *getReleases(since?: string): AsyncGenerator<Release> {
     for (const [spaceId, spaceName] of Object.entries(this.spaces)) {
+      let lookingBack = false;
+      let lookedBack = 0;
       for await (const release of this.client.listReleases(spaceId)) {
+        if (since && release.Id === since) {
+          lookingBack = true;
+        }
+        if (lookingBack) {
+          if (lookedBack >= this.lookBackDepth) {
+            this.logger.info(
+              `Including '${since}', looked back ${lookedBack} release(s)`
+            );
+            break;
+          }
+          lookedBack++;
+        }
+
         const project = await this.client.getProject(release.ProjectId);
+
         yield {
           ...release,
           _extra: {
