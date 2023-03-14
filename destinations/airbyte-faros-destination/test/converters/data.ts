@@ -95,7 +95,12 @@ export const farosFeedsAllStreamsLog = readTestResourceFile(
 export const semaphoreciAllStreamLogs = readTestResourceFile(
   'semaphoreci/all-streams.log'
 );
-export const hygieiaAllStreamsLog = readTestResourceFile('hygieia/all-streams.log');
+export const hygieiaAllStreamsLog = readTestResourceFile(
+  'hygieia/all-streams.log'
+);
 export const notionAllStreamsLog = readTestResourceFile(
   'notion/all-streams.log'
+);
+export const octopusAllStreamsLog = readTestResourceFile(
+  'octopus/all-streams.log'
 );

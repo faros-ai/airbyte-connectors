@@ -1,0 +1,54 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Octopus Spec",
+    "type": "object",
+    "required": ["api_key", "instance_url"],
+    "additionalProperties": true,
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "Octopus API Key",
+        "airbyte_secret": true
+      },
+      "instance_url": {
+        "type": "string",
+        "title": "Octopus Instance Url",
+        "examples": ["https://my-instance.octopus.app"]
+      },
+      "space_names": {
+        "type": "array",
+        "title": "Octopus Spaces to Sync",
+        "description": "The Octopus Spaces to sync. If no Spaces provided, all Spaces will be synced.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "type": "number",
+        "title": "Cutoff Days",
+        "description": "The number of days of data to sync from Octopus.",
+        "default": 90
+      },
+      "look_back_depth": {
+        "type": "number",
+        "title": "Look Back Depth",
+        "description": "The number of items to look back past the checkpoint when syncing incrementally.",
+        "default": 10
+      },
+      "page_size": {
+        "type": "number",
+        "title": "Page Size",
+        "description": "The page size to use when paginating Octopus resources.",
+        "default": 100
+      },
+      "max_retries": {
+        "type": "number",
+        "title": "Max Retries",
+        "description": "The maximum number of times to retry requests to Octopus.",
+        "default": 3
+      }
+    }
+  }
+}
