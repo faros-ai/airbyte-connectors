@@ -223,7 +223,9 @@ async function promptValue(row: TableRow) {
   const type = row.items_type ?? row.type;
   ok(type);
 
-  const message = `${row.title}: ${row.description || ''}`;
+  const message = row.description
+    ? `${row.title}: ${row.description}`
+    : row.title;
 
   switch (type) {
     case 'boolean':
@@ -295,9 +297,12 @@ async function promptLeaf(row: TableRow) {
       message: 'Enter your own value',
       value: ' ',
     });
+    const message = row.description
+      ? `${row.title}: ${row.description}`
+      : row.title;
     choice = await runSelect({
       name: 'leaf',
-      message: `${row.title}: ${row.description || ''}`,
+      message,
       choices,
     });
   }
