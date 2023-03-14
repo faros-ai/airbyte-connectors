@@ -55,8 +55,8 @@ describe('octopus', () => {
       .value();
 
     const writtenByModel = {
-      cicd_Deployment: 2,
-      cicd_Release: 2,
+      cicd_Deployment: 6,
+      cicd_Release: 6,
     };
 
     const processedTotal = _(processedByStream).values().sum();
