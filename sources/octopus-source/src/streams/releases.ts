@@ -51,7 +51,7 @@ export class Releases extends AirbyteStreamBase {
     currentStreamState: ReleaseState,
     latestRecord: Release
   ): ReleaseState {
-    const spaceName = latestRecord._extra.SpaceName;
+    const spaceName = latestRecord.SpaceName;
     const lastId = currentStreamState[spaceName]?.lastReleaseId;
     const currentIdNum = lastId ? +lastId.match(this.idNumRegex)[1] : 0;
     const latestIdNum = +latestRecord.Id.match(this.idNumRegex)[1];

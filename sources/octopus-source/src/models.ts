@@ -16,26 +16,22 @@ export type PagedResponse<T> = AxiosResponse<ResourceCollection<T>>;
 export type PagingParams = ListArgs;
 
 export interface Deployment extends OctopusDeployment {
-  readonly _extra: {
-    readonly SpaceName: string;
-    readonly ProjectName: string;
-    readonly EnvironmentName: string;
-    readonly Task: {
-      readonly State: TaskState;
-      readonly ErrorMessage: string;
-      readonly QueueTime: string;
-      readonly StartTime: string;
-      readonly CompletedTime: string;
-    };
-    readonly Process: DeploymentProcess;
+  readonly SpaceName: string;
+  readonly ProjectName: string;
+  readonly EnvironmentName: string;
+  readonly Task: {
+    readonly State: TaskState;
+    readonly ErrorMessage: string;
+    readonly QueueTime: string;
+    readonly StartTime: string;
+    readonly CompletedTime: string;
   };
+  readonly Process: DeploymentProcess;
 }
 
 export interface Release extends OctopusRelease {
-  readonly _extra: {
-    readonly SpaceName: string;
-    readonly ProjectName: string;
-  };
+  readonly SpaceName: string;
+  readonly ProjectName: string;
 }
 
 export interface DeploymentProcess {

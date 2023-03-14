@@ -152,19 +152,17 @@ export class Octopus {
 
         yield {
           ...deployment,
-          _extra: {
-            SpaceName: spaceName,
-            ProjectName: project.Name,
-            EnvironmentName: environment.Name,
-            Task: {
-              State: task.State,
-              ErrorMessage: task.ErrorMessage,
-              QueueTime: task.QueueTime,
-              StartTime: task.StartTime,
-              CompletedTime: task.CompletedTime,
-            },
-            Process: process,
+          SpaceName: spaceName,
+          ProjectName: project.Name,
+          EnvironmentName: environment.Name,
+          Task: {
+            State: task.State,
+            ErrorMessage: task.ErrorMessage,
+            QueueTime: task.QueueTime,
+            StartTime: task.StartTime,
+            CompletedTime: task.CompletedTime,
           },
+          Process: process,
         };
       }
     }
@@ -203,10 +201,8 @@ export class Octopus {
 
         yield {
           ...release,
-          _extra: {
-            SpaceName: spaceName,
-            ProjectName: project.Name,
-          },
+          SpaceName: spaceName,
+          ProjectName: project.Name,
         };
       }
     }

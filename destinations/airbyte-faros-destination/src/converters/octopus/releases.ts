@@ -21,7 +21,7 @@ export class Releases extends OctopusConverter {
       model: 'cicd_Release',
       record: {
         uid: release.Id,
-        name: `${release._extra?.ProjectName}:${release.Version}`,
+        name: `${release.ProjectName}:${release.Version}`,
         createdAt: Utils.toDate(release.Assembled),
         source,
       },

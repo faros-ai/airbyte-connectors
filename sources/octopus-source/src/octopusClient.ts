@@ -46,10 +46,12 @@ export class OctopusClient {
     const logger = this.logger; // for axios-retry
 
     this.api = axios.create({
-      baseURL: config.instanceUrl.concat('/api'),
+      baseURL: `${config.instanceUrl}/api`,
       headers: {
         'X-Octopus-ApiKey': config.apiKey,
       },
+      timeout: 30_000,
+      maxContentLength: Infinity,
     });
 
     if (retries > 0) {

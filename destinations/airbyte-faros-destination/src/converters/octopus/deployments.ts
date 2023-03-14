@@ -22,17 +22,17 @@ export class Deployments extends OctopusConverter {
       record: {
         uid: deployment.Id,
         application: {
-          name: deployment._extra?.ProjectName,
+          name: deployment.ProjectName,
           platform: '',
         },
         url: deployment.Links?.Self,
-        requestedAt: Utils.toDate(deployment._extra?.Task?.QueueTime),
-        startedAt: Utils.toDate(deployment._extra?.Task?.StartTime),
-        endedAt: Utils.toDate(deployment._extra?.Task?.CompletedTime),
-        env: this.convertOctopusEnvironment(deployment._extra?.EnvironmentName),
+        requestedAt: Utils.toDate(deployment.Task?.QueueTime),
+        startedAt: Utils.toDate(deployment.Task?.StartTime),
+        endedAt: Utils.toDate(deployment.Task?.CompletedTime),
+        env: this.convertOctopusEnvironment(deployment.EnvironmentName),
         status: this.convertOctopusStatus(
-          deployment._extra?.Task?.State,
-          deployment._extra?.Task?.ErrorMessage
+          deployment.Task?.State,
+          deployment.Task?.ErrorMessage
         ),
         source,
       },
@@ -53,9 +53,9 @@ export class Deployments extends OctopusConverter {
     detail: string;
   } {
     if (!octopusStatus) {
-      return {category: 'Unknown', detail: 'undefined'};
+      return {category: 'Custom', detail: 'undefined'};
     }
-    const status = octopusStatus?.toLowerCase();
+    const status = octopusStatus.toLowerCase();
     const detail = `${octopusStatus}${
       octopusErrMsg ? ' - ' + octopusErrMsg : ''
     }`;
@@ -82,9 +82,9 @@ export class Deployments extends OctopusConverter {
     detail: string;
   } {
     if (!octopusEnv) {
-      return {category: 'Unknown', detail: 'undefined'};
+      return {category: 'Custom', detail: 'undefined'};
     }
-    const env = octopusEnv?.toLowerCase();
+    const env = octopusEnv.toLowerCase();
     const detail = octopusEnv;
 
     switch (env) {
