@@ -40,7 +40,11 @@ describe('index', () => {
   test('client strips "/" suffix from instance URL if provided', async () => {
     const instanceUrl = 'https://test.octopus.app';
     const instanceUrlWithSuffix = `${instanceUrl}/`;
-    new sut.OctopusClient({...config, instanceUrl: instanceUrlWithSuffix});
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const client = new sut.OctopusClient({
+      ...config,
+      instanceUrl: instanceUrlWithSuffix,
+    });
     expect(mockedAxios.create).toBeCalledWith(
       expect.objectContaining({baseURL: `${instanceUrl}/api`})
     );
