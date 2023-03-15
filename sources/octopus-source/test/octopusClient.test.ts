@@ -28,12 +28,26 @@ describe('index', () => {
     request: jest.fn(),
   } as any;
 
-  beforeAll(() => {
+  beforeEach(() => {
+    mockedAxios.create.mockReset();
     mockedAxios.create.mockReturnValue(mockApi);
   });
 
   afterEach(() => {
     mockGet.mockReset();
+  });
+
+  test('client strips "/" suffix from instance URL if provided', async () => {
+    const instanceUrl = 'https://test.octopus.app';
+    const instanceUrlWithSuffix = `${instanceUrl}/`;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const client = new sut.OctopusClient({
+      ...config,
+      instanceUrl: instanceUrlWithSuffix,
+    });
+    expect(mockedAxios.create).toBeCalledWith(
+      expect.objectContaining({baseURL: `${instanceUrl}/api`})
+    );
   });
 
   test('client correctly paginates', async () => {
