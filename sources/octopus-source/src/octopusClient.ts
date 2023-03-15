@@ -45,7 +45,7 @@ export class OctopusClient {
     const retries = config.maxRetries ?? DEFAULT_MAX_RETRIES;
     const logger = this.logger; // for axios-retry
 
-    const cleanInstanceUrl = config.instanceUrl.replace(/\/+$/, '');
+    const cleanInstanceUrl = config.instanceUrl.replace(/\/$/, '');
 
     this.api = axios.create({
       baseURL: `${cleanInstanceUrl}/api`,
