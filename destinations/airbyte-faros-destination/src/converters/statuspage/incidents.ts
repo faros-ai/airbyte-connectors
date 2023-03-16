@@ -55,14 +55,11 @@ export class Incidents extends StatuspageConverter {
     // Use highest severity in incident's history as its severity
     let severity: IncidentSeverity | undefined = undefined;
 
-    for (const update of incident.incident_updates) {
-      if (update.affected_components) {
-        for (const component of update.affected_components) {
-          const thisSeverity = this.getSeverity(component.new_status);
-          if (!severity) severity = thisSeverity;
-          if (thisSeverity.category < severity.category)
-            severity = thisSeverity;
-        }
+    for (const update of incident.incident_updates ?? []) {
+      for (const component of update.affected_components ?? []) {
+        const thisSeverity = this.getSeverity(component.new_status);
+        if (!severity) severity = thisSeverity;
+        if (thisSeverity.category < severity.category) severity = thisSeverity;
       }
       res.push({
         model: 'ims_IncidentEvent',
