@@ -8,6 +8,7 @@ import {
   PullRequestActivity,
   PullRequestDiff,
   Repository,
+  Tag,
 } from 'faros-airbyte-common/bitbucket-server';
 import {pick} from 'lodash';
 import parseDiff from 'parse-diff';
@@ -192,6 +193,36 @@ export class BitbucketServer {
       throw new VError(
         innerError(err),
         `Error fetching commits for repository ${fullName}`
+      );
+    }
+  }
+
+  async *tags(
+    projectKey: string,
+    repositorySlug: string
+  ): AsyncGenerator<Tag> {
+    const fullName = repoFullName(projectKey, repositorySlug);
+    try {
+      this.logger.debug(`Fetching tags for repository ${fullName}`);
+      yield* this.paginate<Dict, Tag>(
+        (start) =>
+          this.client[MEP].repos.getTags({
+            projectKey,
+            repositorySlug,
+            start,
+            limit: this.pageSize,
+          }),
+        (data) => {
+          return {
+            ...data,
+            computedProperties: {repository: {fullName}},
+          } as Tag;
+        },
+      );
+    } catch (err) {
+      throw new VError(
+        innerError(err),
+        `Error fetching tags for repository ${fullName}`
       );
     }
   }
