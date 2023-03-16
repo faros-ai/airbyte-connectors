@@ -51,12 +51,35 @@ export class Incidents extends StatuspageConverter {
       }
     }
 
-    // Statuspage doesn't have incident severity, take "severity" of affected component/service
+    // Statuspage doesn't have incident severity, take "severity" from status
+    // Use highest severity in incident's history as its severity
     let severity: IncidentSeverity | undefined = undefined;
-    for (const component of incident.components) {
-      const thisSeverity = this.getSeverity(component.status);
-      if (!severity) severity = thisSeverity;
-      if (thisSeverity.category < severity.category) severity = thisSeverity;
+
+    for (const update of incident.incident_updates ?? []) {
+      for (const component of update.affected_components ?? []) {
+        const thisSeverity = this.getSeverity(component.new_status);
+        if (!severity) severity = thisSeverity;
+        if (thisSeverity.category < severity.category) severity = thisSeverity;
+      }
+      res.push({
+        model: 'ims_IncidentEvent',
+        record: {
+          uid: update.id,
+          type: this.eventType(update.status),
+          createdAt: Utils.toDate(update.created_at),
+          detail: update.body,
+          incident: {uid: update.incident_id, source},
+        },
+      });
+    }
+
+    // If severity could not be found from historical components, try root components
+    if (!severity) {
+      for (const component of incident.components) {
+        const thisSeverity = this.getSeverity(component.status);
+        if (!severity) severity = thisSeverity;
+        if (thisSeverity.category < severity.category) severity = thisSeverity;
+      }
     }
 
     res.push({
@@ -75,19 +98,6 @@ export class Incidents extends StatuspageConverter {
         status: this.getIncidentStatus(incident.status),
       },
     });
-
-    for (const update of incident.incident_updates) {
-      res.push({
-        model: 'ims_IncidentEvent',
-        record: {
-          uid: update.id,
-          type: this.eventType(update.status),
-          createdAt: Utils.toDate(update.created_at),
-          detail: update.body,
-          incident: {uid: update.incident_id, source},
-        },
-      });
-    }
 
     if (incident.components) {
       const applicationMapping = this.applicationMapping(ctx);
