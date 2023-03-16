@@ -16,6 +16,7 @@ import {PullRequestActivities} from './streams/pull_request_activities';
 import {PullRequestDiffs} from './streams/pull_request_diffs';
 import {PullRequests} from './streams/pull_requests';
 import {Repositories} from './streams/repositories';
+import {Tags} from './streams/tags';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -51,6 +52,7 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
       PullRequestDiffs,
       PullRequests,
       Repositories,
+      Tags,
     ].map((Stream) => new Stream(config, this.logger));
   }
 }

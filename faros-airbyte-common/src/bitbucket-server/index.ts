@@ -107,6 +107,18 @@ export interface Repository {
   };
 }
 
+export interface Tag {
+  readonly id: string;
+  readonly displayId: string;
+  readonly type: string;
+  readonly latestCommit: string;
+  readonly latestChangeset: string;
+  readonly hash: string;
+  readonly computedProperties: {
+    readonly repository: {readonly fullName: string};
+  };
+}
+
 export interface Project {
   readonly key: string;
   readonly name: string;
