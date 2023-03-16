@@ -44,6 +44,7 @@ describe('bitbucket-server', () => {
       repositories: 1,
       project_users: 3,
       projects: 1,
+      tags: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -63,6 +64,7 @@ describe('bitbucket-server', () => {
       vcs_PullRequestReview: 5,
       vcs_PullRequest__Update: 5,
       vcs_Repository: 1,
+      vcs_Tag: 1,
       vcs_User: 4,
     };
 

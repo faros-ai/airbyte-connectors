@@ -41,6 +41,12 @@
         "name": "mytestsource__bitbucket-server__projects"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__bitbucket-server__tags"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }
