@@ -13,6 +13,7 @@ export interface OctopusConfig {
   readonly look_back_depth?: number;
   readonly page_size?: number;
   readonly max_retries?: number;
+  readonly reject_unauthorized?: boolean;
 }
 
 /**
@@ -44,6 +45,10 @@ export class Octopus {
     }
     if (!config.instance_url) {
       throw new VError('Instance URL must be provided');
+    }
+    if (config?.reject_unauthorized === false) {
+      logger.warn('Disabling certificate validation');
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
 
     const client = new OctopusClient({
