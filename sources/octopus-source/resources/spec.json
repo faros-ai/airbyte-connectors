@@ -52,7 +52,7 @@
       "reject_unauthorized": {
         "type": "boolean",
         "title": "Reject Unauthorized",
-        "description": "Enable certificate validation for the CircleCI server",
+        "description": "Enable certificate validation for Octopus server",
         "default": true
       }
     }
