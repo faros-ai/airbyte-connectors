@@ -2,13 +2,14 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
-import {Deployment, Release} from './models';
+import {Deployment, DeploymentProcess, Release} from './models';
 import {OctopusClient} from './octopusClient';
 
 export interface OctopusConfig {
   readonly api_key: string;
   readonly instance_url: string;
   readonly space_names?: string[];
+  readonly fetch_deployment_process?: boolean;
   readonly cutoff_days?: number;
   readonly look_back_depth?: number;
   readonly page_size?: number;
@@ -28,7 +29,8 @@ export class Octopus {
     private readonly client: OctopusClient,
     private readonly logger: AirbyteLogger,
     cutoffDays?: number,
-    private readonly lookBackDepth = 10
+    private readonly lookBackDepth = 10,
+    private readonly fetchDeploymentProcess = true
   ) {
     this.cutoff = cutoffDays
       ? DateTime.now().minus({days: cutoffDays})
@@ -62,7 +64,8 @@ export class Octopus {
       client,
       logger,
       config.cutoff_days,
-      config.look_back_depth
+      config.look_back_depth,
+      config.fetch_deployment_process
     );
     await Octopus.inst.initialize(config.space_names);
     return Octopus.inst;
@@ -152,7 +155,7 @@ export class Octopus {
           this.client.getProject(deployment.ProjectId),
           this.client.getEnvironment(deployment.EnvironmentId),
           this.client.getTask(deployment.TaskId),
-          this.client.getProjectDeploymentProcess(deployment.ProjectId),
+          this.getDeploymentProcess(deployment.ProjectId),
         ]);
 
         yield {
@@ -171,6 +174,14 @@ export class Octopus {
         };
       }
     }
+  }
+
+  private async getDeploymentProcess(
+    projectId: string
+  ): Promise<DeploymentProcess | undefined> {
+    return this.fetchDeploymentProcess
+      ? this.client.getProjectDeploymentProcess(projectId)
+      : Promise.resolve(undefined);
   }
 
   async *getReleases(

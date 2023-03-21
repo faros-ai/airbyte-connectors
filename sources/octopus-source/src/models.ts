@@ -26,7 +26,7 @@ export interface Deployment extends OctopusDeployment {
     readonly StartTime: string;
     readonly CompletedTime: string;
   };
-  readonly Process: DeploymentProcess;
+  readonly Process?: DeploymentProcess;
 }
 
 export interface Release extends OctopusRelease {
