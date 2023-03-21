@@ -25,6 +25,12 @@
           "type": "string"
         }
       },
+      "fetch_deployment_process": {
+        "type": "boolean",
+        "title": "Fetch Deployment Process",
+        "description": "Retrieve the deployment process for each deployment.",
+        "default": true
+      },
       "cutoff_days": {
         "type": "number",
         "title": "Cutoff Days",
