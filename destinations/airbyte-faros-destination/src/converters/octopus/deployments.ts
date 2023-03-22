@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OctopusConverter} from './common';
 
@@ -21,10 +22,7 @@ export class Deployments extends OctopusConverter {
       model: 'cicd_Deployment',
       record: {
         uid: deployment.Id,
-        application: {
-          name: deployment.ProjectName,
-          platform: '',
-        },
+        application: Common.computeApplication(deployment.ProjectName),
         url: deployment.Links?.Self,
         requestedAt: Utils.toDate(deployment.Task?.QueueTime),
         startedAt: Utils.toDate(deployment.Task?.StartTime),
