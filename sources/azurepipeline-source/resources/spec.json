@@ -14,7 +14,7 @@
     "properties": {
       "access_token": {
         "type": "string",
-        "title": "Access Token",
+        "title": "Azure Access Token",
         "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
