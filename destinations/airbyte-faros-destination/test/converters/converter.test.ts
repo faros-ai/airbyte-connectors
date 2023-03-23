@@ -34,7 +34,12 @@ describe('converter', () => {
 
   test('set and get records from StreamContext', () => {
     const stream = new GroupUsers().streamName.asString;
-    const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}});
+    const ctx = new StreamContext(
+      new AirbyteLogger(),
+      {edition_configs: {}},
+      {},
+      {}
+    );
     const record = new AirbyteRecord({
       stream,
       emitted_at: 123,

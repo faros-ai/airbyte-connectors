@@ -50,15 +50,26 @@
           "{ \"originA\": \"originB\" }"
         ]
       },
-      "dry_run": {
+      "exclude_fields_map": {
         "order": 4,
+        "type": "string",
+        "title": "Exclude Fields",
+        "description": "JSON map to exclude specific records field values, where each entry (model, fields[]) indicates that the records' fields of specific model type should be removed",
+        "multiline": true,
+        "default": "{}",
+        "examples": [
+          "{ \"tms_Task\": [ \"description\" ], \"vcs_PullRequest\": [ \"description\", \"htmlUrl\" ] }"
+        ]
+      },
+      "dry_run": {
+        "order": 5,
         "type": "boolean",
         "title": "Dry run",
         "description": "Process all input records but avoid writing into Faros API",
         "default": false
       },
       "invalid_record_strategy": {
-        "order": 5,
+        "order": 6,
         "type": "string",
         "title": "Invalid record strategy",
         "description": "Strategy to follow to handle an invalid input record.",
@@ -66,14 +77,14 @@
         "enum": ["FAIL", "SKIP"]
       },
       "jsonata_expression": {
-        "order": 6,
+        "order": 7,
         "type": "string",
         "title": "JSONata expression",
         "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode.",
         "multiline": true
       },
       "jsonata_mode": {
-        "order": 7,
+        "order": 8,
         "type": "string",
         "title": "JSONata apply mode",
         "description": "JSONata apply mode when converting input records.",
@@ -81,7 +92,7 @@
         "enum": ["FALLBACK", "OVERRIDE"]
       },
       "jsonata_destination_models": {
-        "order": 8,
+        "order": 9,
         "type": "array",
         "items": {
           "type": "string"

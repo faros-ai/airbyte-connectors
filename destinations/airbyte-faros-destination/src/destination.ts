@@ -24,7 +24,7 @@ import {
 } from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, keyBy, sortBy, uniq} from 'lodash';
+import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -420,10 +420,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const streamContext = new StreamContext(
         this.logger,
         config,
-        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient(),
+        streamsSyncMode,
+        JSON.parse(config.exclude_fields_map ?? '{}'),
         this.farosGraph,
         origin,
-        streamsSyncMode
+        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
       );
 
       if (dryRunEnabled) {
@@ -445,7 +446,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         let originRemapper = undefined;
         if (config.accept_input_records_origin && config.replace_origin_map) {
           const originMap = JSON.parse(config.replace_origin_map);
-          originRemapper = (origin: string) => {
+          originRemapper = (origin: string): string => {
             return originMap[origin] ?? origin;
           };
         }
@@ -453,7 +454,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           graphQLClient,
           config.accept_input_records_origin
             ? {
-                getOrigin: (record: Dictionary<any>) => {
+                getOrigin: (record: Dictionary<any>): string => {
                   if (!record.origin) {
                     return origin;
                   }
@@ -676,6 +677,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           converter,
           results,
           stats,
+          ctx,
           writer
         );
       }
@@ -800,13 +802,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
     // Write the converted records
-    return this.writeConvertedRecords(converter, results, stats, writer);
+    return this.writeConvertedRecords(converter, results, stats, ctx, writer);
   }
 
   private async writeConvertedRecords<R>(
     converter: Converter,
     results: ReadonlyArray<DestinationRecordTyped<R>>,
     stats: WriteStats,
+    ctx: StreamContext,
     writer?: Writable | GraphQLWriter
   ): Promise<number> {
     if (!Array.isArray(results)) {
@@ -815,15 +818,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     let recordsWritten = 0;
     // Write out the results to the output stream
-    for (const result of results) {
-      if (!result.model) throw new VError('Invalid result: undefined model');
-      if (!result.record) throw new VError('Invalid result: undefined record');
-      if (typeof result.record !== 'object')
+    for (const res of results) {
+      // Som mandatory checks
+      if (!res.model) throw new VError('Invalid result: undefined model');
+      if (!res.record) throw new VError('Invalid result: undefined record');
+      if (typeof res.record !== 'object')
         throw new VError('Invalid result: record is not an object');
 
       // Set the source if missing
-      if (!result.record['source']) {
-        result.record['source'] = converter.streamName.source;
+      if (!res.record['source']) {
+        res.record['source'] = converter.streamName.source;
+      }
+      // Exclude record fields if necessary
+      let result = res;
+      const exclusions = ctx.excludeFieldsByModel[res.model];
+      if (exclusions?.length > 0) {
+        result = {
+          ...res,
+          record: pickBy(res.record, (_v, k) => !exclusions.includes(k)),
+        };
       }
 
       let isTimestamped = false;
@@ -831,9 +844,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         if (writer instanceof GraphQLWriter) {
           isTimestamped = await writer.write(result);
         } else {
-          const obj: Dictionary<any> = {};
-          obj[result.model] = result.record;
-          writer.write(obj);
+          writer.write({[result.model]: result.record});
         }
       }
       if (!isTimestamped) {

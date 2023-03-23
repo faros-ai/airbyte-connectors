@@ -23,6 +23,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly origin?: string;
   readonly accept_input_records_origin?: boolean;
   readonly replace_origin_map?: string;
+  readonly exclude_fields_map?: string;
   readonly source_specific_configs?: Dictionary<any>;
   readonly keep_alive?: boolean;
 }
