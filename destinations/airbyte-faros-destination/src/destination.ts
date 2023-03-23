@@ -812,33 +812,31 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     ctx: StreamContext,
     writer?: Writable | GraphQLWriter
   ): Promise<number> {
-    if (!Array.isArray(results)) {
+    if (!Array.isArray(results))
       throw new VError('Invalid results: not an array');
-    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream
-    for (const res of results) {
-      // Som mandatory checks
-      if (!res.model) throw new VError('Invalid result: undefined model');
-      if (!res.record) throw new VError('Invalid result: undefined record');
-      if (typeof res.record !== 'object')
+    for (const result of results) {
+      if (!result.model) throw new VError('Invalid result: undefined model');
+      if (!result.record) throw new VError('Invalid result: undefined record');
+      if (typeof result.record !== 'object')
         throw new VError('Invalid result: record is not an object');
 
       // Set the source if missing
-      if (!res.record['source']) {
-        res.record['source'] = converter.streamName.source;
+      if (!result.record['source']) {
+        result.record['source'] = converter.streamName.source;
       }
       // Exclude record fields if necessary
-      let result = res;
-      const exclusions = ctx.excludeFieldsByModel[res.model];
+      const exclusions = ctx.excludeFieldsByModel[result.model];
       if (exclusions?.length > 0) {
-        result = {
-          ...res,
-          record: pickBy(res.record, (_v, k) => !exclusions.includes(k)),
-        };
+        result.record = pickBy(
+          result.record,
+          (_v, k) => !exclusions.includes(k)
+        );
       }
 
+      // Write the record & increment the stats
       let isTimestamped = false;
       if (writer) {
         if (writer instanceof GraphQLWriter) {
