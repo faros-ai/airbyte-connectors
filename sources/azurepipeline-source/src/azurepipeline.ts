@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {base64Encode, isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
+import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -55,10 +55,7 @@ export class AzurePipeline {
       throw new VError('cutoff_days is null or empty');
     }
 
-    let accessToken = config.access_token;
-    if (!isBase64Encoded(accessToken)) {
-      accessToken = base64Encode(`:${accessToken}`);
-    }
+    const accessToken = base64Encode(`:${config.access_token}`);
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
