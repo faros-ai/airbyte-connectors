@@ -74,3 +74,10 @@ export function toDate(
   }
   return new Date(val);
 }
+
+const BASE64_PATTERN =
+  /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/;
+
+export function isBase64Encoded(str: string): boolean {
+  return BASE64_PATTERN.test(str);
+}

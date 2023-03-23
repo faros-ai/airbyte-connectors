@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
@@ -41,6 +41,13 @@ export class AzureWorkitems {
       throw new VError('project must not be an empty string');
     }
 
+    let accessToken = config.access_token;
+    if (!isBase64Encoded(accessToken)) {
+      accessToken = Buffer.from(`${':'}${accessToken}`, 'binary').toString(
+        'base64'
+      );
+    }
+
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
@@ -50,7 +57,7 @@ export class AzureWorkitems {
         'api-version': version,
       },
       headers: {
-        Authorization: `Basic ${config.access_token}`,
+        Authorization: `Basic ${accessToken}`,
       },
     });
 
@@ -60,7 +67,7 @@ export class AzureWorkitems {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
-      headers: {Authorization: `Basic ${config.access_token}`},
+      headers: {Authorization: `Basic ${accessToken}`},
     });
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
