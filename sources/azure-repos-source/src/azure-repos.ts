@@ -3,7 +3,7 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
@@ -82,10 +82,7 @@ export class AzureRepos {
       throw new VError('Projects provided in addition to * keyword');
     }
 
-    const base64EncodedAccessToken = Buffer.from(
-      `${':'}${config.access_token}`,
-      'binary'
-    ).toString('base64');
+    const accessToken = base64Encode(`:${config.access_token}`);
 
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}`,
@@ -93,7 +90,7 @@ export class AzureRepos {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
-      headers: {Authorization: `Basic ${base64EncodedAccessToken}`},
+      headers: {Authorization: `Basic ${accessToken}`},
     });
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
@@ -101,7 +98,7 @@ export class AzureRepos {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
-      headers: {Authorization: `Basic ${base64EncodedAccessToken}`},
+      headers: {Authorization: `Basic ${accessToken}`},
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -134,7 +131,9 @@ export class AzureRepos {
     axiosRetry(httpClient, retryConfig);
     axiosRetry(graphClient, retryConfig);
 
-    const branchPattern = new RegExp(config.branch_pattern || DEFAULT_BRANCH_PATTERN);
+    const branchPattern = new RegExp(
+      config.branch_pattern || DEFAULT_BRANCH_PATTERN
+    );
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 

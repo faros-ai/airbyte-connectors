@@ -10,6 +10,7 @@
       "access_token": {
         "type": "string",
         "title": "Azure Access Token",
+        "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
       "organization": {

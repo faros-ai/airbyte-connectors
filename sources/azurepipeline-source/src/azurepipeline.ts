@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -54,6 +54,9 @@ export class AzurePipeline {
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');
     }
+
+    const accessToken = base64Encode(`:${config.access_token}`);
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
 
@@ -66,7 +69,7 @@ export class AzurePipeline {
         'api-version': version,
       },
       headers: {
-        Authorization: `Basic ${config.access_token}`,
+        Authorization: `Basic ${accessToken}`,
       },
     });
     const httpVSRMClient = axios.create({
@@ -77,7 +80,7 @@ export class AzurePipeline {
         'api-version': version,
       },
       headers: {
-        Authorization: `Basic ${config.access_token}`,
+        Authorization: `Basic ${accessToken}`,
       },
     });
 
