@@ -43,7 +43,7 @@ export class AzureWorkitems {
 
     let accessToken = config.access_token;
     if (!isBase64Encoded(accessToken)) {
-      accessToken = base64Encode(`${':'}${accessToken}`);
+      accessToken = base64Encode(`:${accessToken}`);
     }
 
     const version = config.api_version ?? DEFAULT_API_VERSION;

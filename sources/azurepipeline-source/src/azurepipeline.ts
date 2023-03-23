@@ -57,7 +57,7 @@ export class AzurePipeline {
 
     let accessToken = config.access_token;
     if (!isBase64Encoded(accessToken)) {
-      accessToken = base64Encode(`${':'}${accessToken}`);
+      accessToken = base64Encode(`:${accessToken}`);
     }
 
     const startDate = new Date();
