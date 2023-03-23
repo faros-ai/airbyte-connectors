@@ -9,7 +9,7 @@
     "properties": {
       "access_token": {
         "type": "string",
-        "title": "Azure Access Token",
+        "title": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
       "organization": {
