@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
+import {base64Encode, isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -57,9 +57,7 @@ export class AzurePipeline {
 
     let accessToken = config.access_token;
     if (!isBase64Encoded(accessToken)) {
-      accessToken = Buffer.from(`${':'}${accessToken}`, 'binary').toString(
-        'base64'
-      );
+      accessToken = base64Encode(`${':'}${accessToken}`);
     }
 
     const startDate = new Date();

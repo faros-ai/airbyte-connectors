@@ -3,7 +3,12 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
-import {AirbyteLogger, isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  base64Encode,
+  isBase64Encoded,
+  wrapApiError,
+} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
@@ -84,9 +89,7 @@ export class AzureRepos {
 
     let accessToken = config.access_token;
     if (!isBase64Encoded(accessToken)) {
-      accessToken = Buffer.from(`${':'}${accessToken}`, 'binary').toString(
-        'base64'
-      );
+      accessToken = base64Encode(`${':'}${accessToken}`);
     }
 
     const httpClient = axios.create({

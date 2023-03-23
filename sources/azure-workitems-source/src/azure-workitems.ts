@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
+import {base64Encode, isBase64Encoded, wrapApiError} from 'faros-airbyte-cdk';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
@@ -43,9 +43,7 @@ export class AzureWorkitems {
 
     let accessToken = config.access_token;
     if (!isBase64Encoded(accessToken)) {
-      accessToken = Buffer.from(`${':'}${accessToken}`, 'binary').toString(
-        'base64'
-      );
+      accessToken = base64Encode(`${':'}${accessToken}`);
     }
 
     const version = config.api_version ?? DEFAULT_API_VERSION;

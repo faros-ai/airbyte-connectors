@@ -81,3 +81,7 @@ const BASE64_PATTERN =
 export function isBase64Encoded(str: string): boolean {
   return BASE64_PATTERN.test(str);
 }
+
+export function base64Encode(str: string): string {
+  return Buffer.from(str, 'binary').toString('base64');
+}
