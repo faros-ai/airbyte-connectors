@@ -37,7 +37,6 @@ describe('converter', () => {
     const ctx = new StreamContext(
       new AirbyteLogger(),
       {edition_configs: {}},
-      {},
       {}
     );
     const record = new AirbyteRecord({

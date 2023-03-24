@@ -78,6 +78,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
+    private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -318,6 +319,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         'JSONata destination models must be set when using JSONata expression'
       );
     }
+
+    this.excludeFieldsByModel = config.exclude_fields_map
+      ? JSON.parse(config.exclude_fields_map)
+      : {};
+
     const jira_configs = config.source_specific_configs?.jira ?? {};
     if (
       typeof jira_configs.truncate_limit === 'number' &&
@@ -421,7 +427,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger,
         config,
         streamsSyncMode,
-        JSON.parse(config.exclude_fields_map ?? '{}'),
         this.farosGraph,
         origin,
         this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
@@ -677,7 +682,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           converter,
           results,
           stats,
-          ctx,
           writer
         );
       }
@@ -802,14 +806,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     // Apply conversion on the input record
     const results = await converter.convert(recordMessage, ctx);
     // Write the converted records
-    return this.writeConvertedRecords(converter, results, stats, ctx, writer);
+    return this.writeConvertedRecords(converter, results, stats, writer);
   }
 
   private async writeConvertedRecords<R>(
     converter: Converter,
     results: ReadonlyArray<DestinationRecordTyped<R>>,
     stats: WriteStats,
-    ctx: StreamContext,
     writer?: Writable | GraphQLWriter
   ): Promise<number> {
     if (!Array.isArray(results))
@@ -828,7 +831,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         result.record['source'] = converter.streamName.source;
       }
       // Exclude record fields if necessary
-      const exclusions = ctx.excludeFieldsByModel[result.model];
+      const exclusions = this.excludeFieldsByModel[result.model];
       if (exclusions?.length > 0) {
         result.record = pickBy(
           result.record,
