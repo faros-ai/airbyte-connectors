@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {InvalidRecordStrategy} from '../../src';
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {GitHubCommon} from '../../src/converters/github/common';
 import {CLI, read} from '../cli';
 import {
@@ -26,7 +26,15 @@ describe('github', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      undefined,
+      undefined,
+      {vcs_Commit: ['message'], vcs_PullRequest: ['description', 'htmlUrl']}
+    );
   });
 
   afterEach(async () => {

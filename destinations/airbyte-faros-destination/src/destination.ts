@@ -24,7 +24,7 @@ import {
 } from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, keyBy, sortBy, uniq} from 'lodash';
+import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -78,6 +78,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
+    private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -318,6 +319,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         'JSONata destination models must be set when using JSONata expression'
       );
     }
+
+    this.excludeFieldsByModel = config.exclude_fields_map
+      ? JSON.parse(config.exclude_fields_map)
+      : {};
+
     const jira_configs = config.source_specific_configs?.jira ?? {};
     if (
       typeof jira_configs.truncate_limit === 'number' &&
@@ -420,10 +426,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const streamContext = new StreamContext(
         this.logger,
         config,
-        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient(),
+        streamsSyncMode,
         this.farosGraph,
         origin,
-        streamsSyncMode
+        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
       );
 
       if (dryRunEnabled) {
@@ -445,7 +451,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         let originRemapper = undefined;
         if (config.accept_input_records_origin && config.replace_origin_map) {
           const originMap = JSON.parse(config.replace_origin_map);
-          originRemapper = (origin: string) => {
+          originRemapper = (origin: string): string => {
             return originMap[origin] ?? origin;
           };
         }
@@ -453,7 +459,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           graphQLClient,
           config.accept_input_records_origin
             ? {
-                getOrigin: (record: Dictionary<any>) => {
+                getOrigin: (record: Dictionary<any>): string => {
                   if (!record.origin) {
                     return origin;
                   }
@@ -809,9 +815,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stats: WriteStats,
     writer?: Writable | GraphQLWriter
   ): Promise<number> {
-    if (!Array.isArray(results)) {
+    if (!Array.isArray(results))
       throw new VError('Invalid results: not an array');
-    }
 
     let recordsWritten = 0;
     // Write out the results to the output stream
@@ -825,15 +830,22 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (!result.record['source']) {
         result.record['source'] = converter.streamName.source;
       }
+      // Exclude record fields if necessary
+      const exclusions = this.excludeFieldsByModel[result.model];
+      if (exclusions?.length > 0) {
+        result.record = pickBy(
+          result.record,
+          (_v, k) => !exclusions.includes(k)
+        );
+      }
 
+      // Write the record & increment the stats
       let isTimestamped = false;
       if (writer) {
         if (writer instanceof GraphQLWriter) {
           isTimestamped = await writer.write(result);
         } else {
-          const obj: Dictionary<any> = {};
-          obj[result.model] = result.record;
-          writer.write(obj);
+          writer.write({[result.model]: result.record});
         }
       }
       if (!isTimestamped) {
