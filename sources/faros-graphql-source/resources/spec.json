@@ -82,7 +82,8 @@
         "type": "string",
         "title": "Legacy V1 schema",
         "description": "Legacy V1 schema as a gzip compressed, base 64 encoded text. Only used when 'Adapt V1 query' is enabled.",
-        "multiline": true
+        "multiline": true,
+        "airbyte_secret": true
       },
       "bucket_id": {
         "order": 9,
