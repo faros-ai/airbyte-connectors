@@ -38,6 +38,30 @@ describe('Pagerduty', () => {
       },
       resource: [],
     };
+    const logEntry = {
+      id: 'id',
+      type: 'LogEntry',
+      summary: 'Summary',
+      self: 'self',
+      html_url: 'url',
+      created_at: '1',
+      incident: {
+        id: 'id',
+        type: 'Incident',
+        summary: 'Summary',
+        self: 'self',
+        html_url: 'url',
+        created_at: '1',
+      },
+      service: {
+        id: 'id',
+        type: 'Service',
+        summary: 'Summary',
+        self: 'self',
+        html_url: 'url',
+        created_at: '1',
+      },
+    };
     const successResponse: PagerdutyResponse<LogEntry> = {
       url: 'url',
       status: 200,
@@ -50,7 +74,7 @@ describe('Pagerduty', () => {
           },
         ],
       },
-      resource: [],
+      resource: [logEntry],
       next: (): Promise<PagerdutyResponse<LogEntry>> =>
         Promise.reject(limitExceededResponse),
     };
@@ -64,5 +88,6 @@ describe('Pagerduty', () => {
     }
 
     expect(mockGet).toBeCalledTimes(1);
+    expect(items).toEqual([logEntry]);
   });
 });
