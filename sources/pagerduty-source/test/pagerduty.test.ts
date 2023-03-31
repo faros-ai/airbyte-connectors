@@ -15,7 +15,6 @@ describe('Pagerduty', () => {
   const mockGet = jest.fn();
   const mockApi = {
     get: mockGet,
-    request: jest.fn(),
   } as any;
 
   afterEach(() => {
