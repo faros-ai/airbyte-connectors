@@ -40,7 +40,7 @@ export interface PagerdutyConfig {
   readonly max_retries?: number;
 }
 
-interface PagerdutyResponse<Type> {
+export interface PagerdutyResponse<Type> {
   url: string;
   status: number;
   statusText: string;
@@ -154,8 +154,8 @@ export class Pagerduty {
 
       // Deal with PagerDuty 10000 records response limit
       if (
-        errorMessage.includes('Bad Request') &&
-        errorMessage.includes('Offset must be less than')
+        err.status == 400 &&
+        err.data?.error?.errors?.[0]?.includes('Offset must be less than')
       ) {
         this.logger.warn(
           `Reached PagerDuty API response size limit of 10000 records. Error: ${errorMessage}`
