@@ -80,7 +80,10 @@ describe('Pagerduty', () => {
 
     mockGet.mockResolvedValue(successResponse);
 
-    const iter = pd.getIncidentLogEntries(DateTime.now(), DateTime.now());
+    const iter = pd.getIncidentLogEntries(
+      DateTime.now().minus({hours: 12}),
+      DateTime.now()
+    );
     const items = [];
     for await (const item of iter) {
       items.push(item);
