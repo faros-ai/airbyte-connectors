@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "AgileAccelerator",
+          "order": 0
+        },
         "max_description_length": {
           "type": "integer",
           "title": "Max Description Length",

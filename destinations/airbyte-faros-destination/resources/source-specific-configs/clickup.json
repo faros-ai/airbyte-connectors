@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "ClickUp",
+          "order": 0
+        },
         "taskboard_source": {
           "type": "string",
           "title": "TaskBoard Source",

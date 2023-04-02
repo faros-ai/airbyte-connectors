@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Jenkins",
+          "order": 0
+        },
         "create_commit_records": {
           "type": "boolean",
           "title": "Create Commit Records",
