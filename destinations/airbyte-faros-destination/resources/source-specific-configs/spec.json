@@ -8,6 +8,10 @@
       "type": "object",
       "title": "Configurations",
       "properties": {
+        "option_title": {
+          "type": "string",
+          "const": "Source-specific configs"
+        },
         "agileaccelerator": {
           "$ref": "agileaccelerator.json"
         },

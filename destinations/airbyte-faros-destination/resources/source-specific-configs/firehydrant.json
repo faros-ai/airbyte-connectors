@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "FireHydrant",
+          "order": 0
+        },
         "application_mapping": {
           "type": "string",
           "title": "Application Mapping",

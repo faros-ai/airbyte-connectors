@@ -6,7 +6,13 @@
     {
       "type": "object",
       "title": "None",
-      "properties": {}
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Notion_None",
+          "order": 0
+        }
+      }
     },
     {
       "type": "object",
@@ -15,6 +21,11 @@
         "kind_property"
       ],
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Notion",
+          "order": 0
+        },
         "kind_property": {
           "type": "string",
           "title": "Kind Property",
@@ -32,6 +43,11 @@
                 "kind"
               ],
               "properties": {
+                "option_title": {
+                  "type": "string",
+                  "const": "Projects",
+                  "order": 0
+                },
                 "kind": {
                   "type": "string",
                   "title": "Project Kind",
@@ -72,6 +88,11 @@
                 "kind"
               ],
               "properties": {
+                "option_title": {
+                  "type": "string",
+                  "const": "Epics",
+                  "order": 0
+                },
                 "kind": {
                   "type": "string",
                   "title": "Epic Kind",
@@ -124,6 +145,11 @@
                 "kind"
               ],
               "properties": {
+                "option_title": {
+                  "type": "string",
+                  "const": "Sprints",
+                  "order": 0
+                },
                 "kind": {
                   "type": "string",
                   "title": "Sprint Kind",
@@ -188,6 +214,11 @@
                 "kind"
               ],
               "properties": {
+                "option_title": {
+                  "type": "string",
+                  "const": "Tasks",
+                  "order": 0
+                },
                 "kind": {
                   "type": "string",
                   "title": "Task Kind",

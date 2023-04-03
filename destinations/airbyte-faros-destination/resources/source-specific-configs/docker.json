@@ -10,6 +10,11 @@
         "organization"
       ],
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Docker",
+          "order": 0
+        },
         "label_prefix": {
           "type": "string",
           "title": "Label Prefix",
