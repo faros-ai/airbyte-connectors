@@ -8,7 +8,7 @@ export async function read(s: Readable): Promise<string> {
   for await (const line of s) {
     lines.push(line);
   }
-  return lines.join('\n');
+  return lines.join('');
 }
 
 export interface CLIOptions {
