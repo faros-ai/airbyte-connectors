@@ -43,11 +43,20 @@ export class Incidents extends StatuspageConverter {
         : undefined,
       updatedAt = Utils.toDate(incident.updated_at);
 
+    let impactEndedAt;
     for (const update of incident.incident_updates) {
       const eventTime = Utils.toDate(update.created_at);
 
       if (update.status === StatuspageIncidentStatus.Investigating) {
         acknowledgedAt = eventTime;
+      }
+
+      if (update.status === StatuspageIncidentStatus.Monitoring) {
+        // The last monitoring status is when the service impact ended
+        impactEndedAt =
+          !impactEndedAt || impactEndedAt < eventTime
+            ? eventTime
+            : impactEndedAt;
       }
     }
 
@@ -82,6 +91,7 @@ export class Incidents extends StatuspageConverter {
       }
     }
 
+    const priority = this.getPriority(incident.impact);
     res.push({
       model: 'ims_Incident',
       record: {
@@ -93,7 +103,7 @@ export class Incidents extends StatuspageConverter {
         updatedAt,
         acknowledgedAt,
         resolvedAt,
-        priority: this.getPriority(incident.impact),
+        priority,
         severity,
         status: this.getIncidentStatus(incident.status),
       },
@@ -116,7 +126,13 @@ export class Incidents extends StatuspageConverter {
         }
         res.push({
           model: 'ims_IncidentApplicationImpact',
-          record: {incident: incidentRef, application},
+          record: {
+            incident: incidentRef,
+            application,
+            impact: priority,
+            startedAt: acknowledgedAt,
+            endedAt: impactEndedAt ?? resolvedAt,
+          },
         });
       }
     }
