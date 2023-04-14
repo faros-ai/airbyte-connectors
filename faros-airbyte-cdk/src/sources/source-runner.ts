@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import {Command} from 'commander';
+import fs from 'fs';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
@@ -141,7 +142,10 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   airbyteLocalCLIWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
-      .option('--json', 'Output the source configuration as JSON')
+      .option(
+        '--json <path to json>',
+        'Output the source configuration as JSON'
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
@@ -160,7 +164,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
         );
 
         if (opts.json) {
-          console.log(await buildJson(rows));
+          fs.writeFileSync(opts.json, await buildJson(rows));
         } else {
           console.log(
             '\n\nUse the arguments below when running this source' +
