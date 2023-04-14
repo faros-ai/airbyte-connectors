@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import {Command} from 'commander';
+import fs from 'fs';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
-import {buildArgs, helpTable, traverseObject} from '../help';
+import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
 import {Runner} from '../runner';
@@ -132,25 +133,36 @@ export class AirbyteDestinationRunner<
   airbyteLocalCLIWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
+      .option(
+        '--json <path to json>',
+        'Output the destination configuration as JSON'
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
-      .action(async () => {
+      .action(async (opts) => {
         const spec = await this.destination.spec();
         const rows = traverseObject(
           spec.spec.connectionSpecification,
-          [
-            // Prefix argument names with --dst
-            '--dst',
-          ],
+          opts.json
+            ? []
+            : [
+                // Prefix argument names with --dst
+                '--dst',
+              ],
           // Assign section = 0 to the root object's row
           0
         );
-        console.log(
-          '\n\nUse the arguments below when running this destination' +
-            ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
-            `\n\n${await buildArgs(rows)}`
-        );
+
+        if (opts.json) {
+          fs.writeFileSync(opts.json, await buildJson(rows));
+        } else {
+          console.log(
+            '\n\nUse the arguments below when running this destination' +
+              ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
+              `\n\n${await buildArgs(rows)}`
+          );
+        }
       });
   }
 
