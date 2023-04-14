@@ -4,7 +4,7 @@ import {Command} from 'commander';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
-import {buildArgs, helpTable, traverseObject} from '../help';
+import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
@@ -141,25 +141,33 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   airbyteLocalCLIWizardCommand(): Command {
     return new Command()
       .command('airbyte-local-cli-wizard')
+      .option('--json', 'Output the source configuration as JSON')
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
-      .action(async () => {
+      .action(async (opts) => {
         const spec = await this.source.spec();
         const rows = traverseObject(
           spec.spec.connectionSpecification,
-          [
-            // Prefix argument names with --src
-            '--src',
-          ],
+          opts.json
+            ? []
+            : [
+                // Prefix argument names with --src
+                '--src',
+              ],
           // Assign section = 0 to the root object's row
           0
         );
-        console.log(
-          '\n\nUse the arguments below when running this source' +
-            ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
-            `\n\n${await buildArgs(rows)}`
-        );
+
+        if (opts.json) {
+          console.log(await buildJson(rows));
+        } else {
+          console.log(
+            '\n\nUse the arguments below when running this source' +
+              ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
+              `\n\n${await buildArgs(rows)}`
+          );
+        }
       });
   }
 }

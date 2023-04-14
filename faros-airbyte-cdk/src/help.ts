@@ -319,13 +319,38 @@ async function promptLeaf(row: TableRow) {
   }
 }
 
+export async function buildJson(
+  rows: ReadonlyArray<TableRow>
+): Promise<string> {
+  const result = {};
+
+  await acceptUserInput(rows, (row, choice) =>
+    _.set(result, row.path, row.type === 'array' ? [choice] : choice)
+  );
+
+  return JSON.stringify(result);
+}
+
 export async function buildArgs(
   rows: ReadonlyArray<TableRow>
 ): Promise<string> {
+  const result = [];
+
+  await acceptUserInput(rows, (row, choice) =>
+    result.push(formatArg(row, choice))
+  );
+
+  return result.join(' \\\n');
+}
+
+async function acceptUserInput(
+  rows: ReadonlyArray<TableRow>,
+  action: (row: TableRow, choice: any) => void
+): Promise<void> {
   const sections: Map<number, TableRow> = new Map(
     rows.map((row) => [row.section, row])
   );
-  const result = [];
+
   // Stack of sections to process in DFS
   const process = [0];
   const processed = [];
@@ -347,9 +372,8 @@ export async function buildArgs(
     } else {
       const choice = await promptLeaf(row);
       if (choice !== undefined) {
-        result.push(formatArg(row, choice));
+        action(row, choice);
       }
     }
   }
-  return result.join(' \\\n');
 }
