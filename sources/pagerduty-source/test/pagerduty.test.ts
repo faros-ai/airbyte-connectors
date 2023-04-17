@@ -75,7 +75,7 @@ describe('Pagerduty', () => {
       },
       resource: [logEntry],
       next: (): Promise<PagerdutyResponse<LogEntry>> =>
-        Promise.reject(limitExceededResponse),
+        Promise.resolve(limitExceededResponse),
     };
 
     mockGet.mockResolvedValue(successResponse);
