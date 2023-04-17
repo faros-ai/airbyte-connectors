@@ -172,6 +172,7 @@ export class Pagerduty {
     let fetchNextFunc;
 
     do {
+      // Deal with PagerDuty 10000 records response limit
       if (
         response?.status == 400 &&
         response?.data?.error?.errors?.[0]?.includes('Offset must be less than')
