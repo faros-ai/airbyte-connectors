@@ -152,17 +152,6 @@ export class Pagerduty {
       }
       errorMessage = `Error from ${url}. Message: ${errorMessage}`;
 
-      // Deal with PagerDuty 10000 records response limit
-      if (
-        err.status == 400 &&
-        err.data?.error?.errors?.[0]?.includes('Offset must be less than')
-      ) {
-        this.logger.warn(
-          `Reached PagerDuty API response size limit of 10000 records. Error: ${errorMessage}`
-        );
-        return undefined;
-      }
-
       if (++retries > this.maxRetries) {
         throw new VError('%s', errorMessage);
       } else {
@@ -183,6 +172,16 @@ export class Pagerduty {
     let fetchNextFunc;
 
     do {
+      // Deal with PagerDuty 10000 records response limit
+      if (
+        response?.status == 400 &&
+        response?.data?.error?.errors?.[0]?.includes('Offset must be less than')
+      ) {
+        this.logger.warn(
+          `Reached PagerDuty API response size limit of 10000 records.`
+        );
+        return undefined;
+      }
       if (response?.status >= 300) {
         throw new VError(
           '%s',
