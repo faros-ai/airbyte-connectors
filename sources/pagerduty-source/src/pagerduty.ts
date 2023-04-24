@@ -175,8 +175,7 @@ export class Pagerduty {
       // Deal with PagerDuty 10000 records response limit
       if (
         response?.status == 400 &&
-        (response?.data?.error?.errors?.[0]?.includes('Offset must be less') ||
-          response?.data?.error?.errors?.[0]?.includes('Offset+limit exceeds'))
+        response?.data?.error?.errors?.[0]?.includes('Offset')
       ) {
         this.logger.warn(
           `Reached PagerDuty API response size limit of 10000 records.`
