@@ -18,9 +18,6 @@ export class Services extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-    yield* pagerduty.getServices(
-      this.config.service_details,
-      this.config.page_size
-    );
+    yield* pagerduty.getServices(this.config.service_details);
   }
 }
