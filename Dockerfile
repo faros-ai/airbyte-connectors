@@ -9,6 +9,7 @@ COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 
+RUN apk -U upgrade
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
     && npm install -g lerna tsc
 RUN lerna bootstrap --hoist
