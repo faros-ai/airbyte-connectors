@@ -50,12 +50,7 @@ export class Incidents extends AirbyteStreamBase {
       ? DateTime.fromJSDate(new Date(lastSynced))
       : cutoffTimestamp;
 
-    yield* pagerduty.getIncidents(
-      since,
-      now,
-      this.config.page_size,
-      this.config.exclude_services
-    );
+    yield* pagerduty.getIncidents(since, now, this.config.exclude_services);
   }
 
   getUpdatedState(

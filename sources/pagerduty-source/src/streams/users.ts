@@ -1,12 +1,7 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Pagerduty, PagerdutyConfig, User} from '../pagerduty';
+import {Pagerduty, PagerdutyConfig} from '../pagerduty';
 
 export class Users extends AirbyteStreamBase {
   constructor(readonly config: PagerdutyConfig, logger: AirbyteLogger) {
@@ -22,6 +17,6 @@ export class Users extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
-    yield* pagerduty.getUsers(this.config.page_size);
+    yield* pagerduty.getUsers();
   }
 }
