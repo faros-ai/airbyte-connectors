@@ -1,6 +1,10 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
+import axiosRetry, {
+  IAxiosRetryConfig,
+  isIdempotentRequestError,
+} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import isRetryAllowed from 'is-retry-allowed';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -56,11 +60,23 @@ export class OctopusClient {
       maxContentLength: Infinity,
     });
 
+    // TODO: refactor to common library and apply to all sources that use axios
+    const isNetworkError = (error): boolean => {
+      return (
+        !error.response &&
+        Boolean(error.code) && // Prevents retrying cancelled requests
+        isRetryAllowed(error) // Prevents retrying unsafe errors
+      );
+    };
+
     if (retries > 0) {
       const retryConfig: IAxiosRetryConfig = {
         retryDelay: axiosRetry.exponentialDelay,
         shouldResetTimeout: true,
         retries,
+        retryCondition: (error: Error): boolean => {
+          return isNetworkError(error) || isIdempotentRequestError(error);
+        },
         onRetry(retryCount, error, requestConfig) {
           logger?.info(
             `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
