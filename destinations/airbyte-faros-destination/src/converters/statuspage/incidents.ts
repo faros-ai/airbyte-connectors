@@ -4,6 +4,8 @@ import {Utils} from 'faros-js-client';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
+  ApplicationImpact,
+  ApplicationImpactCategory,
   ComponentStatus,
   IncidentEventType,
   IncidentEventTypeCategory,
@@ -91,7 +93,6 @@ export class Incidents extends StatuspageConverter {
       }
     }
 
-    const priority = this.getPriority(incident.impact);
     res.push({
       model: 'ims_Incident',
       record: {
@@ -103,7 +104,7 @@ export class Incidents extends StatuspageConverter {
         updatedAt,
         acknowledgedAt,
         resolvedAt,
-        priority,
+        priority: this.getPriority(incident.impact),
         severity,
         status: this.getIncidentStatus(incident.status),
       },
@@ -129,7 +130,7 @@ export class Incidents extends StatuspageConverter {
           record: {
             incident: incidentRef,
             application,
-            impact: priority,
+            impact: this.getApplicationImpact(incident.status),
             startedAt: acknowledgedAt,
             endedAt: impactEndedAt ?? resolvedAt,
           },
@@ -171,6 +172,24 @@ export class Incidents extends StatuspageConverter {
         return {category: IncidentSeverityCategory.Sev5, detail};
       default:
         return {category: IncidentSeverityCategory.Custom, detail};
+    }
+  }
+
+  private getApplicationImpact(componentStatus: string): ApplicationImpact {
+    const detail: string = componentStatus;
+    switch (componentStatus) {
+      case ComponentStatus.major_outage:
+        return {category: ApplicationImpactCategory.MajorOutage, detail};
+      case ComponentStatus.partial_outage:
+        return {category: ApplicationImpactCategory.PartialOutage, detail};
+      case ComponentStatus.degraded_performance:
+        return {category: ApplicationImpactCategory.DegradedPerformance, detail};
+      case ComponentStatus.under_maintenance:
+        return {category: ApplicationImpactCategory.UnderMaintenance, detail};
+      case ComponentStatus.operational:
+        return {category: ApplicationImpactCategory.Operational, detail};
+      default:
+        return {category: ApplicationImpactCategory.Custom, detail};
     }
   }
 
