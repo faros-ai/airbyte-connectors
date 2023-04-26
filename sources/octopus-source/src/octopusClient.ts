@@ -1,9 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import axiosRetry, {
-  IAxiosRetryConfig,
-  isIdempotentRequestError,
-  isRetryableError,
-} from 'axios-retry';
+import axiosRetry, {IAxiosRetryConfig, isRetryableError} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {Memoize} from 'typescript-memoize';
