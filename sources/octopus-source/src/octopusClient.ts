@@ -2,6 +2,7 @@ import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
+  isRetryableError,
 } from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
@@ -75,7 +76,7 @@ export class OctopusClient {
         shouldResetTimeout: true,
         retries,
         retryCondition: (error: Error): boolean => {
-          return isNetworkError(error) || isIdempotentRequestError(error);
+          return isNetworkError(error) || isRetryableError(error);
         },
         onRetry(retryCount, error, requestConfig) {
           logger?.info(
