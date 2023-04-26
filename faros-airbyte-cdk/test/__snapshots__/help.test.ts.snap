@@ -1,0 +1,407 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`traverse airbyte_secret 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": true,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse constValue 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": "the const",
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse default 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": "the default",
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse description 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": "the description",
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse examples 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": Array [
+      "Alice",
+      "Bob",
+      "Charlie",
+    ],
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse multiline 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": true,
+    "path": "user",
+    "required": false,
+    "section": 2,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse oneOf 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      3,
+      4,
+    ],
+    "description": "Please select and configure a single argument from 3,4",
+    "examples": Array [],
+    "oneOf": true,
+    "path": "select_mode",
+    "required": false,
+    "section": 2,
+    "title": "Mode",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      5,
+    ],
+    "description": "Please configure argument 5 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "select_mode",
+    "required": false,
+    "section": 3,
+    "title": "Mode X",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      6,
+    ],
+    "description": "Please configure argument 6 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "select_mode",
+    "required": false,
+    "section": 4,
+    "title": "Mode Y",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": "mode X",
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "select_mode.mode",
+    "required": true,
+    "section": 5,
+    "title": "Mode",
+    "type": "string",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": "mode Y",
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "select_mode.mode",
+    "required": true,
+    "section": 6,
+    "title": "Mode",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse order 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+      3,
+      4,
+      5,
+    ],
+    "description": "Please configure arguments 2,3,4,5 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "first",
+    "required": false,
+    "section": 2,
+    "title": "First",
+    "type": "integer",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "second",
+    "required": false,
+    "section": 3,
+    "title": "Second",
+    "type": "string",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "third",
+    "required": false,
+    "section": 4,
+    "title": "Third",
+    "type": "string",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "z_fourth",
+    "required": false,
+    "section": 5,
+    "title": "Z Fourth",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse simple 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+      3,
+    ],
+    "description": "Please configure arguments 2,3 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "cutoff_days",
+    "required": true,
+    "section": 2,
+    "title": "Cutoff Days",
+    "type": "integer",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": true,
+    "section": 3,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
