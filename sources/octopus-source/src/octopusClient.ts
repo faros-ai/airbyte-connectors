@@ -1,5 +1,8 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import axiosRetry, {IAxiosRetryConfig, isRetryableError} from 'axios-retry';
+import axiosRetry, {
+  IAxiosRetryConfig,
+  isIdempotentRequestError,
+} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
 import {Memoize} from 'typescript-memoize';
@@ -44,7 +47,6 @@ export class OctopusClient {
     this.pageSize = config?.pageSize ?? DEFAULT_PAGE_SIZE;
     this.logger = config.logger;
     const retries = config.maxRetries ?? DEFAULT_MAX_RETRIES;
-    const logger = this.logger; // for axios-retry
 
     const cleanInstanceUrl = config.instanceUrl.replace(/\/$/, '');
 
@@ -72,10 +74,10 @@ export class OctopusClient {
         shouldResetTimeout: true,
         retries,
         retryCondition: (error: Error): boolean => {
-          return isNetworkError(error) || isRetryableError(error);
+          return isNetworkError(error) || isIdempotentRequestError(error);
         },
-        onRetry(retryCount, error, requestConfig) {
-          logger?.info(
+        onRetry: (retryCount, error, requestConfig) => {
+          this.logger?.info(
             `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
               `(attempt ${retryCount} of ${retries})`
           );
