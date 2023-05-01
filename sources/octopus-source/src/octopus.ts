@@ -155,8 +155,17 @@ export class Octopus {
           this.client.getProject(deployment.ProjectId),
           this.client.getEnvironment(deployment.EnvironmentId),
           this.client.getTask(deployment.TaskId),
-          this.getDeploymentProcess(deployment.ProjectId),
+          this.getDeploymentProcess(
+            deployment.ProjectId,
+            deployment.DeploymentProcessId
+          ),
         ]);
+
+        if (this.fetchDeploymentProcess && !process) {
+          this.logger.warn(
+            `Unable to retrieve deployment process for deployment: ${deployment.Id}`
+          );
+        }
 
         yield {
           ...deployment,
@@ -177,11 +186,18 @@ export class Octopus {
   }
 
   private async getDeploymentProcess(
-    projectId: string
+    projectId: string,
+    deploymentProcessId: string
   ): Promise<DeploymentProcess | undefined> {
-    return this.fetchDeploymentProcess
-      ? this.client.getProjectDeploymentProcess(projectId)
-      : Promise.resolve(undefined);
+    let process: DeploymentProcess;
+    if (this.fetchDeploymentProcess) {
+      process = await this.client.getProjectDeploymentProcess(projectId);
+
+      if (!process) {
+        process = await this.client.getDeploymentProcess(deploymentProcessId);
+      }
+    }
+    return process;
   }
 
   async *getReleases(
