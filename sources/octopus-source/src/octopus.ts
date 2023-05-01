@@ -161,12 +161,6 @@ export class Octopus {
           ),
         ]);
 
-        if (this.fetchDeploymentProcess && !process) {
-          this.logger.warn(
-            `Unable to retrieve deployment process for deployment: ${deployment.Id}`
-          );
-        }
-
         yield {
           ...deployment,
           SpaceName: spaceName,
@@ -195,6 +189,9 @@ export class Octopus {
 
       if (!process) {
         process = await this.client.getDeploymentProcess(deploymentProcessId);
+      }
+      if (!process) {
+        this.logger.warn(`Unable to retrieve deployment process`);
       }
     }
     return process;
