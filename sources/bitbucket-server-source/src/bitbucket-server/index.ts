@@ -197,10 +197,7 @@ export class BitbucketServer {
     }
   }
 
-  async *tags(
-    projectKey: string,
-    repositorySlug: string
-  ): AsyncGenerator<Tag> {
+  async *tags(projectKey: string, repositorySlug: string): AsyncGenerator<Tag> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(`Fetching tags for repository ${fullName}`);
@@ -217,7 +214,7 @@ export class BitbucketServer {
             ...data,
             computedProperties: {repository: {fullName}},
           } as Tag;
-        },
+        }
       );
     } catch (err) {
       throw new VError(
@@ -403,7 +400,7 @@ export class BitbucketServer {
             limit: this.pageSize,
           }),
         async (data): Promise<Repository> => {
-          const fullName = repoFullName(projectKey, data.slug);
+          const fullName = repoFullName(data.project.key, data.slug);
           let mainBranch: string = undefined;
           try {
             const {data: defaultBranch} =
