@@ -45,20 +45,11 @@ export class Incidents extends StatuspageConverter {
         : undefined,
       updatedAt = Utils.toDate(incident.updated_at);
 
-    let impactEndedAt;
     for (const update of incident.incident_updates) {
       const eventTime = Utils.toDate(update.created_at);
 
       if (update.status === StatuspageIncidentStatus.Investigating) {
         acknowledgedAt = eventTime;
-      }
-
-      if (update.status === StatuspageIncidentStatus.Monitoring) {
-        // The last monitoring status is when the service impact ended
-        impactEndedAt =
-          !impactEndedAt || impactEndedAt < eventTime
-            ? eventTime
-            : impactEndedAt;
       }
     }
 
@@ -66,11 +57,47 @@ export class Incidents extends StatuspageConverter {
     // Use highest severity in incident's history as its severity
     let severity: IncidentSeverity | undefined = undefined;
 
+    const componentImpacts: Map<
+      string,
+      {impact: ApplicationImpact; endedAt: Date}
+    > = new Map();
+
     for (const update of incident.incident_updates ?? []) {
       for (const component of update.affected_components ?? []) {
         const thisSeverity = this.getSeverity(component.new_status);
-        if (!severity) severity = thisSeverity;
-        if (thisSeverity.category < severity.category) severity = thisSeverity;
+        const thisImpact = this.getApplicationImpact(component.new_status);
+        const eventTime = Utils.toDate(update.created_at);
+        if (!severity) {
+          severity = thisSeverity;
+        } else if (thisSeverity.category < severity.category) {
+          severity = thisSeverity;
+        }
+        if (!componentImpacts.has(component.code)) {
+          componentImpacts.set(component.code, {
+            impact: thisImpact,
+            endedAt: eventTime,
+          });
+        } else {
+          const compImp = componentImpacts.get(component.code);
+          // get most severe impact
+          if (thisImpact.category > compImp.impact.category) {
+            componentImpacts.set(component.code, {
+              impact: thisImpact,
+              endedAt: compImp.endedAt,
+            });
+          }
+          // get last transition to operational
+          if (component.new_status === ApplicationImpactCategory.Operational) {
+            const existingEndedAt = compImp.endedAt;
+            const newEndedAt =
+              existingEndedAt < eventTime ? eventTime : existingEndedAt;
+
+            componentImpacts.set(component.code, {
+              impact: compImp.impact,
+              endedAt: newEndedAt,
+            });
+          }
+        }
       }
       res.push({
         model: 'ims_IncidentEvent',
@@ -125,14 +152,16 @@ export class Incidents extends StatuspageConverter {
           res.push({model: 'compute_Application', record: application});
           this.seenApplications.add(appKey);
         }
+        const compImp = componentImpacts.get(service.id);
         res.push({
           model: 'ims_IncidentApplicationImpact',
           record: {
             incident: incidentRef,
             application,
-            impact: this.getApplicationImpact(incident.status),
-            startedAt: acknowledgedAt,
-            endedAt: impactEndedAt ?? resolvedAt,
+            impact:
+              compImp?.impact ?? this.getApplicationImpact(service.status),
+            startedAt: createdAt,
+            endedAt: compImp?.endedAt ?? resolvedAt,
           },
         });
       }
@@ -183,7 +212,10 @@ export class Incidents extends StatuspageConverter {
       case ComponentStatus.partial_outage:
         return {category: ApplicationImpactCategory.PartialOutage, detail};
       case ComponentStatus.degraded_performance:
-        return {category: ApplicationImpactCategory.DegradedPerformance, detail};
+        return {
+          category: ApplicationImpactCategory.DegradedPerformance,
+          detail,
+        };
       case ComponentStatus.under_maintenance:
         return {category: ApplicationImpactCategory.UnderMaintenance, detail};
       case ComponentStatus.operational:
