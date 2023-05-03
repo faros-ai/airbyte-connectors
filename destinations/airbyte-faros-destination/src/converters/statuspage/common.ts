@@ -80,6 +80,11 @@ export enum IncidentPriorityCategory {
   Custom = 'Custom',
 }
 
+export interface IncidentSeverity {
+  category: IncidentSeverityCategory;
+  detail: string;
+}
+
 export enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
   Sev2 = 'Sev2',
@@ -89,8 +94,17 @@ export enum IncidentSeverityCategory {
   Custom = 'Custom',
 }
 
-export interface IncidentSeverity {
-  category: IncidentSeverityCategory;
+export enum ApplicationImpactCategory {
+  Operational = 'Operational',
+  UnderMaintenance = 'UnderMaintenance',
+  DegradedPerformance = 'DegradedPerformance',
+  PartialOutage = 'PartialOutage',
+  MajorOutage = 'MajorOutage',
+  Custom = 'Custom',
+}
+
+export interface ApplicationImpact {
+  category: ApplicationImpactCategory;
   detail: string;
 }
 
