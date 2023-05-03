@@ -61,6 +61,16 @@ exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation 
 
 exports[`graphql-client write batch upsert self-referent model 3`] = `"mutation { insert_org_Employee (objects: [{uid: \\"10\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|7\\"}, {uid: \\"8\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}, {uid: \\"7\\", origin: \\"mytestsource\\", managerId: \\"t1|gql-e2e-v2|9\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [managerId, origin]}) { returning { id uid } } }"`;
 
+exports[`graphql-client write batch upsert update as upsert 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"playg\\", source: \\"Bitbucket\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}) { returning { id source uid } } }"`;
+
+exports[`graphql-client write batch upsert update as upsert 2`] = `"mutation { insert_vcs_Repository (objects: [{name: \\"repo1\\", organizationId: \\"4d1025a2cfb95b311b9871a49de3a56bf594beee\\"}], on_conflict: {constraint: vcs_Repository_pkey, update_columns: [name, organizationId]}) { returning { id name organizationId } } }"`;
+
+exports[`graphql-client write batch upsert update as upsert 3`] = `"mutation { insert_vcs_Commit (objects: [{sha: \\"b500332b58c74fc15302c8961e54facf66c16c44\\", origin: \\"my-origin\\", repositoryId: \\"f9b8248bfcbd563eb23d05a8b1c188a873de787e\\"}], on_conflict: {constraint: vcs_Commit_pkey, update_columns: [origin]}) { returning { id repositoryId sha } } }"`;
+
+exports[`graphql-client write batch upsert update as upsert 4`] = `"mutation { insert_vcs_PullRequest (objects: [{number: 2, origin: \\"my-origin\\", repositoryId: \\"f9b8248bfcbd563eb23d05a8b1c188a873de787e\\"}], on_conflict: {constraint: vcs_PullRequest_pkey, update_columns: [origin]}) { returning { id number repositoryId } } }"`;
+
+exports[`graphql-client write batch upsert update as upsert 5`] = `"mutation { m0: insert_vcs_PullRequest_one (object: {number: 2, repository: {data: {name: \\"repo1\\", organization: {data: {uid: \\"playg\\", source: \\"Bitbucket\\"}, on_conflict: {constraint: vcs_Organization_pkey, update_columns: [refreshedAt]}}}, on_conflict: {constraint: vcs_Repository_pkey, update_columns: [refreshedAt]}}, mergeCommit: {data: {sha: \\"b500332b58c74fc15302c8961e54facf66c16c44\\", repository: {data: {name: \\"repo1\\", organization: {data: {uid: \\"playg\\", source: \\"Bitbucket\\"}, on_conflict: {constraint: vcs_Organization_pkey, update_columns: [refreshedAt]}}}, on_conflict: {constraint: vcs_Repository_pkey, update_columns: [refreshedAt]}}}, on_conflict: {constraint: vcs_Commit_pkey, update_columns: [refreshedAt]}}, mergedAt: \\"2022-09-21T03:00:27.505Z\\", origin: \\"my-origin\\"}, on_conflict: {constraint: vcs_PullRequest_pkey, update_columns: [mergeCommitId, mergedAt, origin]}) { id } }"`;
+
 exports[`groupByKeys 1 group of 2 1`] = `
 Array [
   Array [

@@ -456,20 +456,17 @@ export class GraphQLClient {
   }
 
   private async writeUpdateRecord(record: UpdateRecord): Promise<void> {
+    const upsertRec = {
+      ...record.where,
+      ...pick(record.patch, record.mask),
+    };
+    const obj = this.createMutationObject(
+      record.model,
+      upsertRec,
+      record.origin
+    );
     const mutation = {
-      [`update_${record.model}`]: {
-        __args: {
-          where: this.createWhereClause(record.model, record.where),
-          _set: this.createMutationObject(
-            record.model,
-            record.patch,
-            record.origin
-          ).object,
-        },
-        returning: {
-          id: true,
-        },
-      },
+      [`insert_${record.model}_one`]: {__args: obj, id: true},
     };
     await this.postQuery({mutation}, `Failed to update ${record.model} record`);
   }

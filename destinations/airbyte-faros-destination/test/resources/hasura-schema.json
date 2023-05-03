@@ -4,6 +4,10 @@
       "name",
       "repositoryId"
     ],
+    "vcs_Commit": [
+      "repositoryId",
+      "sha"
+    ],
     "vcs_Organization": [
       "source",
       "uid"
@@ -14,6 +18,14 @@
     ],
     "org_Employee": [
       "uid"
+    ],
+    "vcs_PullRequest": [
+      "number",
+      "repositoryId"
+    ],
+    "vcs_User": [
+      "source",
+      "uid"
     ]
   },
   "scalars": {
@@ -22,6 +34,16 @@
       "origin": "String",
       "refreshedAt": "timestamptz",
       "repositoryId": "String"
+    },
+    "vcs_Commit": {
+      "authorId": "String",
+      "createdAt": "timestamptz",
+      "htmlUrl": "String",
+      "message": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "sha": "String"
     },
     "vcs_Organization": {
       "createdAt": "timestamptz",
@@ -68,10 +90,62 @@
       "terminatedAt": "timestamptz",
       "title": "String",
       "uid": "String"
+    },
+    "vcs_PullRequest": {
+      "authorId": "String",
+      "commentCount": "Int",
+      "commitCount": "Int",
+      "createdAt": "timestamptz",
+      "description": "String",
+      "diffStats": "jsonb",
+      "htmlUrl": "String",
+      "mergeCommitId": "String",
+      "mergedAt": "timestamptz",
+      "number": "Int",
+      "origin": "String",
+      "readyForReviewAt": "timestamptz",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "state": "jsonb",
+      "title": "String",
+      "updatedAt": "timestamptz"
+    },
+    "vcs_User": {
+      "email": "String",
+      "htmlUrl": "String",
+      "inactive": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "type": "jsonb",
+      "uid": "String"
     }
   },
   "references": {
     "vcs_Branch": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_Commit": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
       "repositoryId": {
         "field": "repository",
         "model": "vcs_Repository",
@@ -137,19 +211,58 @@
         "model": "org_Employee",
         "foreignKey": "managerId"
       }
-    }
+    },
+    "vcs_PullRequest": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "mergeCommitId": {
+        "field": "mergeCommit",
+        "model": "vcs_Commit",
+        "foreignKey": "mergeCommitId"
+      },
+      "mergeCommit": {
+        "field": "mergeCommit",
+        "model": "vcs_Commit",
+        "foreignKey": "mergeCommitId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_User": {}
   },
   "backReferences": {},
   "sortedModelDependencies": [
     "org_Employee",
     "vcs_Branch",
+    "vcs_PullRequest",
+    "vcs_Commit",
     "vcs_Repository",
-    "vcs_Organization"
+    "vcs_Organization",
+    "vcs_User"
   ],
   "tableNames": [
     "org_Employee",
     "vcs_Branch",
+    "vcs_PullRequest",
+    "vcs_Commit",
     "vcs_Organization",
-    "vcs_Repository"
+    "vcs_Repository",
+    "vcs_User"
   ]
 }
