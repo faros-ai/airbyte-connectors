@@ -400,7 +400,7 @@ export class BitbucketServer {
             limit: this.pageSize,
           }),
         async (data): Promise<Repository> => {
-          const fullName = repoFullName(data.project.key, data.slug);
+          const fullName = repoFullName(projectKey, data.slug);
           let mainBranch: string = undefined;
           try {
             const {data: defaultBranch} =
@@ -441,6 +441,7 @@ export class BitbucketServer {
     }
   }
 
+  @Memoize()
   async project(projectKey: string): Promise<Project> {
     try {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
@@ -480,7 +481,7 @@ export class BitbucketServer {
 }
 
 function repoFullName(projectKey: string, repoSlug: string): string {
-  return `${projectKey}/${repoSlug}`;
+  return `${projectKey}/${repoSlug}`.toLowerCase();
 }
 
 function innerError(err: any): VError {
