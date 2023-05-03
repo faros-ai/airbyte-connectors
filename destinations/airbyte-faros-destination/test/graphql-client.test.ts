@@ -14,6 +14,7 @@ import {
   Upsert,
   UpsertBuffer,
 } from '../src/common/graphql-client';
+import {Operation, UpdateRecord} from '../src/common/types';
 
 describe('graphql-client', () => {
   test('basic batch mutation', async () => {
@@ -499,6 +500,143 @@ describe('graphql-client write batch upsert', () => {
     for (const rec of records) {
       await client.writeRecord('org_Employee', rec, 'mytestsource');
     }
+    await client.flush();
+    expect(queries).toEqual(responses.length);
+  });
+  test('update as upsert', async () => {
+    const responses: any[] = [
+      {
+        data: {
+          insert_vcs_Organization: {
+            returning: [
+              {
+                id: '4d1025a2cfb95b311b9871a49de3a56bf594beee',
+                source: 'Bitbucket',
+                uid: 'playg',
+              },
+            ],
+          },
+        },
+      },
+      {
+        data: {
+          insert_vcs_Repository: {
+            returning: [
+              {
+                id: 'f9b8248bfcbd563eb23d05a8b1c188a873de787e',
+                name: 'repo1',
+                organizationId: '4d1025a2cfb95b311b9871a49de3a56bf594beee',
+              },
+            ],
+          },
+        },
+      },
+      {
+        data: {
+          insert_vcs_Commit: {
+            returning: [
+              {
+                id: 'c9edcbbadfd386d367b8a5d6fd33e04937f5ff34',
+                repositoryId: 'f9b8248bfcbd563eb23d05a8b1c188a873de787e',
+                sha: 'b500332b58c74fc15302c8961e54facf66c16c44',
+              },
+            ],
+          },
+        },
+      },
+      {
+        data: {
+          insert_vcs_PullRequest: {
+            returning: [
+              {
+                id: '601bfb71ffa7cac5059940af2508dbce01d023df',
+                number: 2,
+                repositoryId: 'f9b8248bfcbd563eb23d05a8b1c188a873de787e',
+              },
+            ],
+          },
+        },
+      },
+      {
+        data: {
+          m0: {
+            id: '601bfb71ffa7cac5059940af2508dbce01d023df',
+          },
+        },
+      },
+    ];
+    const updateRecord: UpdateRecord = {
+      operation: Operation.UPDATE,
+      model: 'vcs_PullRequest',
+      origin: 'my-origin',
+      at: 1683125806803,
+      where: {
+        number: 2,
+        uid: '2',
+        repository: {
+          uid: 'repo1',
+          name: 'repo1',
+          organization: {
+            uid: 'playg',
+            source: 'Bitbucket',
+          },
+        },
+      },
+      mask: ['mergeCommit', 'mergedAt'],
+      patch: {
+        mergeCommit: {
+          sha: 'b500332b58c74fc15302c8961e54facf66c16c44',
+          uid: 'b500332b58c74fc15302c8961e54facf66c16c44',
+          repository: {
+            uid: 'repo1',
+            name: 'repo1',
+            organization: {
+              uid: 'playg',
+              source: 'Bitbucket',
+            },
+          },
+        },
+        mergedAt: '2022-09-21T03:00:27.505Z',
+      },
+    };
+    const records: {model: string; origin: string; data: any}[] = [
+      {
+        model: 'vcs_PullRequest',
+        origin: 'my-origin',
+        data: JSON.parse(
+          '{"number":2,"uid":"2","repository":{"name":"repo1","uid":"repo1","organization":{"uid":"playg","source":"Bitbucket"}}}'
+        ),
+      },
+      {
+        model: 'vcs_Commit',
+        origin: 'my-origin',
+        data: JSON.parse(
+          '{"sha":"b500332b58c74fc15302c8961e54facf66c16c44","uid":"b500332b58c74fc15302c8961e54facf66c16c44","repository":{"name":"repo1","uid":"repo1","organization":{"uid":"playg","source":"Bitbucket"}}}'
+        ),
+      },
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    for (const rec of records) {
+      await client.writeRecord(rec.model, rec.data, rec.origin);
+    }
+    await client.writeTimestampedRecord(updateRecord);
     await client.flush();
     expect(queries).toEqual(responses.length);
   });
