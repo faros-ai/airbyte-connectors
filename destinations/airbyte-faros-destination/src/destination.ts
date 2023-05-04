@@ -448,6 +448,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         await graphQLClient.loadSchema();
         await graphQLClient.resetData(origin, deleteModelEntries);
 
+        streamContext.resetData = (models: ReadonlyArray<string>) =>
+          graphQLClient.resetData(origin, models);
+
         let originRemapper = undefined;
         if (config.accept_input_records_origin && config.replace_origin_map) {
           const originMap = JSON.parse(config.replace_origin_map);

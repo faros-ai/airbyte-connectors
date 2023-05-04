@@ -16,6 +16,8 @@ export class FarosFeed extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ALL_MODEL_NAMES;
 
   private schema: FarosGraphSchema = undefined;
+  private deleteModelEntries: string[] = [];
+  private resetModels: Set<string> = new Set();
 
   id(): any {
     return undefined;
@@ -42,12 +44,33 @@ export class FarosFeed extends Converter {
       ctx.config.edition_configs.edition === Edition.COMMUNITY ||
       ctx.config.edition_configs.graphql_api === 'v2'
     ) {
-      // Ignore full model deletion records.
+      // Full model deletion records.
       // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
       // These are issued by the feed and are only applicable to the V1 API
+      // We accumulate the model names in 'deleteModelEntries' to reset them in topological order
       if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
         const [key, value] = Object.entries(rec).pop();
-        if (key === 'where' && typeof value == 'string') return [];
+        if (key === 'where' && typeof value == 'string') {
+          const [baseModel] = model.split('__', 1);
+          // Only reset once per model. Some feeds emit these multiple times (from root and workers)
+          if (!this.resetModels.has(baseModel)) {
+            this.resetModels.add(baseModel);
+            this.deleteModelEntries.push(baseModel);
+          }
+          return [];
+        }
+      } else {
+        if (this.deleteModelEntries.length > 0) {
+          if (ctx.resetData) {
+            await ctx.resetData(this.deleteModelEntries);
+          } else {
+            // This is okay when dry run is enabled
+            ctx.logger?.warn(
+              `Ignored full model deletion records for ${this.deleteModelEntries.join()}`
+            );
+          }
+          this.deleteModelEntries = [];
+        }
       }
     }
 
