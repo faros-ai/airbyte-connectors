@@ -47,7 +47,7 @@ export class FarosFeed extends Converter {
       // Full model deletion records.
       // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
       // These are issued by the feed and are only applicable to the V1 API
-      // We accumulate the model names in 'deleteModelEntries' to reset them in topological order
+      // We accumulate the model names in 'resetModels' to reset them in topological order
       if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
         const [key, value] = Object.entries(rec).pop();
         if (key === 'where' && typeof value == 'string') {
