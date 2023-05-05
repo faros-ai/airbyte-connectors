@@ -16,8 +16,8 @@ export class FarosFeed extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ALL_MODEL_NAMES;
 
   private schema: FarosGraphSchema = undefined;
-  private deleteModelEntries: string[] = [];
   private resetModels: Set<string> = new Set();
+  private hasResetModels = false;
 
   id(): any {
     return undefined;
@@ -52,24 +52,22 @@ export class FarosFeed extends Converter {
         const [key, value] = Object.entries(rec).pop();
         if (key === 'where' && typeof value == 'string') {
           const [baseModel] = model.split('__', 1);
-          // Only reset once per model. Some feeds emit these multiple times (from root and workers)
-          if (!this.resetModels.has(baseModel)) {
-            this.resetModels.add(baseModel);
-            this.deleteModelEntries.push(baseModel);
-          }
+          this.resetModels.add(baseModel);
           return [];
         }
       } else {
-        if (this.deleteModelEntries.length > 0) {
+        if (!this.hasResetModels && this.resetModels.size > 0) {
           if (ctx.resetData) {
-            await ctx.resetData(this.deleteModelEntries);
+            this.hasResetModels = true;
+            await ctx.resetData(Array.from(this.resetModels));
           } else {
             // This is okay when dry run is enabled
             ctx.logger?.warn(
-              `Ignored full model deletion records for ${this.deleteModelEntries.join()}`
+              `Ignored full model deletion records for ${Array.from(
+                this.resetModels
+              ).join()}`
             );
           }
-          this.deleteModelEntries = [];
         }
       }
     }
