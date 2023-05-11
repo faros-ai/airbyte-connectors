@@ -2,6 +2,7 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
+import _ from 'lodash';
 import {
   clone,
   difference,
@@ -241,13 +242,16 @@ export class GraphQLClient {
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
   private readonly selfReferentModels = new Set();
+  private readonly updateResetLimit: boolean;
+  private resetLimitMs: number;
 
   constructor(
     logger: AirbyteLogger,
     schemaLoader: SchemaLoader,
     backend: GraphQLBackend,
     upsertBatchSize,
-    mutationBatchSize
+    mutationBatchSize,
+    updateResetLimit = true
   ) {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
@@ -262,6 +266,11 @@ export class GraphQLClient {
       this.mutationBatchSize > 0,
       `non-positive mutation batch size: ${this.mutationBatchSize}`
     );
+    this.updateResetLimit = updateResetLimit;
+    this.resetLimitMs = updateResetLimit
+      ? // January 1, 2200
+        7258118400000
+      : Date.now();
   }
 
   async healthCheck(): Promise<void> {
@@ -301,6 +310,15 @@ export class GraphQLClient {
     models: ReadonlyArray<string>
   ): Promise<void> {
     this.checkSchema();
+
+    // ensure deletes are executed after processing records
+    await this.flush();
+
+    const minRefreshedAt = new Date(this.resetLimitMs).toISOString();
+    this.logger.info(
+      `Resetting data before ${minRefreshedAt} for origin ${origin}`
+    );
+
     for (const model of intersection(
       this.schema.sortedModelDependencies,
       models
@@ -308,6 +326,7 @@ export class GraphQLClient {
       this.logger.info(`Resetting ${model} data for origin ${origin}`);
       const deleteConditions = {
         origin: {_eq: origin},
+        refreshedAt: {_lt: minRefreshedAt},
         _not: {
           _or: this.schema.backReferences[model].map((br) => {
             return {
@@ -331,8 +350,6 @@ export class GraphQLClient {
         `Failed to reset ${model} data for origin ${origin}`
       );
     }
-    // ensure deletes are executed prior processing records
-    await this.flush();
   }
 
   async writeRecord(
@@ -352,7 +369,7 @@ export class GraphQLClient {
     } else {
       const obj = this.createMutationObject(model, record, origin);
       const mutation = {
-        [`insert_${model}_one`]: {__args: obj, id: true},
+        [`insert_${model}_one`]: {__args: obj, id: true, refreshedAt: true},
       };
       await this.postQuery({mutation}, `Failed to write ${model} record`);
     }
@@ -396,6 +413,13 @@ export class GraphQLClient {
         `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
       );
       upserts.forEach((u) => (u.id = obj.id));
+
+      if (this.updateResetLimit) {
+        const recordRefreshedAtMs = new Date(obj.refreshedAt).getTime();
+        if (recordRefreshedAtMs < this.resetLimitMs) {
+          this.resetLimitMs = recordRefreshedAtMs;
+        }
+      }
     }
     return {
       model,
@@ -527,6 +551,18 @@ export class GraphQLClient {
           }
         }
       } else {
+        if (this.updateResetLimit) {
+          for (const mutationRes of Object.values(res.data)) {
+            const refreshedAt = _.get(mutationRes, 'refreshedAt');
+            if (refreshedAt) {
+              const recordRefreshedAtMs = new Date(refreshedAt).getTime();
+              if (recordRefreshedAtMs < this.resetLimitMs) {
+                this.resetLimitMs = recordRefreshedAtMs;
+              }
+            }
+          }
+        }
+
         // truncate the buffer
         this.writeBuffer.splice(0);
       }
@@ -741,6 +777,7 @@ export class GraphQLClient {
             },
             returning: {
               id: true,
+              refreshedAt: true,
               ...keysObj,
             },
           },
