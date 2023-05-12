@@ -243,7 +243,7 @@ export class GraphQLClient {
   private readonly upsertBuffer = new UpsertBuffer();
   private readonly selfReferentModels = new Set();
   private readonly updateResetLimit: boolean;
-  private resetLimitMs: number;
+  private resetLimitMillis: number;
 
   constructor(
     logger: AirbyteLogger,
@@ -267,7 +267,7 @@ export class GraphQLClient {
       `non-positive mutation batch size: ${this.mutationBatchSize}`
     );
     this.updateResetLimit = updateResetLimit;
-    this.resetLimitMs = updateResetLimit
+    this.resetLimitMillis = updateResetLimit
       ? // January 1, 2200
         7258118400000
       : Date.now();
@@ -314,7 +314,7 @@ export class GraphQLClient {
     // ensure deletes are executed after processing records
     await this.flush();
 
-    const minRefreshedAt = new Date(this.resetLimitMs).toISOString();
+    const minRefreshedAt = new Date(this.resetLimitMillis).toISOString();
     this.logger.info(
       `Resetting data before ${minRefreshedAt} for origin ${origin}`
     );
@@ -416,9 +416,10 @@ export class GraphQLClient {
 
       if (this.updateResetLimit) {
         const recordRefreshedAtMs = new Date(obj.refreshedAt).getTime();
-        if (recordRefreshedAtMs < this.resetLimitMs) {
-          this.resetLimitMs = recordRefreshedAtMs;
-        }
+        this.resetLimitMillis = Math.min(
+          recordRefreshedAtMs,
+          this.resetLimitMillis
+        );
       }
     }
     return {
@@ -551,14 +552,27 @@ export class GraphQLClient {
           }
         }
       } else {
+        // res.data is expected to have one object with 'id' and 'refreshedAt' for each of the mutations
+        // {
+        //   "m0": {
+        //     "id": ...,
+        //     "refreshedAt": ...
+        //   },
+        //   "m1": {
+        //     "id": ...,
+        //     "refreshedAt": ...
+        //   },
+        //   ...
+        // }
         if (this.updateResetLimit) {
           for (const mutationRes of Object.values(res.data)) {
             const refreshedAt = _.get(mutationRes, 'refreshedAt');
             if (refreshedAt) {
               const recordRefreshedAtMs = new Date(refreshedAt).getTime();
-              if (recordRefreshedAtMs < this.resetLimitMs) {
-                this.resetLimitMs = recordRefreshedAtMs;
-              }
+              this.resetLimitMillis = Math.min(
+                recordRefreshedAtMs,
+                this.resetLimitMillis
+              );
             }
           }
         }
