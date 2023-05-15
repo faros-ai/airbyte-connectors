@@ -150,7 +150,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         schemaLoader,
         backend,
         0,
-        config.edition_configs.community_graphql_batch_size
+        config.edition_configs.community_graphql_batch_size,
+        false
       );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
@@ -446,10 +447,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger.info(`Using GraphQLClient for writer`);
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
-        await graphQLClient.resetData(origin, deleteModelEntries);
 
-        streamContext.resetData = (models: ReadonlyArray<string>) =>
-          graphQLClient.resetData(origin, models);
+        streamContext.resetModels = new Set(deleteModelEntries);
 
         let originRemapper = undefined;
         if (config.accept_input_records_origin && config.replace_origin_map) {
@@ -483,7 +482,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           streams,
           converterDependencies,
           stats,
-          writer
+          writer,
+          async () =>
+            await graphQLClient.resetData(
+              origin,
+              Array.from(streamContext.resetModels)
+            )
         );
       } else {
         this.logger.info(
@@ -581,7 +585,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
     stats: WriteStats,
-    writer?: Writable | GraphQLWriter
+    writer?: Writable | GraphQLWriter,
+    resetData?: () => Promise<void>
   ): Promise<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -689,6 +694,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
+      await resetData?.();
       // Don't forget to close the writer
       await writer?.end();
       return stateMessage;

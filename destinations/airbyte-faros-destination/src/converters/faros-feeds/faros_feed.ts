@@ -16,8 +16,6 @@ export class FarosFeed extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ALL_MODEL_NAMES;
 
   private schema: FarosGraphSchema = undefined;
-  private resetModels: Set<string> = new Set();
-  private hasResetModels = false;
 
   id(): any {
     return undefined;
@@ -52,22 +50,8 @@ export class FarosFeed extends Converter {
         const [key, value] = Object.entries(rec).pop();
         if (key === 'where' && typeof value == 'string') {
           const [baseModel] = model.split('__', 1);
-          this.resetModels.add(baseModel);
+          ctx.resetModels.add(baseModel);
           return [];
-        }
-      } else {
-        if (!this.hasResetModels && this.resetModels.size > 0) {
-          if (ctx.resetData) {
-            this.hasResetModels = true;
-            await ctx.resetData(Array.from(this.resetModels));
-          } else {
-            // This is okay when dry run is enabled
-            ctx.logger?.warn(
-              `Ignored full model deletion records for ${Array.from(
-                this.resetModels
-              ).join()}`
-            );
-          }
         }
       }
     }
