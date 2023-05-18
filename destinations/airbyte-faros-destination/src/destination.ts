@@ -491,7 +491,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               Array.from(streamContext.resetModels)
             )
         )) {
-          streamContext.resetModels = new Set(deleteModelEntries);
           await graphQLClient.flush();
           yield stateMessage;
         }
