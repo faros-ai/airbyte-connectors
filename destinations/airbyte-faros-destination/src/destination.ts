@@ -436,13 +436,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
-        latestStateMessage = await this.writeEntries(
+        for await (const stateMessage of this.writeEntries(
           streamContext,
           stdin,
           streams,
           converterDependencies,
           stats
-        );
+        )) {
+          latestStateMessage = stateMessage;
+        }
       } else if (this.graphQLClient) {
         this.logger.info(`Using GraphQLClient for writer`);
         const graphQLClient = this.getGraphQLClient();
@@ -476,7 +478,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           this
         );
 
-        latestStateMessage = await this.writeEntries(
+        for await (const stateMessage of this.writeEntries(
           streamContext,
           stdin,
           streams,
@@ -488,7 +490,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               origin,
               Array.from(streamContext.resetModels)
             )
-        );
+        )) {
+          await graphQLClient.flush();
+          yield stateMessage;
+        }
       } else {
         this.logger.info(
           `Opening a new revision on graph ${this.farosGraph} ` +
@@ -524,14 +529,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 `Destination graph ${this.farosGraph} was ${lastSynced}`
               );
               // Process input and write entries
-              latestStateMessage = await this.writeEntries(
+              for await (const stateMessage of this.writeEntries(
                 streamContext,
                 stdin,
                 streams,
                 converterDependencies,
                 stats,
                 writer
-              );
+              )) {
+                latestStateMessage = stateMessage;
+              }
               // Return the current time
               return {lastSynced: new Date().toISOString()};
             } finally {
@@ -579,7 +586,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     }
   }
 
-  private async writeEntries(
+  private async *writeEntries(
     ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
@@ -587,11 +594,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stats: WriteStats,
     writer?: Writable | GraphQLWriter,
     resetData?: () => Promise<void>
-  ): Promise<AirbyteStateMessage | undefined> {
+  ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
     const convertersUsed: Map<string, Converter> = new Map();
-    let stateMessage: AirbyteStateMessage = undefined;
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -603,6 +609,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     try {
       // Process input & write records
       for await (const line of input) {
+        let stateMessage: AirbyteStateMessage = undefined;
+
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
 
@@ -671,6 +679,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             }
           }
         });
+
+        if (stateMessage) {
+          yield stateMessage;
+        }
       }
       // Process all the remaining records
       if (recordsToBeProcessedLast.length > 0) {
@@ -697,7 +709,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       await resetData?.();
       // Don't forget to close the writer
       await writer?.end();
-      return stateMessage;
     } finally {
       input.close();
     }
