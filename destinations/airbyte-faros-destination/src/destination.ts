@@ -21,7 +21,6 @@ import {
   FarosClientConfig,
   HasuraSchemaLoader,
   Schema,
-  Utils,
 } from 'faros-js-client';
 import http from 'http';
 import https from 'https';
@@ -494,8 +493,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         )) {
           streamContext.resetModels = new Set(deleteModelEntries);
           await graphQLClient.flush();
-          // Allow some time for the flush to complete
-          await Utils.sleep(15000);
           yield stateMessage;
         }
       } else {
