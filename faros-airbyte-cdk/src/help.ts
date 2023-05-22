@@ -8,6 +8,7 @@ import {VError} from 'verror';
 import {
   runBooleanPrompt,
   runNumberPrompt,
+  runPassword,
   runSelect,
   runStringPrompt,
 } from './prompts';
@@ -233,6 +234,9 @@ async function promptValue(row: TableRow) {
     case 'integer':
       return await runNumberPrompt({message});
     case 'string':
+      if (row.airbyte_secret) {
+        return await runPassword({name: 'secret', message});
+      }
       return await runStringPrompt({message});
   }
 
