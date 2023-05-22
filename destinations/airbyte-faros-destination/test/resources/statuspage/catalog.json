@@ -2,6 +2,18 @@
   "streams": [
     {
       "stream": {
+        "name": "mytestsource__statuspage__component_groups"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__statuspage__components"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__statuspage__incidents"
       },
       "destination_sync_mode": "append"

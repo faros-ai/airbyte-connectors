@@ -2,7 +2,12 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {Common} from '../common/common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {
   ApplicationImpact,
   ApplicationImpactCategory,
@@ -25,6 +30,19 @@ export class Incidents extends StatuspageConverter {
     'ims_Incident',
     'ims_IncidentApplicationImpact',
   ];
+
+  private readonly componentGroupsStream = new StreamName(
+    'statuspage',
+    'component_groups'
+  );
+  private readonly componentsStream = new StreamName(
+    'statuspage',
+    'components'
+  );
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [this.componentGroupsStream, this.componentsStream];
+  }
 
   private seenApplications = new Set<string>();
 
