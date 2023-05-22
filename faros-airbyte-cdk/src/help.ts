@@ -281,13 +281,13 @@ async function promptLeaf(row: TableRow) {
       value: 'Skipped.',
     });
   }
-  if (row.default !== undefined) {
+  if (row.type !== 'boolean' && row.default !== undefined) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
     });
   }
-  if (row.examples?.length) {
+  if (row.type !== 'boolean' && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
@@ -297,10 +297,26 @@ async function promptLeaf(row: TableRow) {
 
   let choice = ' ';
   if (choices.length) {
-    choices.push({
-      message: 'Enter your own value',
-      value: ' ',
-    });
+    if (row.type === 'boolean') {
+      for (const choice of [false, true]) {
+        if (row.default === choice) {
+          choices.push({
+            message: `${row.default} (default)`,
+            value: `Used default (${row.default}).`,
+          });
+        } else {
+          choices.push({
+            message: `${choice}`,
+            value: `${choice}`,
+          });
+        }
+      }
+    } else {
+      choices.push({
+        message: 'Enter your own value',
+        value: ' ',
+      });
+    }
     const message = row.description
       ? `${row.title}: ${row.description}`
       : row.title;
