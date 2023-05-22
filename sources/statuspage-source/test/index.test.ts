@@ -9,7 +9,7 @@ import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {Statuspage} from '../src/statuspage';
-import {ComponentGroup} from '../src/types';
+import {Component} from '../src/types';
 
 const statusPageInstance = Statuspage.instance;
 
@@ -113,45 +113,9 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - component groups, use full_refresh sync mode', async () => {
-    const fnComponentGroupsFunc = jest.fn();
-    const expectedData: ReadonlyArray<ComponentGroup> = readTestResourceFile(
-      'component_groups.json'
-    );
-    const sp = new Statuspage(
-      {
-        get: fnComponentGroupsFunc
-          .mockResolvedValueOnce({data: [expectedData[0]]})
-          .mockResolvedValueOnce({data: [expectedData[1]]})
-          .mockResolvedValueOnce({data: []}),
-      } as any,
-      new Date('1970-01-01T00:00:00-0000'),
-      logger,
-      3,
-      1
-    );
-    Statuspage.instance = jest.fn().mockReturnValue(sp);
-    const source = new sut.StatuspageSource(logger);
-    const streams = source.streams({...sourceConfig, page_size: 1});
-
-    const componentGroupsStream = streams[0];
-    const componentGroupsIter = componentGroupsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      null,
-      {pageId: 'page_id'}
-    );
-    const groups = [];
-    for await (const group of componentGroupsIter) {
-      groups.push(group);
-    }
-
-    expect(fnComponentGroupsFunc).toHaveBeenCalledTimes(3);
-    expect(groups).toStrictEqual(expectedData);
-  });
-
   test('streams - components, use full_refresh sync mode', async () => {
     const fnComponentsFunc = jest.fn();
-    const expectedData: ReadonlyArray<ComponentGroup> =
+    const expectedData: ReadonlyArray<Component> =
       readTestResourceFile('components.json');
     const sp = new Statuspage(
       {
@@ -169,7 +133,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     const streams = source.streams({...sourceConfig, page_size: 1});
 
-    const componentsStream = streams[1];
+    const componentsStream = streams[0];
     const componentsIter = componentsStream.readRecords(
       SyncMode.FULL_REFRESH,
       null,
@@ -205,7 +169,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const incidentsStream = streams[2];
+    const incidentsStream = streams[1];
     const incidentsIter = incidentsStream.readRecords(
       SyncMode.FULL_REFRESH,
       null,
@@ -237,7 +201,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const pagesStream = streams[3];
+    const pagesStream = streams[2];
     const pagesIter = pagesStream.readRecords(SyncMode.FULL_REFRESH);
     const pages = [];
     for await (const page of pagesIter) {
@@ -263,7 +227,7 @@ describe('index', () => {
     const source = new sut.StatuspageSource(logger);
     const streams = source.streams(sourceConfig);
 
-    const usersStream = streams[4];
+    const usersStream = streams[3];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of usersIter) {
