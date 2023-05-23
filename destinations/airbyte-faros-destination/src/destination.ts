@@ -488,7 +488,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           async () =>
             await graphQLClient.resetData(
               origin,
-              Array.from(streamContext.resetModels)
+              Array.from(streamContext.resetModels),
+              this.edition === Edition.COMMUNITY
             )
         )) {
           await graphQLClient.flush();
