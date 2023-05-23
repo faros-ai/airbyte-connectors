@@ -14,7 +14,9 @@ import {
 } from './common';
 
 export class Components extends StatuspageConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
+  ];
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [ComponentGroupsStream, PagesStream];
