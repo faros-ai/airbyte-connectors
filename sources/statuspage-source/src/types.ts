@@ -14,6 +14,17 @@ export interface Component {
   updated_at: string;
 }
 
+export interface ComponentGroup {
+  id: string;
+  page_id: string;
+  name: string;
+  description: string;
+  components: ReadonlyArray<string>;
+  position: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export declare enum IncidentImpact {
   Critical = 'critical',
   Major = 'major',
