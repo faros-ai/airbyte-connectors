@@ -327,8 +327,3 @@ export interface DeploymentStatus {
   category: DeploymentStatusCategory;
   detail: string;
 }
-
-export interface ComputeApplication {
-  name: string;
-  platform: string;
-}

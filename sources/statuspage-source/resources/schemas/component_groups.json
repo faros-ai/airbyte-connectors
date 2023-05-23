@@ -24,7 +24,7 @@
       }
     },
     "position": {
-      "type": "string"
+      "type": "number"
     },
     "created_at": {
       "type": "string"
