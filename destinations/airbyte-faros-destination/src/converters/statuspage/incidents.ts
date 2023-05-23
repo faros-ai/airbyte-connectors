@@ -11,6 +11,7 @@ import {
 import {
   ApplicationImpact,
   ApplicationImpactCategory,
+  ComponentsStream,
   ComponentStatus,
   IncidentEventType,
   IncidentEventTypeCategory,
@@ -31,20 +32,9 @@ export class Incidents extends StatuspageConverter {
     'ims_IncidentApplicationImpact',
   ];
 
-  private readonly componentGroupsStream = new StreamName(
-    'statuspage',
-    'component_groups'
-  );
-  private readonly componentsStream = new StreamName(
-    'statuspage',
-    'components'
-  );
-
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.componentGroupsStream, this.componentsStream];
+    return [ComponentsStream];
   }
-
-  private seenApplications = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -156,28 +146,18 @@ export class Incidents extends StatuspageConverter {
     });
 
     if (incident.components) {
-      const applicationMapping = this.applicationMapping(ctx);
-      for (const service of incident.components) {
-        if (!service.name) continue;
+      for (const component of incident.components) {
+        if (!component.name) continue;
 
-        const mappedApp = applicationMapping[service.name];
-        const application = Common.computeApplication(
-          mappedApp?.name ?? service.name,
-          mappedApp?.platform
-        );
-        const appKey = application.uid;
-        if (!this.seenApplications.has(appKey)) {
-          res.push({model: 'compute_Application', record: application});
-          this.seenApplications.add(appKey);
-        }
-        const compImp = componentImpacts.get(service.id);
+        const application = this.computeApplication(ctx, component);
+        const compImp = componentImpacts.get(component.id);
         res.push({
           model: 'ims_IncidentApplicationImpact',
           record: {
             incident: incidentRef,
             application,
             impact:
-              compImp?.impact ?? this.getApplicationImpact(service.status),
+              compImp?.impact ?? this.getApplicationImpact(component.status),
             startedAt: createdAt,
             endedAt: compImp?.endedAt ?? resolvedAt,
           },
