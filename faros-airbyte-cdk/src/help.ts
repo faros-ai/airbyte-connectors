@@ -8,6 +8,7 @@ import {VError} from 'verror';
 import {
   runBooleanPrompt,
   runNumberPrompt,
+  runPassword,
   runSelect,
   runStringPrompt,
 } from './prompts';
@@ -27,6 +28,7 @@ export interface TableRow {
   multiline?: boolean;
   type: string;
   items_type?: string;
+  enum?: ReadonlyArray<string>;
 }
 
 function visitLeaf(
@@ -50,6 +52,7 @@ function visitLeaf(
     examples: o.examples,
     type: o.type,
     items_type: o.items?.type,
+    enum: o.enum,
   };
 
   return leaf;
@@ -233,6 +236,9 @@ async function promptValue(row: TableRow) {
     case 'integer':
       return await runNumberPrompt({message});
     case 'string':
+      if (row.airbyte_secret) {
+        return await runPassword({name: 'secret', message});
+      }
       return await runStringPrompt({message});
   }
 
@@ -277,13 +283,16 @@ async function promptLeaf(row: TableRow) {
       value: 'Skipped.',
     });
   }
-  if (row.default !== undefined) {
+
+  const enumChoices = row.enum !== undefined || row.type === 'boolean';
+
+  if (!enumChoices && row.default !== undefined) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
     });
   }
-  if (row.examples?.length) {
+  if (!enumChoices && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
@@ -293,10 +302,26 @@ async function promptLeaf(row: TableRow) {
 
   let choice = ' ';
   if (choices.length) {
-    choices.push({
-      message: 'Enter your own value',
-      value: ' ',
-    });
+    if (enumChoices) {
+      for (const choice of row.type === 'boolean' ? [false, true] : row.enum) {
+        if (row.default === choice) {
+          choices.push({
+            message: `${row.default} (default)`,
+            value: `Used default (${row.default}).`,
+          });
+        } else {
+          choices.push({
+            message: `${choice}`,
+            value: `${choice}`,
+          });
+        }
+      }
+    } else {
+      choices.push({
+        message: 'Enter your own value',
+        value: ' ',
+      });
+    }
     const message = row.description
       ? `${row.title}: ${row.description}`
       : row.title;

@@ -10,7 +10,7 @@ interface StreamSlice {
 
 export class ComponentGroups extends StatuspageStreamBase {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/components.json');
+    return require('../../resources/schemas/component_groups.json');
   }
 
   get primaryKey(): StreamKey {
