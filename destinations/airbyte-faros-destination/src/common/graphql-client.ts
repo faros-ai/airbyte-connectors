@@ -307,7 +307,8 @@ export class GraphQLClient {
 
   async resetData(
     origin: string,
-    models: ReadonlyArray<string>
+    models: ReadonlyArray<string>,
+    keepReferencedRecords: boolean
   ): Promise<void> {
     this.checkSchema();
 
@@ -327,14 +328,16 @@ export class GraphQLClient {
       const deleteConditions = {
         origin: {_eq: origin},
         refreshedAt: {_lt: minRefreshedAt},
-        _not: {
+      };
+      if (keepReferencedRecords) {
+        deleteConditions['_not'] = {
           _or: this.schema.backReferences[model].map((br) => {
             return {
               [br.field]: {},
             };
           }),
-        },
-      };
+        };
+      }
       const mutation = {
         [`delete_${model}`]: {
           __args: {
