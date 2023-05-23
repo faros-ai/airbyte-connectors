@@ -28,6 +28,7 @@ export interface TableRow {
   multiline?: boolean;
   type: string;
   items_type?: string;
+  enum?: ReadonlyArray<string>;
 }
 
 function visitLeaf(
@@ -51,6 +52,7 @@ function visitLeaf(
     examples: o.examples,
     type: o.type,
     items_type: o.items?.type,
+    enum: o.enum,
   };
 
   return leaf;
@@ -281,13 +283,16 @@ async function promptLeaf(row: TableRow) {
       value: 'Skipped.',
     });
   }
-  if (row.type !== 'boolean' && row.default !== undefined) {
+
+  const enumChoices = row.enum !== undefined || row.type === 'boolean';
+
+  if (!enumChoices && row.default !== undefined) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
     });
   }
-  if (row.type !== 'boolean' && row.examples?.length) {
+  if (!enumChoices && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
@@ -297,8 +302,8 @@ async function promptLeaf(row: TableRow) {
 
   let choice = ' ';
   if (choices.length) {
-    if (row.type === 'boolean') {
-      for (const choice of [false, true]) {
+    if (enumChoices) {
+      for (const choice of row.type === 'boolean' ? [false, true] : row.enum) {
         if (row.default === choice) {
           choices.push({
             message: `${row.default} (default)`,
