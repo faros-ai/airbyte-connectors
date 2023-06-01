@@ -118,8 +118,8 @@ interface BuildLog {
 export interface Repository {
   id: string;
   type: string;
-  name: string;
-  url: string;
+  name?: string;
+  url?: string;
   clean?: string;
   checkoutSubmodules: boolean;
 }

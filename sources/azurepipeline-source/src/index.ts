@@ -27,8 +27,8 @@ export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> 
     config: AzurePipelineConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = AzurePipeline.instance(config);
-      await azureActiveDirectory.checkConnection();
+      const azurePipeline = AzurePipeline.instance(config);
+      await azurePipeline.checkConnection();
     } catch (err: any) {
       return [false, err];
     }

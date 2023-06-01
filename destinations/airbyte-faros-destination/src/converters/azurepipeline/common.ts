@@ -30,16 +30,27 @@ export abstract class AzurePipelineConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  getOrganizationFromUrl(url: string): string {
-    return url.split('/')[3];
+  getOrganizationFromUrl(url: string): string | undefined {
+    try {
+      const parsed = new URL(url);
+      const parts = parsed.pathname.split('/');
+
+      if (parts.length < 2 || parts[1] === '') {
+        return undefined;
+      }
+
+      return parts[1];
+    } catch (error) {
+      return undefined;
+    }
   }
 
-  protected azurepipleConfig(ctx: StreamContext): AzurePipelineConfig {
+  protected azurePipelineConfig(ctx: StreamContext): AzurePipelineConfig {
     return ctx.config?.source_specific_configs?.azurepipeline;
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return this.azurepipleConfig(ctx)?.application_mapping ?? {};
+    return this.azurePipelineConfig(ctx)?.application_mapping ?? {};
   }
 
   convertBuildState(state: string | undefined): {
@@ -66,6 +77,29 @@ export abstract class AzurePipelineConverter extends Converter {
       default:
         return {category: BuildStateCategory.Custom, detail};
     }
+  }
+
+  vcs_Repository(repo: Repository): any | undefined {
+    // TODO: support other repo types
+    if (repo.type !== 'GitHub') {
+      return undefined;
+    }
+
+    const parts = repo.id.split('/');
+    // Expecting repo.id to be in the format of <org>/<repo>
+    // E.g., faros-ai/airbyte-connectors
+    if (parts.length < 2) {
+      return undefined;
+    }
+
+    return {
+      name: parts[1],
+      organization: {
+        name: parts[0],
+        uid: parts[0],
+        source: repo.type,
+      },
+    };
   }
 
   getRepoUrl(repo: Repository): string | undefined {
