@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {Converter, StreamContext} from '../converter';
 import {
@@ -93,10 +94,9 @@ export abstract class AzurePipelineConverter extends Converter {
     }
 
     return {
-      name: parts[1],
+      name: toLower(parts[1]),
       organization: {
-        name: parts[0],
-        uid: parts[0],
+        uid: toLower(parts[0]),
         source: repo.type,
       },
     };
