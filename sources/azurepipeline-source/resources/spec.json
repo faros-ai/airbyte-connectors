@@ -7,7 +7,7 @@
     "required": [
       "access_token",
       "organization",
-      "project_names"
+      "projects"
     ],
     "additionalProperties": true,
     "properties": {
