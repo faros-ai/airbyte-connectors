@@ -844,7 +844,7 @@ export class GraphQLClient {
     updateFieldMask?: Set<string>
   ): ConflictClause {
     const updateColumns = nested
-      ? ['refreshedAt']
+      ? []
       : difference(
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]

@@ -28,14 +28,14 @@ describe('graphql-client', () => {
                   data: {uid: 'ashnet16', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_User_pkey'},
-                    update_columns: [{value: 'refreshedAt'}],
+                    update_columns: [{value: 'uid'}, {value: 'source'}],
                   },
                 },
                 vcs_Organization: {
                   data: {uid: 'faros-ai', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_Organization_pkey'},
-                    update_columns: [{value: 'refreshedAt'}],
+                    update_columns: [{value: 'uid'}, {value: 'source'}],
                   },
                 },
                 origin: 'myghsrc',
@@ -92,14 +92,14 @@ describe('graphql-client', () => {
                   data: {uid: 'ashnet16', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_User_pkey'},
-                    update_columns: [{value: 'refreshedAt'}],
+                    update_columns: [{value: 'uid'}, {value: 'source'}],
                   },
                 },
                 vcs_Organization: {
                   data: {uid: 'faros-ai', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_Organization_pkey'},
-                    update_columns: [{value: 'refreshedAt'}],
+                    update_columns: [{value: 'uid'}, {value: 'source'}],
                   },
                 },
                 origin: 'myghsrc',
