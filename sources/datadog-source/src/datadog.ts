@@ -41,6 +41,7 @@ export interface DatadogConfig {
   readonly metrics?: Array<string>;
   readonly metrics_max_window?: number;
   readonly site?: string;
+  readonly debug?: boolean;
 }
 
 export interface DatadogClient {
@@ -62,6 +63,7 @@ export class Datadog {
         apiKeyAuth: config.api_key,
         appKeyAuth: config.application_key,
       },
+      debug: config.debug ?? false,
     };
 
     const clientConfig = client.createConfiguration(configurationOpts);
@@ -144,6 +146,11 @@ export class Datadog {
     to: number
   ): AsyncGenerator<MetricPoint, any, any> {
     try {
+      if (this.config.debug) {
+        this.logger.debug(
+          `Querying metric '${query}' in range from ${from} to ${to}`
+        );
+      }
       const res = await this.client.metrics.queryMetrics({
         from,
         to,
