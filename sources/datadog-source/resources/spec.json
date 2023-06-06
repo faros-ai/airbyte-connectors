@@ -49,6 +49,13 @@
         "title": "Datadog Site",
         "description": "Datadog Site parameter, e.g 'datadoghq.com'. See all available site options here - https://docs.datadoghq.com/getting_started/site/",
         "default": "datadoghq.com"
+      },
+      "debug": {
+        "order": 6,
+        "type": "boolean",
+        "title": "Client Debug Enabled",
+        "description": "Enable Datadog client debug mode",
+        "default": false
       }
     }
   }
