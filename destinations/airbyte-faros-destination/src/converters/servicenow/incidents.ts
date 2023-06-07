@@ -155,7 +155,7 @@ export class Incidents extends ServiceNowConverter {
       incAppImpact.application?.platform
     ).uid;
 
-    if (incAppImpacts[incAppImpact.incident?.uid] === undefined) {
+    if (!(incAppImpact.incident?.uid in incAppImpacts)) {
       // this incident was not processed, so we keep its associations in the graph
       return false;
     }
