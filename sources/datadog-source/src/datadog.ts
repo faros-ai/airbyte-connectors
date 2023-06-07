@@ -24,6 +24,7 @@ interface PagedResult<T> {
 
 export interface MetricPoint {
   id: string;
+  queryHash: string;
   displayName: string;
   metric: string;
   timestamp: number;
@@ -153,6 +154,7 @@ export class Datadog {
         for (const point of metadata.pointlist) {
           yield {
             id: `${queryHash}-${metadata.metric}-${point[0]}`,
+            queryHash,
             displayName: metadata.displayName,
             metric: metadata.metric,
             timestamp: point[0],
