@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -38,7 +39,7 @@ export class Metrics extends DatadogConverter {
       record: {
         uid: metric.id,
         value: metric.value,
-        computedAt: metric.timestamp,
+        computedAt: Utils.toDate(metric.timestamp),
         definition: {uid: metricDefinition.record.uid},
       },
     };
