@@ -11,7 +11,7 @@ export class Metrics extends DatadogConverter {
     'faros_MetricValue',
   ];
 
-  readonly metricDefintions = new Set<string>();
+  readonly metricDefinitions = new Set<string>();
 
   async convert(
     record: AirbyteRecord
@@ -28,9 +28,9 @@ export class Metrics extends DatadogConverter {
         valueType: this.metricValueType(metric.primaryUnit),
       },
     };
-    if (!this.metricDefintions.has(metricDefinition.record.uid)) {
+    if (!this.metricDefinitions.has(metricDefinition.record.uid)) {
       res.push(metricDefinition);
-      this.metricDefintions.add(metricDefinition.record.uid);
+      this.metricDefinitions.add(metricDefinition.record.uid);
     }
 
     const metricValue = {
