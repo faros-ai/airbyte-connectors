@@ -151,12 +151,12 @@ export class Incidents extends ServiceNowConverter {
       incAppImpact.application?.platform
     ).uid;
 
-    // We shouldn't delete if we processed this incident/application association
     if (this.incAppImpacts[incAppImpact.incident?.uid] === undefined) {
-      // this incident was not processed
-      return true;
+      // this incident was not processed, so we keep its associations in the graph
+      return false;
     }
 
+    // We shouldn't delete if we processed this incident/application association
     return !this.incAppImpacts[incAppImpact.incident?.uid].has(appKey);
   }
 
