@@ -261,15 +261,18 @@ function choiceAsType(row: TableRow, choice: string) {
   throw new VError(`Unexpected type: ${type}`);
 }
 
-function formatArg(row: TableRow, choice: boolean | number | string) {
+function formatArg(
+  row: TableRow,
+  choice: boolean | number | string | string[]
+) {
   let formattedChoice = typeof choice === 'string' ? `"${choice}"` : choice;
   if (row.type === 'array') {
-    formattedChoice = `'[${formattedChoice}]'`;
+    formattedChoice = `'${JSON.stringify(choice)}}'`;
   }
   return `${row.path} ${formattedChoice}`;
 }
 
-async function promptLeaf(row: TableRow) {
+async function promptLeaf(row: TableRow, tail = false) {
   if (row.type === 'empty_object') {
     return undefined;
   }
@@ -279,7 +282,8 @@ async function promptLeaf(row: TableRow) {
   }
   if (!row.required) {
     choices.push({
-      message: 'Skip this section',
+      // If `tail` is true, this means we're prompting for the second or later element of an array.
+      message: tail ? 'Done' : 'Skip this section',
       value: 'Skipped.',
     });
   }
@@ -332,15 +336,26 @@ async function promptLeaf(row: TableRow) {
     });
   }
 
+  let result;
+
   switch (choice) {
     case 'Skipped.':
       return undefined;
     case 'Used default.':
-      return row.default;
+      result = row.default;
+      break;
     case ' ':
-      return await promptValue(row);
+      result = await promptValue(row);
+      break;
     default:
-      return choiceAsType(row, choice);
+      result = choiceAsType(row, choice);
+  }
+
+  if (row.type === 'array') {
+    const nextResult = await promptLeaf(row, true);
+    return nextResult === undefined ? [result] : [result].concat(nextResult);
+  } else {
+    return result;
   }
 }
 
@@ -349,9 +364,7 @@ export async function buildJson(
 ): Promise<string> {
   const result = {};
 
-  await acceptUserInput(rows, (row, choice) =>
-    _.set(result, row.path, row.type === 'array' ? [choice] : choice)
-  );
+  await acceptUserInput(rows, (row, choice) => _.set(result, row.path, choice));
 
   return JSON.stringify(result);
 }
