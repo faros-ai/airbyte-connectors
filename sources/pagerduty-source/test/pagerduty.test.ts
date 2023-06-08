@@ -30,7 +30,7 @@ describe('Pagerduty', () => {
       summary: 'Summary',
       self: 'self',
       html_url: 'url',
-      created_at: '1',
+      created_at: new Date().toISOString(),
       incident: {
         id: 'id',
         type: 'Incident',
@@ -105,7 +105,7 @@ describe('Pagerduty', () => {
 
     mockGet.mockResolvedValue(response);
 
-    const iter = pd.getIncidentLogEntries(
+    const iter = pd.getIncidents(
       DateTime.now().minus({hours: 12}),
       DateTime.now()
     );

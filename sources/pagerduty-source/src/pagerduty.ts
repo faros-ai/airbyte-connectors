@@ -305,7 +305,13 @@ export class Pagerduty {
 
       const resource = `/log_entries?${params}`;
       this.logger.debug(`Fetching Log Entries at ${resource}`);
-      yield* this.paginate<LogEntry>(() => this.client.get(resource));
+      const sinceJSDate = since.toJSDate();
+      const iter = this.paginate<LogEntry>(() => this.client.get(resource));
+      for await (const logEntry of iter) {
+        if (new Date(logEntry.created_at) > sinceJSDate) {
+          yield logEntry;
+        }
+      }
     }
   }
 
