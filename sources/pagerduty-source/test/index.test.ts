@@ -95,7 +95,7 @@ describe('index', () => {
             .mockResolvedValueOnce({
               resource: expectedEntries,
             })
-            .mockResolvedValue({resouce: []}),
+            .mockResolvedValue({resource: []}),
         } as unknown as PartialCall,
         logger
       );
@@ -127,7 +127,7 @@ describe('index', () => {
             .mockResolvedValueOnce({
               resource: readTestResourceFile('incidents.json'),
             })
-            .mockResolvedValue({resouce: []}),
+            .mockResolvedValue({resource: []}),
         } as unknown as PartialCall,
         logger
       );
