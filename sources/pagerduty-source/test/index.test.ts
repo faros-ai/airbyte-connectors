@@ -83,12 +83,17 @@ describe('index', () => {
   test('streams - incidentLogEntries, use full_refresh sync mode', async () => {
     const fnIncidentLogEntriesList = jest.fn();
 
+    const expectedEntries = readTestResourceFile('incidentLogEntries.json').map(
+      (entry) => {
+        return {...entry, created_at: new Date().toISOString()};
+      }
+    );
     Pagerduty.instance = jest.fn().mockImplementation(() => {
       return new Pagerduty(
         {
           get: fnIncidentLogEntriesList
             .mockResolvedValueOnce({
-              resource: readTestResourceFile('incidentLogEntries.json'),
+              resource: expectedEntries,
             })
             .mockResolvedValue({resouce: []}),
         } as unknown as PartialCall,
@@ -109,9 +114,7 @@ describe('index', () => {
       incidentLogEntries.push(logEntry);
     }
     expect(fnIncidentLogEntriesList).toHaveBeenCalledTimes(90);
-    expect(incidentLogEntries).toStrictEqual(
-      readTestResourceFile('incidentLogEntries.json')
-    );
+    expect(incidentLogEntries).toStrictEqual(expectedEntries);
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
