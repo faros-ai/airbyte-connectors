@@ -2,7 +2,6 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import _ from 'lodash';
 import {
   clone,
   difference,
@@ -14,6 +13,7 @@ import {
   isNil,
   keys,
   max,
+  orderBy,
   pick,
   reverse,
   set,
@@ -569,7 +569,7 @@ export class GraphQLClient {
         // }
         if (this.updateResetLimit) {
           for (const mutationRes of Object.values(res.data)) {
-            const refreshedAt = _.get(mutationRes, 'refreshedAt');
+            const refreshedAt = get(mutationRes, 'refreshedAt');
             if (refreshedAt) {
               const recordRefreshedAtMs = new Date(refreshedAt).getTime();
               this.resetLimitMillis = Math.min(
@@ -789,7 +789,8 @@ export class GraphQLClient {
         mutation: {
           [`insert_${model}`]: {
             __args: {
-              objects,
+              // sort objects to avoid deadlocks on concurrent inserts
+              objects: orderBy(objects, primaryKeys),
               on_conflict: onConflict,
             },
             returning: {
