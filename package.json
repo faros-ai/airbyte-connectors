@@ -18,6 +18,7 @@
     "@types/jenkins": "^0.23.2",
     "@types/jest": "^27.5.0",
     "@types/jsonwebtoken": "^9.0.1",
+    "@lerna/legacy-package-management": "^6.4.1",
     "@types/lodash": "^4.14.173",
     "@types/luxon": "^3.0.0",
     "@types/node": "^16.11.41",
