@@ -2,8 +2,7 @@ import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import _ from 'lodash';
-import {
+import _, {
   clone,
   difference,
   flatMap,
@@ -789,7 +788,8 @@ export class GraphQLClient {
         mutation: {
           [`insert_${model}`]: {
             __args: {
-              objects,
+              // sort objects to avoid deadlocks on concurrent inserts
+              objects: _.orderBy(objects, primaryKeys),
               on_conflict: onConflict,
             },
             returning: {
