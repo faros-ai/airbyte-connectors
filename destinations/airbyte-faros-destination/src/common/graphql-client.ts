@@ -222,6 +222,9 @@ export function toPostgresArrayLiteral(value: any[]): string {
       if (isNil(s)) {
         return 'NULL';
       }
+      if (typeof s === 'object') {
+        return JSON.stringify(s);
+      }
       return s;
     })
     .join(',')}}`;

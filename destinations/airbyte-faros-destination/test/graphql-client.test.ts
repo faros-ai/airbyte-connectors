@@ -906,4 +906,18 @@ describe('toPostgresArrayLiteral', () => {
     expect(toPostgresArrayLiteral([1, undefined, 3])).toEqual(`{1,NULL,3}`);
     expect(toPostgresArrayLiteral([1, 0, 3])).toEqual(`{1,0,3}`);
   });
+  test('objects', async () => {
+    expect(toPostgresArrayLiteral([{a: 'a'}, {b: 'b'}, {c: 'c'}])).toEqual(
+      `{{"a":"a"},{"b":"b"},{"c":"c"}}`
+    );
+    expect(toPostgresArrayLiteral([{a: 'a'}, {}, {c: 'c'}])).toEqual(
+      `{{"a":"a"},{},{"c":"c"}}`
+    );
+    expect(toPostgresArrayLiteral([{a: 'a'}, null, {c: 'c'}])).toEqual(
+      `{{"a":"a"},NULL,{"c":"c"}}`
+    );
+    expect(toPostgresArrayLiteral([{a: 'a'}, undefined, {c: 'c'}])).toEqual(
+      `{{"a":"a"},NULL,{"c":"c"}}`
+    );
+  });
 });
