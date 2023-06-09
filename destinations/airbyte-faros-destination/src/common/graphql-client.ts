@@ -8,6 +8,7 @@ import {
   flatMap,
   get,
   groupBy,
+  has,
   intersection,
   isEmpty,
   isNil,
@@ -30,6 +31,8 @@ import {
   UpdateRecord,
   UpsertRecord,
 } from './types';
+
+const ROOT_FLAG = '__root__';
 
 interface ConflictClause {
   constraint: EnumType;
@@ -720,6 +723,8 @@ export class GraphQLClient {
     }
     if (origin) {
       object['origin'] = origin;
+      // add root flag to top-level objects
+      object[ROOT_FLAG] = true;
     }
     const upsert = {
       model,
@@ -788,16 +793,22 @@ export class GraphQLClient {
     // for each set of unique keys, build an UpsertOp
     const groups = groupByKeys(allObjects);
     return groups.map((objects) => {
+      assert(objects?.length, 'objects should not be empty');
       // all objects have same fields due to groupByKeys call
       // pull out fields of first as mask for update fields to ensure
       // fields that aren't in the data are not modified by the upsert
-      const updateColumnMask = objects?.length
-        ? new Set(Object.keys(objects[0]))
-        : undefined;
-      const onConflict = this.createConflictClause(
+      const updateColumnMask = new Set(Object.keys(objects[0]));
+      // determine if this group contains root objects
+      let isRoot = false;
+      if (has(objects[0], ROOT_FLAG)) {
+        isRoot = true;
+        // remove root flag from all objects
+        objects.forEach((o) => delete o[ROOT_FLAG]);
+      }
+      const onConflict = this.createUpsertConflictClause(
         model,
-        false,
-        updateColumnMask
+        updateColumnMask,
+        isRoot
       );
       const mutation = {
         mutation: {
@@ -858,20 +869,43 @@ export class GraphQLClient {
     updateFieldMask?: Set<string>
   ): ConflictClause {
     const updateColumns = nested
-      ? []
+      ? ['refreshedAt']
       : difference(
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
         );
     const filteredUpdateFields =
       updateFieldMask && !nested
-        ? updateColumns.filter(
-            // ensure refreshedAt is always updated for root objects
-            // note: value for refreshedAt, if not in data, comes from
-            // default for column which is now()
-            (c) => updateFieldMask.has(c) || c === 'refreshedAt'
-          )
+        ? updateColumns.filter((c) => updateFieldMask.has(c))
         : updateColumns;
+    // if empty, use model keys to ensure queries always return results
+    if (isEmpty(filteredUpdateFields)) {
+      filteredUpdateFields.push(...this.schema.primaryKeys[model]);
+    }
+    return {
+      constraint: new EnumType(`${model}_pkey`),
+      update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
+    };
+  }
+
+  private createUpsertConflictClause(
+    model: string,
+    updateFieldMask: Set<string>,
+    isRoot: boolean
+  ): ConflictClause {
+    // superset of fields that can be updated
+    const updateColumns = difference(
+      Object.keys(this.schema.scalars[model]),
+      this.schema.primaryKeys[model]
+    );
+    // filter to only those fields that are in the data
+    const filteredUpdateFields = updateColumns.filter((c) =>
+      updateFieldMask.has(c)
+    );
+    // for root objects, always update refreshedAt
+    if (isRoot) {
+      filteredUpdateFields.push('refreshedAt');
+    }
     // if empty, use model keys to ensure queries always return results
     if (isEmpty(filteredUpdateFields)) {
       filteredUpdateFields.push(...this.schema.primaryKeys[model]);
