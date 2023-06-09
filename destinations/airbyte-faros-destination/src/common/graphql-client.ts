@@ -844,19 +844,14 @@ export class GraphQLClient {
     updateFieldMask?: Set<string>
   ): ConflictClause {
     const updateColumns = nested
-      ? []
+      ? ['refreshedAt']
       : difference(
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
         );
     const filteredUpdateFields =
       updateFieldMask && !nested
-        ? updateColumns.filter(
-            // ensure refreshedAt is always updated for root objects
-            // note: value for refreshedAt, if not in data, comes from
-            // default for column which is now()
-            (c) => updateFieldMask.has(c) || c === 'refreshedAt'
-          )
+        ? updateColumns.filter((c) => updateFieldMask.has(c))
         : updateColumns;
     // if empty, use model keys to ensure queries always return results
     if (isEmpty(filteredUpdateFields)) {
