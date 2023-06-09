@@ -11,6 +11,7 @@ import {
   serialize,
   strictPick,
   toLevels,
+  toPostgresArrayLiteral,
   Upsert,
   UpsertBuffer,
 } from '../src/common/graphql-client';
@@ -28,14 +29,14 @@ describe('graphql-client', () => {
                   data: {uid: 'ashnet16', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_User_pkey'},
-                    update_columns: [{value: 'uid'}, {value: 'source'}],
+                    update_columns: [{value: 'refreshedAt'}],
                   },
                 },
                 vcs_Organization: {
                   data: {uid: 'faros-ai', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_Organization_pkey'},
-                    update_columns: [{value: 'uid'}, {value: 'source'}],
+                    update_columns: [{value: 'refreshedAt'}],
                   },
                 },
                 origin: 'myghsrc',
@@ -92,14 +93,14 @@ describe('graphql-client', () => {
                   data: {uid: 'ashnet16', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_User_pkey'},
-                    update_columns: [{value: 'uid'}, {value: 'source'}],
+                    update_columns: [{value: 'refreshedAt'}],
                   },
                 },
                 vcs_Organization: {
                   data: {uid: 'faros-ai', source: 'GitHub', origin: 'myghsrc'},
                   on_conflict: {
                     constraint: {value: 'vcs_Organization_pkey'},
-                    update_columns: [{value: 'uid'}, {value: 'source'}],
+                    update_columns: [{value: 'refreshedAt'}],
                   },
                 },
                 origin: 'myghsrc',
@@ -887,5 +888,22 @@ describe('groupByKeys', () => {
   });
   test('2 groups of mix', async () => {
     await expectGroupByKeys([u0a, u1a, u1b]);
+  });
+});
+
+describe('toPostgresArrayLiteral', () => {
+  test('strings', async () => {
+    expect(toPostgresArrayLiteral(['a', 'b', 'c'])).toEqual(`{"a","b","c"}`);
+    expect(toPostgresArrayLiteral(['a', '', 'c'])).toEqual(`{"a","","c"}`);
+    expect(toPostgresArrayLiteral(['a', null, 'c'])).toEqual(`{"a",NULL,"c"}`);
+    expect(toPostgresArrayLiteral(['a', undefined, 'c'])).toEqual(
+      `{"a",NULL,"c"}`
+    );
+  });
+  test('numbers', async () => {
+    expect(toPostgresArrayLiteral([1, 2, 3])).toEqual(`{1,2,3}`);
+    expect(toPostgresArrayLiteral([1, null, 3])).toEqual(`{1,NULL,3}`);
+    expect(toPostgresArrayLiteral([1, undefined, 3])).toEqual(`{1,NULL,3}`);
+    expect(toPostgresArrayLiteral([1, 0, 3])).toEqual(`{1,0,3}`);
   });
 });
