@@ -608,6 +608,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       terminal: stdin.isTTY,
     });
     try {
+      let sourceFailed = false;
       // Process input & write records
       for await (const line of input) {
         let stateMessage: AirbyteStateMessage = undefined;
@@ -617,7 +618,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
-            stateMessage = msg as AirbyteStateMessage;
+            const message = msg as AirbyteStateMessage;
+            if (message.sourceStatus?.status === 'ERROR') {
+              this.logger.error('Airbyte Source has failed');
+              sourceFailed = true;
+            } else {
+              stateMessage = message;
+            }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -707,7 +714,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
-      await resetData?.();
+      if (sourceFailed) {
+        this.logger.warn(
+          'Skipping reset of non-incremental models due to Airbyte Source failure'
+        );
+      } else {
+        await resetData?.();
+      }
       // Don't forget to close the writer
       await writer?.end();
     } finally {

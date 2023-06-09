@@ -141,6 +141,10 @@ export abstract class AirbyteSourceBase<
           }`,
           e.stack
         );
+        yield new AirbyteStateMessage(
+          {data: connectorState},
+          {status: 'ERROR'}
+        );
         throw e;
       }
     }

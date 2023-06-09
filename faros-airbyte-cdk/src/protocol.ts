@@ -257,11 +257,15 @@ export interface AirbyteState {
   [stream: string]: any;
 }
 
+export interface AirbyteSourceStatus {
+  status: 'RUNNING' | 'ERROR';
+  [key: string]: any;
+}
+
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
-    readonly state: {
-      data: AirbyteState;
-    }
+    readonly state: {data: AirbyteState},
+    readonly sourceStatus?: AirbyteSourceStatus
   ) {}
 }
