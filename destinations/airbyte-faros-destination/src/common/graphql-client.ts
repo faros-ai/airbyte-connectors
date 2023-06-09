@@ -210,6 +210,20 @@ function addLevel(u: Upsert): [Upsert, number][] {
   return result;
 }
 
+export function toPostgresArrayLiteral(value: any[]): string {
+  return `{${value
+    .map((s) => {
+      if (typeof s === 'string') {
+        return `"${s}"`;
+      }
+      if (isNil(s)) {
+        return 'NULL';
+      }
+      return s;
+    })
+    .join(',')}}`;
+}
+
 /**
  * Client for writing records as GraphQL mutations.  The client supports 3
  * kinds of writes: Upserts, Updates and Deletes.
@@ -827,7 +841,7 @@ export class GraphQLClient {
         );
       }
       // format array value as postgres literal
-      return `{${value.join(',')}}`;
+      return toPostgresArrayLiteral(value);
     } else if (typeof value === 'object' || Array.isArray(value)) {
       return traverse(value).map(function (this, val) {
         if (val instanceof Date) {
