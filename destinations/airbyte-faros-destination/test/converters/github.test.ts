@@ -219,8 +219,12 @@ describe('github', () => {
       '--dry-run',
     ]);
     cli.stdin.end(
-      JSON.stringify(new AirbyteStateMessage({data: {}}, {status: 'ERROR'})) +
-        os.EOL,
+      JSON.stringify(
+        new AirbyteStateMessage(
+          {data: {}},
+          {status: 'ERRORED', error: 'Source error message'}
+        )
+      ) + os.EOL,
       'utf8'
     );
     const stdout = await read(cli.stdout);
@@ -229,7 +233,8 @@ describe('github', () => {
     expect(stdout).toMatch('Processed 0 records');
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch(
-      'Skipping reset of non-incremental models due to Airbyte Source failure'
+      'Skipping reset of non-incremental models due to' +
+        ' Airbyte Source failure: Source error message'
     );
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');

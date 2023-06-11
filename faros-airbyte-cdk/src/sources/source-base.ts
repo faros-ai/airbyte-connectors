@@ -143,7 +143,7 @@ export abstract class AirbyteSourceBase<
         );
         yield new AirbyteStateMessage(
           {data: connectorState},
-          {status: 'ERROR'}
+          {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
         );
         throw e;
       }
