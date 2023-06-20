@@ -1,3 +1,6 @@
-import {Builds} from './builds';
+import {Cases} from './case';
+import {Results} from './result';
+import {Runs} from './run';
+import {Suites} from './suite';
 
-export {Builds};
+export {Runs, Results, Cases, Suites};

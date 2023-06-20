@@ -1,160 +1,223 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {DateTime} from 'luxon';
 import VError from 'verror';
 
-import {TimeWindow} from '../models';
-import {
-  Case,
-  CaseType,
-  PagedCases,
-  PagedProjects,
-  PagedResponse,
-  PagedRuns,
-  Project,
-  Run,
-  Suite,
-} from './models';
+import {Case, Result, Run, Suite, TimeWindow} from '../models';
+import {TestRailsClient} from './testRailsClient';
 
-const DEFAULT_PAGE_SIZE = 250;
-const DEFAULT_TIMEOUT = 30_000;
-const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_CUTOFF_DAYS = 90;
 
-export interface TestRailsClientConfig {
+export interface TestRailsConfig {
   readonly username: string;
-  readonly apiKey: string;
-  readonly instanceUrl: string;
-  readonly pageSize?: number;
-  readonly timeout?: number;
-  readonly maxRetries?: number;
-  readonly logger?: AirbyteLogger;
+  readonly api_key: string;
+  readonly instance_url: string;
+  readonly project_names?: string[];
+  readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly max_retries?: number;
+  readonly reject_unauthorized?: boolean;
+  readonly before?: string;
+  readonly after?: string;
 }
 
-export class TestRailsClient {
-  private readonly api: AxiosInstance;
-  private readonly pageSize: number;
-  private readonly logger?: AirbyteLogger;
+export class TestRails {
+  private static inst: TestRails = null;
+  private projects: Record<string, string> = {};
 
-  constructor(config: TestRailsClientConfig) {
-    this.logger = config.logger;
-    this.pageSize = config.pageSize ?? DEFAULT_PAGE_SIZE;
+  private constructor(
+    readonly client: TestRailsClient,
+    readonly window: TimeWindow,
+    readonly windowOverride: boolean,
+    readonly logger: AirbyteLogger
+  ) {}
 
-    const cleanInstanceUrl = config.instanceUrl.replace(/\/$/, '');
+  static async instance(
+    config: TestRailsConfig,
+    logger: AirbyteLogger
+  ): Promise<TestRails> {
+    if (TestRails.inst) return TestRails.inst;
+    if (!config.username) {
+      throw new VError('Username must be provided');
+    }
+    if (!config.api_key) {
+      throw new VError('API Key must be provided');
+    }
+    if (!config.instance_url) {
+      throw new VError('Instance URL must be provided');
+    }
+    if (config?.reject_unauthorized === false) {
+      logger.warn('Disabling certificate validation');
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
 
-    this.api = axios.create({
-      baseURL: `${cleanInstanceUrl}/index.php?/api/v2`,
-      auth: {
-        username: config.username,
-        password: config.apiKey,
-      },
-      timeout: config.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: Infinity,
+    const client = new TestRailsClient({
+      username: config.username,
+      apiKey: config.api_key,
+      instanceUrl: config.instance_url,
+      pageSize: config.page_size,
+      maxRetries: config.max_retries,
+      logger,
     });
 
-    const retries = config.maxRetries ?? DEFAULT_MAX_RETRIES;
-    if (retries > 0) {
-      const retryConfig: IAxiosRetryConfig = {
-        retryDelay: axiosRetry.exponentialDelay,
-        shouldResetTimeout: true,
-        retries,
-        onRetry: (retryCount, error, requestConfig) => {
-          this.logger?.info(
-            `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
-              `(attempt ${retryCount} of ${retries})`
-          );
-        },
-      };
-      axiosRetry(this.api, retryConfig);
-    }
+    const before = config.before ? DateTime.fromISO(config.before) : undefined;
+    const after = config.after
+      ? DateTime.fromISO(config.after)
+      : DateTime.now().minus({
+          days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+        });
+
+    const window: TimeWindow = {before, after};
+    const windowOverride: boolean =
+      config.before != null && config.after != null;
+
+    this.inst = new TestRails(client, window, windowOverride, logger);
+    await this.inst.initializeProjects(config.project_names);
+    return this.inst;
   }
 
-  async *getProjects(): AsyncGenerator<Project> {
-    const projects = (res: PagedProjects): Project[] => {
-      return res.projects;
-    };
+  /**
+   * Resolve project names to project ids. If no names are provided, then all
+   * projects will be resolved.
+   * @param projectNames The project names that should be resolved
+   */
+  private async initializeProjects(projectNames: string[] = []): Promise<void> {
+    const unresolvedNames =
+      projectNames.length > 0 ? new Set(projectNames) : undefined;
+    const resolvedNames = [];
 
-    yield* this.paginate<Project, PagedProjects>('/get_projects', projects);
-  }
-
-  async getSuites(projectId: number): Promise<Suite[]> {
-    return this.get<Suite[]>(`/get_suites/${projectId}`);
-  }
-
-  async *getCases(
-    projectId: string,
-    window?: TimeWindow
-  ): AsyncGenerator<Case> {
-    let window_params = '';
-    if (window.after) {
-      window_params += `&updated_after=${window.after.toUnixInteger()}`;
-    }
-    if (window.before) {
-      window_params += `&updated_before=${window.before.toUnixInteger()}`;
-    }
-
-    const path = '/get_cases/' + projectId + window_params;
-    const cases = (res: PagedCases): Case[] => {
-      return res.cases;
-    };
-
-    yield* this.paginate<Case, PagedCases>(path, cases);
-  }
-
-  async getCaseTypes(): Promise<CaseType[]> {
-    return this.get<CaseType[]>('/get_cases_types');
-  }
-
-  // TODO: Might not pull things that are part of test plans
-  async *getRuns(projectId: number, window: TimeWindow): AsyncGenerator<Run> {
-    let window_params = '';
-    if (window.after) {
-      window_params += `&created_after=${window.after.toUnixInteger()}`;
-    }
-    if (window.before) {
-      window_params += `&created_before=${window.before.toUnixInteger()}`;
-    }
-
-    const path = '/get_runs/' + projectId + window_params;
-    const runs = (res: PagedRuns): Run[] => {
-      return res.runs;
-    };
-
-    yield* this.paginate(path, runs);
-  }
-
-  private async *paginate<T, R extends PagedResponse>(
-    path: string,
-    getItems: (res: R) => T[]
-  ): AsyncGenerator<T> {
-    const limit = this.pageSize;
-    let offset = 0;
-    let hasNext = true;
-    while (hasNext) {
-      // TestRails uses a non-standard '&' query param starter
-      const page_params = `&limit=${limit}&offset=${offset}`;
-      const request = this.api.get<R>(path + page_params);
-      const response = await this.wrapRequest(request);
-
-      for (const item of getItems(response)) {
-        yield item;
+    for await (const project of this.client.listProjects()) {
+      if (unresolvedNames?.has(project.name)) {
+        this.projects[project.id] = project.name;
+        resolvedNames.push(project.name);
+        unresolvedNames.delete(project.name);
+        if (unresolvedNames.size == 0) {
+          break;
+        }
+      } else if (!unresolvedNames) {
+        this.projects[project.id] = project.name;
+        resolvedNames.push(project.name);
       }
+    }
 
-      offset += limit;
-      hasNext = limit == response.size;
+    if (unresolvedNames?.size > 0) {
+      const unresolvedNamesStr = Array.from(unresolvedNames.values()).join(
+        ', '
+      );
+      this.logger.warn(
+        `The following projects could not be resolved: ${unresolvedNamesStr}`
+      );
+    }
+    if (resolvedNames.length > 0) {
+      this.logger.info(
+        `TestRails initialized to sync projects: ${resolvedNames.join(', ')}`
+      );
+    }
+    if (resolvedNames.length == 0) {
+      this.logger.warn('No projects could be resolved');
     }
   }
 
-  private get<T>(path: string): Promise<T> {
-    return this.wrapRequest(this.api.get(path));
-  }
-
-  private async wrapRequest<T>(request: Promise<AxiosResponse<T>>): Promise<T> {
+  async checkConnection(): Promise<void> {
     try {
-      const {data} = await request;
-      return data;
+      const iter = this.client.listProjects();
+      await iter.next();
     } catch (err: any) {
-      const errorMessage = wrapApiError(err).message;
-      throw new VError(errorMessage);
+      throw new VError(err, 'Error verifying connection');
     }
+  }
+
+  async *getSuites(): AsyncGenerator<Suite> {
+    for (const projectId of Object.keys(this.projects)) {
+      const suites = await this.client.listSuites(projectId);
+      for (const suite of suites) {
+        yield suite;
+      }
+    }
+  }
+
+  async *getCases(since?: number): AsyncGenerator<Case> {
+    const typeMap = await this.getTestTypes();
+
+    for (const projectId of Object.keys(this.projects)) {
+      const suites = await this.client.listSuites(projectId);
+      for (const suite of suites) {
+        for await (const tc of this.client.listCases(
+          projectId,
+          suite.id,
+          this.getWindow(since)
+        )) {
+          const milestone = await this.client.getMilestone(tc.milestone_id);
+
+          yield {
+            ...tc,
+            type: typeMap.get(tc.type_id),
+            milestone: milestone?.name,
+          };
+        }
+      }
+    }
+  }
+
+  async *getRuns(since?: number): AsyncGenerator<Run> {
+    for (const projectId of Object.keys(this.projects)) {
+      for await (const run of this.client.listRuns(
+        projectId,
+        this.getWindow(since)
+      )) {
+        const milestone = await this.client.getMilestone(run.milestone_id);
+
+        yield {
+          ...run,
+          milestone: milestone?.name,
+        };
+      }
+    }
+  }
+
+  async *getResults(since?: number): AsyncGenerator<Result> {
+    const idToStatusMap: Map<number, string> = new Map();
+    const statuses = await this.client.getStatuses();
+    for (const status of statuses) {
+      idToStatusMap.set(status.id, status.label);
+    }
+
+    for (const projectId of Object.keys(this.projects)) {
+      for await (const run of this.client.listRuns(
+        projectId,
+        this.getWindow(since)
+      )) {
+        const testToCaseMap: Map<number, number> = new Map();
+        for await (const test of this.client.listTests(run.id)) {
+          testToCaseMap.set(test.id, test.case_id);
+        }
+
+        for await (const result of this.client.listRunResults(run.id)) {
+          yield {
+            ...result,
+            case_id: testToCaseMap.get(result.test_id),
+            run_id: run.id,
+            status: idToStatusMap.get(result.status_id),
+          };
+        }
+      }
+    }
+  }
+
+  private async getTestTypes(): Promise<Map<number, string>> {
+    const typeMap = new Map();
+    const types = await this.client.getCaseTypes();
+    for (const type of types) {
+      typeMap.set(type.id, type.name);
+    }
+    return typeMap;
+  }
+
+  private getWindow(since?: number): TimeWindow {
+    if (since && !this.windowOverride) {
+      return {
+        after: DateTime.fromSeconds(since),
+      };
+    }
+    return this.window;
   }
 }

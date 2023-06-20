@@ -1,0 +1,36 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {TestRailsConverter} from './common';
+
+export class Suites extends TestRailsConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'qa_TestSuite',
+  ];
+
+  async convert(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+    const source = this.streamName.source;
+    const suite = record.record.data;
+
+    const masterTag = `master:${suite.is_master}`;
+    const baselineTag = `baseline:${suite.is_baseline}`;
+    const completeTag = `complete:${suite.is_complete}`;
+
+    res.push({
+      model: 'qa_TestSuite',
+      record: {
+        uid: suite.id,
+        name: suite.name,
+        description: suite.description,
+        tags: [masterTag, baselineTag, completeTag],
+        source,
+      },
+    });
+
+    return res;
+  }
+}
