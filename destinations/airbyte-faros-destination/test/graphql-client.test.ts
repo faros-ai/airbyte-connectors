@@ -641,7 +641,7 @@ describe('graphql-client write batch upsert', () => {
     await client.flush();
     expect(queries).toEqual(responses.length);
   });
-  test('null fields bug', async () => {
+  test('allow upsert null values', async () => {
     const responses = [
       JSON.parse(`
         {
@@ -732,7 +732,7 @@ describe('graphql-client write batch upsert', () => {
     await expect(
       client.writeRecord('vcs_Organization', {uid: null}, 'mytestsource')
     ).rejects.toThrow(
-      'cannot upsert null uid for model vcs_Organization with keys {"uid":null}'
+      'cannot upsert null or undefined uid for model vcs_Organization with keys {"uid":null}'
     );
     await client.writeRecord('vcs_Organization', {uid: 'u2'}, 'mytestsource');
     await client.flush();

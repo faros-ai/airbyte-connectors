@@ -736,7 +736,7 @@ export class GraphQLClient {
     // error on flush
     if (has(object, 'uid') && isNil(object['uid'])) {
       throw new VError(
-        'cannot upsert null uid for model %s with keys %s',
+        'cannot upsert null or undefined uid for model %s with keys %s',
         model,
         JSON.stringify(pick(record, this.schema.primaryKeys[model]))
       );
