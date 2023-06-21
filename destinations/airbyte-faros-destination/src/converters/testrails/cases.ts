@@ -22,7 +22,7 @@ export class Cases extends TestRailsConverter {
     res.push({
       model: 'qa_TestCase',
       record: {
-        uid: testCase.id,
+        uid: testCase.id.toString(),
         name: testCase.title,
         source,
         tags: [milestoneTag],
@@ -33,8 +33,8 @@ export class Cases extends TestRailsConverter {
     res.push({
       model: 'qa_TestSuiteTestCaseAssociation',
       record: {
-        testSuite: {uid: testCase.uid, source},
-        testCase: {uid: testCase.suite_id, source},
+        testSuite: {uid: testCase.id.toString(), source},
+        testCase: {uid: testCase.suite_id.toString(), source},
       },
     });
 

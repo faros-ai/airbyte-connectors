@@ -36,19 +36,19 @@ export class Runs extends TestRailsConverter {
     res.push({
       model: 'qa_TestExecution',
       record: {
-        uid: run.id,
+        uid: run.id.toString(),
         name: run.name,
         description: run.description,
         source,
         startedAt: run.created_on
-          ? DateTime.fromSeconds(run.created_on)
+          ? DateTime.fromSeconds(run.created_on).toJSDate()
           : undefined,
         endedAt: run.completed_on
-          ? DateTime.fromSeconds(run.completed_on)
+          ? DateTime.fromSeconds(run.completed_on).toJSDate()
           : undefined,
         testCaseResultsStats,
         suite: {
-          uid: run.suite_id,
+          uid: run.suite_id.toString(),
           source,
         },
         tags: [milestoneTag],

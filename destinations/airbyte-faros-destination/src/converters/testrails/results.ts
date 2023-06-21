@@ -18,18 +18,18 @@ export class Results extends TestRailsConverter {
     const result = record.record.data;
 
     const startedAt = result.created_on
-      ? DateTime.fromSeconds(result.created_on)
+      ? DateTime.fromSeconds(result.created_on).toJSDate()
       : undefined;
 
     res.push({
       model: 'qa_TestCaseResult',
       record: {
-        uid: result.id,
+        uid: result.id.toString(),
         description: `Version: ${result.version}, Comment: ${result.comment} Duration: ${result.elapsed}`,
         startedAt,
         status: this.convertStatus(result.status),
-        testCase: {uid: result.case_id, source},
-        testExecution: {uid: result.run_id, source},
+        testCase: {uid: result.case_id.toString(), source},
+        testExecution: {uid: result.run_id.toString(), source},
       },
     });
 

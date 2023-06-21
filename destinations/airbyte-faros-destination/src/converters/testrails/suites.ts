@@ -23,7 +23,7 @@ export class Suites extends TestRailsConverter {
     res.push({
       model: 'qa_TestSuite',
       record: {
-        uid: suite.id,
+        uid: suite.id.toString(),
         name: suite.name,
         description: suite.description,
         tags: [masterTag, baselineTag, completeTag],
