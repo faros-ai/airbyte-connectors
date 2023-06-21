@@ -192,7 +192,7 @@ export class TestRailsClient {
    * @returns The list of case types
    */
   async getCaseTypes(): Promise<TestRailsCaseType[]> {
-    return this.get('/get_cases_types');
+    return this.get('/get_case_types');
   }
 
   /**
