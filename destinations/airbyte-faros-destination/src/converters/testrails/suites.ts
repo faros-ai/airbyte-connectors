@@ -18,7 +18,7 @@ export class Suites extends TestRailsConverter {
 
     const masterTag = `master:${suite.is_master}`;
     const baselineTag = `baseline:${suite.is_baseline}`;
-    const completeTag = `complete:${suite.is_complete}`;
+    const completedTag = `completed:${suite.is_completed}`;
 
     res.push({
       model: 'qa_TestSuite',
@@ -26,7 +26,7 @@ export class Suites extends TestRailsConverter {
         uid: this.suiteUid(suite.project_id, suite.id),
         name: suite.name,
         description: suite.description,
-        tags: [masterTag, baselineTag, completeTag],
+        tags: [masterTag, baselineTag, completedTag],
         source,
       },
     });

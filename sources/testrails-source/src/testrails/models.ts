@@ -34,7 +34,7 @@ export interface Suite {
   readonly project_id: number;
   readonly is_master: boolean;
   readonly is_baseline: boolean;
-  readonly is_complete: boolean;
+  readonly is_completed: boolean;
   readonly completed_on: number;
 }
 

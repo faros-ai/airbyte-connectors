@@ -8,6 +8,6 @@
     "description": {"type": "string"},
     "is_master": {"type": "boolean"},
     "is_baseline": {"type": "boolean"},
-    "is_complete": {"type": "boolean"}
+    "is_completed": {"type": "boolean"}
   }
 }
