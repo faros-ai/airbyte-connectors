@@ -39,9 +39,8 @@ export class Results extends AirbyteStreamBase {
   ): AsyncGenerator<Result> {
     const testRails = await TestRails.instance(this.config, this.logger);
 
-    const isIncremental = syncMode === SyncMode.INCREMENTAL;
     yield* testRails.getResults(
-      isIncremental ? streamState.created_after : undefined
+      syncMode === SyncMode.INCREMENTAL ? streamState.created_after : undefined
     );
   }
 

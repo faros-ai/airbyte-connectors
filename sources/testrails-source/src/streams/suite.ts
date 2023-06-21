@@ -6,6 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {Suite} from '../models';
 import {TestRails, TestRailsConfig} from '../testrails/testRails';
 
 export class Suites extends AirbyteStreamBase {
@@ -31,9 +32,9 @@ export class Suites extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
-  ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+  ): AsyncGenerator<Suite> {
     const testRails = await TestRails.instance(this.config, this.logger);
 
-    yield testRails.getSuites();
+    yield* testRails.getSuites();
   }
 }
