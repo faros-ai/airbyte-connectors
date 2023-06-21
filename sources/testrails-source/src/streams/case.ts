@@ -50,7 +50,7 @@ export class Cases extends AirbyteStreamBase {
     latestRecord: Case
   ): Dictionary<any> {
     return {
-      cutoff: Math.max(
+      updated_after: Math.max(
         currentStreamState.updated_after ?? 0,
         latestRecord.updated_on ?? 0
       ),
