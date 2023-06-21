@@ -714,17 +714,32 @@ export class GraphQLClient {
     const foreignKeys: Dictionary<Upsert> = {};
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
-      if (nestedModel && value) {
-        foreignKeys[field] = this.addUpsert(nestedModel.model, value);
-      } else {
+      if (nestedModel) {
+        if (isNil(value)) {
+          // for explicit nil relation, set the FK of this record to null
+          object[nestedModel.foreignKey] = null;
+        } else {
+          foreignKeys[field] = this.addUpsert(nestedModel.model, value);
+        }
+      } else if (this.isValidField(model, field)) {
         const val = this.formatFieldValue(model, field, value);
-        if (!isNil(val)) object[field] = val;
+        object[field] = isNil(val) ? null : val;
       }
     }
     if (origin) {
       object['origin'] = origin;
       // add root flag to top-level objects
       object[ROOT_FLAG] = true;
+    }
+    // since all our uids are non-null, check for nil uids early
+    // to prevent losing an entire batch later with db constraint
+    // error on flush
+    if (has(object, 'uid') && isNil(object['uid'])) {
+      throw new VError(
+        'cannot upsert null uid for model %s with keys %s',
+        model,
+        JSON.stringify(pick(record, this.schema.primaryKeys[model]))
+      );
     }
     const upsert = {
       model,
@@ -833,13 +848,17 @@ export class GraphQLClient {
     });
   }
 
+  private isValidField(model: string, field: string): boolean {
+    return has(this.schema.scalars[model], field);
+  }
+
   private formatFieldValue(model: string, field: string, value: any): any {
     if (isNil(value)) return undefined;
-    const type = this.schema.scalars[model][field];
-    if (!type) {
+    if (!this.isValidField(model, field)) {
       this.logger.debug(`Could not find type of ${field} in ${model}`);
       return undefined;
     }
+    const type = this.schema.scalars[model][field];
     if (type === 'timestamptz') {
       // The field value may already be a string. E.g., if coming from the Faros Feeds source.
       return typeof value === 'string' ? value : timestamptz(value);

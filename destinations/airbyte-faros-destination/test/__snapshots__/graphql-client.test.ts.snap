@@ -45,6 +45,10 @@ Array [
 ]
 `;
 
+exports[`graphql-client write batch upsert nil uid 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"u1\\", origin: \\"mytestsource\\"}, {uid: \\"u2\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt source uid } } }"`;
+
+exports[`graphql-client write batch upsert null fields bug 1`] = `"mutation { insert_vcs_Commit (objects: [{sha: \\"c2\\", authorId: null, message: null, origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Commit_pkey, update_columns: [authorId, message, origin, refreshedAt]}) { returning { id refreshedAt repositoryId sha } } }"`;
+
 exports[`graphql-client write batch upsert on_conflict update_columns bug 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", source: \\"GitHub\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}) { returning { id refreshedAt source uid } } }"`;
 
 exports[`graphql-client write batch upsert on_conflict update_columns bug 2`] = `"mutation { insert_vcs_Repository (objects: [{name: \\"hermes\\", organizationId: \\"t1|gql-e2e-v2|GitHub|faros-ai\\"}], on_conflict: {constraint: vcs_Repository_pkey, update_columns: [name, organizationId]}) { returning { id refreshedAt name organizationId } } }"`;

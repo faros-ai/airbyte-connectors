@@ -641,6 +641,103 @@ describe('graphql-client write batch upsert', () => {
     await client.flush();
     expect(queries).toEqual(responses.length);
   });
+  test('null fields bug', async () => {
+    const responses = [
+      JSON.parse(`
+        {
+          "data": {
+            "insert_vcs_Commit": {
+              "returning": [
+                {
+                  "id": "1603f9d5f6a4d5e5f21c7251a5fc31af20ec0eb3",
+                  "refreshedAt": "2023-06-21T15:20:37.611395+00:00",
+                  "repositoryId": null,
+                  "sha": "c2"
+                }
+              ]
+            }
+          }
+        }
+      `),
+    ];
+    const records = [JSON.parse('{"sha":"c2","author":null, "message":null}')];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    for (const rec of records) {
+      await client.writeRecord('vcs_Commit', rec, 'mytestsource');
+    }
+    await client.flush();
+    expect(queries).toEqual(responses.length);
+  });
+  test('nil uid', async () => {
+    const responses = [
+      JSON.parse(`
+        {
+          "data": {
+            "insert_vcs_Organization": {
+              "returning": [
+                {
+                  "id": "6183747fc59ecd1e8a4d7ebdde6f1e63a8c96468",
+                  "refreshedAt": "2023-06-21T18:48:36.240969+00:00",
+                  "source": null,
+                  "uid": "u1"
+                },
+                {
+                  "id": "87abe37abf99a7946269cc490de66c134d20c68f",
+                  "refreshedAt": "2023-06-21T18:48:36.240969+00:00",
+                  "source": null,
+                  "uid": "u2"
+                }
+              ]
+            }
+          }
+        }
+      `),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_Organization', {uid: 'u1'}, 'mytestsource');
+    await expect(
+      client.writeRecord('vcs_Organization', {uid: null}, 'mytestsource')
+    ).rejects.toThrow(
+      'cannot upsert null uid for model vcs_Organization with keys {"uid":null}'
+    );
+    await client.writeRecord('vcs_Organization', {uid: 'u2'}, 'mytestsource');
+    await client.flush();
+    expect(queries).toEqual(responses.length);
+  });
 });
 
 describe('graphql-client write batch updates', () => {
