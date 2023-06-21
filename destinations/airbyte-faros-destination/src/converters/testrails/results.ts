@@ -24,12 +24,18 @@ export class Results extends TestRailsConverter {
     res.push({
       model: 'qa_TestCaseResult',
       record: {
-        uid: result.id.toString(),
+        uid: this.resultUid(result.run_id, result.test_id, result.id),
         description: `Version: ${result.version}, Comment: ${result.comment} Duration: ${result.elapsed}`,
         startedAt,
         status: this.convertStatus(result.status),
-        testCase: {uid: result.case_id.toString(), source},
-        testExecution: {uid: result.run_id.toString(), source},
+        testCase: {
+          uid: this.caseUid(result.project_id, result.suite_id, result.case_id),
+          source,
+        },
+        testExecution: {
+          uid: this.runUid(result.project_id, result.suite_id, result.run_id),
+          source,
+        },
       },
     });
 

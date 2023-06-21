@@ -25,7 +25,7 @@ export class Cases extends AirbyteStreamBase {
     return require('../../resources/schemas/case.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return ['project_id', 'suite_id', 'id'];
   }
   get cursorField(): string | string[] {
     return 'updated_on';

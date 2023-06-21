@@ -47,4 +47,20 @@ export abstract class TestRailsConverter extends Converter {
         return {category: 'Custom', detail: status};
     }
   }
+
+  suiteUid(projectId: string, suiteId: number): string {
+    return `project-${projectId}_suite-${suiteId}`;
+  }
+
+  caseUid(projectId: string, suiteId: number, caseId: number): string {
+    return `${this.suiteUid(projectId, suiteId)}_case-${caseId}`;
+  }
+
+  runUid(projectId: string, suiteId: number, runId: number): string {
+    return `${this.suiteUid(projectId, suiteId)}_run-${runId}`;
+  }
+
+  resultUid(runId: number, testId: number, resultId: number): string {
+    return `run-${runId}_test-${testId}_result-${resultId}`;
+  }
 }

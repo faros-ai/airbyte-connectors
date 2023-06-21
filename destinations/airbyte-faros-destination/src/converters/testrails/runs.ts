@@ -24,7 +24,6 @@ export class Runs extends TestRailsConverter {
       custom: (run.retest_count ?? 0) + (run.blocked_count ?? 0),
       total: 0,
     };
-
     testCaseResultsStats.total =
       testCaseResultsStats.success +
       testCaseResultsStats.failure +
@@ -36,7 +35,7 @@ export class Runs extends TestRailsConverter {
     res.push({
       model: 'qa_TestExecution',
       record: {
-        uid: run.id.toString(),
+        uid: this.runUid(run.project_id, run.suite_id, run.id),
         name: run.name,
         description: run.description,
         source,
@@ -48,7 +47,7 @@ export class Runs extends TestRailsConverter {
           : undefined,
         testCaseResultsStats,
         suite: {
-          uid: run.suite_id.toString(),
+          uid: this.suiteUid(run.project_id, run.suite_id),
           source,
         },
         tags: [milestoneTag],

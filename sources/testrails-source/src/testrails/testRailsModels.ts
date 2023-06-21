@@ -89,7 +89,7 @@ export interface TestRailsRun {
   readonly id: number;
   readonly name: string;
   readonly description: string;
-  readonly suite_id: string;
+  readonly suite_id: number;
   readonly passed_count: number;
   readonly failed_count: number;
   readonly blocked_count: number;

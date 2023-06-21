@@ -21,7 +21,7 @@ export class Suites extends AirbyteStreamBase {
     return require('../../resources/schemas/suite.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return ['project_id', 'id'];
   }
   get cursorField(): string | string[] {
     return 'id';

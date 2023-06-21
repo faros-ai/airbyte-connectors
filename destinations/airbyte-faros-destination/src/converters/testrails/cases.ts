@@ -17,12 +17,17 @@ export class Cases extends TestRailsConverter {
     const source = this.streamName.source;
     const testCase = record.record.data;
 
+    const uid = this.caseUid(
+      testCase.project_id,
+      testCase.suite_id,
+      testCase.id
+    );
     const milestoneTag = `milestone:${testCase.milestone}`;
 
     res.push({
       model: 'qa_TestCase',
       record: {
-        uid: testCase.id.toString(),
+        uid,
         name: testCase.title,
         source,
         tags: [milestoneTag],
@@ -33,8 +38,11 @@ export class Cases extends TestRailsConverter {
     res.push({
       model: 'qa_TestSuiteTestCaseAssociation',
       record: {
-        testSuite: {uid: testCase.id.toString(), source},
-        testCase: {uid: testCase.suite_id.toString(), source},
+        testSuite: {
+          uid: this.suiteUid(testCase.project_id, testCase.suite_id),
+          source,
+        },
+        testCase: {uid, source},
       },
     });
 

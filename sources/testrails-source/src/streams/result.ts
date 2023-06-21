@@ -25,7 +25,7 @@ export class Results extends AirbyteStreamBase {
     return require('../../resources/schemas/result.json');
   }
   get primaryKey(): StreamKey {
-    return 'id';
+    return ['run_id', 'test_id', 'id'];
   }
   get cursorField(): string | string[] {
     return 'created_on';

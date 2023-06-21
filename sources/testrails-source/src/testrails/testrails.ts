@@ -130,7 +130,10 @@ export class TestRails {
     for (const projectId of Object.keys(this.projects)) {
       const suites = await this.client.listSuites(projectId);
       for (const suite of suites) {
-        yield suite;
+        yield {
+          ...suite,
+          project_id: projectId,
+        };
       }
     }
   }
@@ -150,6 +153,7 @@ export class TestRails {
 
           yield {
             ...tc,
+            project_id: projectId,
             type: typeMap.get(tc.type_id),
             milestone: milestone?.name,
           };
@@ -168,6 +172,7 @@ export class TestRails {
 
         yield {
           ...run,
+          project_id: projectId,
           milestone: milestone?.name,
         };
       }
@@ -194,6 +199,8 @@ export class TestRails {
         for await (const result of this.client.listRunResults(run.id)) {
           yield {
             ...result,
+            project_id: projectId,
+            suite_id: run.suite_id,
             case_id: testToCaseMap.get(result.test_id),
             run_id: run.id,
             status: idToStatusMap.get(result.status_id),
