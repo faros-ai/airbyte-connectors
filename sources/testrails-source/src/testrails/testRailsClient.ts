@@ -163,6 +163,9 @@ export class TestRailsClient {
   /**
    * Documentation:
    * https://support.testrail.com/hc/en-us/articles/7077819312404-Results#getresultsforrun
+   *
+   * TODO: Might need to handle more than one result per case
+   *
    * @param runId The run for which to list results
    */
   async *listRunResults(runId: number): AsyncGenerator<TestRailsResult> {

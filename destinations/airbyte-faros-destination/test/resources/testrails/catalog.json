@@ -1,0 +1,28 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__testrails__suites"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__testrails__cases"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__testrails__runs"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__testrails__results"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

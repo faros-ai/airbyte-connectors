@@ -4,7 +4,7 @@ import {DateTime} from 'luxon';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {TestRailsConverter} from './common';
 
-export class Suites extends TestRailsConverter {
+export class Runs extends TestRailsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'qa_TestExecution',
   ];
