@@ -1,5 +1,5 @@
 {
-  "server_url": "http://localhost",
-  "token": "",
-  "user": "chris"
+  "username": "will@faros.ai",
+  "token": "<token>",
+  "instance_url": "https://farosai.testrails.io"
 }
