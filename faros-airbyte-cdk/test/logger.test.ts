@@ -27,9 +27,10 @@ describe('logger', () => {
 
   test('converts undefined record fields to nulls', async () => {
     const data = {
+      boolean: true,
       number: 1,
       string: 'string',
-      array: [1, 'string'],
+      array: [1, 'string', {a: 1}],
       object: {a: 1, b: 'string'},
       null: null,
       undefined: undefined,
