@@ -53,7 +53,7 @@ write_test_config $tag $test_config_env_var
 
 echo Building source image $tag
 version=$(jq -r '.version' lerna.json)
-docker build . --build-arg path=$path --build-arg version=$version --pull -t $tag
+docker build . -f local/Dockerfile --build-arg path=$path --build-arg version=$version --pull -t $tag
 docker pull airbyte/source-acceptance-test:latest
 echo Running source acceptance tests against $tag
 docker run --rm -t \
