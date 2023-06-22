@@ -1,3 +1,4 @@
+import {isNil} from 'lodash';
 import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
 
@@ -86,6 +87,13 @@ export class AirbyteLogger {
       const msgLevelOrder = AirbyteLogLevelOrder((msg as AirbyteLog).log.level);
       if (levelOrder > msgLevelOrder) return;
     }
-    console.log(JSON.stringify(msg));
+
+    // convert undefined record values to nulls so they are stringified
+    const replacer =
+      msg.type === AirbyteMessageType.RECORD
+        ? (key, value) => (isNil(value) ? null : value)
+        : null;
+
+    console.log(JSON.stringify(msg, replacer));
   }
 }
