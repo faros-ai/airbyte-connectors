@@ -31,15 +31,14 @@ describe('logger', () => {
       number: 1,
       string: 'string',
       array: [1, 'string', {a: 1}],
-      object: {a: 1, b: 'string'},
       null: null,
       undefined: undefined,
-      objectWithUndefined: {a: 1, null: null, undefined: undefined},
+      object: {a: 1, b: 'string', null: null, undefined: undefined},
     };
     const expectedData = {
       ...data,
       undefined: null,
-      objectWithUndefined: {a: 1, null: null, undefined: null},
+      object: {a: 1, b: 'string', null: null, undefined: null},
     };
 
     const consoleOutput = captureConsoleLog(() =>
