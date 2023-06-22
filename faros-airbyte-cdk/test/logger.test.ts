@@ -31,14 +31,22 @@ describe('logger', () => {
       number: 1,
       string: 'string',
       array: [1, 'string', {a: 1}],
-      null: null,
-      undefined: undefined,
-      object: {a: 1, b: 'string', null: null, undefined: undefined},
+      keyWithNullValue: null,
+      keyWithUndefinedValue: undefined,
+      object: {
+        boolean: true,
+        number: 1,
+        string: 'string',
+        array: [1, 'string', {a: 1}],
+        object: {a: 1},
+        keyWithNullValue: null,
+        keyWithUndefinedValue: undefined,
+      },
     };
     const expectedData = {
       ...data,
-      undefined: null,
-      object: {a: 1, b: 'string', null: null, undefined: null},
+      keyWithUndefinedValue: null,
+      object: {...data.object, keyWithUndefinedValue: null},
     };
 
     const consoleOutput = captureConsoleLog(() =>
