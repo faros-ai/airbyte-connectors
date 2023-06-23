@@ -63,5 +63,26 @@ describe('logger', () => {
     expect(outputRecord).toEqual(
       new AirbyteRecord({stream: 'test', emitted_at: 1, data: expectedData})
     );
+
+    const namespacedOutputRecord = parseAirbyteMessage(
+      captureConsoleLog(() =>
+        logger.write(
+          new AirbyteRecord({
+            stream: 'test',
+            namespace: 'test_namespace',
+            emitted_at: 1,
+            data,
+          })
+        )
+      )
+    ) as AirbyteRecord;
+    expect(namespacedOutputRecord).toEqual(
+      new AirbyteRecord({
+        stream: 'test',
+        namespace: 'test_namespace',
+        emitted_at: 1,
+        data: expectedData,
+      })
+    );
   });
 });
