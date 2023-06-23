@@ -15,6 +15,7 @@ export interface TestRailsConfig {
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly max_retries?: number;
+  readonly timeout?: number;
   readonly reject_unauthorized?: boolean;
   readonly before?: string;
   readonly after?: string;
@@ -56,6 +57,7 @@ export class TestRails {
       instanceUrl: config.instance_url,
       pageSize: config.page_size,
       maxRetries: config.max_retries,
+      timeout: config.timeout,
       logger,
     });
 
@@ -221,10 +223,15 @@ export class TestRails {
 
   private getWindow(since?: number): TimeWindow {
     if (since && !this.windowOverride) {
-      return {
-        after: DateTime.fromSeconds(since),
-      };
+      const after = DateTime.fromSeconds(since);
+      this.logger.info(`Syncing data since ${after}`);
+      return {after};
     }
+    this.logger.info(
+      `Syncing data from ${this.window.after.toISODate()} to ${
+        this.window.before?.toISODate() ?? 'Now'
+      }`
+    );
     return this.window;
   }
 }

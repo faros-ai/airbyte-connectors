@@ -8,7 +8,7 @@ import {
 
 export interface TimeWindow {
   before?: DateTime;
-  after?: DateTime;
+  after: DateTime;
 }
 
 export interface Case extends TestRailsCase {
