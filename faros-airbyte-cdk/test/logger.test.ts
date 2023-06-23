@@ -60,6 +60,8 @@ describe('logger', () => {
     );
 
     const outputRecord = parseAirbyteMessage(consoleOutput) as AirbyteRecord;
-    expect(outputRecord.record.data).toEqual(expectedData);
+    expect(outputRecord).toEqual(
+      new AirbyteRecord({stream: 'test', emitted_at: 1, data: expectedData})
+    );
   });
 });
