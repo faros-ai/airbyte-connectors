@@ -26,11 +26,13 @@ describe('logger', () => {
   const logger = new AirbyteLogger();
 
   test('converts undefined record fields to nulls', async () => {
+    const date = new Date();
     const data = {
       boolean: true,
       number: 1,
       string: 'string',
       array: [1, 'string', {a: 1}],
+      date: date,
       keyWithNullValue: null,
       keyWithUndefinedValue: undefined,
       object: {
@@ -39,14 +41,20 @@ describe('logger', () => {
         string: 'string',
         array: [1, 'string', {a: 1}],
         object: {a: 1},
+        date: date,
         keyWithNullValue: null,
         keyWithUndefinedValue: undefined,
       },
     };
     const expectedData = {
       ...data,
+      date: date.toISOString(),
       keyWithUndefinedValue: null,
-      object: {...data.object, keyWithUndefinedValue: null},
+      object: {
+        ...data.object,
+        date: date.toISOString(),
+        keyWithUndefinedValue: null,
+      },
     };
 
     const consoleOutput = captureConsoleLog(() =>
