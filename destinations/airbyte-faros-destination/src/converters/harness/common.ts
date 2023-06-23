@@ -1,12 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {ComputeApplication} from '../common/common';
 import {Converter} from '../converter';
-
-export interface ComputeApplication {
-  uid: string;
-  name: string;
-  platform: string;
-}
 
 interface CICDOrganization {
   uid: string;

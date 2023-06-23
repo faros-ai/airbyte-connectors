@@ -31,7 +31,8 @@ export class PullRequests extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    for (const key of this.config.projects) {
+      const project = await this.fetchProjectKey(key);
       for (const repo of await this.server.repositories(
         project,
         this.config.repositories

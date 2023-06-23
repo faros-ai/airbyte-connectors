@@ -118,8 +118,8 @@ interface BuildLog {
 export interface Repository {
   id: string;
   type: string;
-  name: string;
-  url: string;
+  name?: string;
+  url?: string;
   clean?: string;
   checkoutSubmodules: boolean;
 }
@@ -326,9 +326,4 @@ export enum DeploymentStatusCategory {
 export interface DeploymentStatus {
   category: DeploymentStatusCategory;
   detail: string;
-}
-
-export interface ComputeApplication {
-  name: string;
-  platform: string;
 }

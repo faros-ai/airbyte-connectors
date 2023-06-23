@@ -40,7 +40,7 @@
               "type": "string"
             },
             "avatar_url": {
-              "type": "string"
+              "type": ["string", "null"]
             }
           }
         }

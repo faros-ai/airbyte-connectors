@@ -73,8 +73,7 @@ export class Googlecalendar {
       clientOptions,
     });
 
-    const authClient = await auth.getClient();
-    const calendarClient = google.calendar({version: 'v3', auth: authClient});
+    const calendarClient = google.calendar({version: 'v3', auth});
 
     const eventsMaxResults =
       config.events_max_results ?? DEFAULT_EVENT_MAX_RESULTS;

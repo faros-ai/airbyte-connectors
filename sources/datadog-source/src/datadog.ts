@@ -24,11 +24,12 @@ interface PagedResult<T> {
 
 export interface MetricPoint {
   id: string;
+  queryHash: string;
   displayName: string;
   metric: string;
   timestamp: number;
   value: number;
-  primaryUnit: v1.MetricsQueryUnit;
+  primaryUnit?: v1.MetricsQueryUnit;
   perUnit?: v1.MetricsQueryUnit;
   scope: string;
   tagSet: Array<string>;
@@ -153,12 +154,19 @@ export class Datadog {
         for (const point of metadata.pointlist) {
           yield {
             id: `${queryHash}-${metadata.metric}-${point[0]}`,
+            queryHash,
             displayName: metadata.displayName,
             metric: metadata.metric,
             timestamp: point[0],
             value: point[1],
-            primaryUnit: metadata.unit[0],
-            perUnit: metadata.unit[1],
+            primaryUnit:
+              Array.isArray(metadata.unit) && metadata.unit.length > 0
+                ? metadata.unit[0]
+                : undefined,
+            perUnit:
+              Array.isArray(metadata.unit) && metadata.unit.length > 1
+                ? metadata.unit[1]
+                : undefined,
             scope: metadata.scope,
             tagSet: metadata.tagSet,
           };

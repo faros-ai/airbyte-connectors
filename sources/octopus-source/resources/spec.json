@@ -29,7 +29,7 @@
         "type": "boolean",
         "title": "Fetch Deployment Process",
         "description": "Retrieve the deployment process for each deployment.",
-        "default": true
+        "default": false
       },
       "cutoff_days": {
         "type": "number",
