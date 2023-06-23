@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - no access token 1`] = `
+Array [
+  false,
+  [VError: Please provide an access token],
+]
+`;

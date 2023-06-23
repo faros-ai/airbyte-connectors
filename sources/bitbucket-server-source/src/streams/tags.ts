@@ -1,5 +1,5 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Commit, Tag} from 'faros-airbyte-common/bitbucket-server';
+import {Tag} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {BitbucketServerConfig} from '../bitbucket-server';
@@ -24,7 +24,8 @@ export class Tags extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    for (const key of this.config.projects) {
+      const project = await this.fetchProjectKey(key);
       for (const repo of await this.server.repositories(
         project,
         this.config.repositories

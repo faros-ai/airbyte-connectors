@@ -8,11 +8,13 @@ import {
   flatMap,
   get,
   groupBy,
+  has,
   intersection,
   isEmpty,
   isNil,
   keys,
   max,
+  orderBy,
   pick,
   reverse,
   set,
@@ -29,6 +31,8 @@ import {
   UpdateRecord,
   UpsertRecord,
 } from './types';
+
+const ROOT_FLAG = '__root__';
 
 interface ConflictClause {
   constraint: EnumType;
@@ -209,6 +213,20 @@ function addLevel(u: Upsert): [Upsert, number][] {
   return result;
 }
 
+export function toPostgresArrayLiteral(value: any[]): string {
+  return `{${value
+    .map((s) => {
+      if (typeof s === 'string') {
+        return `"${s}"`;
+      }
+      if (isNil(s)) {
+        return 'NULL';
+      }
+      return s;
+    })
+    .join(',')}}`;
+}
+
 /**
  * Client for writing records as GraphQL mutations.  The client supports 3
  * kinds of writes: Upserts, Updates and Deletes.
@@ -241,13 +259,16 @@ export class GraphQLClient {
   private readonly writeBuffer: WriteOp[] = [];
   private readonly upsertBuffer = new UpsertBuffer();
   private readonly selfReferentModels = new Set();
+  private readonly updateResetLimit: boolean;
+  private resetLimitMillis: number;
 
   constructor(
     logger: AirbyteLogger,
     schemaLoader: SchemaLoader,
     backend: GraphQLBackend,
     upsertBatchSize,
-    mutationBatchSize
+    mutationBatchSize,
+    updateResetLimit = true
   ) {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
@@ -262,6 +283,11 @@ export class GraphQLClient {
       this.mutationBatchSize > 0,
       `non-positive mutation batch size: ${this.mutationBatchSize}`
     );
+    this.updateResetLimit = updateResetLimit;
+    this.resetLimitMillis = updateResetLimit
+      ? // January 1, 2200
+        7258118400000
+      : Date.now();
   }
 
   async healthCheck(): Promise<void> {
@@ -298,9 +324,19 @@ export class GraphQLClient {
 
   async resetData(
     origin: string,
-    models: ReadonlyArray<string>
+    models: ReadonlyArray<string>,
+    keepReferencedRecords: boolean
   ): Promise<void> {
     this.checkSchema();
+
+    // ensure deletes are executed after processing records
+    await this.flush();
+
+    const minRefreshedAt = new Date(this.resetLimitMillis).toISOString();
+    this.logger.info(
+      `Resetting data before ${minRefreshedAt} for origin ${origin}`
+    );
+
     for (const model of intersection(
       this.schema.sortedModelDependencies,
       models
@@ -308,14 +344,17 @@ export class GraphQLClient {
       this.logger.info(`Resetting ${model} data for origin ${origin}`);
       const deleteConditions = {
         origin: {_eq: origin},
-        _not: {
+        refreshedAt: {_lt: minRefreshedAt},
+      };
+      if (keepReferencedRecords) {
+        deleteConditions['_not'] = {
           _or: this.schema.backReferences[model].map((br) => {
             return {
               [br.field]: {},
             };
           }),
-        },
-      };
+        };
+      }
       const mutation = {
         [`delete_${model}`]: {
           __args: {
@@ -331,8 +370,6 @@ export class GraphQLClient {
         `Failed to reset ${model} data for origin ${origin}`
       );
     }
-    // ensure deletes are executed prior processing records
-    await this.flush();
   }
 
   async writeRecord(
@@ -352,7 +389,7 @@ export class GraphQLClient {
     } else {
       const obj = this.createMutationObject(model, record, origin);
       const mutation = {
-        [`insert_${model}_one`]: {__args: obj, id: true},
+        [`insert_${model}_one`]: {__args: obj, id: true, refreshedAt: true},
       };
       await this.postQuery({mutation}, `Failed to write ${model} record`);
     }
@@ -396,6 +433,14 @@ export class GraphQLClient {
         `failed to resolve id for ${model} and ${JSON.stringify(obj)}`
       );
       upserts.forEach((u) => (u.id = obj.id));
+
+      if (this.updateResetLimit) {
+        const recordRefreshedAtMs = new Date(obj.refreshedAt).getTime();
+        this.resetLimitMillis = Math.min(
+          recordRefreshedAtMs,
+          this.resetLimitMillis
+        );
+      }
     }
     return {
       model,
@@ -456,20 +501,17 @@ export class GraphQLClient {
   }
 
   private async writeUpdateRecord(record: UpdateRecord): Promise<void> {
+    const upsertRec = {
+      ...record.where,
+      ...pick(record.patch, record.mask),
+    };
+    const obj = this.createMutationObject(
+      record.model,
+      upsertRec,
+      record.origin
+    );
     const mutation = {
-      [`update_${record.model}`]: {
-        __args: {
-          where: this.createWhereClause(record.model, record.where),
-          _set: this.createMutationObject(
-            record.model,
-            record.patch,
-            record.origin
-          ).object,
-        },
-        returning: {
-          id: true,
-        },
-      },
+      [`insert_${record.model}_one`]: {__args: obj, id: true},
     };
     await this.postQuery({mutation}, `Failed to update ${record.model} record`);
   }
@@ -530,6 +572,31 @@ export class GraphQLClient {
           }
         }
       } else {
+        // res.data is expected to have one object with 'id' and 'refreshedAt' for each of the mutations
+        // {
+        //   "m0": {
+        //     "id": ...,
+        //     "refreshedAt": ...
+        //   },
+        //   "m1": {
+        //     "id": ...,
+        //     "refreshedAt": ...
+        //   },
+        //   ...
+        // }
+        if (this.updateResetLimit) {
+          for (const mutationRes of Object.values(res.data)) {
+            const refreshedAt = get(mutationRes, 'refreshedAt');
+            if (refreshedAt) {
+              const recordRefreshedAtMs = new Date(refreshedAt).getTime();
+              this.resetLimitMillis = Math.min(
+                recordRefreshedAtMs,
+                this.resetLimitMillis
+              );
+            }
+          }
+        }
+
         // truncate the buffer
         this.writeBuffer.splice(0);
       }
@@ -647,15 +714,32 @@ export class GraphQLClient {
     const foreignKeys: Dictionary<Upsert> = {};
     for (const [field, value] of Object.entries(record)) {
       const nestedModel = this.schema.references[model][field];
-      if (nestedModel && value) {
-        foreignKeys[field] = this.addUpsert(nestedModel.model, value);
-      } else {
+      if (nestedModel) {
+        if (isNil(value)) {
+          // for explicit nil relation, set the FK of this record to null
+          object[nestedModel.foreignKey] = null;
+        } else {
+          foreignKeys[field] = this.addUpsert(nestedModel.model, value);
+        }
+      } else if (this.isValidField(model, field)) {
         const val = this.formatFieldValue(model, field, value);
-        if (!isNil(val)) object[field] = val;
+        object[field] = isNil(val) ? null : val;
       }
     }
     if (origin) {
       object['origin'] = origin;
+      // add root flag to top-level objects
+      object[ROOT_FLAG] = true;
+    }
+    // since all our uids are non-null, check for nil uids early
+    // to prevent losing an entire batch later with db constraint
+    // error on flush
+    if (has(object, 'uid') && isNil(object['uid'])) {
+      throw new VError(
+        'cannot upsert null or undefined uid for model %s with keys %s',
+        model,
+        JSON.stringify(pick(record, this.schema.primaryKeys[model]))
+      );
     }
     const upsert = {
       model,
@@ -724,26 +808,34 @@ export class GraphQLClient {
     // for each set of unique keys, build an UpsertOp
     const groups = groupByKeys(allObjects);
     return groups.map((objects) => {
+      assert(objects?.length, 'objects should not be empty');
       // all objects have same fields due to groupByKeys call
       // pull out fields of first as mask for update fields to ensure
       // fields that aren't in the data are not modified by the upsert
-      const updateColumnMask = objects?.length
-        ? new Set(Object.keys(objects[0]))
-        : undefined;
-      const onConflict = this.createConflictClause(
+      const updateColumnMask = new Set(Object.keys(objects[0]));
+      // determine if this group contains root objects
+      let isRoot = false;
+      if (has(objects[0], ROOT_FLAG)) {
+        isRoot = true;
+        // remove root flag from all objects
+        objects.forEach((o) => delete o[ROOT_FLAG]);
+      }
+      const onConflict = this.createUpsertConflictClause(
         model,
-        false,
-        updateColumnMask
+        updateColumnMask,
+        isRoot
       );
       const mutation = {
         mutation: {
           [`insert_${model}`]: {
             __args: {
-              objects,
+              // sort objects to avoid deadlocks on concurrent inserts
+              objects: orderBy(objects, primaryKeys),
               on_conflict: onConflict,
             },
             returning: {
               id: true,
+              refreshedAt: true,
               ...keysObj,
             },
           },
@@ -756,13 +848,17 @@ export class GraphQLClient {
     });
   }
 
+  private isValidField(model: string, field: string): boolean {
+    return has(this.schema.scalars[model], field);
+  }
+
   private formatFieldValue(model: string, field: string, value: any): any {
     if (isNil(value)) return undefined;
-    const type = this.schema.scalars[model][field];
-    if (!type) {
+    if (!this.isValidField(model, field)) {
       this.logger.debug(`Could not find type of ${field} in ${model}`);
       return undefined;
     }
+    const type = this.schema.scalars[model][field];
     if (type === 'timestamptz') {
       // The field value may already be a string. E.g., if coming from the Faros Feeds source.
       return typeof value === 'string' ? value : timestamptz(value);
@@ -775,7 +871,7 @@ export class GraphQLClient {
         );
       }
       // format array value as postgres literal
-      return `{${value.join(',')}}`;
+      return toPostgresArrayLiteral(value);
     } else if (typeof value === 'object' || Array.isArray(value)) {
       return traverse(value).map(function (this, val) {
         if (val instanceof Date) {
@@ -801,6 +897,34 @@ export class GraphQLClient {
       updateFieldMask && !nested
         ? updateColumns.filter((c) => updateFieldMask.has(c))
         : updateColumns;
+    // if empty, use model keys to ensure queries always return results
+    if (isEmpty(filteredUpdateFields)) {
+      filteredUpdateFields.push(...this.schema.primaryKeys[model]);
+    }
+    return {
+      constraint: new EnumType(`${model}_pkey`),
+      update_columns: filteredUpdateFields.map((c) => new EnumType(c)),
+    };
+  }
+
+  private createUpsertConflictClause(
+    model: string,
+    updateFieldMask: Set<string>,
+    isRoot: boolean
+  ): ConflictClause {
+    // superset of fields that can be updated
+    const updateColumns = difference(
+      Object.keys(this.schema.scalars[model]),
+      this.schema.primaryKeys[model]
+    );
+    // filter to only those fields that are in the data
+    const filteredUpdateFields = updateColumns.filter((c) =>
+      updateFieldMask.has(c)
+    );
+    // for root objects, always update refreshedAt
+    if (isRoot) {
+      filteredUpdateFields.push('refreshedAt');
+    }
     // if empty, use model keys to ensure queries always return results
     if (isEmpty(filteredUpdateFields)) {
       filteredUpdateFields.push(...this.schema.primaryKeys[model]);

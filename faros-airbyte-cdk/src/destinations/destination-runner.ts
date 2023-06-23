@@ -137,11 +137,17 @@ export class AirbyteDestinationRunner<
         '--json <path to json>',
         'Output the destination configuration as JSON'
       )
+      .option(
+        '--spec-file <path to spec>',
+        'Path to the spec file. If not provided, the spec will be fetched from the destination'
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
       .action(async (opts) => {
-        const spec = await this.destination.spec();
+        const spec = opts.specFile
+          ? JSON.parse(fs.readFileSync(opts.specFile, 'utf8'))
+          : await this.destination.spec();
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           opts.json

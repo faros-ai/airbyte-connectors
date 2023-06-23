@@ -35,7 +35,7 @@ export class Builds extends AirbyteStreamBase {
     return 'queueTime';
   }
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.project_names) {
+    for (const project of this.config.projects) {
       yield {
         project,
       };
@@ -52,7 +52,11 @@ export class Builds extends AirbyteStreamBase {
         ? streamState?.lastQueueTime
         : undefined;
     const azurePipeline = AzurePipeline.instance(this.config);
-    yield* azurePipeline.getBuilds(streamSlice.project, lastQueueTime);
+    yield* azurePipeline.getBuilds(
+      streamSlice.project,
+      lastQueueTime,
+      this.logger
+    );
   }
   getUpdatedState(
     currentStreamState: BuildState,

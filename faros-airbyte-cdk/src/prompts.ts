@@ -10,6 +10,15 @@ export function runSelect(cfg: SelectConfig): Promise<string> {
   return new (enquirer as any).Select(cfg).run();
 }
 
+export interface PasswordConfig {
+  name: string;
+  message: string;
+}
+
+export function runPassword(cfg: PasswordConfig): Promise<string> {
+  return new (enquirer as any).Password(cfg).run();
+}
+
 export function runBooleanPrompt(cfg: any): Promise<boolean> {
   return new (enquirer as any).BooleanPrompt(cfg).run();
 }

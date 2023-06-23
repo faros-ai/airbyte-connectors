@@ -1,4 +1,9 @@
-import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  AirbyteLog,
+  AirbyteLogLevel,
+  AirbyteRecord,
+  AirbyteStateMessage,
+} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -201,6 +206,40 @@ describe('github', () => {
     expect(stdout).toMatch('Undefined stream mytestsource__github__bad');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBeGreaterThan(0);
+  });
+
+  test('skip non-incremental model reset if Source failure detected', async () => {
+    configPath = await tempConfig(mockttp.url);
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(
+      JSON.stringify(
+        new AirbyteStateMessage(
+          {data: {}},
+          {status: 'ERRORED', error: 'Source error message'}
+        )
+      ) + os.EOL,
+      'utf8'
+    );
+    const stdout = await read(cli.stdout);
+    logger.debug(stdout);
+    expect(stdout).toMatch('Read 1 messages');
+    expect(stdout).toMatch('Processed 0 records');
+    expect(stdout).toMatch('Would write 0 records');
+    expect(stdout).toMatch(
+      'Skipping reset of non-incremental models due to' +
+        ' Airbyte Source failure: Source error message'
+    );
+    expect(stdout).toMatch('Errored 0 records');
+    expect(stdout).toMatch('Skipped 0 records');
+    expect(await read(cli.stderr)).toBe('');
+    expect(await cli.wait()).toBe(0);
   });
 
   test('process records from all streams', async () => {
