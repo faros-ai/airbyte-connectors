@@ -8,6 +8,7 @@ import {VError} from 'verror';
 import {
   runBooleanPrompt,
   runNumberPrompt,
+  runPassword,
   runSelect,
   runStringPrompt,
 } from './prompts';
@@ -27,6 +28,7 @@ export interface TableRow {
   multiline?: boolean;
   type: string;
   items_type?: string;
+  enum?: ReadonlyArray<string>;
 }
 
 function visitLeaf(
@@ -50,6 +52,7 @@ function visitLeaf(
     examples: o.examples,
     type: o.type,
     items_type: o.items?.type,
+    enum: o.enum,
   };
 
   return leaf;
@@ -233,6 +236,9 @@ async function promptValue(row: TableRow) {
     case 'integer':
       return await runNumberPrompt({message});
     case 'string':
+      if (row.airbyte_secret) {
+        return await runPassword({name: 'secret', message});
+      }
       return await runStringPrompt({message});
   }
 
@@ -255,15 +261,18 @@ function choiceAsType(row: TableRow, choice: string) {
   throw new VError(`Unexpected type: ${type}`);
 }
 
-function formatArg(row: TableRow, choice: boolean | number | string) {
+function formatArg(
+  row: TableRow,
+  choice: boolean | number | string | string[]
+) {
   let formattedChoice = typeof choice === 'string' ? `"${choice}"` : choice;
   if (row.type === 'array') {
-    formattedChoice = `'[${formattedChoice}]'`;
+    formattedChoice = `'${JSON.stringify(choice)}}'`;
   }
   return `${row.path} ${formattedChoice}`;
 }
 
-async function promptLeaf(row: TableRow) {
+async function promptLeaf(row: TableRow, tail = false) {
   if (row.type === 'empty_object') {
     return undefined;
   }
@@ -273,17 +282,21 @@ async function promptLeaf(row: TableRow) {
   }
   if (!row.required) {
     choices.push({
-      message: 'Skip this section',
+      // If `tail` is true, this means we're prompting for the second or later element of an array.
+      message: tail ? 'Done' : 'Skip this section',
       value: 'Skipped.',
     });
   }
-  if (row.default !== undefined) {
+
+  const enumChoices = row.enum !== undefined || row.type === 'boolean';
+
+  if (!enumChoices && row.default !== undefined) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
     });
   }
-  if (row.examples?.length) {
+  if (!enumChoices && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
@@ -293,10 +306,26 @@ async function promptLeaf(row: TableRow) {
 
   let choice = ' ';
   if (choices.length) {
-    choices.push({
-      message: 'Enter your own value',
-      value: ' ',
-    });
+    if (enumChoices) {
+      for (const choice of row.type === 'boolean' ? [false, true] : row.enum) {
+        if (row.default === choice) {
+          choices.push({
+            message: `${row.default} (default)`,
+            value: `Used default (${row.default}).`,
+          });
+        } else {
+          choices.push({
+            message: `${choice}`,
+            value: `${choice}`,
+          });
+        }
+      }
+    } else {
+      choices.push({
+        message: 'Enter your own value',
+        value: ' ',
+      });
+    }
     const message = row.description
       ? `${row.title}: ${row.description}`
       : row.title;
@@ -307,15 +336,26 @@ async function promptLeaf(row: TableRow) {
     });
   }
 
+  let result;
+
   switch (choice) {
     case 'Skipped.':
       return undefined;
     case 'Used default.':
-      return row.default;
+      result = row.default;
+      break;
     case ' ':
-      return await promptValue(row);
+      result = await promptValue(row);
+      break;
     default:
-      return choiceAsType(row, choice);
+      result = choiceAsType(row, choice);
+  }
+
+  if (row.type === 'array') {
+    const nextResult = await promptLeaf(row, true);
+    return nextResult === undefined ? [result] : [result].concat(nextResult);
+  } else {
+    return result;
   }
 }
 
@@ -324,9 +364,7 @@ export async function buildJson(
 ): Promise<string> {
   const result = {};
 
-  await acceptUserInput(rows, (row, choice) =>
-    _.set(result, row.path, row.type === 'array' ? [choice] : choice)
-  );
+  await acceptUserInput(rows, (row, choice) => _.set(result, row.path, choice));
 
   return JSON.stringify(result);
 }

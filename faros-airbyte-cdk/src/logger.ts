@@ -1,5 +1,7 @@
+import {isNil} from 'lodash';
 import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
+import {Dictionary} from 'ts-essentials';
 
 import {
   AirbyteLog,
@@ -7,6 +9,7 @@ import {
   AirbyteLogLevelOrder,
   AirbyteMessage,
   AirbyteMessageType,
+  AirbyteRecord,
   AirbyteTrace,
   AirbyteTraceFailureType,
 } from './protocol';
@@ -86,6 +89,36 @@ export class AirbyteLogger {
       const msgLevelOrder = AirbyteLogLevelOrder((msg as AirbyteLog).log.level);
       if (levelOrder > msgLevelOrder) return;
     }
-    console.log(JSON.stringify(msg));
+
+    console.log(
+      JSON.stringify(
+        msg.type === AirbyteMessageType.RECORD
+          ? prepareAirbyteRecord(msg as AirbyteRecord)
+          : msg
+      )
+    );
   }
+}
+
+function prepareAirbyteRecord(record: AirbyteRecord): AirbyteRecord {
+  return new AirbyteRecord({
+    stream: record.record.stream,
+    namespace: record.record.namespace,
+    emitted_at: record.record.emitted_at,
+    data: replaceUndefinedWithNull(record.record.data),
+  });
+}
+
+// convert undefined record values to nulls so they are stringified
+function replaceUndefinedWithNull(obj: Dictionary<any>): Dictionary<any> {
+  const result: Dictionary<any> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+      result[key] = replaceUndefinedWithNull(value);
+    } else {
+      result[key] = value === undefined ? null : value;
+    }
+  }
+
+  return result;
 }

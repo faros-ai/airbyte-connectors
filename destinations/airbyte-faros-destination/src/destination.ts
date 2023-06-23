@@ -8,6 +8,7 @@ import {
   AirbyteLogger,
   AirbyteMessageType,
   AirbyteRecord,
+  AirbyteSourceErrorStatus,
   AirbyteSpec,
   AirbyteStateMessage,
   DestinationSyncMode,
@@ -150,7 +151,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         schemaLoader,
         backend,
         0,
-        config.edition_configs.community_graphql_batch_size
+        config.edition_configs.community_graphql_batch_size,
+        false
       );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
@@ -435,18 +437,21 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (dryRunEnabled) {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
-        latestStateMessage = await this.writeEntries(
+        for await (const stateMessage of this.writeEntries(
           streamContext,
           stdin,
           streams,
           converterDependencies,
           stats
-        );
+        )) {
+          latestStateMessage = stateMessage;
+        }
       } else if (this.graphQLClient) {
         this.logger.info(`Using GraphQLClient for writer`);
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
-        await graphQLClient.resetData(origin, deleteModelEntries);
+
+        streamContext.resetModels = new Set(deleteModelEntries);
 
         let originRemapper = undefined;
         if (config.accept_input_records_origin && config.replace_origin_map) {
@@ -474,14 +479,23 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           this
         );
 
-        latestStateMessage = await this.writeEntries(
+        for await (const stateMessage of this.writeEntries(
           streamContext,
           stdin,
           streams,
           converterDependencies,
           stats,
-          writer
-        );
+          writer,
+          async () =>
+            await graphQLClient.resetData(
+              origin,
+              Array.from(streamContext.resetModels),
+              this.edition === Edition.COMMUNITY
+            )
+        )) {
+          await graphQLClient.flush();
+          yield stateMessage;
+        }
       } else {
         this.logger.info(
           `Opening a new revision on graph ${this.farosGraph} ` +
@@ -517,14 +531,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 `Destination graph ${this.farosGraph} was ${lastSynced}`
               );
               // Process input and write entries
-              latestStateMessage = await this.writeEntries(
+              for await (const stateMessage of this.writeEntries(
                 streamContext,
                 stdin,
                 streams,
                 converterDependencies,
                 stats,
                 writer
-              );
+              )) {
+                latestStateMessage = stateMessage;
+              }
               // Return the current time
               return {lastSynced: new Date().toISOString()};
             } finally {
@@ -572,18 +588,18 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     }
   }
 
-  private async writeEntries(
+  private async *writeEntries(
     ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
     stats: WriteStats,
-    writer?: Writable | GraphQLWriter
-  ): Promise<AirbyteStateMessage | undefined> {
+    writer?: Writable | GraphQLWriter,
+    resetData?: () => Promise<void>
+  ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
     const convertersUsed: Map<string, Converter> = new Map();
-    let stateMessage: AirbyteStateMessage = undefined;
 
     // NOTE: readline.createInterface() will start to consume the input stream once invoked.
     // Having asynchronous operations between interface creation and asynchronous iteration may
@@ -593,14 +609,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       terminal: stdin.isTTY,
     });
     try {
+      let sourceFailed: AirbyteSourceErrorStatus = undefined;
       // Process input & write records
       for await (const line of input) {
+        let stateMessage: AirbyteStateMessage = undefined;
+
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
 
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
-            stateMessage = msg as AirbyteStateMessage;
+            const message = msg as AirbyteStateMessage;
+            if (message.sourceStatus?.status === 'ERRORED') {
+              this.logger.error(
+                'Airbyte Source has failed: ' + message.sourceStatus.error
+              );
+              sourceFailed = message.sourceStatus;
+            } else {
+              stateMessage = message;
+            }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -663,6 +690,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             }
           }
         });
+
+        if (stateMessage) {
+          yield stateMessage;
+        }
       }
       // Process all the remaining records
       if (recordsToBeProcessedLast.length > 0) {
@@ -686,9 +717,17 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
+      if (sourceFailed) {
+        this.logger.error(
+          'Skipping reset of non-incremental models due to' +
+            ` Airbyte Source failure: ${sourceFailed.error}`
+        );
+      } else {
+        await resetData?.();
+      }
+
       // Don't forget to close the writer
       await writer?.end();
-      return stateMessage;
     } finally {
       input.close();
     }

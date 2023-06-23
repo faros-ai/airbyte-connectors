@@ -56,6 +56,9 @@
     },
     "url": {
       "type": "string"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [
@@ -68,6 +71,7 @@
     "number",
     "result",
     "timestamp",
-    "url"
+    "url",
+    "description"
   ]
 }

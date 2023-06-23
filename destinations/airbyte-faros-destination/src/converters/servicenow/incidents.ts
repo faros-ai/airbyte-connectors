@@ -141,8 +141,12 @@ export class Incidents extends ServiceNowConverter {
     return true;
   }
 
-  private shouldDeleteRecord(incAppImpact: any): boolean {
-    if (incAppImpact.incident?.source !== this.streamName.source) {
+  static shouldDeleteRecord(
+    incAppImpact: any,
+    source: string,
+    incAppImpacts: Dictionary<Set<string>>
+  ): boolean {
+    if (incAppImpact.incident?.source !== source) {
       return false;
     }
 
@@ -151,13 +155,13 @@ export class Incidents extends ServiceNowConverter {
       incAppImpact.application?.platform
     ).uid;
 
-    // We shouldn't delete if we processed this incident/application association
-    if (this.incAppImpacts[incAppImpact.incident?.uid] === undefined) {
-      // this incident was not processed
-      return true;
+    if (!(incAppImpact.incident?.uid in incAppImpacts)) {
+      // this incident was not processed, so we keep its associations in the graph
+      return false;
     }
 
-    return !this.incAppImpacts[incAppImpact.incident?.uid].has(appKey);
+    // We shouldn't delete if we processed this incident/application association
+    return !incAppImpacts[incAppImpact.incident?.uid].has(appKey);
   }
 
   // TODO: Support CE
@@ -215,7 +219,11 @@ export class Incidents extends ServiceNowConverter {
     for await (const incAppImpact of faros.nodeIterable(graph, query)) {
       if (
         incAppImpact.metadata?.origin === origin &&
-        this.shouldDeleteRecord(incAppImpact)
+        Incidents.shouldDeleteRecord(
+          incAppImpact,
+          this.streamName.source,
+          this.incAppImpacts
+        )
       ) {
         results.push({
           model: 'ims_IncidentApplicationImpact__Deletion',
@@ -257,7 +265,13 @@ export class Incidents extends ServiceNowConverter {
       100,
       paginatedQueryV2
     )) {
-      if (this.shouldDeleteRecord(incAppImpact)) {
+      if (
+        Incidents.shouldDeleteRecord(
+          incAppImpact,
+          this.streamName.source,
+          this.incAppImpacts
+        )
+      ) {
         results.push({
           model: 'ims_IncidentApplicationImpact__Deletion',
           record: {

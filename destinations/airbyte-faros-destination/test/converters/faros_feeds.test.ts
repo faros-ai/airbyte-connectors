@@ -46,7 +46,7 @@ describe('faros_feeds', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      faros_feed: 1001,
+      faros_feed: 1004,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -66,7 +66,7 @@ describe('faros_feeds', () => {
       vcs_Membership: 166,
       vcs_PullRequest: 91,
       vcs_PullRequestLabel: 13,
-      vcs_PullRequestReview: 436,
+      vcs_PullRequestReview: 437,
       vcs_Tag: 32,
       vcs_User: 217,
     };
