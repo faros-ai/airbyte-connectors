@@ -141,6 +141,7 @@ export class TestRails {
   }
 
   async *getCases(since?: number): AsyncGenerator<Case> {
+    const window = this.getWindow(since);
     const typeMap = await this.getTestTypes();
 
     for (const projectId of Object.keys(this.projects)) {
@@ -149,7 +150,7 @@ export class TestRails {
         for await (const tc of this.client.listCases(
           projectId,
           suite.id,
-          this.getWindow(since)
+          window
         )) {
           const milestone = await this.client.getMilestone(tc.milestone_id);
 
@@ -165,11 +166,10 @@ export class TestRails {
   }
 
   async *getRuns(since?: number): AsyncGenerator<Run> {
+    const window = this.getWindow(since);
+
     for (const projectId of Object.keys(this.projects)) {
-      for await (const run of this.client.listRuns(
-        projectId,
-        this.getWindow(since)
-      )) {
+      for await (const run of this.client.listRuns(projectId, window)) {
         const milestone = await this.client.getMilestone(run.milestone_id);
 
         yield {
@@ -182,6 +182,7 @@ export class TestRails {
   }
 
   async *getResults(since?: number): AsyncGenerator<Result> {
+    const window = this.getWindow(since);
     const idToStatusMap: Map<number, string> = new Map();
     const statuses = await this.client.getStatuses();
     for (const status of statuses) {
@@ -189,10 +190,7 @@ export class TestRails {
     }
 
     for (const projectId of Object.keys(this.projects)) {
-      for await (const run of this.client.listRuns(
-        projectId,
-        this.getWindow(since)
-      )) {
+      for await (const run of this.client.listRuns(projectId, window)) {
         const testToCaseMap: Map<number, number> = new Map();
         for await (const test of this.client.listTests(run.id)) {
           testToCaseMap.set(test.id, test.case_id);
