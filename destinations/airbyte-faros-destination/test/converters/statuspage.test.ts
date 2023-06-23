@@ -37,9 +37,11 @@ describe('statuspage', () => {
     logger.debug(stdout);
 
     const processedByStream = {
-      incidents: 3,
+      component_groups: 3,
+      components: 9,
+      incidents: 5,
       pages: 1,
-      users: 3,
+      users: 1,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -49,11 +51,11 @@ describe('statuspage', () => {
       .value();
 
     const writtenByModel = {
-      compute_Application: 3,
-      ims_Incident: 3,
-      ims_IncidentApplicationImpact: 5,
-      ims_IncidentEvent: 10,
-      ims_User: 3,
+      compute_Application: 6,
+      ims_Incident: 5,
+      ims_IncidentApplicationImpact: 7,
+      ims_IncidentEvent: 14,
+      ims_User: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();

@@ -7,41 +7,59 @@
     "required": [
       "access_token",
       "organization",
-      "project_names",
-      "cutoff_days"
+      "projects"
     ],
     "additionalProperties": true,
     "properties": {
+      "organization": {
+        "order": 0,
+        "type": "string",
+        "title": "Organization",
+        "description": "Azure Organization"
+      },
+      "projects": {
+        "order": 1,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project IDs or project names",
+        "description": "Azure Projects"
+      },
       "access_token": {
+        "order": 2,
         "type": "string",
         "title": "Azure Access Token",
         "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
-      "organization": {
-        "type": "string",
-        "title": "Organization",
-        "description": "Azure Organization"
-      },
-      "project_names": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Project Names",
-        "description": "Azure Project"
-      },
       "cutoff_days": {
+        "order": 3,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Fetch builds and releases created within the specified number of days"
       },
+      "page_size": {
+        "order": 4,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Page size to use when requesting records from Azure API",
+        "default": 100
+      },
       "api_version": {
+        "order": 5,
         "type": "string",
         "title": "API Version",
         "description": "Azure API Version",
         "default": "6.0"
+      },
+      "api_timeout": {
+        "order": 6,
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to Azure API. 0 means no timeout.",
+        "default": 0
       }
     }
   }
