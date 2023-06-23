@@ -113,7 +113,12 @@ function prepareAirbyteRecord(record: AirbyteRecord): AirbyteRecord {
 function replaceUndefinedWithNull(obj: Dictionary<any>): Dictionary<any> {
   const result: Dictionary<any> = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+    if (
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      !(value instanceof Date) &&
+      value !== null
+    ) {
       result[key] = replaceUndefinedWithNull(value);
     } else {
       result[key] = value === undefined ? null : value;
