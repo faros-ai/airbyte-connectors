@@ -18,6 +18,6 @@ export class Teams extends AirbyteStreamBase {
   async *readRecords(): AsyncGenerator<Priority> {
     const pagerduty = Pagerduty.instance(this.config, this.logger);
 
-    yield* pagerduty.getTeams(this.config.page_size);
+    yield* pagerduty.getTeams();
   }
 }

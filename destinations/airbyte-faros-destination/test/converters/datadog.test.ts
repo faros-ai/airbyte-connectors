@@ -58,6 +58,7 @@ describe('datadog', () => {
 
     const processedByStream = {
       incidents: 2,
+      metrics: 168,
       users: 14,
     };
     const processed = _(processedByStream)
@@ -68,6 +69,8 @@ describe('datadog', () => {
       .value();
     const writtenByModel = {
       compute_Application: 2,
+      faros_MetricDefinition: 1,
+      faros_MetricValue: 168,
       ims_Incident: 2,
       ims_IncidentApplicationImpact: 3,
       ims_IncidentAssignment: 2,
@@ -110,11 +113,11 @@ describe('datadog', () => {
           event: 'Write Stats',
           messageId: expect.anything(),
           properties: {
-            messagesRead: 16,
+            messagesRead: 184,
             processedByStream: processed,
             recordsErrored: 0,
             recordsProcessed: processedTotal,
-            recordsRead: 16,
+            recordsRead: 184,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
             writtenByModel,

@@ -5,7 +5,13 @@
         "name": "mytestsource__datadog__incidents"
       },
       "destination_sync_mode": "append"
-    }, 
+    },
+    {
+      "stream": {
+        "name": "mytestsource__datadog__metrics"
+      },
+      "destination_sync_mode": "append"
+    },
     {
       "stream": {
         "name": "mytestsource__datadog__users"

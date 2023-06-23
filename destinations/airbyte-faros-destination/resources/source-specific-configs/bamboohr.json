@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "BambooHR",
+          "order": 0
+        },
         "bootstrap_teams_from_managers": {
           "type": "boolean",
           "title": "Bootstrap Teams From Managers",

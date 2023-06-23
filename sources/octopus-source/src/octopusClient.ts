@@ -1,6 +1,10 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import axiosRetry, {IAxiosRetryConfig} from 'axios-retry';
+import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import axiosRetry, {
+  IAxiosRetryConfig,
+  isIdempotentRequestError,
+} from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import isRetryAllowed from 'is-retry-allowed';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -43,7 +47,6 @@ export class OctopusClient {
     this.pageSize = config?.pageSize ?? DEFAULT_PAGE_SIZE;
     this.logger = config.logger;
     const retries = config.maxRetries ?? DEFAULT_MAX_RETRIES;
-    const logger = this.logger; // for axios-retry
 
     const cleanInstanceUrl = config.instanceUrl.replace(/\/$/, '');
 
@@ -56,13 +59,39 @@ export class OctopusClient {
       maxContentLength: Infinity,
     });
 
+    // TODO: refactor to common library and apply to all sources that use axios
+    const isNetworkError = (error): boolean => {
+      return (
+        !error.response &&
+        Boolean(error.code) && // Prevents retrying cancelled requests
+        isRetryAllowed(error) // Prevents retrying unsafe errors
+      );
+    };
+
+    const isNonRetryable500 = (error: AxiosError): boolean => {
+      return (
+        error.response &&
+        error.response.status >= 500 &&
+        error.response.status <= 599 &&
+        error.response.data?.ErrorMessage?.includes(
+          'We received a request for a version-controlled resource'
+        )
+      );
+    };
+
     if (retries > 0) {
       const retryConfig: IAxiosRetryConfig = {
         retryDelay: axiosRetry.exponentialDelay,
         shouldResetTimeout: true,
         retries,
-        onRetry(retryCount, error, requestConfig) {
-          logger?.info(
+        retryCondition: (error: AxiosError): boolean => {
+          return (
+            (isNetworkError(error) || isIdempotentRequestError(error)) &&
+            !isNonRetryable500(error)
+          );
+        },
+        onRetry: (retryCount, error, requestConfig) => {
+          this.logger?.info(
             `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
               `(attempt ${retryCount} of ${retries})`
           );
@@ -92,11 +121,28 @@ export class OctopusClient {
   @Memoize((projectId) => projectId)
   async getProjectDeploymentProcess(
     projectId: string
-  ): Promise<DeploymentProcess> {
-    const process = await this.get<OctopusDeploymentProcess>(
-      `projects/${projectId}/deploymentprocesses`
-    );
-    return cleanProcess(process);
+  ): Promise<DeploymentProcess | undefined> {
+    try {
+      const process = await this.get<OctopusDeploymentProcess>(
+        `/projects/${projectId}/deploymentprocesses`
+      );
+      return cleanProcess(process);
+    } catch (err: any) {
+      return undefined;
+    }
+  }
+
+  async getDeploymentProcess(
+    deploymentProcessId: string
+  ): Promise<DeploymentProcess | undefined> {
+    try {
+      const process = await this.get<OctopusDeploymentProcess>(
+        `/deploymentprocesses/${deploymentProcessId}`
+      );
+      return cleanProcess(process);
+    } catch (err: any) {
+      return undefined;
+    }
   }
 
   @Memoize((id) => id)

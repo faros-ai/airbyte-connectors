@@ -37,7 +37,6 @@ describe('index', () => {
 
   test('spec', async () => {
     const cli = await CLI.runWith(['spec']);
-    const maxCheckLength = 16384;
     const expectedSpec =
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       JSON.stringify(
@@ -45,10 +44,8 @@ describe('index', () => {
           path.join(__dirname, '../resources/spec.json')
         )
       ) + os.EOL;
+    expect(await read(cli.stdout)).toBe(expectedSpec);
     expect(await read(cli.stderr)).toBe('');
-    expect((await read(cli.stdout)).substring(0, maxCheckLength)).toBe(
-      expectedSpec.substring(0, maxCheckLength)
-    );
     expect(await cli.wait()).toBe(0);
   });
 

@@ -30,7 +30,7 @@ export class Octopus {
     private readonly logger: AirbyteLogger,
     cutoffDays?: number,
     private readonly lookBackDepth = 10,
-    private readonly fetchDeploymentProcess = true
+    private readonly fetchDeploymentProcess = false
   ) {
     this.cutoff = cutoffDays
       ? DateTime.now().minus({days: cutoffDays})
@@ -155,7 +155,10 @@ export class Octopus {
           this.client.getProject(deployment.ProjectId),
           this.client.getEnvironment(deployment.EnvironmentId),
           this.client.getTask(deployment.TaskId),
-          this.getDeploymentProcess(deployment.ProjectId),
+          this.getDeploymentProcess(
+            deployment.ProjectId,
+            deployment.DeploymentProcessId
+          ),
         ]);
 
         yield {
@@ -177,11 +180,21 @@ export class Octopus {
   }
 
   private async getDeploymentProcess(
-    projectId: string
+    projectId: string,
+    deploymentProcessId: string
   ): Promise<DeploymentProcess | undefined> {
-    return this.fetchDeploymentProcess
-      ? this.client.getProjectDeploymentProcess(projectId)
-      : Promise.resolve(undefined);
+    let process: DeploymentProcess;
+    if (this.fetchDeploymentProcess) {
+      process = await this.client.getProjectDeploymentProcess(projectId);
+
+      if (!process) {
+        process = await this.client.getDeploymentProcess(deploymentProcessId);
+      }
+      if (!process) {
+        this.logger.warn(`Unable to retrieve deployment process`);
+      }
+    }
+    return process;
   }
 
   async *getReleases(

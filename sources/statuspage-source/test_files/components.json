@@ -1,0 +1,34 @@
+[
+  {
+    "id": "component1",
+    "page_id": "string",
+    "group_id": "string",
+    "created_at": "2023-05-22T13:42:58Z",
+    "updated_at": "2023-05-22T13:42:58Z",
+    "group": true,
+    "name": "string",
+    "description": "string",
+    "position": 0,
+    "status": "operational",
+    "showcase": true,
+    "only_show_if_degraded": true,
+    "automation_email": "string",
+    "start_date": "2023-05-22"
+  },
+  {
+    "id": "component2",
+    "page_id": "string",
+    "group_id": "string",
+    "created_at": "2023-05-22T13:42:58Z",
+    "updated_at": "2023-05-22T13:42:58Z",
+    "group": true,
+    "name": "string",
+    "description": "string",
+    "position": 0,
+    "status": "operational",
+    "showcase": true,
+    "only_show_if_degraded": true,
+    "automation_email": "string",
+    "start_date": "2023-05-22"
+  }
+]

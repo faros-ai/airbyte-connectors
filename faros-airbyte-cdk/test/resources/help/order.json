@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Spec",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "third": {
+      "type": "string"
+    },
+    "z_fourth": {
+      "type": "string"
+    },
+    "second": {
+      "order": 1,
+      "type": "string"
+    },
+    "first": {
+      "order": 0,
+      "type": "integer"
+    }
+  }
+}

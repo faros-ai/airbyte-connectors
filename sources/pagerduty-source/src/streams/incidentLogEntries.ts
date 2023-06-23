@@ -53,7 +53,6 @@ export class IncidentLogEntries extends AirbyteStreamBase {
     yield* pagerduty.getIncidentLogEntries(
       since,
       now,
-      this.config.page_size,
       this.config.incident_log_entries_overview
     );
   }

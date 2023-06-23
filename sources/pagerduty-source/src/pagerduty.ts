@@ -152,17 +152,6 @@ export class Pagerduty {
       }
       errorMessage = `Error from ${url}. Message: ${errorMessage}`;
 
-      // Deal with PagerDuty 10000 records response limit
-      if (
-        err.status == 400 &&
-        err.data?.error?.errors?.[0]?.includes('Offset must be less than')
-      ) {
-        this.logger.warn(
-          `Reached PagerDuty API response size limit of 10000 records. Error: ${errorMessage}`
-        );
-        return undefined;
-      }
-
       if (++retries > this.maxRetries) {
         throw new VError('%s', errorMessage);
       } else {
@@ -183,6 +172,16 @@ export class Pagerduty {
     let fetchNextFunc;
 
     do {
+      // Deal with PagerDuty 10000 records response limit
+      if (
+        response?.status == 400 &&
+        response?.data?.error?.errors?.[0]?.includes('Offset')
+      ) {
+        this.logger.warn(
+          `Reached PagerDuty API response size limit of 10000 records.`
+        );
+        return undefined;
+      }
       if (response?.status >= 300) {
         throw new VError(
           '%s',
@@ -222,16 +221,14 @@ export class Pagerduty {
     }
   }
 
-  async *getUsers(limit = this.pageSize): AsyncGenerator<User> {
-    const params = new URLSearchParams({limit: `${limit}`});
-    const resource = `/users?${params}`;
+  async *getUsers(): AsyncGenerator<User> {
+    const resource = `/users`;
     this.logger.debug(`Fetching Users at ${resource}`);
     yield* this.paginate<User>(() => this.client.get(resource));
   }
 
-  async *getTeams(limit = this.pageSize): AsyncGenerator<Team> {
-    const params = new URLSearchParams({limit: `${limit}`});
-    const resource = `/teams?${params}`;
+  async *getTeams(): AsyncGenerator<Team> {
+    const resource = `/teams`;
     this.logger.debug(`Fetching Team at ${resource}`);
     yield* this.paginate<Team>(() => this.client.get(resource));
   }
@@ -239,14 +236,13 @@ export class Pagerduty {
   async *getIncidents(
     since: DateTime,
     until: DateTime,
-    limit = this.pageSize,
     exclude_services: ReadonlyArray<string> = []
   ): AsyncGenerator<Incident> {
-    const params = new URLSearchParams({limit: `${limit}`, time_zone: 'UTC'});
+    const params = new URLSearchParams({time_zone: 'UTC'});
 
     const services: (Service | undefined)[] = [];
     if (exclude_services?.length > 0) {
-      const servicesIter = this.getServices([], limit);
+      const servicesIter = this.getServices([]);
       for await (const service of servicesIter) {
         if (
           exclude_services.includes(service.name) ||
@@ -291,11 +287,9 @@ export class Pagerduty {
   async *getIncidentLogEntries(
     since: DateTime,
     until: DateTime,
-    limit: number = this.pageSize,
     isOverview = DEFAULT_OVERVIEW
   ): AsyncGenerator<LogEntry> {
     const params = new URLSearchParams({
-      limit: `${limit}`,
       is_overview: `${isOverview}`,
       time_zone: 'UTC',
     });
@@ -311,7 +305,13 @@ export class Pagerduty {
 
       const resource = `/log_entries?${params}`;
       this.logger.debug(`Fetching Log Entries at ${resource}`);
-      yield* this.paginate<LogEntry>(() => this.client.get(resource));
+      const sinceJSDate = since.toJSDate();
+      const iter = this.paginate<LogEntry>(() => this.client.get(resource));
+      for await (const logEntry of iter) {
+        if (new Date(logEntry.created_at) > sinceJSDate) {
+          yield logEntry;
+        }
+      }
     }
   }
 
@@ -331,10 +331,9 @@ export class Pagerduty {
   }
 
   async *getServices(
-    details: ReadonlyArray<string> = [],
-    limit: number = this.pageSize
+    details: ReadonlyArray<string> = []
   ): AsyncGenerator<Service> {
-    const params = new URLSearchParams({limit: `${limit}`});
+    const params = new URLSearchParams({});
     for (const detail of details) {
       params.append('include[]', detail);
     }

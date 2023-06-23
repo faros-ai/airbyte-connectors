@@ -76,6 +76,8 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
+  resetModels: Set<string>;
+
   constructor(
     readonly logger: AirbyteLogger,
     readonly config: DestinationConfig,
@@ -86,7 +88,7 @@ export class StreamContext {
   ) {}
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
-    {};
+    Object.create(null);
 
   getAll(streamName: string): Dictionary<AirbyteRecord> {
     const recs = this.recordsByStreamName[streamName];
@@ -105,7 +107,7 @@ export class StreamContext {
   }
   set(streamName: string, id: string, record: AirbyteRecord): void {
     const recs = this.recordsByStreamName[streamName];
-    if (!recs) this.recordsByStreamName[streamName] = {};
+    if (!recs) this.recordsByStreamName[streamName] = Object.create(null);
     this.recordsByStreamName[streamName][id] = record;
   }
   stats(includeIds = false): string {

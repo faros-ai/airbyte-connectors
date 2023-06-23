@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Spec",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "select_mode": {
+      "title": "Mode",
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "Mode X",
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "mode X"
+            }
+          }
+        },
+        {
+          "title": "Mode Y",
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "mode Y"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

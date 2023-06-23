@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Jira",
+          "order": 0
+        },
         "use_board_ownership": {
           "type": "boolean",
           "title": "Use Board Ownership",
