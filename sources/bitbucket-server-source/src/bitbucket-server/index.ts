@@ -197,10 +197,7 @@ export class BitbucketServer {
     }
   }
 
-  async *tags(
-    projectKey: string,
-    repositorySlug: string
-  ): AsyncGenerator<Tag> {
+  async *tags(projectKey: string, repositorySlug: string): AsyncGenerator<Tag> {
     const fullName = repoFullName(projectKey, repositorySlug);
     try {
       this.logger.debug(`Fetching tags for repository ${fullName}`);
@@ -217,7 +214,7 @@ export class BitbucketServer {
             ...data,
             computedProperties: {repository: {fullName}},
           } as Tag;
-        },
+        }
       );
     } catch (err) {
       throw new VError(
@@ -444,6 +441,7 @@ export class BitbucketServer {
     }
   }
 
+  @Memoize()
   async project(projectKey: string): Promise<Project> {
     try {
       const {data} = await this.client[MEP].projects.getProject({projectKey});
@@ -483,7 +481,7 @@ export class BitbucketServer {
 }
 
 function repoFullName(projectKey: string, repoSlug: string): string {
-  return `${projectKey}/${repoSlug}`;
+  return `${projectKey}/${repoSlug}`.toLowerCase();
 }
 
 function innerError(err: any): VError {

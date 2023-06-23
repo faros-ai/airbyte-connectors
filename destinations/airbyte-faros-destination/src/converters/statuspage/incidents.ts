@@ -2,8 +2,16 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {Common} from '../common/common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {
+  ApplicationImpact,
+  ApplicationImpactCategory,
+  ComponentsStream,
   ComponentStatus,
   IncidentEventType,
   IncidentEventTypeCategory,
@@ -19,12 +27,13 @@ import {
 
 export class Incidents extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_Application',
     'ims_Incident',
     'ims_IncidentApplicationImpact',
   ];
 
-  private seenApplications = new Set<string>();
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [ComponentsStream];
+  }
 
   async convert(
     record: AirbyteRecord,
@@ -55,11 +64,47 @@ export class Incidents extends StatuspageConverter {
     // Use highest severity in incident's history as its severity
     let severity: IncidentSeverity | undefined = undefined;
 
+    const componentImpacts: Map<
+      string,
+      {impact: ApplicationImpact; endedAt: Date}
+    > = new Map();
+
     for (const update of incident.incident_updates ?? []) {
       for (const component of update.affected_components ?? []) {
         const thisSeverity = this.getSeverity(component.new_status);
-        if (!severity) severity = thisSeverity;
-        if (thisSeverity.category < severity.category) severity = thisSeverity;
+        const thisImpact = this.getApplicationImpact(component.new_status);
+        const eventTime = Utils.toDate(update.created_at);
+        if (!severity) {
+          severity = thisSeverity;
+        } else if (thisSeverity.category < severity.category) {
+          severity = thisSeverity;
+        }
+        if (!componentImpacts.has(component.code)) {
+          componentImpacts.set(component.code, {
+            impact: thisImpact,
+            endedAt: eventTime,
+          });
+        } else {
+          const compImp = componentImpacts.get(component.code);
+          // get most severe impact
+          if (thisImpact.category > compImp.impact.category) {
+            componentImpacts.set(component.code, {
+              impact: thisImpact,
+              endedAt: compImp.endedAt,
+            });
+          }
+          // get last transition to operational
+          if (component.new_status === ApplicationImpactCategory.Operational) {
+            const existingEndedAt = compImp.endedAt;
+            const newEndedAt =
+              existingEndedAt < eventTime ? eventTime : existingEndedAt;
+
+            componentImpacts.set(component.code, {
+              impact: compImp.impact,
+              endedAt: newEndedAt,
+            });
+          }
+        }
       }
       res.push({
         model: 'ims_IncidentEvent',
@@ -100,23 +145,21 @@ export class Incidents extends StatuspageConverter {
     });
 
     if (incident.components) {
-      const applicationMapping = this.applicationMapping(ctx);
-      for (const service of incident.components) {
-        if (!service.name) continue;
+      for (const component of incident.components) {
+        if (!component.name) continue;
 
-        const mappedApp = applicationMapping[service.name];
-        const application = Common.computeApplication(
-          mappedApp?.name ?? service.name,
-          mappedApp?.platform
-        );
-        const appKey = application.uid;
-        if (!this.seenApplications.has(appKey)) {
-          res.push({model: 'compute_Application', record: application});
-          this.seenApplications.add(appKey);
-        }
+        const application = this.computeApplication(ctx, component);
+        const compImp = componentImpacts.get(component.id);
         res.push({
           model: 'ims_IncidentApplicationImpact',
-          record: {incident: incidentRef, application},
+          record: {
+            incident: incidentRef,
+            application,
+            impact:
+              compImp?.impact ?? this.getApplicationImpact(component.status),
+            startedAt: createdAt,
+            endedAt: compImp?.endedAt ?? resolvedAt,
+          },
         });
       }
     }
@@ -155,6 +198,27 @@ export class Incidents extends StatuspageConverter {
         return {category: IncidentSeverityCategory.Sev5, detail};
       default:
         return {category: IncidentSeverityCategory.Custom, detail};
+    }
+  }
+
+  private getApplicationImpact(componentStatus: string): ApplicationImpact {
+    const detail: string = componentStatus;
+    switch (componentStatus) {
+      case ComponentStatus.major_outage:
+        return {category: ApplicationImpactCategory.MajorOutage, detail};
+      case ComponentStatus.partial_outage:
+        return {category: ApplicationImpactCategory.PartialOutage, detail};
+      case ComponentStatus.degraded_performance:
+        return {
+          category: ApplicationImpactCategory.DegradedPerformance,
+          detail,
+        };
+      case ComponentStatus.under_maintenance:
+        return {category: ApplicationImpactCategory.UnderMaintenance, detail};
+      case ComponentStatus.operational:
+        return {category: ApplicationImpactCategory.Operational, detail};
+      default:
+        return {category: ApplicationImpactCategory.Custom, detail};
     }
   }
 

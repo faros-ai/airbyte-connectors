@@ -9,6 +9,8 @@ import {Dictionary} from 'ts-essentials';
 
 import {Datadog, MetricPoint} from '../datadog';
 
+const DEFAULT_MAX_WINDOW = 604800000; // 7 days in milliseconds
+
 export class Metrics extends AirbyteStreamBase {
   constructor(
     private readonly datadog: Datadog,
@@ -44,14 +46,19 @@ export class Metrics extends AirbyteStreamBase {
     streamState?: Dictionary<string, number>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
     for (const metricQuery of this.datadog.config.metrics ?? []) {
-      let from = 0;
+      const now = Date.now();
+      let from =
+        now - (this.datadog.config.metrics_max_window ?? DEFAULT_MAX_WINDOW);
       const queryHash = createHash('md5').update(metricQuery).digest('hex');
-      if (syncMode === SyncMode.INCREMENTAL) {
-        from = streamState[queryHash] ?? 0;
+      if (syncMode === SyncMode.INCREMENTAL && queryHash in streamState) {
+        from = streamState[queryHash];
       }
-      const maxTo = from + this.datadog.config.metrics_max_window;
-      const to = Math.min(Date.now().valueOf(), maxTo);
-      yield* this.datadog.getMetrics(metricQuery, queryHash, from, to);
+      yield* this.datadog.getMetrics(
+        metricQuery,
+        queryHash,
+        from / 1000,
+        now / 1000
+      );
     }
   }
 }

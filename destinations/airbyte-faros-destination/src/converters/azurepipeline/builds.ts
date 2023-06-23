@@ -3,17 +3,14 @@ import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Build, Tag} from './models';
+import {Build} from './models';
 
 export class Builds extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'cicd_Artifact',
     'cicd_Build',
     'cicd_BuildStep',
-    'cicd_Repository',
+    'cicd_BuildCommitAssociation',
   ];
-
-  private seenRepositories = new Set<string>();
 
   async convert(
     record: AirbyteRecord
@@ -23,11 +20,15 @@ export class Builds extends AzurePipelineConverter {
     const uid = String(build.id);
 
     const organizationName = this.getOrganizationFromUrl(build.url);
-    const organization = {uid: organizationName, source};
+    if (!organizationName) {
+      return [];
+    }
+
     const pipeline = {
       uid: String(build.definition?.id),
       organization: {uid: organizationName, source},
     };
+
     const buildUid = {uid, pipeline};
     const createdAt = Utils.toDate(build.queueTime);
     const startedAt = Utils.toDate(build.startTime);
@@ -50,20 +51,22 @@ export class Builds extends AzurePipelineConverter {
         pipeline,
       },
     });
-    // TODO
-    const repo = build.repository;
-    if (!this.seenRepositories.has(repo.id)) {
-      this.seenRepositories.add(repo.id);
-      res.push({
-        model: 'cicd_Repository',
-        record: {
-          uid: repo.id,
-          name: repo.name,
-          description: null,
-          url: this.getRepoUrl(repo),
-          organization,
-        },
-      });
+
+    if (build.sourceVersion && build.repository) {
+      const repository = this.vcs_Repository(build.repository);
+      if (repository) {
+        res.push({
+          model: 'cicd_BuildCommitAssociation',
+          record: {
+            build: {uid, pipeline},
+            commit: {
+              sha: build.sourceVersion,
+              uid: build.sourceVersion,
+              repository,
+            },
+          },
+        });
+      }
     }
 
     for (const job of build.jobs) {
@@ -90,26 +93,6 @@ export class Builds extends AzurePipelineConverter {
       });
     }
 
-    for (const artifact of build.artifacts) {
-      const artifactCreatedAt = Utils.toDate(build.startTime);
-      const tags: Tag[] = [];
-      for (const [key, value] of Object.entries(artifact.resource.properties)) {
-        tags.push({name: key, value: String(value)});
-      }
-      res.push({
-        model: 'cicd_Artifact',
-        record: {
-          uid: String(artifact.id),
-          name: artifact.name,
-          url: artifact.resource.url,
-          type: artifact.resource.type,
-          createdAt: artifactCreatedAt,
-          tags,
-          build: buildUid,
-          repository: {uid: repo.id, organization},
-        },
-      });
-    }
     return res;
   }
 }

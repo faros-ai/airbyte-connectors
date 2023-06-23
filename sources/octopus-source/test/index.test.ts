@@ -43,7 +43,7 @@ describe('index', () => {
   } as any;
 
   beforeAll(async () => {
-    const octopus = new Octopus(mockOctopusClient, logger, undefined, 1);
+    const octopus = new Octopus(mockOctopusClient, logger, undefined, 1, true);
     await octopus.initialize(['Default']);
     Octopus.instance = jest.fn().mockImplementation(() => {
       return Promise.resolve(octopus);

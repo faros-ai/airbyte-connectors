@@ -8,4 +8,9 @@ export abstract class StreamBase extends AirbyteStreamBase {
   get server(): BitbucketServer {
     return BitbucketServer.instance(this.config, this.logger);
   }
+
+  // Fetch the project key from the Bitbucket API in case it was renamed
+  async fetchProjectKey(configProjectKey: string): Promise<string> {
+    return (await this.server.project(configProjectKey)).key;
+  }
 }
