@@ -4,11 +4,13 @@ import {VError} from 'verror';
 
 import {Deployment, DeploymentProcess, Release} from './models';
 import {OctopusClient} from './octopusClient';
+import {DeploymentVariable} from './octopusModels';
 
 export interface OctopusConfig {
   readonly api_key: string;
   readonly instance_url: string;
   readonly space_names?: string[];
+  readonly variable_names?: string[];
   readonly fetch_deployment_process?: boolean;
   readonly cutoff_days?: number;
   readonly look_back_depth?: number;
@@ -24,17 +26,20 @@ export class Octopus {
   private static inst: Octopus = null;
   private spaces: Record<string, string> = {};
   private cutoff?: DateTime;
-
+  private variableNameSet: Set<string>;
   constructor(
     private readonly client: OctopusClient,
     private readonly logger: AirbyteLogger,
     cutoffDays?: number,
+    variableNames: string[] = [],
     private readonly lookBackDepth = 10,
     private readonly fetchDeploymentProcess = false
   ) {
     this.cutoff = cutoffDays
       ? DateTime.now().minus({days: cutoffDays})
       : undefined;
+
+    this.variableNameSet = new Set(variableNames);
   }
 
   static async instance(
@@ -64,6 +69,7 @@ export class Octopus {
       client,
       logger,
       config.cutoff_days,
+      config.variable_names,
       config.look_back_depth,
       config.fetch_deployment_process
     );
@@ -151,15 +157,20 @@ export class Octopus {
           lookedBack++;
         }
 
-        const [project, environment, task, process] = await Promise.all([
-          this.client.getProject(deployment.ProjectId),
-          this.client.getEnvironment(deployment.EnvironmentId),
-          this.client.getTask(deployment.TaskId),
-          this.getDeploymentProcess(
-            deployment.ProjectId,
-            deployment.DeploymentProcessId
-          ),
-        ]);
+        const [project, environment, task, process, variables] =
+          await Promise.all([
+            this.client.getProject(deployment.ProjectId),
+            this.client.getEnvironment(deployment.EnvironmentId),
+            this.client.getTask(deployment.TaskId),
+            this.getDeploymentProcess(
+              deployment.ProjectId,
+              deployment.DeploymentProcessId
+            ),
+            this.getDeploymentVariables(
+              spaceId,
+              deployment.ManifestVariableSetId
+            ),
+          ]);
 
         yield {
           ...deployment,
@@ -174,8 +185,22 @@ export class Octopus {
             CompletedTime: task.CompletedTime,
           },
           Process: process,
+          Variables: variables,
         };
       }
+    }
+  }
+
+  private async getDeploymentVariables(
+    spaceId: string,
+    variableSetId: string
+  ): Promise<DeploymentVariable[] | undefined> {
+    if (this.variableNameSet.size > 0) {
+      const variables = await this.client.getVariableSet(
+        spaceId,
+        variableSetId
+      );
+      return variables?.filter((item) => this.variableNameSet.has(item.Name));
     }
   }
 
