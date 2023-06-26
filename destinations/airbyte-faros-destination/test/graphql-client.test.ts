@@ -11,6 +11,7 @@ import {
   serialize,
   strictPick,
   toLevels,
+  toPostgresArrayLiteral,
   Upsert,
   UpsertBuffer,
 } from '../src/common/graphql-client';
@@ -640,6 +641,103 @@ describe('graphql-client write batch upsert', () => {
     await client.flush();
     expect(queries).toEqual(responses.length);
   });
+  test('allow upsert null values', async () => {
+    const responses = [
+      JSON.parse(`
+        {
+          "data": {
+            "insert_vcs_Commit": {
+              "returning": [
+                {
+                  "id": "1603f9d5f6a4d5e5f21c7251a5fc31af20ec0eb3",
+                  "refreshedAt": "2023-06-21T15:20:37.611395+00:00",
+                  "repositoryId": null,
+                  "sha": "c2"
+                }
+              ]
+            }
+          }
+        }
+      `),
+    ];
+    const records = [JSON.parse('{"sha":"c2","author":null, "message":null}')];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    for (const rec of records) {
+      await client.writeRecord('vcs_Commit', rec, 'mytestsource');
+    }
+    await client.flush();
+    expect(queries).toEqual(responses.length);
+  });
+  test('nil uid', async () => {
+    const responses = [
+      JSON.parse(`
+        {
+          "data": {
+            "insert_vcs_Organization": {
+              "returning": [
+                {
+                  "id": "6183747fc59ecd1e8a4d7ebdde6f1e63a8c96468",
+                  "refreshedAt": "2023-06-21T18:48:36.240969+00:00",
+                  "source": null,
+                  "uid": "u1"
+                },
+                {
+                  "id": "87abe37abf99a7946269cc490de66c134d20c68f",
+                  "refreshedAt": "2023-06-21T18:48:36.240969+00:00",
+                  "source": null,
+                  "uid": "u2"
+                }
+              ]
+            }
+          }
+        }
+      `),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return responses[queries++];
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_Organization', {uid: 'u1'}, 'mytestsource');
+    await expect(
+      client.writeRecord('vcs_Organization', {uid: null}, 'mytestsource')
+    ).rejects.toThrow(
+      'cannot upsert null or undefined uid for model vcs_Organization with keys {"uid":null}'
+    );
+    await client.writeRecord('vcs_Organization', {uid: 'u2'}, 'mytestsource');
+    await client.flush();
+    expect(queries).toEqual(responses.length);
+  });
 });
 
 describe('graphql-client write batch updates', () => {
@@ -887,5 +985,22 @@ describe('groupByKeys', () => {
   });
   test('2 groups of mix', async () => {
     await expectGroupByKeys([u0a, u1a, u1b]);
+  });
+});
+
+describe('toPostgresArrayLiteral', () => {
+  test('strings', async () => {
+    expect(toPostgresArrayLiteral(['a', 'b', 'c'])).toEqual(`{"a","b","c"}`);
+    expect(toPostgresArrayLiteral(['a', '', 'c'])).toEqual(`{"a","","c"}`);
+    expect(toPostgresArrayLiteral(['a', null, 'c'])).toEqual(`{"a",NULL,"c"}`);
+    expect(toPostgresArrayLiteral(['a', undefined, 'c'])).toEqual(
+      `{"a",NULL,"c"}`
+    );
+  });
+  test('numbers', async () => {
+    expect(toPostgresArrayLiteral([1, 2, 3])).toEqual(`{1,2,3}`);
+    expect(toPostgresArrayLiteral([1, null, 3])).toEqual(`{1,NULL,3}`);
+    expect(toPostgresArrayLiteral([1, undefined, 3])).toEqual(`{1,NULL,3}`);
+    expect(toPostgresArrayLiteral([1, 0, 3])).toEqual(`{1,0,3}`);
   });
 });

@@ -5,12 +5,10 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
+import nock from 'nock';
 
-import {AzurePipeline} from '../src/azurepipeline';
 import * as sut from '../src/index';
-
-const azureActivePipeline = AzurePipeline.instance;
+import {Build} from '../src/models';
 
 describe('index', () => {
   const logger = new AirbyteLogger(
@@ -20,141 +18,132 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  beforeEach(() => {
-    AzurePipeline.instance = azureActivePipeline;
+  const source = new sut.AzurePipelineSource(logger);
+  const [pipelinesStream, buildsStream, releasesStream] = source.streams({
+    access_token: 'XYZ',
+    organization: 'org1',
+    projects: ['proj1'],
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
+  const apiUrl = 'https://dev.azure.com/org1';
+  const vsrmApiUrl = 'https://vsrm.dev.azure.com/org1';
+  const WATERMARK = '2023-03-03T18:18:11.592Z';
 
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
   test('spec', async () => {
-    const source = new sut.AzurePipelineSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
   test('check connection - no access token', async () => {
-    const source = new sut.AzurePipelineSource(logger);
-    await expect(
-      source.checkConnection({
+    expect(
+      await source.checkConnection({
         access_token: '',
         organization: 'organization',
         project: 'project',
         cutoff_days: 365,
       } as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('access_token must not be an empty string'),
-    ]);
+    ).toMatchSnapshot();
   });
 
   test('streams - pipelines, use full_refresh sync mode', async () => {
-    const projectNames = ['project'];
-    const fnPipelinesFunc = jest.fn();
+    const pipelinesResource: any[] = readTestResourceFile('pipelines.json');
+    const mock = nock(apiUrl)
+      .get('/proj1/_apis/pipelines')
+      .query({'api-version': '6.0', $top: 100})
+      .reply(200, {value: pipelinesResource});
 
-    AzurePipeline.instance = jest.fn().mockImplementation(() => {
-      const pipelinesResource: any[] = readTestResourceFile('pipelines.json');
-      return new AzurePipeline(
-        {
-          get: fnPipelinesFunc.mockResolvedValue({
-            data: {value: pipelinesResource},
-          }),
-        } as any,
-        null,
-        new Date('2010-03-27T14:03:51-0800'),
-        projectNames
-      );
-    });
-    const source = new sut.AzurePipelineSource(logger);
-    const streams = source.streams({} as any);
-
-    const pipelinesStream = streams[0];
     const pipelineIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {project: projectNames[0]}
+      {project: 'proj1'}
     );
+
     const pipelines = [];
     for await (const pipeline of pipelineIter) {
       pipelines.push(pipeline);
     }
 
-    expect(fnPipelinesFunc).toHaveBeenCalledTimes(3);
-    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
+    mock.done();
+
+    expect(pipelines).toStrictEqual(pipelinesResource);
   });
 
-  test('streams - builds, use full_refresh sync mode', async () => {
-    const projectNames = ['project'];
-    const fnBuildsFunc = jest.fn();
+  test('streams - builds', async () => {
+    const buildsResource: Build[] = readTestResourceFile('builds.json');
+    const mock = nock(apiUrl)
+      .get('/proj1/_apis/build/builds')
+      .query({
+        'api-version': '6.0',
+        $top: 100,
+        queryOrder: 'queueTimeAscending',
+        minTime: WATERMARK,
+      })
+      .reply(200, {value: buildsResource});
 
-    AzurePipeline.instance = jest.fn().mockImplementation(() => {
-      const buildsResource: any[] = readTestResourceFile('builds.json');
-      return new AzurePipeline(
-        {
-          get: fnBuildsFunc.mockResolvedValue({
-            data: {value: buildsResource},
-          }),
-        } as any,
-        null,
-        new Date('2010-03-27T14:03:51-0800'),
-        projectNames
-      );
-    });
-    const source = new sut.AzurePipelineSource(logger);
-    const streams = source.streams({} as any);
+    for (const build of buildsResource) {
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/artifacts`)
+        .query({'api-version': '6.0'})
+        .reply(200, {value: build.artifacts});
 
-    const buildsStream = streams[0];
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/timeline`)
+        .query({'api-version': '6.0'})
+        .reply(200, {records: build.jobs});
+    }
+
     const buildIter = buildsStream.readRecords(
-      SyncMode.FULL_REFRESH,
+      SyncMode.INCREMENTAL,
       undefined,
-      {project: projectNames[0]}
+      {project: 'proj1'},
+      {lastQueueTime: WATERMARK}
     );
+
     const builds = [];
     for await (const build of buildIter) {
       builds.push(build);
     }
 
-    expect(fnBuildsFunc).toHaveBeenCalledTimes(4);
-    expect(builds).toStrictEqual(readTestResourceFile('builds.json'));
+    mock.done();
+
+    expect(builds).toStrictEqual(buildsResource);
   });
 
-  test('streams - releases, use full_refresh sync mode', async () => {
-    const projectNames = ['project'];
-    const fnReleasesFunc = jest.fn();
+  test('streams - releases', async () => {
+    const releasesResource: any[] = readTestResourceFile('releases.json');
+    const mock = nock(vsrmApiUrl)
+      .get('/proj1/_apis/release/releases')
+      .query({
+        'api-version': '6.0',
+        $top: 100,
+        queryOrder: 'ascending',
+        minCreatedTime: WATERMARK,
+      })
+      .reply(200, {value: releasesResource});
 
-    AzurePipeline.instance = jest.fn().mockImplementation(() => {
-      const releasesResource: any[] = readTestResourceFile('releases.json');
-      return new AzurePipeline(
-        {
-          get: fnReleasesFunc.mockResolvedValue({
-            data: {value: releasesResource},
-          }),
-        } as any,
-        null,
-        new Date('2010-03-27T14:03:51-0800'),
-        projectNames
-      );
-    });
-    const source = new sut.AzurePipelineSource(logger);
-    const streams = source.streams({} as any);
-
-    const releasesStream = streams[0];
     const releaseIter = releasesStream.readRecords(
-      SyncMode.FULL_REFRESH,
+      SyncMode.INCREMENTAL,
       undefined,
-      {project: projectNames[0]}
+      {project: 'proj1'},
+      {lastCreatedOn: WATERMARK}
     );
+
     const releases = [];
     for await (const release of releaseIter) {
       releases.push(release);
     }
 
-    expect(fnReleasesFunc).toHaveBeenCalledTimes(2);
-    expect(releases).toStrictEqual(readTestResourceFile('releases.json'));
+    mock.done();
+
+    expect(releases).toStrictEqual(releasesResource);
   });
 });
+
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
+function readTestResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+}

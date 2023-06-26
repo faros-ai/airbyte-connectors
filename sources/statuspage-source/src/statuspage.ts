@@ -3,7 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Incident, Page, User} from './types';
+import {Component, ComponentGroup, Incident, Page, User} from './types';
 
 const BASE_URL = 'https://api.statuspage.io/v1/';
 const DEFAULT_MAX_RETRIES = 3;
@@ -176,6 +176,24 @@ export class Statuspage {
       }
     } else {
       this.logger.warn('Org_id not provided. Cannot fetch Statuspage users.');
+    }
+  }
+
+  async *getComponents(pageId: string): AsyncGenerator<Component> {
+    for await (const component of this.paginate<Component>(
+      `/pages/${pageId}/components`,
+      'per_page'
+    )) {
+      yield component;
+    }
+  }
+
+  async *getComponentGroups(pageId: string): AsyncGenerator<ComponentGroup> {
+    for await (const group of this.paginate<ComponentGroup>(
+      `/pages/${pageId}/component-groups`,
+      'per_page'
+    )) {
+      yield group;
     }
   }
 }
