@@ -32,6 +32,9 @@ describe('index', () => {
   const mockGetProject = jest.fn();
   const mockGetTask = jest.fn();
   const mockGetProjectDeploymentProcess = jest.fn();
+  const mockGetVariableSet = jest
+    .fn()
+    .mockResolvedValue(readTestResourceFile('variable_set.json'));
   const mockOctopusClient = {
     listSpaces: mockListSpaces,
     listDeployments: mockListDeployments,
@@ -40,10 +43,19 @@ describe('index', () => {
     getProject: mockGetProject,
     getTask: mockGetTask,
     getProjectDeploymentProcess: mockGetProjectDeploymentProcess,
+    getVariableSet: mockGetVariableSet,
   } as any;
 
   beforeAll(async () => {
-    const octopus = new Octopus(mockOctopusClient, logger, undefined, 1, true);
+    const variableNames = ['Name1'];
+    const octopus = new Octopus(
+      mockOctopusClient,
+      logger,
+      undefined,
+      variableNames,
+      1,
+      true
+    );
     await octopus.initialize(['Default']);
     Octopus.instance = jest.fn().mockImplementation(() => {
       return Promise.resolve(octopus);

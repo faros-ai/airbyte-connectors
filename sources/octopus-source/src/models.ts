@@ -6,6 +6,7 @@ import {
   DeploymentAction as OctopusDeploymentAction,
   DeploymentProcess as OctopusDeploymentProcess,
   DeploymentStep as OctopusDeploymentStep,
+  DeploymentVariable,
   ListArgs,
   Release as OctopusRelease,
   ResourceCollection,
@@ -27,6 +28,7 @@ export interface Deployment extends OctopusDeployment {
     readonly CompletedTime: string;
   };
   readonly Process?: DeploymentProcess;
+  readonly Variables?: DeploymentVariable[];
 }
 
 export interface Release extends OctopusRelease {
