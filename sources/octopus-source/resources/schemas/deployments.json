@@ -63,99 +63,97 @@
     "Created": {
       "type": "string"
     },
-    "_extra": {
-      "SpaceName": {
-        "type": "string"
-      },
-      "ProjectName": {
-        "type": "string"
-      },
-      "EnvironmentName": {
-        "type": "string"
-      },
-      "Task": {
-        "type": "object",
-        "properties": {
-          "State": {
-            "type": "string"
-          },
-          "ErrorMessage": {
-            "type": "string"
-          },
-          "QueueTime": {
-            "type": "string"
-          },
-          "StartTime": {
-            "type": "string"
-          },
-          "CompletedTime": {
-            "type": "string"
-          }
+    "SpaceName": {
+      "type": "string"
+    },
+    "ProjectName": {
+      "type": "string"
+    },
+    "EnvironmentName": {
+      "type": "string"
+    },
+    "Task": {
+      "type": "object",
+      "properties": {
+        "State": {
+          "type": "string"
+        },
+        "ErrorMessage": {
+          "type": "string"
+        },
+        "QueueTime": {
+          "type": "string"
+        },
+        "StartTime": {
+          "type": "string"
+        },
+        "CompletedTime": {
+          "type": "string"
         }
-      },
-      "Process": {
-        "type": "object",
-        "properties": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "Name": {
-                "type": "string"
-              },
-              "Properties": {
-                "type": "object"
-              },
-              "Actions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "Name": {
-                      "type": "string"
-                    },
-                    "Properties": {
-                      "type": "object"
-                    }
+      }
+    },
+    "Process": {
+      "type": "object",
+      "properties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            },
+            "Properties": {
+              "type": "object"
+            },
+            "Actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Properties": {
+                    "type": "object"
                   }
                 }
               }
             }
           }
         }
-      },
-      "Variables": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "Id": {
-              "type": "string"
-            },
-            "Name": {
-              "type": "string"
-            },
-            "Value": {
-              "type": "string"
-            },
-            "Description": {
-              "type": "string"
-            },
-            "Scope": {
-              "type": "object"
-            },
-            "IsEditable": {
-              "type": "boolean"
-            },
-            "Prompt": {
-              "type": "object"
-            },
-            "Type": {
-              "type": "string"
-            },
-            "IsSensitive": {
-              "type": "boolean"
-            }
+      }
+    },
+    "Variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Value": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string"
+          },
+          "Scope": {
+            "type": "object"
+          },
+          "IsEditable": {
+            "type": "boolean"
+          },
+          "Prompt": {
+            "type": "object"
+          },
+          "Type": {
+            "type": "string"
+          },
+          "IsSensitive": {
+            "type": "boolean"
           }
         }
       }
