@@ -38,13 +38,13 @@
       "page_size": {
         "type": "number",
         "title": "Page Size",
-        "description": "The page size to use when paginating Octopus resources.",
+        "description": "The page size to use when paginating TestRails resources.",
         "default": 250
       },
       "max_retries": {
         "type": "number",
         "title": "Max Retries",
-        "description": "The maximum number of times to retry requests to Octopus.",
+        "description": "The maximum number of times to retry requests to TestRails.",
         "default": 3
       },
       "timeout": {
@@ -57,7 +57,7 @@
       "reject_unauthorized": {
         "type": "boolean",
         "title": "Reject Unauthorized",
-        "description": "Enable certificate validation for the Octopus server.",
+        "description": "Enable certificate validation for the TestRails server.",
         "default": true
       },
       "before": {
