@@ -195,8 +195,13 @@ export class Octopus {
     spaceId: string,
     variableSetId: string
   ): Promise<DeploymentVariable[] | undefined> {
-    const variables = await this.client.getVariableSet(spaceId, variableSetId);
-    return variables?.filter((item) => this.variableNameSet.has(item.Name));
+    if (this.variableNameSet.size > 0) {
+      const variables = await this.client.getVariableSet(
+        spaceId,
+        variableSetId
+      );
+      return variables?.filter((item) => this.variableNameSet.has(item.Name));
+    }
   }
 
   private async getDeploymentProcess(
