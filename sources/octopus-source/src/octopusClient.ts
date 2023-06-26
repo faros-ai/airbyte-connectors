@@ -18,10 +18,12 @@ import {
   Deployment as OctopusDeployment,
   DeploymentEnvironment as OctopusDeploymentEnvironment,
   DeploymentProcess as OctopusDeploymentProcess,
+  DeploymentVariable as OctopusDeploymentVariable,
   Project as OctopusProject,
   Release as OctopusRelease,
   ServerTask as OctopusServerTask,
   Space as OctopusSpace,
+  VariableSetResponse,
 } from './octopusModels';
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -140,6 +142,20 @@ export class OctopusClient {
         `/deploymentprocesses/${deploymentProcessId}`
       );
       return cleanProcess(process);
+    } catch (err: any) {
+      return undefined;
+    }
+  }
+
+  async getVariableSet(
+    spaceId: string,
+    variableSetId: string
+  ): Promise<OctopusDeploymentVariable[] | undefined> {
+    try {
+      const res: VariableSetResponse = await this.get<VariableSetResponse>(
+        `/${spaceId}/variables/${variableSetId}`
+      );
+      return res.Variables;
     } catch (err: any) {
       return undefined;
     }

@@ -25,6 +25,14 @@
           "type": "string"
         }
       },
+      "variable_names": {
+        "type": "array",
+        "title": "Octopus Deployment Variable to Sync",
+        "description": "The Octopus Deployment Variables to sync.",
+        "items": {
+          "type": "string"
+        }
+      },
       "fetch_deployment_process": {
         "type": "boolean",
         "title": "Fetch Deployment Process",

@@ -359,3 +359,40 @@ export interface Release {
   readonly LastModifiedOn: object;
   readonly Link: object;
 }
+
+export interface VariableScope {
+  // Note: For all, length of list is almost always 1
+  Action?: string[];
+  Environment?: string[];
+  Role?: string[];
+  TargetRole?: string[];
+  Project?: string[];
+  // Note length of list is usually 1 with a string in bool format like "True"
+  User?: string[];
+  Machine?: string[];
+  // Note length of list is also usually 1 with a string in bool format like "True"
+  Private?: string[];
+}
+
+export interface VariablePrompt {
+  Label: string;
+  Description: string;
+  Required: boolean;
+  DisplaySettings: any;
+}
+
+export interface DeploymentVariable {
+  Id: string | null;
+  Name: string | null;
+  Value: string | null;
+  Description: string | null;
+  Scope: VariableScope;
+  IsEditable: boolean;
+  Prompt: VariablePrompt | null;
+  Type: string | null;
+  IsSensitive: boolean;
+}
+
+export interface VariableSetResponse {
+  Variables: DeploymentVariable[];
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "Id": "abcd-1234",
+    "Name": "Name1",
+    "Value": "#{Value1}",
+    "Description": null,
+    "Scope": {},
+    "IsEditable": false,
+    "Prompt": null,
+    "Type": "String",
+    "IsSensitive": false
+  },
+  {
+    "Id": "bcde-1234",
+    "Name": "Name2",
+    "Value": "#{Value1}",
+    "Description": null,
+    "Scope": {},
+    "IsEditable": false,
+    "Prompt": null,
+    "Type": "String",
+    "IsSensitive": false
+  }
+]
