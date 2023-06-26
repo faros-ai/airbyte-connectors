@@ -157,6 +157,10 @@ export class OctopusClient {
       );
       return res.Variables;
     } catch (err: any) {
+      this.logger?.warn(
+        err,
+        `Could not retrieve variable set: ${variableSetId}.`
+      );
       return undefined;
     }
   }

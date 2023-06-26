@@ -27,8 +27,8 @@
       },
       "variable_names": {
         "type": "array",
-        "title": "Octopus Deployment Variable to Sync",
-        "description": "The Octopus Deployment Variables to sync.",
+        "title": "Octopus Deployment Variables to Sync",
+        "description": "The names of the Octopus deployment variables you would like to sync. Will retrieve variable values regardless of sensitivity.",
         "items": {
           "type": "string"
         }
