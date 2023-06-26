@@ -32,7 +32,9 @@ describe('index', () => {
   const mockGetProject = jest.fn();
   const mockGetTask = jest.fn();
   const mockGetProjectDeploymentProcess = jest.fn();
-  const mockGetVariableSet = jest.fn();
+  const mockGetVariableSet = jest
+    .fn()
+    .mockResolvedValue(readTestResourceFile('variable_set.json'));
   const mockOctopusClient = {
     listSpaces: mockListSpaces,
     listDeployments: mockListDeployments,
@@ -105,9 +107,6 @@ describe('index', () => {
     mockGetProjectDeploymentProcess.mockResolvedValue(
       readTestResourceFile('project_deployment_process.json')
     );
-    mockGetVariableSet.mockResolvedValue(
-      readTestResourceFile('variable_set.json')
-    );
 
     const source = new sut.OctopusSource(logger);
     const streams = source.streams({} as any);
@@ -141,9 +140,6 @@ describe('index', () => {
     mockGetTask.mockResolvedValueOnce(tasks[1]);
     mockGetProjectDeploymentProcess.mockResolvedValue(
       readTestResourceFile('project_deployment_process.json')
-    );
-    mockGetVariableSet.mockResolvedValue(
-      readTestResourceFile('variable_set.json')
     );
 
     const source = new sut.OctopusSource(logger);
