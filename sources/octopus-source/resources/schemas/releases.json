@@ -44,13 +44,11 @@
     "Link": {
       "type": "object"
     },
-    "_extra": {
       "SpaceName": {
         "type": "string"
       },
       "ProjectName": {
         "type": "string"
       }
-    }
   }
 }
