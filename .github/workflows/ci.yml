@@ -74,6 +74,13 @@ jobs:
               ./scripts/source-acceptance-test.sh $source
             fi
           done
+      - name: Destination packaging test
+        run: |
+          cd destinations/airbyte-faros-destination && \
+          cat package.json | jq --arg V "${{ env.TAG_VERSION }}" '(.dependencies."faros-airbyte-cdk",.dependencies."faros-airbyte-common") = $V' > package.tmp && \
+          mv package.tmp package.json && \
+          npm i && \
+          npm version ${{ env.TAG_VERSION }}
 
       - name: Stop Jenkins server
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }} # Skip PRs
