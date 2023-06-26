@@ -123,6 +123,43 @@
             }
           }
         }
+      },
+      "Variables": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "type": "string"
+              },
+              "Name": {
+                "type": "string"
+              },
+              "Value": {
+                "type": "string"
+              },
+              "Description": {
+                "type": "string"
+              },
+              "Scope": {
+                "type": "object"
+              },
+              "IsEditable": {
+                "type": "boolean"
+              },
+              "Prompt": {
+                "type": "object"
+              },
+              "Type": {
+                "type": "string"
+              },
+              "IsSensitive": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
       }
     }
   }
