@@ -29,9 +29,9 @@ export class Octopus {
   private variableNameSet: Set<string>;
   constructor(
     private readonly client: OctopusClient,
-    variableNames: string[] = [],
     private readonly logger: AirbyteLogger,
     cutoffDays?: number,
+    variableNames: string[] = [],
     private readonly lookBackDepth = 10,
     private readonly fetchDeploymentProcess = false
   ) {
@@ -67,9 +67,9 @@ export class Octopus {
 
     Octopus.inst = new Octopus(
       client,
-      config.variable_names,
       logger,
       config.cutoff_days,
+      config.variable_names,
       config.look_back_depth,
       config.fetch_deployment_process
     );

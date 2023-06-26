@@ -48,9 +48,9 @@ describe('index', () => {
     const variableNames = ['Name1'];
     const octopus = new Octopus(
       mockOctopusClient,
-      variableNames,
       logger,
       undefined,
+      variableNames,
       1,
       true
     );
