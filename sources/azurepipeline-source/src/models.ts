@@ -45,7 +45,6 @@ export interface Pipeline {
   url?: string;
   folder?: string;
   _links: PipelineLink;
-  runs: Run[];
 }
 
 export interface PipelineResponse {

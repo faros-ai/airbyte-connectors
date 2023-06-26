@@ -44,7 +44,7 @@ jobs:
         run: npm --version
 
       - name: Install Lerna
-        run: npm install -g lerna
+        run: npm install -g lerna @lerna/legacy-package-management
 
       - name: Reformat package-lock.json
         run: lerna bootstrap --hoist --no-ci

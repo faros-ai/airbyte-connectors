@@ -8,6 +8,7 @@ import {
   AirbyteLogger,
   AirbyteMessageType,
   AirbyteRecord,
+  AirbyteSourceErrorStatus,
   AirbyteSpec,
   AirbyteStateMessage,
   DestinationSyncMode,
@@ -488,7 +489,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           async () =>
             await graphQLClient.resetData(
               origin,
-              Array.from(streamContext.resetModels)
+              Array.from(streamContext.resetModels),
+              this.edition === Edition.COMMUNITY
             )
         )) {
           await graphQLClient.flush();
@@ -607,6 +609,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       terminal: stdin.isTTY,
     });
     try {
+      let sourceFailed: AirbyteSourceErrorStatus = undefined;
       // Process input & write records
       for await (const line of input) {
         let stateMessage: AirbyteStateMessage = undefined;
@@ -616,7 +619,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
-            stateMessage = msg as AirbyteStateMessage;
+            const message = msg as AirbyteStateMessage;
+            if (message.sourceStatus?.status === 'ERRORED') {
+              this.logger.error(
+                'Airbyte Source has failed: ' + message.sourceStatus.error
+              );
+              sourceFailed = message.sourceStatus;
+            } else {
+              stateMessage = message;
+            }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
@@ -706,7 +717,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
-      await resetData?.();
+      if (sourceFailed) {
+        this.logger.error(
+          'Skipping reset of non-incremental models due to' +
+            ` Airbyte Source failure: ${sourceFailed.error}`
+        );
+      } else {
+        await resetData?.();
+      }
+
       // Don't forget to close the writer
       await writer?.end();
     } finally {

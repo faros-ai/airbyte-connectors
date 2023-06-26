@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosGraphSchema} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
 
 import {Edition} from '../../common/types';
 import {
@@ -9,6 +10,37 @@ import {
   StreamContext,
 } from '../converter';
 import {ALL_MODEL_NAMES} from './model_names';
+
+interface FarosFeedsRecord {
+  id: number;
+  record?: Dictionary<any>;
+}
+
+interface ModelRecord {
+  model: string;
+  rec: Dictionary<any>;
+}
+
+function isFarosFeedsRecord(data: Dictionary<any>): data is FarosFeedsRecord {
+  return (
+    'id' in data &&
+    data.record &&
+    typeof data.record === 'object' &&
+    Object.keys(data.record).length === 1
+  );
+}
+
+function getModelRecord(data: Dictionary<any>): ModelRecord | undefined {
+  if (isFarosFeedsRecord(data)) {
+    const [model, rec] = Object.entries(data.record).pop();
+    return {model, rec};
+  } else if (Object.keys(data).length === 1) {
+    // support previous farosai/airbyte-faros-feeds-source versions
+    const [model, rec] = Object.entries(data).pop();
+    return {model, rec};
+  }
+  return undefined;
+}
 
 export class FarosFeed extends Converter {
   source = 'Faros-Feeds';
@@ -34,9 +66,10 @@ export class FarosFeed extends Converter {
     const data = record.record.data;
 
     if (data.state) return [];
-    if (Object.keys(data).length != 1) return [];
 
-    const [model, rec] = Object.entries(data).pop();
+    const modelRecord = getModelRecord(data);
+    if (!modelRecord) return [];
+    const {model, rec} = modelRecord;
 
     if (
       ctx.config.edition_configs.edition === Edition.COMMUNITY ||
