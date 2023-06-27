@@ -118,5 +118,46 @@ jobs:
 
       - name: Test
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: '--max-old-space-size=4096'
         run: lerna run test-cov
+
+  test-packaging:
+    if: ${{ github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch' }} # Only on PRs
+    name: Packaging Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FORCE_COLOR: true
+      HUSKY_SKIP_INSTALL: 1
+      HUSKY_SKIP_HOOKS: 1
+      HUSKY: 0
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+
+      - name: Test Airbyte CDK package
+        run: |
+          cd faros-airbyte-cdk && \
+          npm i && \
+          npm publish --dry-run
+
+      - name: Test Airbyte Common package
+        run: |
+          cd faros-airbyte-common && \
+          npm i && \
+          npm publish --dry-run
+
+      - name: Test Faros Destination package
+        run: |
+          cd destinations/airbyte-faros-destination && \
+          npm i && \
+          npm publish --dry-run
