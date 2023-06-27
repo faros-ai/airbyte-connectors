@@ -148,19 +148,16 @@ jobs:
         run: |
           cd faros-airbyte-cdk && \
           npm i && \
-          npm version 0.0.1 && \
           npm publish --dry-run
 
       - name: Test Airbyte Common package
         run: |
           cd faros-airbyte-common && \
           npm i && \
-          npm version 0.0.1 && \
           npm publish --dry-run
 
       - name: Test Faros Destination package
         run: |
           cd destinations/airbyte-faros-destination && \
           npm i && \
-          npm version 0.0.1 && \
           npm publish --dry-run
