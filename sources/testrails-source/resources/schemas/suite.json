@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {"type": "number"},
+    "project_id": {"type": "number"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "is_master": {"type": "boolean"},
+    "is_baseline": {"type": "boolean"},
+    "is_completed": {"type": "boolean"}
+  }
+}

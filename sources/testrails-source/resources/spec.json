@@ -1,0 +1,77 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TestRails Spec",
+    "type": "object",
+    "required": ["username", "api_key", "instance_url"],
+    "additionalProperties": true,
+    "properties": {
+      "username": {
+        "type": "string",
+        "title": "TestRails Username"
+      },
+      "api_key": {
+        "type": "string",
+        "title": "Test Rails API Key",
+        "airbyte_secret": true
+      },
+      "instance_url": {
+        "type": "string",
+        "title": "TestRails Instance URL",
+        "examples": ["https://example.testrail.com"]
+      },
+      "project_names": {
+        "type": "string",
+        "title": "TestRails Projects to Sync",
+        "description": "If no Projects provided, all Projects will be synced.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "type": "number",
+        "title": "Cutoff Days",
+        "description": "The number of days of data to sync from TestRails.",
+        "default": 90
+      },
+      "page_size": {
+        "type": "number",
+        "title": "Page Size",
+        "description": "The page size to use when paginating TestRails resources.",
+        "default": 250
+      },
+      "max_retries": {
+        "type": "number",
+        "title": "Max Retries",
+        "description": "The maximum number of times to retry requests to TestRails.",
+        "default": 3
+      },
+      "timeout": {
+        "type": "number",
+        "title": "Timeout",
+        "description": "Request timeout in milliseconds",
+        "minimum": 1000,
+        "default": 30000
+      },
+      "reject_unauthorized": {
+        "type": "boolean",
+        "title": "Reject Unauthorized",
+        "description": "Enable certificate validation for the TestRails server.",
+        "default": true
+      },
+      "before": {
+        "type": "string",
+        "title": "Sync to Date",
+        "examples": ["2023-06-20"],
+        "description": "Only data from before this date will be considered."
+      },
+      "after": {
+        "type": "string",
+        "title": "Sync from Date",
+        "examples": ["2023-06-20"],
+        "description": "Only data from after this date will be considered. If not provided, Cutoff Days will be used to compute this threshold."
+      }
+    }
+  }
+}

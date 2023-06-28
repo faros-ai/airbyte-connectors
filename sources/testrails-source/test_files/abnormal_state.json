@@ -1,0 +1,12 @@
+{
+  "suites": {},
+  "runs":{
+    "bad": 1234
+  },
+  "results":{
+    "bad": 1234
+  },
+  "cases":{
+    "bad": 1234
+  }
+}

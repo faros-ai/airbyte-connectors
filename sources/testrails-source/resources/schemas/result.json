@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {"type": "number"},
+    "test_id": {"type": "number"},
+    "comment": {"type": "string"},
+    "version": {"type": "string"},
+    "defects": {"type": "string"},
+    "status_id": {"type": "number"},
+    "created_on": {"type": "number"},
+    "elapsed": {"type": "string"},
+    "project_id": {"type": "number"},
+    "suite_id": {"type": "number"},
+    "case_id": {"type": "number"},
+    "run_id": {"type": "number"},
+    "status": {"type": "string"}
+  }
+}

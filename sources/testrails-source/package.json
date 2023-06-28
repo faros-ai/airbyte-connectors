@@ -1,12 +1,12 @@
 {
-  "name": "octopus-source",
+  "name": "testrails-source",
   "version": "0.0.1",
-  "description": "Octopus source",
+  "description": "TestRails source",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "octopus"
+    "testrails"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",

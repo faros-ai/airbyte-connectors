@@ -104,3 +104,6 @@ export const notionAllStreamsLog = readTestResourceFile(
 export const octopusAllStreamsLog = readTestResourceFile(
   'octopus/all-streams.log'
 );
+export const testrailsAllStreamsLog = readTestResourceFile(
+  'testrails/all-streams.log'
+);

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {"type": "number"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "suite_id": {"type": "number"},
+    "passed_count": {"type": "number"},
+    "failed_count": {"type": "number"},
+    "blocked_count": {"type": "number"},
+    "retest_count": {"type": "number"},
+    "untested_count": {"type": "number"},
+    "created_on": {"type": "number"},
+    "completed_on": {"type": "number"},
+    "included_all": {"type": "boolean"},
+    "plan_id": {"type": "number"},
+    "milestone_id": {"type": "number"},
+    "config": {"type": "string"},
+    "config_ids": {"type": "array", "items": {"type": "number"}},
+    "refs": {"type": "string"},
+    "custom_status1_count": {"type": "number"},
+    "custom_status2_count": {"type": "number"},
+    "custom_status3_count": {"type": "number"},
+    "custom_status4_count": {"type": "number"},
+    "custom_status5_count": {"type": "number"},
+    "custom_status6_count": {"type": "number"},
+    "custom_status7_count": {"type": "number"},
+    "project_id": {"type": "number"},
+    "milestone": {"type": "string"}
+  }
+}

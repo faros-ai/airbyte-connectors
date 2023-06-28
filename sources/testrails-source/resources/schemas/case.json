@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {"type": "number"},
+    "title": {"type": "string"},
+    "section_id": {"type": "number"},
+    "template_id": {"type": "number"},
+    "type_id": {"type": "number"},
+    "priority_id": {"type": "number"},
+    "milestone_id": {"type": "number"},
+    "refs": {"type": "string"},
+    "created_by": {"type": "number"},
+    "created_on": {"type": "number"},
+    "updated_by": {"type": "number"},
+    "updated_on": {"type": "number"},
+    "estimate": {"type": "string"},
+    "estimate_forecast": {"type": "string"},
+    "suite_id": {"type": "number"},
+    "custom_preconds": {"type": "string"},
+    "custom_steps": {"type": "string"},
+    "custom_expected": {"type": "string"},
+    "project_id": {"type": "number"},
+    "type": {"type": "string"},
+    "milestone": {"type": "string"}
+  }
+}

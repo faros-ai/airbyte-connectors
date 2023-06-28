@@ -18,5 +18,6 @@ phabricator-source
 semaphoreci-source
 servicenow-source
 squadcast-source
+testrails-source
 victorops-source
 workday-source
