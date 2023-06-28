@@ -4,7 +4,7 @@ import {
   TestRailsCase,
   TestRailsResult,
   TestRailsRun,
-} from './testrails/testRailsModels';
+} from './testrails/testrails-models';
 
 export interface TimeWindow {
   before?: DateTime;

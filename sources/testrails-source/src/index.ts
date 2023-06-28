@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Cases, Results, Runs, Suites} from './streams';
-import {TestRails, TestRailsConfig} from './testrails/testRails';
+import {TestRails, TestRailsConfig} from './testrails/testrails';
 
 /** The main entry point. */
 export function mainCommand(): Command {

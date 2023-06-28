@@ -7,7 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Suite} from '../models';
-import {TestRails, TestRailsConfig} from '../testrails/testRails';
+import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
 export class Suites extends AirbyteStreamBase {
   constructor(

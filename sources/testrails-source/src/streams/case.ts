@@ -7,7 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Case} from '../models';
-import {TestRails, TestRailsConfig} from '../testrails/testRails';
+import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
 export interface CaseState {
   updated_after: number;

@@ -3,7 +3,7 @@ import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import {Case, Result, Run, Suite, TimeWindow} from '../models';
-import {TestRailsClient} from './testRailsClient';
+import {TestRailsClient} from './testrails-client';
 
 const DEFAULT_CUTOFF_DAYS = 90;
 

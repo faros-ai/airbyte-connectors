@@ -7,7 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Result} from '../models';
-import {TestRails, TestRailsConfig} from '../testrails/testRails';
+import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
 export interface ResultState {
   created_after: number;

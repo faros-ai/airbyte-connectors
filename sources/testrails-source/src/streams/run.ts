@@ -7,7 +7,7 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Run} from '../models';
-import {TestRails, TestRailsConfig} from '../testrails/testRails';
+import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
 export interface RunState {
   created_after: number;

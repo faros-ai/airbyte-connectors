@@ -21,7 +21,7 @@ import {
   TestRailsStatus,
   TestRailsSuite,
   TestRailsTest,
-} from './testRailsModels';
+} from './testrails-models';
 
 const DEFAULT_PAGE_SIZE = 250;
 const DEFAULT_TIMEOUT = 30_000;
