@@ -45,7 +45,7 @@
     "graphql": "^16.3.0",
     "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.5",
-    "object-sizeof": "^1.6.1",
+    "object-sizeof": "^2.6.1",
     "toposort": "^2.0.2",
     "traverse": "^0.6.6",
     "turndown": "^7.1.1",
