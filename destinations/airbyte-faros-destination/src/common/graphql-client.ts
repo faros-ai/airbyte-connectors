@@ -53,6 +53,7 @@ interface WriteOp {
 interface UpsertOp {
   readonly query: any;
   readonly upsertsByKey: Map<string, Upsert[]>;
+  readonly isRoot: boolean;
 }
 
 export interface Upsert {
@@ -434,7 +435,7 @@ export class GraphQLClient {
       );
       upserts.forEach((u) => (u.id = obj.id));
 
-      if (this.updateResetLimit) {
+      if (this.updateResetLimit && op.isRoot) {
         const recordRefreshedAtMs = new Date(obj.refreshedAt).getTime();
         this.resetLimitMillis = Math.min(
           recordRefreshedAtMs,
@@ -844,6 +845,7 @@ export class GraphQLClient {
       return {
         query: mutation,
         upsertsByKey,
+        isRoot,
       };
     });
   }
@@ -888,7 +890,7 @@ export class GraphQLClient {
     updateFieldMask?: Set<string>
   ): ConflictClause {
     const updateColumns = nested
-      ? ['refreshedAt']
+      ? []
       : difference(
           Object.keys(this.schema.scalars[model]),
           this.schema.primaryKeys[model]
