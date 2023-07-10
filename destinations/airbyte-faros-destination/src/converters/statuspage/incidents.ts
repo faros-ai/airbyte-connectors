@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {Common} from '../common/common';
 import {
   DestinationModel,
   DestinationRecord,
@@ -45,6 +44,7 @@ export class Incidents extends StatuspageConverter {
 
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
+    const startedAt = Utils.toDate(incident.started_at);
 
     let acknowledgedAt = Utils.toDate(incident.created_at); // Statuspage doesn't have "triggered" semantic status
     const resolvedAt = incident.resolved_at
@@ -135,6 +135,7 @@ export class Incidents extends StatuspageConverter {
         description: incident.postmortem_body,
         url: incident.shortlink,
         createdAt,
+        startedAt,
         updatedAt,
         acknowledgedAt,
         resolvedAt,
