@@ -44,7 +44,9 @@ export class Incidents extends StatuspageConverter {
 
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
-    const startedAt = Utils.toDate(incident.started_at);
+    const startedAt = incident.started_at
+      ? Utils.toDate(incident.started_at)
+      : undefined;
 
     let acknowledgedAt = Utils.toDate(incident.created_at); // Statuspage doesn't have "triggered" semantic status
     const resolvedAt = incident.resolved_at
