@@ -147,7 +147,7 @@ jobs:
       - name: Test Airbyte CDK package
         run: |
           cd faros-airbyte-cdk && \
-          npm  --dry-run
+          npm publish --dry-run
 
       - name: Test Airbyte Common package
         run: |
