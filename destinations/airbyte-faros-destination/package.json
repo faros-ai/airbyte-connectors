@@ -69,6 +69,10 @@
       "ts-jest": {
         "tsconfig": "test/tsconfig.json"
       }
+    },
+    "snapshotFormat": {
+      "printBasicPrototype": true,
+      "escapeString": true
     }
   }
 }
