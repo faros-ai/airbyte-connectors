@@ -6,7 +6,7 @@ import {OrgKey, RepoKey, UserKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
 export abstract class BitbucketServerConverter extends Converter {
-  source = 'Bitbucket-Server';
+  source = 'Bitbucket';
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

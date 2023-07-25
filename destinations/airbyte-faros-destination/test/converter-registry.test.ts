@@ -40,18 +40,24 @@ describe('converter registry', () => {
 
   test('load all converters', async () => {
     const streams = listStreams('src/converters');
-
+    let converterCount = 0;
     for (const stream of streams) {
       const converter = sut.getConverter(stream);
 
       if (converter && converter.convert) {
+        converterCount++;
         const streamName = converter.streamName.asString.toLowerCase();
-
-        expect(streamName).toBe(stream.asString.toLowerCase());
+        const expectedStream =
+          stream.source === 'bitbucket-server'
+            ? // special case since both bitbucket-server and bitbucket converters have the same source of 'bitbucket'
+              new StreamName('bitbucket', stream.name)
+            : stream;
+        expect(streamName).toBe(expectedStream.asString.toLowerCase());
         expect(converter.dependencies.length).toBeGreaterThanOrEqual(0);
         expect(converter.destinationModels.length).toBeGreaterThanOrEqual(0);
       }
     }
+    expect(converterCount).toBeGreaterThan(0);
   });
 
   test('not fail on non-existent converter', async () => {
@@ -71,9 +77,11 @@ describe('converter registry', () => {
     class CustomConverter extends Converter {
       source = 'Custom';
       destinationModels = ['test_Model'];
+
       id(record: AirbyteRecord): string {
         return record.record.data.id;
       }
+
       async convert(
         record: AirbyteRecord
       ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -89,6 +97,7 @@ describe('converter registry', () => {
         ];
       }
     }
+
     const converter = new CustomConverter();
     sut.addConverter(converter);
     const res = sut.getConverter(converter.streamName);
@@ -107,12 +116,15 @@ describe('converter registry', () => {
       foo: string;
       bar: number;
     }
+
     class CustomConverter extends ConverterTyped<FooBar> {
       source = 'Custom';
       destinationModels = ['test_Model'];
+
       id(record: AirbyteRecord): string {
         return record.record.data.id;
       }
+
       async convert(
         record: AirbyteRecord
       ): Promise<ReadonlyArray<DestinationRecordTyped<FooBar>>> {
@@ -128,6 +140,7 @@ describe('converter registry', () => {
         ];
       }
     }
+
     const converter = new CustomConverter();
     sut.addConverter(converter);
     const res = sut.getConverter(converter.streamName);
