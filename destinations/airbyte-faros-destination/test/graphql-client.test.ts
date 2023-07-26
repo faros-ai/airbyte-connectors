@@ -569,7 +569,7 @@ describe('graphql-client write batch upsert', () => {
     const updateRecord: UpdateRecord = {
       operation: Operation.UPDATE,
       model: 'vcs_PullRequest',
-      origin: 'my-origin',
+      origin: 'my-transform-origin',
       at: 1683125806803,
       where: {
         number: 2,
