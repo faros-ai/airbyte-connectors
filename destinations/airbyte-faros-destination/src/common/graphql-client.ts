@@ -509,7 +509,8 @@ export class GraphQLClient {
     const obj = this.createMutationObject(
       record.model,
       upsertRec,
-      record.origin
+      record.origin,
+      true
     );
     const mutation = {
       [`insert_${record.model}_one`]: {__args: obj, id: true},
@@ -670,6 +671,7 @@ export class GraphQLClient {
     model: string,
     record: Dictionary<any>,
     origin?: string,
+    keepExistingOrigin?: boolean,
     nested?: boolean
   ): {
     data?: Dictionary<any>;
@@ -686,6 +688,7 @@ export class GraphQLClient {
           nestedModel.model,
           value,
           undefined,
+          keepExistingOrigin,
           true
         );
       } else {
@@ -696,13 +699,13 @@ export class GraphQLClient {
     if (origin) {
       obj['origin'] = origin;
     }
+    const updateFieldMask = new Set(Object.keys(obj).concat(foreignKeys));
+    if (keepExistingOrigin) {
+      updateFieldMask.delete('origin');
+    }
     return {
       [nested ? 'data' : 'object']: obj,
-      on_conflict: this.createConflictClause(
-        model,
-        nested,
-        new Set(Object.keys(obj).concat(foreignKeys))
-      ),
+      on_conflict: this.createConflictClause(model, nested, updateFieldMask),
     };
   }
 
