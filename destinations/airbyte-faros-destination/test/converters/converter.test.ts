@@ -70,6 +70,8 @@ describe('converter', () => {
     );
     testFn('source__stream', 'source', 'stream');
     testFn('origin__source__stream', 'source', 'stream');
+    testFn('source__stream_c', 'source', 'stream_c');
+    testFn('origin__source__stream_c', 'source', 'stream_c');
     testFn('source__stream__c', 'source', 'stream__c');
     testFn('origin__source__stream__c', 'source', 'stream__c');
     testFn('origin__source__Stream__c', 'source', 'Stream__c');
