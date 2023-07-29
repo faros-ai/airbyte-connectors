@@ -78,5 +78,8 @@ describe('converter', () => {
     expect(StreamName.fromString('origin__source__Stream__c')).toEqual(
       new StreamName('source', 'Stream__c')
     );
+    expect(StreamName.fromString('origin__source__stream__stream__c')).toEqual(
+      new StreamName('source', 'stream__stream__c')
+    );
   });
 });

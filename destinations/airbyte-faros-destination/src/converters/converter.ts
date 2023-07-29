@@ -165,7 +165,7 @@ export class StreamName {
 
 // Node.js string.split(sep, limit) truncates the result array to limit length
 // We want Java string.split() behavior
-// exported only for tests
+// Exported only for tests
 export function splitWithLimit(str: string, separator: string, limit: number) {
   const parts = str.split(separator);
   if (parts.length <= limit) return parts;
