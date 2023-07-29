@@ -5,6 +5,8 @@ import {Converter, StreamContext} from '../../src';
 import {
   DestinationModel,
   DestinationRecordTyped,
+  splitWithLimit,
+  StreamName,
 } from '../../src/converters/converter';
 
 describe('converter', () => {
@@ -48,5 +50,33 @@ describe('converter', () => {
     expect(ctx.get(stream, 'id1')).toEqual(record);
     expect(ctx.get(stream, 'id2')).toBeUndefined();
     expect(ctx.getAll(stream)).toEqual({id1: record});
+  });
+
+  test('split strings with limit', () => {
+    expect(splitWithLimit('a', '-', 1)).toEqual(['a']);
+    expect(splitWithLimit('a-b', '-', 1)).toEqual(['a-b']);
+    expect(splitWithLimit('a-b', '-', 2)).toEqual(['a', 'b']);
+    expect(splitWithLimit('a-b-c-d-e', '-', 3)).toEqual(['a', 'b', 'c-d-e']);
+  });
+
+  test('parse stream names from records', () => {
+    expect(() => StreamName.fromString('stream')).toThrow(
+      /missing source prefix/
+    );
+    expect(StreamName.fromString('source__stream')).toEqual(
+      new StreamName('source', 'stream')
+    );
+    expect(StreamName.fromString('origin__source__stream')).toEqual(
+      new StreamName('source', 'stream')
+    );
+    expect(StreamName.fromString('source__stream__c')).toEqual(
+      new StreamName('source', 'stream__c')
+    );
+    expect(StreamName.fromString('origin__source__stream__c')).toEqual(
+      new StreamName('source', 'stream__c')
+    );
+    expect(StreamName.fromString('origin__source__Stream__c')).toEqual(
+      new StreamName('source', 'Stream__c')
+    );
   });
 });
