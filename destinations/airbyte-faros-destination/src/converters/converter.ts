@@ -150,14 +150,31 @@ export class StreamName {
     if (!s) {
       throw new VError(`Empty stream name ${s}`);
     }
-    const res = s.split(StreamNameSeparator);
+    let res = s.split(StreamNameSeparator);
     if (res.length < 2) {
       throw new VError(
         `Invalid stream name ${s}: missing source prefix (e.g 'github${StreamNameSeparator}')`
       );
     }
+    if (res[res.length - 1].length < 3) {
+      res = splitWithLimit(s, StreamNameSeparator, res.length > 3 ? 3 : 2);
+    }
     return new StreamName(res[res.length - 2], res[res.length - 1]);
   }
+}
+
+// Node.js string.split(sep, limit) truncates the result array to limit length
+// We want Java string.split() behavior
+// Exported only for tests
+export function splitWithLimit(str: string, separator: string, limit: number) {
+  const parts = str.split(separator);
+  if (parts.length <= limit) return parts;
+
+  const limitedParts = parts.slice(0, limit - 1);
+  const remainder = parts.slice(limit - 1).join(separator);
+  limitedParts.push(remainder);
+
+  return limitedParts;
 }
 
 /**
