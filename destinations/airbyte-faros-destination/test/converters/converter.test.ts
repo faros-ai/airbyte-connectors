@@ -60,26 +60,19 @@ describe('converter', () => {
   });
 
   test('parse stream names from records', () => {
+    function testFn(input: string, source: string, stream: string): void {
+      expect(StreamName.fromString(input)).toEqual(
+        new StreamName(source, stream)
+      );
+    }
     expect(() => StreamName.fromString('stream')).toThrow(
       /missing source prefix/
     );
-    expect(StreamName.fromString('source__stream')).toEqual(
-      new StreamName('source', 'stream')
-    );
-    expect(StreamName.fromString('origin__source__stream')).toEqual(
-      new StreamName('source', 'stream')
-    );
-    expect(StreamName.fromString('source__stream__c')).toEqual(
-      new StreamName('source', 'stream__c')
-    );
-    expect(StreamName.fromString('origin__source__stream__c')).toEqual(
-      new StreamName('source', 'stream__c')
-    );
-    expect(StreamName.fromString('origin__source__Stream__c')).toEqual(
-      new StreamName('source', 'Stream__c')
-    );
-    expect(StreamName.fromString('origin__source__stream__stream__c')).toEqual(
-      new StreamName('source', 'stream__stream__c')
-    );
+    testFn('source__stream', 'source', 'stream');
+    testFn('origin__source__stream', 'source', 'stream');
+    testFn('source__stream__c', 'source', 'stream__c');
+    testFn('origin__source__stream__c', 'source', 'stream__c');
+    testFn('origin__source__Stream__c', 'source', 'Stream__c');
+    testFn('origin__source__stream__stream__c', 'source', 'stream__stream__c');
   });
 });
