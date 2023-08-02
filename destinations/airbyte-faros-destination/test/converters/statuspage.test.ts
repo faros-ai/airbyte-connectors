@@ -56,6 +56,7 @@ describe('statuspage', () => {
       ims_IncidentApplicationImpact: 7,
       ims_IncidentEvent: 14,
       ims_User: 1,
+      ims_ApplicationUptime: 5,
     };
 
     const processedTotal = _(processedByStream).values().sum();
