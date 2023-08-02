@@ -14,9 +14,9 @@ import {
   StatuspageConverter,
 } from './common';
 
-export class Components extends StatuspageConverter {
+export class ComponentUptimes extends StatuspageConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'ims_ApplicationAvailability',
+    'ims_ApplicationUptime',
   ];
 
   override get dependencies(): ReadonlyArray<StreamName> {
@@ -28,7 +28,11 @@ export class Components extends StatuspageConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const uptime = record.record.data as ComponentUptime;
-    const component = {id: uptime.id, name: uptime.name} as Component;
+    const component = {
+      id: uptime.id,
+      name: uptime.name,
+      page_id: uptime.page_id,
+    } as Component;
     const application = this.computeApplication(ctx, component);
     return [
       {

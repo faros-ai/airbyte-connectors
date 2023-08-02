@@ -49,6 +49,7 @@ export interface ComponentUptime {
   partial_outage: number;
   warnings: ReadonlyArray<string>;
   related_events: ReadonlyArray<{id: string}>;
+  page_id: string;
 }
 
 export enum IncidentEventTypeCategory {
