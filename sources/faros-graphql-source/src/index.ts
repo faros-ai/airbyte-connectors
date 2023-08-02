@@ -29,6 +29,7 @@ export interface GraphQLConfig extends AirbyteConfig {
   graphql_api?: GraphQLVersion;
   page_size?: number;
   query?: string;
+  models_filter?: ReadonlyArray<string>;
   result_model?: ResultModel;
   adapt_v1_query?: boolean;
   legacy_v1_schema?: string;

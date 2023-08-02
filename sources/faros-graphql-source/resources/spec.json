@@ -52,15 +52,24 @@
         "description": "The query to execute.",
         "multiline": true
       },
-      "page_size": {
+      "models_filter": {
         "order": 5,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Models filter",
+        "description": "Only query the following models and skip everything else."
+      },
+      "page_size": {
+        "order": 6,
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when paginating through query results.",
         "default": 100
       },
       "result_model": {
-        "order": 6,
+        "order": 7,
         "type": "string",
         "title": "Result model",
         "description": "Where to place each of the query results in their corresponding output records. E.g Nested - { vcs { pullRequests { nodes: [<record>] } } }, Flat - { vcs_PullRequest: <record> }",
@@ -71,14 +80,14 @@
         ]
       },
       "adapt_v1_query": {
-        "order": 7,
+        "order": 8,
         "type": "boolean",
         "title": "Adapt V1 query",
         "default": false,
         "description": "Indicate that the input query conforms to the V1 schema provided in 'Legacy V1 schema' and should be translated into V2 to query the graph. Requires the 'query' and 'Legacy V1 schema' fields to be present and the 'GraphQL API' to be V2"
       },
       "legacy_v1_schema": {
-        "order": 8,
+        "order": 9,
         "type": "string",
         "title": "Legacy V1 schema",
         "description": "Legacy V1 schema as a gzip compressed, base 64 encoded text. Only used when 'Adapt V1 query' is enabled.",
@@ -86,14 +95,14 @@
         "airbyte_secret": true
       },
       "bucket_id": {
-        "order": 9,
+        "order": 10,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of models to pull. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'. Please note that V1 graphs do not support opening multiple revisions at once, so only use buckets if writing to a V2 graph on the destination, or not writing at all.",
         "default": 1
       },
       "bucket_total": {
-        "order": 10,
+        "order": 11,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute models across. Use it when distributing the load between multiple sources. Cannot be used in combination with 'GraphQL query'. Please note that V1 graphs do not support opening multiple revisions at once, so only use buckets if writing to a V2 graph on the destination, or not writing at all.",
