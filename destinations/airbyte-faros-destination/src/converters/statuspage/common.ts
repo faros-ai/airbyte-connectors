@@ -39,6 +39,18 @@ export enum ComponentStatus {
   under_maintenance = 'under_maintenance',
 }
 
+export interface ComponentUptime {
+  id: string;
+  name: string;
+  range_start: string;
+  range_end: string;
+  uptime_percentage: number;
+  major_outage: number;
+  partial_outage: number;
+  warnings: ReadonlyArray<string>;
+  related_events: ReadonlyArray<{id: string}>;
+}
+
 export enum IncidentEventTypeCategory {
   Created = 'Created',
   Acknowledged = 'Acknowledged',
@@ -121,6 +133,11 @@ export const ComponentGroupsStream = new StreamName(
 );
 
 export const ComponentsStream = new StreamName('statuspage', 'components');
+
+export const ComponentUptimeStream = new StreamName(
+  'statuspage',
+  'component_uptimes'
+);
 
 export const PagesStream = new StreamName('statuspage', 'pages');
 

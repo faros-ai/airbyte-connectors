@@ -1,0 +1,15 @@
+{
+  "id": "uptime1",
+  "name": "component1",
+  "range_start": "2023-07-01",
+  "range_end": "2023-07-01",
+  "uptime_percentage": 99.99,
+  "major_outage": 358,
+  "partial_outage": 477,
+  "related_events": [
+    {
+      "id": "event1"
+    }
+  ],
+  "warnings": []
+}

@@ -14,6 +14,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__statuspage__component_uptimes"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__statuspage__incidents"
       },
       "destination_sync_mode": "append"
