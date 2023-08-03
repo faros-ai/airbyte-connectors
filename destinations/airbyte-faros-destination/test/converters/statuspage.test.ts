@@ -42,6 +42,7 @@ describe('statuspage', () => {
       incidents: 5,
       pages: 1,
       users: 1,
+      component_uptimes: 5,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -52,6 +53,7 @@ describe('statuspage', () => {
 
     const writtenByModel = {
       compute_Application: 6,
+      ims_ApplicationUptime: 5,
       ims_Incident: 5,
       ims_IncidentApplicationImpact: 7,
       ims_IncidentEvent: 14,

@@ -22,3 +22,4 @@ tests:
       future_state_path: "test_files/abnormal_state.json"
       cursor_paths:
         incidents: [ "mz1ms2kfwq1s", "lastUpdatedAt" ]
+        component_uptimes: [ "mz1ms2kfwq1s", "n0d3k22k3trw", "rangeEnd" ]

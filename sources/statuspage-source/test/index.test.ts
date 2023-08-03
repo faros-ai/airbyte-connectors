@@ -273,4 +273,78 @@ describe('index', () => {
     expect(fnUsersFunc).toHaveBeenCalledTimes(1);
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
+
+  test('streams - component uptimes, use full_refresh sync mode', async () => {
+    const fnComponentUptimesFunc = jest.fn();
+    const componentUptime = readTestResourceFile('component_uptime.json');
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 3);
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnComponentUptimesFunc.mockResolvedValue({
+            data: componentUptime,
+          }),
+        } as any,
+        startDate,
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const componentUptimesStream = streams[5];
+    const uptimesIter = componentUptimesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      null,
+      {pageId: 'page_id', componentId: 'component1'}
+    );
+    const componentUptimes = [];
+    for await (const uptime of uptimesIter) {
+      componentUptimes.push(uptime);
+    }
+
+    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(3);
+    expect(componentUptimes).toStrictEqual([...Array(3).fill(expectedUptime)]);
+  });
+
+  test('streams - component uptimes, use incremental sync mode', async () => {
+    const fnComponentUptimesFunc = jest.fn();
+    const componentUptime = readTestResourceFile('component_uptime.json');
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 90);
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnComponentUptimesFunc.mockResolvedValue({
+            data: componentUptime,
+          }),
+        } as any,
+        startDate,
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const rangeEnd = new Date();
+    rangeEnd.setDate(rangeEnd.getDate() - 1);
+
+    const componentUptimesStream = streams[5];
+    const uptimesIter = componentUptimesStream.readRecords(
+      SyncMode.INCREMENTAL,
+      null,
+      {pageId: 'page_id', componentId: 'component1'},
+      {page_id: {component1: {rangeEnd: rangeEnd.toISOString()}}}
+    );
+    const componentUptimes = [];
+    for await (const uptime of uptimesIter) {
+      componentUptimes.push(uptime);
+    }
+
+    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(1);
+    expect(componentUptimes).toStrictEqual([expectedUptime]);
+  });
 });

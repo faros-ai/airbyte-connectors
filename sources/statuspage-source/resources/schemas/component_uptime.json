@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "range_start": {
+      "type": "string"
+    },
+    "range_end": {
+      "type": "string"
+    },
+    "uptime_percentage": {
+      "type": "number"
+    },
+    "major_outage": {
+      "type": "integer"
+    },
+    "partial_outage": {
+      "type": "integer"
+    },
+    "warnings": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "related_events": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "page_id": {
+      "type": "string"
+    }
+  }
+}

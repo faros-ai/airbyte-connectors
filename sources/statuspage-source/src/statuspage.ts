@@ -3,7 +3,14 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Component, ComponentGroup, Incident, Page, User} from './types';
+import {
+  Component,
+  ComponentGroup,
+  ComponentUptime,
+  Incident,
+  Page,
+  User,
+} from './types';
 
 const BASE_URL = 'https://api.statuspage.io/v1/';
 const DEFAULT_MAX_RETRIES = 3;
@@ -194,6 +201,42 @@ export class Statuspage {
       'per_page'
     )) {
       yield group;
+    }
+  }
+
+  // Uptime is a pre-computed metric. We will get the value for each day
+  // (most granular value) up to the previous day.
+  async *getComponentUptime(
+    pageId: string,
+    componentId: string,
+    rangeEndDate?: Date
+  ): AsyncGenerator<ComponentUptime> {
+    const path = `/pages/${pageId}/components/${componentId}/uptime`;
+    const getFormattedDate = (date: Date): string => {
+      const year = date.getFullYear().toString();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const rangeStart =
+      rangeEndDate > this.startDate ? rangeEndDate : this.startDate;
+    // Use start of day to avoid partial days.
+    const currentDate = new Date(getFormattedDate(new Date()));
+
+    while (rangeStart < currentDate) {
+      const start = getFormattedDate(rangeStart);
+      // Start and end are the same so we get a value for a single day.
+      const params = new URLSearchParams({
+        start: `${start}`,
+        end: `${start}`,
+      });
+      const {data}: AxiosResponse<ComponentUptime> = await this.rateLimitGet(
+        `${path}?${params}`
+      );
+      yield {...data, page_id: pageId};
+
+      rangeStart.setDate(rangeStart.getDate() + 1);
     }
   }
 }
