@@ -149,20 +149,27 @@ export class FarosGraph extends AirbyteStreamBase {
         `Processing bucket ${this.bucketId} of ${this.bucketTotal}`
       );
 
+      const modelsFilter = this.config.models_filter ?? [];
+
       for (const query of queries) {
         const slice = {
           query: query.gql,
           incremental: true,
           queryPaths: this.queryPaths(query.gql, schema),
         };
+        const modelName = slice.queryPaths.model.modelName;
+        if (modelsFilter.length > 0 && !modelsFilter.includes(modelName)) {
+          this.logger.debug(`Skipping fetching ${modelName}`);
+          continue;
+        }
 
         const hex = createHash('md5')
-          .update(slice.queryPaths.model.modelName)
+          .update(modelName)
           .digest('hex')
           .substring(0, 8);
         const bucket = (parseInt(hex, 16) % this.bucketTotal) + 1;
         if (bucket == this.bucketId) {
-          this.logger.debug(`Will fetch ${slice.queryPaths.model.modelName}`);
+          this.logger.debug(`Will fetch ${modelName}`);
           yield slice;
         }
       }
