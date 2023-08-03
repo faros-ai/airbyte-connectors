@@ -34,10 +34,13 @@ export class ComponentUptimes extends StatuspageConverter {
       page_id: uptime.page_id,
     } as Component;
     const application = this.computeApplication(ctx, component);
+    // Generate uid from uptime page_id, component id, range_start, and range_end
+    const uid = `${uptime.page_id}:${uptime.id}:${uptime.range_start}-${uptime.range_end}}`;
     return [
       {
         model: 'ims_ApplicationUptime',
         record: {
+          uid,
           intervalStartTime: Utils.toDate(uptime.range_start),
           intervalEndTime: Utils.toDate(uptime.range_end),
           uptimePercentage: uptime.uptime_percentage,

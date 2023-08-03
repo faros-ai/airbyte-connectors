@@ -135,7 +135,7 @@ export const ComponentGroupsStream = new StreamName(
 
 export const ComponentsStream = new StreamName('statuspage', 'components');
 
-export const ComponentUptimeStream = new StreamName(
+export const ComponentUptimesStream = new StreamName(
   'statuspage',
   'component_uptimes'
 );
