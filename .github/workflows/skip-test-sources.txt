@@ -2,6 +2,7 @@ agileaccelerator-source
 azure-repos-source
 azure-workitems-source
 azurepipeline-source
+azureactivedirectory-source
 bamboohr-source
 bitbucket-server-source
 datadog-source
