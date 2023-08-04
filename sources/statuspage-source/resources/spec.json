@@ -48,6 +48,12 @@
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Statuspage API",
         "default": 3
+      },
+      "fetch_component_uptime": {
+        "type": "boolean",
+        "title": "Fetch Component Uptimes",
+        "description": "Fetch the uptime of each component",
+        "default": false
       }
     }
   }
