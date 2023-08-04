@@ -19,11 +19,9 @@
     },
     "warnings": {
       "type": "array",
-      "items": [
-        {
-          "type": "string"
-        }
-      ]
+      "items": {
+        "type": "string"
+      }
     },
     "id": {
       "type": "string"
