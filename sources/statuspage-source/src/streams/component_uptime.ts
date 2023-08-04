@@ -25,6 +25,12 @@ export class ComponentUptimes extends StatuspageStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
+    if (!this.cfg.fetch_component_uptime) {
+      this.logger.debug(
+        'Fetching component uptime is disabled. Skipping fetching component uptimes.'
+      );
+      return;
+    }
     for (const page of await this.statuspage.getPages(this.cfg.page_ids)) {
       for await (const component of this.statuspage.getComponents(page.id)) {
         yield {pageId: page.id, componentId: component.id};

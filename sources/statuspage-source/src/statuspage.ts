@@ -24,6 +24,7 @@ export interface StatuspageConfig {
   readonly page_ids?: ReadonlyArray<string>;
   readonly max_retries?: number;
   readonly page_size?: number;
+  readonly fetch_component_uptime?: boolean;
 }
 
 export class Statuspage {
@@ -219,8 +220,13 @@ export class Statuspage {
       return `${year}-${month}-${day}`;
     };
 
-    const rangeStart =
-      rangeEndDate > this.startDate ? rangeEndDate : this.startDate;
+    // Can only get uptimes for the last 90 days.
+    const maxRangeStart = new Date();
+    maxRangeStart.setDate(maxRangeStart.getDate() - 90);
+    const maxCutoff =
+      this.startDate > maxRangeStart ? this.startDate : maxRangeStart;
+
+    const rangeStart = rangeEndDate > maxCutoff ? rangeEndDate : maxCutoff;
     // Use start of day to avoid partial days.
     const currentDate = new Date(getFormattedDate(new Date()));
 

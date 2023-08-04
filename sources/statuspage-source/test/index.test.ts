@@ -9,7 +9,7 @@ import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {Statuspage} from '../src/statuspage';
-import {ComponentGroup} from '../src/types';
+import {Component, ComponentGroup} from '../src/types';
 
 const statusPageInstance = Statuspage.instance;
 
@@ -50,6 +50,7 @@ describe('index', () => {
     page_ids: ['n3wb7hf336hn', 'mz1ms2kfwq1s'],
     cutoff_days: 90,
     org_id: 'org_id',
+    fetch_component_uptimes: true,
   };
 
   test('check connection', async () => {
@@ -151,7 +152,7 @@ describe('index', () => {
 
   test('streams - components, use full_refresh sync mode', async () => {
     const fnComponentsFunc = jest.fn();
-    const expectedData: ReadonlyArray<ComponentGroup> =
+    const expectedData: ReadonlyArray<Component> =
       readTestResourceFile('components.json');
     const sp = new Statuspage(
       {
@@ -346,5 +347,70 @@ describe('index', () => {
     const expectedUptime = {...componentUptime, page_id: 'page_id'};
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(1);
     expect(componentUptimes).toStrictEqual([expectedUptime]);
+  });
+
+  test('streams - component uptimes, fetch uptimes disabled', async () => {
+    const fnStreamSlicesFunc = jest.fn();
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnStreamSlicesFunc.mockResolvedValue({}),
+        } as any,
+        new Date('1970-01-01T00:00:00-0000'),
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams({
+      ...sourceConfig,
+      fetch_component_uptime: false,
+    });
+
+    const componentUptimesStream = streams[5];
+    const slicesIter = componentUptimesStream.streamSlices(
+      SyncMode.FULL_REFRESH
+    );
+    const slices = [];
+    for await (const slice of slicesIter) {
+      slices.push(slice);
+    }
+
+    expect(fnStreamSlicesFunc).toHaveBeenCalledTimes(0);
+    expect(slices).toHaveLength(0);
+  });
+
+  test('streams - component uptimes, fetch max 90 days', async () => {
+    const fnComponentUptimesFunc = jest.fn();
+    const componentUptime = readTestResourceFile('component_uptime.json');
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 1000);
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnComponentUptimesFunc.mockResolvedValue({
+            data: componentUptime,
+          }),
+        } as any,
+        startDate,
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const componentUptimesStream = streams[5];
+    const uptimesIter = componentUptimesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      null,
+      {pageId: 'page_id', componentId: 'component1'}
+    );
+    const componentUptimes = [];
+    for await (const uptime of uptimesIter) {
+      componentUptimes.push(uptime);
+    }
+
+    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(90);
+    expect(componentUptimes).toStrictEqual([...Array(90).fill(expectedUptime)]);
   });
 });
