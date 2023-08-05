@@ -7,6 +7,7 @@ import {StatuspageStreamBase} from './common';
 interface StreamSlice {
   pageId: string;
   componentId: string;
+  startDate: string;
 }
 
 type ComponentUptimeState = Dictionary<Dictionary<{rangeEnd?: string}>>;
@@ -33,7 +34,11 @@ export class ComponentUptimes extends StatuspageStreamBase {
     }
     for (const page of await this.statuspage.getPages(this.cfg.page_ids)) {
       for await (const component of this.statuspage.getComponents(page.id)) {
-        yield {pageId: page.id, componentId: component.id};
+        yield {
+          pageId: page.id,
+          componentId: component.id,
+          startDate: component.start_date,
+        };
       }
     }
   }
@@ -55,6 +60,7 @@ export class ComponentUptimes extends StatuspageStreamBase {
     yield* this.statuspage.getComponentUptime(
       pageId,
       componentId,
+      new Date(streamSlice.startDate),
       rangeEndDate
     );
   }

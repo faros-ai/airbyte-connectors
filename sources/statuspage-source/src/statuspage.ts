@@ -210,6 +210,7 @@ export class Statuspage {
   async *getComponentUptime(
     pageId: string,
     componentId: string,
+    componentStartDate: Date,
     rangeEndDate?: Date
   ): AsyncGenerator<ComponentUptime> {
     const path = `/pages/${pageId}/components/${componentId}/uptime`;
@@ -220,13 +221,11 @@ export class Statuspage {
       return `${year}-${month}-${day}`;
     };
 
-    // Can only get uptimes for the last 90 days.
-    const maxRangeStart = new Date();
-    maxRangeStart.setDate(maxRangeStart.getDate() - 90);
-    const maxCutoff =
-      this.startDate > maxRangeStart ? this.startDate : maxRangeStart;
+    const rangeStart = this.getComponentUptimeRangeStart(
+      componentStartDate,
+      rangeEndDate
+    );
 
-    const rangeStart = rangeEndDate > maxCutoff ? rangeEndDate : maxCutoff;
     // Use start of day to avoid partial days.
     const currentDate = new Date(getFormattedDate(new Date()));
 
@@ -244,5 +243,25 @@ export class Statuspage {
 
       rangeStart.setDate(rangeStart.getDate() + 1);
     }
+  }
+
+  private getComponentUptimeRangeStart(
+    componentStartDate: Date,
+    rangeEndDate: Date
+  ): Date {
+    // Can only get uptimes for the last 90 days.
+    const maxStartDate = new Date();
+    maxStartDate.setDate(maxStartDate.getDate() - 90);
+
+    // If the component was created after the max range start,
+    // use the component start date.
+    const startDate =
+      componentStartDate > maxStartDate ? componentStartDate : maxStartDate;
+
+    // If a defined cutoff date is after start date use that.
+    const cutoff = this.startDate > startDate ? this.startDate : startDate;
+
+    // Use range end date is defined and is after the cutoff date,
+    return rangeEndDate > cutoff ? rangeEndDate : cutoff;
   }
 }
