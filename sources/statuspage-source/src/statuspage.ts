@@ -221,9 +221,9 @@ export class Statuspage {
       return `${year}-${month}-${day}`;
     };
 
-    const rangeStart = this.getComponentUptimeRangeStart(
-      componentStartDate,
-      rangeEndDate
+    // Instantiate new date object to avoid mutating the original.
+    const rangeStart = new Date(
+      this.getComponentUptimeRangeStart(componentStartDate, rangeEndDate)
     );
 
     // Use start of day to avoid partial days.
