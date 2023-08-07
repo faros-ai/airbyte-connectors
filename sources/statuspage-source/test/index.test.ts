@@ -9,7 +9,7 @@ import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {Statuspage} from '../src/statuspage';
-import {Component, ComponentGroup} from '../src/types';
+import {Component, ComponentGroup, Page} from '../src/types';
 
 const statusPageInstance = Statuspage.instance;
 
@@ -50,7 +50,7 @@ describe('index', () => {
     page_ids: ['n3wb7hf336hn', 'mz1ms2kfwq1s'],
     cutoff_days: 90,
     org_id: 'org_id',
-    fetch_component_uptimes: true,
+    fetch_component_uptime: true,
   };
 
   test('check connection', async () => {
@@ -454,5 +454,46 @@ describe('index', () => {
     const expectedUptime = {...componentUptime, page_id: 'page_id'};
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(10);
     expect(componentUptimes).toStrictEqual([...Array(10).fill(expectedUptime)]);
+  });
+
+  test('streams - component showcase disabled', async () => {
+    const fnStreamSlicesFunc = jest.fn();
+    const pages: ReadonlyArray<Page> = readTestResourceFile('pages.json');
+    const components: ReadonlyArray<Component> =
+      readTestResourceFile('components.json');
+
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnStreamSlicesFunc
+            .mockResolvedValueOnce({data: [pages[0]]})
+            .mockResolvedValueOnce({
+              data: [components[1], {...components[0], showcase: false}],
+            }),
+        } as any,
+        new Date('1970-01-01T00:00:00-0000'),
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+
+    const componentUptimesStream = streams[5];
+    const slicesIter = componentUptimesStream.streamSlices(
+      SyncMode.FULL_REFRESH
+    );
+    const slices = [];
+    for await (const slice of slicesIter) {
+      slices.push(slice);
+    }
+
+    expect(fnStreamSlicesFunc).toHaveBeenCalledTimes(2);
+    expect(slices).toStrictEqual([
+      {
+        pageId: 'n3wb7hf336hn',
+        componentId: 'component2',
+        startDate: '2023-05-22',
+      },
+    ]);
   });
 });
