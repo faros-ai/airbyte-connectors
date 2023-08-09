@@ -62,6 +62,7 @@ export function traverseObject(
   startObject: Dictionary<any>,
   startPath: string[],
   section = 1,
+  useDeprecatedFields = false
 ): TableRow[] {
   const result: TableRow[] = [];
   // Queue of objects to process in BFS
@@ -81,7 +82,9 @@ export function traverseObject(
     ok(curObject.title);
 
     if (curObject.properties) {
-      const children = Object.keys(curObject.properties).length;
+      const children = Object.values(curObject.properties).filter(
+        (v) => useDeprecatedFields || !v['deprecated']
+      ).length;
       if (!children) {
         result.push({
           title: curObject.title,
@@ -122,6 +125,13 @@ export function traverseObject(
         return a.localeCompare(b);
       };
       for (const propertyName of Object.keys(curObject.properties).sort(cmp)) {
+        if (
+          !useDeprecatedFields &&
+          curObject.properties[propertyName]['deprecated']
+        ) {
+          continue;
+        }
+
         process.push([
           curObject.properties[propertyName],
           curPath.concat(propertyName),
@@ -130,7 +140,9 @@ export function traverseObject(
         ]);
       }
     } else {
-      const children = curObject.oneOf.length;
+      const children = Object.values(curObject.oneOf).filter(
+        (v) => useDeprecatedFields || !v['deprecated']
+      ).length;
       ok(children > 0);
       result.push({
         title: curObject.title,
@@ -150,6 +162,10 @@ export function traverseObject(
         examples: [],
       });
       for (const choice of curObject.oneOf) {
+        if (!useDeprecatedFields && choice['deprecated']) {
+          continue;
+        }
+
         process.push([choice, curPath, newIdx++, false]);
       }
     }
