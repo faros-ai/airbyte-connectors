@@ -62,6 +62,13 @@ export interface Job {
   status: string;
   type: string;
   stopped_at: string;
+  artifacts: Artifact[];
+}
+
+export interface Artifact {
+  path: string;
+  node_index: number;
+  url: string;
 }
 
 export interface TaskType {

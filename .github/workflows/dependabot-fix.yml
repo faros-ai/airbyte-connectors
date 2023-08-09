@@ -44,10 +44,10 @@ jobs:
         run: npm --version
 
       - name: Install Lerna
-        run: npm install -g lerna @lerna/legacy-package-management
+        run: npm install -g lerna @lerna/legacy-package-management patch-package
 
       - name: Reformat package-lock.json
-        run: lerna bootstrap --hoist --no-ci
+        run: lerna bootstrap --hoist --no-ci && patch-package
 
       - name: Print package-lock.json
         run: head package-lock.json
@@ -55,4 +55,4 @@ jobs:
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Reformat package-lock.json [dependabot skip]"
+          commit_message: 'Reformat package-lock.json [dependabot skip]'

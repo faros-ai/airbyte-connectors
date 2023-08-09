@@ -6,7 +6,7 @@
     "clean": "lerna run clean && rm -rf node_modules out",
     "fix": "lerna run fix",
     "lint": "lerna run lint",
-    "prepare": "lerna bootstrap --hoist && husky install",
+    "prepare": "lerna bootstrap --hoist && patch-package && husky install",
     "test": "lerna run test",
     "test-cov": "lerna run test-cov"
   },
@@ -37,6 +37,7 @@
     "lerna": "^6.4.1",
     "lint-staged": "^13.0.3",
     "mockttp": "^3.9.0",
+    "patch-package": "^8.0.0",
     "pino-pretty": "^10.0.0",
     "prettier": "^2.6.2",
     "tmp-promise": "^3.0.3",

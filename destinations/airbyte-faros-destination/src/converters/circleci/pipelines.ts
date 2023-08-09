@@ -1,10 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {makeAxiosInstance, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
+import {parser} from 'test-results-parser';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
-import {Pipeline} from './models';
+import {Artifact, Pipeline} from './models';
 
 export class Pipelines extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -12,14 +13,20 @@ export class Pipelines extends CircleCIConverter {
     'cicd_BuildCommitAssociation',
     'cicd_BuildStep',
   ];
+
+  private readonly axios = makeAxiosInstance();
+  private tokenSet = false;
+  private token: string | null = null;
+
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    for (const workflow of pipeline.workflows) {
+    for (const workflow of pipeline.workflows ?? []) {
       const buildKey = CircleCICommon.getBuildKey(workflow, pipeline, source);
       const repoName = CircleCICommon.getProject(pipeline.project_slug);
       res.push({
@@ -54,7 +61,7 @@ export class Pipelines extends CircleCIConverter {
           },
         },
       });
-      for (const job of workflow.jobs) {
+      for (const job of workflow.jobs ?? []) {
         res.push({
           model: 'cicd_BuildStep',
           record: {
@@ -67,8 +74,43 @@ export class Pipelines extends CircleCIConverter {
             build: buildKey,
           },
         });
+
+        for (const artifact of job.artifacts ?? []) {
+          const testResults = await this.collectTestResults(artifact, ctx);
+          for (const testRes of testResults ?? []) {
+            res.push(testRes);
+          }
+        }
       }
     }
     return res;
+  }
+
+  // https://circleci.com/docs/collect-test-data/
+  // We only collect test results from JUnit artifacts for now
+  async collectTestResults(
+    artifact: Artifact,
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    if (!artifact?.url.endsWith('.xml')) {
+      return [];
+    }
+    if (this.token === null) {
+      this.token = this.circleciConfig(ctx)?.token ?? '';
+      if (this.token === '') {
+        ctx.logger.warn(
+          'CircleCI token is not set in the config. Test results might fail to download.'
+        );
+      }
+    }
+
+    const response = await this.axios.get(artifact.url, {
+      responseType: 'arraybuffer',
+      headers: this.token ? {'Circle-Token': this.token} : undefined,
+    });
+    const data = Buffer.from(response.data, 'binary');
+
+    // TODO: download artifact, process, convert to test executions
+    return [];
   }
 }

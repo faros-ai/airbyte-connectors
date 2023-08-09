@@ -114,7 +114,7 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm install -g lerna @lerna/legacy-package-management patch-package && lerna bootstrap --hoist && patch-package
 
       - name: Test
         env:
@@ -142,7 +142,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm install -g lerna @lerna/legacy-package-management patch-package && lerna bootstrap --hoist && patch-package
 
       - name: Test Airbyte CDK package
         run: |
