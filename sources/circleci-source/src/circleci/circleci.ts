@@ -10,7 +10,7 @@ import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Job, Pipeline, Project, Workflow} from './typings';
+import {Artifact, Job, Pipeline, Project, Workflow} from './typings';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -194,7 +194,7 @@ export class CircleCI {
 
   async fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
     const url = `/pipeline/${pipelineId}/workflow`;
-    return this.iterate(
+    return this.iterate<Workflow>(
       (params) =>
         this.get(url, {params, validateStatus: validateNotFoundStatus}),
       (item: any) => ({
@@ -205,7 +205,7 @@ export class CircleCI {
   }
 
   async fetchJobs(workflowId: string): Promise<Job[]> {
-    return this.iterate(
+    const jobs = await this.iterate<Job>(
       (params) =>
         this.get(`/workflow/${workflowId}/job`, {
           params,
@@ -213,6 +213,20 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+
+    for (const job of jobs) {
+      const artifacts = await this.iterate<Artifact>(
+        (params) =>
+          this.get(`/project/${job.project_slug}/${job.job_number}/artifacts`, {
+            params,
+            validateStatus: validateNotFoundStatus,
+          }),
+        (item: any) => item
+      );
+      job.artifacts = artifacts;
+    }
+
+    return jobs;
   }
 }
 

@@ -130,6 +130,23 @@
                 },
                 "stopped_at": {
                   "type": "string"
+                },
+                "artifacts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "node_index": {
+                        "type": "number"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
