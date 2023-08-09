@@ -140,6 +140,10 @@ export class AirbyteDestinationRunner<
       .option(
         '--spec-file <path to spec>',
         'Path to the spec file. If not provided, the spec will be fetched from the destination'
+      ).option(
+        '--include-deprecated-fields',
+        'Include fields marked as deprecated in the spec',
+        false
       )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
@@ -157,7 +161,8 @@ export class AirbyteDestinationRunner<
                 '--dst',
               ],
           // Assign section = 0 to the root object's row
-          0
+          0,
+          opts.includeDeprecatedFields
         );
 
         if (opts.json) {
