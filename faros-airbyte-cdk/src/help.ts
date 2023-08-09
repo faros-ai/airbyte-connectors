@@ -62,12 +62,11 @@ export function traverseObject(
   startObject: Dictionary<any>,
   startPath: string[],
   section = 1,
-  required = false
 ): TableRow[] {
   const result: TableRow[] = [];
   // Queue of objects to process in BFS
   const process: [[Dictionary<any>, string[], number, boolean]] = [
-    [startObject, startPath, section, required],
+    [startObject, startPath, section, false],
   ];
   let newIdx = section + 1;
   while (process.length > 0) {
