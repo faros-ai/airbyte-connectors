@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {makeAxiosInstance, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
-import {parser} from 'test-results-parser';
+import {getParser, jsonFromXML, parserTypes} from 'test-results-parser';
+import TestResult from 'test-results-parser';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
@@ -15,7 +16,6 @@ export class Pipelines extends CircleCIConverter {
   ];
 
   private readonly axios = makeAxiosInstance();
-  private tokenSet = false;
   private token: string | null = null;
 
   async convert(
@@ -86,13 +86,13 @@ export class Pipelines extends CircleCIConverter {
     return res;
   }
 
-  // https://circleci.com/docs/collect-test-data/
-  // We only collect test results from JUnit artifacts for now
+  // Collect test results from CircleCI artifacts
+  // See - https://circleci.com/docs/collect-test-data/
   async collectTestResults(
     artifact: Artifact,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    if (!artifact?.url.endsWith('.xml')) {
+    if (!artifact?.url.endsWith('.xml') || !artifact?.url.endsWith('.json')) {
       return [];
     }
     if (this.token === null) {
@@ -104,13 +104,34 @@ export class Pipelines extends CircleCIConverter {
       }
     }
 
-    const response = await this.axios.get(artifact.url, {
-      responseType: 'arraybuffer',
-      headers: this.token ? {'Circle-Token': this.token} : undefined,
-    });
-    const data = Buffer.from(response.data, 'binary');
+    try {
+      const response = await this.axios.get(artifact.url, {
+        responseType: 'arraybuffer',
+        headers: this.token ? {'Circle-Token': this.token} : undefined,
+      });
+      const dataBytes = Buffer.from(response.data, 'binary').toString();
+      const dataJson = artifact?.url.endsWith('.xml')
+        ? jsonFromXML(dataBytes)
+        : JSON.parse(dataBytes);
 
-    // TODO: download artifact, process, convert to test executions
+      // Trying to parse with all available parsers
+      for (const parserType of parserTypes()) {
+        try {
+          const tr = getParser(parserType).getTestResult(
+            dataJson
+          ) as TestResult;
+          ctx.logger.debug(
+            `Parsed ${tr.total} test results from ${artifact.url} with ${parserType} parser`
+          );
+          break;
+        } catch (e: any) {
+          continue;
+        }
+      }
+    } catch (e: any) {
+      const error = e?.message ?? JSON.stringify(e);
+      ctx.logger.debug(`Failed to parse ${artifact.url}: ${error}`);
+    }
     return [];
   }
 }

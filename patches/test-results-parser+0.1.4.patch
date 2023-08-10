@@ -1,19 +1,86 @@
 diff --git a/node_modules/test-results-parser/src/helpers/helper.js b/node_modules/test-results-parser/src/helpers/helper.js
-index de7830d..da37665 100644
+index de7830d..bce24bc 100644
 --- a/node_modules/test-results-parser/src/helpers/helper.js
 +++ b/node_modules/test-results-parser/src/helpers/helper.js
-@@ -5,8 +5,7 @@ const { totalist } = require('totalist/sync');
+@@ -5,8 +5,11 @@ const { totalist } = require('totalist/sync');
  const globrex = require('globrex');
  
  function getJsonFromXMLFile(filePath) {
 -  const cwd = process.cwd();
 -  const xml = fs.readFileSync(path.join(cwd, filePath)).toString();
 +  const xml = fs.readFileSync(filePath).toString();
++  return getJsonFromXML(xml);
++}
++
++function getJsonFromXML(xml) {
    return parser.parse(xml, { arrayMode: true, ignoreAttributes: false, parseAttributeValue: true });
  }
  
+@@ -30,6 +33,7 @@ function getMatchingFilePaths(file_path) {
+ }
+ 
+ module.exports = {
++  getJsonFromXML,
+   getJsonFromXMLFile,
+   getMatchingFilePaths
+ }
+diff --git a/node_modules/test-results-parser/src/index.d.ts b/node_modules/test-results-parser/src/index.d.ts
+index 85b16e3..7964f88 100644
+--- a/node_modules/test-results-parser/src/index.d.ts
++++ b/node_modules/test-results-parser/src/index.d.ts
+@@ -1,4 +1,6 @@
+-import TestResult from "./models/TestResult";
++import TestResult from './models/TestResult';
++
++export = TestResult;
+ 
+ declare interface ParseOptions {
+   type: string;
+@@ -6,5 +8,8 @@ declare interface ParseOptions {
+ }
+ 
+ export function parse(options: ParseOptions): TestResult;
++export function getParser(type: string): any;
++export function parserTypes(): string[];
++export function jsonFromXML(xml: string): any;
+ 
+-export namespace parser { }
+\ No newline at end of file
++export namespace parser {}
+diff --git a/node_modules/test-results-parser/src/index.js b/node_modules/test-results-parser/src/index.js
+index a6c1f81..40e27b3 100644
+--- a/node_modules/test-results-parser/src/index.js
++++ b/node_modules/test-results-parser/src/index.js
+@@ -1,9 +1,25 @@
+ const parser = require('./parsers');
++const { getJsonFromXML } = require('./helpers/helper');
+ 
+ function parse(options) {
+   return parser.parse(options);
+ }
+ 
+-module.exports = {
+-  parse
++function getParser(type) {
++  return parser.getParser(type);
++}
++
++function parserTypes() {
++  return parser.parserTypes;
+ }
++
++function jsonFromXML(xml) {
++  return getJsonFromXML(xml);
++}
++
++module.exports = {
++  parse,
++  getParser,
++  parserTypes,
++  jsonFromXML
++};
 diff --git a/node_modules/test-results-parser/src/models/TestSuite.d.ts b/node_modules/test-results-parser/src/models/TestSuite.d.ts
-index 98977f0..223bbeb 100644
+index 98977f0..cded6b8 100644
 --- a/node_modules/test-results-parser/src/models/TestSuite.d.ts
 +++ b/node_modules/test-results-parser/src/models/TestSuite.d.ts
 @@ -8,6 +8,7 @@ declare class TestSuite {
@@ -25,7 +92,7 @@ index 98977f0..223bbeb 100644
    cases: TestCase[];
  }
 diff --git a/node_modules/test-results-parser/src/models/TestSuite.js b/node_modules/test-results-parser/src/models/TestSuite.js
-index d4c6a0d..7bb27cd 100644
+index d4c6a0d..503e8e4 100644
 --- a/node_modules/test-results-parser/src/models/TestSuite.js
 +++ b/node_modules/test-results-parser/src/models/TestSuite.js
 @@ -9,6 +9,7 @@ class TestSuite {
@@ -36,8 +103,42 @@ index d4c6a0d..7bb27cd 100644
      this.status = 'NA';
      this.cases = [];
    }
+diff --git a/node_modules/test-results-parser/src/parsers/cucumber.js b/node_modules/test-results-parser/src/parsers/cucumber.js
+index 42eac3a..389d3a8 100644
+--- a/node_modules/test-results-parser/src/parsers/cucumber.js
++++ b/node_modules/test-results-parser/src/parsers/cucumber.js
+@@ -99,5 +99,6 @@ function parse(file) {
+ } 
+ 
+ module.exports = {
+-  parse
++  parse,
++  getTestResult
+ }
+diff --git a/node_modules/test-results-parser/src/parsers/index.js b/node_modules/test-results-parser/src/parsers/index.js
+index 6cacfc4..7f02898 100644
+--- a/node_modules/test-results-parser/src/parsers/index.js
++++ b/node_modules/test-results-parser/src/parsers/index.js
+@@ -29,6 +29,8 @@ function merge(results) {
+   return main_result;
+ }
+ 
++const parserTypes = ['testng', 'junit', 'xunit', 'mocha', 'cucumber']
++
+ function getParser(type) {
+   switch (type) {
+     case 'testng':
+@@ -63,5 +65,7 @@ function parse(options) {
+ }
+ 
+ module.exports = {
+-  parse
++  parse,
++  getParser,
++  parserTypes
+ }
 diff --git a/node_modules/test-results-parser/src/parsers/junit.js b/node_modules/test-results-parser/src/parsers/junit.js
-index fb012c3..5c9f0ce 100644
+index fb012c3..210250b 100644
 --- a/node_modules/test-results-parser/src/parsers/junit.js
 +++ b/node_modules/test-results-parser/src/parsers/junit.js
 @@ -33,6 +33,7 @@ function getTestSuite(rawSuite) {
@@ -48,3 +149,66 @@ index fb012c3..5c9f0ce 100644
    suite.status = suite.total === suite.passed ? 'PASS' : 'FAIL';
    const raw_test_cases = rawSuite.testcase;
    if (raw_test_cases) {
+@@ -108,5 +109,6 @@ function parse(file) {
+ }
+ 
+ module.exports = {
+-  parse
++  parse,
++  getTestResult
+ }
+diff --git a/node_modules/test-results-parser/src/parsers/mocha.js b/node_modules/test-results-parser/src/parsers/mocha.js
+index 878b412..4d65488 100644
+--- a/node_modules/test-results-parser/src/parsers/mocha.js
++++ b/node_modules/test-results-parser/src/parsers/mocha.js
+@@ -115,5 +115,6 @@ function parse(file) {
+ } 
+ 
+ module.exports = {
+-  parse
++  parse,
++  getTestResult
+ }
+diff --git a/node_modules/test-results-parser/src/parsers/testng.js b/node_modules/test-results-parser/src/parsers/testng.js
+index 60c420e..78e8aea 100644
+--- a/node_modules/test-results-parser/src/parsers/testng.js
++++ b/node_modules/test-results-parser/src/parsers/testng.js
+@@ -72,9 +72,7 @@ function getTestSuite(rawSuite) {
+   return suite;
+ }
+ 
+-function parse(file) {
+-  // TODO - loop through files
+-  const json = getJsonFromXMLFile(file);
++function getTestResult(json) {
+   const result = new TestResult();
+   const results = json['testng-results'][0];
+   result.failed = results['@_failed'];
+@@ -124,7 +122,14 @@ function parse(file) {
+   return result;
+ }
+ 
++function parse(file) {
++  // TODO - loop through files
++  const json = getJsonFromXMLFile(file);
++  return getTestResult(json);
++}
++
+ 
+ module.exports = {
+-  parse
++  parse,
++  getTestResult
+ }
+diff --git a/node_modules/test-results-parser/src/parsers/xunit.js b/node_modules/test-results-parser/src/parsers/xunit.js
+index 18448f1..e73a080 100644
+--- a/node_modules/test-results-parser/src/parsers/xunit.js
++++ b/node_modules/test-results-parser/src/parsers/xunit.js
+@@ -74,5 +74,6 @@ function parse(file) {
+ }
+ 
+ module.exports = {
+-  parse
++  parse,
++  getTestResult
+ }
