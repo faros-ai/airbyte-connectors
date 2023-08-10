@@ -11,7 +11,7 @@ COPY ./destinations ./destinations
 
 RUN apk -U upgrade
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
-  && npm install -g lerna @lerna/legacy-package-management tsc
+    && npm install -g lerna @lerna/legacy-package-management tsc
 RUN lerna bootstrap --hoist
 
 ARG version
@@ -19,8 +19,8 @@ RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg 
 ENV CONNECTOR_VERSION $version
 
 #RUN cp package-lock.json .package-lock.json.tmp \
-#&& lerna version $CONNECTOR_VERSION -y --no-git-tag-version --no-push --ignore-scripts --exact \
-#&& mv .package-lock.json.tmp package-lock.json
+    #&& lerna version $CONNECTOR_VERSION -y --no-git-tag-version --no-push --ignore-scripts --exact \
+    #&& mv .package-lock.json.tmp package-lock.json
 RUN apk del .gyp
 
 ARG path
