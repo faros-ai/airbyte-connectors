@@ -11,3 +11,7 @@ export abstract class CircleCIStreamBase extends AirbyteStreamBase {
     super(logger);
   }
 }
+
+export type StreamSlice = {
+  projectName: string;
+};

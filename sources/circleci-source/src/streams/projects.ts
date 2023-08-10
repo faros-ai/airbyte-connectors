@@ -2,11 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Project} from '../circleci/typings';
-import {CircleCIStreamBase} from './common';
-
-type StreamSlice = {
-  projectName: string;
-};
+import {CircleCIStreamBase, StreamSlice} from './common';
 
 export class Projects extends CircleCIStreamBase {
   getJsonSchema(): Dictionary<any, string> {

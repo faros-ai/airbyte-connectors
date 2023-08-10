@@ -10,7 +10,7 @@ import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Job, Pipeline, Project, Workflow} from './typings';
+import {Job, Pipeline, Project, TestMetadata, Workflow} from './typings';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -166,12 +166,14 @@ export class CircleCI {
     return (await this.get(`/project/${projectName}`)).data;
   }
 
-  async *fetchPipelines(
+  @Memoize()
+  async fetchPipelines(
     projectName: string,
     since?: string
-  ): AsyncGenerator<Pipeline> {
+  ): Promise<ReadonlyArray<Pipeline>> {
     const lastUpdatedAt = since ? new Date(since) : this.startDate;
     const url = `/project/${projectName}/pipeline`;
+    const res = [];
     const pipelines = await this.iterate<Pipeline>(
       (params) => this.get(url, {params}),
       (item: any) => ({
@@ -180,20 +182,24 @@ export class CircleCI {
       })
     );
     for (const pipeline of pipelines) {
-      pipeline.workflows = await this.fetchWorkflows(pipeline.id);
-      for (const workflow of pipeline.workflows) {
-        workflow.jobs = await this.fetchJobs(workflow.id);
-      }
+      const workflows = await this.fetchWorkflows(pipeline.id);
       const updatedAt =
         maxBy(
-          pipeline.workflows.map((wf) => wf.stopped_at || wf.created_at),
+          workflows.map((wf) => wf.stopped_at || wf.created_at),
           (timestamp) => new Date(timestamp)
         ) || pipeline.updated_at;
+
       if (new Date(updatedAt) > lastUpdatedAt) {
         pipeline.computedProperties = {updatedAt};
-        yield pipeline;
+        pipeline.workflows = workflows;
+        // Only fetch jobs if the pipeline is updated
+        for (const workflow of pipeline.workflows) {
+          workflow.jobs = await this.fetchJobs(workflow.id);
+        }
+        res.push(pipeline);
       }
     }
+    return res;
   }
 
   @Memoize()
@@ -211,7 +217,7 @@ export class CircleCI {
 
   @Memoize()
   async fetchJobs(workflowId: string): Promise<Job[]> {
-    const jobs = await this.iterate<Job>(
+    return this.iterate<Job>(
       (params) =>
         this.get(`/workflow/${workflowId}/job`, {
           params,
@@ -219,11 +225,25 @@ export class CircleCI {
         }),
       (item: any) => item
     );
-    return jobs;
+  }
+
+  @Memoize()
+  async fetchTests(
+    projectSlug: string,
+    jobNumber: string
+  ): Promise<TestMetadata[]> {
+    return this.iterate<TestMetadata>(
+      (params) =>
+        this.get(`/project/${projectSlug}/${jobNumber}/tests`, {
+          params,
+          validateStatus: validateNotFoundStatus,
+        }),
+      (item: any) => item
+    );
   }
 }
 
-// CircleCi API returns 404 if no workflows or jobs exist for a given pipeline
+// CircleCI API returns 404 if no workflows or jobs exist for a given pipeline
 function validateNotFoundStatus(status: number): boolean {
   return status === 200 || status === 404;
 }

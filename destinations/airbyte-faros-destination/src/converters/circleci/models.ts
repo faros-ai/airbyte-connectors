@@ -1,10 +1,17 @@
 export interface Project {
-  readonly slug: string;
-  readonly organization_name: string;
-  readonly organization_id: string;
-  readonly name: string;
-  readonly id: string;
-  readonly organization_slug: string;
+  slug: string;
+  organization_name: string;
+  organization_id: string;
+  name: string;
+  id: string;
+  organization_slug: string;
+  vcs_info: VcsInfo;
+}
+
+export interface VcsInfo {
+  vcs_url: string;
+  provider: string;
+  default_branch: string;
 }
 
 export interface Actor {
