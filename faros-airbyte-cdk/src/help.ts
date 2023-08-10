@@ -1,5 +1,5 @@
 import {ok} from 'assert';
-import _, {startsWith} from 'lodash';
+import _ from 'lodash';
 import {upperFirst} from 'lodash';
 import {table} from 'table';
 import {Dictionary} from 'ts-essentials';
