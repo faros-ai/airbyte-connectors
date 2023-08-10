@@ -1,5 +1,5 @@
 import {ok} from 'assert';
-import _ from 'lodash';
+import _, {startsWith} from 'lodash';
 import {upperFirst} from 'lodash';
 import {table} from 'table';
 import {Dictionary} from 'ts-essentials';
@@ -317,6 +317,18 @@ async function promptLeaf(row: TableRow, tail = false) {
       idx++;
       choices.push({message: `example ${idx} (${example})`, value: example});
     }
+  }
+
+  if (row.airbyte_secret || row.multiline) {
+    const variableName = row.path
+      .split('.')
+      .filter((part) => part[0].match(/[a-z]/i))
+      .join('_')
+      .toUpperCase();
+    choices.push({
+      message: `Use environment variable ${variableName}`,
+      value: `\${${variableName}}`,
+    });
   }
 
   let choice = ' ';
