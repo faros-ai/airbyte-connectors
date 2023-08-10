@@ -319,6 +319,18 @@ async function promptLeaf(row: TableRow, tail = false) {
     }
   }
 
+  if (row.airbyte_secret || row.multiline) {
+    const variableName = row.path
+      .split('.')
+      .filter((part) => part[0].match(/[a-z]/i))
+      .join('_')
+      .toUpperCase();
+    choices.push({
+      message: `Use environment variable ${variableName}`,
+      value: `\${${variableName}}`,
+    });
+  }
+
   let choice = ' ';
   if (choices.length) {
     if (enumChoices) {
