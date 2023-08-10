@@ -21,6 +21,8 @@ export class Services extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Service> {
     const squadcast = await Squadcast.instance(this.config, this.logger);
-    yield* squadcast.getServices();
+    for (const service of await squadcast.getServices()) {
+      yield service;
+    }
   }
 }
