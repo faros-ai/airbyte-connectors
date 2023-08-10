@@ -36,7 +36,7 @@ export class Tests extends CircleCIStreamBase {
         ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
         : undefined;
 
-    for await (const pipeline of this.circleCI.fetchPipelines(
+    for (const pipeline of await this.circleCI.fetchPipelines(
       streamSlice.projectName,
       since
     )) {
