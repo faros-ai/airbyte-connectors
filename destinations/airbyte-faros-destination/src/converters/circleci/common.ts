@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
 import {Converter} from '../converter';
-import {BuildKey, CommitKey, Pipeline, Vcs, Workflow} from './models';
+import {BuildKey, CommitKey, Vcs} from './models';
 
 export class CircleCICommon {
   static getCommitKey(vcs: Vcs, project_slug: string): CommitKey {

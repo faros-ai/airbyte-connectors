@@ -9,6 +9,7 @@ export class Projects extends CircleCIConverter {
     'cicd_Organization',
     'cicd_Pipeline',
   ];
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
