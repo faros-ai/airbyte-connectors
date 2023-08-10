@@ -1,8 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {makeAxiosInstance, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
-import {getParser, jsonFromXML, parserTypes} from 'test-results-parser';
-import TestResult from 'test-results-parser';
+import * as TestResultsParser from 'test-results-parser';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
@@ -13,9 +12,13 @@ export class Pipelines extends CircleCIConverter {
     'cicd_Build',
     'cicd_BuildCommitAssociation',
     'cicd_BuildStep',
+    // TODO: add test results models
   ];
 
-  private readonly axios = makeAxiosInstance();
+  private readonly axios = makeAxiosInstance({
+    maxBodyLength: Infinity, // accept any response size
+    maxContentLength: Infinity, // accept any response size
+  });
   private token: string | null = null;
 
   async convert(
@@ -92,9 +95,11 @@ export class Pipelines extends CircleCIConverter {
     artifact: Artifact,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    // We only process XML and JSON files, e.g JUnit, TestNG, xUnit, Mocha(json), Cucumber(json)
     if (!artifact?.url.endsWith('.xml') || !artifact?.url.endsWith('.json')) {
       return [];
     }
+    // Load CircleCI token from the config if present
     if (this.token === null) {
       this.token = this.circleciConfig(ctx)?.token ?? '';
       if (this.token === '') {
@@ -105,33 +110,40 @@ export class Pipelines extends CircleCIConverter {
     }
 
     try {
+      // Try to download artifact
       const response = await this.axios.get(artifact.url, {
         responseType: 'arraybuffer',
         headers: this.token ? {'Circle-Token': this.token} : undefined,
       });
       const dataBytes = Buffer.from(response.data, 'binary').toString();
+
+      const trp = TestResultsParser as any; // patching issue, have to use any
+      // Convert XML to JSON if needed
       const dataJson = artifact?.url.endsWith('.xml')
-        ? jsonFromXML(dataBytes)
+        ? trp.jsonFromXML(dataBytes)
         : JSON.parse(dataBytes);
 
-      // Trying to parse with all available parsers
-      for (const parserType of parserTypes()) {
+      // Trying to parse artifact with first available parser
+      for (const parserType of trp.parserTypes()) {
         try {
-          const tr = getParser(parserType).getTestResult(
-            dataJson
-          ) as TestResult;
+          const tr = trp.getParser(parserType).getTestResult(dataJson);
           ctx.logger.debug(
             `Parsed ${tr.total} test results from ${artifact.url} with ${parserType} parser`
           );
-          break;
+          return this.convertTestResult(tr);
         } catch (e: any) {
           continue;
         }
       }
     } catch (e: any) {
-      const error = e?.message ?? JSON.stringify(e);
-      ctx.logger.debug(`Failed to parse ${artifact.url}: ${error}`);
+      const msg = e?.message ?? JSON.stringify(e);
+      ctx.logger.debug(`Failed to process ${artifact.url}: ${msg}`);
     }
+    return [];
+  }
+
+  convertTestResult(tr: any): ReadonlyArray<DestinationRecord> {
+    // TODO: implement
     return [];
   }
 }
