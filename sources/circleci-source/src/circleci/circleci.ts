@@ -166,7 +166,7 @@ export class CircleCI {
     return (await this.get(`/project/${projectName}`)).data;
   }
 
-  @Memoize()
+  @Memoize((projectName: string, since?: string) => `${projectName}_${since}`)
   async fetchPipelines(
     projectName: string,
     since?: string
@@ -192,7 +192,6 @@ export class CircleCI {
       if (new Date(updatedAt) > lastUpdatedAt) {
         pipeline.computedProperties = {updatedAt};
         pipeline.workflows = workflows;
-        // Only fetch jobs if the pipeline is updated
         for (const workflow of pipeline.workflows) {
           workflow.jobs = await this.fetchJobs(workflow.id);
         }
@@ -227,7 +226,9 @@ export class CircleCI {
     );
   }
 
-  @Memoize()
+  @Memoize(
+    (projectSlug: string, jobNumber: string) => `${projectSlug}_${jobNumber}`
+  )
   async fetchTests(
     projectSlug: string,
     jobNumber: string
