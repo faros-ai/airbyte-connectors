@@ -62,13 +62,33 @@ export interface Job {
   status: string;
   type: string;
   stopped_at: string;
-  artifacts: Artifact[];
 }
 
-export interface Artifact {
-  path: string;
-  node_index: number;
-  url: string;
+export interface TestMetadata {
+  pipeline_id: string;
+  pipeline_vcs: Vcs;
+  project_slug: string;
+  workflow_id: string;
+  workflow_name: string;
+  job_number: number;
+  job_started_at: Date;
+  job_stopped_at: Date;
+  message: string;
+  source: string;
+  run_time: number;
+  file: string;
+  result: string;
+  name: string;
+  classname: string;
+}
+
+export interface qa_TestExecutionStats {
+  failure: number;
+  success: number;
+  skipped: number;
+  unknown: number;
+  custom: number;
+  total: number;
 }
 
 export interface TaskType {
@@ -84,6 +104,19 @@ export enum SyncEntity {
   All = 'All',
   Org = 'Org',
   Project = 'Project',
+}
+
+export interface CommitKey {
+  readonly sha: string;
+  readonly uid: string;
+  readonly repository: {
+    readonly name: string;
+    readonly uid: string;
+    readonly organization: {
+      readonly uid: string;
+      readonly source: string;
+    };
+  };
 }
 
 export interface BuildKey {

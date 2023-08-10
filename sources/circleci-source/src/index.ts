@@ -36,8 +36,10 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    return [Pipelines, Projects].map(
-      (Stream) => new Stream(config, this.logger)
-    );
+    const circleCI = CircleCI.instance(config, this.logger);
+    return [
+      new Projects(circleCI, config, this.logger),
+      new Pipelines(circleCI, config, this.logger),
+    ];
   }
 }

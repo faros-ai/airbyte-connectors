@@ -1,17 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {makeAxiosInstance, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
-import {Artifact, Pipeline} from './models';
+import {Pipeline} from './models';
 
 export class Pipelines extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_Build',
     'cicd_BuildCommitAssociation',
     'cicd_BuildStep',
-    // TODO: add test results models
   ];
 
   async convert(
@@ -23,8 +22,12 @@ export class Pipelines extends CircleCIConverter {
     const res: DestinationRecord[] = [];
 
     for (const workflow of pipeline.workflows ?? []) {
-      const buildKey = CircleCICommon.getBuildKey(workflow, pipeline, source);
-      const repoName = CircleCICommon.getProject(pipeline.project_slug);
+      const buildKey = CircleCICommon.getBuildKey(
+        workflow.id,
+        pipeline.id,
+        pipeline.project_slug,
+        source
+      );
       res.push({
         model: 'cicd_Build',
         record: {
@@ -43,18 +46,10 @@ export class Pipelines extends CircleCIConverter {
         model: 'cicd_BuildCommitAssociation',
         record: {
           build: buildKey,
-          commit: {
-            sha: pipeline.vcs?.revision,
-            uid: pipeline.vcs?.revision,
-            repository: {
-              name: repoName,
-              uid: repoName,
-              organization: {
-                uid: CircleCICommon.getOrganization(pipeline.project_slug),
-                source: pipeline.vcs?.provider_name,
-              },
-            },
-          },
+          commit: CircleCICommon.getCommitKey(
+            pipeline.vcs,
+            pipeline.project_slug
+          ),
         },
       });
       for (const job of workflow.jobs ?? []) {

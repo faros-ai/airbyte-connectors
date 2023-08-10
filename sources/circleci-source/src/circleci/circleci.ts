@@ -10,7 +10,7 @@ import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Artifact, Job, Pipeline, Project, Workflow} from './typings';
+import {Job, Pipeline, Project, Workflow} from './typings';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -61,6 +61,10 @@ export class CircleCI {
           'Circle-Token': config.token,
         },
         httpsAgent: new https.Agent({rejectUnauthorized}),
+        timeout: 60000, // default is `0` (no timeout)
+        // CircleCI responses can be are very large hence the infinity
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
       }),
       startDate,
       config.max_retries ?? DEFAULT_MAX_RETRIES
@@ -192,6 +196,7 @@ export class CircleCI {
     }
   }
 
+  @Memoize()
   async fetchWorkflows(pipelineId: string): Promise<Workflow[]> {
     const url = `/pipeline/${pipelineId}/workflow`;
     return this.iterate<Workflow>(
@@ -204,6 +209,7 @@ export class CircleCI {
     );
   }
 
+  @Memoize()
   async fetchJobs(workflowId: string): Promise<Job[]> {
     const jobs = await this.iterate<Job>(
       (params) =>
@@ -213,19 +219,6 @@ export class CircleCI {
         }),
       (item: any) => item
     );
-
-    for (const job of jobs) {
-      const artifacts = await this.iterate<Artifact>(
-        (params) =>
-          this.get(`/project/${job.project_slug}/${job.job_number}/artifacts`, {
-            params,
-            validateStatus: validateNotFoundStatus,
-          }),
-        (item: any) => item
-      );
-      job.artifacts = artifacts;
-    }
-
     return jobs;
   }
 }

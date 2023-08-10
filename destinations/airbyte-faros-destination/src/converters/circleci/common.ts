@@ -2,16 +2,37 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
 import {Converter} from '../converter';
-import {BuildKey, Pipeline, Workflow} from './models';
+import {BuildKey, CommitKey, Pipeline, Vcs, Workflow} from './models';
 
 export class CircleCICommon {
-  static getBuildKey(workflow: Workflow, pipeline: Pipeline, source): BuildKey {
+  static getCommitKey(vcs: Vcs, project_slug: string): CommitKey {
+    const repoName = CircleCICommon.getProject(project_slug);
     return {
-      uid: `${toLower(pipeline.id)}_${toLower(workflow.id)}`,
-      pipeline: {
-        uid: this.getProject(pipeline.project_slug),
+      sha: vcs.revision,
+      uid: vcs.revision,
+      repository: {
+        name: repoName,
+        uid: repoName,
         organization: {
-          uid: this.getOrganization(pipeline.project_slug),
+          uid: CircleCICommon.getOrganization(project_slug),
+          source: vcs.provider_name,
+        },
+      },
+    };
+  }
+
+  static getBuildKey(
+    workflow_id: string,
+    pipeline_id: string,
+    project_slug: string,
+    source: string
+  ): BuildKey {
+    return {
+      uid: `${toLower(pipeline_id)}_${toLower(workflow_id)}`,
+      pipeline: {
+        uid: this.getProject(project_slug),
+        organization: {
+          uid: this.getOrganization(project_slug),
           source,
         },
       },

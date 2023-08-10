@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
