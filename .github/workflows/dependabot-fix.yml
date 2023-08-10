@@ -44,10 +44,10 @@ jobs:
         run: npm --version
 
       - name: Install Lerna
-        run: npm install -g lerna @lerna/legacy-package-management patch-package
+        run: npm install -g lerna @lerna/legacy-package-management
 
       - name: Reformat package-lock.json
-        run: lerna bootstrap --hoist --no-ci && patch-package
+        run: lerna bootstrap --hoist --no-ci
 
       - name: Print package-lock.json
         run: head package-lock.json

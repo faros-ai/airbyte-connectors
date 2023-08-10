@@ -11,8 +11,8 @@ COPY ./destinations ./destinations
 
 RUN apk -U upgrade
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
-  && npm install -g lerna @lerna/legacy-package-management patch-package tsc
-RUN lerna bootstrap --hoist && patch-package
+  && npm install -g lerna @lerna/legacy-package-management tsc
+RUN lerna bootstrap --hoist
 
 ARG version
 RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg version=x.y.z" && false)
