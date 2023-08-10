@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter} from '../converter';
 import {BuildKey, Pipeline, Workflow} from './models';
 
 export class CircleCICommon {
@@ -67,10 +67,6 @@ export class CircleCICommon {
   }
 }
 
-export interface CircleCIConfig {
-  token?: string;
-}
-
 /** CircleCI converter base */
 export abstract class CircleCIConverter extends Converter {
   source = 'CircleCI';
@@ -78,9 +74,5 @@ export abstract class CircleCIConverter extends Converter {
   /** Almost every CircleCI record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  protected circleciConfig(ctx: StreamContext): CircleCIConfig {
-    return ctx.config.source_specific_configs?.circleci ?? {};
   }
 }
