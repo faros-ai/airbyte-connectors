@@ -282,7 +282,7 @@ function formatArg(
 ) {
   let formattedChoice = typeof choice === 'string' ? `"${choice}"` : choice;
   if (row.type === 'array') {
-    formattedChoice = `'${JSON.stringify(choice)}}'`;
+    formattedChoice = `'${JSON.stringify(choice)}'`;
   }
   return `${row.path} ${formattedChoice}`;
 }
@@ -295,7 +295,7 @@ async function promptLeaf(row: TableRow, tail = false) {
   if (row.constValue !== undefined) {
     return row.constValue;
   }
-  if (!row.required) {
+  if (!row.required || tail) {
     choices.push({
       // If `tail` is true, this means we're prompting for the second or later element of an array.
       message: tail ? 'Done' : 'Skip this section',
