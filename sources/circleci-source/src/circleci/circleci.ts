@@ -226,9 +226,6 @@ export class CircleCI {
     );
   }
 
-  @Memoize(
-    (projectSlug: string, jobNumber: string) => `${projectSlug}_${jobNumber}`
-  )
   async fetchTests(
     projectSlug: string,
     jobNumber: string
