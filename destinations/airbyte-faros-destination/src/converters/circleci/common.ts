@@ -28,7 +28,7 @@ export class CircleCICommon {
     source: string
   ): BuildKey {
     return {
-      uid: `${toLower(pipeline_id)}_${toLower(workflow_id)}`,
+      uid: `${toLower(pipeline_id)}__${toLower(workflow_id)}`,
       pipeline: {
         uid: this.getProject(project_slug),
         organization: {
