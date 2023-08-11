@@ -90,7 +90,4 @@ export interface TestMetadata {
   result: string;
   name: string;
   classname: string;
-  computedProperties: {
-    updatedAt: string;
-  };
 }

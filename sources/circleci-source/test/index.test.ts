@@ -56,7 +56,7 @@ describe('index', () => {
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
-        new Date('2010-03-27T14:03:51-0800'),
+        10000,
         1
       );
     });
@@ -70,12 +70,7 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(
-        logger,
-        null,
-        new Date('2010-03-27T14:03:51-0800'),
-        1
-      );
+      return new CircleCI(logger, null, 10000, 1);
     });
     const source = new sut.CircleCISource(logger);
     const res = await source.checkConnection(sourceConfig);
@@ -96,7 +91,7 @@ describe('index', () => {
             status: 200,
           }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800'),
+        10000,
         1
       );
     });
@@ -137,7 +132,7 @@ describe('index', () => {
             status: 200,
           }),
       } as any,
-      new Date('2010-03-27T14:03:51-0800'),
+      10000,
       1
     );
     CircleCI.instance = jest.fn().mockReturnValue(circleCI);
@@ -197,7 +192,7 @@ describe('index', () => {
               status: 200,
             }),
         } as any,
-        new Date('2010-03-27T14:03:51-0800'),
+        10000,
         1
       );
     });

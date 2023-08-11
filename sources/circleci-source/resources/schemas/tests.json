@@ -63,14 +63,6 @@
     },
     "source": {
       "type": "string"
-    },
-    "computedProperties": {
-      "type": "object",
-      "properties": {
-        "updatedAt": {
-          "type": "string"
-        }
-      }
     }
   }
 }

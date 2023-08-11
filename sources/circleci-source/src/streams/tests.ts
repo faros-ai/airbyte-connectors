@@ -16,7 +16,7 @@ export class Tests extends CircleCIStreamBase {
   }
 
   get cursorField(): string[] {
-    return ['computedProperties', 'updatedAt'];
+    return ['job_stopped_at'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -73,9 +73,9 @@ export class Tests extends CircleCIStreamBase {
 
     const newState = {
       lastUpdatedAt:
-        new Date(latestRecord.computedProperties.updatedAt) >
+        new Date(latestRecord.job_stopped_at) >
         new Date(state.lastUpdatedAt ?? 0)
-          ? latestRecord.computedProperties.updatedAt
+          ? latestRecord.job_stopped_at
           : state.lastUpdatedAt,
     };
     return {...currentStreamState, [projectName]: newState};
