@@ -160,7 +160,6 @@ export class Tests extends CircleCIConverter {
       case 'succeeded':
       case 'pass':
       case 'passed':
-      case 'system-out':
         return {category: 'Success', detail};
       case 'skip':
       case 'skipped':
