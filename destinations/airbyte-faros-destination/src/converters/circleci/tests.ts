@@ -123,20 +123,20 @@ export class Tests extends CircleCIConverter {
       };
     }
     // Update test execution status & stats
-    const testExecution = this.testExecutions[testExecutionUid];
+    const te = this.testExecutions[testExecutionUid];
     if (testCaseResultStatus.category === 'Failure') {
-      testExecution.status = {category: 'Failure', detail: null};
-      testExecution.stats.failure += 1;
+      te.status = {category: 'Failure', detail: null};
+      te.testCaseResultsStats.failure += 1;
     } else if (testCaseResultStatus.category === 'Success') {
-      testExecution.stats.success += 1;
+      te.testCaseResultsStats.success += 1;
     } else if (testCaseResultStatus.category === 'Skipped') {
-      testExecution.stats.skipped += 1;
+      te.testCaseResultsStats.skipped += 1;
     } else if (testCaseResultStatus.category === 'Custom') {
-      testExecution.stats.custom += 1;
+      te.testCaseResultsStats.custom += 1;
     } else {
-      testExecution.stats.unknown += 1;
+      te.testCaseResultsStats.unknown += 1;
     }
-    testExecution.stats.total += 1;
+    te.testCaseResultsStats.total += 1;
 
     return res;
   }
