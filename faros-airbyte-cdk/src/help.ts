@@ -282,7 +282,7 @@ function formatArg(
 ) {
   let formattedChoice = typeof choice === 'string' ? `"${choice}"` : choice;
   if (row.type === 'array') {
-    formattedChoice = `'${JSON.stringify(choice)}}'`;
+    formattedChoice = `'${JSON.stringify(choice)}'`;
   }
   return `${row.path} ${formattedChoice}`;
 }
