@@ -166,14 +166,12 @@ export class CircleCI {
     return (await this.get(`/project/${projectName}`)).data;
   }
 
-  @Memoize((projectName: string, since?: string) => `${projectName}_${since}`)
-  async fetchPipelines(
+  async *fetchPipelines(
     projectName: string,
     since?: string
-  ): Promise<ReadonlyArray<Pipeline>> {
+  ): AsyncGenerator<Pipeline> {
     const lastUpdatedAt = since ? new Date(since) : this.startDate;
     const url = `/project/${projectName}/pipeline`;
-    const res = [];
     const pipelines = await this.iterate<Pipeline>(
       (params) => this.get(url, {params}),
       (item: any) => ({
@@ -195,10 +193,9 @@ export class CircleCI {
         for (const workflow of pipeline.workflows) {
           workflow.jobs = await this.fetchJobs(workflow.id);
         }
-        res.push(pipeline);
+        yield pipeline;
       }
     }
-    return res;
   }
 
   @Memoize()
@@ -228,7 +225,7 @@ export class CircleCI {
 
   async fetchTests(
     projectSlug: string,
-    jobNumber: string
+    jobNumber: number
   ): Promise<TestMetadata[]> {
     return this.iterate<TestMetadata>(
       (params) =>

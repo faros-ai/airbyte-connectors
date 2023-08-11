@@ -35,12 +35,7 @@ export class Pipelines extends CircleCIStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
         : undefined;
-    for (const pipeline of await this.circleCI.fetchPipelines(
-      streamSlice.projectName,
-      since
-    )) {
-      yield pipeline;
-    }
+    yield* this.circleCI.fetchPipelines(streamSlice.projectName, since);
   }
 
   getUpdatedState(

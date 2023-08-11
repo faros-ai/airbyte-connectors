@@ -36,7 +36,7 @@ export class Tests extends CircleCIStreamBase {
         ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
         : undefined;
 
-    for (const pipeline of await this.circleCI.fetchPipelines(
+    for await (const pipeline of this.circleCI.fetchPipelines(
       streamSlice.projectName,
       since
     )) {
@@ -44,7 +44,7 @@ export class Tests extends CircleCIStreamBase {
         for (const job of workflow.jobs ?? []) {
           const tests = await this.circleCI.fetchTests(
             pipeline.project_slug,
-            job.job_number.toString()
+            job.job_number
           );
           for (const test of tests) {
             yield {
