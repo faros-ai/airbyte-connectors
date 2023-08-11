@@ -149,4 +149,35 @@ describe('traverse', () => {
       )
     ).toMatchSnapshot();
   });
+
+  test('deprecated', () => {
+    expect(
+      traverseObject(
+        {
+          title: 'Spec',
+          type: 'object',
+          properties: {
+            user: {
+              type: 'string',
+            },
+            name: {
+              type: 'string',
+              deprecated: true,
+            },
+            age: {
+              type: 'integer',
+              deprecated: false,
+            },
+          },
+        },
+        []
+      )
+    ).toMatchSnapshot();
+  });
+
+  test('oneOf deprecated', () => {
+    expect(
+      traverseObject(loadJSON('one-of-deprecated.json'), [])
+    ).toMatchSnapshot();
+  });
 });

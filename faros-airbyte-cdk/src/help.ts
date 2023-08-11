@@ -62,12 +62,12 @@ export function traverseObject(
   startObject: Dictionary<any>,
   startPath: string[],
   section = 1,
-  required = false
+  useDeprecatedFields = false
 ): TableRow[] {
   const result: TableRow[] = [];
   // Queue of objects to process in BFS
   const process: [[Dictionary<any>, string[], number, boolean]] = [
-    [startObject, startPath, section, required],
+    [startObject, startPath, section, false],
   ];
   let newIdx = section + 1;
   while (process.length > 0) {
@@ -82,7 +82,9 @@ export function traverseObject(
     ok(curObject.title);
 
     if (curObject.properties) {
-      const children = Object.keys(curObject.properties).length;
+      const children = Object.values(curObject.properties).filter(
+        (v) => useDeprecatedFields || !v['deprecated']
+      ).length;
       if (!children) {
         result.push({
           title: curObject.title,
@@ -123,6 +125,13 @@ export function traverseObject(
         return a.localeCompare(b);
       };
       for (const propertyName of Object.keys(curObject.properties).sort(cmp)) {
+        if (
+          !useDeprecatedFields &&
+          curObject.properties[propertyName]['deprecated']
+        ) {
+          continue;
+        }
+
         process.push([
           curObject.properties[propertyName],
           curPath.concat(propertyName),
@@ -131,7 +140,9 @@ export function traverseObject(
         ]);
       }
     } else {
-      const children = curObject.oneOf.length;
+      const children = Object.values(curObject.oneOf).filter(
+        (v) => useDeprecatedFields || !v['deprecated']
+      ).length;
       ok(children > 0);
       result.push({
         title: curObject.title,
@@ -151,6 +162,10 @@ export function traverseObject(
         examples: [],
       });
       for (const choice of curObject.oneOf) {
+        if (!useDeprecatedFields && choice['deprecated']) {
+          continue;
+        }
+
         process.push([choice, curPath, newIdx++, false]);
       }
     }
@@ -302,6 +317,18 @@ async function promptLeaf(row: TableRow, tail = false) {
       idx++;
       choices.push({message: `example ${idx} (${example})`, value: example});
     }
+  }
+
+  if (row.airbyte_secret || row.multiline) {
+    const variableName = row.path
+      .split('.')
+      .filter((part) => part[0].match(/[a-z]/i))
+      .join('_')
+      .toUpperCase();
+    choices.push({
+      message: `Use environment variable ${variableName}`,
+      value: `\${${variableName}}`,
+    });
   }
 
   let choice = ' ';
