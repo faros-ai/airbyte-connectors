@@ -10,9 +10,10 @@
         "skip_writing_test_cases": {
           "type": "boolean",
           "title": "Skip writing test cases",
-          "description": "Disable if you require to collect detailed information about all test results (will write a large number of records).",
+          "description": "Disable if you require to collect detailed information about test results.",
           "default": true
         }
+      }
     }
   ]
 }
