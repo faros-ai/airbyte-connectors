@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
 import {TestMetadata} from './models';
 
@@ -16,14 +16,23 @@ export class Tests extends CircleCIConverter {
     'qa_TestExecutionCommitAssociation',
   ];
 
+  private skipWritingTestCases: boolean | undefined = undefined;
   private readonly testCases: Set<string> = new Set<string>();
   private readonly testSuites: Set<string> = new Set<string>();
   private readonly testExecutionCommits: Set<string> = new Set<string>();
   private readonly testExecutions: Dictionary<any> = {};
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    if (this.skipWritingTestCases === undefined) {
+      const skipWritingTestCases =
+        this.circleCIConfig(ctx)?.skip_writing_test_cases;
+      this.skipWritingTestCases =
+        skipWritingTestCases === undefined ? true : skipWritingTestCases;
+    }
+
     const source = this.streamName.source;
     const test = record.record.data as TestMetadata;
     const res: DestinationRecord[] = [];
@@ -34,7 +43,7 @@ export class Tests extends CircleCIConverter {
     const testExecutionUid = `${testSuiteUid}__${test.job_number}`;
 
     // Write test case & test suite association only once
-    if (!this.testCases.has(testCaseUid)) {
+    if (!this.skipWritingTestCases && !this.testCases.has(testCaseUid)) {
       res.push({
         model: 'qa_TestCase',
         record: {
@@ -58,16 +67,18 @@ export class Tests extends CircleCIConverter {
     }
     // Write the test case result on every test outcome
     const testCaseResultStatus = this.convertTestStatus(test.result);
-    res.push({
-      model: 'qa_TestCaseResult',
-      record: {
-        uid: testCaseResultUid,
-        description: test.message?.substring(0, 256),
-        status: testCaseResultStatus,
-        testCase: {uid: testCaseUid, source},
-        testExecution: {uid: testExecutionUid, source},
-      },
-    });
+    if (!this.skipWritingTestCases) {
+      res.push({
+        model: 'qa_TestCaseResult',
+        record: {
+          uid: testCaseResultUid,
+          description: test.message?.substring(0, 256),
+          status: testCaseResultStatus,
+          testCase: {uid: testCaseUid, source},
+          testExecution: {uid: testExecutionUid, source},
+        },
+      });
+    }
 
     // Write the test suite only once
     if (!this.testSuites.has(testSuiteUid)) {

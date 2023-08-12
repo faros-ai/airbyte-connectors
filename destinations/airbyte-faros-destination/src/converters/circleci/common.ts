@@ -1,8 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 import {BuildKey, CommitKey, Vcs} from './models';
+
+export interface CircleCIConfig {
+  skip_writing_test_cases: boolean;
+}
 
 export class CircleCICommon {
   static getCommitKey(vcs: Vcs, project_slug: string): CommitKey {
@@ -95,5 +99,9 @@ export abstract class CircleCIConverter extends Converter {
   /** Almost every CircleCI record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected circleCIConfig(ctx: StreamContext): CircleCIConfig {
+    return ctx.config.source_specific_configs?.circleci ?? {};
   }
 }
