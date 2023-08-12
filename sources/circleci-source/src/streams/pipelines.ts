@@ -2,11 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Pipeline} from '../circleci/typings';
-import {CircleCIStreamBase} from './common';
-
-type StreamSlice = {
-  projectName: string;
-};
+import {CircleCIStreamBase, StreamSlice} from './common';
 
 type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
 

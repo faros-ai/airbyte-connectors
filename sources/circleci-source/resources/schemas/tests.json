@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "pipeline_id": {
+      "type": "string"
+    },
+    "pipeline_vcs": {
+      "type": "object",
+      "properties": {
+        "origin_repository_url": {
+          "type": "string"
+        },
+        "target_repository_url": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        },
+        "provider_name": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        }
+      }
+    },
+    "project_slug": {
+      "type": "string"
+    },
+    "workflow_id": {
+      "type": "string"
+    },
+    "workflow_name": {
+      "type": "string"
+    },
+    "job_number": {
+      "type": "number"
+    },
+    "job_started_at": {
+      "type": "string"
+    },
+    "job_stopped_at": {
+      "type": "string"
+    },
+    "classname": {
+      "type": "string"
+    },
+    "file": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "run_time": {
+      "type": "number"
+    },
+    "source": {
+      "type": "string"
+    }
+  }
+}

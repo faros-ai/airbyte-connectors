@@ -1,10 +1,17 @@
 export interface Project {
-  readonly slug: string;
-  readonly organization_name: string;
-  readonly organization_id: string;
-  readonly name: string;
-  readonly id: string;
-  readonly organization_slug: string;
+  slug: string;
+  organization_name: string;
+  organization_id: string;
+  name: string;
+  id: string;
+  organization_slug: string;
+  vcs_info: VcsInfo;
+}
+
+export interface VcsInfo {
+  vcs_url: string;
+  provider: string;
+  default_branch: string;
 }
 
 export interface Actor {
@@ -64,6 +71,33 @@ export interface Job {
   stopped_at: string;
 }
 
+export interface TestMetadata {
+  pipeline_id: string;
+  pipeline_vcs: Vcs;
+  project_slug: string;
+  workflow_id: string;
+  workflow_name: string;
+  job_number: number;
+  job_started_at: Date;
+  job_stopped_at: Date;
+  message: string;
+  source: string;
+  run_time: number;
+  file: string;
+  result: string;
+  name: string;
+  classname: string;
+}
+
+export interface qa_TestExecutionStats {
+  failure: number;
+  success: number;
+  skipped: number;
+  unknown: number;
+  custom: number;
+  total: number;
+}
+
 export interface TaskType {
   category: string;
   detail?: string;
@@ -77,6 +111,19 @@ export enum SyncEntity {
   All = 'All',
   Org = 'Org',
   Project = 'Project',
+}
+
+export interface CommitKey {
+  readonly sha: string;
+  readonly uid: string;
+  readonly repository: {
+    readonly name: string;
+    readonly uid: string;
+    readonly organization: {
+      readonly uid: string;
+      readonly source: string;
+    };
+  };
 }
 
 export interface BuildKey {

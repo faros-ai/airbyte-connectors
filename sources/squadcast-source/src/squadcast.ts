@@ -191,7 +191,7 @@ export class Squadcast {
     params.append('owner_id', ownerID);
 
     if (this.services.length > 0) {
-      for await (const service of this.getServices()) {
+      for (const service of await this.getServices()) {
         params.append('service', service.id);
       }
     }
@@ -275,13 +275,15 @@ export class Squadcast {
   }
 
   @Memoize()
-  async *getServices(): AsyncGenerator<Service> {
+  async getServices(): Promise<ReadonlyArray<Service>> {
     const res = await this.httpClient.get<ServiceResponse>('services');
+    const services = [];
     for (const item of res.data.data) {
       if (this.services.length === 0 || this.services.includes(item.slug)) {
-        yield item;
+        services.push(item);
       }
     }
+    return services;
   }
 
   async *getUsers(): AsyncGenerator<User> {

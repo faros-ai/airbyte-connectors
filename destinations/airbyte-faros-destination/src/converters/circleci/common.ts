@@ -1,17 +1,42 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {Converter} from '../converter';
-import {BuildKey, Pipeline, Workflow} from './models';
+import {Converter, StreamContext} from '../converter';
+import {BuildKey, CommitKey, Vcs} from './models';
+
+export interface CircleCIConfig {
+  skip_writing_test_cases: boolean;
+}
 
 export class CircleCICommon {
-  static getBuildKey(workflow: Workflow, pipeline: Pipeline, source): BuildKey {
+  static getCommitKey(vcs: Vcs, project_slug: string): CommitKey {
+    const repoName = CircleCICommon.getProject(project_slug);
     return {
-      uid: `${toLower(pipeline.id)}_${toLower(workflow.id)}`,
-      pipeline: {
-        uid: this.getProject(pipeline.project_slug),
+      sha: vcs.revision,
+      uid: vcs.revision,
+      repository: {
+        name: repoName,
+        uid: repoName,
         organization: {
-          uid: this.getOrganization(pipeline.project_slug),
+          uid: CircleCICommon.getOrganization(project_slug),
+          source: vcs.provider_name,
+        },
+      },
+    };
+  }
+
+  static getBuildKey(
+    workflow_id: string,
+    pipeline_id: string,
+    project_slug: string,
+    source: string
+  ): BuildKey {
+    return {
+      uid: `${toLower(pipeline_id)}__${toLower(workflow_id)}`,
+      pipeline: {
+        uid: this.getProject(project_slug),
+        organization: {
+          uid: this.getOrganization(project_slug),
           source,
         },
       },
@@ -74,5 +99,9 @@ export abstract class CircleCIConverter extends Converter {
   /** Almost every CircleCI record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected circleCIConfig(ctx: StreamContext): CircleCIConfig {
+    return ctx.config.source_specific_configs?.circleci ?? {};
   }
 }

@@ -27,6 +27,9 @@
         "bitbucket": {
           "$ref": "bitbucket.json"
         },
+        "circleci": {
+          "$ref": "circleci.json"
+        },
         "clickup": {
           "$ref": "clickup.json"
         },

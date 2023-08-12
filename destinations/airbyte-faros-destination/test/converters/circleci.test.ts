@@ -2,6 +2,7 @@ import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {circleciAllStreamsLog} from './data';
@@ -15,7 +16,13 @@ describe('circleci', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      {circleci: {skip_writing_test_cases: false}}
+    );
   });
 
   afterEach(async () => {
@@ -39,6 +46,7 @@ describe('circleci', () => {
     const processedByStream = {
       pipelines: 1,
       projects: 1,
+      tests: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -47,11 +55,17 @@ describe('circleci', () => {
       .fromPairs()
       .value();
     const writtenByModel = {
-      cicd_Build: 3,
-      cicd_BuildCommitAssociation: 3,
-      cicd_BuildStep: 3,
+      cicd_Build: 1,
+      cicd_BuildCommitAssociation: 1,
+      cicd_BuildStep: 1,
       cicd_Organization: 1,
       cicd_Pipeline: 1,
+      qa_TestCase: 2,
+      qa_TestCaseResult: 2,
+      qa_TestExecution: 1,
+      qa_TestExecutionCommitAssociation: 1,
+      qa_TestSuite: 1,
+      qa_TestSuiteTestCaseAssociation: 2,
     };
 
     const processedTotal = _(processedByStream).values().sum();

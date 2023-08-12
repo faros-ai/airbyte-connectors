@@ -1,10 +1,17 @@
 export interface Project {
-  readonly slug: string;
-  readonly organization_name: string;
-  readonly organization_id: string;
-  readonly name: string;
-  readonly id: string;
-  readonly organization_slug: string;
+  slug: string;
+  organization_name: string;
+  organization_id: string;
+  name: string;
+  id: string;
+  organization_slug: string;
+  vcs_info: VcsInfo;
+}
+
+export interface VcsInfo {
+  vcs_url: string;
+  provider: string;
+  default_branch: string;
 }
 
 export interface Actor {
@@ -59,10 +66,28 @@ export interface Job {
   dependencies: any[];
   job_number: number;
   id: string;
-  started_at: Date;
+  started_at: string;
   name: string;
   project_slug: string;
   status: string;
   type: string;
   stopped_at: string;
+}
+
+export interface TestMetadata {
+  pipeline_id: string;
+  pipeline_vcs: Vcs;
+  project_slug: string;
+  workflow_id: string;
+  workflow_name: string;
+  job_number: number;
+  job_started_at: string;
+  job_stopped_at: string;
+  message: string;
+  source: string;
+  run_time: number;
+  file: string;
+  result: string;
+  name: string;
+  classname: string;
 }

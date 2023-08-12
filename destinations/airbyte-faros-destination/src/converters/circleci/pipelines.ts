@@ -12,6 +12,7 @@ export class Pipelines extends CircleCIConverter {
     'cicd_BuildCommitAssociation',
     'cicd_BuildStep',
   ];
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -19,9 +20,13 @@ export class Pipelines extends CircleCIConverter {
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    for (const workflow of pipeline.workflows) {
-      const buildKey = CircleCICommon.getBuildKey(workflow, pipeline, source);
-      const repoName = CircleCICommon.getProject(pipeline.project_slug);
+    for (const workflow of pipeline.workflows ?? []) {
+      const buildKey = CircleCICommon.getBuildKey(
+        workflow.id,
+        pipeline.id,
+        pipeline.project_slug,
+        source
+      );
       res.push({
         model: 'cicd_Build',
         record: {
@@ -40,21 +45,13 @@ export class Pipelines extends CircleCIConverter {
         model: 'cicd_BuildCommitAssociation',
         record: {
           build: buildKey,
-          commit: {
-            sha: pipeline.vcs?.revision,
-            uid: pipeline.vcs?.revision,
-            repository: {
-              name: repoName,
-              uid: repoName,
-              organization: {
-                uid: CircleCICommon.getOrganization(pipeline.project_slug),
-                source: pipeline.vcs?.provider_name,
-              },
-            },
-          },
+          commit: CircleCICommon.getCommitKey(
+            pipeline.vcs,
+            pipeline.project_slug
+          ),
         },
       });
-      for (const job of workflow.jobs) {
+      for (const job of workflow.jobs ?? []) {
         res.push({
           model: 'cicd_BuildStep',
           record: {

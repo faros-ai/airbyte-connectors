@@ -1,0 +1,20 @@
+[
+  {
+    "message": "seems to work",
+    "source": "source",
+    "run_time": "MacOS",
+    "file": "/path/to/main.java",
+    "result": "success",
+    "name": "Tasty Main",
+    "classname": "Main"
+  },
+  {
+    "message": "Error: division by zero",
+    "source": "source",
+    "run_time": "MacOS",
+    "file": "/path/to/util.java",
+    "result": "failure",
+    "name": "Tasty Util",
+    "classname": "Main"
+  }
+]
