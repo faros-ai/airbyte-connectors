@@ -21,7 +21,7 @@ describe('circleci', () => {
       InvalidRecordStrategy.SKIP,
       Edition.CLOUD,
       undefined,
-      {skip_writing_test_cases: false}
+      {circleci: {skip_writing_test_cases: false}}
     );
   });
 
