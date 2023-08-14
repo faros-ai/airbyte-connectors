@@ -72,6 +72,7 @@ export interface LogEntry extends PagerdutyObject {
   readonly incident: PagerdutyObject;
   readonly service: PagerdutyObject;
   readonly event_details?: Record<string, any>; // e.g. trigger events have "description" detail
+  readonly agent: PagerdutyObject;
 }
 
 export interface Incident extends PagerdutyObject {
