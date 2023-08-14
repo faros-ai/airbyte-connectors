@@ -4,6 +4,7 @@ import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon} from './common';
 import {GitHubConverter} from './common';
+import {Utils} from 'faros-js-client';
 
 export class PullRequestCommits extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -24,9 +25,13 @@ export class PullRequestCommits extends GitHubConverter {
 
     if (!repository) return [];
 
+    const author = prCommit.author ? {uid: prCommit.author.login, source} : null;
+
     const commit = {
       uid: prCommit.sha,
       sha: prCommit.sha,
+      author,
+      createdAt: Utils.toDate(prCommit.commit.author?.date),
       repository,
     };
 
