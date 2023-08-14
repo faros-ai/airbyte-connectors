@@ -60,6 +60,10 @@ interface PagerdutyObject {
 export interface User extends PagerdutyObject {
   readonly email: string;
   readonly name: string;
+  readonly time_zone: string; // tzinfo
+  readonly role: string;
+  readonly description: string;
+  readonly job_title: string;
 }
 
 export interface Team extends PagerdutyObject {
