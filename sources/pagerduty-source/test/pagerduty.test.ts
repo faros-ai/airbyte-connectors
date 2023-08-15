@@ -45,6 +45,13 @@ describe('Pagerduty', () => {
         self: 'self',
         html_url: 'url',
       },
+      agent: {
+        id: 'id',
+        type: 'Agent',
+        summary: 'Summary',
+        self: 'self',
+        html_url: 'url',
+      },
     };
 
     const response = pagination10000Response<LogEntry>(
