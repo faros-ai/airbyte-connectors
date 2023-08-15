@@ -22,7 +22,19 @@
     },
     "name": {
       "type": "string"
+    },
+    "time_zone": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "job_title": {
+      "type": "string"
     }
   },
-  "required": ["id", "type", "summary", "self", "html_url", "email", "name"]
+  "required": ["id", "type", "summary", "self", "html_url", "email", "name", "role"]
 }
