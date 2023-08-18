@@ -1,0 +1,56 @@
+{
+  "name": "sheets-source",
+  "version": "0.0.1",
+  "description": "Sheets source",
+  "keywords": [
+    "airbyte",
+    "sheets"
+  ],
+  "homepage": "https://www.faros.ai",
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/",
+    "resources/"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "main": "./lib",
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "prepare": "npm run build",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.377.0",
+    "faros-airbyte-cdk": "0.0.1",
+    "faros-airbyte-common": "0.0.1",
+    "fs-extra": "^9.1.0",
+    "google-spreadsheet": "^3.1.15",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
+    "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/google-spreadsheet": "^3.0.2"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testTimeout": 10000,
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "test/tsconfig.json"
+      }
+    },
+    "snapshotFormat": {
+      "printBasicPrototype": true
+    }
+  }
+}
