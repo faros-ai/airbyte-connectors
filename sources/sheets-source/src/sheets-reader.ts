@@ -150,7 +150,7 @@ export class SheetsReader {
       });
 
       for (const row of rows) {
-        yield row;
+        yield { sheetName, row };
       }
     }
   }

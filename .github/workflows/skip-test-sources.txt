@@ -17,6 +17,7 @@ opsgenie-source
 phabricator-source
 semaphoreci-source
 servicenow-source
+sheets-source
 squadcast-source
 testrails-source
 victorops-source

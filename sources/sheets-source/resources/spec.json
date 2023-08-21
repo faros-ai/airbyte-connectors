@@ -12,7 +12,7 @@
       "spreadsheet_source": {
         "order": 1,
         "title": "Spreadsheet Source",
-        "description": "Either local spreadsheet file, Google Sheet or S3 spreadsheet",
+        "description": "Either local spreadsheet file, Google Sheet or S3 spreadsheet. Only xlsx files are supported.",
         "type": "object",
         "oneOf": [
           {
@@ -164,7 +164,7 @@
           "customers",
           "orders"
         ]
-      }      
+      }
     }
   }
 }
