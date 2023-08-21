@@ -1,13 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {GitHubCommon, GitHubConverter} from './common';
+import {GitHubConverter} from './common';
 
 export class Teams extends GitHubConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Team',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Team'];
 
   async convert(
     record: AirbyteRecord
@@ -16,17 +14,12 @@ export class Teams extends GitHubConverter {
     const team = record.record.data;
     const res: DestinationRecord[] = [];
 
-
-
     res.push({
       model: 'vcs_Team',
       record: {
-        teamId: team.id,
         name: team.name,
-        slug: team.slug,
+        uid: toLower(team.slug),
         description: team.description,
-        privacy: team.privacy,
-        url: team.url,
         source,
       },
     });
