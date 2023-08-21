@@ -30,10 +30,10 @@
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "job_title": {
-      "type": "string"
+      "type": ["string", "null"]
     }
   },
   "required": ["id", "type", "summary", "self", "html_url", "email", "name", "role"]
