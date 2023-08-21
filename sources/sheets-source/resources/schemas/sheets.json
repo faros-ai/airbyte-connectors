@@ -6,7 +6,9 @@
       "type": "string"
     },
     "row": {
-      "type": "string"
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {}
     }
   }
 }
