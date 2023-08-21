@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index reads local spreadsheet 1`] = `
+Array [
+  Object {
+    "row": Object {
+      "Age": 28,
+      "Country": "USA",
+      "Name": "John",
+      "Occupation": "Engineer",
+      "Salary": 75000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 32,
+      "Country": "Canada",
+      "Name": "Emily",
+      "Occupation": "Designer",
+      "Salary": 62000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 45,
+      "Country": "UK",
+      "Name": "Michael",
+      "Occupation": "Manager",
+      "Salary": 95000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 23,
+      "Country": "Germany",
+      "Name": "Sara",
+      "Occupation": "Student",
+      "Salary": 0,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 35,
+      "Country": "France",
+      "Name": "Daniel",
+      "Occupation": "Writer",
+      "Salary": 42000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 29,
+      "Country": "Australia",
+      "Name": "Jessica",
+      "Occupation": "Doctor",
+      "Salary": 120000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 31,
+      "Country": "Spain",
+      "Name": "Alex",
+      "Occupation": "Teacher",
+      "Salary": 52000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 27,
+      "Country": "Italy",
+      "Name": "Olivia",
+      "Occupation": "Artist",
+      "Salary": 38000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 40,
+      "Country": "Japan",
+      "Name": "William",
+      "Occupation": "Scientist",
+      "Salary": 80000,
+    },
+    "sheetName": "Sheet1",
+  },
+  Object {
+    "row": Object {
+      "Age": 22,
+      "Country": "Brazil",
+      "Name": "Sophia",
+      "Occupation": "Programmer",
+      "Salary": 60000,
+    },
+    "sheetName": "Sheet1",
+  },
+]
+`;
