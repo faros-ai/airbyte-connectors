@@ -31,6 +31,7 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
 function toPath(pointer: string): string {
   return pointer
     .replace(/\/oneOf\/\d+/g, '')
+    .replace(/\/items(\/?)/g, '[*]$1')
     .split('/properties/')
     .filter((s) => s)
     .join('.');
