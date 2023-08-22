@@ -13,6 +13,29 @@ AirbyteSpec {
               "const": "John Doe",
               "type": "string",
             },
+            "object_token_array": Object {
+              "items": Object {
+                "properties": Object {
+                  "token": Object {
+                    "airbyte_secret": true,
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+              "type": "array",
+            },
+            "token": Object {
+              "airbyte_secret": true,
+              "type": "string",
+            },
+            "token_array": Object {
+              "items": Object {
+                "airbyte_secret": true,
+                "type": "string",
+              },
+              "type": "array",
+            },
           },
           "type": "object",
         },
