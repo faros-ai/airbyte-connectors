@@ -338,7 +338,7 @@ async function promptLeaf(row: TableRow, tail = false) {
         if (row.default === choice) {
           choices.push({
             message: `${row.default} (default)`,
-            value: `Used default (${row.default}).`,
+            value: 'Used default.',
           });
         } else {
           choices.push({
