@@ -14,6 +14,7 @@ const CUSTOMER_IO_API_URL = 'https://api.customer.io/v1';
 
 export interface CustomerIOConfig {
   app_api_key: string;
+  api_url?: string;
   readonly cutoff_days: number;
 }
 
@@ -35,7 +36,7 @@ export class CustomerIO {
     return new CustomerIO(
       axiosInstance ??
         axios.create({
-          baseURL: CUSTOMER_IO_API_URL,
+          baseURL: config.api_url ?? CUSTOMER_IO_API_URL,
           timeout: 30000,
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},
