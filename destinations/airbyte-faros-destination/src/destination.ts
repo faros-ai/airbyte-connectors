@@ -190,7 +190,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
-    const useGraphQLV2 = config.edition_configs.graphql_api === 'v2';
+    const useGraphQLV2 = (config.edition_configs.graphql_api ?? 'v2') === 'v2';
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url,

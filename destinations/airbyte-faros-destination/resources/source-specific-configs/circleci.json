@@ -7,6 +7,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "CircleCI",
+          "order": 0
+        },
         "skip_writing_test_cases": {
           "type": "boolean",
           "title": "Skip writing test cases",
