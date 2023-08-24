@@ -47,7 +47,7 @@
       "customReportPath": {
         "type": "string",
         "title": "Custom Report Path",
-        "description": "Path to a Custom Report which the API will call, e.g. /acme/My_Custom_Report"
+        "description": "Path to a Custom Report to fetch from the API, e.g. /acme/My_Custom_Report. The source then calls the following API endpoint {baseUrl}/service/customreport2/acme/My_Custom_Report?format=json"
       }
     }
   }
