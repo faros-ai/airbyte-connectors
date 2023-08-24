@@ -32,7 +32,8 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly apiBaseUrlTemplate: string,
-    private readonly customReportsPath?: string
+    private readonly customReportsPath?: string,
+    private readonly baseUrl?: string
   ) {}
 
   static async instance(
@@ -55,13 +56,13 @@ export class Workday {
       throw new VError('baseUrl must not be an empty string');
     }
 
-    const baseURL = new URL(cfg.baseUrl);
+    const baseUrl = new URL(cfg.baseUrl);
     const apiBaseUrlTemplate =
-      baseURL.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
+      baseUrl.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
     logger.debug('Assuming API base url template: %s', apiBaseUrlTemplate);
     const timeout = cfg.timeout ?? 6000;
 
-    const accessToken = await Workday.getAccessToken(baseURL, cfg, logger);
+    const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
     const api = axios.create({
       timeout: timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
@@ -77,7 +78,8 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       apiBaseUrlTemplate,
-      cfg.customReportPath ?? ''
+      cfg.customReportPath ?? '',
+      cfg.baseUrl
     );
   }
 
@@ -151,7 +153,7 @@ export class Workday {
 
   async *customReports(path: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
-    const baseURL = this.apiBaseUrl('v2');
+    const baseURL = this.baseUrl;
     const res = await this.api.get(path, {
       baseURL,
     });
