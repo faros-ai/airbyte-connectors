@@ -20,8 +20,8 @@ export class CustomReports extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *readRecords(): AsyncGenerator<Person> {
+  async *readRecords(): AsyncGenerator<Dictionary<any>> {
     const workday = await Workday.instance(this.cfg, this.logger);
-    yield* workday.people();
+    yield* workday.customReports(this.cfg.customReportPath);
   }
 }

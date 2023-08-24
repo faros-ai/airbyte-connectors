@@ -146,9 +146,10 @@ export class Workday {
     );
   }
 
-  customReports(): any {
+  customReports(path: string): any {
+    // Note input param path should start with '/'
     const baseURL = this.apiBaseUrl('v2');
-    return this.api.get('/people', {
+    return this.api.get(path, {
       baseURL,
     });
   }
