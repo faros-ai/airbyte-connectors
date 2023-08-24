@@ -2,7 +2,6 @@ import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {WorkdayConfig} from '..';
-import {Person} from '../types';
 import {Workday} from '../workday';
 
 export class CustomReports extends AirbyteStreamBase {

@@ -3,7 +3,6 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {WorkdayConfig} from '.';
-import {CustomReports} from './streams/custom_reports';
 import {
   Person,
   SupervisoryOrganization,
