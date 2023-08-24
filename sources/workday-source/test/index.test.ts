@@ -178,4 +178,30 @@ describe('index', () => {
     expect(fnListOrgs).toHaveBeenCalledTimes(limit);
     expect(items).toStrictEqual([...expected.data, ...expected.data]);
   });
+  test('streams - customReports', async () => {
+    const fnListOrgs = jest.fn();
+    const expected = readTestResourceFile('customReports.json');
+    const limit = 2;
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnListOrgs.mockResolvedValue({data: expected}),
+        } as any,
+        limit,
+        'base-url'
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const workers = source.streams(config)[3];
+    const iter = workers.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
+    expect(items).toStrictEqual([...expected.data, ...expected.data]);
+  });
 });

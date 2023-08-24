@@ -48,6 +48,14 @@
         "type": "string",
         "title": "Custom Report Path",
         "description": "Path to a Custom Report to fetch from the API, e.g. /acme/My_Custom_Report. The source then calls the following API endpoint {baseUrl}/service/customreport2/acme/My_Custom_Report?format=json"
+      },
+      "timeout": {
+        "type": "number",
+        "title": "Request Timeout",
+        "minimum": 500,
+        "maximum": 40000,
+        "default": 6000,
+        "description": "The time allowed for a request to timeout (in milliseconds)."
       }
     }
   }

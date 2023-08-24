@@ -11,7 +11,6 @@ import {
 } from './types';
 
 const DEFAULT_PAGE_LIMIT = 20;
-const DEFAULT_BASE_URL = 'https://wd2-impl-services1.workday.com/ccx/';
 const VERSION_PLACEHOLDER = '<VERSION>';
 
 export interface Page<T> {
@@ -52,16 +51,21 @@ export class Workday {
     if (!cfg.refreshToken) {
       throw new VError('refreshToken must not be an empty string');
     }
+    if (!cfg.baseUrl) {
+      throw new VError('baseUrl must not be an empty string');
+    }
 
-    const baseURL = new URL(cfg.baseUrl ?? DEFAULT_BASE_URL);
+    const baseURL = new URL(cfg.baseUrl);
     const apiBaseUrlTemplate =
       baseURL.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
     logger.debug('Assuming API base url template: %s', apiBaseUrlTemplate);
+    const timeout = cfg.timeout ?? 6000;
 
     const accessToken = await Workday.getAccessToken(baseURL, cfg, logger);
     const api = axios.create({
-      timeout: 30000, // default is `0` (no timeout)
+      timeout: timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
+      maxBodyLength: Infinity, //default is 2000 bytes,
       headers: {
         authorization: `Bearer ${accessToken}`,
         'content-type': 'application/json',
