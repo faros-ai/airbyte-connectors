@@ -149,12 +149,15 @@ export class Workday {
     );
   }
 
-  customReports(path: string): any {
+  async *customReports(path: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
     const baseURL = this.apiBaseUrl('v2');
-    return this.api.get(path, {
+    const res = await this.api.get(path, {
       baseURL,
     });
+    for (const item of res.data?.Report_Entry ?? []) {
+      yield item;
+    }
   }
 
   async *orgCharts(

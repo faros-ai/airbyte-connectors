@@ -1,4 +1,4 @@
-import {CustomReports} from './custom_reports';
+import {CustomReports} from './customreports';
 import {OrgCharts} from './orgcharts';
 import {Orgs} from './orgs';
 import {People} from './people';
