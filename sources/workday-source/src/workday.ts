@@ -3,6 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {WorkdayConfig} from '.';
+import {CustomReports} from './streams/custom_reports';
 import {
   Person,
   SupervisoryOrganization,
@@ -32,7 +33,8 @@ export class Workday {
     private readonly logger: AirbyteLogger,
     private readonly api: AxiosInstance,
     private readonly limit: number,
-    private readonly apiBaseUrlTemplate: string
+    private readonly apiBaseUrlTemplate: string,
+    private readonly customReportsPath?: string
   ) {}
 
   static async instance(
@@ -71,7 +73,8 @@ export class Workday {
       logger,
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
-      apiBaseUrlTemplate
+      apiBaseUrlTemplate,
+      cfg.customReportPath ?? ''
     );
   }
 
@@ -141,6 +144,13 @@ export class Workday {
         params: {limit, offset},
       })
     );
+  }
+
+  customReports(): any {
+    const baseURL = this.apiBaseUrl('v2');
+    return this.api.get('/people', {
+      baseURL,
+    });
   }
 
   async *orgCharts(
