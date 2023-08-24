@@ -15,13 +15,15 @@ import {Job, Pipeline, Project, TestMetadata, Workflow} from './typings';
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_REQUEST_TIMEOUT = 60000;
 
 export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
   readonly reject_unauthorized: boolean;
-  readonly cutoff_days: number;
+  readonly cutoff_days?: number;
   readonly url?: string;
+  readonly request_timeout?: number;
   readonly max_retries?: number;
 }
 
@@ -58,7 +60,7 @@ export class CircleCI {
           'Circle-Token': config.token,
         },
         httpsAgent: new https.Agent({rejectUnauthorized}),
-        timeout: 60000, // default is `0` (no timeout)
+        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         // CircleCI responses can be are very large hence the infinity
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
