@@ -39,7 +39,7 @@
         "type": "string",
         "title": "GraphQL API",
         "description": "The version of GraphQL API for reads.",
-        "default": "v1",
+        "default": "v2",
         "enum": [
           "v1",
           "v2"
