@@ -1,0 +1,170 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Sheets Spec",
+    "type": "object",
+    "required": [
+      "spreadsheet_source"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "spreadsheet_source": {
+        "order": 1,
+        "title": "Spreadsheet Source",
+        "description": "Either local spreadsheet file, Google Sheet or S3 spreadsheet. Only xlsx files are supported.",
+        "type": "object",
+        "oneOf": [
+          {
+            "order": 0,
+            "title": "Local Spreadsheet",
+            "type": "object",
+            "required": [
+              "sheet_source",
+              "file"
+            ],
+            "properties": {
+              "sheet_source": {
+                "order": 0,
+                "type": "string",
+                "const": "LocalSpreadsheet"
+              },
+              "file": {
+                "order": 1,
+                "title": "File",
+                "description": "Path to a local spreadsheet file",
+                "type": "string",
+                "examples": [
+                  "my-sheet.xlsx"
+                ]
+              }
+            }
+          },
+          {
+            "order": 1,
+            "title": "Google Sheet",
+            "type": "object",
+            "required": [
+              "sheet_source",
+              "google_sheet_id"
+            ],
+            "properties": {
+              "sheet_source": {
+                "order": 0,
+                "type": "string",
+                "const": "GoogleSheet"
+              },
+              "google_sheet_id": {
+                "order": 1,
+                "title": "Google Sheet ID",
+                "description": "Google Sheet ID from the URL",
+                "type": "string",
+                "examples": [
+                  "1tslbvnyGJmEXzwOhTgOILTxzyYxuled8xwXkkfl5JWY"
+                ]
+              },
+              "google_service_account_private_key": {
+                "order": 2,
+                "title": "Google Service Account Private Key",
+                "description": "Google service account private key in JSON format (recommended). Don't specify with Google API Key.",
+                "type": "string",
+                "multiline": true,
+                "airbyte_secret": true
+              },
+              "google_api_key": {
+                "order": 3,
+                "title": "Google API Key",
+                "description": "Google API Key. Don't specify with Google Service Account Private Key.",
+                "type": "string",
+                "airbyte_secret": true
+              }
+            }
+          },
+          {
+            "order": 2,
+            "title": "S3 Spreadsheet",
+            "type": "object",
+            "required": [
+              "sheet_source",
+              "file",
+              "aws_region",
+              "aws_access_key_id",
+              "aws_secret_access_key"
+            ],
+            "properties": {
+              "sheet_source": {
+                "order": 0,
+                "type": "string",
+                "const": "S3Spreadsheet"
+              },
+              "file": {
+                "order": 1,
+                "title": "File",
+                "description": "Path to a spreadsheet file in an S3 bucket",
+                "type": "string",
+                "examples": [
+                  "s3://my-bucket/my-sheet.xlsx"
+                ]
+              },
+              "aws_region": {
+                "order": 2,
+                "title": "AWS Region",
+                "description": "AWS Region",
+                "type": "string",
+                "examples": [
+                  "us-east-1"
+                ]
+              },
+              "aws_access_key_id": {
+                "order": 2,
+                "title": "AWS Access Key Id",
+                "description": "AWS Access Key Id",
+                "type": "string",
+                "airbyte_secret": true
+              },
+              "aws_secret_access_key": {
+                "order": 3,
+                "title": "AWS Secret Access Key",
+                "description": "AWS Secret Access Key",
+                "type": "string",
+                "airbyte_secret": true
+              },
+              "aws_session_token": {
+                "order": 4,
+                "title": "AWS Session Token",
+                "description": "AWS Session Token",
+                "type": "string",
+                "airbyte_secret": true
+              }
+            }
+          }
+        ]
+      },
+      "sheet_page_size": {
+        "order": 2,
+        "title": "Sheet Page Size",
+        "description": "Page size when fetching rows from a sheet",
+        "type": "integer",
+        "default": 500,
+        "examples": [
+          100,
+          250,
+          500,
+          1000
+        ]
+      },
+      "stream_name": {
+        "order": 3,
+        "title": "Stream Name",
+        "description": "Name of the data stream",
+        "type": "string",
+        "default": "sheets",
+        "examples": [
+          "sales",
+          "customers",
+          "orders"
+        ]
+      }
+    }
+  }
+}

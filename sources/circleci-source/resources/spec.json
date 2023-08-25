@@ -6,8 +6,7 @@
     "type": "object",
     "required": [
       "token",
-      "project_names",
-      "cutoff_days"
+      "project_names"
     ],
     "additionalProperties": true,
     "properties": {
@@ -42,6 +41,12 @@
         "title": "API URL",
         "default": "https://circleci.com/api/v2",
         "description": "CircleCI API URL"
+      },
+      "request_timeout": {
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
+        "default": 60000
       },
       "max_retries": {
         "type": "integer",

@@ -2,8 +2,7 @@
   "type": "object",
   "title": "Cloud Edition",
   "required": [
-    "api_key",
-    "api_url"
+    "api_key"
   ],
   "properties": {
     "edition": {
@@ -37,7 +36,7 @@
       "type": "string",
       "title": "GraphQL API",
       "description": "The version of GraphQL API for writes.",
-      "default": "v1",
+      "default": "v2",
       "enum": [
         "v1",
         "v2"

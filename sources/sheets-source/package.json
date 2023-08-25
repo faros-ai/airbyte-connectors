@@ -1,11 +1,10 @@
 {
-  "name": "faros-graphql-source",
+  "name": "sheets-source",
   "version": "0.0.1",
-  "description": "Faros GraphQL Airbyte source",
+  "description": "Sheets source",
   "keywords": [
     "airbyte",
-    "graphql",
-    "faros"
+    "sheets"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
@@ -29,12 +28,16 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "avsc": "5.7.7",
+    "@aws-sdk/client-s3": "^3.377.0",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",
-    "faros-js-client": "^0.3.1",
-    "graphql": "^16.3.0",
+    "fs-extra": "^9.1.0",
+    "google-spreadsheet": "^3.1.15",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/google-spreadsheet": "^3.0.2"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

@@ -56,6 +56,7 @@ import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
+const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -184,16 +185,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private async initCloud(config: DestinationConfig): Promise<void> {
-    if (!config.edition_configs.api_url) {
-      throw new VError('API url is not set');
-    }
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
-    const useGraphQLV2 = config.edition_configs.graphql_api === 'v2';
+    const useGraphQLV2 = (config.edition_configs.graphql_api ?? 'v2') === 'v2';
     try {
       this.farosClientConfig = {
-        url: config.edition_configs.api_url,
+        url: config.edition_configs.api_url ?? DEFAULT_API_URL,
         apiKey: config.edition_configs.api_key,
         useGraphQLV2,
       };

@@ -4,6 +4,29 @@
     "name": {
       "type": "string",
       "const": "John Doe"
+    },
+    "token": {
+      "type": "string",
+      "airbyte_secret": true
+    },
+    "token_array": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "airbyte_secret": true
+      }
+    },
+    "object_token_array": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "airbyte_secret": true
+          }
+        }
+      }
     }
   }
 }

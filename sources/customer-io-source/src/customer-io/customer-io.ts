@@ -11,10 +11,12 @@ import {
 } from './typings';
 
 const CUSTOMER_IO_API_URL = 'https://api.customer.io/v1';
+const DEFAULT_CUTOFF_DAYS = 90;
 
 export interface CustomerIOConfig {
   app_api_key: string;
-  readonly cutoff_days: number;
+  api_url?: string;
+  cutoff_days?: number;
 }
 
 export class CustomerIO {
@@ -27,15 +29,12 @@ export class CustomerIO {
     config: CustomerIOConfig,
     axiosInstance?: AxiosInstance
   ): CustomerIO {
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
-    }
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    startDate.setDate(startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS));
     return new CustomerIO(
       axiosInstance ??
         axios.create({
-          baseURL: CUSTOMER_IO_API_URL,
+          baseURL: config.api_url ?? CUSTOMER_IO_API_URL,
           timeout: 30000,
           responseType: 'json',
           headers: {Authorization: `Bearer ${config.app_api_key}`},

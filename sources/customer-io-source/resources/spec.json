@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Customer.io Spec",
     "type": "object",
-    "required": ["app_api_key", "cutoff_days"],
+    "required": ["app_api_key"],
     "additionalProperties": true,
     "properties": {
       "app_api_key": {
@@ -12,6 +12,13 @@
         "title": "App API Key",
         "description": "App API Key for Customer.io API authentication",
         "airbyte_secret": true
+      },
+      "api_url": {
+        "type": "string",
+        "title": "API URL",
+        "description": "Customer.io API URL. Use https://api.customer.io/v1 for US, and https://api-eu.customer.io/v1 for EU.",
+        "default": "https://api.customer.io/v1",
+        "examples": ["https://api.customer.io/v1", "https://api-eu.customer.io/v1"]
       },
       "cutoff_days": {
         "type": "integer",
