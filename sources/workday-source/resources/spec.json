@@ -33,7 +33,7 @@
       "baseUrl": {
         "type": "string",
         "title": "REST/Auth API base URL",
-        "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenantName}' then strip 'api/v2/{tenantName}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
+        "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip 'api/v2/{tenant}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
         "examples": ["https://wd2-impl-services1.workday.com/ccx/", "https://wd5-impl-services1.workday.com/ccx/"]
       },
       "limit": {
@@ -47,7 +47,7 @@
       "customReportName": {
         "type": "string",
         "title": "Custom Report Name",
-        "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/service/customreport2/tenant/My_Custom_Report?format=json"
+        "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/service/customreport2/{tenant}/My_Custom_Report?format=json"
       },
       "timeout": {
         "type": "number",
