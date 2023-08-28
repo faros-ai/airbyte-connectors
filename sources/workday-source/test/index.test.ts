@@ -18,6 +18,17 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
+function getWorkdayInstance(logger, axios_instance, limit): Workday {
+  return new Workday(
+    logger,
+    axios_instance,
+    limit,
+    'base-url',
+    'base-url',
+    'acme'
+  );
+}
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -80,17 +91,14 @@ describe('index', () => {
 
   test('check connection', async () => {
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: jest.fn().mockResolvedValue({
             data: readTestResourceFile('workers.json'),
           }),
         } as any,
-        20,
-        'base-url',
-        'base-url',
-        'acme'
+        20
       );
     });
     const source = new sut.WorkdaySource(logger);
@@ -106,15 +114,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url',
-        'base-url',
-        'acme'
+        limit
       );
     });
 
@@ -135,15 +140,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url',
-        'base-url',
-        'acme'
+        limit
       );
     });
 
@@ -164,15 +166,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url',
-        'base-url',
-        'acme'
+        limit
       );
     });
 
@@ -191,15 +190,12 @@ describe('index', () => {
     const expected = readTestResourceFile('customreports.json');
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnCustomReports.mockResolvedValue({data: expected}),
         } as any,
-        0,
-        'base-url',
-        'base-url',
-        'acme'
+        0
       );
     });
 
