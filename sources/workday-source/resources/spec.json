@@ -53,8 +53,8 @@
         "type": "number",
         "title": "Request Timeout",
         "minimum": 500,
-        "maximum": 40000,
-        "default": 6000,
+        "maximum": 100000,
+        "default": 60000,
         "description": "The time allowed for a request to timeout (in milliseconds)."
       }
     }

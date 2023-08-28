@@ -60,7 +60,7 @@ export class Workday {
     const apiBaseUrlTemplate =
       baseUrl.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
     logger.debug('Assuming API base url template: %s', apiBaseUrlTemplate);
-    const timeout = cfg.timeout ?? 6000;
+    const timeout = cfg.timeout ?? 60000;
 
     const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
     const api = axios.create({
