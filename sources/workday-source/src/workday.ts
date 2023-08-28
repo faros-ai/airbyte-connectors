@@ -82,8 +82,9 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       apiBaseUrlTemplate,
-      cfg.customReportPath ?? '',
-      cfg.baseUrl
+      cfg.baseUrl,
+      cfg.tenant,
+      cfg.customReportPath ?? ''
     );
   }
 
