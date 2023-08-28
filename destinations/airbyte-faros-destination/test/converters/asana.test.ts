@@ -1,7 +1,8 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
@@ -82,5 +83,74 @@ describe('asana', () => {
     );
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
+  });
+
+  describe('tasks', () => {
+    const converter = new Tasks();
+
+    test('', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        gid: '1205346703408262',
+        assignee: {
+          gid: '7440298482110',
+        },
+        completed: true,
+        completed_at: '2023-08-25T20:59:25.481Z',
+        completed_by: {
+          gid: '7440298482110',
+        },
+        created_at: '2023-08-24T15:52:00.014Z',
+        custom_fields: [],
+        dependencies: [],
+        dependents: [],
+        due_at: null,
+        due_on: '2023-08-31',
+        followers: [
+          {
+            gid: '7440298482110',
+          },
+        ],
+        hearted: false,
+        hearts: [],
+        html_notes: '<body></body>',
+        is_rendered_as_separator: false,
+        liked: false,
+        likes: [],
+        memberships: [
+          {
+            project: {
+              gid: '1205346703408259',
+            },
+            section: {
+              gid: '1205346703408260',
+            },
+          },
+        ],
+        modified_at: '2023-08-25T20:59:25.575Z',
+        name: 'Task 1',
+        notes: '',
+        num_hearts: 0,
+        num_likes: 0,
+        num_subtasks: 0,
+        parent: null,
+        permalink_url:
+          'https://app.asana.com/0/1205346703408259/1205346703408262',
+        projects: [
+          {
+            gid: '1205346703408259',
+          },
+        ],
+        resource_type: 'task',
+        start_on: null,
+        tags: [],
+        resource_subtype: 'default_task',
+        workspace: {
+          gid: '1205346833089989',
+        },
+      });
+
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
   });
 });

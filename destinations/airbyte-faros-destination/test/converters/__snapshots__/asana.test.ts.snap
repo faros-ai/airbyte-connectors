@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`asana tasks  1`] = `
+Array [
+  Object {
+    "model": "tms_Task",
+    "record": Object {
+      "additionalFields": Array [],
+      "createdAt": 2023-08-24T15:52:00.014Z,
+      "creator": Object {
+        "source": "Asana",
+        "uid": "7440298482110",
+      },
+      "description": "",
+      "name": "Task 1",
+      "parent": null,
+      "points": null,
+      "priority": null,
+      "source": "Asana",
+      "status": Object {
+        "category": "Done",
+        "detail": "completed",
+      },
+      "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "type": Object {
+        "category": "Task",
+        "detail": "task",
+      },
+      "uid": "1205346703408262",
+      "updatedAt": 2023-08-25T20:59:25.575Z,
+      "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
+    },
+  },
+  Object {
+    "model": "tms_Project",
+    "record": Object {
+      "name": undefined,
+      "source": "Asana",
+      "uid": "1205346703408259",
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoard",
+    "record": Object {
+      "name": undefined,
+      "source": "Asana",
+      "uid": "1205346703408260",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Asana",
+        "uid": "1205346703408260",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskAssignment",
+    "record": Object {
+      "assignee": Object {
+        "source": "Asana",
+        "uid": "7440298482110",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+]
+`;

@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
@@ -52,7 +53,6 @@ export class Tasks extends AsanaConverter {
     const task = record.record.data;
 
     const taskKey = {uid: task.gid, source};
-    const status = this.findFieldByName(task.custom_fields, 'status');
     const parent = task.parent ? {uid: task.parent.gid, source} : null;
     const priority = this.findFieldByName(task.custom_fields, 'priority');
     const points = this.findFieldByName(task.custom_fields, 'points');
@@ -69,8 +69,7 @@ export class Tasks extends AsanaConverter {
         url: task.permalink_url ?? null,
         type: AsanaCommon.toTmsTaskType(task.resource_type),
         priority: typeof priority === 'string' ? priority : null,
-        status:
-          typeof status === 'string' ? this.toTmsTaskStatus(status) : null,
+        status: this.getStatus(task),
         points: typeof points === 'number' ? points : null,
         additionalFields: task.custom_fields.map((f) => this.toTaskField(f)),
         createdAt: Utils.toDate(task.created_at),
@@ -158,6 +157,18 @@ export class Tasks extends AsanaConverter {
     }
 
     return res;
+  }
+
+  private getStatus(task: Dictionary<any>): TmsTaskStatus | null {
+    const status = this.findFieldByName(task.custom_fields, 'status');
+
+    if (typeof status === 'string') {
+      return this.toTmsTaskStatus(status);
+    } else if (task.completed) {
+      return {category: Tms_TaskStatusCategory.Done, detail: 'completed'};
+    } else {
+      return null;
+    }
   }
 
   private tms_TaskBoardRelationship(
