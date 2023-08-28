@@ -153,7 +153,7 @@ export class Workday {
 
   async *customReports(path: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
-    const baseURL = this.baseUrl;
+    const baseURL = this.baseUrl + '/service/customreport2';
     const res = await this.api.get(path, {
       baseURL,
     });
