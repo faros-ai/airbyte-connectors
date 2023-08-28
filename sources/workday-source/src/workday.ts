@@ -32,8 +32,9 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly apiBaseUrlTemplate: string,
-    private readonly customReportsPath?: string,
-    private readonly baseUrl?: string
+    private readonly baseUrl: string,
+    private readonly tenant: string,
+    private readonly customReportsPath?: string
   ) {}
 
   static async instance(
@@ -54,6 +55,9 @@ export class Workday {
     }
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
+    }
+    if (!cfg.tenant) {
+      throw new VError('tenant must not be an empty string');
     }
 
     const baseUrl = new URL(cfg.baseUrl);
@@ -153,7 +157,8 @@ export class Workday {
 
   async *customReports(path: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
-    const baseURL = this.baseUrl + '/service/customreport2';
+    const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
+    this.logger.info(`base url: ${baseURL}`);
     const res = await this.api.get(path, {
       baseURL,
     });

@@ -88,7 +88,9 @@ describe('index', () => {
           }),
         } as any,
         20,
-        'base-url'
+        'base-url',
+        'base-url',
+        'acme'
       );
     });
     const source = new sut.WorkdaySource(logger);
@@ -110,7 +112,9 @@ describe('index', () => {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
         limit,
-        'base-url'
+        'base-url',
+        'base-url',
+        'acme'
       );
     });
 
@@ -137,7 +141,9 @@ describe('index', () => {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
         limit,
-        'base-url'
+        'base-url',
+        'base-url',
+        'acme'
       );
     });
 
@@ -164,7 +170,9 @@ describe('index', () => {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
         limit,
-        'base-url'
+        'base-url',
+        'base-url',
+        'acme'
       );
     });
 
@@ -189,7 +197,9 @@ describe('index', () => {
           get: fnCustomReports.mockResolvedValue({data: expected}),
         } as any,
         0,
-        'base-url'
+        'base-url',
+        'base-url',
+        'acme'
       );
     });
 
