@@ -190,7 +190,7 @@ describe('index', () => {
         } as any,
         0,
         'base-url',
-        'my_tenant',
+        'acme',
         'customReportPath'
       );
     });
