@@ -87,35 +87,105 @@ describe('asana', () => {
 
   describe('tasks', () => {
     const converter = new Tasks();
+    const TASK = {
+      gid: '1205346703408262',
+      created_at: '2023-08-24T15:52:00.014Z',
+      custom_fields: [],
+      dependencies: [],
+      dependents: [],
+      due_at: null,
+      due_on: '2023-08-31',
+      followers: [
+        {
+          gid: '7440298482110',
+        },
+      ],
+      hearted: false,
+      hearts: [],
+      html_notes: '<body></body>',
+      is_rendered_as_separator: false,
+      liked: false,
+      likes: [],
+      modified_at: '2023-08-25T20:59:25.575Z',
+      name: 'Task 1',
+      notes: 'Task 1 notes',
+      num_hearts: 0,
+      num_likes: 0,
+      num_subtasks: 0,
+      parent: null,
+      permalink_url:
+        'https://app.asana.com/0/1205346703408259/1205346703408262',
+      projects: [
+        {
+          gid: '1205346703408259',
+        },
+      ],
+      resource_type: 'task',
+      start_on: null,
+      resource_subtype: 'default_task',
+      workspace: {
+        gid: '1205346833089989',
+      },
+    };
+
+    test('basic task', async () => {
+      const record = AirbyteRecord.make('tasks', TASK);
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
 
     test('completed task converts to status Done', async () => {
       const record = AirbyteRecord.make('tasks', {
-        gid: '1205346703408262',
-        assignee: {
-          gid: '7440298482110',
-        },
+        ...TASK,
         completed: true,
         completed_at: '2023-08-25T20:59:25.481Z',
         completed_by: {
           gid: '7440298482110',
         },
-        created_at: '2023-08-24T15:52:00.014Z',
-        custom_fields: [],
-        dependencies: [],
-        dependents: [],
-        due_at: null,
-        due_on: '2023-08-31',
-        followers: [
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('status from custom_fields', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        custom_fields: [
           {
-            gid: '7440298482110',
+            name: 'status',
+            text_value: 'In Progress',
           },
         ],
-        hearted: false,
-        hearts: [],
-        html_notes: '<body></body>',
-        is_rendered_as_separator: false,
-        liked: false,
-        likes: [],
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('assignee', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        assignee: {
+          gid: '7440298482110',
+        },
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('parent', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        parent: {
+          gid: '1205346703408261',
+        },
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('memberships', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
         memberships: [
           {
             project: {
@@ -126,29 +196,20 @@ describe('asana', () => {
             },
           },
         ],
-        modified_at: '2023-08-25T20:59:25.575Z',
-        name: 'Task 1',
-        notes: '',
-        num_hearts: 0,
-        num_likes: 0,
-        num_subtasks: 0,
-        parent: null,
-        permalink_url:
-          'https://app.asana.com/0/1205346703408259/1205346703408262',
-        projects: [
-          {
-            gid: '1205346703408259',
-          },
-        ],
-        resource_type: 'task',
-        start_on: null,
-        tags: [],
-        resource_subtype: 'default_task',
-        workspace: {
-          gid: '1205346833089989',
-        },
       });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
 
+    test('tags', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        tags: [
+          {gid: '1205346703408260', name: 'tag1'},
+          {gid: '1205346703408261', name: 'tag2'},
+          {gid: '1205346703408261', name: 'tag2'},
+        ],
+      });
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

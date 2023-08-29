@@ -79,7 +79,7 @@ export class Tasks extends AsanaConverter {
       },
     });
 
-    for (const membership of task.memberships) {
+    for (const membership of task.memberships ?? []) {
       if (membership.project) {
         res.push({
           model: 'tms_TaskProjectRelationship',
@@ -110,6 +110,7 @@ export class Tasks extends AsanaConverter {
         },
       });
     }
+
     if (parent) {
       res.push({
         model: 'tms_TaskDependency',
@@ -121,7 +122,7 @@ export class Tasks extends AsanaConverter {
       });
     }
 
-    for (const tag of task.tags) {
+    for (const tag of task.tags ?? []) {
       if (tag.gid) {
         const label = {name: tag.name};
 
@@ -188,16 +189,15 @@ export class Tasks extends AsanaConverter {
   }
 
   private toTmsTaskStatus(status: string): TmsTaskStatus {
-    const detail = status.toLowerCase();
-    switch (detail) {
+    switch (AsanaCommon.normalize(status)) {
       case 'done':
-        return {category: Tms_TaskStatusCategory.Done, detail};
+        return {category: Tms_TaskStatusCategory.Done, detail: status};
       case 'inprogress':
-        return {category: Tms_TaskStatusCategory.InProgress, detail};
+        return {category: Tms_TaskStatusCategory.InProgress, detail: status};
       case 'todo':
-        return {category: Tms_TaskStatusCategory.Todo, detail};
+        return {category: Tms_TaskStatusCategory.Todo, detail: status};
       default:
-        return {category: Tms_TaskStatusCategory.Custom, detail};
+        return {category: Tms_TaskStatusCategory.Custom, detail: status};
     }
   }
 }
