@@ -35,7 +35,6 @@ export class Tasks extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskProjectRelationship',
-    'tms_TaskBoard',
     'tms_TaskBoardRelationship',
     'tms_TaskDependency',
     'tms_TaskAssignment',
@@ -90,13 +89,13 @@ export class Tasks extends AsanaConverter {
       }
 
       if (membership.section) {
-        res.push(
-          ...this.tms_TaskBoardRelationship(
-            taskKey.uid,
-            membership.section,
-            source
-          )
-        );
+        res.push({
+          model: 'tms_TaskBoardRelationship',
+          record: {
+            task: taskKey,
+            board: {uid: membership.section.gid, source},
+          },
+        });
       }
     }
 
@@ -118,15 +117,6 @@ export class Tasks extends AsanaConverter {
           fulfillingTask: parent,
         },
       });
-    }
-    if (task.assignee_section) {
-      res.push(
-        ...this.tms_TaskBoardRelationship(
-          taskKey.uid,
-          task.assignee_section,
-          source
-        )
-      );
     }
 
     for (const tag of task.tags) {
@@ -159,23 +149,6 @@ export class Tasks extends AsanaConverter {
     } else {
       return null;
     }
-  }
-
-  private tms_TaskBoardRelationship(
-    taskId: string,
-    section: AsanaSection,
-    source: string
-  ): DestinationRecord[] {
-    const res = [];
-    res.push(AsanaCommon.tms_TaskBoard(section, source));
-    res.push({
-      model: 'tms_TaskBoardRelationship',
-      record: {
-        task: {uid: taskId, source},
-        board: {uid: section.gid, source},
-      },
-    });
-    return res;
   }
 
   private findFieldByName(
