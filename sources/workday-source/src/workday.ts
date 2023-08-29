@@ -159,10 +159,9 @@ export class Workday {
   async *customReports(path: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    this.logger.info(`base url: ${baseURL}`);
-    const res = await this.api.get(path, {
-      baseURL,
-    });
+    const complete_path = `${baseURL}/${path}?format=json`;
+    this.logger.info(`Custom Reports Full path URL: ${complete_path}`);
+    const res = await this.api.get(complete_path);
     for (const item of res.data?.Report_Entry ?? []) {
       yield item;
     }
