@@ -2,8 +2,7 @@
   "type": "object",
   "title": "Cloud Edition",
   "required": [
-    "api_key",
-    "api_url"
+    "api_key"
   ],
   "properties": {
     "edition": {

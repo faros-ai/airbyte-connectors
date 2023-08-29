@@ -77,7 +77,7 @@ export class Tasks extends AsanaConverter {
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
-        creator: task.assignee ? {uid: task.assignee, source} : null,
+        creator: task.assignee ? {uid: task.assignee.gid, source} : null,
       },
     });
 
@@ -116,7 +116,7 @@ export class Tasks extends AsanaConverter {
         model: 'tms_TaskAssignment',
         record: {
           task: taskKey,
-          assignee: {uid: task.assignee, source},
+          assignee: {uid: task.assignee.gid, source},
         },
       });
     }
