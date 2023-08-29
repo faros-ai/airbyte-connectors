@@ -18,6 +18,10 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
+function getWorkdayInstance(logger, axios_instance, limit): Workday {
+  return new Workday(logger, axios_instance, limit, 'base-url', 'acme');
+}
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -80,15 +84,14 @@ describe('index', () => {
 
   test('check connection', async () => {
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: jest.fn().mockResolvedValue({
             data: readTestResourceFile('workers.json'),
           }),
         } as any,
-        20,
-        'base-url'
+        20
       );
     });
     const source = new sut.WorkdaySource(logger);
@@ -104,13 +107,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url'
+        limit
       );
     });
 
@@ -131,13 +133,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url'
+        limit
       );
     });
 
@@ -158,13 +159,12 @@ describe('index', () => {
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return new Workday(
+      return getWorkdayInstance(
         logger,
         {
           get: fnListOrgs.mockResolvedValue({data: expected}),
         } as any,
-        limit,
-        'base-url'
+        limit
       );
     });
 
@@ -177,5 +177,32 @@ describe('index', () => {
     }
     expect(fnListOrgs).toHaveBeenCalledTimes(limit);
     expect(items).toStrictEqual([...expected.data, ...expected.data]);
+  });
+  test('streams - customReports', async () => {
+    const fnCustomReports = jest.fn();
+    const expected = readTestResourceFile('customreports.json');
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnCustomReports.mockResolvedValue({data: expected}),
+        } as any,
+        0,
+        'base-url',
+        'my_tenant',
+        'customReportPath'
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const workers = source.streams(config)[4];
+    const iter = workers.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnCustomReports).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(expected.Report_Entry);
   });
 });
