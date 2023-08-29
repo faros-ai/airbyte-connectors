@@ -34,7 +34,6 @@ enum Tms_TaskStatusCategory {
 export class Tasks extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
-    'tms_Project',
     'tms_TaskProjectRelationship',
     'tms_TaskBoard',
     'tms_TaskBoardRelationship',
@@ -81,14 +80,6 @@ export class Tasks extends AsanaConverter {
 
     for (const membership of task.memberships) {
       if (membership.project) {
-        res.push({
-          model: 'tms_Project',
-          record: {
-            uid: membership.project.gid,
-            name: membership.project.name,
-            source,
-          },
-        });
         res.push({
           model: 'tms_TaskProjectRelationship',
           record: {

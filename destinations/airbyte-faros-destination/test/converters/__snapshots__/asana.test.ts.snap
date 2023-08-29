@@ -28,14 +28,6 @@ Array [
     },
   },
   Object {
-    "model": "tms_Project",
-    "record": Object {
-      "name": undefined,
-      "source": "Asana",
-      "uid": "1205346703408259",
-    },
-  },
-  Object {
     "model": "tms_TaskProjectRelationship",
     "record": Object {
       "project": Object {
