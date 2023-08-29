@@ -112,9 +112,9 @@ export class Tasks extends AsanaConverter {
       res.push({
         model: 'tms_TaskDependency',
         record: {
-          dependentTask: taskKey,
+          dependentTask: parent,
           blocking: false,
-          fulfillingTask: parent,
+          fulfillingTask: taskKey,
         },
       });
     }

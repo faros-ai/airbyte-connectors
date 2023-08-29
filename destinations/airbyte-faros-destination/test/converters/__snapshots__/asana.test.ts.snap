@@ -41,14 +41,6 @@ Array [
     },
   },
   Object {
-    "model": "tms_TaskBoard",
-    "record": Object {
-      "name": undefined,
-      "source": "Asana",
-      "uid": "1205346703408260",
-    },
-  },
-  Object {
     "model": "tms_TaskBoardRelationship",
     "record": Object {
       "board": Object {
