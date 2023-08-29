@@ -19,14 +19,7 @@ function readTestResourceFile(fileName: string): any {
 }
 
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
-  return new Workday(
-    logger,
-    axios_instance,
-    limit,
-    'base-url',
-    'base-url',
-    'acme'
-  );
+  return new Workday(logger, axios_instance, limit, 'base-url', 'acme');
 }
 
 describe('index', () => {
@@ -190,12 +183,15 @@ describe('index', () => {
     const expected = readTestResourceFile('customreports.json');
 
     Workday.instance = jest.fn().mockImplementation(() => {
-      return getWorkdayInstance(
+      return new Workday(
         logger,
         {
           get: fnCustomReports.mockResolvedValue({data: expected}),
         } as any,
-        0
+        0,
+        'base-url',
+        'my_tenant',
+        'customReportPath'
       );
     });
 

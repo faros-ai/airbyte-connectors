@@ -31,7 +31,6 @@ export class Workday {
     private readonly logger: AirbyteLogger,
     private readonly api: AxiosInstance,
     private readonly limit: number,
-    private readonly apiBaseUrlTemplate: string,
     private readonly baseUrl: string,
     private readonly tenant: string,
     private readonly customReportsPath?: string
@@ -56,14 +55,8 @@ export class Workday {
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
     }
-    if (!cfg.tenant) {
-      throw new VError('tenant must not be an empty string');
-    }
 
     const baseUrl = new URL(cfg.baseUrl);
-    const apiBaseUrlTemplate =
-      baseUrl.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
-    logger.debug('Assuming API base url template: %s', apiBaseUrlTemplate);
     const timeout = cfg.timeout ?? 60000;
 
     const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
@@ -81,8 +74,7 @@ export class Workday {
       logger,
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
-      apiBaseUrlTemplate,
-      cfg.baseUrl,
+      baseUrl.toString(),
       cfg.tenant,
       cfg.customReportPath ?? ''
     );
@@ -110,7 +102,7 @@ export class Workday {
   }
 
   private apiBaseUrl(version: string): string {
-    return this.apiBaseUrlTemplate.replace(VERSION_PLACEHOLDER, version);
+    return `${this.baseUrl}/api/${version}/${this.tenant}`;
   }
 
   async checkConnection(): Promise<void> {
@@ -159,9 +151,13 @@ export class Workday {
   async *customReports(customReportName: string): AsyncGenerator<any> {
     // Note input param path should start with '/'
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    const complete_path = `${baseURL}/${customReportName}?format=json`;
+    const complete_path = `${baseURL}/${customReportName}`;
     this.logger.info(`Custom Reports Full path URL: ${complete_path}`);
-    const res = await this.api.get(complete_path);
+    const res = await this.api.get(complete_path, {
+      params: {
+        format: 'json',
+      },
+    });
     for (const item of res.data?.Report_Entry ?? []) {
       yield item;
     }
