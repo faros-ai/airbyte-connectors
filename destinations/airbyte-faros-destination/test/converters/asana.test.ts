@@ -88,7 +88,7 @@ describe('asana', () => {
   describe('tasks', () => {
     const converter = new Tasks();
 
-    test('', async () => {
+    test('completed task converts to status Done', async () => {
       const record = AirbyteRecord.make('tasks', {
         gid: '1205346703408262',
         assignee: {
