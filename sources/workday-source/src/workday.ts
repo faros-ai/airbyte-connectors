@@ -11,7 +11,6 @@ import {
 } from './types';
 
 const DEFAULT_PAGE_LIMIT = 20;
-const VERSION_PLACEHOLDER = '<VERSION>';
 
 export interface Page<T> {
   data: ReadonlyArray<T>;
@@ -152,7 +151,7 @@ export class Workday {
     // Note input param path should start with '/'
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
     const complete_path = `${baseURL}/${customReportName}`;
-    this.logger.info(`Custom Reports Full path URL: ${complete_path}`);
+    this.logger.info(`Custom Reports full path URL: ${complete_path}`);
     const res = await this.api.get(complete_path, {
       params: {
         format: 'json',

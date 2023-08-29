@@ -13,7 +13,7 @@ export class CustomReports extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/people.json');
+    return require('../../resources/schemas/customreports.json');
   }
   get primaryKey(): StreamKey {
     return ['id'];
