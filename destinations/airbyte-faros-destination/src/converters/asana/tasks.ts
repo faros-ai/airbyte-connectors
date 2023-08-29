@@ -3,7 +3,7 @@ import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
+import {AsanaCommon, AsanaConverter} from './common';
 
 interface CustomField {
   gid: string;
@@ -41,6 +41,8 @@ export class Tasks extends AsanaConverter {
     'tms_Label',
     'tms_TaskTag',
   ];
+
+  private seenTags: Set<string> = new Set();
 
   async convert(
     record: AirbyteRecord
@@ -122,17 +124,24 @@ export class Tasks extends AsanaConverter {
     for (const tag of task.tags) {
       if (tag.gid) {
         const label = {name: tag.name};
-        res.push({
-          model: 'tms_Label',
-          record: {name: label.name},
-        });
+
         res.push({
           model: 'tms_TaskTag',
           record: {
-            label: {name: label.name},
+            label,
             task: taskKey,
           },
         });
+
+        if (this.seenTags.has(tag.name)) {
+          continue;
+        }
+
+        res.push({
+          model: 'tms_Label',
+          record: label,
+        });
+        this.seenTags.add(tag.name);
       }
     }
 
