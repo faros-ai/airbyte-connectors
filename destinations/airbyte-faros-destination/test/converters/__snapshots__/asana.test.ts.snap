@@ -7,10 +7,6 @@ Array [
     "record": Object {
       "additionalFields": Array [],
       "createdAt": 2023-08-24T15:52:00.014Z,
-      "creator": Object {
-        "source": "Asana",
-        "uid": "7440298482110",
-      },
       "description": "",
       "name": "Task 1",
       "parent": null,
