@@ -191,7 +191,9 @@ describe('index', () => {
         0,
         'base-url',
         'my_tenant',
-        'customReportPath'
+        'customReportName',
+        'myUsername',
+        'myPassword'
       );
     });
 

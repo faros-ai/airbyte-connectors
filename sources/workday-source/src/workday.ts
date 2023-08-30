@@ -32,7 +32,9 @@ export class Workday {
     private readonly limit: number,
     private readonly baseUrl: string,
     private readonly tenant: string,
-    private readonly customReportsPath?: string
+    private readonly customReportName?: string,
+    private readonly username?: string,
+    private readonly password?: string
   ) {}
 
   static async instance(
@@ -53,6 +55,18 @@ export class Workday {
     }
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
+    }
+    if (cfg.customReportName) {
+      if (!cfg.username) {
+        throw new VError(
+          'When getting custom reports, username must not be an empty string'
+        );
+      }
+      if (!cfg.password) {
+        throw new VError(
+          'When getting custom reports, password must not be an empty string'
+        );
+      }
     }
 
     const baseUrl = new URL(cfg.baseUrl);
@@ -75,7 +89,9 @@ export class Workday {
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
       cfg.tenant,
-      cfg.customReportPath ?? ''
+      cfg.customReportName ?? '',
+      cfg.username ?? '',
+      cfg.password ?? ''
     );
   }
 
@@ -152,10 +168,12 @@ export class Workday {
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
     const complete_path = `${baseURL}/${customReportName}`;
     this.logger.info(`Custom Reports full path URL: ${complete_path}`);
+    const basic_pw = Buffer.from(`${this.username}:${this.password}`).toString(
+      'base64'
+    );
     const res = await this.api.get(complete_path, {
-      params: {
-        format: 'json',
-      },
+      headers: {Authorization: `Basic ${basic_pw}`},
+      params: {format: 'json'},
     });
     for (const item of res.data?.Report_Entry ?? []) {
       yield item;

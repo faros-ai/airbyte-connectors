@@ -3,5 +3,8 @@
   "clientId": "foo",
   "clientSecret": "bar",
   "refreshToken": "baz",
-  "baseUrl": "test.test"
+  "baseUrl": "test.test",
+  "customReportName": "CR",
+  "username": "foo",
+  "password": "bar"
 }

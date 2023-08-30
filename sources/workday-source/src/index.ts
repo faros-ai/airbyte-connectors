@@ -19,8 +19,10 @@ export interface WorkdayConfig extends AirbyteConfig {
   readonly refreshToken: string;
   readonly baseUrl: string;
   readonly limit?: number;
-  readonly customReportPath?: string;
+  readonly customReportName?: string;
   readonly timeout?: number;
+  readonly username?: string;
+  readonly password?: string;
 }
 
 /** The main entry point. */

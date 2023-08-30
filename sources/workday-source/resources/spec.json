@@ -55,7 +55,17 @@
         "minimum": 500,
         "default": 60000,
         "description": "The time allowed for a request to timeout (in milliseconds)."
-      }
+      },
+      "username": {
+        "type": "string",
+        "title": "Username",
+        "description": "When downloading Custom Reports, this is required along with password."
+      },
+      "password": {
+        "type": "string",
+        "title": "Password",
+        "description": "When downloading Custom Reports, this is required along with username."
     }
   }
+}
 }
