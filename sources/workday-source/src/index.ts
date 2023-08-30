@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {OrgCharts, Orgs, People, Workers} from './streams';
+import {CustomReports, OrgCharts, Orgs, People, Workers} from './streams';
 import {Workday} from './workday';
 
 export interface WorkdayConfig extends AirbyteConfig {
@@ -17,8 +17,10 @@ export interface WorkdayConfig extends AirbyteConfig {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly refreshToken: string;
-  readonly baseUrl?: string;
+  readonly baseUrl: string;
   readonly limit?: number;
+  readonly customReportPath?: string;
+  readonly timeout?: number;
 }
 
 /** The main entry point. */
@@ -49,6 +51,7 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
       new Orgs(config, this.logger),
       new People(config, this.logger),
       new Workers(config, this.logger),
+      new CustomReports(config, this.logger),
     ];
   }
 }
