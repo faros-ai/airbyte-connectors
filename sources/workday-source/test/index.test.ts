@@ -191,7 +191,9 @@ describe('index', () => {
         0,
         'base-url',
         'acme',
-        'customReportPath'
+        'customReportName',
+        'myUsername',
+        'myPassword'
       );
     });
 
