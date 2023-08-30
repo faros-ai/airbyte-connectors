@@ -332,12 +332,6 @@ Array [
     },
   },
   Object {
-    "model": "tms_Label",
-    "record": Object {
-      "name": "tag1",
-    },
-  },
-  Object {
     "model": "tms_TaskTag",
     "record": Object {
       "label": Object {
@@ -347,12 +341,6 @@ Array [
         "source": "Asana",
         "uid": "1205346703408262",
       },
-    },
-  },
-  Object {
-    "model": "tms_Label",
-    "record": Object {
-      "name": "tag2",
     },
   },
   Object {

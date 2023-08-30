@@ -38,11 +38,8 @@ export class Tasks extends AsanaConverter {
     'tms_TaskBoardRelationship',
     'tms_TaskDependency',
     'tms_TaskAssignment',
-    'tms_Label',
     'tms_TaskTag',
   ];
-
-  private seenTags: Set<string> = new Set();
 
   async convert(
     record: AirbyteRecord
@@ -133,16 +130,6 @@ export class Tasks extends AsanaConverter {
             task: taskKey,
           },
         });
-
-        if (this.seenTags.has(tag.name)) {
-          continue;
-        }
-
-        res.push({
-          model: 'tms_Label',
-          record: label,
-        });
-        this.seenTags.add(tag.name);
       }
     }
 
