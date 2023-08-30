@@ -1,8 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {reduce} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {AsanaCommon, AsanaConverter} from './common';
 
 interface CustomField {
@@ -41,8 +47,15 @@ export class Tasks extends AsanaConverter {
     'tms_TaskTag',
   ];
 
+  static readonly tagsStream = new StreamName('asana', 'tags');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [Tasks.tagsStream];
+  }
+
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
 
@@ -121,7 +134,12 @@ export class Tasks extends AsanaConverter {
 
     for (const tag of task.tags ?? []) {
       if (tag.gid) {
-        const label = {name: tag.name};
+        const tagRec = ctx?.get(Tasks.tagsStream.asString, tag.gid);
+        if (!tagRec) {
+          continue;
+        }
+
+        const label = {name: tagRec.record.data.name};
 
         res.push({
           model: 'tms_TaskTag',

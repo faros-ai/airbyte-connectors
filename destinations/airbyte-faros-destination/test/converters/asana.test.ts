@@ -1,7 +1,13 @@
-import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  AirbyteLog,
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteRecord,
+} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {StreamContext, StreamName} from '../../src';
 import {Projects} from '../../src/converters/asana/projects';
 import {Sections} from '../../src/converters/asana/sections';
 import {Tags} from '../../src/converters/asana/tags';
@@ -208,13 +214,24 @@ describe('asana', () => {
     test('tags', async () => {
       const record = AirbyteRecord.make('tasks', {
         ...TASK,
-        tags: [
-          {gid: '1205346703408260', name: 'tag1'},
-          {gid: '1205346703408261', name: 'tag2'},
-          {gid: '1205346703408261', name: 'tag2'},
-        ],
+        tags: [{gid: '1205346703408260'}, {gid: '1205346703408261'}],
       });
-      const res = await converter.convert(record);
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {edition_configs: {}},
+        {}
+      );
+      ctx.set(
+        Tasks.tagsStream.asString,
+        '1205346703408260',
+        AirbyteRecord.make('tags', {name: 'tag1'})
+      );
+      ctx.set(
+        Tasks.tagsStream.asString,
+        '1205346703408261',
+        AirbyteRecord.make('tags', {name: 'tag2'})
+      );
+      const res = await converter.convert(record, ctx);
       expect(res).toMatchSnapshot();
     });
   });

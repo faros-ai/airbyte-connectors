@@ -343,18 +343,6 @@ Array [
       },
     },
   },
-  Object {
-    "model": "tms_TaskTag",
-    "record": Object {
-      "label": Object {
-        "name": "tag2",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
 ]
 `;
 
