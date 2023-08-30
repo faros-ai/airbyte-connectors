@@ -89,9 +89,9 @@ export class Workday {
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
       cfg.tenant,
-      cfg.customReportName ?? '',
-      cfg.username ?? '',
-      cfg.password ?? ''
+      cfg.customReportName,
+      cfg.username,
+      cfg.password
     );
   }
 
