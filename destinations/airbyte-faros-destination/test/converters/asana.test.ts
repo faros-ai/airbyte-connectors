@@ -6,6 +6,7 @@ import {Projects} from '../../src/converters/asana/projects';
 import {Sections} from '../../src/converters/asana/sections';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
+import {Users} from '../../src/converters/asana/users';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
@@ -267,6 +268,29 @@ describe('asana', () => {
 
     test('basic tag', async () => {
       const record = AirbyteRecord.make('tags', TAG);
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('users', () => {
+    const converter = new Users();
+    const USER = {
+      gid: 'user-123',
+      name: 'John Doe',
+    };
+
+    test('basic user', async () => {
+      const record = AirbyteRecord.make('users', USER);
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('user with email', async () => {
+      const record = AirbyteRecord.make('users', {
+        ...USER,
+        email: 'johndoe@example.com',
+      });
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

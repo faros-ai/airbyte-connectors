@@ -369,3 +369,31 @@ Array [
   },
 ]
 `;
+
+exports[`asana users basic user 1`] = `
+Array [
+  Object {
+    "model": "tms_User",
+    "record": Object {
+      "emailAddress": null,
+      "name": "John Doe",
+      "source": "Asana",
+      "uid": "user-123",
+    },
+  },
+]
+`;
+
+exports[`asana users user with email 1`] = `
+Array [
+  Object {
+    "model": "tms_User",
+    "record": Object {
+      "emailAddress": "johndoe@example.com",
+      "name": "John Doe",
+      "source": "Asana",
+      "uid": "user-123",
+    },
+  },
+]
+`;
