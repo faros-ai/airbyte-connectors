@@ -2,5 +2,6 @@
   "tenant": "acme",
   "clientId": "foo",
   "clientSecret": "bar",
-  "refreshToken": "baz"
+  "refreshToken": "baz",
+  "baseUrl": "test.test"
 }

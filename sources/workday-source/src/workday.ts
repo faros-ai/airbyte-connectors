@@ -11,8 +11,6 @@ import {
 } from './types';
 
 const DEFAULT_PAGE_LIMIT = 20;
-const DEFAULT_BASE_URL = 'https://wd2-impl-services1.workday.com/ccx/';
-const VERSION_PLACEHOLDER = '<VERSION>';
 
 export interface Page<T> {
   data: ReadonlyArray<T>;
@@ -32,7 +30,9 @@ export class Workday {
     private readonly logger: AirbyteLogger,
     private readonly api: AxiosInstance,
     private readonly limit: number,
-    private readonly apiBaseUrlTemplate: string
+    private readonly baseUrl: string,
+    private readonly tenant: string,
+    private readonly customReportsPath?: string
   ) {}
 
   static async instance(
@@ -51,16 +51,18 @@ export class Workday {
     if (!cfg.refreshToken) {
       throw new VError('refreshToken must not be an empty string');
     }
+    if (!cfg.baseUrl) {
+      throw new VError('baseUrl must not be an empty string');
+    }
 
-    const baseURL = new URL(cfg.baseUrl ?? DEFAULT_BASE_URL);
-    const apiBaseUrlTemplate =
-      baseURL.toString() + `/api/${VERSION_PLACEHOLDER}/${cfg.tenant}`;
-    logger.debug('Assuming API base url template: %s', apiBaseUrlTemplate);
+    const baseUrl = new URL(cfg.baseUrl);
+    const timeout = cfg.timeout ?? 60000;
 
-    const accessToken = await Workday.getAccessToken(baseURL, cfg, logger);
+    const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
     const api = axios.create({
-      timeout: 30000, // default is `0` (no timeout)
+      timeout: timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
+      maxBodyLength: Infinity, //default is 2000 bytes,
       headers: {
         authorization: `Bearer ${accessToken}`,
         'content-type': 'application/json',
@@ -71,7 +73,9 @@ export class Workday {
       logger,
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
-      apiBaseUrlTemplate
+      baseUrl.toString(),
+      cfg.tenant,
+      cfg.customReportPath ?? ''
     );
   }
 
@@ -97,7 +101,7 @@ export class Workday {
   }
 
   private apiBaseUrl(version: string): string {
-    return this.apiBaseUrlTemplate.replace(VERSION_PLACEHOLDER, version);
+    return `${this.baseUrl}/api/${version}/${this.tenant}`;
   }
 
   async checkConnection(): Promise<void> {
@@ -141,6 +145,21 @@ export class Workday {
         params: {limit, offset},
       })
     );
+  }
+
+  async *customReports(customReportName: string): AsyncGenerator<any> {
+    // Note input param path should start with '/'
+    const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
+    const complete_path = `${baseURL}/${customReportName}`;
+    this.logger.info(`Custom Reports full path URL: ${complete_path}`);
+    const res = await this.api.get(complete_path, {
+      params: {
+        format: 'json',
+      },
+    });
+    for (const item of res.data?.Report_Entry ?? []) {
+      yield item;
+    }
   }
 
   async *orgCharts(
