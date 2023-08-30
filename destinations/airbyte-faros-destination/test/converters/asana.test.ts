@@ -4,6 +4,7 @@ import {getLocal} from 'mockttp';
 
 import {Projects} from '../../src/converters/asana/projects';
 import {Sections} from '../../src/converters/asana/sections';
+import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
@@ -252,6 +253,20 @@ describe('asana', () => {
 
     test('basic section', async () => {
       const record = AirbyteRecord.make('sections', SECTION);
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('tags', () => {
+    const converter = new Tags();
+    const TAG = {
+      gid: 'tag-123',
+      name: 'SampleTag',
+    };
+
+    test('basic tag', async () => {
+      const record = AirbyteRecord.make('tags', TAG);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });
