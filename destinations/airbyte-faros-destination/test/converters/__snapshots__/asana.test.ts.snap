@@ -16,6 +16,45 @@ Array [
 ]
 `;
 
+exports[`asana sections basic section 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskBoard",
+    "record": Object {
+      "name": "Sample Section",
+      "source": "Asana",
+      "uid": "1234567890",
+    },
+  },
+]
+`;
+
+exports[`asana sections basic section with project 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskBoard",
+    "record": Object {
+      "name": "Sample Section",
+      "source": "Asana",
+      "uid": "1234567890",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardProjectRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Asana",
+        "uid": "1234567890",
+      },
+      "project": Object {
+        "source": "Asana",
+        "uid": "9876543210",
+      },
+    },
+  },
+]
+`;
+
 exports[`asana tasks assignee 1`] = `
 Array [
   Object {

@@ -3,6 +3,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {Projects} from '../../src/converters/asana/projects';
+import {Sections} from '../../src/converters/asana/sections';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
@@ -228,6 +229,29 @@ describe('asana', () => {
 
     test('basic project', async () => {
       const record = AirbyteRecord.make('projects', PROJECT);
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('sections', () => {
+    const converter = new Sections();
+    const SECTION = {
+      gid: '1234567890',
+      name: 'Sample Section',
+    };
+
+    test('basic section with project', async () => {
+      const record = AirbyteRecord.make('sections', {
+        ...SECTION,
+        project: {gid: '9876543210'},
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('basic section', async () => {
+      const record = AirbyteRecord.make('sections', SECTION);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });
