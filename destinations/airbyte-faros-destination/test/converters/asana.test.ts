@@ -2,6 +2,7 @@ import {AirbyteLog, AirbyteLogLevel, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Projects} from '../../src/converters/asana/projects';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
@@ -210,6 +211,23 @@ describe('asana', () => {
           {gid: '1205346703408261', name: 'tag2'},
         ],
       });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('projects', () => {
+    const converter = new Projects();
+    const PROJECT = {
+      gid: '1205346703408259',
+      created_at: '2023-08-24T15:51:52.758Z',
+      modified_at: '2023-08-24T15:51:52.758Z',
+      name: 'Project Uno',
+      notes: 'Project Uno notes',
+    };
+
+    test('basic project', async () => {
+      const record = AirbyteRecord.make('projects', PROJECT);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

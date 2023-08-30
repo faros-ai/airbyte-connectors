@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`asana projects basic project 1`] = `
+Array [
+  Object {
+    "model": "tms_Project",
+    "record": Object {
+      "createdAt": 2023-08-24T15:51:52.758Z,
+      "description": "Project Uno notes",
+      "name": "Project Uno",
+      "source": "Asana",
+      "uid": "1205346703408259",
+      "updatedAt": 2023-08-24T15:51:52.758Z,
+    },
+  },
+]
+`;
+
 exports[`asana tasks assignee 1`] = `
 Array [
   Object {
