@@ -57,14 +57,9 @@ export class Workday {
       throw new VError('baseUrl must not be an empty string');
     }
     if (cfg.customReportName) {
-      if (!cfg.username) {
+      if (!cfg.username || !cfg.password) {
         throw new VError(
-          'When getting custom reports, username must not be an empty string'
-        );
-      }
-      if (!cfg.password) {
-        throw new VError(
-          'When getting custom reports, password must not be an empty string'
+          'When getting custom reports, username and password must be provided.'
         );
       }
     }

@@ -1,71 +1,102 @@
 {
-  "documentationUrl": "https://docs.faros.ai",
-  "connectionSpecification": {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Workday Spec",
-    "type": "object",
-    "required": ["tenant", "clientId", "clientSecret", "refreshToken", "baseUrl"],
-    "additionalProperties": true,
-    "properties": {
-      "tenant": {
-        "type": "string",
-        "title": "Tenant",
-        "description": "Workday tenant name.",
-        "examples": ["acme"]
-      },
-      "clientId": {
-        "type": "string",
-        "title": "Client ID",
-        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
-      },
-      "clientSecret": {
-        "type": "string",
-        "title": "Client Secret",
-        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
-        "airbyte_secret": true
-      },
-      "refreshToken": {
-        "type": "string",
-        "title": "Refresh Token",
-        "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
-        "airbyte_secret": true
-      },
-      "baseUrl": {
-        "type": "string",
-        "title": "REST/Auth API base URL",
-        "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip 'api/v2/{tenant}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
-        "examples": ["https://wd2-impl-services1.workday.com/ccx/", "https://wd5-impl-services1.workday.com/ccx/"]
-      },
-      "limit": {
-        "type": "number",
-        "title": "Page Limit",
-        "minimum": 1,
-        "maximum": 100,
-        "default": 20,
-        "description": "The maximum number of objects in a single response."
-      },
-      "customReportName": {
-        "type": "string",
-        "title": "Custom Report Name",
-        "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=json"
-      },
-      "timeout": {
-        "type": "number",
-        "title": "Request Timeout",
-        "minimum": 500,
-        "default": 60000,
-        "description": "The time allowed for a request to timeout (in milliseconds)."
-      },
-      "username": {
-        "type": "string",
-        "title": "Username",
-        "description": "When downloading Custom Reports, this is required along with password."
-      },
-      "password": {
-        "type": "string",
-        "title": "Password",
-        "description": "When downloading Custom Reports, this is required along with username."
+    "documentationUrl": "https://docs.faros.ai",
+    "connectionSpecification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Workday Spec",
+        "type": "object",
+        "required": [
+            "tenant",
+            "credentials",
+            "baseUrl"
+        ],
+        "additionalProperties": true,
+        "properties": {
+            "tenant": {
+                "type": "string",
+                "title": "Tenant",
+                "description": "Workday tenant name.",
+                "examples": [
+                    "acme"
+                ]
+            },
+            "credentials": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "required": [
+                            "clientId",
+                            "clientSecret",
+                            "refreshToken"
+                        ],
+                        "properties": {
+                            "clientId": {
+                                "type": "string",
+                                "title": "Client ID",
+                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
+                            },
+                            "clientSecret": {
+                                "type": "string",
+                                "title": "Client Secret",
+                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
+                                "airbyte_secret": true
+                            },
+                            "refreshToken": {
+                                "type": "string",
+                                "title": "Refresh Token",
+                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
+                                "airbyte_secret": true
+                            }
+                        }
+                    },
+                    {
+                        "required": [
+                            "username",
+                            "password"
+                        ],
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "title": "Username",
+                                "description": "When downloading Custom Reports, this is required along with password."
+                            },
+                            "password": {
+                                "type": "string",
+                                "title": "Password",
+                                "description": "When downloading Custom Reports, this is required along with username."
+                            }
+                        }
+                    }
+                ]
+            },
+            "baseUrl": {
+                "type": "string",
+                "title": "REST/Auth API base URL",
+                "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip 'api/v2/{tenant}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
+                "examples": [
+                    "https://wd2-impl-services1.workday.com/ccx/",
+                    "https://wd5-impl-services1.workday.com/ccx/"
+                ]
+            },
+            "limit": {
+                "type": "number",
+                "title": "Page Limit",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20,
+                "description": "The maximum number of objects in a single response."
+            },
+            "customReportName": {
+                "type": "string",
+                "title": "Custom Report Name",
+                "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=json"
+            },
+            "timeout": {
+                "type": "number",
+                "title": "Request Timeout",
+                "minimum": 500,
+                "default": 60000,
+                "description": "The time allowed for a request to timeout (in milliseconds)."
+            }
+        }
     }
-  }
-}
 }
