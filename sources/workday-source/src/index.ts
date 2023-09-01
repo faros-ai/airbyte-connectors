@@ -49,7 +49,7 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
       const workday = await Workday.instance(config, this.logger);
       await workday.checkConnection();
     } catch (err: any) {
-      return [false, err];
+      return [false, new VError(err, 'Connection check failed.')];
     }
     return [true, undefined];
   }
