@@ -30,7 +30,8 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const config = readTestResourceFile('config.json');
+  const config_tkn = readTestResourceFile('config_tokens.json');
+  const config_unpw = readTestResourceFile('config_unpw.json');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -51,38 +52,22 @@ describe('index', () => {
     const source = new sut.WorkdaySource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
-      new VError('tenant must not be an empty string'),
+      new VError(
+        'Connection check failed.: tenant must not be an empty string'
+      ),
     ]);
     await expect(
       source.checkConnection({
-        ...config,
-        clientId: '',
+        ...config_tkn,
+        credentials: '',
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('clientId must not be an empty string'),
-    ]);
-    await expect(
-      source.checkConnection({
-        ...config,
-        clientSecret: '',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError('clientSecret must not be an empty string'),
-    ]);
-    await expect(
-      source.checkConnection({
-        ...config,
-        refreshToken: '',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError('refreshToken must not be an empty string'),
+      new VError('Connection check failed.: credentials must not be empty'),
     ]);
   });
 
-  test('check connection', async () => {
+  test('check token connection', async () => {
     Workday.instance = jest.fn().mockImplementation(() => {
       return getWorkdayInstance(
         logger,
@@ -95,7 +80,26 @@ describe('index', () => {
       );
     });
     const source = new sut.WorkdaySource(logger);
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+    await expect(source.checkConnection(config_tkn)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
+  });
+
+  test('check un/pw connection', async () => {
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return getWorkdayInstance(
+        logger,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: readTestResourceFile('workers.json'),
+          }),
+        } as any,
+        20
+      );
+    });
+    const source = new sut.WorkdaySource(logger);
+    await expect(source.checkConnection(config_unpw)).resolves.toStrictEqual([
       true,
       undefined,
     ]);
@@ -117,7 +121,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const orgs = source.streams(config)[1];
+    const orgs = source.streams(config_tkn)[1];
     const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -143,7 +147,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const people = source.streams(config)[2];
+    const people = source.streams(config_tkn)[2];
     const iter = people.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -169,7 +173,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const workers = source.streams(config)[3];
+    const workers = source.streams(config_tkn)[3];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -190,13 +194,12 @@ describe('index', () => {
         } as any,
         0,
         'base-url',
-        'my_tenant',
-        'customReportPath'
+        'my_tenant'
       );
     });
 
     const source = new sut.WorkdaySource(logger);
-    const workers = source.streams(config)[4];
+    const workers = source.streams(config_unpw)[4];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
