@@ -40,6 +40,9 @@ export class AsanaCommon {
   }
 
   static toTmsTaskType(resource_type: string): TmsTaskType {
+    if (!resource_type) {
+        return { category: Custom, detail: 'undefined' }
+    }
     switch (this.normalize(resource_type)) {
       case 'bug':
         return {category: TmsTaskCategory.Bug, detail: resource_type};
