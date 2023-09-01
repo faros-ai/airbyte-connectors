@@ -24,6 +24,7 @@ export interface Page<T> {
  *  1. https://github.com/Workday/workday-prism-analytics-data-loader
  *  2. https://github.com/Workday/prism-python
  *  3. https://community.workday.com/sites/default/files/file-hosting/restapi/
+ *  4. https://github.com/Workday/raas-python
  */
 export class Workday {
   constructor(
@@ -31,8 +32,7 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly baseUrl: string,
-    private readonly tenant: string,
-    private readonly customReportName?: string
+    private readonly tenant: string
   ) {}
 
   static async instance(
@@ -81,8 +81,7 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
-      cfg.tenant,
-      cfg.customReportName
+      cfg.tenant
     );
   }
 
@@ -157,13 +156,13 @@ export class Workday {
   }
 
   async *customReports(customReportName: string): AsyncGenerator<any> {
-    // Note input param path should start with '/'
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    const complete_path = `${baseURL}/${customReportName}`;
-    this.logger.info(`Custom Reports full path URL: ${complete_path}`);
-    const res = await this.api.get(complete_path, {
-      params: {format: 'json'},
-    });
+    const finalPath = `${baseURL}/${customReportName}`;
+    this.logger.info(
+      `Fetching Custom Report '${customReportName}' from - ${finalPath}`
+    );
+
+    const res = await this.api.get(finalPath, {params: {format: 'json'}});
     for (const item of res.data?.Report_Entry ?? []) {
       yield item;
     }

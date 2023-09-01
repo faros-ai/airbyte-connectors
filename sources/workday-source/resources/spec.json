@@ -93,7 +93,6 @@
             "timeout": {
                 "type": "number",
                 "title": "Request Timeout",
-                "minimum": 500,
                 "default": 60000,
                 "description": "The time allowed for a request to timeout (in milliseconds)."
             }
