@@ -161,7 +161,7 @@ export class Tasks extends AsanaConverter {
     } else if (task.completed) {
       return {category: Tms_TaskStatusCategory.Done, detail: 'completed'};
     } else {
-      return null;
+      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
     }
   }
 
@@ -193,6 +193,9 @@ export class Tasks extends AsanaConverter {
   }
 
   private toTmsTaskStatus(status: string): TmsTaskStatus {
+    if (!status)
+      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
+
     switch (AsanaCommon.normalize(status)) {
       case 'done':
         return {category: Tms_TaskStatusCategory.Done, detail: status};
