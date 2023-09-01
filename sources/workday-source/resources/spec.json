@@ -57,12 +57,12 @@
                             "username": {
                                 "type": "string",
                                 "title": "Username",
-                                "description": "When downloading Custom Reports, this is required along with password."
+                                "description": "Workday username for Basic authentication."
                             },
                             "password": {
                                 "type": "string",
                                 "title": "Password",
-                                "description": "When downloading Custom Reports, this is required along with username."
+                                "description": "Workday password for Basic authentication."
                             }
                         }
                     }

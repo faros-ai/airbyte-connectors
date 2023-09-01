@@ -43,45 +43,37 @@ export class Workday {
       throw new VError('tenant must not be an empty string');
     }
     if (!cfg.credentials) {
-      throw new VError(
-        'credentials of type refreshToken/clientId/clientSecret or username/password must be provided'
-      );
+      throw new VError('credentials must not be empty');
     }
-
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
     }
 
     const baseUrl = new URL(cfg.baseUrl);
     const timeout = cfg.timeout ?? 60000;
-    const headers = {
-      'content-type': 'application/json',
-    };
+    const headers = {'content-type': 'application/json'};
 
-    if ('refresh_token' in cfg.credentials) {
-      Workday.checkTokenCredentials(cfg.credentials);
-      const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
-      headers['authorization'] = `Bearer ${accessToken}`;
-    } else if ('password' in cfg.credentials) {
-      if (!('username' in cfg.credentials)) {
-        throw new VError(
-          'Incorrect Auth- credentials with password means username must also be provided'
-        );
-      }
-      const basic_pw = Buffer.from(
-        `${cfg.credentials.username}:${cfg.credentials.password}`
-      ).toString('base64');
-      headers['authorization'] = `Basic ${basic_pw}`;
+    if (
+      'refresh_token' in cfg.credentials &&
+      'clientId' in cfg.credentials &&
+      'clientSecret' in cfg.credentials
+    ) {
+      const res = await Workday.getAccessToken(baseUrl, cfg, logger);
+      headers['authorization'] = `Bearer ${res.access_token}`;
+    } else if ('password' in cfg.credentials && 'username' in cfg.credentials) {
+      const usernamePass = `${cfg.credentials.username}:${cfg.credentials.password}`;
+      const basic = Buffer.from(usernamePass).toString('base64');
+      headers['authorization'] = `Basic ${basic}`;
     } else {
       throw new VError(
-        'Incorrect Auth- credentials with refreshToken/clientId/clientSecret or username/password must be provided'
+        'Invalid credentials! Either (refreshToken, clientId, clientSecret) OR (username, password) must be provided'
       );
     }
     const api = axios.create({
-      timeout: timeout, // default is `0` (no timeout)
+      timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
       maxBodyLength: Infinity, //default is 2000 bytes,
-      headers: headers,
+      headers,
     });
 
     return new Workday(
@@ -93,32 +85,18 @@ export class Workday {
       cfg.customReportName
     );
   }
-  private static checkTokenCredentials(credentials: object): void {
-    let raise = false;
-    if (!('clientId' in credentials)) {
-      raise = true;
-    } else if (!credentials['clientId']) {
-      raise = true;
-    }
-    if (!('clientSecret' in credentials)) {
-      raise = true;
-    } else if (!credentials['clientSecret']) {
-      raise = true;
-    }
-    if (raise) {
-      throw new VError(
-        'Incorrect Auth- credentials with refreshToken means clientId and clientSecret must also be provided'
-      );
-    }
-  }
 
   private static async getAccessToken(
     baseURL: URL,
     cfg: any,
     logger: AirbyteLogger
-  ): Promise<string> {
+  ): Promise<{
+    refresh_token: string;
+    token_type: string;
+    access_token: string;
+  }> {
     const authUrl = baseURL.toString() + `/oauth2/${cfg.tenant}/token`;
-    logger.debug('Requesting an access token from: %s', authUrl);
+    logger.debug('Requesting an access token - %s', authUrl);
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: cfg.credentials.refreshToken,
@@ -128,8 +106,7 @@ export class Workday {
     const res = await axios.post(authUrl, data.toString(), {
       headers: {'content-type': 'application/x-www-form-urlencoded'},
     });
-    // Expecting data of type: {refresh_token, token_type, access_token}
-    return res.data.access_token;
+    return res.data;
   }
 
   private apiBaseUrl(version: string): string {
