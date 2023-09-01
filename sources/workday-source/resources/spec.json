@@ -62,7 +62,8 @@
                             "password": {
                                 "type": "string",
                                 "title": "Password",
-                                "description": "Workday password for Basic authentication."
+                                "description": "Workday password for Basic authentication.",
+                                "airbyte_secret": true
                             }
                         }
                     }
