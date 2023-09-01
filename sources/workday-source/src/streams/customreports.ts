@@ -23,6 +23,8 @@ export class CustomReports extends AirbyteStreamBase {
     const workday = await Workday.instance(this.cfg, this.logger);
     if (this.cfg.customReportName) {
       yield* workday.customReports(this.cfg.customReportName);
+    } else {
+      this.logger.warn('No custom report name provided. Skipping...');
     }
   }
 }
