@@ -61,9 +61,7 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError(
-        'credentials of type refreshToken/clientId/clientSecret or username/password must be provided'
-      ),
+      new VError('credentials must not be empty'),
     ]);
   });
 
