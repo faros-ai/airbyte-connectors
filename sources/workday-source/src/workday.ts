@@ -24,6 +24,7 @@ export interface Page<T> {
  *  1. https://github.com/Workday/workday-prism-analytics-data-loader
  *  2. https://github.com/Workday/prism-python
  *  3. https://community.workday.com/sites/default/files/file-hosting/restapi/
+ *  4. https://github.com/Workday/raas-python
  */
 export class Workday {
   constructor(
@@ -31,8 +32,7 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly baseUrl: string,
-    private readonly tenant: string,
-    private readonly customReportsPath?: string
+    private readonly tenant: string
   ) {}
 
   static async instance(
@@ -42,14 +42,8 @@ export class Workday {
     if (!cfg.tenant) {
       throw new VError('tenant must not be an empty string');
     }
-    if (!cfg.clientId) {
-      throw new VError('clientId must not be an empty string');
-    }
-    if (!cfg.clientSecret) {
-      throw new VError('clientSecret must not be an empty string');
-    }
-    if (!cfg.refreshToken) {
-      throw new VError('refreshToken must not be an empty string');
+    if (!cfg.credentials) {
+      throw new VError('credentials must not be empty');
     }
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
@@ -57,16 +51,29 @@ export class Workday {
 
     const baseUrl = new URL(cfg.baseUrl);
     const timeout = cfg.timeout ?? 60000;
+    const headers = {'content-type': 'application/json'};
 
-    const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
+    if (
+      'refresh_token' in cfg.credentials &&
+      'clientId' in cfg.credentials &&
+      'clientSecret' in cfg.credentials
+    ) {
+      const res = await Workday.getAccessToken(baseUrl, cfg, logger);
+      headers['authorization'] = `Bearer ${res.access_token}`;
+    } else if ('password' in cfg.credentials && 'username' in cfg.credentials) {
+      const usernamePass = `${cfg.credentials.username}:${cfg.credentials.password}`;
+      const basic = Buffer.from(usernamePass).toString('base64');
+      headers['authorization'] = `Basic ${basic}`;
+    } else {
+      throw new VError(
+        'Invalid credentials! Either (refreshToken, clientId, clientSecret) OR (username, password) must be provided'
+      );
+    }
     const api = axios.create({
-      timeout: timeout, // default is `0` (no timeout)
+      timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
       maxBodyLength: Infinity, //default is 2000 bytes,
-      headers: {
-        authorization: `Bearer ${accessToken}`,
-        'content-type': 'application/json',
-      },
+      headers,
     });
 
     return new Workday(
@@ -74,30 +81,31 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
-      cfg.tenant,
-      cfg.customReportPath ?? ''
+      cfg.tenant
     );
   }
 
   private static async getAccessToken(
     baseURL: URL,
-    cfg: WorkdayConfig,
+    cfg: any,
     logger: AirbyteLogger
-  ): Promise<string> {
+  ): Promise<{
+    refresh_token: string;
+    token_type: string;
+    access_token: string;
+  }> {
     const authUrl = baseURL.toString() + `/oauth2/${cfg.tenant}/token`;
-    logger.debug('Requesting an access token from: %s', authUrl);
-
+    logger.debug('Requesting an access token - %s', authUrl);
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: cfg.refreshToken,
-      client_id: cfg.clientId,
-      client_secret: cfg.clientSecret,
+      refresh_token: cfg.credentials.refreshToken,
+      client_id: cfg.credentials.clientId,
+      client_secret: cfg.credentials.clientSecret,
     });
     const res = await axios.post(authUrl, data.toString(), {
       headers: {'content-type': 'application/x-www-form-urlencoded'},
     });
-    // Expecting data of type: {refresh_token, token_type, access_token}
-    return res.data.access_token;
+    return res.data;
   }
 
   private apiBaseUrl(version: string): string {
@@ -148,15 +156,13 @@ export class Workday {
   }
 
   async *customReports(customReportName: string): AsyncGenerator<any> {
-    // Note input param path should start with '/'
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    const complete_path = `${baseURL}/${customReportName}`;
-    this.logger.info(`Custom Reports full path URL: ${complete_path}`);
-    const res = await this.api.get(complete_path, {
-      params: {
-        format: 'json',
-      },
-    });
+    const finalPath = `${baseURL}/${customReportName}`;
+    this.logger.info(
+      `Fetching Custom Report '${customReportName}' from - ${finalPath}`
+    );
+
+    const res = await this.api.get(finalPath, {params: {format: 'json'}});
     for (const item of res.data?.Report_Entry ?? []) {
       yield item;
     }

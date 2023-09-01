@@ -12,14 +12,22 @@ import VError from 'verror';
 import {CustomReports, OrgCharts, Orgs, People, Workers} from './streams';
 import {Workday} from './workday';
 
-export interface WorkdayConfig extends AirbyteConfig {
-  readonly tenant: string;
+export interface TokenCredentials {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly refreshToken: string;
+}
+export interface UsernamePasswordCredentials {
+  readonly username: string;
+  readonly password: string;
+}
+
+export interface WorkdayConfig extends AirbyteConfig {
+  readonly tenant: string;
   readonly baseUrl: string;
+  readonly credentials: TokenCredentials | UsernamePasswordCredentials;
   readonly limit?: number;
-  readonly customReportPath?: string;
+  readonly customReportName?: string;
   readonly timeout?: number;
 }
 
@@ -41,7 +49,7 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
       const workday = await Workday.instance(config, this.logger);
       await workday.checkConnection();
     } catch (err: any) {
-      return [false, err];
+      return [false, new VError(err, 'Connection check failed.')];
     }
     return [true, undefined];
   }

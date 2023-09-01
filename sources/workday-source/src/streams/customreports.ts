@@ -21,6 +21,10 @@ export class CustomReports extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any>> {
     const workday = await Workday.instance(this.cfg, this.logger);
-    yield* workday.customReports(this.cfg.customReportPath);
+    if (this.cfg.customReportName) {
+      yield* workday.customReports(this.cfg.customReportName);
+    } else {
+      this.logger.warn('No custom report name provided. Skipping...');
+    }
   }
 }
