@@ -32,9 +32,7 @@ export class Workday {
     private readonly limit: number,
     private readonly baseUrl: string,
     private readonly tenant: string,
-    private readonly customReportName?: string,
-    private readonly username?: string,
-    private readonly password?: string
+    private readonly customReportName?: string
   ) {}
 
   static async instance(
@@ -44,38 +42,46 @@ export class Workday {
     if (!cfg.tenant) {
       throw new VError('tenant must not be an empty string');
     }
-    if (!cfg.clientId) {
-      throw new VError('clientId must not be an empty string');
+    if (!cfg.credentials) {
+      throw new VError(
+        'credentials of type refreshToken/clientId/clientSecret or username/password must be provided'
+      );
     }
-    if (!cfg.clientSecret) {
-      throw new VError('clientSecret must not be an empty string');
-    }
-    if (!cfg.refreshToken) {
-      throw new VError('refreshToken must not be an empty string');
-    }
+
     if (!cfg.baseUrl) {
       throw new VError('baseUrl must not be an empty string');
-    }
-    if (cfg.customReportName) {
-      if (!cfg.username || !cfg.password) {
-        throw new VError(
-          'When getting custom reports, username and password must be provided.'
-        );
-      }
     }
 
     const baseUrl = new URL(cfg.baseUrl);
     const timeout = cfg.timeout ?? 60000;
+    const headers = {
+      'content-type': 'application/json',
+    };
 
-    const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
+    if ('refresh_token' in cfg.credentials) {
+      Workday.checkTokenCredentials(cfg.credentials);
+      const accessToken = await Workday.getAccessToken(baseUrl, cfg, logger);
+      headers['authorization'] = `Bearer ${accessToken}`;
+    } else if ('password' in cfg.credentials) {
+      if (!('username' in cfg.credentials)) {
+        throw new VError(
+          'Incorrect Auth- credentials with password means username must also be provided'
+        );
+      }
+      const basic_pw = Buffer.from(
+        `${cfg.credentials.username}:${cfg.credentials.password}`
+      ).toString('base64');
+      headers['authorization'] = `Basic ${basic_pw}`;
+    } else {
+      throw new VError(
+        'Incorrect Auth- credentials with refreshToken/clientId/clientSecret or username/password must be provided'
+      );
+    }
     const api = axios.create({
       timeout: timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
       maxBodyLength: Infinity, //default is 2000 bytes,
-      headers: {
-        authorization: `Bearer ${accessToken}`,
-        'content-type': 'application/json',
-      },
+      headers: headers,
     });
 
     return new Workday(
@@ -84,25 +90,40 @@ export class Workday {
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
       cfg.tenant,
-      cfg.customReportName,
-      cfg.username,
-      cfg.password
+      cfg.customReportName
     );
+  }
+  private static checkTokenCredentials(credentials: object): void {
+    let raise = false;
+    if (!('clientId' in credentials)) {
+      raise = true;
+    } else if (!credentials['clientId']) {
+      raise = true;
+    }
+    if (!('clientSecret' in credentials)) {
+      raise = true;
+    } else if (!credentials['clientSecret']) {
+      raise = true;
+    }
+    if (raise) {
+      throw new VError(
+        'Incorrect Auth- credentials with refreshToken means clientId and clientSecret must also be provided'
+      );
+    }
   }
 
   private static async getAccessToken(
     baseURL: URL,
-    cfg: WorkdayConfig,
+    cfg: any,
     logger: AirbyteLogger
   ): Promise<string> {
     const authUrl = baseURL.toString() + `/oauth2/${cfg.tenant}/token`;
     logger.debug('Requesting an access token from: %s', authUrl);
-
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: cfg.refreshToken,
-      client_id: cfg.clientId,
-      client_secret: cfg.clientSecret,
+      refresh_token: cfg.credentials.refreshToken,
+      client_id: cfg.credentials.clientId,
+      client_secret: cfg.credentials.clientSecret,
     });
     const res = await axios.post(authUrl, data.toString(), {
       headers: {'content-type': 'application/x-www-form-urlencoded'},
@@ -163,11 +184,7 @@ export class Workday {
     const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
     const complete_path = `${baseURL}/${customReportName}`;
     this.logger.info(`Custom Reports full path URL: ${complete_path}`);
-    const basic_pw = Buffer.from(`${this.username}:${this.password}`).toString(
-      'base64'
-    );
     const res = await this.api.get(complete_path, {
-      headers: {Authorization: `Basic ${basic_pw}`},
       params: {format: 'json'},
     });
     for (const item of res.data?.Report_Entry ?? []) {

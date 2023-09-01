@@ -12,17 +12,23 @@ import VError from 'verror';
 import {CustomReports, OrgCharts, Orgs, People, Workers} from './streams';
 import {Workday} from './workday';
 
-export interface WorkdayConfig extends AirbyteConfig {
-  readonly tenant: string;
+export interface TokenCredentials {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly refreshToken: string;
+}
+export interface UsernamePasswordCredentials {
+  readonly username: string;
+  readonly password: string;
+}
+
+export interface WorkdayConfig extends AirbyteConfig {
+  readonly tenant: string;
   readonly baseUrl: string;
+  readonly credentials: TokenCredentials | UsernamePasswordCredentials;
   readonly limit?: number;
   readonly customReportName?: string;
   readonly timeout?: number;
-  readonly username?: string;
-  readonly password?: string;
 }
 
 /** The main entry point. */
