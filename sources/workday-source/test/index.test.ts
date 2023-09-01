@@ -52,7 +52,9 @@ describe('index', () => {
     const source = new sut.WorkdaySource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
-      new VError('tenant must not be an empty string'),
+      new VError(
+        'Connection check failed.: tenant must not be an empty string'
+      ),
     ]);
     await expect(
       source.checkConnection({
@@ -61,7 +63,7 @@ describe('index', () => {
       })
     ).resolves.toStrictEqual([
       false,
-      new VError('credentials must not be empty'),
+      new VError('Connection check failed.: credentials must not be empty'),
     ]);
   });
 
@@ -192,8 +194,7 @@ describe('index', () => {
         } as any,
         0,
         'base-url',
-        'my_tenant',
-        'customReportName'
+        'my_tenant'
       );
     });
 
