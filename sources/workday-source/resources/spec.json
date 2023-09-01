@@ -24,11 +24,17 @@
                 "oneOf": [
                     {
                         "required": [
+                            "credential_type",
                             "clientId",
                             "clientSecret",
                             "refreshToken"
                         ],
                         "properties": {
+                            "credential_type": {
+                                "type": "string",
+                                "title": "Credential Type",
+                                "const": "token"
+                            },
                             "clientId": {
                                 "type": "string",
                                 "title": "Client ID",
@@ -50,10 +56,16 @@
                     },
                     {
                         "required": [
+                            "credential_type",
                             "username",
                             "password"
                         ],
                         "properties": {
+                            "credential_type": {
+                                "type": "string",
+                                "title": "Credential Type",
+                                "const": "userpassword"
+                            },
                             "username": {
                                 "type": "string",
                                 "title": "Username",
