@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AsanaConverter} from './common';
 
 export class Tags extends AsanaConverter {
@@ -10,7 +10,6 @@ export class Tags extends AsanaConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const tag = record.record.data;
-
     return [
       {
         model: 'tms_Label',
