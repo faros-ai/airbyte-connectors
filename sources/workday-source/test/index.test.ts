@@ -183,14 +183,14 @@ describe('index', () => {
     expect(items).toStrictEqual([...expected.data, ...expected.data]);
   });
   test('streams - customReports', async () => {
-    const fnCustomReports = jest.fn();
+    const fnCustomreports = jest.fn();
     const expected = readTestResourceFile('customreports.json');
 
     Workday.instance = jest.fn().mockImplementation(() => {
       return new Workday(
         logger,
         {
-          get: fnCustomReports.mockResolvedValue({data: expected}),
+          get: fnCustomreports.mockResolvedValue({data: expected}),
         } as any,
         0,
         'base-url',
@@ -205,7 +205,7 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    expect(fnCustomReports).toHaveBeenCalledTimes(1);
+    expect(fnCustomreports).toHaveBeenCalledTimes(1);
     expect(items).toStrictEqual(expected.Report_Entry);
   });
 });
