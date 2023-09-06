@@ -359,7 +359,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     const edition = config.edition_configs?.edition ?? Edition.CLOUD;
 
     if (!config.edition_configs?.edition) {
-      this.logger.info('Edition is not set. Using CLOUD edition');
+      this.logger.info('Edition is not set. Assuming Faros Cloud edition');
     }
 
     this.edition = edition;
