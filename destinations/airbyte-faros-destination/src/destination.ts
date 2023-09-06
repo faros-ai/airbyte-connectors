@@ -356,21 +356,28 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private async init(config: DestinationConfig): Promise<void> {
-    const edition = config.edition_configs?.edition;
-    if (!edition) {
-      throw new VError('Faros Edition is not set');
+    const edition = config.edition_configs?.edition ?? Edition.CLOUD;
+
+    if (!config.edition_configs?.edition) {
+      this.logger.info('Edition is not set. Assuming Faros Cloud edition');
     }
+
     this.edition = edition;
-    if (edition === Edition.COMMUNITY) {
-      await this.initCommunity(config);
-    } else if (edition === Edition.CLOUD) {
-      await this.initCloud(config);
-    } else {
-      throw new VError(
-        `Invalid run mode ${edition}. ` +
-          `Possible values are ${Object.values(Edition).join(',')}`
-      );
+
+    switch (edition) {
+      case Edition.COMMUNITY:
+        await this.initCommunity(config);
+        break;
+      case Edition.CLOUD:
+        await this.initCloud(config);
+        break;
+      default:
+        throw new VError(
+          `Invalid edition ${edition}. ` +
+            `Possible values are ${Object.values(Edition).join(',')}`
+        );
     }
+
     this.initGlobal(config);
   }
 
