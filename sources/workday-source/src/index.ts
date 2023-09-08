@@ -46,14 +46,14 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: WorkdayConfig): Promise<[boolean, VError]> {
-    if (config.skipConnectionCheck) {
+    if (config.skipConnectionCheck === false) {
+      try {
+        const workday = await Workday.instance(config, this.logger);
+        await workday.checkConnection();
+      } catch (err: any) {
+        return [false, new VError(err, 'Connection check failed.')];
+      }
       return [true, undefined];
-    }
-    try {
-      const workday = await Workday.instance(config, this.logger);
-      await workday.checkConnection();
-    } catch (err: any) {
-      return [false, new VError(err, 'Connection check failed.')];
     }
     return [true, undefined];
   }

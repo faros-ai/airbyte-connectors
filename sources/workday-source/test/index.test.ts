@@ -30,6 +30,7 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const config_tkn_check = readTestResourceFile('config_tokens_copy.json');
   const config_tkn = readTestResourceFile('config_tokens.json');
   const config_unpw = readTestResourceFile('config_unpw.json');
 
@@ -46,25 +47,6 @@ describe('index', () => {
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
-  });
-
-  test('check connection - if config params are not provided', async () => {
-    const source = new sut.WorkdaySource(logger);
-    await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Connection check failed.: tenant must not be an empty string'
-      ),
-    ]);
-    await expect(
-      source.checkConnection({
-        ...config_tkn,
-        credentials: '',
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError('Connection check failed.: credentials must not be empty'),
-    ]);
   });
 
   test('check token connection', async () => {

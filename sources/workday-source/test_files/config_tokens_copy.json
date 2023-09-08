@@ -1,0 +1,10 @@
+{
+  "tenant": "acme",
+  "credentials": {
+    "clientId": "foo",
+    "clientSecret": "bar",
+    "refreshToken": "baz"
+  },
+  "baseUrl": "test.test",
+  "skipConnection": false
+}
