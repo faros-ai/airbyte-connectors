@@ -26,6 +26,7 @@ export interface WorkdayConfig extends AirbyteConfig {
   readonly tenant: string;
   readonly baseUrl: string;
   readonly credentials: TokenCredentials | UsernamePasswordCredentials;
+  readonly skipConnectionCheck?: boolean;
   readonly limit?: number;
   readonly customReportName?: string;
   readonly timeout?: number;
@@ -45,6 +46,9 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: WorkdayConfig): Promise<[boolean, VError]> {
+    if (config.skipConnectionCheck) {
+      return [true, undefined];
+    }
     try {
       const workday = await Workday.instance(config, this.logger);
       await workday.checkConnection();
