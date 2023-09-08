@@ -108,6 +108,11 @@
                 "title": "Request Timeout",
                 "default": 60000,
                 "description": "The time allowed for a request to timeout (in milliseconds)."
+            },
+            "skipWorkerCheck": {
+                "type": "boolean",
+                "title": "Skip Worker Count Check",
+                "default": true
             }
         }
     }

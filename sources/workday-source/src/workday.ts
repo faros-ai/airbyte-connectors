@@ -32,7 +32,8 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly baseUrl: string,
-    private readonly tenant: string
+    private readonly tenant: string,
+    private readonly skipWorkerCheck: boolean
   ) {}
 
   static async instance(
@@ -81,7 +82,8 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       baseUrl.toString(),
-      cfg.tenant
+      cfg.tenant,
+      cfg.skipWorkerCheck ? cfg.skipWorkerCheck : true
     );
   }
 
@@ -113,12 +115,14 @@ export class Workday {
   }
 
   async checkConnection(): Promise<void> {
-    const res = [];
-    for await (const org of this.workers(1, 1)) {
-      res.push(org);
-    }
-    if (res.length <= 0) {
-      throw new VError('No workers were found');
+    if (this.skipWorkerCheck === false) {
+      const res = [];
+      for await (const org of this.workers(1, 1)) {
+        res.push(org);
+      }
+      if (res.length <= 0) {
+        throw new VError('No workers were found');
+      }
     }
   }
 

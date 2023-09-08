@@ -19,7 +19,7 @@ function readTestResourceFile(fileName: string): any {
 }
 
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
-  return new Workday(logger, axios_instance, limit, 'base-url', 'acme');
+  return new Workday(logger, axios_instance, limit, 'base-url', 'acme', true);
 }
 
 describe('index', () => {
@@ -194,7 +194,8 @@ describe('index', () => {
         } as any,
         0,
         'base-url',
-        'my_tenant'
+        'my_tenant',
+        true
       );
     });
 
