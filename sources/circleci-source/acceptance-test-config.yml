@@ -21,5 +21,6 @@ tests:
     - config_path: 'secrets/config.json'
       configured_catalog_path: 'test_files/incremental_configured_catalog.json'
       future_state_path: 'test_files/abnormal_state.json'
+      threshold_days: 90
       cursor_paths:
         pipelines: ['gh/faros-test-org1/test-repo1', 'lastUpdatedAt']

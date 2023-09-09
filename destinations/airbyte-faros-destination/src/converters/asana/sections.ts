@@ -17,13 +17,16 @@ export class Sections extends AsanaConverter {
     const section = record.record.data as AsanaSection;
 
     res.push(AsanaCommon.tms_TaskBoard(section, source));
-    res.push({
-      model: 'tms_TaskBoardProjectRelationship',
-      record: {
-        board: {uid: section.gid, source},
-        project: section.project ? {uid: section.project.gid, source} : null,
-      },
-    });
+
+    if (section.project) {
+      res.push({
+        model: 'tms_TaskBoardProjectRelationship',
+        record: {
+          board: {uid: section.gid, source},
+          project: {uid: section.project.gid, source},
+        },
+      });
+    }
 
     return res;
   }

@@ -4,7 +4,7 @@ import {Dictionary} from 'ts-essentials';
 import {WorkdayConfig} from '..';
 import {Workday} from '../workday';
 
-export class CustomReports extends AirbyteStreamBase {
+export class Customreports extends AirbyteStreamBase {
   constructor(
     private readonly cfg: WorkdayConfig,
     protected readonly logger: AirbyteLogger

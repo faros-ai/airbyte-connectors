@@ -1,8 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
 
-import {DestinationModel, DestinationRecord} from '../converter';
-import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {AsanaCommon, AsanaConverter} from './common';
 
 interface CustomField {
   gid: string;
@@ -33,18 +39,22 @@ enum Tms_TaskStatusCategory {
 export class Tasks extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
-    'tms_Project',
     'tms_TaskProjectRelationship',
-    'tms_TaskBoard',
     'tms_TaskBoardRelationship',
     'tms_TaskDependency',
     'tms_TaskAssignment',
-    'tms_Label',
     'tms_TaskTag',
   ];
 
+  static readonly tagsStream = new StreamName('asana', 'tags');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [Tasks.tagsStream];
+  }
+
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
 
@@ -52,7 +62,6 @@ export class Tasks extends AsanaConverter {
     const task = record.record.data;
 
     const taskKey = {uid: task.gid, source};
-    const status = this.findFieldByName(task.custom_fields, 'status');
     const parent = task.parent ? {uid: task.parent.gid, source} : null;
     const priority = this.findFieldByName(task.custom_fields, 'priority');
     const points = this.findFieldByName(task.custom_fields, 'points');
@@ -69,28 +78,18 @@ export class Tasks extends AsanaConverter {
         url: task.permalink_url ?? null,
         type: AsanaCommon.toTmsTaskType(task.resource_type),
         priority: typeof priority === 'string' ? priority : null,
-        status:
-          typeof status === 'string' ? this.toTmsTaskStatus(status) : null,
+        status: this.getStatus(task),
         points: typeof points === 'number' ? points : null,
         additionalFields: task.custom_fields.map((f) => this.toTaskField(f)),
         createdAt: Utils.toDate(task.created_at),
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
-        creator: task.assignee ? {uid: task.assignee.gid, source} : null,
       },
     });
 
-    for (const membership of task.memberships) {
+    for (const membership of task.memberships ?? []) {
       if (membership.project) {
-        res.push({
-          model: 'tms_Project',
-          record: {
-            uid: membership.project.gid,
-            name: membership.project.name,
-            source,
-          },
-        });
         res.push({
           model: 'tms_TaskProjectRelationship',
           record: {
@@ -101,13 +100,13 @@ export class Tasks extends AsanaConverter {
       }
 
       if (membership.section) {
-        res.push(
-          ...this.tms_TaskBoardRelationship(
-            taskKey.uid,
-            membership.section,
-            source
-          )
-        );
+        res.push({
+          model: 'tms_TaskBoardRelationship',
+          record: {
+            task: taskKey,
+            board: {uid: membership.section.gid, source},
+          },
+        });
       }
     }
 
@@ -120,37 +119,31 @@ export class Tasks extends AsanaConverter {
         },
       });
     }
+
     if (parent) {
       res.push({
         model: 'tms_TaskDependency',
         record: {
-          dependentTask: taskKey,
+          dependentTask: parent,
           blocking: false,
-          fulfillingTask: parent,
+          fulfillingTask: taskKey,
         },
       });
     }
-    if (task.assignee_section) {
-      res.push(
-        ...this.tms_TaskBoardRelationship(
-          taskKey.uid,
-          task.assignee_section,
-          source
-        )
-      );
-    }
 
-    for (const tag of task.tags) {
+    for (const tag of task.tags ?? []) {
       if (tag.gid) {
-        const label = {name: tag.name};
-        res.push({
-          model: 'tms_Label',
-          record: {name: label.name},
-        });
+        const tagRec = ctx?.get(Tasks.tagsStream.asString, tag.gid);
+        if (!tagRec) {
+          continue;
+        }
+
+        const label = {name: tagRec.record.data.name};
+
         res.push({
           model: 'tms_TaskTag',
           record: {
-            label: {name: label.name},
+            label,
             task: taskKey,
           },
         });
@@ -160,21 +153,16 @@ export class Tasks extends AsanaConverter {
     return res;
   }
 
-  private tms_TaskBoardRelationship(
-    taskId: string,
-    section: AsanaSection,
-    source: string
-  ): DestinationRecord[] {
-    const res = [];
-    res.push(AsanaCommon.tms_TaskBoard(section, source));
-    res.push({
-      model: 'tms_TaskBoardRelationship',
-      record: {
-        task: {uid: taskId, source},
-        board: {uid: section.gid, source},
-      },
-    });
-    return res;
+  private getStatus(task: Dictionary<any>): TmsTaskStatus | null {
+    const status = this.findFieldByName(task.custom_fields, 'status');
+
+    if (typeof status === 'string') {
+      return this.toTmsTaskStatus(status);
+    } else if (task.completed) {
+      return {category: Tms_TaskStatusCategory.Done, detail: 'completed'};
+    } else {
+      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
+    }
   }
 
   private findFieldByName(
@@ -205,16 +193,18 @@ export class Tasks extends AsanaConverter {
   }
 
   private toTmsTaskStatus(status: string): TmsTaskStatus {
-    const detail = status.toLowerCase();
-    switch (detail) {
+    if (!status)
+      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
+
+    switch (AsanaCommon.normalize(status)) {
       case 'done':
-        return {category: Tms_TaskStatusCategory.Done, detail};
+        return {category: Tms_TaskStatusCategory.Done, detail: status};
       case 'inprogress':
-        return {category: Tms_TaskStatusCategory.InProgress, detail};
+        return {category: Tms_TaskStatusCategory.InProgress, detail: status};
       case 'todo':
-        return {category: Tms_TaskStatusCategory.Todo, detail};
+        return {category: Tms_TaskStatusCategory.Todo, detail: status};
       default:
-        return {category: Tms_TaskStatusCategory.Custom, detail};
+        return {category: Tms_TaskStatusCategory.Custom, detail: status};
     }
   }
 }
