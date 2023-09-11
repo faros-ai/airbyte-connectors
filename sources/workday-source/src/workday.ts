@@ -34,6 +34,7 @@ export class Workday {
     private readonly baseUrl: string,
     private readonly tenant: string,
     private readonly skipWorkerCheck: boolean
+
   ) {}
 
   static async instance(
