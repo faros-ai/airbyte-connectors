@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {AzureReposConverter} from './common';
+import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
 import {PullRequest} from './models';
 
 export class PullRequests extends AzureReposConverter {
@@ -43,7 +43,7 @@ export class PullRequests extends AzureReposConverter {
           record: {
             number: comment.id,
             uid: comment.id.toString(),
-            comment: comment.content,
+            comment: comment.content?.substring(0, MAX_DESCRIPTION_LENGTH),
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
             author: {uid: comment.author.uniqueName, source},

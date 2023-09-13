@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {AzureReposConverter} from './common';
+import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
 import {Commit} from './models';
 
 export class Commits extends AzureReposConverter {
@@ -34,7 +34,7 @@ export class Commits extends AzureReposConverter {
       record: {
         sha: commitItem.commitId,
         uid: commitItem.commitId,
-        message: commitItem.comment,
+        message: commitItem.comment?.substring(0, MAX_DESCRIPTION_LENGTH),
         htmlUrl: commitItem.remoteUrl,
         createdAt: Utils.toDate(commitItem.committer?.date),
         author: {uid: commitItem.author?.email, source},
