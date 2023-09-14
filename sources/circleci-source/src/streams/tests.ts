@@ -41,7 +41,18 @@ export class Tests extends CircleCIStreamBase {
       since
     )) {
       for (const workflow of pipeline.workflows ?? []) {
+        const seenJobs = new Set<number>();
+
         for (const job of workflow.jobs ?? []) {
+          const jobNum = job.job_number;
+          if (seenJobs.has(jobNum)) {
+            this.logger.warn(
+              `Tests for job [${jobNum}] in project [${pipeline.project_slug}] has already been seen. Skipping second occurrence.`
+            );
+            continue;
+          }
+          seenJobs.add(jobNum);
+
           const tests = await this.circleCI.fetchTests(
             pipeline.project_slug,
             job.job_number
