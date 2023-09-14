@@ -9,6 +9,8 @@ import {
   PullRequestStateCategory,
 } from './models';
 
+export const MAX_DESCRIPTION_LENGTH = 1000;
+
 export type ApplicationMapping = Record<
   string,
   {name: string; platform?: string}

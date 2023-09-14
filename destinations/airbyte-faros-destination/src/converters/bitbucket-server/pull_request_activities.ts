@@ -7,6 +7,7 @@ import {
 } from 'faros-airbyte-common/bitbucket-server';
 import {Utils} from 'faros-js-client';
 
+import {MAX_DESCRIPTION_LENGTH} from '../azure-repos/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
 
@@ -42,7 +43,10 @@ export class PullRequestActivities extends BitbucketServerConverter {
           number: id,
           uid: id.toString(),
           pullRequest,
-          comment: activity.comment.text,
+          comment: activity?.comment?.text?.substring(
+            0,
+            MAX_DESCRIPTION_LENGTH
+          ),
           createdAt: Utils.toDate(activity.comment.createdDate),
           updatedAt: Utils.toDate(activity.comment.updatedDate),
           author,
