@@ -47,7 +47,7 @@ export class Tests extends CircleCIStreamBase {
           const jobNum = job.job_number;
           if (seenJobs.has(jobNum)) {
             this.logger.warn(
-              `Tests for job [${jobNum}] in project [${pipeline.project_slug}] has already been seen. Skipping second occurrence.`
+              `Tests for job [${jobNum}] in project [${pipeline.project_slug}] have already been seen. Skipping second occurrence.`
             );
             continue;
           }
