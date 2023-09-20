@@ -180,4 +180,35 @@ describe('traverse', () => {
       traverseObject(loadJSON('one-of-deprecated.json'), [])
     ).toMatchSnapshot();
   });
+
+  test('airbyte_hidden', () => {
+    expect(
+      traverseObject(
+        {
+          title: 'Spec',
+          type: 'object',
+          properties: {
+            user: {
+              type: 'string',
+            },
+            name: {
+              type: 'string',
+              airbyte_hidden: true,
+            },
+            age: {
+              type: 'integer',
+              airbyte_hidden: false,
+            },
+          },
+        },
+        []
+      )
+    ).toMatchSnapshot();
+  });
+
+  test('oneOf airbyte_hidden', () => {
+    expect(
+      traverseObject(loadJSON('one-of-airbyte-hidden.json'), [])
+    ).toMatchSnapshot();
+  });
 });

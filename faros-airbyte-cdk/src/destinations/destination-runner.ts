@@ -140,9 +140,15 @@ export class AirbyteDestinationRunner<
       .option(
         '--spec-file <path to spec>',
         'Path to the spec file. If not provided, the spec will be fetched from the destination'
-      ).option(
+      )
+      .option(
         '--include-deprecated-fields',
         'Include fields marked as deprecated in the spec',
+        false
+      )
+      .option(
+        '--include-hidden-fields',
+        'Include fields marked as hidden in the spec',
         false
       )
       .description(
@@ -162,7 +168,8 @@ export class AirbyteDestinationRunner<
               ],
           // Assign section = 0 to the root object's row
           0,
-          opts.includeDeprecatedFields
+          opts.includeDeprecatedFields,
+          opts.includeHiddenFields
         );
 
         if (opts.json) {

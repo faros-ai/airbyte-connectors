@@ -155,6 +155,11 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
         'Include fields marked as deprecated in the spec',
         false
       )
+      .option(
+        '--include-hidden-fields',
+        'Include fields marked as hidden in the spec',
+        false
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
@@ -172,7 +177,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               ],
           // Assign section = 0 to the root object's row
           0,
-          opts.includeDeprecatedFields
+          opts.includeDeprecatedFields,
+          opts.includeHiddenFields
         );
 
         if (opts.json) {

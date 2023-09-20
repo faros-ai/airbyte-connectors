@@ -1,5 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`traverse airbyte_hidden 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+      3,
+      4,
+    ],
+    "description": "Please configure arguments 2,3,4 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "enum": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "age",
+    "required": false,
+    "section": 2,
+    "title": "Age",
+    "type": "integer",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": undefined,
+    "default": undefined,
+    "description": undefined,
+    "enum": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "user",
+    "required": false,
+    "section": 3,
+    "title": "User",
+    "type": "string",
+  },
+]
+`;
+
 exports[`traverse airbyte_secret 1`] = `
 Array [
   Object {
@@ -288,6 +338,94 @@ Array [
 `;
 
 exports[`traverse oneOf 1`] = `
+Array [
+  Object {
+    "children": Array [
+      2,
+    ],
+    "description": "Please configure argument 2 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "",
+    "required": false,
+    "section": 1,
+    "title": "Spec",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      3,
+      4,
+    ],
+    "description": "Please select and configure a single argument from 3,4",
+    "examples": Array [],
+    "oneOf": true,
+    "path": "select_mode",
+    "required": false,
+    "section": 2,
+    "title": "Mode",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      5,
+    ],
+    "description": "Please configure argument 5 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "select_mode",
+    "required": false,
+    "section": 3,
+    "title": "Mode X",
+    "type": "object",
+  },
+  Object {
+    "children": Array [
+      6,
+    ],
+    "description": "Please configure argument 6 as needed",
+    "examples": Array [],
+    "oneOf": false,
+    "path": "select_mode",
+    "required": false,
+    "section": 4,
+    "title": "Mode Y",
+    "type": "object",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": "mode X",
+    "default": undefined,
+    "description": undefined,
+    "enum": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "select_mode.mode",
+    "required": true,
+    "section": 5,
+    "title": "Mode",
+    "type": "string",
+  },
+  Object {
+    "airbyte_secret": undefined,
+    "constValue": "mode Y",
+    "default": undefined,
+    "description": undefined,
+    "enum": undefined,
+    "examples": undefined,
+    "items_type": undefined,
+    "multiline": undefined,
+    "path": "select_mode.mode",
+    "required": true,
+    "section": 6,
+    "title": "Mode",
+    "type": "string",
+  },
+]
+`;
+
+exports[`traverse oneOf airbyte_hidden 1`] = `
 Array [
   Object {
     "children": Array [
