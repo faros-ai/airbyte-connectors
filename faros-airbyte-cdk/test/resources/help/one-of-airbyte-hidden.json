@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Spec",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "select_mode": {
+      "title": "Mode",
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "Mode X",
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "mode X"
+            }
+          }
+        },
+        {
+          "title": "Mode Y",
+          "type": "object",
+          "airbyte_hidden": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "mode Y"
+            }
+          }
+        },
+        {
+          "title": "Mode Z",
+          "type": "object",
+          "airbyte_hidden": true,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "mode Z"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

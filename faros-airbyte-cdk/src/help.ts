@@ -62,7 +62,8 @@ export function traverseObject(
   startObject: Dictionary<any>,
   startPath: string[],
   section = 1,
-  useDeprecatedFields = false
+  useDeprecatedFields = false,
+  useHiddenFields = false
 ): TableRow[] {
   const result: TableRow[] = [];
   // Queue of objects to process in BFS
@@ -131,6 +132,12 @@ export function traverseObject(
         ) {
           continue;
         }
+        if (
+          !useHiddenFields &&
+          curObject.properties[propertyName]['airbyte_hidden']
+        ) {
+          continue;
+        }
 
         process.push([
           curObject.properties[propertyName],
@@ -140,9 +147,10 @@ export function traverseObject(
         ]);
       }
     } else {
-      const children = Object.values(curObject.oneOf).filter(
-        (v) => useDeprecatedFields || !v['deprecated']
-      ).length;
+      const children = Object.values(curObject.oneOf)
+        .filter((v) => useDeprecatedFields || !v['deprecated'])
+        .filter((v) => useHiddenFields || !v['airbyte_hidden']).length;
+
       ok(children > 0);
       result.push({
         title: curObject.title,
@@ -163,6 +171,9 @@ export function traverseObject(
       });
       for (const choice of curObject.oneOf) {
         if (!useDeprecatedFields && choice['deprecated']) {
+          continue;
+        }
+        if (!useHiddenFields && choice['airbyte_hidden']) {
           continue;
         }
 
