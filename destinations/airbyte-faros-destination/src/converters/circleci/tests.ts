@@ -37,10 +37,10 @@ export class Tests extends CircleCIConverter {
     const test = record.record.data as TestMetadata;
     const res: DestinationRecord[] = [];
 
-    const testSuiteUid = `${test.pipeline_id}__${test.workflow_name}_${test.classname}`;
+    const testSuiteUid = `${test.pipeline_id}__${test.workflow_name}__${test.classname}`;
     const testCaseUid = `${testSuiteUid}__${test.name}`;
-    const testCaseResultUid = `${testCaseUid}__${test.job_number}`;
-    const testExecutionUid = `${testSuiteUid}__${test.job_number}`;
+    const testCaseResultUid = `${testCaseUid}__${test.job_id}`;
+    const testExecutionUid = `${testSuiteUid}__${test.job_id}`;
 
     // Write test case & test suite association only once
     if (!this.skipWritingTestCases && !this.testCases.has(testCaseUid)) {
