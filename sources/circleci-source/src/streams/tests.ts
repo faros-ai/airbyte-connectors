@@ -71,6 +71,7 @@ export class Tests extends CircleCIStreamBase {
               project_slug: pipeline.project_slug,
               workflow_id: workflow.id,
               workflow_name: workflow.name,
+              job_id: job.id,
               job_number: job.job_number,
               job_started_at: job.started_at,
               job_stopped_at: job.stopped_at,

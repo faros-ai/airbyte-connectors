@@ -80,6 +80,7 @@ export interface TestMetadata {
   project_slug: string;
   workflow_id: string;
   workflow_name: string;
+  job_id: string;
   job_number: number;
   job_started_at: string;
   job_stopped_at: string;
