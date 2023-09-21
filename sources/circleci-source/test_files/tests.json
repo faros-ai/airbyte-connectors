@@ -25,6 +25,7 @@
     "project_slug": "gh/CircleCI-Public/api-preview-docs",
     "workflow_id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "workflow_name": "build-and-test",
+    "job_id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "job_number": 0,
     "job_started_at": "2019-08-24T14:15:22Z",
     "job_stopped_at": "2019-08-24T14:15:22Z"
@@ -55,6 +56,7 @@
     "project_slug": "gh/CircleCI-Public/api-preview-docs",
     "workflow_id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "workflow_name": "build-and-test",
+    "job_id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "job_number": 0,
     "job_started_at": "2019-08-24T14:15:22Z",
     "job_stopped_at": "2019-08-24T14:15:22Z"
