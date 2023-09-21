@@ -6,9 +6,8 @@ Array [
     "children": Array [
       2,
       3,
-      4,
     ],
-    "description": "Please configure arguments 2,3,4 as needed",
+    "description": "Please configure arguments 2,3 as needed",
     "examples": Array [],
     "oneOf": false,
     "path": "",
