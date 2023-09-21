@@ -199,6 +199,16 @@ describe('traverse', () => {
               type: 'integer',
               airbyte_hidden: false,
             },
+            address: {
+              title: 'Address',
+              type: 'object',
+              airbyte_hidden: true,
+              properties: {
+                street: {
+                  type: 'string',
+                },
+              },
+            },
           },
         },
         []

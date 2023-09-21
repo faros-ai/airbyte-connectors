@@ -65,6 +65,13 @@ export function traverseObject(
   useDeprecatedFields = false,
   useHiddenFields = false
 ): TableRow[] {
+  function shouldInclude(property: Dictionary<any>) {
+    return (
+      (useDeprecatedFields || !property['deprecated']) &&
+      (useHiddenFields || !property['airbyte_hidden'])
+    );
+  }
+
   const result: TableRow[] = [];
   // Queue of objects to process in BFS
   const process: [[Dictionary<any>, string[], number, boolean]] = [
@@ -84,7 +91,7 @@ export function traverseObject(
 
     if (curObject.properties) {
       const children = Object.values(curObject.properties).filter(
-        (v) => useDeprecatedFields || !v['deprecated']
+        shouldInclude
       ).length;
       if (!children) {
         result.push({
@@ -126,16 +133,7 @@ export function traverseObject(
         return a.localeCompare(b);
       };
       for (const propertyName of Object.keys(curObject.properties).sort(cmp)) {
-        if (
-          !useDeprecatedFields &&
-          curObject.properties[propertyName]['deprecated']
-        ) {
-          continue;
-        }
-        if (
-          !useHiddenFields &&
-          curObject.properties[propertyName]['airbyte_hidden']
-        ) {
+        if (!shouldInclude(curObject.properties[propertyName])) {
           continue;
         }
 
@@ -147,9 +145,9 @@ export function traverseObject(
         ]);
       }
     } else {
-      const children = Object.values(curObject.oneOf)
-        .filter((v) => useDeprecatedFields || !v['deprecated'])
-        .filter((v) => useHiddenFields || !v['airbyte_hidden']).length;
+      const children = Object.values(curObject.oneOf).filter(
+        shouldInclude
+      ).length;
 
       ok(children > 0);
       result.push({
@@ -170,10 +168,7 @@ export function traverseObject(
         examples: [],
       });
       for (const choice of curObject.oneOf) {
-        if (!useDeprecatedFields && choice['deprecated']) {
-          continue;
-        }
-        if (!useHiddenFields && choice['airbyte_hidden']) {
+        if (!shouldInclude(choice)) {
           continue;
         }
 
