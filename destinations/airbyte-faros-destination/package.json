@@ -42,7 +42,7 @@
     "faros-js-client": "^0.3.1",
     "fs-extra": "^11.1.0",
     "git-url-parse": "^13.0.0",
-    "graphql": "^16.3.0",
+    "graphql": "^16.8.1",
     "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.5",
     "object-sizeof": "^1.6.1",
