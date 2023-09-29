@@ -21,6 +21,7 @@ export class Tests extends CircleCIConverter {
   private readonly testSuites: Set<string> = new Set<string>();
   private readonly testExecutionCommits: Set<string> = new Set<string>();
   private readonly testExecutions: Dictionary<any> = {};
+  private readonly testCaseResults: Set<string> = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -41,6 +42,14 @@ export class Tests extends CircleCIConverter {
     const testCaseUid = `${testSuiteUid}__${test.name}`;
     const testCaseResultUid = `${testCaseUid}__${test.job_id}`;
     const testExecutionUid = `${testSuiteUid}__${test.job_id}`;
+
+    if (this.testCaseResults.has(testCaseResultUid)) {
+      ctx.logger.warn(
+        `Duplicate test case result will be skipped. project/${test.project_slug}/${test.job_number}/tests - ${test.classname}__${test.name} `
+      );
+      return res;
+    }
+    this.testCaseResults.add(testCaseResultUid);
 
     // Write test case & test suite association only once
     if (!this.skipWritingTestCases && !this.testCases.has(testCaseUid)) {
