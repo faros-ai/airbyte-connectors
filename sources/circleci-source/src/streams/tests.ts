@@ -40,24 +40,23 @@ export class Tests extends CircleCIStreamBase {
       streamSlice.projectName,
       since
     )) {
+      const seenJobs = new Set<string>();
       for (const workflow of pipeline.workflows ?? []) {
-        const seenJobs = new Set<number>();
-
         for (const job of workflow.jobs ?? []) {
-          const jobNum = job.job_number;
-          if (jobNum === undefined) {
+          if (job.job_number === undefined) {
             this.logger.debug(
               `Job number for job [${job.id}] is undefined in project [${pipeline.project_slug}] - Skipping`
             );
             continue;
           }
-          if (seenJobs.has(jobNum)) {
+
+          if (seenJobs.has(job.id)) {
             this.logger.warn(
-              `Tests already seen for job [${jobNum}] in project [${pipeline.project_slug}] - Skipping additional occurrence`
+              `Tests already seen for job [${job.job_number}] in project [${pipeline.project_slug}] - Skipping additional occurrence`
             );
             continue;
           }
-          seenJobs.add(jobNum);
+          seenJobs.add(job.id);
 
           const tests = await this.circleCI.fetchTests(
             pipeline.project_slug,
