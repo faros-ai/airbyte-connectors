@@ -24,7 +24,7 @@ export enum ResultModel {
 
 export interface GraphQLConfig extends AirbyteConfig {
   api_key: string;
-  api_url: string;
+  api_url?: string;
   graph: string;
   graphql_api?: GraphQLVersion;
   page_size?: number;
@@ -42,6 +42,8 @@ export function mainCommand(): Command {
   const source = new FarosGraphSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
+
+const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
 export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
   async spec(): Promise<AirbyteSpec> {
@@ -68,10 +70,7 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
   }
 
   validateConfig(config: GraphQLConfig): void {
-    if (!config.api_url) throw new VError('Faros API url was not provided');
     if (!config.api_key) throw new VError('Faros API key was not provided');
-    if (!config.graphql_api)
-      throw new VError('Faros GraphQL API version was not set');
     if (!config.graph) throw new VError('Faros graph name was not provided');
     if (config.result_model === undefined)
       throw new VError('Result model was not provided');
@@ -79,7 +78,7 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
       if (!config.legacy_v1_schema)
         throw new VError('Legacy V1 schema was not provided');
       if (!config.query) throw new VError('GraphQL query was not provided');
-      if (config.graphql_api !== GraphQLVersion.V2)
+      if ((config.graphql_api ?? 'v2') !== GraphQLVersion.V2)
         throw new VError(
           `GraphQL API version should be ${GraphQLVersion.V2}` +
             " when 'Adapt V1 query' is enabled"
@@ -109,7 +108,7 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     this.validateConfig(config);
 
     const faros = new FarosClient({
-      url: config.api_url,
+      url: config.api_url ?? DEFAULT_API_URL,
       apiKey: config.api_key,
       useGraphQLV2: (config.graphql_api ?? 'v2') === GraphQLVersion.V2,
     });

@@ -94,7 +94,7 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
-      new VError('Faros API url was not provided'),
+      new VError('Faros API key was not provided'),
     ]);
     await expect(
       source.checkConnection({api_url: 'x'} as any)
@@ -106,7 +106,7 @@ describe('index', () => {
       source.checkConnection({api_url: 'x', api_key: 'y'} as any)
     ).resolves.toStrictEqual([
       false,
-      new VError('Faros GraphQL API version was not set'),
+      new VError('Faros graph name was not provided'),
     ]);
     await expect(
       source.checkConnection({
