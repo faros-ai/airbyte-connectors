@@ -40,9 +40,8 @@ export class Tests extends CircleCIStreamBase {
       streamSlice.projectName,
       since
     )) {
+      const seenJobs = new Set<number>();
       for (const workflow of pipeline.workflows ?? []) {
-        const seenJobs = new Set<number>();
-
         for (const job of workflow.jobs ?? []) {
           const jobNum = job.job_number;
           if (jobNum === undefined) {
