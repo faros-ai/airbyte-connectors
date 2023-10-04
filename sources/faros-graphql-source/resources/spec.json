@@ -6,7 +6,6 @@
     "type": "object",
     "required": [
       "api_key",
-      "api_url",
       "graph"
     ],
     "additionalProperties": true,
