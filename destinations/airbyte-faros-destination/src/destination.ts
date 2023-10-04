@@ -459,15 +459,17 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         streamContext.resetModels = new Set(deleteModelEntries);
 
         let originRemapper = undefined;
-        if (config.accept_input_records_origin && config.replace_origin_map) {
-          const originMap = JSON.parse(config.replace_origin_map);
+        const acceptInputRecordsOrigin =
+          config.accept_input_records_origin ?? true;
+        if (acceptInputRecordsOrigin) {
+          const originMap = JSON.parse(config.replace_origin_map ?? '{}');
           originRemapper = (origin: string): string => {
             return originMap[origin] ?? origin;
           };
         }
         const writer = new GraphQLWriter(
           graphQLClient,
-          config.accept_input_records_origin
+          acceptInputRecordsOrigin
             ? {
                 getOrigin: (record: Dictionary<any>): string => {
                   if (!record.origin) {
