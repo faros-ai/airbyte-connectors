@@ -37,7 +37,7 @@
         "type": "boolean",
         "title": "Accept input records origin",
         "description": "Whether to accept the origin field (if present) of input records. If enabled, the input records origin will only be changed according to the replacements specified by 'Replace Records Origin'. Otherwise, the input records origin are ignored and overwritten.",
-        "default": false
+        "default": true
       },
       "replace_origin_map": {
         "order": 3,
