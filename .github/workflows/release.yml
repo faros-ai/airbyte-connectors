@@ -27,7 +27,12 @@ jobs:
       - name: Extract tag version
         id: extract-tag-version
         run: |
+          echo "GITHUB_REF is ${GITHUB_REF}"
+          echo "RELEASE_TAG_NAME is ${RELEASE_TAG_NAME}"
           TAG="${GITHUB_REF:10}"
+          if [ -z "$TAG" ]; then
+            TAG="${RELEASE_TAG_NAME}"
+          fi
           TAG_VERSION="${TAG//v/}"
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
