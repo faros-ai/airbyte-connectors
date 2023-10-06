@@ -63,6 +63,9 @@
         "servicenow": {
           "$ref": "servicenow.json"
         },
+        "sheets": {
+          "$ref": "sheets.json"
+        },
         "squadcast": {
           "$ref": "squadcast.json"
         },
