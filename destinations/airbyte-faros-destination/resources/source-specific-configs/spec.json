@@ -15,6 +15,9 @@
         "agileaccelerator": {
           "$ref": "agileaccelerator.json"
         },
+        "airtable": {
+          "$ref": "airtable.json"
+        },
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
@@ -62,9 +65,6 @@
         },
         "servicenow": {
           "$ref": "servicenow.json"
-        },
-        "sheets": {
-          "$ref": "sheets.json"
         },
         "squadcast": {
           "$ref": "squadcast.json"

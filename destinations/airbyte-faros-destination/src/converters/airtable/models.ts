@@ -71,7 +71,7 @@ export enum SurveyStatusCategory {
   Custom = 'Custom',
 }
 
-type SurveyQuestionCategoryType = {
+export type SurveyQuestionCategoryType = {
   category: SurveyQuestionCategory;
   detail: string;
 };
