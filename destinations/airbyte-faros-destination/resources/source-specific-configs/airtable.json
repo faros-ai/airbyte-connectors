@@ -50,12 +50,6 @@
           "type": "string",
           "format": "date-time"
         },
-        "question_column_index_start": {
-          "title": "Question Columns Start Index",
-          "description": "The index of the first question column header.",
-          "type": "integer",
-          "default": 6
-        },
         "id_column_name": {
           "title": "Survey ID Column Name",
           "description": "The name of the column that contains the survey ID.",
@@ -91,6 +85,24 @@
           "description": "The name of the column that contains the respondent team name.",
           "type": "string",
           "default": "Team"
+        },
+        "question_category_column_name": {
+          "title": "Question Category Column Name",
+          "description": "The name of the column that contains the question category.",
+          "type": "string",
+          "default": "Category"
+        },
+        "response_category_column_name": {
+          "title": "Response Category Column Name",
+          "description": "The name of the column that contains the question response type.",
+          "type": "string",
+          "default": "Response category"
+        },
+        "question_column_name": {
+          "title": "Question Column Name",
+          "description": "The name of the column that contains the question text.",
+          "type": "string",
+          "default": "Question"
         }
       }
     }

@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+
 import {Converter} from '../converter';
 
 export abstract class AirtableConverter extends Converter {
