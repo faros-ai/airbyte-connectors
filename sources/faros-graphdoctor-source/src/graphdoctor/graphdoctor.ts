@@ -15,7 +15,7 @@ export async function* orgTeamParentNull(
   const org_Teams = response.org_Team;
   let uid = 0;
   for (const team of org_Teams) {
-    if (_.isNull(team.parentTeam) && !(team.uid === 'all_teams')) {
+    if (_.isNull(team.parentTeam) && team.uid !== 'all_teams') {
       results.push({
         faros_DataQualityIssue: {
           uid: uid.toString(),
@@ -28,8 +28,8 @@ export async function* orgTeamParentNull(
     }
   }
 
-  for (let i = 0; i < results.length; i++) {
-    yield results[i];
+  for (const result of results) {
+    yield result;
   }
 }
 
@@ -60,7 +60,7 @@ export async function* orgTeamAssignmentNullTeam(
     }
   }
 
-  for (let i = 0; i < results.length; i++) {
-    yield results[i];
+  for (const result of results) {
+    yield result;
   }
 }

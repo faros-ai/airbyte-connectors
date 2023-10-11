@@ -5,8 +5,6 @@ import {Dictionary} from 'ts-essentials';
 import {GraphQLConfig} from '..';
 import {orgTeamAssignmentNullTeam} from '../graphdoctor';
 
-//import {Gitlab, GitlabConfig, Group} from '../gitlab';
-
 export class OrgTeamMembershipNulls extends AirbyteStreamBase {
   constructor(
     readonly config: GraphQLConfig,
