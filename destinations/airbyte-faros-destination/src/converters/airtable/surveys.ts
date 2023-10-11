@@ -384,7 +384,7 @@ export class Surveys extends AirtableConverter {
   }
 
   createQuestionUid(question: string) {
-    return createHash('md5').update(question).digest('hex');
+    return createHash('sha256').update(question).digest('hex');
   }
 
   private updateSurveyStats(surveyId: string, questions: string[]) {
