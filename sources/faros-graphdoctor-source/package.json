@@ -1,7 +1,7 @@
 {
-  "name": "faros-graphql-source",
+  "name": "faros-graphdoctor-source",
   "version": "0.0.1",
-  "description": "Faros GraphQL Airbyte source",
+  "description": "Faros Graph Doctor Airbyte source",
   "keywords": [
     "airbyte",
     "graphql",

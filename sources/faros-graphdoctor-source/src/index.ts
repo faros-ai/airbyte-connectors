@@ -10,9 +10,11 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {OrgTeamParentNulls} from './streams/org-team-parent-null';
+import {OrgTeamParentNulls} from './streams/org-team-parent-nulls';
+import {OrgTeamMembershipNulls} from './streams/team-membership-nulls';
 
 export interface GraphQLConfig extends AirbyteConfig {
+  logger: AirbyteLogger;
   api_key: string;
   api_url: string;
   graph: string;
@@ -47,8 +49,12 @@ export class FarosGraphDoctorSource extends AirbyteSourceBase<GraphQLConfig> {
   }
 
   streams(config: GraphQLConfig): AirbyteStreamBase[] {
+    const myFarosClient = this.makeFarosClient(config);
+    config.logger = this.logger;
+
     return [
-      new OrgTeamParentNulls(config, this.logger, this.makeFarosClient(config)),
+      new OrgTeamParentNulls(config, this.logger, myFarosClient),
+      new OrgTeamMembershipNulls(config, this.logger, myFarosClient),
     ];
   }
 

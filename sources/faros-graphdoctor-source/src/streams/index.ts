@@ -1,3 +1,3 @@
-import {OrgTeamParentNulls} from './org-team-parent-null';
+import {OrgTeamParentNulls} from './org-team-parent-nulls';
 
 export {OrgTeamParentNulls};
