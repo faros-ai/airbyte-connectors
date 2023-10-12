@@ -101,7 +101,7 @@ export class Deployments extends OctopusConverter {
     let commitSha: string;
     let repoName: string;
     let orgUid: string;
-    let orgSource: string;
+    let orgSource: string = this.vcsSource(ctx);
 
     // Attempt to first retrieve VCS information from explicit deployment variables
     for (const v of deployment.Variables ?? []) {
@@ -117,7 +117,7 @@ export class Deployments extends OctopusConverter {
     }
 
     // If all information provided as variables return it
-    if (commitSha && repoName && orgUid && orgSource) {
+    if (commitSha && repoName && orgUid) {
       return [
         {
           artifactUid: commitSha,
@@ -140,13 +140,30 @@ export class Deployments extends OctopusConverter {
       deployment.Changes.length > 0;
 
     if (hasChangeArray) {
-      // First retrieve the fallback repo information from repo property if set
-      let defaultRepoInfo: ArtifactVCSInfo['repository'];
-      for (const step of deployment.Process?.Steps ?? []) {
-        for (const action of step.Actions ?? []) {
-          const repo = action.Properties?.['repo'];
-          if (repo) {
-            defaultRepoInfo = this.getRepoInfoFromURL(deployId, repo, ctx);
+      // First try to construct the fallback repo from explicit deployment variables
+      let fallbackRepoInfo: ArtifactVCSInfo['repository'];
+      if (repoName && orgUid) {
+        fallbackRepoInfo = {
+          name: repoName,
+          organization: {
+            uid: orgUid,
+            source: orgSource,
+          },
+        };
+      }
+
+      // If fallback not set attempt to retrieve it from repo property in process
+      if (!fallbackRepoInfo) {
+        for (const step of deployment.Process?.Steps ?? []) {
+          for (const action of step.Actions ?? []) {
+            const repo = action.Properties?.['repo'];
+            if (repo) {
+              fallbackRepoInfo = this.getRepoInfoFromURL(deployId, repo, ctx);
+              break;
+            }
+          }
+          if (fallbackRepoInfo) {
+            break;
           }
         }
       }
@@ -160,7 +177,7 @@ export class Deployments extends OctopusConverter {
         const sha = commit.Id;
         const repository =
           this.getRepoInfoFromURL(deployId, commit.LinkUrl, ctx) ??
-          defaultRepoInfo;
+          fallbackRepoInfo;
 
         if (repository) {
           vcsInfo.push({artifactUid, sha, repository});
@@ -174,7 +191,7 @@ export class Deployments extends OctopusConverter {
           const sha = buildInfo.VcsCommitNumber;
           const repository =
             this.getRepoInfoFromURL(deployId, buildInfo.VcsRoot, ctx) ??
-            defaultRepoInfo;
+            fallbackRepoInfo;
 
           if (repository) {
             vcsInfo.push({artifactUid, sha, repository});
@@ -183,10 +200,10 @@ export class Deployments extends OctopusConverter {
       }
 
       // If still no info create a dummy artifact using Change.Version
-      if (!vcsInfo.length && defaultRepoInfo) {
+      if (!vcsInfo.length && fallbackRepoInfo) {
         vcsInfo.push({
           artifactUid: change.Version,
-          repository: defaultRepoInfo,
+          repository: fallbackRepoInfo,
         });
       }
     }
