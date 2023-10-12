@@ -10,10 +10,9 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {OrgTeamParentNulls} from './streams/org-team-parent-nulls';
-import {OrgTeamMembershipNulls} from './streams/team-membership-nulls';
+import {DataQualityTests} from './streams/data-quality-tests';
 
-export interface GraphQLConfig extends AirbyteConfig {
+export interface GraphDoctorConfig extends AirbyteConfig {
   logger: AirbyteLogger;
   api_key: string;
   api_url: string;
@@ -28,13 +27,13 @@ export function mainCommand(): Command {
 
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
-export class FarosGraphDoctorSource extends AirbyteSourceBase<GraphQLConfig> {
+export class FarosGraphDoctorSource extends AirbyteSourceBase<GraphDoctorConfig> {
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: GraphQLConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: GraphDoctorConfig): Promise<[boolean, VError]> {
     try {
       const faros = this.makeFarosClient(config);
 
@@ -48,22 +47,19 @@ export class FarosGraphDoctorSource extends AirbyteSourceBase<GraphQLConfig> {
     return [true, undefined];
   }
 
-  streams(config: GraphQLConfig): AirbyteStreamBase[] {
+  streams(config: GraphDoctorConfig): AirbyteStreamBase[] {
     const myFarosClient = this.makeFarosClient(config);
     config.logger = this.logger;
 
-    return [
-      new OrgTeamParentNulls(config, this.logger, myFarosClient),
-      new OrgTeamMembershipNulls(config, this.logger, myFarosClient),
-    ];
+    return [new DataQualityTests(config, this.logger, myFarosClient)];
   }
 
-  validateConfig(config: GraphQLConfig): void {
+  validateConfig(config: GraphDoctorConfig): void {
     if (!config.api_key) throw new VError('Faros API key was not provided');
     if (!config.graph) throw new VError('Faros graph name was not provided');
   }
 
-  makeFarosClient(config: GraphQLConfig): FarosClient {
+  makeFarosClient(config: GraphDoctorConfig): FarosClient {
     this.validateConfig(config);
 
     const faros = new FarosClient({

@@ -2,12 +2,12 @@ import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {GraphQLConfig} from '..';
-import {orgTeamParentNull} from '../graphdoctor';
+import {GraphDoctorConfig} from '..';
+import {runGraphDoctorTests} from '../graphdoctor';
 
-export class OrgTeamParentNulls extends AirbyteStreamBase {
+export class DataQualityTests extends AirbyteStreamBase {
   constructor(
-    readonly config: GraphQLConfig,
+    readonly config: GraphDoctorConfig,
     readonly logger: AirbyteLogger,
     readonly farosClient: FarosClient
   ) {
@@ -23,6 +23,6 @@ export class OrgTeamParentNulls extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<any> {
-    yield* orgTeamParentNull(this.config, this.farosClient);
+    yield* runGraphDoctorTests(this.config, this.farosClient);
   }
 }
