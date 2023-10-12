@@ -9,6 +9,7 @@ import {
   DeploymentVariable,
   ListArgs,
   Release as OctopusRelease,
+  ReleasePackageVersionBuildInformation,
   ResourceCollection,
   TaskState,
 } from './octopusModels';
@@ -29,11 +30,16 @@ export interface Deployment extends OctopusDeployment {
   };
   readonly Process?: DeploymentProcess;
   readonly Variables?: DeploymentVariable[];
+  readonly Release?: DeploymentRelease;
 }
 
 export interface Release extends OctopusRelease {
   readonly SpaceName: string;
   readonly ProjectName: string;
+}
+
+export interface DeploymentRelease {
+  readonly BuildInformation: ReleasePackageVersionBuildInformation[];
 }
 
 export interface DeploymentProcess {

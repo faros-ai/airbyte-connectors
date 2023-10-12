@@ -2,7 +2,12 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
-import {Deployment, DeploymentProcess, Release} from './models';
+import {
+  Deployment,
+  DeploymentProcess,
+  DeploymentRelease,
+  Release,
+} from './models';
 import {OctopusClient} from './octopusClient';
 import {DeploymentVariable} from './octopusModels';
 
@@ -12,6 +17,7 @@ export interface OctopusConfig {
   readonly space_names?: string[];
   readonly variable_names?: string[];
   readonly fetch_deployment_process?: boolean;
+  readonly fetch_deployment_build_information?: boolean;
   readonly cutoff_days?: number;
   readonly look_back_depth?: number;
   readonly page_size?: number;
@@ -33,7 +39,8 @@ export class Octopus {
     cutoffDays?: number,
     variableNames: string[] = [],
     private readonly lookBackDepth = 10,
-    private readonly fetchDeploymentProcess = false
+    private readonly fetchDeploymentProcess = false,
+    private readonly fetchDeploymentBuildInformation = false
   ) {
     this.cutoff = cutoffDays
       ? DateTime.now().minus({days: cutoffDays})
@@ -157,7 +164,7 @@ export class Octopus {
           lookedBack++;
         }
 
-        const [project, environment, task, process, variables] =
+        const [project, environment, task, process, variables, release] =
           await Promise.all([
             this.client.getProject(deployment.ProjectId),
             this.client.getEnvironment(deployment.EnvironmentId),
@@ -170,6 +177,7 @@ export class Octopus {
               spaceId,
               deployment.ManifestVariableSetId
             ),
+            this.getDeploymentRelease(deployment.ReleaseId),
           ]);
 
         yield {
@@ -186,6 +194,7 @@ export class Octopus {
           },
           Process: process,
           Variables: variables,
+          Release: release,
         };
       }
     }
@@ -220,6 +229,21 @@ export class Octopus {
       }
     }
     return process;
+  }
+
+  private async getDeploymentRelease(
+    releaseId: string
+  ): Promise<DeploymentRelease | undefined> {
+    let release: DeploymentRelease;
+    if (this.fetchDeploymentBuildInformation) {
+      const buildInformation = await this.client.getReleaseBuildInformation(
+        releaseId
+      );
+      release = {
+        BuildInformation: buildInformation,
+      };
+    }
+    return release;
   }
 
   async *getReleases(

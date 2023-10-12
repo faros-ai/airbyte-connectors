@@ -257,7 +257,7 @@ interface ReleaseChanges {
   BuildInformation: ReleasePackageVersionBuildInformation[];
 }
 
-interface ReleasePackageVersionBuildInformation {
+export interface ReleasePackageVersionBuildInformation {
   PackageId: string;
   Version: string;
   BuildNumber: string;
@@ -349,7 +349,7 @@ export interface Release {
   readonly ReleaseNotes: string;
   readonly ProjectDeploymentProcessSnapshotId: string;
   readonly IgnoreChannelRules: boolean;
-  readonly BuildInformation: object;
+  readonly BuildInformation: ReleasePackageVersionBuildInformation[];
   readonly Assembled: string;
   readonly LibraryVariableSetSnapshotIds: object;
   readonly SelectedPackages: object;

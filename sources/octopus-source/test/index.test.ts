@@ -28,6 +28,9 @@ describe('index', () => {
     .mockReturnValue(iterArray(readTestResourceFile('spaces.json')));
   const mockListDeployments = jest.fn();
   const mockListReleases = jest.fn();
+  const mockGetReleaseBuildInformation = jest
+    .fn()
+    .mockResolvedValue(readTestResourceFile('release_build_information.json'));
   const mockGetEnvironment = jest.fn();
   const mockGetProject = jest.fn();
   const mockGetTask = jest.fn();
@@ -39,6 +42,7 @@ describe('index', () => {
     listSpaces: mockListSpaces,
     listDeployments: mockListDeployments,
     listReleases: mockListReleases,
+    getReleaseBuildInformation: mockGetReleaseBuildInformation,
     getEnvironment: mockGetEnvironment,
     getProject: mockGetProject,
     getTask: mockGetTask,
@@ -54,6 +58,7 @@ describe('index', () => {
       undefined,
       variableNames,
       1,
+      true,
       true
     );
     await octopus.initialize(['Default']);

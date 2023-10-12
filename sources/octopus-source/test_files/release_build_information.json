@@ -1,0 +1,20 @@
+[
+  {
+    "PackageId": "package1",
+    "Version": "0.0.0",
+    "BuildNumber": "1",
+    "BuildUrl": "url",
+    "VcsType": "Git",
+    "VcsRoot": "root",
+    "VcsCommitNumber": "123"
+  },
+  {
+    "PackageId": "package2",
+    "Version": "0.0.1",
+    "BuildNumber": "2",
+    "BuildUrl": "url",
+    "VcsType": "Git",
+    "VcsRoot": "root",
+    "VcsCommitNumber": "456"
+  }
+]

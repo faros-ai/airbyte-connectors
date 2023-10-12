@@ -21,6 +21,7 @@ import {
   DeploymentVariable as OctopusDeploymentVariable,
   Project as OctopusProject,
   Release as OctopusRelease,
+  ReleasePackageVersionBuildInformation as ReleaseBuildInformation,
   ServerTask as OctopusServerTask,
   Space as OctopusSpace,
   VariableSetResponse,
@@ -113,6 +114,24 @@ export class OctopusClient {
 
   async *listReleases(spaceId: string): AsyncGenerator<OctopusRelease> {
     yield* this.paginate(`/${spaceId}/releases`);
+  }
+
+  async getReleaseBuildInformation(
+    id: string
+  ): Promise<ReleaseBuildInformation[]> {
+    const response = await this.get<OctopusRelease>(`/releases/${id}`);
+
+    return response.BuildInformation.map((buildInfo) => {
+      return {
+        PackageId: buildInfo.PackageId,
+        Version: buildInfo.Version,
+        BuildNumber: buildInfo.BuildNumber,
+        BuildUrl: buildInfo.BuildUrl,
+        VcsType: buildInfo.VcsType,
+        VcsRoot: buildInfo.VcsRoot,
+        VcsCommitNumber: buildInfo.VcsCommitNumber,
+      };
+    });
   }
 
   @Memoize((id) => id)
