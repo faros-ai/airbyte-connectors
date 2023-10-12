@@ -1,9 +1,10 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
-interface GraphDoctorTestFunction {
-  (cfg: any, fc: FarosClient): AsyncGenerator<any>;
-}
+type GraphDoctorTestFunction = (
+  cfg: any,
+  fc: FarosClient
+) => AsyncGenerator<any>;
 
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
