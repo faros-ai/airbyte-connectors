@@ -6,6 +6,19 @@ type GraphDoctorTestFunction = (
   fc: FarosClient
 ) => AsyncGenerator<any>;
 
+function simpleHash(str): string {
+  let hash = 0;
+  if (str.length === 0) return '0';
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+
+  return hash.toString();
+}
+
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
   fc: FarosClient
@@ -20,11 +33,13 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   let uid = 0;
   for (const team of org_Teams) {
     if (_.isNull(team.parentTeam) && team.uid !== 'all_teams') {
+      const desc_str = `Team other than all_teams has missing parent team, uid=${team.uid}`;
       results.push({
         faros_DataQualityIssue: {
-          uid: uid.toString(),
+          uid: simpleHash(`${uid.toString}${desc_str}`),
           model: 'org_Team',
-          description: `Team other than all_teams has missing parent team, uid=${team.uid}`,
+          description: desc_str,
+          recordIds: [team.id],
         },
       });
       uid += 1;
@@ -48,11 +63,13 @@ export const orgTeamAssignmentNullTeam: GraphDoctorTestFunction =
     let uid = 0;
     for (const rec of org_Teams) {
       if (_.isNull(rec.team) || _.isNull(rec.member)) {
+        const desc_str = `Team Membership with ID '${rec.id}' has missing 'team' or 'member'`;
         results.push({
           faros_DataQualityIssue: {
-            uid: uid.toString(),
+            uid: simpleHash(`${uid.toString}${desc_str}`),
             model: 'org_TeamMembership',
-            description: `Team Membership with ID '${rec.id}' has missing 'team' or 'member'`,
+            description: desc_str,
+            recordIds: [rec.id],
           },
         });
         uid += 1;

@@ -1,35 +1,10 @@
-import {AxiosInstance} from 'axios';
-import {
-  AirbyteLogger,
-  AirbyteLogLevel,
-  AirbyteSpec,
-  SyncMode,
-} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
+import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {DataQualityTests} from '../src/streams/data-quality-tests';
 import {readTestResourceAsJSON} from './helpers';
 
-// const QUERY_HASH = 'acbd18db4cc2f85cedef654fccc4a4d8';
-//
-// const BASE_CONFIG = {
-//   query: 'foo',
-//   api_url: 'x',
-//   api_key: 'y',
-//   graphql_api: 'v2',
-//   graph: 'default',
-// };
-//
-// const queryPaths = {
-//   model: {modelName: 'D', path: ['A', 'B', 'C']},
-//   nodeIds: [],
-// };
-
-// const adapterNodes: any[] = [{k3: 'v3'}, {k4: 'v4'}];
-// let graphExists: boolean;
-// let nodes: any[];
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'mockQueryToObject.json'
 );
@@ -55,10 +30,6 @@ jest.mock('faros-js-client', () => {
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
 describe('index', () => {
@@ -111,26 +82,29 @@ describe('index', () => {
     expect(results).toStrictEqual([
       {
         faros_DataQualityIssue: {
-          uid: '0',
+          uid: '-703795182',
           model: 'org_Team',
           description:
             'Team other than all_teams has missing parent team, uid=c',
+          recordIds: ['a'],
         },
       },
       {
         faros_DataQualityIssue: {
-          uid: '0',
+          uid: '-1496261476',
           model: 'org_TeamMembership',
           description:
             "Team Membership with ID 'c' has missing 'team' or 'member'",
+          recordIds: ['c'],
         },
       },
       {
         faros_DataQualityIssue: {
-          uid: '1',
+          uid: '-1496261476',
           model: 'org_TeamMembership',
           description:
             "Team Membership with ID 'c' has missing 'team' or 'member'",
+          recordIds: ['c'],
         },
       },
     ]);
