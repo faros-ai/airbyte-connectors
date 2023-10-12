@@ -6,7 +6,7 @@ import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {OctopusConverter} from './common';
 
-interface VCSInfo {
+interface ArtifactVCSInfo {
   artifactUid: string;
   sha?: string;
   repository: {
@@ -56,17 +56,28 @@ export class Deployments extends OctopusConverter {
     const vcsInfo = this.getVCSInfo(deployment, ctx);
 
     for (const vcs of vcsInfo) {
-      let artifactKey;
-      if (vcs.artifactUid) {
-        artifactKey = {
-          uid: vcs.artifactUid,
-          repository: {
-            uid: vcs.repository.name,
-            organization: vcs.repository.organization,
-          },
-        };
-      }
+      const artifactKey = {
+        uid: vcs.artifactUid,
+        repository: {
+          uid: vcs.repository.name,
+          organization: vcs.repository.organization,
+        },
+      };
+
+      res.push({
+        model: 'cicd_ArtifactDeployment',
+        record: {
+          artifact: artifactKey,
+          deployment: deploymentKey,
+        },
+      });
+
       if (vcs.sha) {
+        // Only instantiate artifact if we can link all the way to commit
+        res.push({
+          model: 'cicd_Artifact',
+          record: artifactKey,
+        });
         res.push({
           model: 'cicd_ArtifactCommitAssociation',
           record: {
@@ -78,24 +89,12 @@ export class Deployments extends OctopusConverter {
           },
         });
       }
-
-      res.push({
-        model: 'cicd_Artifact',
-        record: artifactKey,
-      });
-      res.push({
-        model: 'cicd_ArtifactDeployment',
-        record: {
-          artifact: artifactKey,
-          deployment: deploymentKey,
-        },
-      });
     }
 
     return res;
   }
 
-  private getVCSInfo(deployment: any, ctx: StreamContext): VCSInfo[] {
+  private getVCSInfo(deployment: any, ctx: StreamContext): ArtifactVCSInfo[] {
     const deployId = deployment.Id;
     const logger = ctx.logger;
 
@@ -134,8 +133,7 @@ export class Deployments extends OctopusConverter {
       ];
     }
 
-    // Retrieve VCS/artifact information from all deployment changes
-    const vcsInfo: VCSInfo[] = [];
+    const vcsInfo: ArtifactVCSInfo[] = [];
     const hasChangeArray =
       deployment.Changes &&
       Array.isArray(deployment.Changes) &&
@@ -143,7 +141,7 @@ export class Deployments extends OctopusConverter {
 
     if (hasChangeArray) {
       // First retrieve the fallback repo information from repo property if set
-      let defaultRepoInfo: VCSInfo['repository'];
+      let defaultRepoInfo: ArtifactVCSInfo['repository'];
       for (const step of deployment.Process?.Steps ?? []) {
         for (const action of step.Actions ?? []) {
           const repo = action.Properties?.['repo'];
@@ -155,18 +153,17 @@ export class Deployments extends OctopusConverter {
 
       // Assume last change was the one deployed
       const change = deployment.Changes.at(-1);
+
       // Retrieve repo information from Commits
       for (const commit of change.Commits ?? []) {
+        const artifactUid = change.Version;
         const sha = commit.Id;
-        const repoInfo =
+        const repository =
           this.getRepoInfoFromURL(deployId, commit.LinkUrl, ctx) ??
           defaultRepoInfo;
-        if (repoInfo) {
-          vcsInfo.push({
-            artifactUid: change.Version,
-            sha: sha,
-            repository: repoInfo,
-          });
+
+        if (repository) {
+          vcsInfo.push({artifactUid, sha, repository});
         }
       }
 
@@ -175,20 +172,17 @@ export class Deployments extends OctopusConverter {
         for (const buildInfo of change.BuildInformation ?? []) {
           const artifactUid = `${buildInfo.PackageId}:${buildInfo.Version}`;
           const sha = buildInfo.VcsCommitNumber;
-          const repoInfo =
+          const repository =
             this.getRepoInfoFromURL(deployId, buildInfo.VcsRoot, ctx) ??
             defaultRepoInfo;
-          if (repoInfo) {
-            vcsInfo.push({
-              artifactUid,
-              sha,
-              repository: repoInfo,
-            });
+
+          if (repository) {
+            vcsInfo.push({artifactUid, sha, repository});
           }
         }
       }
 
-      // If still no VCS info create a dummy artifact uid using Change.Version
+      // If still no info create a dummy artifact using Change.Version
       if (!vcsInfo.length && defaultRepoInfo) {
         vcsInfo.push({
           artifactUid: change.Version,
@@ -208,7 +202,7 @@ export class Deployments extends OctopusConverter {
     deploymentId: string,
     url: string,
     ctx: StreamContext
-  ): VCSInfo['repository'] {
+  ): ArtifactVCSInfo['repository'] {
     try {
       const parsedUrl = GitUrlParse(url);
       return {
