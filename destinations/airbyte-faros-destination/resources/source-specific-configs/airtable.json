@@ -54,19 +54,37 @@
           "title": "Survey ID Column Name",
           "description": "The name of the column that contains the survey ID.",
           "type": "string",
-          "default": "Survey ID"
+          "default": "SurveyID"
         },
         "survey_name_column_name": {
           "title": "Survey Name Column Name",
           "description": "The name of the column that contains the survey name.",
           "type": "string",
-          "default": "Survey Name"
+          "default": "SurveyName"
         },
         "survey_type_column_name": {
           "title": "Survey Type Column Name",
           "description": "The name of the column that contains the survey type.",
           "type": "string",
-          "default": "Survey Type"
+          "default": "SurveyType"
+        },
+        "survey_started_at_column_name": {
+          "title": "Survey Started At Column Name",
+          "description": "The name of the column that contains the survey started at timestamp.",
+          "type": "string",
+          "default": "SurveyStartedAt"
+        },
+        "survey_ended_at_column_name": {
+          "title": "Survey Ended At Column Name",
+          "description": "The name of the column that contains the survey ended at timestamp.",
+          "type": "string",
+          "default": "SurveyEndedAt"
+        },
+        "survey_description_column_name": {
+          "title": "Survey Description Column Name",
+          "description": "The name of the column that contains the survey description.",
+          "type": "string",
+          "default": "SurveyDescription"
         },
         "name_column_name": {
           "title": "Name Column Name",

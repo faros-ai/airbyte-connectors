@@ -6,8 +6,8 @@ export type Survey = {
   status: SurveyStatus;
   startedAt: string;
   endedAt: string;
-  creator: SurveyUser;
-  stats: SurveyStats;
+  creator?: SurveyUser;
+  stats?: SurveyStats;
   source: string;
 };
 

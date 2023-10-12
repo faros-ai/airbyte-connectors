@@ -2,14 +2,10 @@ import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {QueryBuilder} from 'faros-js-client';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  parseObjectConfig,
-  StreamContext,
-} from '../converter';
+import {DestinationModel, DestinationRecord, parseObjectConfig, StreamContext,} from '../converter';
 import {AirtableConverter} from './common';
 import {
+  Survey,
   SurveyCategory,
   SurveyQuestionCategory,
   SurveyResponseCategory,
@@ -31,6 +27,9 @@ interface SurveysConfig {
   id_column_name?: string;
   survey_name_column_name?: string;
   survey_type_column_name?: string;
+  survey_description_column_name?: string;
+  survey_started_at_column_name?: string;
+  survey_ended_at_column_name?: string;
   name_column_name?: string;
   email_column_name?: string;
   team_column_name?: string;
@@ -52,6 +51,7 @@ export class Surveys extends AirtableConverter {
   ];
 
   private surveyQuestionsWithMetadata = [];
+  private surveyRecord: Survey;
   private surveysWithStats: Map<string, SurveyStats> = new Map();
 
   protected config(ctx: StreamContext): SurveysConfig {
@@ -80,8 +80,7 @@ export class Surveys extends AirtableConverter {
     // Check if row is a question metadata row for pushing it to survey questions metadata records
     if (
       row[config.question_column_name] &&
-      row[config.question_category_column_name] &&
-      row[config.response_category_column_name]
+      row[config.question_category_column_name]
     ) {
       const questionCategoryMapping = this.questionCategoryMapping(ctx);
       const questionWithMetadata = this.getQuestionsWithMetadata(
@@ -94,7 +93,26 @@ export class Surveys extends AirtableConverter {
       return [];
     }
 
-    const questions = Object.keys(row);
+    const questions = this.getFilteredQuestions(row, config);
+    const tableId = record?.record?.data?._airtable_table_id;
+
+    // check if row contains survey metadata for pushing survey records
+    // include questions empty array check to make sure row comes from table with no questions (survey data only)
+    if (
+      row[config.id_column_name] &&
+      row[config.survey_name_column_name] &&
+      row[config.survey_type_column_name] &&
+      questions.length === 0
+    ) {
+      this.surveyRecord = this.getSurveyRecord(row, config, tableId, source);
+      return [
+        {
+          model: 'survey_Survey',
+          record: this.surveyRecord,
+        }
+      ];
+    }
+
     const res = [];
 
     let surveyUser: SurveyUser;
@@ -151,7 +169,6 @@ export class Surveys extends AirtableConverter {
       );
     }
 
-    const tableId = record?.record?.data?._airtable_table_id;
     const recordId = this.id(record);
     const submittedAt = record?.record?.data?._airtable_created_time;
 
@@ -169,7 +186,7 @@ export class Surveys extends AirtableConverter {
     res.push(...surveyQuestionRecs);
 
     // Update survey stats for pushing on processing complete
-    const surveyId = this.getSurveyId(row, config, tableId);
+    const surveyId = this.surveyRecord.uid || this.getSurveyId(row, config, tableId);
     this.updateSurveyStats(surveyId, questions);
 
     return res;
@@ -187,7 +204,6 @@ export class Surveys extends AirtableConverter {
       mutations.push(qb.upsert({survey_Question}));
     });
 
-    // Add survey upsert mutations
     this.surveysWithStats.forEach((surveyStats, surveyId) => {
       const survey_Survey = {
         uid: surveyId,
@@ -211,6 +227,7 @@ export class Surveys extends AirtableConverter {
       row[config.question_category_column_name],
       questionCategoryMapping
     );
+    // TODO: calculate response type from response received for the question if possible
     const responseType = this.getResponseType(
       row[config.response_category_column_name]
     );
@@ -242,23 +259,7 @@ export class Surveys extends AirtableConverter {
   ) {
     return questions.flatMap((question, index) => {
       // If id column is not specified and default column name has no value, default to airtable id
-      const surveyId = this.getSurveyId(row, config, tableId);
-      const surveyType = this.getSurveyType(config.survey_type);
-      const surveyStatus = this.getSurveyStatus(
-        config.survey_started_at,
-        config.survey_ended_at
-      );
-      const surveyRecord = {
-        uid: surveyId,
-        source: source,
-        name: config.survey_name,
-        description: config.survey_description,
-        type: surveyType,
-        status: surveyStatus,
-        startedAt: config.survey_started_at,
-        endedAt: config.survey_ended_at,
-      };
-
+      const surveyRecord = this.surveyRecord || this.getSurveyRecord(row, config, tableId, source)
       // Generate digest from question text to create uid
       const questionId = this.createQuestionUid(question);
       const questionRecord = {
@@ -284,12 +285,8 @@ export class Surveys extends AirtableConverter {
           team: surveyTeam,
         },
       };
-      return [
+      const records = [
         questionResponse,
-        {
-          model: 'survey_Survey',
-          record: surveyRecord,
-        },
         {
           model: 'survey_Question',
           record: questionRecord,
@@ -299,7 +296,35 @@ export class Surveys extends AirtableConverter {
           record: surveyQuestionAssociationRecord,
         },
       ];
+      // Only add survey record if it was not saved in memory reading survey metadata row
+      if (!this.surveyRecord) {
+        return [
+          ...records,
+          {
+            model: 'survey_Survey',
+            record: surveyRecord,
+          }
+        ];
+      }
+      return records;
     });
+  }
+
+  private getSurveyRecord(row: any, config: SurveysConfig, tableId: string, source: string): Survey {
+    const surveyId = this.getSurveyId(row, config, tableId);
+    const surveyData = this.getSurveyData(config, row);
+    const surveyType = this.getSurveyType(surveyData.type.detail);
+    const surveyStatus = this.getSurveyStatus(
+      surveyData.startedAt,
+      surveyData.endedAt
+    );
+    return {
+      uid: surveyId,
+      source: source,
+      status: surveyStatus,
+      type: surveyType,
+      ...surveyData
+    };
   }
 
   private getSurveyId(row: any, config: SurveysConfig, tableId: string) {
@@ -395,5 +420,34 @@ export class Surveys extends AirtableConverter {
     };
     stats.responseCount += 1;
     this.surveysWithStats.set(surveyId, stats);
+  }
+
+  private getFilteredQuestions(row: any, config: SurveysConfig) {
+    return Object.keys(row).filter(
+      (question) =>
+        ![
+          config.id_column_name,
+          config.survey_name_column_name,
+          config.survey_type_column_name,
+          config.survey_description_column_name,
+          config.survey_started_at_column_name,
+          config.survey_ended_at_column_name,
+          config.name_column_name,
+          config.email_column_name,
+          config.team_column_name,
+          'ADSK FY.Q',
+          'Date'
+        ].includes(question)
+    );
+  }
+
+  private getSurveyData(config: SurveysConfig, row: any) {
+    return {
+      name: row[config.survey_name_column_name] ?? config.survey_name,
+      type: this.getSurveyType(row[config.survey_type_column_name] ?? config.survey_type),
+      description: row[config.survey_description_column_name] ?? config.survey_description,
+      startedAt: row[config.survey_started_at_column_name] ?? config.survey_started_at,
+      endedAt: row[config.survey_ended_at_column_name] ?? config.survey_ended_at,
+    }
   }
 }
