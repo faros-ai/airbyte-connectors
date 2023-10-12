@@ -51,6 +51,9 @@
         "notion": {
           "$ref": "notion.json"
         },
+        "octopus": {
+          "$ref": "octopus.json"
+        },
         "opsgenie": {
           "$ref": "opsgenie.json"
         },
