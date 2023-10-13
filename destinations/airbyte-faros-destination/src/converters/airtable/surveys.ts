@@ -303,8 +303,8 @@ export class Surveys extends AirtableConverter {
     row: any,
     config: SurveysConfig,
     source: string,
-    surveyUser: SurveyUser,
-    surveyTeam: SurveyTeam
+    surveyUser?: SurveyUser,
+    surveyTeam?: SurveyTeam
   ) {
     return questions.flatMap((question, index) => {
       // If id column is not specified and default column name has no value, default to airtable id
@@ -318,8 +318,8 @@ export class Surveys extends AirtableConverter {
         source,
       };
       const surveyQuestionAssociationRecord = {
-        survey: surveyRecord,
-        question: questionRecord,
+        survey: {uid: surveyRecord.uid, source},
+        question: {uid: questionRecord.uid, source},
         order: index + 1,
       };
       const questionResponse = {
@@ -329,9 +329,12 @@ export class Surveys extends AirtableConverter {
           source,
           submittedAt,
           response: row[question].toString(),
-          surveyQuestion: surveyQuestionAssociationRecord,
-          respondent: surveyUser,
-          team: surveyTeam,
+          surveyQuestion: {
+            survey: {uid: surveyRecord.uid, source},
+            question: {uid: questionRecord.uid, source},
+          },
+          respondent: surveyUser ? {uid: surveyUser.uid, source} : null,
+          team: surveyTeam ? {uid: surveyTeam.uid, source} : null,
         },
       };
       return [
@@ -489,14 +492,16 @@ export class Surveys extends AirtableConverter {
 
   private getSurveyData(config: SurveysConfig, row: any) {
     return {
-      name: row[config.column_names_mapping.survey_name_column_name],
+      name: row[config.column_names_mapping.survey_name_column_name] ?? null,
       type: this.getSurveyType(
-        row[config.column_names_mapping.survey_type_column_name]
+        row[config.column_names_mapping.survey_type_column_name] ?? null
       ),
       description:
-        row[config.column_names_mapping.survey_description_column_name],
-      startedAt: row[config.column_names_mapping.survey_started_at_column_name],
-      endedAt: row[config.column_names_mapping.survey_ended_at_column_name],
+        row[config.column_names_mapping.survey_description_column_name] ?? null,
+      startedAt:
+        row[config.column_names_mapping.survey_started_at_column_name] ?? null,
+      endedAt:
+        row[config.column_names_mapping.survey_ended_at_column_name] ?? null,
     };
   }
 }

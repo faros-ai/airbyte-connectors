@@ -1,7 +1,16 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {
+  AirbyteLog,
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteRecord,
+} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
+import {record} from 'zod';
 
+import {StreamContext} from '../../src';
+import {Surveys} from '../../src/converters/airtable/surveys';
+import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
@@ -78,5 +87,50 @@ describe('airtable', () => {
     );
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
+  });
+
+  describe('survey responses', () => {
+    const converter = new Surveys();
+    const DEFAULT_CONFIG = {
+      question_category_mapping: '{}',
+      column_names_mapping: {
+        survey_name_column_name: 'SurveyName',
+        survey_type_column_name: 'SurveyType',
+        survey_started_at_column_name: 'SurveyStartedAt',
+        survey_ended_at_column_name: 'SurveyEndedAt',
+        survey_description_column_name: 'SurveyDescription',
+        name_column_name: 'Name',
+        email_column_name: 'Email',
+        team_column_name: 'Team',
+        question_category_column_name: 'Category',
+        response_category_column_name: 'Response category',
+        question_column_name: 'Question',
+      },
+    };
+
+    test('basic response', async () => {
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Table 1',
+        row: {
+          'How much do you like ice cream?': 5,
+          Team: 'X',
+        },
+      });
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const res = await converter.convert(record, ctx);
+      expect(res).toMatchSnapshot();
+    });
   });
 });
