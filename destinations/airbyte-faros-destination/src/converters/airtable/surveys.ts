@@ -79,24 +79,26 @@ export class Surveys extends AirtableConverter {
     const config = this.config(ctx);
     const row = record?.record?.data?.row;
     const source = this.streamName.source;
+    const tableId = record?.record?.data?._airtable_table_id;
     // Check if row is a question metadata row for pushing it to survey questions metadata records
     if (
       row[config.column_names_mapping.question_column_name] &&
       row[config.column_names_mapping.question_category_column_name]
     ) {
       const questionCategoryMapping = this.questionCategoryMapping(ctx);
+      const surveyId = this.getSurveyId(tableId);
       const questionWithMetadata = this.getQuestionsWithMetadata(
         row,
         questionCategoryMapping,
         source,
-        config
+        config,
+        surveyId
       );
       this.surveyQuestionsWithMetadata.push(questionWithMetadata);
       return [];
     }
 
     const questions = this.getFilteredQuestions(row, config);
-    const tableId = record?.record?.data?._airtable_table_id;
 
     // check if row contains survey metadata for pushing survey records
     // include questions empty array check to make sure row comes from table with no questions (survey data only)
@@ -254,7 +256,8 @@ export class Surveys extends AirtableConverter {
     row: any,
     questionCategoryMapping: QuestionCategoryMapping,
     source: string,
-    config: SurveysConfig
+    config: SurveysConfig,
+    surveyId: string
   ) {
     const questionCategory = this.getQuestionCategory(
       row[config.column_names_mapping.question_category_column_name],
@@ -264,7 +267,7 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.response_category_column_name]
     );
     const question = row[config.column_names_mapping.question_column_name];
-    const questionId = this.createQuestionUid(question);
+    const questionId = this.createQuestionUid(question, surveyId);
     return {
       uid: questionId,
       source: source,
@@ -293,7 +296,7 @@ export class Surveys extends AirtableConverter {
       // If id column is not specified and default column name has no value, default to airtable id
       const surveyRecord = this.getSurveyRecord(row, config, tableId, source)
       // Generate digest from question text to create uid
-      const questionId = this.createQuestionUid(question);
+      const questionId = this.createQuestionUid(question, surveyRecord.uid);
       const questionRecord = {
         uid: questionId,
         question: question,
@@ -433,8 +436,8 @@ export class Surveys extends AirtableConverter {
     };
   }
 
-  createQuestionUid(question: string) {
-    return createHash('sha256').update(question).digest('hex');
+  createQuestionUid(question: string, surveyId: string) {
+    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`
   }
 
   private updateSurveyStats(surveyId: string, questions: string[]) {
