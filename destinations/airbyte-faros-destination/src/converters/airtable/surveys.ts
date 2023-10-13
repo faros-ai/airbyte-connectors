@@ -1,7 +1,12 @@
 import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {DestinationModel, DestinationRecord, parseObjectConfig, StreamContext,} from '../converter';
+import {
+  DestinationModel,
+  DestinationRecord,
+  parseObjectConfig,
+  StreamContext,
+} from '../converter';
 import {AirtableConverter} from './common';
 import {
   Survey,
@@ -17,7 +22,7 @@ import {
 
 type QuestionCategoryMapping = Record<string, string>;
 
-type ColumnNameMapping =  {
+type ColumnNameMapping = {
   survey_name_column_name?: string;
   survey_type_column_name?: string;
   survey_description_column_name?: string;
@@ -29,7 +34,7 @@ type ColumnNameMapping =  {
   question_category_column_name?: string;
   response_category_column_name?: string;
   question_column_name?: string;
-}
+};
 
 interface SurveysConfig {
   question_category_mapping?: QuestionCategoryMapping;
@@ -107,7 +112,12 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.survey_type_column_name] &&
       questions.length === 0
     ) {
-      this.surveyRecordWithMetadata = this.getSurveyRecord(row, config, tableId, source);
+      this.surveyRecordWithMetadata = this.getSurveyRecord(
+        row,
+        config,
+        tableId,
+        source
+      );
       return [];
     }
 
@@ -129,7 +139,9 @@ export class Surveys extends AirtableConverter {
         source,
       };
 
-      const teamUid = this.getTeamUidFromTeamName(row[config.column_names_mapping.team_column_name]);
+      const teamUid = this.getTeamUidFromTeamName(
+        row[config.column_names_mapping.team_column_name]
+      );
       surveyTeam = {
         uid: teamUid,
         name: row[config.column_names_mapping.team_column_name],
@@ -194,59 +206,66 @@ export class Surveys extends AirtableConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const updateRecords = []
+    const updateRecords = [];
     // Add survey questions upsert mutations
     this.surveyQuestionsWithMetadata.forEach((surveyQuestion) => {
       const questionRecord = {
         model: 'survey_Question__Update',
         record: {
           at: Date.now(),
-          where: { uid: surveyQuestion.uid, source: surveyQuestion.source },
+          where: {uid: surveyQuestion.uid, source: surveyQuestion.source},
           mask: ['questionCategory', 'responseType'],
           patch: {
             questionCategory: surveyQuestion.questionCategory,
             responseType: surveyQuestion.responseType,
-          }
-        }
-      }
+          },
+        },
+      };
       updateRecords.push(questionRecord);
     });
 
     this.surveysWithStats.forEach((surveyStats, surveyId) => {
-
       const surveyRecord = {
         model: 'survey_Survey__Update',
         record: {
           at: Date.now(),
-          where: { uid: surveyId, source: this.streamName.source },
+          where: {uid: surveyId, source: this.streamName.source},
           mask: ['stats'],
           patch: {
             stats: surveyStats,
-          }
-        }
+          },
+        },
       };
       updateRecords.push(surveyRecord);
     });
 
     if (this.surveyRecordWithMetadata) {
-      updateRecords.push(
-        {
-          model: 'survey_Survey__Update',
-          record: {
-            at: Date.now(),
-            where: {uid: this.surveyRecordWithMetadata.uid, source: this.streamName.source},
-            mask: ['name', 'description', 'type', 'status', 'startedAt', 'endedAt'],
-            patch: {
-              name: this.surveyRecordWithMetadata.name,
-              description: this.surveyRecordWithMetadata.description,
-              type: this.surveyRecordWithMetadata.type,
-              status: this.surveyRecordWithMetadata.status,
-              startedAt: this.surveyRecordWithMetadata.startedAt,
-              endedAt: this.surveyRecordWithMetadata.endedAt
-            }
-          }
-        }
-      );
+      updateRecords.push({
+        model: 'survey_Survey__Update',
+        record: {
+          at: Date.now(),
+          where: {
+            uid: this.surveyRecordWithMetadata.uid,
+            source: this.streamName.source,
+          },
+          mask: [
+            'name',
+            'description',
+            'type',
+            'status',
+            'startedAt',
+            'endedAt',
+          ],
+          patch: {
+            name: this.surveyRecordWithMetadata.name,
+            description: this.surveyRecordWithMetadata.description,
+            type: this.surveyRecordWithMetadata.type,
+            status: this.surveyRecordWithMetadata.status,
+            startedAt: this.surveyRecordWithMetadata.startedAt,
+            endedAt: this.surveyRecordWithMetadata.endedAt,
+          },
+        },
+      });
     }
 
     return updateRecords;
@@ -294,7 +313,7 @@ export class Surveys extends AirtableConverter {
   ) {
     return questions.flatMap((question, index) => {
       // If id column is not specified and default column name has no value, default to airtable id
-      const surveyRecord = this.getSurveyRecord(row, config, tableId, source)
+      const surveyRecord = this.getSurveyRecord(row, config, tableId, source);
       // Generate digest from question text to create uid
       const questionId = this.createQuestionUid(question, surveyRecord.uid);
       const questionRecord = {
@@ -338,7 +357,12 @@ export class Surveys extends AirtableConverter {
     });
   }
 
-  private getSurveyRecord(row: any, config: SurveysConfig, tableId: string, source: string): Survey {
+  private getSurveyRecord(
+    row: any,
+    config: SurveysConfig,
+    tableId: string,
+    source: string
+  ): Survey {
     const surveyId = this.getSurveyId(tableId);
     const surveyData = this.getSurveyData(config, row);
     const surveyType = this.getSurveyType(surveyData.type.detail);
@@ -351,12 +375,12 @@ export class Surveys extends AirtableConverter {
       source: source,
       status: surveyStatus,
       type: surveyType,
-      ...surveyData
+      ...surveyData,
     };
   }
 
   private getSurveyId(tableId: string) {
-    return tableId.split('/')[0] // Get base id only, by removing the table id that comes before slash e.g. appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU
+    return tableId.split('/')[0]; // Get base id only, by removing the table id that comes before slash e.g. appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU
   }
 
   getSurveyType(type: string) {
@@ -437,7 +461,7 @@ export class Surveys extends AirtableConverter {
   }
 
   createQuestionUid(question: string, surveyId: string) {
-    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`
+    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`;
   }
 
   private updateSurveyStats(surveyId: string, questions: string[]) {
@@ -463,18 +487,21 @@ export class Surveys extends AirtableConverter {
           config.column_names_mapping.email_column_name,
           config.column_names_mapping.team_column_name,
           'ADSK FY.Q',
-          'Date'
+          'Date',
         ].includes(question)
     );
   }
 
   private getSurveyData(config: SurveysConfig, row: any) {
     return {
-      name: row[config.column_names_mapping.survey_name_column_name] ?? config.survey_name,
-      type: this.getSurveyType(row[config.column_names_mapping.survey_type_column_name] ?? config.survey_type),
-      description: row[config.column_names_mapping.survey_description_column_name] ?? config.survey_description,
-      startedAt: row[config.column_names_mapping.survey_started_at_column_name] ?? config.survey_started_at,
-      endedAt: row[config.column_names_mapping.survey_ended_at_column_name] ?? config.survey_ended_at,
-    }
+      name: row[config.column_names_mapping.survey_name_column_name],
+      type: this.getSurveyType(
+        row[config.column_names_mapping.survey_type_column_name]
+      ),
+      description:
+        row[config.column_names_mapping.survey_description_column_name],
+      startedAt: row[config.column_names_mapping.survey_started_at_column_name],
+      endedAt: row[config.column_names_mapping.survey_ended_at_column_name],
+    };
   }
 }

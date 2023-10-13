@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__airtable__surveys"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}
