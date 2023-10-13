@@ -32,17 +32,12 @@ type ColumnNameMapping = {
   email_column_name?: string;
   team_column_name?: string;
   question_category_column_name?: string;
-  response_category_column_name?: string;
+  response_type_column_name?: string;
   question_column_name?: string;
 };
 
 interface SurveysConfig {
   question_category_mapping?: QuestionCategoryMapping;
-  survey_name?: string;
-  survey_description?: string;
-  survey_type?: SurveyCategory;
-  survey_started_at?: string;
-  survey_ended_at?: string;
   column_names_mapping?: ColumnNameMapping;
 }
 
@@ -283,7 +278,7 @@ export class Surveys extends AirtableConverter {
       questionCategoryMapping
     );
     const responseType = this.getResponseType(
-      row[config.column_names_mapping.response_category_column_name]
+      row[config.column_names_mapping.response_type_column_name]
     );
     const question = row[config.column_names_mapping.question_column_name];
     const questionId = this.createQuestionUid(question, surveyId);
@@ -434,9 +429,11 @@ export class Surveys extends AirtableConverter {
       };
     }
     const mappedCategory = questionCategoryMapping[category];
-    if (mappedCategory) {
+    // Check if category was mapped to a Faros category
+    const farosMappedCategory = SurveyQuestionCategory[mappedCategory];
+    if (farosMappedCategory) {
       return {
-        category: mappedCategory,
+        category: farosMappedCategory,
         detail: category,
       };
     }
@@ -486,8 +483,6 @@ export class Surveys extends AirtableConverter {
           config.column_names_mapping.name_column_name,
           config.column_names_mapping.email_column_name,
           config.column_names_mapping.team_column_name,
-          'ADSK FY.Q',
-          'Date',
         ].includes(question)
     );
   }

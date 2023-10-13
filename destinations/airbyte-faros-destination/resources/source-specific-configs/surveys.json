@@ -76,11 +76,11 @@
               "type": "string",
               "default": "Category"
             },
-            "response_category_column_name": {
-              "title": "Response Category Column Name",
+            "response_type_column_name": {
+              "title": "Response Type Column Name",
               "description": "The name of the column that contains the question response type.",
               "type": "string",
-              "default": "Response category"
+              "default": "Response Type"
             },
             "question_column_name": {
               "title": "Question Column Name",

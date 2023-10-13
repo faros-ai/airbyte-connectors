@@ -76,7 +76,6 @@ export type SurveyQuestionCategoryType = {
   detail: string;
 };
 
-
 export enum SurveyQuestionCategory {
   AlignmentAndGoals = 'AlignmentAndGoals',
   DeveloperProductivity = 'DeveloperProductivity',
