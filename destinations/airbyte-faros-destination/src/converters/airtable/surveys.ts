@@ -51,6 +51,7 @@ export class Surveys extends AirtableConverter {
     'survey_Team',
     'survey_TeamMembership',
     'survey_OrgTeam',
+    'survey_UserIdentity',
   ];
 
   private surveyQuestionsWithMetadata: SurveyQuestion[] = [];
@@ -128,7 +129,8 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.team_column_name]
     ) {
       surveyUser = {
-        uid: row[config.column_names_mapping.email_column_name],
+        // TODO: find a workaround for assigning identity uid to surveyUser uid
+        uid: row[config.column_names_mapping.name_column_name]?.toLowerCase(),
         email: row[config.column_names_mapping.email_column_name],
         name: row[config.column_names_mapping.name_column_name],
         source,
@@ -170,6 +172,15 @@ export class Surveys extends AirtableConverter {
               },
             },
           },
+          {
+            model: 'survey_UserIdentity',
+            record: {
+              surveyUser: surveyUser,
+              identity: {
+                uid: surveyUser.uid
+              }
+            }
+          }
         ]
       );
     }
@@ -292,7 +303,7 @@ export class Surveys extends AirtableConverter {
 
   /** Get team uid from team name assuming team name received is the equivalent of snake case uid */
   private getTeamUidFromTeamName(teamName: string) {
-    return teamName.toLowerCase().split(' ').join('_');
+    return teamName.toLowerCase().split(' ').join('-');
   }
 
   private getSurveyQuestionRecords(
