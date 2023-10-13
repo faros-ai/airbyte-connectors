@@ -13,8 +13,8 @@ export type Survey = {
 
 export type SurveyQuestion = {
   uid: string;
-  question: string;
-  description: string;
+  question?: string;
+  description?: string;
   questionCategory: SurveyQuestionCategoryType;
   responseType: SurveyResponseType;
   source: string;
@@ -75,6 +75,7 @@ export type SurveyQuestionCategoryType = {
   category: SurveyQuestionCategory;
   detail: string;
 };
+
 
 export enum SurveyQuestionCategory {
   AlignmentAndGoals = 'AlignmentAndGoals',

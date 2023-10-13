@@ -15,9 +15,6 @@
         "agileaccelerator": {
           "$ref": "agileaccelerator.json"
         },
-        "airtable": {
-          "$ref": "airtable.json"
-        },
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
@@ -71,6 +68,9 @@
         },
         "statuspage": {
           "$ref": "statuspage.json"
+        },
+        "surveys": {
+          "$ref": "surveys.json"
         },
         "victorops": {
           "$ref": "victorops.json"
