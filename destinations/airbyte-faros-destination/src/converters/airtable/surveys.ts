@@ -56,9 +56,10 @@ export class Surveys extends AirtableConverter {
     'survey_UserIdentity',
   ];
 
-  private questionMetadata: SurveyQuestion[] = [];
-  private surveyMetadata: Survey[] = [];
+  private questionMetadata: Map<string, SurveyQuestion> = new Map();
+  private surveyMetadata: Map<string, Survey> = new Map();
   private surveyStats: Map<string, SurveyStats> = new Map();
+
   private usersSeen = new Set<string>();
   private teamsSeen = new Set<string>();
   private surveysSeen = new Set<string>();
@@ -101,7 +102,7 @@ export class Surveys extends AirtableConverter {
         config,
         surveyId
       );
-      this.questionMetadata.push(questionWithMetadata);
+      this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
       return [];
     }
 
@@ -114,9 +115,8 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.survey_type_column_name] &&
       questions.length === 0
     ) {
-      this.surveyMetadata.push(
-        this.getSurveyRecord(row, config, tableId, source)
-      );
+      const surveyRecord = this.getSurveyRecord(row, config, tableId, source);
+      this.surveyMetadata.set(surveyRecord.uid, surveyRecord);
       return [];
     }
 
