@@ -18,6 +18,7 @@ import {
   SurveyStats,
   SurveyStatusCategory,
   SurveyTeam,
+  SurveyType,
   SurveyUser,
 } from './models';
 
@@ -56,10 +57,12 @@ export class Surveys extends AirtableConverter {
   ];
 
   private surveyQuestionsWithMetadata: SurveyQuestion[] = [];
-  private surveyRecordWithMetadata: Survey;
+  private surveyRecordWithMetadata: Survey[] = [];
   private surveysWithStats: Map<string, SurveyStats> = new Map();
   private usersSeen = new Set<string>();
   private teamsSeen = new Set<string>();
+  private surveysSeen = new Set<string>();
+  private questionsSeen = new Set<string>();
 
   protected config(ctx: StreamContext): SurveysConfig {
     return ctx.config.source_specific_configs?.surveys ?? {};
@@ -111,11 +114,8 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.survey_type_column_name] &&
       questions.length === 0
     ) {
-      this.surveyRecordWithMetadata = this.getSurveyRecord(
-        row,
-        config,
-        tableId,
-        source
+      this.surveyRecordWithMetadata.push(
+        this.getSurveyRecord(row, config, tableId, source)
       );
       return [];
     }
@@ -219,13 +219,13 @@ export class Surveys extends AirtableConverter {
       updateRecords.push(surveyRecord);
     });
 
-    if (this.surveyRecordWithMetadata) {
+    this.surveyRecordWithMetadata.forEach((survey) => {
       updateRecords.push({
         model: 'survey_Survey__Update',
         record: {
           at: Date.now(),
           where: {
-            uid: this.surveyRecordWithMetadata.uid,
+            uid: survey.uid,
             source: this.streamName.source,
           },
           mask: [
@@ -237,16 +237,16 @@ export class Surveys extends AirtableConverter {
             'endedAt',
           ],
           patch: {
-            name: this.surveyRecordWithMetadata.name,
-            description: this.surveyRecordWithMetadata.description,
-            type: this.surveyRecordWithMetadata.type,
-            status: this.surveyRecordWithMetadata.status,
-            startedAt: this.surveyRecordWithMetadata.startedAt,
-            endedAt: this.surveyRecordWithMetadata.endedAt,
+            name: survey.name,
+            description: survey.description,
+            type: survey.type,
+            status: survey.status,
+            startedAt: survey.startedAt,
+            endedAt: survey.endedAt,
           },
         },
       });
-    }
+    });
 
     return updateRecords;
   }
@@ -322,21 +322,34 @@ export class Surveys extends AirtableConverter {
           team: surveyTeam ? {uid: surveyTeam.uid, source} : null,
         },
       };
-      return [
-        questionResponse,
-        {
+
+      const res: DestinationRecord[] = [questionResponse];
+
+      if (!this.questionsSeen.has(questionRecord.uid)) {
+        this.questionsSeen.add(questionRecord.uid);
+        res.push(
+          ...[
+            {
+              model: 'survey_Question',
+              record: questionRecord,
+            },
+            {
+              model: 'survey_SurveyQuestionAssociation',
+              record: surveyQuestionAssociationRecord,
+            },
+          ]
+        );
+      }
+
+      if (!this.surveysSeen.has(surveyRecord.uid)) {
+        this.surveysSeen.add(surveyRecord.uid);
+        res.push({
           model: 'survey_Survey',
           record: surveyRecord,
-        },
-        {
-          model: 'survey_Question',
-          record: questionRecord,
-        },
-        {
-          model: 'survey_SurveyQuestionAssociation',
-          record: surveyQuestionAssociationRecord,
-        },
-      ];
+        });
+      }
+
+      return res;
     });
   }
 
@@ -348,17 +361,19 @@ export class Surveys extends AirtableConverter {
   ): Survey {
     const surveyId = this.getSurveyId(tableId);
     const surveyData = this.getSurveyData(config, row);
-    const surveyType = this.getSurveyType(surveyData.type.detail);
     const surveyStatus = this.getSurveyStatus(
       surveyData.startedAt,
       surveyData.endedAt
     );
     return {
       uid: surveyId,
-      source: source,
+      source,
       status: surveyStatus,
-      type: surveyType,
-      ...surveyData,
+      type: this.getSurveyType(surveyData.type),
+      name: surveyData.name,
+      description: surveyData.description,
+      startedAt: surveyData.startedAt,
+      endedAt: surveyData.endedAt,
     };
   }
 
@@ -366,7 +381,7 @@ export class Surveys extends AirtableConverter {
     return tableId.split('/')[0]; // Get base id only, by removing the table id that comes before slash e.g. appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU
   }
 
-  getSurveyType(type: string) {
+  getSurveyType(type: string | null): SurveyType {
     const farosType = SurveyCategory[type];
     if (farosType) {
       return {
@@ -475,12 +490,19 @@ export class Surveys extends AirtableConverter {
     );
   }
 
-  private getSurveyData(config: SurveysConfig, row: any) {
+  private getSurveyData(
+    config: SurveysConfig,
+    row: any
+  ): {
+    name: string | null;
+    type: string | null;
+    description: string | null;
+    startedAt: string | null;
+    endedAt: string | null;
+  } {
     return {
       name: row[config.column_names_mapping.survey_name_column_name] ?? null,
-      type: this.getSurveyType(
-        row[config.column_names_mapping.survey_type_column_name] ?? null
-      ),
+      type: row[config.column_names_mapping.survey_type_column_name] ?? null,
       description:
         row[config.column_names_mapping.survey_description_column_name] ?? null,
       startedAt:
