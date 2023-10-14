@@ -1,5 +1,6 @@
 import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import _ from 'lodash';
 
 import {
   DestinationModel,
@@ -57,6 +58,8 @@ export class Surveys extends AirtableConverter {
   private surveyQuestionsWithMetadata: SurveyQuestion[] = [];
   private surveyRecordWithMetadata: Survey;
   private surveysWithStats: Map<string, SurveyStats> = new Map();
+  private usersSeen = new Set<string>();
+  private teamsSeen = new Set<string>();
 
   protected config(ctx: StreamContext): SurveysConfig {
     return ctx.config.source_specific_configs?.surveys ?? {};
@@ -119,70 +122,41 @@ export class Surveys extends AirtableConverter {
 
     const res = [];
 
-    let surveyUser: SurveyUser;
-    let surveyTeam: SurveyTeam;
+    const surveyUser: SurveyUser | undefined = this.getSurveyUser(
+      row,
+      config,
+      source
+    );
+    const surveyTeam: SurveyTeam | undefined = this.getSurveyTeam(
+      row,
+      config,
+      source
+    );
 
-    // Check if row contains user data for pushing user records
-    if (
-      row[config.column_names_mapping.name_column_name] &&
-      row[config.column_names_mapping.email_column_name] &&
-      row[config.column_names_mapping.team_column_name]
-    ) {
-      surveyUser = {
-        // TODO: find a workaround for assigning identity uid to surveyUser uid
-        uid: row[config.column_names_mapping.name_column_name]?.toLowerCase(),
-        email: row[config.column_names_mapping.email_column_name],
-        name: row[config.column_names_mapping.name_column_name],
-        source,
-      };
+    if (surveyUser && !this.usersSeen.has(surveyUser.uid)) {
+      this.usersSeen.add(surveyUser.uid);
+      res.push({
+        model: 'survey_User',
+        record: surveyUser,
+      });
+    }
 
-      const teamUid = this.getTeamUidFromTeamName(
-        row[config.column_names_mapping.team_column_name]
-      );
-      surveyTeam = {
-        uid: teamUid,
-        name: row[config.column_names_mapping.team_column_name],
-        description: row[config.column_names_mapping.team_column_name],
-        source,
-      };
+    if (surveyTeam && !this.teamsSeen.has(surveyTeam.uid)) {
+      this.teamsSeen.add(surveyTeam.uid);
+      res.push({
+        model: 'survey_Team',
+        record: surveyTeam,
+      });
+    }
 
-      res.push(
-        ...[
-          {
-            model: 'survey_User',
-            record: surveyUser,
-          },
-          {
-            model: 'survey_Team',
-            record: surveyTeam,
-          },
-          {
-            model: 'survey_TeamMembership',
-            record: {
-              member: surveyUser,
-              team: surveyTeam,
-            },
-          },
-          {
-            model: 'survey_OrgTeam',
-            record: {
-              surveyTeam: surveyTeam,
-              orgTeam: {
-                uid: teamUid,
-              },
-            },
-          },
-          {
-            model: 'survey_UserIdentity',
-            record: {
-              surveyUser: surveyUser,
-              identity: {
-                uid: surveyUser.uid
-              }
-            }
-          }
-        ]
-      );
+    if (surveyUser && surveyTeam) {
+      res.push({
+        model: 'survey_TeamMembership',
+        record: {
+          member: _.pick(surveyUser, ['uid', 'source']),
+          team: _.pick(surveyTeam, ['uid', 'source']),
+        },
+      });
     }
 
     const recordId = this.id(record);
@@ -514,5 +488,43 @@ export class Surveys extends AirtableConverter {
       endedAt:
         row[config.column_names_mapping.survey_ended_at_column_name] ?? null,
     };
+  }
+
+  private getSurveyUser(
+    row: any,
+    config: SurveysConfig,
+    source: string
+  ): SurveyUser | undefined {
+    if (row[config.column_names_mapping.email_column_name]) {
+      const surveyUser: SurveyUser = {
+        uid: row[config.column_names_mapping.email_column_name],
+        email: row[config.column_names_mapping.email_column_name],
+        name: row[config.column_names_mapping.name_column_name] ?? null,
+        source,
+      };
+      return surveyUser;
+    }
+    return undefined;
+  }
+
+  private getSurveyTeam(
+    row: any,
+    config: SurveysConfig,
+    source: string
+  ): SurveyTeam | undefined {
+    if (row[config.column_names_mapping.team_column_name]) {
+      const teamUid = this.getTeamUidFromTeamName(
+        row[config.column_names_mapping.team_column_name]
+      );
+
+      const surveyTeam: SurveyTeam = {
+        uid: teamUid,
+        name: row[config.column_names_mapping.team_column_name],
+        description: row[config.column_names_mapping.team_column_name] ?? null,
+        source,
+      };
+      return surveyTeam;
+    }
+    return undefined;
   }
 }

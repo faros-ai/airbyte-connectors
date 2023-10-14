@@ -3,6 +3,15 @@
 exports[`airtable survey responses basic response 1`] = `
 Array [
   Object {
+    "model": "survey_Team",
+    "record": Object {
+      "description": "X",
+      "name": "X",
+      "source": "Airtable",
+      "uid": "x",
+    },
+  },
+  Object {
     "model": "survey_QuestionResponse",
     "record": Object {
       "respondent": null,
@@ -19,7 +28,106 @@ Array [
           "uid": "app0z7JKgJ19t13fw",
         },
       },
-      "team": null,
+      "team": Object {
+        "source": "Airtable",
+        "uid": "x",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Airtable",
+      "startedAt": null,
+      "status": Object {
+        "category": "Planned",
+        "detail": "Planned",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": null,
+      },
+      "uid": "app0z7JKgJ19t13fw",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "description": "How much do you like ice cream?",
+      "question": "How much do you like ice cream?",
+      "source": "Airtable",
+      "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+]
+`;
+
+exports[`airtable survey responses response with user and team info 1`] = `
+Array [
+  Object {
+    "model": "survey_User",
+    "record": Object {
+      "email": "john@doe.xyz",
+      "name": "John Doe",
+      "source": "Airtable",
+      "uid": "john@doe.xyz",
+    },
+  },
+  Object {
+    "model": "survey_TeamMembership",
+    "record": Object {
+      "member": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "x",
+      },
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "5",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "x",
+      },
       "uid": "rec1",
     },
   },
@@ -71,6 +179,15 @@ Array [
 exports[`airtable survey responses survey metadata 1`] = `
 Array [
   Object {
+    "model": "survey_Team",
+    "record": Object {
+      "description": "X",
+      "name": "X",
+      "source": "Airtable",
+      "uid": "x",
+    },
+  },
+  Object {
     "model": "survey_QuestionResponse",
     "record": Object {
       "respondent": null,
@@ -87,7 +204,10 @@ Array [
           "uid": "app0z7JKgJ19t13fw",
         },
       },
-      "team": null,
+      "team": Object {
+        "source": "Airtable",
+        "uid": "x",
+      },
       "uid": "rec1",
     },
   },

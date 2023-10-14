@@ -61,6 +61,7 @@ describe('airtable', () => {
       survey_Survey: 1,
       survey_SurveyQuestionAssociation: 1,
       survey_Survey__Update: 2,
+      survey_Team: 1,
     };
 
     const processedTotal = _(processedByStream).values().sum();
@@ -158,6 +159,33 @@ describe('airtable', () => {
       expect(
         await convert(new Surveys(), ctx, RESPONSE, record)
       ).toMatchSnapshot();
+    });
+
+    test('response with user and team info', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Table 1',
+        row: {
+          'How much do you like ice cream?': 5,
+          Team: 'X',
+          Name: 'John Doe',
+          Email: 'john@doe.xyz',
+        },
+      });
+      const res = await converter.convert(record, ctx);
+      expect(res).toMatchSnapshot();
     });
 
     async function convert(
