@@ -56,9 +56,9 @@ export class Surveys extends AirtableConverter {
     'survey_UserIdentity',
   ];
 
-  private surveyQuestionsWithMetadata: SurveyQuestion[] = [];
-  private surveyRecordWithMetadata: Survey[] = [];
-  private surveysWithStats: Map<string, SurveyStats> = new Map();
+  private questionMetadata: SurveyQuestion[] = [];
+  private surveyMetadata: Survey[] = [];
+  private surveyStats: Map<string, SurveyStats> = new Map();
   private usersSeen = new Set<string>();
   private teamsSeen = new Set<string>();
   private surveysSeen = new Set<string>();
@@ -101,7 +101,7 @@ export class Surveys extends AirtableConverter {
         config,
         surveyId
       );
-      this.surveyQuestionsWithMetadata.push(questionWithMetadata);
+      this.questionMetadata.push(questionWithMetadata);
       return [];
     }
 
@@ -114,7 +114,7 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.survey_type_column_name] &&
       questions.length === 0
     ) {
-      this.surveyRecordWithMetadata.push(
+      this.surveyMetadata.push(
         this.getSurveyRecord(row, config, tableId, source)
       );
       return [];
@@ -188,7 +188,7 @@ export class Surveys extends AirtableConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const updateRecords = [];
     // Add survey questions upsert mutations
-    this.surveyQuestionsWithMetadata.forEach((surveyQuestion) => {
+    this.questionMetadata.forEach((surveyQuestion) => {
       const questionRecord = {
         model: 'survey_Question__Update',
         record: {
@@ -204,7 +204,7 @@ export class Surveys extends AirtableConverter {
       updateRecords.push(questionRecord);
     });
 
-    this.surveysWithStats.forEach((surveyStats, surveyId) => {
+    this.surveyStats.forEach((surveyStats, surveyId) => {
       const surveyRecord = {
         model: 'survey_Survey__Update',
         record: {
@@ -219,7 +219,7 @@ export class Surveys extends AirtableConverter {
       updateRecords.push(surveyRecord);
     });
 
-    this.surveyRecordWithMetadata.forEach((survey) => {
+    this.surveyMetadata.forEach((survey) => {
       updateRecords.push({
         model: 'survey_Survey__Update',
         record: {
@@ -465,13 +465,13 @@ export class Surveys extends AirtableConverter {
   }
 
   private updateSurveyStats(surveyId: string, questions: string[]) {
-    const stats = this.surveysWithStats.get(surveyId) || {
+    const stats = this.surveyStats.get(surveyId) || {
       questionCount: questions.length,
       invitationCount: 0, // Invitation count is left at 0 as we don't have this data from Airtable
       responseCount: 0,
     };
     stats.responseCount += 1;
-    this.surveysWithStats.set(surveyId, stats);
+    this.surveyStats.set(surveyId, stats);
   }
 
   private getFilteredQuestions(row: any, config: SurveysConfig) {
