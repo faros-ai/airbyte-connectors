@@ -80,7 +80,7 @@
               "title": "Response Type Column Name",
               "description": "The name of the column that contains the question response type.",
               "type": "string",
-              "default": "Response Type"
+              "default": "ResponseType"
             },
             "question_column_name": {
               "title": "Question Column Name",

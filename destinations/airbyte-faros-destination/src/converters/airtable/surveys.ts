@@ -37,7 +37,7 @@ type ColumnNameMapping = {
   question_column_name?: string;
 };
 
-interface SurveysConfig {
+export interface SurveysConfig {
   question_category_mapping?: QuestionCategoryMapping;
   column_names_mapping?: ColumnNameMapping;
 }

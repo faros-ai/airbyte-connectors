@@ -8,7 +8,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {DestinationRecord, StreamContext} from '../../src';
-import {Surveys} from '../../src/converters/airtable/surveys';
+import {Surveys, SurveysConfig} from '../../src/converters/airtable/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
@@ -92,8 +92,8 @@ describe('airtable', () => {
 
   describe('survey responses', () => {
     const converter = new Surveys();
-    const DEFAULT_CONFIG = {
-      question_category_mapping: '{}',
+    const DEFAULT_CONFIG: SurveysConfig = {
+      question_category_mapping: {},
       column_names_mapping: {
         survey_name_column_name: 'SurveyName',
         survey_type_column_name: 'SurveyType',
@@ -104,7 +104,7 @@ describe('airtable', () => {
         email_column_name: 'Email',
         team_column_name: 'Team',
         question_category_column_name: 'Category',
-        response_category_column_name: 'Response category',
+        response_type_column_name: 'ResponseType',
         question_column_name: 'Question',
       },
     };
@@ -143,6 +143,34 @@ describe('airtable', () => {
         row: {
           SurveyName: 'Survey1',
           SurveyType: 'ENPS',
+        },
+      });
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+
+      expect(
+        await convert(new Surveys(), ctx, RESPONSE, record)
+      ).toMatchSnapshot();
+    });
+
+    test('question metadata', async () => {
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec2',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
+        _airtable_table_name: 'my_surveys/Question metadata',
+        row: {
+          Question: 'How much do you like ice cream?',
+          Category: 'AlignmentAndGoals',
+          ResponseType: 'Binary',
         },
       });
       const ctx = new StreamContext(
