@@ -6,11 +6,9 @@ import {
 } from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import {record} from 'zod';
 
 import {DestinationRecord, StreamContext} from '../../src';
 import {Surveys} from '../../src/converters/airtable/surveys';
-import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
@@ -25,10 +23,12 @@ describe('airtable', () => {
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
+    jest.spyOn(Date, 'now').mockImplementation(() => 1697245567000);
   });
 
   afterEach(async () => {
     await mockttp.stop();
+    jest.restoreAllMocks();
   });
 
   test('process records from all streams', async () => {
