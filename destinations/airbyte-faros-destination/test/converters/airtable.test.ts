@@ -8,7 +8,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import {record} from 'zod';
 
-import {StreamContext} from '../../src';
+import {DestinationRecord, StreamContext} from '../../src';
 import {Surveys} from '../../src/converters/airtable/surveys';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {CLI, read} from '../cli';
@@ -107,16 +107,41 @@ describe('airtable', () => {
         question_column_name: 'Question',
       },
     };
+    const RESPONSE = AirbyteRecord.make('surveys', {
+      _airtable_id: 'rec1',
+      _airtable_created_time: '2023-10-09T14:09:37.000Z',
+      _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+      _airtable_table_name: 'my_surveys/Table 1',
+      row: {
+        'How much do you like ice cream?': 5,
+        Team: 'X',
+      },
+    });
 
     test('basic response', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const res = await converter.convert(RESPONSE, ctx);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('survey metadata', async () => {
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec1',
+        _airtable_id: 'rec2',
         _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-        _airtable_table_name: 'my_surveys/Table 1',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
+        _airtable_table_name: 'my_surveys/Survey metadata',
         row: {
-          'How much do you like ice cream?': 5,
-          Team: 'X',
+          SurveyName: 'Survey1',
+          SurveyType: 'ENPS',
         },
       });
       const ctx = new StreamContext(
@@ -129,8 +154,25 @@ describe('airtable', () => {
         },
         {}
       );
-      const res = await converter.convert(record, ctx);
-      expect(res).toMatchSnapshot();
+
+      expect(
+        await convert(new Surveys(), ctx, RESPONSE, record)
+      ).toMatchSnapshot();
     });
+
+    async function convert(
+      converter: Surveys,
+      ctx: StreamContext,
+      ...recs: AirbyteRecord[]
+    ): Promise<DestinationRecord[]> {
+      const conversionResults = [];
+
+      for (const record of recs) {
+        conversionResults.push(...(await converter.convert(record, ctx)));
+      }
+
+      conversionResults.push(...(await converter.onProcessingComplete(ctx)));
+      return conversionResults;
+    }
   });
 });
