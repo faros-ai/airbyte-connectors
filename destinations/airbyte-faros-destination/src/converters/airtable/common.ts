@@ -42,7 +42,11 @@ export abstract class AirtableConverter extends Converter {
     };
   }
 
-  static getTeamUidFromTeamName(teamName: string): string {
+  static getTeamUid(teamName: string): string | undefined {
+    if (!teamName) {
+      return undefined;
+    }
+
     return teamName.toLowerCase().split(' ').join('_');
   }
 

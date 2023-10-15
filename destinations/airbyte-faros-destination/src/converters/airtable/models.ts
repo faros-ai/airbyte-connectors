@@ -42,7 +42,7 @@ export type SurveyUser = {
 export type SurveyTeam = {
   uid: string;
   name: string;
-  description: string;
+  description?: string;
   source: string;
 };
 

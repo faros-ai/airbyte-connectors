@@ -333,4 +333,14 @@ describe('airtable', () => {
       });
     });
   });
+
+  describe('team uid', () => {
+    test('convert team name to team uid', () => {
+      expect(Surveys.getTeamUid('My Team Name')).toEqual('my_team_name');
+      expect(Surveys.getTeamUid('Red')).toEqual('red');
+      expect(Surveys.getTeamUid(undefined)).toBeUndefined();
+      expect(Surveys.getTeamUid('')).toBeUndefined();
+      expect(Surveys.getTeamUid(null)).toBeUndefined();
+    });
+  });
 });
