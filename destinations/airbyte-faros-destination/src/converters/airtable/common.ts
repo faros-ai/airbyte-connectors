@@ -18,58 +18,26 @@ export abstract class AirtableConverter extends Converter {
     return record?.record?.data?._airtable_id;
   }
 
-  static getQuestionCategory(
+  // TODO: Move this to faros-js-client utils
+  static toCategoryDetail<T extends {Custom: any}>(
+    enumObject: T,
     category: string,
-    questionCategoryMapping: QuestionCategoryMapping = {}
-  ): SurveyQuestionCategoryType {
-    const farosCategory = SurveyQuestionCategory[category];
-    if (farosCategory) {
+    categoryMapping: Record<string, string> = {}
+  ): {
+    category: T[keyof T];
+    detail: string;
+  } {
+    const enumSymbol =
+      enumObject[category] ?? enumObject[categoryMapping[category]];
+    if (enumSymbol) {
       return {
-        category: farosCategory,
-        detail: category,
-      };
-    }
-
-    const mappedCategory = questionCategoryMapping[category];
-    // Check if category was mapped to a Faros category
-    const farosMappedCategory = SurveyQuestionCategory[mappedCategory];
-    if (farosMappedCategory) {
-      return {
-        category: farosMappedCategory,
+        category: enumSymbol,
         detail: category,
       };
     }
 
     return {
-      category: SurveyQuestionCategory.Custom,
-      detail: category,
-    };
-  }
-
-  static getSurveyType(type: string): SurveyType {
-    const farosType = SurveyCategory[type];
-    if (farosType) {
-      return {
-        category: farosType,
-        detail: type,
-      };
-    }
-    return {
-      category: SurveyCategory.Custom,
-      detail: type,
-    };
-  }
-
-  static getResponseType(category: string): SurveyResponseType {
-    const farosCategory = SurveyResponseCategory[category];
-    if (farosCategory) {
-      return {
-        category: farosCategory,
-        detail: category,
-      };
-    }
-    return {
-      category: SurveyResponseCategory.Custom,
+      category: enumObject.Custom,
       detail: category,
     };
   }

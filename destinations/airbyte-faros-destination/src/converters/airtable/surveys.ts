@@ -257,11 +257,13 @@ export class Surveys extends AirtableConverter {
     config: SurveysConfig,
     surveyId: string
   ) {
-    const questionCategory = Surveys.getQuestionCategory(
+    const questionCategory = AirtableConverter.toCategoryDetail(
+      SurveyQuestionCategory,
       row[config.column_names_mapping.question_category_column_name],
       questionCategoryMapping
     );
-    const responseType = Surveys.getResponseType(
+    const responseType = AirtableConverter.toCategoryDetail(
+      SurveyResponseCategory,
       row[config.column_names_mapping.response_type_column_name]
     );
     const question = row[config.column_names_mapping.question_column_name];
@@ -361,7 +363,7 @@ export class Surveys extends AirtableConverter {
       uid: surveyId,
       source,
       status: surveyStatus,
-      type: Surveys.getSurveyType(surveyData.type),
+      type: AirtableConverter.toCategoryDetail(SurveyCategory, surveyData.type),
       name: surveyData.name,
       description: surveyData.description,
       startedAt: surveyData.startedAt ? toDate(surveyData.startedAt) : null,

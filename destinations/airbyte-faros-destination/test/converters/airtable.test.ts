@@ -239,7 +239,9 @@ describe('airtable', () => {
 
   describe('get question category', () => {
     test('category matches enum symbol', () => {
-      expect(Surveys.getQuestionCategory('AlignmentAndGoals')).toEqual({
+      expect(
+        Surveys.toCategoryDetail(SurveyQuestionCategory, 'AlignmentAndGoals')
+      ).toEqual({
         category: SurveyQuestionCategory.AlignmentAndGoals,
         detail: 'AlignmentAndGoals',
       });
@@ -252,7 +254,11 @@ describe('airtable', () => {
       };
 
       expect(
-        Surveys.getQuestionCategory(sourceCategory, questionCategoryMapping)
+        Surveys.toCategoryDetail(
+          SurveyQuestionCategory,
+          sourceCategory,
+          questionCategoryMapping
+        )
       ).toEqual({
         category: SurveyQuestionCategory.AlignmentAndGoals,
         detail: sourceCategory,
@@ -266,13 +272,19 @@ describe('airtable', () => {
       };
 
       expect(
-        Surveys.getQuestionCategory(sourceCategory, questionCategoryMapping)
+        Surveys.toCategoryDetail(
+          SurveyQuestionCategory,
+          sourceCategory,
+          questionCategoryMapping
+        )
       ).toEqual({
         category: SurveyQuestionCategory.Custom,
         detail: sourceCategory,
       });
 
-      expect(Surveys.getQuestionCategory(sourceCategory)).toEqual({
+      expect(
+        Surveys.toCategoryDetail(SurveyQuestionCategory, sourceCategory)
+      ).toEqual({
         category: SurveyQuestionCategory.Custom,
         detail: sourceCategory,
       });
@@ -281,14 +293,16 @@ describe('airtable', () => {
 
   describe('get survey category', () => {
     test('type matches enum symbol', () => {
-      expect(Surveys.getSurveyType('ENPS')).toEqual({
+      expect(Surveys.toCategoryDetail(SurveyCategory, 'ENPS')).toEqual({
         category: SurveyCategory.ENPS,
         detail: 'ENPS',
       });
     });
 
     test('unmatched type', () => {
-      expect(Surveys.getSurveyType('NotARealCategory')).toEqual({
+      expect(
+        Surveys.toCategoryDetail(SurveyCategory, 'NotARealCategory')
+      ).toEqual({
         category: SurveyCategory.Custom,
         detail: 'NotARealCategory',
       });
@@ -297,14 +311,18 @@ describe('airtable', () => {
 
   describe('get survey response category', () => {
     test('category matches enum symbol', () => {
-      expect(Surveys.getResponseType('Binary')).toEqual({
+      expect(
+        Surveys.toCategoryDetail(SurveyResponseCategory, 'Binary')
+      ).toEqual({
         category: SurveyResponseCategory.Binary,
         detail: 'Binary',
       });
     });
 
     test('unmatched category', () => {
-      expect(Surveys.getResponseType('NotARealCategory')).toEqual({
+      expect(
+        Surveys.toCategoryDetail(SurveyResponseCategory, 'NotARealCategory')
+      ).toEqual({
         category: SurveyResponseCategory.Custom,
         detail: 'NotARealCategory',
       });
