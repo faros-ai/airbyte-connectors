@@ -14,12 +14,10 @@ import {
   SurveyCategory,
   SurveyQuestion,
   SurveyQuestionCategory,
-  SurveyQuestionCategoryType,
   SurveyResponseCategory,
   SurveyStats,
   SurveyStatusCategory,
   SurveyTeam,
-  SurveyType,
   SurveyUser,
 } from './models';
 
@@ -29,6 +27,7 @@ type ColumnNameMapping = {
   survey_description_column_name?: string;
   survey_started_at_column_name?: string;
   survey_ended_at_column_name?: string;
+  survey_status_column_name?: string;
   name_column_name?: string;
   email_column_name?: string;
   team_column_name?: string;
@@ -355,44 +354,22 @@ export class Surveys extends AirtableConverter {
   ): Survey {
     const surveyId = Surveys.getSurveyId(tableId);
     const surveyData = this.getSurveyData(config, row);
-    const surveyStatus = this.getSurveyStatus(
-      surveyData.startedAt,
-      surveyData.endedAt
-    );
     return {
       uid: surveyId,
       source,
-      status: surveyStatus,
-      type: AirtableConverter.toCategoryDetail(SurveyCategory, surveyData.type),
+      status: surveyData.status
+        ? AirtableConverter.toCategoryDetail(
+            SurveyStatusCategory,
+            surveyData.status
+          )
+        : null,
+      type: surveyData.type
+        ? AirtableConverter.toCategoryDetail(SurveyCategory, surveyData.type)
+        : null,
       name: surveyData.name,
       description: surveyData.description,
       startedAt: surveyData.startedAt ? toDate(surveyData.startedAt) : null,
       endedAt: surveyData.endedAt ? toDate(surveyData.endedAt) : null,
-    };
-  }
-
-  getSurveyStatus(startedAt: string, endedAt: string) {
-    if (!startedAt && !endedAt) {
-      return {
-        category: SurveyStatusCategory.Planned,
-        detail: SurveyStatusCategory.Planned,
-      };
-    }
-    if (startedAt && !endedAt) {
-      return {
-        category: SurveyStatusCategory.InProgress,
-        detail: SurveyStatusCategory.InProgress,
-      };
-    }
-    if (startedAt && endedAt) {
-      return {
-        category: SurveyStatusCategory.Completed,
-        detail: SurveyStatusCategory.Completed,
-      };
-    }
-    return {
-      category: SurveyStatusCategory.Custom,
-      detail: SurveyStatusCategory.Custom,
     };
   }
 
@@ -415,6 +392,7 @@ export class Surveys extends AirtableConverter {
           config.column_names_mapping.survey_description_column_name,
           config.column_names_mapping.survey_started_at_column_name,
           config.column_names_mapping.survey_ended_at_column_name,
+          config.column_names_mapping.survey_status_column_name,
           config.column_names_mapping.name_column_name,
           config.column_names_mapping.email_column_name,
           config.column_names_mapping.team_column_name,
@@ -431,6 +409,7 @@ export class Surveys extends AirtableConverter {
     description: string | null;
     startedAt: string | null;
     endedAt: string | null;
+    status: string | null;
   } {
     return {
       name: row[config.column_names_mapping.survey_name_column_name] ?? null,
@@ -441,6 +420,8 @@ export class Surveys extends AirtableConverter {
         row[config.column_names_mapping.survey_started_at_column_name] ?? null,
       endedAt:
         row[config.column_names_mapping.survey_ended_at_column_name] ?? null,
+      status:
+        row[config.column_names_mapping.survey_status_column_name] ?? null,
     };
   }
 

@@ -104,6 +104,7 @@ describe('airtable', () => {
         survey_type_column_name: 'Survey Type',
         survey_started_at_column_name: 'Survey Started At',
         survey_ended_at_column_name: 'Survey Ended At',
+        survey_status_column_name: 'Survey Status',
         survey_description_column_name: 'Survey Description',
         name_column_name: 'Name',
         email_column_name: 'Email',
@@ -148,6 +149,10 @@ describe('airtable', () => {
         row: {
           'Survey Name': 'Survey1',
           'Survey Type': 'ENPS',
+          'Survey Started At': '2023-10-09T14:09:37.000Z',
+          'Survey Ended At': '2023-10-09T14:09:37.000Z',
+          'Survey Status': 'Completed',
+          'Survey Description': 'This is a survey',
         },
       });
       const ctx = new StreamContext(

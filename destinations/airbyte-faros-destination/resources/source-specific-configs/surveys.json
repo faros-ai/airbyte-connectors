@@ -52,6 +52,12 @@
               "type": "string",
               "default": "Survey Description"
             },
+            "survey_status_column_name": {
+              "title": "Survey Status Column Name",
+              "description": "The name of the column that contains the survey status.",
+              "type": "string",
+              "default": "Survey Status"
+            },            
             "name_column_name": {
               "title": "Name Column Name",
               "description": "The name of the column that contains the respondent name.",
