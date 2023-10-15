@@ -430,16 +430,18 @@ export class Surveys extends AirtableConverter {
     config: SurveysConfig,
     source: string
   ): SurveyUser | undefined {
-    if (row[config.column_names_mapping.email_column_name]) {
-      const surveyUser: SurveyUser = {
-        uid: row[config.column_names_mapping.email_column_name],
-        email: row[config.column_names_mapping.email_column_name],
-        name: row[config.column_names_mapping.name_column_name] ?? null,
-        source,
-      };
-      return surveyUser;
+    const uid = row[config.column_names_mapping.email_column_name];
+
+    if (!uid) {
+      return undefined;
     }
-    return undefined;
+
+    return {
+      uid,
+      source,
+      email: uid,
+      name: row[config.column_names_mapping.name_column_name] ?? null,
+    };
   }
 
   private getSurveyTeam(
