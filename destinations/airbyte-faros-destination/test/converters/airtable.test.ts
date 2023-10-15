@@ -8,6 +8,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {DestinationRecord, StreamContext} from '../../src';
+import {SurveyQuestionCategory} from '../../src/converters/airtable/models';
 import {Surveys, SurveysConfig} from '../../src/converters/airtable/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
@@ -230,5 +231,47 @@ describe('airtable', () => {
       conversionResults.push(...(await converter.onProcessingComplete(ctx)));
       return conversionResults;
     }
+  });
+
+  describe('get question category', () => {
+    test('category matches enum symbol', () => {
+      expect(Surveys.getQuestionCategory('AlignmentAndGoals')).toEqual({
+        category: SurveyQuestionCategory.AlignmentAndGoals,
+        detail: 'AlignmentAndGoals',
+      });
+    });
+
+    test('mapped category matches enum symbol', () => {
+      const sourceCategory = 'Alignment & Goals';
+      const questionCategoryMapping = {
+        [sourceCategory]: 'AlignmentAndGoals',
+      };
+
+      expect(
+        Surveys.getQuestionCategory(sourceCategory, questionCategoryMapping)
+      ).toEqual({
+        category: SurveyQuestionCategory.AlignmentAndGoals,
+        detail: sourceCategory,
+      });
+    });
+
+    test('unmatched category', () => {
+      const sourceCategory = 'Alignment & Goals';
+      const questionCategoryMapping = {
+        [sourceCategory]: 'NotARealCategory',
+      };
+
+      expect(
+        Surveys.getQuestionCategory(sourceCategory, questionCategoryMapping)
+      ).toEqual({
+        category: SurveyQuestionCategory.Custom,
+        detail: sourceCategory,
+      });
+
+      expect(Surveys.getQuestionCategory(sourceCategory)).toEqual({
+        category: SurveyQuestionCategory.Custom,
+        detail: sourceCategory,
+      });
+    });
   });
 });

@@ -1,5 +1,5 @@
 import {createHash} from 'crypto';
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord, toDate} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 
 import {
@@ -10,10 +10,12 @@ import {
 } from '../converter';
 import {AirtableConverter} from './common';
 import {
+  QuestionCategoryMapping,
   Survey,
   SurveyCategory,
   SurveyQuestion,
   SurveyQuestionCategory,
+  SurveyQuestionCategoryType,
   SurveyResponseCategory,
   SurveyStats,
   SurveyStatusCategory,
@@ -21,8 +23,6 @@ import {
   SurveyType,
   SurveyUser,
 } from './models';
-
-type QuestionCategoryMapping = Record<string, string>;
 
 type ColumnNameMapping = {
   survey_name_column_name?: string;
@@ -258,7 +258,7 @@ export class Surveys extends AirtableConverter {
     config: SurveysConfig,
     surveyId: string
   ) {
-    const questionCategory = this.getQuestionCategory(
+    const questionCategory = Surveys.getQuestionCategory(
       row[config.column_names_mapping.question_category_column_name],
       questionCategoryMapping
     );
@@ -372,8 +372,8 @@ export class Surveys extends AirtableConverter {
       type: this.getSurveyType(surveyData.type),
       name: surveyData.name,
       description: surveyData.description,
-      startedAt: surveyData.startedAt,
-      endedAt: surveyData.endedAt,
+      startedAt: surveyData.startedAt ? toDate(surveyData.startedAt) : null,
+      endedAt: surveyData.endedAt ? toDate(surveyData.endedAt) : null,
     };
   }
 
@@ -417,32 +417,6 @@ export class Surveys extends AirtableConverter {
     return {
       category: SurveyStatusCategory.Custom,
       detail: SurveyStatusCategory.Custom,
-    };
-  }
-
-  getQuestionCategory(
-    category: string,
-    questionCategoryMapping: QuestionCategoryMapping
-  ) {
-    const farosCategory = SurveyQuestionCategory[category];
-    if (farosCategory) {
-      return {
-        category: farosCategory,
-        detail: category,
-      };
-    }
-    const mappedCategory = questionCategoryMapping[category];
-    // Check if category was mapped to a Faros category
-    const farosMappedCategory = SurveyQuestionCategory[mappedCategory];
-    if (farosMappedCategory) {
-      return {
-        category: farosMappedCategory,
-        detail: category,
-      };
-    }
-    return {
-      category: SurveyQuestionCategory.Custom,
-      detail: category,
     };
   }
 

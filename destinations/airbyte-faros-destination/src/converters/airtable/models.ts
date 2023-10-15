@@ -4,8 +4,8 @@ export type Survey = {
   description: string;
   type: SurveyType;
   status: SurveyStatus;
-  startedAt: string;
-  endedAt: string;
+  startedAt: Date;
+  endedAt: Date;
   creator?: SurveyUser;
   stats?: SurveyStats;
   source: string;
@@ -102,3 +102,5 @@ export enum SurveyResponseCategory {
   Rating = 'Rating',
   Custom = 'Custom',
 }
+
+export type QuestionCategoryMapping = Record<string, string>;
