@@ -86,31 +86,24 @@ export class Surveys extends AirtableConverter {
     const row = record?.record?.data?.row;
     const source = this.streamName.source;
     const tableId = record?.record?.data?._airtable_table_id;
-    // Check if row is a question metadata row for pushing it to survey questions metadata records
+
+    // Question metadata
     if (
       row[config.column_names_mapping.question_column_name] &&
       row[config.column_names_mapping.question_category_column_name]
     ) {
-      const questionCategoryMapping = this.questionCategoryMapping(ctx);
-      const surveyId = Surveys.getSurveyId(tableId);
-      const questionWithMetadata = this.getQuestionsWithMetadata(
-        row,
-        questionCategoryMapping,
-        source,
-        config,
-        surveyId
-      );
-      this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
+      this.processQuestionMetadata(ctx, tableId, row, source, config);
       return [];
     }
 
     const questions = this.getFilteredQuestions(row, config);
 
-    // check if row contains survey metadata for pushing survey records
-    // include questions empty array check to make sure row comes from table with no questions (survey data only)
+    // Survey metadata
     if (
       row[config.column_names_mapping.survey_name_column_name] &&
       row[config.column_names_mapping.survey_type_column_name] &&
+      // Check if there are any questions in the row
+      // If there are no questions, then this is a survey metadata row
       questions.length === 0
     ) {
       const surveyRecord = this.getSurveyRecord(row, config, tableId, source);
@@ -118,6 +111,31 @@ export class Surveys extends AirtableConverter {
       return [];
     }
 
+    // Survey response
+    const res = this.processResponse(
+      row,
+      config,
+      source,
+      record,
+      questions,
+      tableId
+    );
+
+    // Update survey stats for pushing on processing complete
+    const surveyId = Surveys.getSurveyId(tableId);
+    this.updateSurveyStats(surveyId, questions);
+
+    return res;
+  }
+
+  private processResponse(
+    row: any,
+    config: SurveysConfig,
+    source: string,
+    record: AirbyteRecord,
+    questions: string[],
+    tableId: any
+  ) {
     const res = [];
 
     const surveyUser: SurveyUser | undefined = this.getSurveyUser(
@@ -172,12 +190,26 @@ export class Surveys extends AirtableConverter {
       surveyTeam
     );
     res.push(...surveyQuestionRecs);
-
-    // Update survey stats for pushing on processing complete
-    const surveyId = Surveys.getSurveyId(tableId);
-    this.updateSurveyStats(surveyId, questions);
-
     return res;
+  }
+
+  private processQuestionMetadata(
+    ctx: StreamContext,
+    tableId: any,
+    row: any,
+    source: string,
+    config: SurveysConfig
+  ): void {
+    const questionCategoryMapping = this.questionCategoryMapping(ctx);
+    const surveyId = Surveys.getSurveyId(tableId);
+    const questionWithMetadata = this.getQuestionsWithMetadata(
+      row,
+      questionCategoryMapping,
+      source,
+      config,
+      surveyId
+    );
+    this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
   }
 
   /** Upsert surveys to add stats and survey questions records to include metadata (question category and response type) **/
