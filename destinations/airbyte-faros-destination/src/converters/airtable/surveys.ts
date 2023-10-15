@@ -369,7 +369,7 @@ export class Surveys extends AirtableConverter {
       uid: surveyId,
       source,
       status: surveyStatus,
-      type: this.getSurveyType(surveyData.type),
+      type: Surveys.getSurveyType(surveyData.type),
       name: surveyData.name,
       description: surveyData.description,
       startedAt: surveyData.startedAt ? toDate(surveyData.startedAt) : null,
@@ -379,20 +379,6 @@ export class Surveys extends AirtableConverter {
 
   private getSurveyId(tableId: string) {
     return tableId.split('/')[0]; // Get base id only, by removing the table id that comes before slash e.g. appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU
-  }
-
-  getSurveyType(type: string | null): SurveyType {
-    const farosType = SurveyCategory[type];
-    if (farosType) {
-      return {
-        category: farosType,
-        detail: type,
-      };
-    }
-    return {
-      category: SurveyCategory.Custom,
-      detail: type,
-    };
   }
 
   getSurveyStatus(startedAt: string, endedAt: string) {

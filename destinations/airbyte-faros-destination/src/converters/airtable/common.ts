@@ -3,8 +3,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Converter} from '../converter';
 import {
   QuestionCategoryMapping,
+  SurveyCategory,
   SurveyQuestionCategory,
   SurveyQuestionCategoryType,
+  SurveyType,
 } from './models';
 
 export abstract class AirtableConverter extends Converter {
@@ -38,6 +40,20 @@ export abstract class AirtableConverter extends Converter {
     return {
       category: SurveyQuestionCategory.Custom,
       detail: category,
+    };
+  }
+
+  static getSurveyType(type: string): SurveyType {
+    const farosType = SurveyCategory[type];
+    if (farosType) {
+      return {
+        category: farosType,
+        detail: type,
+      };
+    }
+    return {
+      category: SurveyCategory.Custom,
+      detail: type,
     };
   }
 }

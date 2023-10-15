@@ -8,7 +8,10 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {DestinationRecord, StreamContext} from '../../src';
-import {SurveyQuestionCategory} from '../../src/converters/airtable/models';
+import {
+  SurveyCategory,
+  SurveyQuestionCategory,
+} from '../../src/converters/airtable/models';
 import {Surveys, SurveysConfig} from '../../src/converters/airtable/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
@@ -271,6 +274,22 @@ describe('airtable', () => {
       expect(Surveys.getQuestionCategory(sourceCategory)).toEqual({
         category: SurveyQuestionCategory.Custom,
         detail: sourceCategory,
+      });
+    });
+  });
+
+  describe('get survey category', () => {
+    test('type matches enum symbol', () => {
+      expect(Surveys.getSurveyType('ENPS')).toEqual({
+        category: SurveyCategory.ENPS,
+        detail: 'ENPS',
+      });
+    });
+
+    test('unmatched type', () => {
+      expect(Surveys.getSurveyType('NotARealCategory')).toEqual({
+        category: SurveyCategory.Custom,
+        detail: 'NotARealCategory',
       });
     });
   });
