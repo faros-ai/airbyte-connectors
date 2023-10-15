@@ -26,31 +26,31 @@
               "title": "Survey Name Column Name",
               "description": "The name of the column that contains the survey name.",
               "type": "string",
-              "default": "SurveyName"
+              "default": "Survey Name"
             },
             "survey_type_column_name": {
               "title": "Survey Type Column Name",
               "description": "The name of the column that contains the survey type.",
               "type": "string",
-              "default": "SurveyType"
+              "default": "Survey Type"
             },
             "survey_started_at_column_name": {
               "title": "Survey Started At Column Name",
               "description": "The name of the column that contains the survey started at timestamp.",
               "type": "string",
-              "default": "SurveyStartedAt"
+              "default": "Survey Started At"
             },
             "survey_ended_at_column_name": {
               "title": "Survey Ended At Column Name",
               "description": "The name of the column that contains the survey ended at timestamp.",
               "type": "string",
-              "default": "SurveyEndedAt"
+              "default": "Survey Ended At"
             },
             "survey_description_column_name": {
               "title": "Survey Description Column Name",
               "description": "The name of the column that contains the survey description.",
               "type": "string",
-              "default": "SurveyDescription"
+              "default": "Survey Description"
             },
             "name_column_name": {
               "title": "Name Column Name",
@@ -80,7 +80,7 @@
               "title": "Response Type Column Name",
               "description": "The name of the column that contains the question response type.",
               "type": "string",
-              "default": "ResponseType"
+              "default": "Response Type"
             },
             "question_column_name": {
               "title": "Question Column Name",

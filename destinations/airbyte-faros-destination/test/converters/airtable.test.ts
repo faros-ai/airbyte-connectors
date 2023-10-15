@@ -100,16 +100,16 @@ describe('airtable', () => {
     const DEFAULT_CONFIG: SurveysConfig = {
       question_category_mapping: {},
       column_names_mapping: {
-        survey_name_column_name: 'SurveyName',
-        survey_type_column_name: 'SurveyType',
-        survey_started_at_column_name: 'SurveyStartedAt',
-        survey_ended_at_column_name: 'SurveyEndedAt',
-        survey_description_column_name: 'SurveyDescription',
+        survey_name_column_name: 'Survey Name',
+        survey_type_column_name: 'Survey Type',
+        survey_started_at_column_name: 'Survey Started At',
+        survey_ended_at_column_name: 'Survey Ended At',
+        survey_description_column_name: 'Survey Description',
         name_column_name: 'Name',
         email_column_name: 'Email',
         team_column_name: 'Team',
         question_category_column_name: 'Category',
-        response_type_column_name: 'ResponseType',
+        response_type_column_name: 'Response Type',
         question_column_name: 'Question',
       },
     };
@@ -146,8 +146,8 @@ describe('airtable', () => {
         _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
         _airtable_table_name: 'my_surveys/Survey metadata',
         row: {
-          SurveyName: 'Survey1',
-          SurveyType: 'ENPS',
+          'Survey Name': 'Survey1',
+          'Survey Type': 'ENPS',
         },
       });
       const ctx = new StreamContext(
@@ -175,7 +175,7 @@ describe('airtable', () => {
         row: {
           Question: 'How much do you like ice cream?',
           Category: 'AlignmentAndGoals',
-          ResponseType: 'Binary',
+          'Response Type': 'Binary',
         },
       });
       const ctx = new StreamContext(
