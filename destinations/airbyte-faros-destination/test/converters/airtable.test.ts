@@ -11,6 +11,7 @@ import {DestinationRecord, StreamContext} from '../../src';
 import {
   SurveyCategory,
   SurveyQuestionCategory,
+  SurveyResponseCategory,
 } from '../../src/converters/airtable/models';
 import {Surveys, SurveysConfig} from '../../src/converters/airtable/surveys';
 import {CLI, read} from '../cli';
@@ -289,6 +290,22 @@ describe('airtable', () => {
     test('unmatched type', () => {
       expect(Surveys.getSurveyType('NotARealCategory')).toEqual({
         category: SurveyCategory.Custom,
+        detail: 'NotARealCategory',
+      });
+    });
+  });
+
+  describe('get survey response category', () => {
+    test('category matches enum symbol', () => {
+      expect(Surveys.getResponseType('Binary')).toEqual({
+        category: SurveyResponseCategory.Binary,
+        detail: 'Binary',
+      });
+    });
+
+    test('unmatched category', () => {
+      expect(Surveys.getResponseType('NotARealCategory')).toEqual({
+        category: SurveyResponseCategory.Custom,
         detail: 'NotARealCategory',
       });
     });

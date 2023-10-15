@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
@@ -6,6 +7,8 @@ import {
   SurveyCategory,
   SurveyQuestionCategory,
   SurveyQuestionCategoryType,
+  SurveyResponseCategory,
+  SurveyResponseType,
   SurveyType,
 } from './models';
 
@@ -55,5 +58,33 @@ export abstract class AirtableConverter extends Converter {
       category: SurveyCategory.Custom,
       detail: type,
     };
+  }
+
+  static getResponseType(category: string): SurveyResponseType {
+    const farosCategory = SurveyResponseCategory[category];
+    if (farosCategory) {
+      return {
+        category: farosCategory,
+        detail: category,
+      };
+    }
+    return {
+      category: SurveyResponseCategory.Custom,
+      detail: category,
+    };
+  }
+
+  static getTeamUidFromTeamName(teamName: string): string {
+    return teamName.toLowerCase().split(' ').join('_');
+  }
+
+  static getSurveyId(fqTableId: string): string {
+    // Get the first part of the fully qualified table id, which corresponds to the Airtable base id
+    // E.g., appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU -> appwVNmuUAPCIxzSZ
+    return fqTableId.split('/')[0];
+  }
+
+  static createQuestionUid(question: string, surveyId: string) {
+    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`;
   }
 }

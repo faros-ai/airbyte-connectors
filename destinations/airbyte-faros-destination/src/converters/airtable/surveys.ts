@@ -1,4 +1,3 @@
-import {createHash} from 'crypto';
 import {AirbyteRecord, toDate} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 
@@ -94,7 +93,7 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.question_category_column_name]
     ) {
       const questionCategoryMapping = this.questionCategoryMapping(ctx);
-      const surveyId = this.getSurveyId(tableId);
+      const surveyId = Surveys.getSurveyId(tableId);
       const questionWithMetadata = this.getQuestionsWithMetadata(
         row,
         questionCategoryMapping,
@@ -176,7 +175,7 @@ export class Surveys extends AirtableConverter {
     res.push(...surveyQuestionRecs);
 
     // Update survey stats for pushing on processing complete
-    const surveyId = this.getSurveyId(tableId);
+    const surveyId = Surveys.getSurveyId(tableId);
     this.updateSurveyStats(surveyId, questions);
 
     return res;
@@ -262,22 +261,17 @@ export class Surveys extends AirtableConverter {
       row[config.column_names_mapping.question_category_column_name],
       questionCategoryMapping
     );
-    const responseType = this.getResponseType(
+    const responseType = Surveys.getResponseType(
       row[config.column_names_mapping.response_type_column_name]
     );
     const question = row[config.column_names_mapping.question_column_name];
-    const questionId = this.createQuestionUid(question, surveyId);
+    const questionId = Surveys.createQuestionUid(question, surveyId);
     return {
       uid: questionId,
       source: source,
       questionCategory: questionCategory,
       responseType: responseType,
     };
-  }
-
-  /** Get team uid from team name assuming team name received is the equivalent of snake case uid */
-  private getTeamUidFromTeamName(teamName: string) {
-    return teamName.toLowerCase().split(' ').join('-');
   }
 
   private getSurveyQuestionRecords(
@@ -292,10 +286,8 @@ export class Surveys extends AirtableConverter {
     surveyTeam?: SurveyTeam
   ) {
     return questions.flatMap((question, index) => {
-      // If id column is not specified and default column name has no value, default to airtable id
       const surveyRecord = this.getSurveyRecord(row, config, tableId, source);
-      // Generate digest from question text to create uid
-      const questionId = this.createQuestionUid(question, surveyRecord.uid);
+      const questionId = Surveys.createQuestionUid(question, surveyRecord.uid);
       const questionRecord = {
         uid: questionId,
         question: question,
@@ -359,7 +351,7 @@ export class Surveys extends AirtableConverter {
     tableId: string,
     source: string
   ): Survey {
-    const surveyId = this.getSurveyId(tableId);
+    const surveyId = Surveys.getSurveyId(tableId);
     const surveyData = this.getSurveyData(config, row);
     const surveyStatus = this.getSurveyStatus(
       surveyData.startedAt,
@@ -375,10 +367,6 @@ export class Surveys extends AirtableConverter {
       startedAt: surveyData.startedAt ? toDate(surveyData.startedAt) : null,
       endedAt: surveyData.endedAt ? toDate(surveyData.endedAt) : null,
     };
-  }
-
-  private getSurveyId(tableId: string) {
-    return tableId.split('/')[0]; // Get base id only, by removing the table id that comes before slash e.g. appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU
   }
 
   getSurveyStatus(startedAt: string, endedAt: string) {
@@ -404,24 +392,6 @@ export class Surveys extends AirtableConverter {
       category: SurveyStatusCategory.Custom,
       detail: SurveyStatusCategory.Custom,
     };
-  }
-
-  getResponseType(category: string) {
-    const farosCategory = SurveyResponseCategory[category];
-    if (farosCategory) {
-      return {
-        category: farosCategory,
-        detail: category,
-      };
-    }
-    return {
-      category: SurveyResponseCategory.Custom,
-      detail: category,
-    };
-  }
-
-  createQuestionUid(question: string, surveyId: string) {
-    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`;
   }
 
   private updateSurveyStats(surveyId: string, questions: string[]) {
@@ -495,7 +465,7 @@ export class Surveys extends AirtableConverter {
     source: string
   ): SurveyTeam | undefined {
     if (row[config.column_names_mapping.team_column_name]) {
-      const teamUid = this.getTeamUidFromTeamName(
+      const teamUid = Surveys.getTeamUidFromTeamName(
         row[config.column_names_mapping.team_column_name]
       );
 
