@@ -7,6 +7,24 @@
       "title": "Configuration",
       "type": "object",
       "properties": {
+        "survey_responses_table_name": {
+          "title": "Survey Responses Table Name",
+          "description": "The name of the table that contains survey responses.",
+          "type": "string",
+          "default": "Survey Responses"
+        },
+        "survey_metadata_table_name": {
+          "title": "Survey Metadata Table Name",
+          "description": "The name of the table that contains survey metadata.",
+          "type": "string",
+          "default": "Survey Metadata"
+        },
+        "question_metadata_table_name": {
+          "title": "Question Metadata Table Name",
+          "description": "The name of the table that contains question metadata.",
+          "type": "string",
+          "default": "Question Metadata"
+        },                        
         "question_category_mapping": {
           "type": "string",
           "title": "Question Category Mapping",

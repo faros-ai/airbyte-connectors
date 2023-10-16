@@ -99,6 +99,9 @@ describe('airtable', () => {
   describe('survey responses', () => {
     const converter = new Surveys();
     const DEFAULT_CONFIG: SurveysConfig = {
+      survey_responses_table_name: 'Survey Responses',
+      survey_metadata_table_name: 'Survey Metadata',
+      question_metadata_table_name: 'Question Metadata',
       question_category_mapping: {},
       column_names_mapping: {
         survey_name_column_name: 'Survey Name',
@@ -119,7 +122,7 @@ describe('airtable', () => {
       _airtable_id: 'rec1',
       _airtable_created_time: '2023-10-09T14:09:37.000Z',
       _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-      _airtable_table_name: 'my_surveys/Table 1',
+      _airtable_table_name: 'my_surveys/Survey Responses',
       row: {
         'How much do you like ice cream?': 5,
         Team: 'X',
@@ -146,7 +149,7 @@ describe('airtable', () => {
         _airtable_id: 'rec2',
         _airtable_created_time: '2023-10-09T14:09:37.000Z',
         _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
-        _airtable_table_name: 'my_surveys/Survey metadata',
+        _airtable_table_name: 'my_surveys/Survey Metadata',
         row: {
           'Survey Name': 'Survey1',
           'Survey Type': 'ENPS',
@@ -177,7 +180,7 @@ describe('airtable', () => {
         _airtable_id: 'rec2',
         _airtable_created_time: '2023-10-09T14:09:37.000Z',
         _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
-        _airtable_table_name: 'my_surveys/Question metadata',
+        _airtable_table_name: 'my_surveys/Question Metadata',
         row: {
           Question: 'How much do you like ice cream?',
           Category: 'AlignmentAndGoals',
@@ -215,7 +218,7 @@ describe('airtable', () => {
         _airtable_id: 'rec1',
         _airtable_created_time: '2023-10-09T14:09:37.000Z',
         _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-        _airtable_table_name: 'my_surveys/Table 1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
           Team: 'X',

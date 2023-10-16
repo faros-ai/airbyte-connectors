@@ -38,6 +38,9 @@ type ColumnNameMapping = {
 };
 
 export interface SurveysConfig {
+  survey_responses_table_name?: string;
+  survey_metadata_table_name?: string;
+  question_metadata_table_name?: string;
   question_category_mapping?: QuestionCategoryMapping;
   column_names_mapping?: ColumnNameMapping;
 }
@@ -94,41 +97,40 @@ export class Surveys extends AirtableConverter {
     this.initialize(ctx);
 
     const row = record?.record?.data?.row;
-
     const tableId = record?.record?.data?._airtable_table_id;
+    const tableName: string = record?.record?.data?._airtable_table_name;
+
+    if (!row || !tableId || !tableName) {
+      return [];
+    }
+
     const surveyId = Surveys.getSurveyId(tableId);
 
     // Question metadata
-    if (
-      row[this.config.column_names_mapping.question_column_name] &&
-      row[this.config.column_names_mapping.question_category_column_name]
-    ) {
+    if (tableName.endsWith(this.config.question_metadata_table_name)) {
       this.processQuestionMetadata(surveyId, row);
       return [];
     }
 
-    const questions = this.getFilteredQuestions(row);
-
     // Survey metadata
-    if (
-      row[this.config.column_names_mapping.survey_name_column_name] &&
-      row[this.config.column_names_mapping.survey_type_column_name] &&
-      // Check if there are any questions in the row
-      // If there are no questions, then this is a survey metadata row
-      questions.length === 0
-    ) {
+    if (tableName.endsWith(this.config.survey_metadata_table_name)) {
       const surveyRecord = this.getSurveyRecord(row, surveyId);
       this.surveyMetadata.set(surveyRecord.uid, surveyRecord);
       return [];
     }
 
     // Survey response
-    const res = this.processResponse(row, record, questions, surveyId);
+    if (tableName.endsWith(this.config.survey_responses_table_name)) {
+      const questions = this.getFilteredQuestions(row);
+      const res = this.processResponse(row, record, questions, surveyId);
 
-    // Update survey stats for pushing on processing complete
-    this.updateSurveyStats(surveyId, questions);
+      // Update survey stats for pushing on processing complete
+      this.updateSurveyStats(surveyId, questions);
 
-    return res;
+      return res;
+    }
+
+    return [];
   }
 
   private processResponse(
@@ -185,7 +187,12 @@ export class Surveys extends AirtableConverter {
   }
 
   private processQuestionMetadata(surveyId: string, row: any): void {
-    const questionWithMetadata = this.getQuestionsWithMetadata(row, surveyId);
+    const questionWithMetadata = this.getQuestionWithMetadata(row, surveyId);
+
+    if (!questionWithMetadata) {
+      return;
+    }
+
     this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
   }
 
@@ -258,23 +265,31 @@ export class Surveys extends AirtableConverter {
     return updateRecords;
   }
 
-  private getQuestionsWithMetadata(row: any, surveyId: string) {
-    const questionCategory = Utils.toCategoryDetail(
-      SurveyQuestionCategory,
-      row[this.config.column_names_mapping.question_category_column_name],
-      this.questionCategoryMapping
-    );
-    const responseType = Utils.toCategoryDetail(
-      SurveyResponseCategory,
-      row[this.config.column_names_mapping.response_type_column_name]
-    );
+  private getQuestionWithMetadata(row: any, surveyId: string) {
     const question = row[this.config.column_names_mapping.question_column_name];
-    const questionId = Surveys.createQuestionUid(question, surveyId);
+
+    if (!question) {
+      return undefined;
+    }
+
+    const category =
+      row[this.config.column_names_mapping.question_category_column_name];
+    const responseType =
+      row[this.config.column_names_mapping.response_type_column_name];
+
     return {
-      uid: questionId,
+      uid: Surveys.createQuestionUid(question, surveyId),
       source: this.source,
-      questionCategory: questionCategory,
-      responseType: responseType,
+      questionCategory: category
+        ? Utils.toCategoryDetail(
+            SurveyQuestionCategory,
+            category,
+            this.questionCategoryMapping
+          )
+        : null,
+      responseType: responseType
+        ? Utils.toCategoryDetail(SurveyResponseCategory, responseType)
+        : null,
     };
   }
 
