@@ -211,6 +211,7 @@ export class Statuspage {
     pageId: string,
     componentId: string,
     componentStartDate: Date,
+    componentGroupId?: string,
     rangeEndDate?: Date
   ): AsyncGenerator<ComponentUptime> {
     const path = `/pages/${pageId}/components/${componentId}/uptime`;
@@ -239,7 +240,7 @@ export class Statuspage {
       const {data}: AxiosResponse<ComponentUptime> = await this.rateLimitGet(
         `${path}?${params}`
       );
-      yield {...data, page_id: pageId};
+      yield {...data, page_id: pageId, group_id: componentGroupId};
 
       rangeStart.setDate(rangeStart.getDate() + 1);
     }
