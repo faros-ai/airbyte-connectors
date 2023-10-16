@@ -6,6 +6,7 @@ bamboohr-source
 bitbucket-server-source
 datadog-source
 docker-source
+faros-graphdoctor-source
 faros-graphql-source
 gitlab-ci-source
 googlecalendar-source
