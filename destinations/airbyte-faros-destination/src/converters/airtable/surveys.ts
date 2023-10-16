@@ -1,4 +1,5 @@
 import {AirbyteRecord, toDate} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import _ from 'lodash';
 
 import {
@@ -258,12 +259,12 @@ export class Surveys extends AirtableConverter {
   }
 
   private getQuestionsWithMetadata(row: any, surveyId: string) {
-    const questionCategory = AirtableConverter.toCategoryDetail(
+    const questionCategory = Utils.toCategoryDetail(
       SurveyQuestionCategory,
       row[this.config.column_names_mapping.question_category_column_name],
       this.questionCategoryMapping
     );
-    const responseType = AirtableConverter.toCategoryDetail(
+    const responseType = Utils.toCategoryDetail(
       SurveyResponseCategory,
       row[this.config.column_names_mapping.response_type_column_name]
     );
@@ -354,13 +355,10 @@ export class Surveys extends AirtableConverter {
       uid: surveyId,
       source: this.source,
       status: surveyData.status
-        ? AirtableConverter.toCategoryDetail(
-            SurveyStatusCategory,
-            surveyData.status
-          )
+        ? Utils.toCategoryDetail(SurveyStatusCategory, surveyData.status)
         : null,
       type: surveyData.type
-        ? AirtableConverter.toCategoryDetail(SurveyCategory, surveyData.type)
+        ? Utils.toCategoryDetail(SurveyCategory, surveyData.type)
         : null,
       name: surveyData.name,
       description: surveyData.description,
