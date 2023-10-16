@@ -1,5 +1,5 @@
 import {AirbyteRecord, toDate} from 'faros-airbyte-cdk';
-import _, {initial} from 'lodash';
+import _ from 'lodash';
 
 import {
   DestinationModel,
