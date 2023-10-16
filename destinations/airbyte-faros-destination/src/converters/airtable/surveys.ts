@@ -93,7 +93,9 @@ export class Surveys extends AirtableConverter {
     this.initialize(ctx);
 
     const row = record?.record?.data?.row;
+
     const tableId = record?.record?.data?._airtable_table_id;
+    const surveyId = Surveys.getSurveyId(tableId);
 
     // Question metadata
     if (
@@ -114,16 +116,15 @@ export class Surveys extends AirtableConverter {
       // If there are no questions, then this is a survey metadata row
       questions.length === 0
     ) {
-      const surveyRecord = this.getSurveyRecord(row, tableId);
+      const surveyRecord = this.getSurveyRecord(row, surveyId);
       this.surveyMetadata.set(surveyRecord.uid, surveyRecord);
       return [];
     }
 
     // Survey response
-    const res = this.processResponse(row, record, questions, tableId);
+    const res = this.processResponse(row, record, questions, surveyId);
 
     // Update survey stats for pushing on processing complete
-    const surveyId = Surveys.getSurveyId(tableId);
     this.updateSurveyStats(surveyId, questions);
 
     return res;
@@ -133,7 +134,7 @@ export class Surveys extends AirtableConverter {
     row: any,
     record: AirbyteRecord,
     questions: string[],
-    tableId: any
+    surveyId: string
   ) {
     const res = [];
 
@@ -171,7 +172,7 @@ export class Surveys extends AirtableConverter {
 
     const surveyQuestionRecs = this.getSurveyQuestionRecords(
       questions,
-      tableId,
+      surveyId,
       recordId,
       submittedAt,
       row,
@@ -279,7 +280,7 @@ export class Surveys extends AirtableConverter {
 
   private getSurveyQuestionRecords(
     questions: string[],
-    tableId: string,
+    surveyId: string,
     recordId: string,
     submittedAt: string,
     row: any,
@@ -287,8 +288,8 @@ export class Surveys extends AirtableConverter {
     surveyTeam?: SurveyTeam
   ) {
     return questions.flatMap((question, index) => {
-      const surveyRecord = this.getSurveyRecord(row, tableId);
-      const questionId = Surveys.createQuestionUid(question, surveyRecord.uid);
+      const surveyRecord = this.getSurveyRecord(row, surveyId);
+      const questionId = Surveys.createQuestionUid(question, surveyId);
       const questionRecord = {
         uid: questionId,
         question: question,
@@ -296,7 +297,7 @@ export class Surveys extends AirtableConverter {
         source: this.source,
       };
       const surveyQuestionAssociationRecord = {
-        survey: {uid: surveyRecord.uid, source: this.source},
+        survey: {uid: surveyId, source: this.source},
         question: {uid: questionRecord.uid, source: this.source},
         order: index + 1,
       };
@@ -308,7 +309,7 @@ export class Surveys extends AirtableConverter {
           submittedAt,
           response: row[question].toString(),
           surveyQuestion: {
-            survey: {uid: surveyRecord.uid, source: this.source},
+            survey: {uid: surveyId, source: this.source},
             question: {uid: questionRecord.uid, source: this.source},
           },
           respondent: surveyUser
@@ -336,8 +337,8 @@ export class Surveys extends AirtableConverter {
         );
       }
 
-      if (!this.surveysSeen.has(surveyRecord.uid)) {
-        this.surveysSeen.add(surveyRecord.uid);
+      if (!this.surveysSeen.has(surveyId)) {
+        this.surveysSeen.add(surveyId);
         res.push({
           model: 'survey_Survey',
           record: surveyRecord,
@@ -348,8 +349,7 @@ export class Surveys extends AirtableConverter {
     });
   }
 
-  private getSurveyRecord(row: any, tableId: string): Survey {
-    const surveyId = Surveys.getSurveyId(tableId);
+  private getSurveyRecord(row: any, surveyId: string): Survey {
     const surveyData = this.getSurveyData(row);
     return {
       uid: surveyId,
