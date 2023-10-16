@@ -102,7 +102,7 @@ export class Surveys extends AirtableConverter {
       row[this.config.column_names_mapping.question_column_name] &&
       row[this.config.column_names_mapping.question_category_column_name]
     ) {
-      this.processQuestionMetadata(tableId, row);
+      this.processQuestionMetadata(surveyId, row);
       return [];
     }
 
@@ -183,8 +183,7 @@ export class Surveys extends AirtableConverter {
     return res;
   }
 
-  private processQuestionMetadata(tableId: any, row: any): void {
-    const surveyId = Surveys.getSurveyId(tableId);
+  private processQuestionMetadata(surveyId: string, row: any): void {
     const questionWithMetadata = this.getQuestionsWithMetadata(row, surveyId);
     this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
   }
