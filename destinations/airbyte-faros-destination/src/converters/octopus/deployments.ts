@@ -105,13 +105,13 @@ export class Deployments extends OctopusConverter {
 
     // Attempt to first retrieve VCS information from explicit deployment variables
     for (const v of deployment.Variables ?? []) {
-      if (v.Name == 'VCS_COMMIT') {
+      if (v.Name === 'VCS_COMMIT') {
         commitSha = this.getVarValue(deployId, v, logger);
-      } else if (v.name == 'VCS_REPO') {
+      } else if (v.name === 'VCS_REPO') {
         repoName = this.getVarValue(deployId, v, logger);
-      } else if (v.name == 'VCS_ORG') {
+      } else if (v.name === 'VCS_ORG') {
         orgUid = this.getVarValue(deployId, v, logger);
-      } else if (v.name == 'VCS_SOURCE') {
+      } else if (v.name === 'VCS_SOURCE') {
         orgSource = this.getVarValue(deployId, v, logger);
       }
     }
