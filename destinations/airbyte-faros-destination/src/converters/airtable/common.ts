@@ -14,6 +14,7 @@ import {
 
 export abstract class AirtableConverter extends Converter {
   source = 'Airtable';
+
   id(record: AirbyteRecord): any {
     return record?.record?.data?._airtable_id;
   }
