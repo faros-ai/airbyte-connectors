@@ -29,9 +29,10 @@ type ColumnNameMapping = {
   survey_started_at_column_name?: string;
   survey_ended_at_column_name?: string;
   survey_status_column_name?: string;
-  name_column_name?: string;
-  email_column_name?: string;
-  team_column_name?: string;
+  respondent_name_column_name?: string;
+  respondent_email_column_name?: string;
+  respondent_team_name_column_name?: string;
+  respondent_team_id_column_name?: string;
   question_category_column_name?: string;
   response_type_column_name?: string;
   question_column_name?: string;
@@ -429,9 +430,10 @@ export class Surveys extends AirtableConverter {
           this.config.column_names_mapping.survey_started_at_column_name,
           this.config.column_names_mapping.survey_ended_at_column_name,
           this.config.column_names_mapping.survey_status_column_name,
-          this.config.column_names_mapping.name_column_name,
-          this.config.column_names_mapping.email_column_name,
-          this.config.column_names_mapping.team_column_name,
+          this.config.column_names_mapping.respondent_name_column_name,
+          this.config.column_names_mapping.respondent_email_column_name,
+          this.config.column_names_mapping.respondent_team_name_column_name,
+          this.config.column_names_mapping.respondent_team_id_column_name,
         ].includes(question)
     );
   }
@@ -464,7 +466,8 @@ export class Surveys extends AirtableConverter {
   }
 
   private getSurveyUser(row: any): SurveyUser | undefined {
-    const uid = row[this.config.column_names_mapping.email_column_name];
+    const uid =
+      row[this.config.column_names_mapping.respondent_email_column_name];
 
     if (!uid) {
       return undefined;
@@ -474,14 +477,18 @@ export class Surveys extends AirtableConverter {
       uid,
       source: this.source,
       email: uid,
-      name: row[this.config.column_names_mapping.name_column_name] ?? null,
+      name:
+        row[this.config.column_names_mapping.respondent_name_column_name] ??
+        null,
     };
   }
 
   private getSurveyTeam(row: any): SurveyTeam | undefined {
-    const uid = Surveys.getTeamUid(
-      row[this.config.column_names_mapping.team_column_name]
-    );
+    const uid =
+      row[this.config.column_names_mapping.respondent_team_id_column_name] ??
+      Surveys.getTeamUid(
+        row[this.config.column_names_mapping.respondent_team_name_column_name]
+      );
 
     if (!uid) {
       return undefined;
@@ -490,7 +497,9 @@ export class Surveys extends AirtableConverter {
     return {
       uid,
       source: this.source,
-      name: row[this.config.column_names_mapping.team_column_name],
+      name: row[
+        this.config.column_names_mapping.respondent_team_name_column_name
+      ],
     };
   }
 }

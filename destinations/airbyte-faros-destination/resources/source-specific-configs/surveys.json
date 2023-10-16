@@ -76,24 +76,30 @@
               "type": "string",
               "default": "Survey Status"
             },            
-            "name_column_name": {
+            "respondent_name_column_name": {
               "title": "Name Column Name",
               "description": "The name of the column that contains the respondent name.",
               "type": "string",
               "default": "Name"
             },
-            "email_column_name": {
+            "respondent_email_column_name": {
               "title": "Email Column Name",
               "description": "The name of the column that contains the respondent email.",
               "type": "string",
               "default": "Email"
             },
-            "team_column_name": {
-              "title": "Team Column Name",
-              "description": "The name of the column that contains the respondent team name.",
+            "respondent_team_name_column_name": {
+              "title": "Team Name Column Name",
+              "description": "The name of the column that contains the name of the respondent's team.",
               "type": "string",
-              "default": "Team"
+              "default": "Team Name"
             },
+            "respondent_team_id_column_name": {
+              "title": "Respondent Team ID Column Name",
+              "description": "The name of the column that contains the unique identifier for the respondent's team.",
+              "type": "string",
+              "default": "Team ID"
+            },            
             "question_category_column_name": {
               "title": "Question Category Column Name",
               "description": "The name of the column that contains the question category.",

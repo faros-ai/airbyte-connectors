@@ -15,7 +15,7 @@ export abstract class AirtableConverter extends Converter {
       return undefined;
     }
 
-    return teamName.toLowerCase().split(' ').join('_');
+    return AirtableConverter.digest(teamName);
   }
 
   static getSurveyId(fqTableId: string): string {
@@ -31,6 +31,10 @@ export abstract class AirtableConverter extends Converter {
   }
 
   static createQuestionUid(surveyId: string, question: string) {
-    return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`;
+    return `${surveyId}-${AirtableConverter.digest(question)}`;
+  }
+
+  private static digest(input: string): string {
+    return createHash('sha256').update(input).digest('hex');
   }
 }

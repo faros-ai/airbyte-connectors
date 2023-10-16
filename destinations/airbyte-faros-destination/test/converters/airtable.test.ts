@@ -111,9 +111,10 @@ describe('airtable', () => {
         survey_ended_at_column_name: 'Survey Ended At',
         survey_status_column_name: 'Survey Status',
         survey_description_column_name: 'Survey Description',
-        name_column_name: 'Name',
-        email_column_name: 'Email',
-        team_column_name: 'Team',
+        respondent_name_column_name: 'Name',
+        respondent_email_column_name: 'Email',
+        respondent_team_name_column_name: 'Team Name',
+        respondent_team_id_column_name: 'Team ID',
         question_category_column_name: 'Category',
         response_type_column_name: 'Response Type',
         question_column_name: 'Question',
@@ -126,7 +127,7 @@ describe('airtable', () => {
       _airtable_table_name: 'my_surveys/Survey Responses',
       row: {
         'How much do you like ice cream?': 5,
-        Team: 'X',
+        'Team Name': 'X',
       },
     });
 
@@ -218,7 +219,35 @@ describe('airtable', () => {
         _airtable_table_name: 'my_surveys/Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
-          Team: 'X',
+          'Team Name': 'X',
+          Name: 'John Doe',
+          Email: 'john@doe.xyz',
+        },
+      });
+      const res = await converter.convert(record, ctx);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('uses team id', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          'Team Name': 'X',
+          'Team ID': 'team1',
           Name: 'John Doe',
           Email: 'john@doe.xyz',
         },
@@ -245,7 +274,7 @@ describe('airtable', () => {
         _airtable_table_name: 'my_surveys/Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
-          Team: 'X',
+          'Team Name': 'X',
           Name: 'John Doe',
           Email: 'john@doe.xyz',
           'Survey Name': 'Survey1',
@@ -368,8 +397,9 @@ describe('airtable', () => {
 
   describe('team uid', () => {
     test('convert team name to team uid', () => {
-      expect(Surveys.getTeamUid('My Team Name')).toEqual('my_team_name');
-      expect(Surveys.getTeamUid('Red')).toEqual('red');
+      expect(Surveys.getTeamUid('My Team Name')).toMatchInlineSnapshot(
+        `"a8981623d7d1eb7e7fd16ba387f87e2c857c5d87a18d7da0e9cc246710d13c8a"`
+      );
       expect(Surveys.getTeamUid(undefined)).toBeUndefined();
       expect(Surveys.getTeamUid('')).toBeUndefined();
       expect(Surveys.getTeamUid(null)).toBeUndefined();

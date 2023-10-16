@@ -7,7 +7,7 @@ Array [
     "record": Object {
       "name": "X",
       "source": "Airtable",
-      "uid": "x",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
     },
   },
   Object {
@@ -29,7 +29,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
       "uid": "rec1",
     },
@@ -79,7 +79,7 @@ Array [
     "record": Object {
       "name": "X",
       "source": "Airtable",
-      "uid": "x",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
     },
   },
   Object {
@@ -101,7 +101,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
       "uid": "rec1",
     },
@@ -204,7 +204,7 @@ Array [
     "record": Object {
       "name": "X",
       "source": "Airtable",
-      "uid": "x",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
     },
   },
   Object {
@@ -216,7 +216,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
     },
   },
@@ -242,7 +242,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
       "uid": "rec1",
     },
@@ -307,7 +307,7 @@ Array [
     "record": Object {
       "name": "X",
       "source": "Airtable",
-      "uid": "x",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
     },
   },
   Object {
@@ -319,7 +319,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
     },
   },
@@ -345,7 +345,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
       "uid": "rec1",
     },
@@ -395,7 +395,7 @@ Array [
     "record": Object {
       "name": "X",
       "source": "Airtable",
-      "uid": "x",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
     },
   },
   Object {
@@ -417,7 +417,7 @@ Array [
       },
       "team": Object {
         "source": "Airtable",
-        "uid": "x",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
       },
       "uid": "rec1",
     },
@@ -507,6 +507,103 @@ Array [
         "source": "Airtable",
         "uid": "app0z7JKgJ19t13fw",
       },
+    },
+  },
+]
+`;
+
+exports[`airtable survey responses uses team id 1`] = `
+Array [
+  Object {
+    "model": "survey_User",
+    "record": Object {
+      "email": "john@doe.xyz",
+      "name": "John Doe",
+      "source": "Airtable",
+      "uid": "john@doe.xyz",
+    },
+  },
+  Object {
+    "model": "survey_Team",
+    "record": Object {
+      "name": "X",
+      "source": "Airtable",
+      "uid": "team1",
+    },
+  },
+  Object {
+    "model": "survey_TeamMembership",
+    "record": Object {
+      "member": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "team1",
+      },
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "5",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "team1",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "How much do you like ice cream?",
+      "source": "Airtable",
+      "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw-6db25b327d5bb72d56ee66a24c16abfbb8cad427cf53b07d9c4e054eadb9af42",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Airtable",
+      "startedAt": null,
+      "status": null,
+      "type": null,
+      "uid": "app0z7JKgJ19t13fw",
     },
   },
 ]
