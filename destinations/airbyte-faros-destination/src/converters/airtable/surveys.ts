@@ -54,8 +54,6 @@ export class Surveys extends AirtableConverter {
     'survey_User',
     'survey_Team',
     'survey_TeamMembership',
-    'survey_OrgTeam',
-    'survey_UserIdentity',
   ];
 
   private questionMetadata: Map<string, SurveyQuestion> = new Map();
