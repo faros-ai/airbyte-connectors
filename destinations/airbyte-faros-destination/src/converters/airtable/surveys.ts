@@ -97,32 +97,55 @@ export class Surveys extends AirtableConverter {
     this.initialize(ctx);
 
     const row = record?.record?.data?.row;
-    const tableId = record?.record?.data?._airtable_table_id;
-    const tableName: string = record?.record?.data?._airtable_table_name;
+    const fqTableId: string = record?.record?.data?._airtable_table_id;
+    const fqTableName: string = record?.record?.data?._airtable_table_name;
 
-    if (!row || !tableId || !tableName) {
+    if (!row || !fqTableId || !fqTableName) {
       return [];
     }
 
-    const surveyId = Surveys.getSurveyId(tableId);
+    const surveyId = Surveys.getSurveyId(fqTableId);
+    const tableName = Surveys.getTableName(fqTableName);
+
+    // Be a bit more lenient with table names matching
+    const normalizeTableName = (tableName: string): string => {
+      return tableName.toLowerCase().split(' ').join('_');
+    };
 
     // Question metadata
-    if (tableName.endsWith(this.config.question_metadata_table_name)) {
+    if (
+      normalizeTableName(tableName) ===
+      normalizeTableName(this.config.question_metadata_table_name)
+    ) {
       this.processQuestionMetadata(surveyId, row);
       return [];
     }
 
     // Survey metadata
-    if (tableName.endsWith(this.config.survey_metadata_table_name)) {
-      const surveyRecord = this.getSurveyRecord(row, surveyId);
-      this.surveyMetadata.set(surveyRecord.uid, surveyRecord);
+    if (
+      normalizeTableName(tableName) ===
+      normalizeTableName(this.config.survey_metadata_table_name)
+    ) {
+      this.processSurveyMetadata(surveyId, row);
       return [];
     }
 
     // Survey response
-    if (tableName.endsWith(this.config.survey_responses_table_name)) {
+    if (
+      normalizeTableName(tableName) ===
+      normalizeTableName(this.config.survey_responses_table_name)
+    ) {
+      const responseId = this.id(record);
+      const submittedAt = record?.record?.data?._airtable_created_time;
+
       const questions = this.getFilteredQuestions(row);
-      const res = this.processResponse(row, record, questions, surveyId);
+      const res = this.processResponse(
+        surveyId,
+        row,
+        responseId,
+        submittedAt,
+        questions
+      );
 
       // Update survey stats for pushing on processing complete
       this.updateSurveyStats(surveyId, questions);
@@ -133,11 +156,27 @@ export class Surveys extends AirtableConverter {
     return [];
   }
 
+  private processQuestionMetadata(surveyId: string, row: any): void {
+    const questionWithMetadata = this.getQuestionWithMetadata(surveyId, row);
+
+    if (!questionWithMetadata) {
+      return;
+    }
+
+    this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
+  }
+
+  private processSurveyMetadata(surveyId: string, row: any) {
+    const surveyRecord = this.getSurveyRecord(surveyId, row);
+    this.surveyMetadata.set(surveyRecord.uid, surveyRecord);
+  }
+
   private processResponse(
+    surveyId: string,
     row: any,
-    record: AirbyteRecord,
-    questions: string[],
-    surveyId: string
+    responseId: string,
+    submittedAt: string,
+    questions: string[]
   ) {
     const res = [];
 
@@ -170,30 +209,18 @@ export class Surveys extends AirtableConverter {
       });
     }
 
-    const recordId = this.id(record);
-    const submittedAt = record?.record?.data?._airtable_created_time;
-
-    const surveyQuestionRecs = this.getSurveyQuestionRecords(
-      questions,
-      surveyId,
-      recordId,
-      submittedAt,
-      row,
-      surveyUser,
-      surveyTeam
+    res.push(
+      ...this.getResponseRecords(
+        surveyId,
+        row,
+        responseId,
+        submittedAt,
+        questions,
+        surveyUser,
+        surveyTeam
+      )
     );
-    res.push(...surveyQuestionRecs);
     return res;
-  }
-
-  private processQuestionMetadata(surveyId: string, row: any): void {
-    const questionWithMetadata = this.getQuestionWithMetadata(row, surveyId);
-
-    if (!questionWithMetadata) {
-      return;
-    }
-
-    this.questionMetadata.set(questionWithMetadata.uid, questionWithMetadata);
   }
 
   /** Upsert surveys to add stats and survey questions records to include metadata (question category and response type) **/
@@ -265,7 +292,7 @@ export class Surveys extends AirtableConverter {
     return updateRecords;
   }
 
-  private getQuestionWithMetadata(row: any, surveyId: string) {
+  private getQuestionWithMetadata(surveyId: string, row: any): SurveyQuestion {
     const question = row[this.config.column_names_mapping.question_column_name];
 
     if (!question) {
@@ -278,7 +305,7 @@ export class Surveys extends AirtableConverter {
       row[this.config.column_names_mapping.response_type_column_name];
 
     return {
-      uid: Surveys.createQuestionUid(question, surveyId),
+      uid: Surveys.createQuestionUid(surveyId, question),
       source: this.source,
       questionCategory: category
         ? Utils.toCategoryDetail(
@@ -293,33 +320,35 @@ export class Surveys extends AirtableConverter {
     };
   }
 
-  private getSurveyQuestionRecords(
-    questions: string[],
+  private getResponseRecords(
     surveyId: string,
-    recordId: string,
-    submittedAt: string,
     row: any,
+    responseId: string,
+    submittedAt: string,
+    questions: string[],
     surveyUser?: SurveyUser,
     surveyTeam?: SurveyTeam
   ) {
     return questions.flatMap((question, index) => {
-      const surveyRecord = this.getSurveyRecord(row, surveyId);
-      const questionId = Surveys.createQuestionUid(question, surveyId);
+      const surveyRecord = this.getSurveyRecord(surveyId, row);
+      const questionId = Surveys.createQuestionUid(surveyId, question);
+
       const questionRecord = {
         uid: questionId,
-        question: question,
-        description: question,
         source: this.source,
+        question,
       };
+
       const surveyQuestionAssociationRecord = {
         survey: {uid: surveyId, source: this.source},
         question: {uid: questionRecord.uid, source: this.source},
         order: index + 1,
       };
+
       const questionResponse = {
         model: 'survey_QuestionResponse',
         record: {
-          uid: recordId,
+          uid: responseId,
           source: this.source,
           submittedAt,
           response: row[question].toString(),
@@ -364,7 +393,7 @@ export class Surveys extends AirtableConverter {
     });
   }
 
-  private getSurveyRecord(row: any, surveyId: string): Survey {
+  private getSurveyRecord(surveyId: string, row: any): Survey {
     const surveyData = this.getSurveyData(row);
     return {
       uid: surveyId,
@@ -462,8 +491,8 @@ export class Surveys extends AirtableConverter {
 
     return {
       uid,
-      name: row[this.config.column_names_mapping.team_column_name],
       source: this.source,
+      name: row[this.config.column_names_mapping.team_column_name],
     };
   }
 }

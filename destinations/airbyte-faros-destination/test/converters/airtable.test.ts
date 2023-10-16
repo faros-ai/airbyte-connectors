@@ -25,11 +25,13 @@ describe('airtable', () => {
   const catalogPath = 'test/resources/airtable/surveys/catalog.json';
   let configPath: string;
   const streamNamePrefix = 'mytestsource__airtable__';
+  let converter: Surveys;
 
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
     jest.spyOn(Date, 'now').mockImplementation(() => 1697245567000);
+    converter = new Surveys();
   });
 
   afterEach(async () => {
@@ -97,7 +99,6 @@ describe('airtable', () => {
   });
 
   describe('survey responses', () => {
-    const converter = new Surveys();
     const DEFAULT_CONFIG: SurveysConfig = {
       survey_responses_table_name: 'Survey Responses',
       survey_metadata_table_name: 'Survey Metadata',
@@ -170,9 +171,7 @@ describe('airtable', () => {
         {}
       );
 
-      expect(
-        await convert(new Surveys(), ctx, RESPONSE, record)
-      ).toMatchSnapshot();
+      expect(await convert(converter, ctx, RESPONSE, record)).toMatchSnapshot();
     });
 
     test('question metadata', async () => {
@@ -198,9 +197,7 @@ describe('airtable', () => {
         {}
       );
 
-      expect(
-        await convert(new Surveys(), ctx, RESPONSE, record)
-      ).toMatchSnapshot();
+      expect(await convert(converter, ctx, RESPONSE, record)).toMatchSnapshot();
     });
 
     test('response with user and team info', async () => {
@@ -224,6 +221,39 @@ describe('airtable', () => {
           Team: 'X',
           Name: 'John Doe',
           Email: 'john@doe.xyz',
+        },
+      });
+      const res = await converter.convert(record, ctx);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('response with survey metadata', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          Team: 'X',
+          Name: 'John Doe',
+          Email: 'john@doe.xyz',
+          'Survey Name': 'Survey1',
+          'Survey Type': 'ENPS',
+          'Survey Started At': '2023-10-09T14:09:37.000Z',
+          'Survey Ended At': '2023-10-09T14:09:37.000Z',
+          'Survey Status': 'Completed',
+          'Survey Description': 'This is a survey',
         },
       });
       const res = await converter.convert(record, ctx);

@@ -24,7 +24,13 @@ export abstract class AirtableConverter extends Converter {
     return fqTableId.split('/')[0];
   }
 
-  static createQuestionUid(question: string, surveyId: string) {
+  static getTableName(fqTableName: string): string {
+    // Get the second part of the fully qualified table name, which corresponds to the table name
+    // E.g., my_surveys/Survey Responses => Survey Responses
+    return fqTableName.split('/')[1];
+  }
+
+  static createQuestionUid(surveyId: string, question: string) {
     return `${surveyId}-${createHash('sha256').update(question).digest('hex')}`;
   }
 }
