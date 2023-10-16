@@ -31,7 +31,7 @@ export abstract class AirtableConverter extends Converter {
   }
 
   static createQuestionUid(surveyId: string, question: string) {
-    return `${surveyId}-${AirtableConverter.digest(question)}`;
+    return AirtableConverter.digest(`${surveyId}-${question}`);
   }
 
   private static digest(input: string): string {
