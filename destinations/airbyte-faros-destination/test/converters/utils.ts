@@ -1,7 +1,7 @@
-import {CLI, read} from "../cli";
-import _ from "lodash";
-import {AirbyteLog, AirbyteLogLevel} from "faros-airbyte-cdk";
-import {Dictionary} from "ts-essentials";
+import {CLI, read} from '../cli';
+import _ from 'lodash';
+import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {Dictionary} from 'ts-essentials';
 
 
 type ProcessedAndWrittenModels = {
