@@ -8,8 +8,8 @@ import {
 } from '../converter';
 import {DataQualityIssue, SummaryKey} from './models';
 
-export class DataQualityTest extends Converter {
-  source = 'DataQualityTest';
+export class DataQualityTests extends Converter {
+  source = 'DataQualityTests';
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;

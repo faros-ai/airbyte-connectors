@@ -107,3 +107,6 @@ export const octopusAllStreamsLog = readTestResourceFile(
 export const testrailsAllStreamsLog = readTestResourceFile(
   'testrails/all-streams.log'
 );
+export const farosGraphDoctorAllStreamsLog = readTestResourceFile(
+  'faros_graphdoctor/all-streams.log'
+);
