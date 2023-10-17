@@ -1,7 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
 
-import {Common} from '../common/common';
 import {
   Converter,
   DestinationModel,
@@ -21,20 +19,18 @@ export class DataQualityTest extends Converter {
     'faros_DataQualitySummary',
   ];
 
-  private unRecognizedDataIssueObjects: AirbyteRecord[] = [];
+  private unRecognizedDataIssueRecords: AirbyteRecord[] = [];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const res: DestinationRecord[] = [];
     const data_obj = record.record.data;
     if ('faros_DataQualityIssue' in data_obj) {
       const data_quality_issue: DataQualityIssue = data_obj as DataQualityIssue;
       return this.getDataQualityIssue(data_quality_issue);
     } else {
-      this.unRecognizedDataIssueObjects.push(record);
+      this.unRecognizedDataIssueRecords.push(record);
     }
     return res;
   }
@@ -67,5 +63,20 @@ export class DataQualityTest extends Converter {
       };
     }
     return summary_obj;
+  }
+
+  private AirbyterRecordsToString(l: AirbyteRecord[]): string {
+    return JSON.stringify(l);
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    ctx.logger.info(
+      `Unidentified records:\n${this.AirbyterRecordsToString(
+        this.unRecognizedDataIssueRecords
+      )}`
+    );
+    return [];
   }
 }
