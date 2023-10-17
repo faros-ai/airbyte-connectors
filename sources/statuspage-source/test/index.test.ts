@@ -277,7 +277,7 @@ describe('index', () => {
 
   test('streams - component uptimes, use full_refresh sync mode', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptime.json');
+    const componentUptime = readTestResourceFile('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 3);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -305,14 +305,18 @@ describe('index', () => {
       componentUptimes.push(uptime);
     }
 
-    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    const expected = {
+      ...componentUptime,
+      page_id: 'page_id',
+      group_id: undefined,
+    };
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(3);
-    expect(componentUptimes).toStrictEqual([...Array(3).fill(expectedUptime)]);
+    expect(componentUptimes).toStrictEqual([...Array(3).fill(expected)]);
   });
 
   test('streams - component uptimes, use incremental sync mode', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptime.json');
+    const componentUptime = readTestResourceFile('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 90);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -344,9 +348,13 @@ describe('index', () => {
       componentUptimes.push(uptime);
     }
 
-    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    const expected = {
+      ...componentUptime,
+      page_id: 'page_id',
+      group_id: undefined,
+    };
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(1);
-    expect(componentUptimes).toStrictEqual([expectedUptime]);
+    expect(componentUptimes).toStrictEqual([expected]);
   });
 
   test('streams - component uptimes, fetch uptimes disabled', async () => {
@@ -381,7 +389,7 @@ describe('index', () => {
 
   test('streams - component uptimes, fetch max 90 days', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptime.json');
+    const componentUptime = readTestResourceFile('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 1000);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -409,14 +417,18 @@ describe('index', () => {
       componentUptimes.push(uptime);
     }
 
-    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    const expected = {
+      ...componentUptime,
+      page_id: 'page_id',
+      group_id: undefined,
+    };
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(90);
-    expect(componentUptimes).toStrictEqual([...Array(90).fill(expectedUptime)]);
+    expect(componentUptimes).toStrictEqual([...Array(90).fill(expected)]);
   });
 
   test('streams - component uptimes, use component start date', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptime.json');
+    const componentUptime = readTestResourceFile('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 1000);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -451,9 +463,13 @@ describe('index', () => {
       componentUptimes.push(uptime);
     }
 
-    const expectedUptime = {...componentUptime, page_id: 'page_id'};
+    const expected = {
+      ...componentUptime,
+      page_id: 'page_id',
+      group_id: undefined,
+    };
     expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(10);
-    expect(componentUptimes).toStrictEqual([...Array(10).fill(expectedUptime)]);
+    expect(componentUptimes).toStrictEqual([...Array(10).fill(expected)]);
   });
 
   test('streams - component showcase disabled', async () => {
@@ -493,7 +509,51 @@ describe('index', () => {
         pageId: 'n3wb7hf336hn',
         componentId: 'component2',
         startDate: '2023-05-22',
+        componentGroupId: 'string',
       },
     ]);
+  });
+
+  test('streams - component uptimes, sub-components', async () => {
+    const fnComponentUptimesFunc = jest.fn();
+    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 1);
+    Statuspage.instance = jest.fn().mockImplementation(() => {
+      return new Statuspage(
+        {
+          get: fnComponentUptimesFunc.mockResolvedValue({
+            data: componentUptime,
+          }),
+        } as any,
+        startDate,
+        logger
+      );
+    });
+    const source = new sut.StatuspageSource(logger);
+    const streams = source.streams(sourceConfig);
+    const componentUptimesStream = streams[5];
+    const uptimesIter = componentUptimesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      null,
+      {
+        pageId: 'page_id',
+        componentId: 'component1',
+        startDate: '2021-01-01',
+        componentGroupId: 'group_id',
+      }
+    );
+    const componentUptimes = [];
+    for await (const uptime of uptimesIter) {
+      componentUptimes.push(uptime);
+    }
+
+    const expectedUptime = {
+      ...componentUptime,
+      page_id: 'page_id',
+      group_id: 'group_id',
+    };
+    expect(fnComponentUptimesFunc).toHaveBeenCalledTimes(1);
+    expect(componentUptimes).toStrictEqual([expectedUptime]);
   });
 });
