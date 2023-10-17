@@ -9,7 +9,7 @@ import {
 import {DataQualityIssue, SummaryKey} from './models';
 
 export class DataQualityTests extends Converter {
-  source = 'DataQualityTests';
+  source = 'faros-graphdoctor';
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
@@ -27,7 +27,9 @@ export class DataQualityTests extends Converter {
     const res: DestinationRecord[] = [];
     const data_obj = record.record.data;
     if ('faros_DataQualityIssue' in data_obj) {
-      const data_quality_issue: DataQualityIssue = data_obj as DataQualityIssue;
+      const data_quality_issue: DataQualityIssue = data_obj[
+        'faros_DataQualityIssue'
+      ] as DataQualityIssue;
       return this.getDataQualityIssue(data_quality_issue);
     } else {
       this.unRecognizedDataIssueRecords.push(record);
