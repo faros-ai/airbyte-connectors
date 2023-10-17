@@ -72,6 +72,9 @@
         "statuspage": {
           "$ref": "statuspage.json"
         },
+        "surveys": {
+          "$ref": "surveys.json"
+        },
         "victorops": {
           "$ref": "victorops.json"
         }
