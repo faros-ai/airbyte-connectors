@@ -11,6 +11,7 @@
     "test-cov": "lerna run test-cov"
   },
   "devDependencies": {
+    "@nrwl/workspace": "^16.10.0",
     "@types/analytics-node": "^3.1.8",
     "@types/eslint": "^8.44.2",
     "@types/fast-redact": "^3.0.1",
