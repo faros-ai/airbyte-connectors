@@ -103,7 +103,7 @@ export class Surveys extends AirtableConverter {
       return [];
     }
 
-    const surveyId = Surveys.getSurveyId(fqTableId);
+    const surveyId = Surveys.getBaseId(fqTableId);
     const tableName = Surveys.getTableName(fqTableName);
 
     // Be a bit more lenient with table names matching
@@ -501,5 +501,9 @@ export class Surveys extends AirtableConverter {
         this.config.column_names_mapping.respondent_team_name_column_name
       ],
     };
+  }
+
+  static createQuestionUid(surveyId: string, question: string) {
+    return AirtableConverter.digest(`${surveyId}-${question}`);
   }
 }

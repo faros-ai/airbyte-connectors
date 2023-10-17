@@ -18,7 +18,7 @@ export abstract class AirtableConverter extends Converter {
     return AirtableConverter.digest(teamName);
   }
 
-  static getSurveyId(fqTableId: string): string {
+  static getBaseId(fqTableId: string): string {
     // Get the first part of the fully qualified table id, which corresponds to the Airtable base id
     // E.g., appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU -> appwVNmuUAPCIxzSZ
     return fqTableId.split('/')[0];
@@ -30,11 +30,7 @@ export abstract class AirtableConverter extends Converter {
     return fqTableName.split('/')[1];
   }
 
-  static createQuestionUid(surveyId: string, question: string) {
-    return AirtableConverter.digest(`${surveyId}-${question}`);
-  }
-
-  private static digest(input: string): string {
+  static digest(input: string): string {
     return createHash('sha256').update(input).digest('hex');
   }
 }
