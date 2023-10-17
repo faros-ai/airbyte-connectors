@@ -5,6 +5,7 @@ import {getLocal} from 'mockttp';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {agileacceleratorAllStreamsLog} from './data';
+import {assertProcessedAndWrittenModels} from "./utils";
 
 describe('agileaccelerator', () => {
   const logger = testLogger();
@@ -54,29 +55,6 @@ describe('agileaccelerator', () => {
       tms_User: 1,
     };
 
-    const processedTotal = _(processedByStream).values().sum();
-    const writtenTotal = _(writtenByModel).values().sum();
-    expect(stdout).toMatch(`Processed ${processedTotal} records`);
-    expect(stdout).toMatch(`Would write ${writtenTotal} records`);
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Processed records by stream: ${JSON.stringify(processed)}`
-        )
-      )
-    );
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Would write records by model: ${JSON.stringify(writtenByModel)}`
-        )
-      )
-    );
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
+    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
   });
 });

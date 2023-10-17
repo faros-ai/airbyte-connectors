@@ -9,6 +9,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {clickupAllStreamsLog} from './data';
+import {assertProcessedAndWrittenModels} from "./utils";
 
 describe('clickup', () => {
   const logger = testLogger();
@@ -73,29 +74,6 @@ describe('clickup', () => {
       tms_User: 3,
     };
 
-    const processedTotal = _(processedByStream).values().sum();
-    const writtenTotal = _(writtenByModel).values().sum();
-    expect(stdout).toMatch(`Processed ${processedTotal} records`);
-    expect(stdout).toMatch(`Would write ${writtenTotal} records`);
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Processed records by stream: ${JSON.stringify(processed)}`
-        )
-      )
-    );
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Would write records by model: ${JSON.stringify(writtenByModel)}`
-        )
-      )
-    );
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
+    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
   });
 });
