@@ -50,6 +50,7 @@ export interface ComponentUptime {
   warnings: ReadonlyArray<string>;
   related_events: ReadonlyArray<{id: string}>;
   page_id: string;
+  group_id?: string;
 }
 
 export enum IncidentEventTypeCategory {
