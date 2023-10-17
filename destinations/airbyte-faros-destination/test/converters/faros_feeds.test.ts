@@ -1,4 +1,3 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {readFileSync} from 'fs';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';

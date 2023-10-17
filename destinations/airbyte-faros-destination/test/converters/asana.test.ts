@@ -1,7 +1,5 @@
 import {
-  AirbyteLog,
   AirbyteLogger,
-  AirbyteLogLevel,
   AirbyteRecord,
 } from 'faros-airbyte-cdk';
 import _ from 'lodash';
