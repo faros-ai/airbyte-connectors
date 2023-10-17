@@ -25,6 +25,20 @@ export interface ComponentGroup {
   updated_at: string;
 }
 
+export interface ComponentUptime {
+  readonly id: string;
+  readonly name: string;
+  readonly range_start: string; // date-time
+  readonly range_end: string; // date-time
+  readonly uptime_percentage: number;
+  readonly major_outage: number;
+  readonly partial_outage: number;
+  readonly warnings: ReadonlyArray<string>;
+  readonly related_events: ReadonlyArray<{id: string}>;
+  readonly page_id: string;
+  readonly group_id?: string;
+}
+
 export declare enum IncidentImpact {
   Critical = 'critical',
   Major = 'major',
@@ -85,17 +99,4 @@ export interface User {
   readonly created_at: string; // date-time
   readonly email: string;
   readonly organization_id: string;
-}
-
-export interface ComponentUptime {
-  readonly id: string;
-  readonly name: string;
-  readonly range_start: string; // date-time
-  readonly range_end: string; // date-time
-  readonly uptime_percentage: number;
-  readonly major_outage: number;
-  readonly partial_outage: number;
-  readonly warnings: ReadonlyArray<string>;
-  readonly related_events: ReadonlyArray<{id: string}>;
-  readonly page_id: string;
 }
