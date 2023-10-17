@@ -51,6 +51,9 @@
         "notion": {
           "$ref": "notion.json"
         },
+        "octopus": {
+          "$ref": "octopus.json"
+        },
         "opsgenie": {
           "$ref": "opsgenie.json"
         },
@@ -68,6 +71,9 @@
         },
         "statuspage": {
           "$ref": "statuspage.json"
+        },
+        "surveys": {
+          "$ref": "surveys.json"
         },
         "victorops": {
           "$ref": "victorops.json"

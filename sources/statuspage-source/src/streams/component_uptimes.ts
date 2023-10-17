@@ -8,6 +8,7 @@ interface StreamSlice {
   pageId: string;
   componentId: string;
   startDate: string;
+  componentGroupId?: string;
 }
 
 type ComponentUptimeState = Dictionary<Dictionary<{rangeEnd?: string}>>;
@@ -41,6 +42,7 @@ export class ComponentUptimes extends StatuspageStreamBase {
           pageId: page.id,
           componentId: component.id,
           startDate: component.start_date,
+          componentGroupId: component.group_id,
         };
       }
     }
@@ -64,6 +66,7 @@ export class ComponentUptimes extends StatuspageStreamBase {
       pageId,
       componentId,
       new Date(streamSlice.startDate),
+      streamSlice.componentGroupId,
       rangeEndDate
     );
   }
