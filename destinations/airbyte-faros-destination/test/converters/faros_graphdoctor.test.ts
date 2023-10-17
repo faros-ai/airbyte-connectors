@@ -6,6 +6,7 @@ import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {farosGraphDoctorAllStreamsLog} from './data';
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe.only('faros_graphdoctor', () => {
   const logger = testLogger();
@@ -13,16 +14,9 @@ describe.only('faros_graphdoctor', () => {
   const catalogPath = 'test/resources/faros_graphdoctor/catalog.json';
   let configPath: string;
   const streamNamePrefix = 'mytestsource__faros_graphdoctor__';
-  let segmentMock: MockedEndpoint;
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-
-    // Segment analytics mock
-    segmentMock = await mockttp
-      .forPost('/v1/batch')
-      .once()
-      .thenReply(200, JSON.stringify({}));
 
     configPath = await tempConfig(
       mockttp.url,
@@ -63,59 +57,12 @@ describe.only('faros_graphdoctor', () => {
       faros_DataQualityIssue: 3,
     };
 
-    const processedTotal = _(processedByStream).values().sum();
-    const writtenTotal = _(writtenByModel).values().sum();
-    expect(stdout).toMatch(`Processed ${processedTotal} records`);
-    expect(stdout).toMatch(`Would write ${writtenTotal} records`);
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Processed records by stream: ${JSON.stringify(processed)}`
-        )
-      )
+    assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
     );
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Would write records by model: ${JSON.stringify(writtenByModel)}`
-        )
-      )
-    );
-
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-
-    const recordedRequests = await segmentMock.getSeenRequests();
-    expect(recordedRequests.length).toBe(1);
-    const body = await recordedRequests[0].body.getJson();
-    expect(body).toStrictEqual({
-      batch: [
-        {
-          _metadata: expect.anything(),
-          context: expect.anything(),
-          event: 'Write Stats',
-          messageId: expect.anything(),
-          properties: {
-            messagesRead: processedTotal,
-            processedByStream: processed,
-            recordsErrored: 0,
-            recordsProcessed: processedTotal,
-            recordsRead: processedTotal,
-            recordsSkipped: 0,
-            recordsWritten: writtenTotal,
-            writtenByModel,
-          },
-          timestamp: expect.anything(),
-          type: 'track',
-          userId: 'bacaf6e6-41d8-4102-a3a4-5d28100e642f',
-        },
-      ],
-      sentAt: expect.anything(),
-      timestamp: expect.anything(),
-    });
   });
 });
