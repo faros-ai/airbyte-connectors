@@ -24,7 +24,11 @@ export class Customreports extends Converter {
     skippedRecords: 0,
     storedRecords: 0,
   };
+  private cycleChains: ReadonlyArray<string>[] = [];
   FAROS_TEAM_ROOT = 'all_teams';
+  // TODO: Replace these two with config variables
+  private orgs_to_save = ['a', 'b', 'c'];
+  private orgs_to_block = ['d', 'e', 'f'];
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -153,6 +157,12 @@ export class Customreports extends Converter {
     allOrgId: string,
     teamToParent: Record<string, string>
   ): {cycle: boolean; ownershipChain: ReadonlyArray<string>} {
+    // In the case of a cycle, it means that the second to last
+    // team in the cycle is has a parent that has been previously
+    // seen in the chain. So we need to make it so the second to
+    // last element in the chain points to the top team.
+    // The length of the ownership chain will be at least
+    // 2 if there is a cycle.
     let id = elementId;
     const ownershipChain = [];
     const visited = new Set<string>();
@@ -178,6 +188,41 @@ export class Customreports extends Converter {
   ): Set<string> {
     // TODO: implement this function
     const acceptableTeams = new Set<string>();
+    for (const team of Object.keys(teamToParent)) {
+      const ownershipInfo = this.computeOwnershipChain(
+        team,
+        this.FAROS_TEAM_ROOT,
+        teamToParent
+      );
+      const ownershipChain: ReadonlyArray<string> =
+        ownershipInfo.ownershipChain;
+      if (ownershipInfo.cycle) {
+        // Cycle found
+        const fix_team = ownershipChain[ownershipChain.length - 2];
+        teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
+        this.cycleChains.push(ownershipChain);
+      }
+      let include_bool = false;
+      for (const used_org in this.orgs_to_save) {
+        if (ownershipChain.includes(used_org)) {
+          include_bool = true;
+        }
+      }
+      for (const block_org in this.orgs_to_block) {
+        if (ownershipChain.includes(block_org)) {
+          include_bool = false;
+        }
+      }
+      if (include_bool) {
+        acceptableTeams.add(team);
+      }
+    }
+    for (const team of acceptableTeams) {
+      const parent_team = teamToParent[team];
+      if (!acceptableTeams.has(parent_team)) {
+        teamToParent[team] = this.FAROS_TEAM_ROOT;
+      }
+    }
     return acceptableTeams;
   }
 
