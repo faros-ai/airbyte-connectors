@@ -13,3 +13,9 @@ Expecting fields (? implies optional):
   Location?: string;
   Email?: string;
 ```
+
+Source Specific Configs:
+```
+Orgs_To_Keep
+Orgs_To_Ignore
+```

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {workdayV1StreamsLog} from './data';
@@ -15,14 +16,20 @@ describe('workday', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
   });
 
   afterEach(async () => {
     await mockttp.stop();
   });
 
-  test('process records from customreports v1 stream', async () => {
+  test('process records from customreports v1 stream accept all', async () => {
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {Orgs_To_Keep: ['Team A', 'Team B'], Orgs_To_Ignore: []}
+    );
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -47,7 +54,11 @@ describe('workday', () => {
       .value();
 
     const writtenByModel = {
-      ims_User: 1,
+      geo_Location: 2,
+      identity_Identity: 3,
+      org_Employee: 3,
+      org_Team: 2,
+      org_TeamMembership: 3,
     };
 
     await assertProcessedAndWrittenModels(

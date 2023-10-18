@@ -26,9 +26,6 @@ export class Customreports extends Converter {
   };
   private cycleChains: ReadonlyArray<string>[] = [];
   FAROS_TEAM_ROOT = 'all_teams';
-  // TODO: Replace these two with config variables
-  private orgs_to_save = ['Team A', 'Team B'];
-  private orgs_to_block = ['d', 'e', 'f'];
 
   private replacedParentTeams: string[] = [];
   private seenLocations: Set<string> = new Set<string>();
@@ -198,6 +195,11 @@ export class Customreports extends Converter {
   ): Set<string> {
     // Note, ctx is included for potential debugging
     const acceptableTeams = new Set<string>();
+    const orgs_to_keep = ctx.config.source_specific_configs.Orgs_To_Keep;
+    if (orgs_to_keep.length == 0) {
+      orgs_to_keep.push(this.FAROS_TEAM_ROOT);
+    }
+    const orgs_to_ignore = ctx.config.source_specific_configs.Orgs_To_Ignore;
     for (const team of Object.keys(teamToParent)) {
       const ownershipInfo = this.computeOwnershipChain(
         team,
@@ -206,8 +208,6 @@ export class Customreports extends Converter {
       );
       const ownershipChain: ReadonlyArray<string> =
         ownershipInfo.ownershipChain;
-      ctx.logger.info(JSON.stringify(ownershipChain));
-      ctx.logger.info(String(ownershipInfo.cycle));
       if (ownershipInfo.cycle) {
         // Cycle found
         const fix_team = ownershipChain[ownershipChain.length - 2];
@@ -215,14 +215,13 @@ export class Customreports extends Converter {
         this.cycleChains.push(ownershipChain);
       }
       let include_bool = false;
-      for (const used_org of this.orgs_to_save) {
-        ctx.logger.info('used org: ' + used_org);
+      for (const used_org of orgs_to_keep) {
         if (ownershipChain.includes(used_org)) {
           include_bool = true;
         }
       }
       ctx.logger.info(String(include_bool));
-      for (const block_org in this.orgs_to_block) {
+      for (const block_org in orgs_to_ignore) {
         if (ownershipChain.includes(block_org)) {
           include_bool = false;
         }
