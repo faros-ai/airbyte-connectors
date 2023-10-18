@@ -7,7 +7,7 @@ export interface DataQualityIssue {
   uid: string;
   description?: string;
   created_at?: string;
-  recordIds?: [string];
+  recordIds?: string[];
   model?: string;
   summary?: SummaryKey;
 }
