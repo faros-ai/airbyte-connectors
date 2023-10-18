@@ -20,7 +20,7 @@ describe.only('faros_graphdoctor', () => {
     configPath = await tempConfig(
       mockttp.url,
       InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY
+      Edition.CLOUD
     );
   });
 
@@ -56,7 +56,7 @@ describe.only('faros_graphdoctor', () => {
       faros_DataQualityIssue: 3,
     };
 
-    assertProcessedAndWrittenModels(
+    await assertProcessedAndWrittenModels(
       processedByStream,
       writtenByModel,
       stdout,

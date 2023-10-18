@@ -78,7 +78,6 @@ describe('index', () => {
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
     }
-    console.log(JSON.stringify(results));
     expect(results).toStrictEqual([
       {
         faros_DataQualityIssue: {
