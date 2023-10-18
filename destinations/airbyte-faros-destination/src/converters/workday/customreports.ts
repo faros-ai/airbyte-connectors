@@ -27,7 +27,7 @@ export class Customreports extends Converter {
   private cycleChains: ReadonlyArray<string>[] = [];
   FAROS_TEAM_ROOT = 'all_teams';
   // TODO: Replace these two with config variables
-  private orgs_to_save = ['a', 'b', 'c'];
+  private orgs_to_save = ['Team A', 'Team B'];
   private orgs_to_block = ['d', 'e', 'f'];
 
   private replacedParentTeams: string[] = [];
@@ -193,9 +193,10 @@ export class Customreports extends Converter {
   }
 
   private getAcceptableTeams(
-    teamToParent: Record<string, string>
+    teamToParent: Record<string, string>,
+    ctx: StreamContext
   ): Set<string> {
-    // TODO: implement this function
+    // Note, ctx is included for potential debugging
     const acceptableTeams = new Set<string>();
     for (const team of Object.keys(teamToParent)) {
       const ownershipInfo = this.computeOwnershipChain(
@@ -205,6 +206,8 @@ export class Customreports extends Converter {
       );
       const ownershipChain: ReadonlyArray<string> =
         ownershipInfo.ownershipChain;
+      ctx.logger.info(JSON.stringify(ownershipChain));
+      ctx.logger.info(String(ownershipInfo.cycle));
       if (ownershipInfo.cycle) {
         // Cycle found
         const fix_team = ownershipChain[ownershipChain.length - 2];
@@ -212,11 +215,13 @@ export class Customreports extends Converter {
         this.cycleChains.push(ownershipChain);
       }
       let include_bool = false;
-      for (const used_org in this.orgs_to_save) {
+      for (const used_org of this.orgs_to_save) {
+        ctx.logger.info('used org: ' + used_org);
         if (ownershipChain.includes(used_org)) {
           include_bool = true;
         }
       }
+      ctx.logger.info(String(include_bool));
       for (const block_org in this.orgs_to_block) {
         if (ownershipChain.includes(block_org)) {
           include_bool = false;
@@ -332,14 +337,21 @@ export class Customreports extends Converter {
     const teamToParent: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
     // Here we need to get a list of teams to keep
-    const acceptable_teams: Set<string> = this.getAcceptableTeams(teamToParent);
+    const acceptable_teams: Set<string> = this.getAcceptableTeams(
+      teamToParent,
+      ctx
+    );
+    ctx.logger.info(JSON.stringify(teamToParent));
     for (const team of acceptable_teams) {
       res.push(this.createOrgTeamRecord(team, teamToParent));
     }
+    ctx.logger.info('res after teams:');
+    ctx.logger.info(JSON.stringify(res));
     for (const employeeID of Object.keys(this.employeeIDtoRecord)) {
       res.push(...this.createEmployeeRecordList(employeeID, acceptable_teams));
     }
     this.printReport(ctx, acceptable_teams);
+    ctx.logger.info(res.length.toString());
     return res;
   }
 }
