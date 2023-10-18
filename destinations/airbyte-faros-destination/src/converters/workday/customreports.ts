@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {DateTime} from 'luxon';
+import {Utils} from 'faros-js-client';
 
 import {
   Converter,
@@ -11,11 +11,11 @@ import {EmployeeRecord, ManagerTimeRecord} from './models';
 
 export class Customreports extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'org_Team',
     'org_Employee',
     'identity_Identity',
     'geo_Location',
     'org_TeamMembership',
-    'org_Team',
   ];
   source = 'Customreports';
   private employeeIDtoRecord: Record<string, EmployeeRecord> = {};
@@ -29,6 +29,9 @@ export class Customreports extends Converter {
   // TODO: Replace these two with config variables
   private orgs_to_save = ['a', 'b', 'c'];
   private orgs_to_block = ['d', 'e', 'f'];
+
+  private replacedParentTeams: string[] = [];
+  private seenLocations: Set<string> = new Set<string>();
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -85,7 +88,10 @@ export class Customreports extends Converter {
     }
     // TODO: Double check that the Start_Date value is recorded as a string
     if (
-      this.checkIfTime1GreaterThanTime2(rec.Start_Date, crt_last_rec.Timestamp)
+      this.checkIfTime1GreaterThanTime2(
+        Utils.toDate(rec.Start_Date),
+        Utils.toDate(crt_last_rec.Timestamp)
+      )
     ) {
       this.teamNameToManagerIDs[rec.Team_Name].push({
         Manager_ID: rec.Manager_ID,
@@ -96,7 +102,7 @@ export class Customreports extends Converter {
   }
 
   private checkIfTime1GreaterThanTime2(time1: Date, time2: Date): boolean {
-    if (time1 > time2) {
+    if (time1.getTime() > time2.getTime()) {
       return true;
     } else {
       return false;
@@ -121,6 +127,12 @@ export class Customreports extends Converter {
     return true;
   }
 
+  private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
+    const last_record: ManagerTimeRecord = recs[recs.length - 1];
+    const manager_id: string = last_record.Manager_ID;
+    return manager_id;
+  }
+
   private computeTeamToParentTeamMapping(
     ctx: StreamContext
   ): Record<string, string> {
@@ -128,13 +140,11 @@ export class Customreports extends Converter {
     teamNameToParentTeamName[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
     for (const [teamName, recs] of Object.entries(this.teamNameToManagerIDs)) {
-      const last_record: ManagerTimeRecord = recs[recs.length - 1];
-      const manager_id: string = last_record.Manager_ID;
+      const manager_id = this.getManagerIDFromList(recs);
       let parent_team_uid: string = this.FAROS_TEAM_ROOT;
       if (manager_id in this.employeeIDtoRecord) {
         // This is the expected case
-        parent_team_uid =
-          this.employeeIDtoRecord[last_record.Manager_ID].Team_Name;
+        parent_team_uid = this.employeeIDtoRecord[manager_id].Team_Name;
       } else {
         // This is in the rare case where manager ID isn't in one of the employee records.
         // It can occur if the currently observed team is the root team in the org
@@ -221,14 +231,101 @@ export class Customreports extends Converter {
       const parent_team = teamToParent[team];
       if (!acceptableTeams.has(parent_team)) {
         teamToParent[team] = this.FAROS_TEAM_ROOT;
+        this.replacedParentTeams.push(team);
       }
     }
     return acceptableTeams;
   }
 
+  private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
+    const report_obj = {
+      nAcceptableTeams: acceptableTeams.size,
+      nOriginalTeams: Object.keys(this.teamNameToManagerIDs).length,
+      records_skipped: this.recordCount.skippedRecords,
+      records_stored: this.recordCount.storedRecords,
+    };
+    ctx.logger.info('Report:');
+    ctx.logger.info(JSON.stringify(report_obj));
+  }
+
+  private createEmployeeRecordList(
+    employeeID: string,
+    acceptable_teams: Set<string>
+  ): DestinationRecord[] {
+    // org_Employee, identity_Identity, geo_Location, org_TeamMembership
+    const records = [];
+    const employee_record: EmployeeRecord = this.employeeIDtoRecord[employeeID];
+    if (!acceptable_teams.has(employee_record.Team_Name)) {
+      return records;
+    }
+    records.push(
+      {
+        model: 'org_Employee',
+        record: {
+          uid: employee_record.Employee_ID,
+          joinedAt: employee_record.Start_Date,
+          inactive: false,
+          manager: {uid: employee_record.Manager_ID},
+          identity: {uid: employee_record.Employee_ID},
+          location: employee_record.Location
+            ? {uid: employee_record.Location}
+            : null,
+        },
+      },
+      {
+        model: 'identity_Identity',
+        record: {
+          uid: employee_record.Employee_ID,
+          fullName: employee_record.Full_Name,
+          emails: employee_record.Email ? [employee_record.Email] : null,
+        },
+      },
+      {
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid: employee_record.Team_Name},
+          member: {uid: employee_record.Employee_ID},
+        },
+      }
+    );
+    if (
+      employee_record.Location &&
+      !this.seenLocations.has(employee_record.Location)
+    ) {
+      records.push({
+        model: 'geo_Location',
+        record: {
+          uid: employee_record.Location,
+        },
+      });
+      this.seenLocations.add(employee_record.Location);
+    }
+
+    return records;
+  }
+
+  private createOrgTeamRecord(
+    team: string,
+    teamToParent: Record<string, string>
+  ): DestinationRecord {
+    const manager_id = this.getManagerIDFromList(
+      this.teamNameToManagerIDs[team]
+    );
+    return {
+      model: 'org_Team',
+      record: {
+        uid: team,
+        name: team,
+        lead: {uid: manager_id},
+        parentTeam: {uid: teamToParent[team]},
+      },
+    };
+  }
+
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
     ctx.logger.info(
       `Starting 'onProcessingComplete'. Records skipped: '${this.recordCount.skippedRecords}',` +
         ` records kept: '${this.recordCount.storedRecords}'.`
@@ -236,8 +333,14 @@ export class Customreports extends Converter {
     const teamToParent: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
     // Here we need to get a list of teams to keep
-    const acceptable_teams = this.getAcceptableTeams(teamToParent);
-
-    return [];
+    const acceptable_teams: Set<string> = this.getAcceptableTeams(teamToParent);
+    for (const team of acceptable_teams) {
+      res.push(this.createOrgTeamRecord(team, teamToParent));
+    }
+    for (const employeeID of Object.keys(this.employeeIDtoRecord)) {
+      res.push(...this.createEmployeeRecordList(employeeID, acceptable_teams));
+    }
+    this.printReport(ctx, acceptable_teams);
+    return res;
   }
 }

@@ -4,16 +4,16 @@ When providing a Custom Report, please use the "Worker Data" setting.
 Export the report to a JSON file which will be a list of employee records,
 all of which have similar fields. Among those specific field names,
 in order to use the destination, we require the field names to contain the following:
+(? implies optional):
 ```
-Start_Date: date
-Full_Name: str
-Employee_ID: str
-Manager_Name: str
-Manager_ID: str
-Team_Name: str
+  Start_Date: Date;
+  Full_Name: string;
+  Employee_ID: string;
+  Manager_Name: string;
+  Manager_ID: string;
+  Team_Name: string;
+  Termination_Date?: Date;
+  Location?: string;
+  Email?: string;
 ```
-Below is an optional field:
-```
-[Termination_Date]: str
-```
-For the Custom Report, the expected credentials are a username and password.
+For the Custom Report, the conventional credentials are a username and password.

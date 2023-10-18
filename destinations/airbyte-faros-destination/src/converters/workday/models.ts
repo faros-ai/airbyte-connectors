@@ -6,6 +6,8 @@ export declare type EmployeeRecord = {
   Manager_ID: string;
   Team_Name: string;
   Termination_Date?: Date;
+  Location?: string;
+  Email?: string;
 };
 
 export declare type ManagerTimeRecord = {
