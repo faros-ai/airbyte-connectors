@@ -4,10 +4,10 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {AirtableConverter} from './common';
+import {SheetsConverter} from "./common";
 import {SurveysCommon} from "../common/surveys/surveys_common";
 
-export class Surveys extends AirtableConverter {
+export class Surveys extends SheetsConverter {
   private surveys: SurveysCommon;
 
   constructor() {
@@ -32,50 +32,48 @@ export class Surveys extends AirtableConverter {
     this.surveys.initialize(ctx);
 
     const row = record?.record?.data?.row;
-    const fqTableId: string = record?.record?.data?._airtable_table_id;
-    const fqTableName: string = record?.record?.data?._airtable_table_name;
+    const sheetId: string = record?.record?.data?.sheetId;
+    const sheetName: string = record?.record?.data?.sheetName;
 
-    if (!row || !fqTableId || !fqTableName) {
+    if (!row || !sheetId || !sheetName) {
       return [];
     }
 
-    const surveyId = Surveys.getBaseId(fqTableId);
-    const tableName = Surveys.getTableName(fqTableName);
-
-    // Be a bit more lenient with table names matching
-    const normalizeTableName = (tableName: string): string => {
-      return tableName.toLowerCase().split(' ').join('_');
+    // Be a bit more lenient with sheet names matching
+    const normalizeSheetName = (sheetName: string): string => {
+      return sheetName.toLowerCase().split(' ').join('_');
     };
 
     // Question metadata
     if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.question_metadata_table_name)
+      normalizeSheetName(sheetName) ===
+      normalizeSheetName(this.surveys.config.question_metadata_table_name)
     ) {
-      this.surveys.processQuestionMetadata(surveyId, row);
+      this.surveys.processQuestionMetadata(sheetId, row);
       return [];
     }
 
     // Survey metadata
     if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.survey_metadata_table_name)
+      normalizeSheetName(sheetName) ===
+      normalizeSheetName(this.surveys.config.question_metadata_table_name)
     ) {
-      this.surveys.processSurveyMetadata(surveyId, row);
+      this.surveys.processSurveyMetadata(sheetId, row);
       return [];
     }
 
     // Survey response
     if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.survey_responses_table_name)
+      normalizeSheetName(sheetName) ===
+      normalizeSheetName(this.surveys.config.survey_responses_table_name)
     ) {
       const responseId = this.id(record);
+      // TODO: get submittedAt from the sheet row as record data doesn't have it
       const submittedAt = record?.record?.data?._airtable_created_time;
 
       const questions = this.surveys.getFilteredQuestions(row);
       const res = this.surveys.processResponse(
-        surveyId,
+        sheetId,
         row,
         responseId,
         submittedAt,
@@ -83,11 +81,12 @@ export class Surveys extends AirtableConverter {
       );
 
       // Update survey stats for pushing on processing complete
-      this.surveys.updateSurveyStats(surveyId, questions);
+      this.surveys.updateSurveyStats(sheetId, questions);
 
       return res;
     }
 
     return [];
   }
+
 }
