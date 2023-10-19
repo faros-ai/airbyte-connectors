@@ -119,3 +119,6 @@ export const workdayV1StreamsLog = readTestResourceFile(
 export const workdayV3StreamsLog = readTestResourceFile(
   'workday/stream_v3.log'
 );
+export const workdayV4StreamsLog = readTestResourceFile(
+  'workday/stream_v4.log'
+);

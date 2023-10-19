@@ -4,7 +4,11 @@ import {getLocal} from 'mockttp';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {workdayV1StreamsLog, workdayV3StreamsLog} from './data';
+import {
+  workdayV1StreamsLog,
+  workdayV3StreamsLog,
+  workdayV4StreamsLog,
+} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
 describe('workday', () => {
@@ -113,6 +117,25 @@ describe('workday', () => {
       processedByStream,
       writtenByModel,
       workdayV3StreamsLog
+    );
+  });
+  test('process structured generated records from customreports v4 stream', async () => {
+    const configPath = await getTempConfig([], []);
+    const processedByStream = {
+      customreports: 100,
+    };
+    const writtenByModel = {
+      geo_Location: 4,
+      identity_Identity: 99,
+      org_Employee: 99,
+      org_Team: 12,
+      org_TeamMembership: 99,
+    };
+    await runTest(
+      configPath,
+      processedByStream,
+      writtenByModel,
+      workdayV4StreamsLog
     );
   });
 });
