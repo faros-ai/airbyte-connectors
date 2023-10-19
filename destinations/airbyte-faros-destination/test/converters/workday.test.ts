@@ -11,8 +11,43 @@ describe('workday', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/workday/catalog.json';
-  let configPath: string;
   const streamNamePrefix = 'mytestsource__workday__';
+  const getTempConfig = async (orgs_to_keep, orgs_to_ignore) => {
+    return await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {Orgs_To_Keep: orgs_to_keep, Orgs_To_Ignore: orgs_to_ignore}
+    );
+  };
+  const runTest = async (configPath, processedByStream, writtenByModel) => {
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(workdayV1StreamsLog, 'utf8');
+    const stdout = await read(cli.stdout);
+    logger.debug(stdout);
+    const processed = _(processedByStream)
+      .toPairs()
+      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
+  };
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -23,36 +58,10 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream accept all', async () => {
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {Orgs_To_Keep: ['Team A', 'Team B'], Orgs_To_Ignore: []}
-    );
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(workdayV1StreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
+    const configPath = await getTempConfig(['Team A', 'Team B'], []);
     const processedByStream = {
       customreports: 3,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
     const writtenByModel = {
       geo_Location: 2,
       identity_Identity: 3,
@@ -60,54 +69,15 @@ describe('workday', () => {
       org_Team: 2,
       org_TeamMembership: 3,
     };
-
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await runTest(configPath, processedByStream, writtenByModel);
   });
+
   test('process records from customreports v1 stream reject all', async () => {
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {Orgs_To_Keep: [], Orgs_To_Ignore: ['Team A', 'Team B']}
-    );
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(workdayV1StreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
+    const configPath = await getTempConfig([], ['Team A', 'Team B']);
     const processedByStream = {
       customreports: 3,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
     const writtenByModel = {};
-
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await runTest(configPath, processedByStream, writtenByModel);
   });
 });
