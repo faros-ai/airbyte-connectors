@@ -271,6 +271,7 @@ export class Customreports extends Converter {
       nOriginalTeams: teamNames ? teamNames.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
+      cycleChains: this.cycleChains,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));

@@ -116,3 +116,6 @@ export const farosGraphDoctorAllStreamsLog = readTestResourceFile(
 export const workdayV1StreamsLog = readTestResourceFile(
   'workday/stream_v1.log'
 );
+export const workdayV3StreamsLog = readTestResourceFile(
+  'workday/stream_v3.log'
+);

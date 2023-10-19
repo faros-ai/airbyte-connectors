@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {workdayV1StreamsLog} from './data';
+import {workdayV1StreamsLog, workdayV3StreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
 describe('workday', () => {
@@ -21,7 +21,12 @@ describe('workday', () => {
       {Orgs_To_Keep: orgs_to_keep, Orgs_To_Ignore: orgs_to_ignore}
     );
   };
-  const runTest = async (configPath, processedByStream, writtenByModel) => {
+  const runTest = async (
+    configPath,
+    processedByStream,
+    writtenByModel,
+    workdayStreamsLog
+  ) => {
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -30,7 +35,7 @@ describe('workday', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(workdayV1StreamsLog, 'utf8');
+    cli.stdin.end(workdayStreamsLog, 'utf8');
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
     const processed = _(processedByStream)
@@ -69,7 +74,12 @@ describe('workday', () => {
       org_Team: 2,
       org_TeamMembership: 3,
     };
-    await runTest(configPath, processedByStream, writtenByModel);
+    await runTest(
+      configPath,
+      processedByStream,
+      writtenByModel,
+      workdayV1StreamsLog
+    );
   });
 
   test('process records from customreports v1 stream reject all', async () => {
@@ -78,6 +88,31 @@ describe('workday', () => {
       customreports: 3,
     };
     const writtenByModel = {};
-    await runTest(configPath, processedByStream, writtenByModel);
+    await runTest(
+      configPath,
+      processedByStream,
+      writtenByModel,
+      workdayV1StreamsLog
+    );
+  });
+
+  test('process randomly generated records from customreports v3 stream', async () => {
+    const configPath = await getTempConfig([], []);
+    const processedByStream = {
+      customreports: 100,
+    };
+    const writtenByModel = {
+      geo_Location: 4,
+      identity_Identity: 100,
+      org_Employee: 100,
+      org_Team: 4,
+      org_TeamMembership: 100,
+    };
+    await runTest(
+      configPath,
+      processedByStream,
+      writtenByModel,
+      workdayV3StreamsLog
+    );
   });
 });
