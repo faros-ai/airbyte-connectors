@@ -17,7 +17,7 @@ export class Customreports extends Converter {
     'geo_Location',
     'org_TeamMembership',
   ];
-  source = 'Customreports';
+  source = 'workday';
   private employeeIDtoRecord: Record<string, EmployeeRecord> = {};
   private teamNameToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
   private recordCount = {
