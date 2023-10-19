@@ -39,16 +39,13 @@ export class Customreports extends Converter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
-    //const source = this.source;
     const rec = record.record.data as EmployeeRecord;
     if (!this.checkRecordValidity(rec)) {
       this.recordCount.skippedRecords += 1;
-      return res;
+    } else {
+      this.recordCount.storedRecords += 1;
+      this.extractRecordInfo(rec);
     }
-
-    this.recordCount.storedRecords += 1;
-    this.extractRecordInfo(rec);
-
     return res;
   }
 
@@ -85,7 +82,7 @@ export class Customreports extends Converter {
     if (crt_last_rec.Manager_ID === rec.Manager_ID) {
       return;
     }
-    // TODO: Double check that the Start_Date value is recorded as a string
+    // TODO: Check that the Start_Date value is recorded as a string
     if (
       this.checkIfTime1GreaterThanTime2(
         Utils.toDate(rec.Start_Date),
@@ -97,7 +94,6 @@ export class Customreports extends Converter {
         Timestamp: rec.Start_Date,
       });
     }
-    return;
   }
 
   private checkIfTime1GreaterThanTime2(time1: Date, time2: Date): boolean {
@@ -196,13 +192,7 @@ export class Customreports extends Converter {
     return {cycle: false, ownershipChain};
   }
 
-  private getAcceptableTeams(
-    teamToParent: Record<string, string>,
-    ctx: StreamContext
-  ): Set<string> {
-    // Note, ctx is included for potential debugging
-    ctx.logger.info('Getting Acceptable teams');
-    const acceptableTeams = new Set<string>();
+  private getOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
     const orgs_to_keep = ctx.config.source_specific_configs.Orgs_To_Keep;
     const orgs_to_ignore = ctx.config.source_specific_configs.Orgs_To_Ignore;
     if (!orgs_to_keep || !orgs_to_ignore) {
@@ -213,43 +203,62 @@ export class Customreports extends Converter {
     if (orgs_to_keep.length == 0) {
       orgs_to_keep.push(this.FAROS_TEAM_ROOT);
     }
-    ctx.logger.info('Computing ownership chains.');
-    for (const team of Object.keys(teamToParent)) {
-      const ownershipInfo = this.computeOwnershipChain(
-        team,
-        this.FAROS_TEAM_ROOT,
-        teamToParent
-      );
-      const ownershipChain: ReadonlyArray<string> =
-        ownershipInfo.ownershipChain;
-      if (ownershipInfo.cycle) {
-        // Cycle found - this should mean ownershipChain exists with length greater than 1
-        ctx.logger.info(JSON.stringify(ownershipChain));
-        const fix_team = ownershipChain[ownershipChain.length - 2];
-        teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
-        this.cycleChains.push(ownershipChain);
-      }
-      let include_bool = false;
-      for (const used_org of orgs_to_keep) {
-        if (ownershipChain.includes(used_org)) {
-          include_bool = true;
-        }
-      }
-      for (const block_org of orgs_to_ignore) {
-        if (ownershipChain.includes(block_org)) {
-          include_bool = false;
-        }
-      }
-      if (include_bool) {
-        acceptableTeams.add(team);
+    return [orgs_to_keep, orgs_to_ignore];
+  }
+
+  private checkIfTeamIsAcceptable(
+    team: string,
+    teamToParent: Record<string, string>,
+    ctx: StreamContext,
+    orgs_to_keep: string[],
+    orgs_to_ignore: string[]
+  ): boolean {
+    const ownershipInfo = this.computeOwnershipChain(
+      team,
+      this.FAROS_TEAM_ROOT,
+      teamToParent
+    );
+    const ownershipChain: ReadonlyArray<string> = ownershipInfo.ownershipChain;
+    if (ownershipInfo.cycle) {
+      // Cycle found - this should mean ownershipChain exists with length greater than 1
+      ctx.logger.info(JSON.stringify(ownershipChain));
+      const fix_team = ownershipChain[ownershipChain.length - 2];
+      teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
+      this.cycleChains.push(ownershipChain);
+    }
+    let include_bool = false;
+    for (const used_org of orgs_to_keep) {
+      if (ownershipChain.includes(used_org)) {
+        include_bool = true;
       }
     }
-    ctx.logger.info('Finished computing ownership chains.');
-    for (const team of acceptableTeams) {
-      const parent_team = teamToParent[team];
-      if (!acceptableTeams.has(parent_team)) {
-        teamToParent[team] = this.FAROS_TEAM_ROOT;
-        this.replacedParentTeams.push(team);
+    for (const block_org of orgs_to_ignore) {
+      if (ownershipChain.includes(block_org)) {
+        include_bool = false;
+      }
+    }
+    return include_bool;
+  }
+
+  private getAcceptableTeams(
+    teamToParent: Record<string, string>,
+    ctx: StreamContext
+  ): Set<string> {
+    // Note, ctx is included for potential debugging
+    ctx.logger.info('Getting Acceptable teams');
+    const acceptableTeams = new Set<string>();
+    const [orgs_to_keep, orgs_to_ignore] = this.getOrgsToKeepAndIgnore(ctx);
+    ctx.logger.info('Computing ownership chains.');
+    for (const team of Object.keys(teamToParent)) {
+      const include_bool = this.checkIfTeamIsAcceptable(
+        team,
+        teamToParent,
+        ctx,
+        orgs_to_keep,
+        orgs_to_ignore
+      );
+      if (include_bool) {
+        acceptableTeams.add(team);
       }
     }
     return acceptableTeams;
@@ -362,6 +371,19 @@ export class Customreports extends Converter {
     ctx.logger.info(
       'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
     );
+
+    ctx.logger.info('Finished computing ownership chains.');
+
+    ctx.logger.info('Replacing non existent teams with root');
+
+    for (const team of acceptable_teams) {
+      const parent_team = teamToParent[team];
+      if (!acceptable_teams.has(parent_team)) {
+        teamToParent[team] = this.FAROS_TEAM_ROOT;
+        this.replacedParentTeams.push(team);
+      }
+    }
+
     for (const team of acceptable_teams) {
       if (team != 'all_teams') {
         res.push(this.createOrgTeamRecord(team, teamToParent));
