@@ -69,4 +69,45 @@ describe('workday', () => {
       cli
     );
   });
+  test('process records from customreports v1 stream reject all', async () => {
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {Orgs_To_Keep: [], Orgs_To_Ignore: ['Team A', 'Team B']}
+    );
+    const cli = await CLI.runWith([
+      'write',
+      '--config',
+      configPath,
+      '--catalog',
+      catalogPath,
+      '--dry-run',
+    ]);
+    cli.stdin.end(workdayV1StreamsLog, 'utf8');
+
+    const stdout = await read(cli.stdout);
+    logger.debug(stdout);
+
+    const processedByStream = {
+      customreports: 3,
+    };
+    const processed = _(processedByStream)
+      .toPairs()
+      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
+      .orderBy(0, 'asc')
+      .fromPairs()
+      .value();
+
+    const writtenByModel = {};
+
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
+  });
 });

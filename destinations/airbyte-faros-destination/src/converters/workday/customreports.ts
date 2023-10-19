@@ -70,14 +70,17 @@ export class Customreports extends Converter {
       throw new Error(error_str);
     }
 
-    // Here we check if we've already stored info for this Team Name:
+    // Here we check if we haven't yet stored info for this Team Name:
     if (!(rec.Team_Name in this.teamNameToManagerIDs)) {
       this.teamNameToManagerIDs[rec.Team_Name] = [
         {Manager_ID: rec.Manager_ID, Timestamp: rec.Start_Date},
       ];
       return;
     }
+
+    // We have already stored info for this team. This should be a list
     const recs_list = this.teamNameToManagerIDs[rec.Team_Name];
+
     const crt_last_rec = recs_list[recs_list.length - 1];
     if (crt_last_rec.Manager_ID === rec.Manager_ID) {
       return;
@@ -124,6 +127,9 @@ export class Customreports extends Converter {
   }
 
   private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
+    if (!recs) {
+      throw new Error('Missing recs');
+    }
     const last_record: ManagerTimeRecord = recs[recs.length - 1];
     const manager_id: string = last_record.Manager_ID;
     return manager_id;
@@ -132,6 +138,7 @@ export class Customreports extends Converter {
   private computeTeamToParentTeamMapping(
     ctx: StreamContext
   ): Record<string, string> {
+    ctx.logger.info('Computing team to parent mapping');
     const teamNameToParentTeamName: Record<string, string> = {};
     teamNameToParentTeamName[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
@@ -194,12 +201,19 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): Set<string> {
     // Note, ctx is included for potential debugging
+    ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
     const orgs_to_keep = ctx.config.source_specific_configs.Orgs_To_Keep;
+    const orgs_to_ignore = ctx.config.source_specific_configs.Orgs_To_Ignore;
+    if (!orgs_to_keep || !orgs_to_ignore) {
+      throw new Error(
+        'Orgs_To_Keep or Orgs_To_Ignore missing from source specific configs'
+      );
+    }
     if (orgs_to_keep.length == 0) {
       orgs_to_keep.push(this.FAROS_TEAM_ROOT);
     }
-    const orgs_to_ignore = ctx.config.source_specific_configs.Orgs_To_Ignore;
+    ctx.logger.info('Computing ownership chains.');
     for (const team of Object.keys(teamToParent)) {
       const ownershipInfo = this.computeOwnershipChain(
         team,
@@ -209,7 +223,8 @@ export class Customreports extends Converter {
       const ownershipChain: ReadonlyArray<string> =
         ownershipInfo.ownershipChain;
       if (ownershipInfo.cycle) {
-        // Cycle found
+        // Cycle found - this should mean ownershipChain exists with length greater than 1
+        ctx.logger.info(JSON.stringify(ownershipChain));
         const fix_team = ownershipChain[ownershipChain.length - 2];
         teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
         this.cycleChains.push(ownershipChain);
@@ -220,8 +235,7 @@ export class Customreports extends Converter {
           include_bool = true;
         }
       }
-      ctx.logger.info(String(include_bool));
-      for (const block_org in orgs_to_ignore) {
+      for (const block_org of orgs_to_ignore) {
         if (ownershipChain.includes(block_org)) {
           include_bool = false;
         }
@@ -230,6 +244,7 @@ export class Customreports extends Converter {
         acceptableTeams.add(team);
       }
     }
+    ctx.logger.info('Finished computing ownership chains.');
     for (const team of acceptableTeams) {
       const parent_team = teamToParent[team];
       if (!acceptableTeams.has(parent_team)) {
@@ -241,9 +256,10 @@ export class Customreports extends Converter {
   }
 
   private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
+    const teamNames = Object.keys(this.teamNameToManagerIDs);
     const report_obj = {
       nAcceptableTeams: acceptableTeams.size,
-      nOriginalTeams: Object.keys(this.teamNameToManagerIDs).length,
+      nOriginalTeams: teamNames ? teamNames.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
     };
@@ -340,12 +356,17 @@ export class Customreports extends Converter {
       teamToParent,
       ctx
     );
-    ctx.logger.info(JSON.stringify(teamToParent));
+    ctx.logger.info(
+      'Got acceptable teams and computed team to parent team mapping.'
+    );
+    ctx.logger.info(
+      'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
+    );
     for (const team of acceptable_teams) {
-      res.push(this.createOrgTeamRecord(team, teamToParent));
+      if (team != 'all_teams') {
+        res.push(this.createOrgTeamRecord(team, teamToParent));
+      }
     }
-    ctx.logger.info('res after teams:');
-    ctx.logger.info(JSON.stringify(res));
     for (const employeeID of Object.keys(this.employeeIDtoRecord)) {
       res.push(...this.createEmployeeRecordList(employeeID, acceptable_teams));
     }
