@@ -46,15 +46,11 @@ interface Config {
 }
 
 export class Tasks extends AsanaConverter {
-  private _config: Config = undefined;
+  private config: Config = undefined;
 
   private initialize(ctx?: StreamContext): void {
-    this._config =
-      this._config ?? ctx?.config.source_specific_configs?.asana ?? {};
-  }
-
-  private get config(): Config {
-    return this._config;
+    this.config =
+      this.config ?? ctx?.config.source_specific_configs?.asana ?? {};
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
