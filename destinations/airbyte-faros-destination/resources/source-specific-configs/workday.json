@@ -26,7 +26,7 @@
                         "type": "string"
                     },
                     "title": "Orgs To Ignore",
-                    "description": "The teams underneath these orgs will be ignored (stronger than keep)."
+                    "description": "The teams underneath these orgs will be ignored. If there is a keep org as a child of ignored, child will be kept."
                 }
             }
         }

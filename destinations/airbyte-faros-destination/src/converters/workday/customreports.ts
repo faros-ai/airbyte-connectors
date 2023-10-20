@@ -29,6 +29,7 @@ export class Customreports extends Converter {
 
   private replacedParentTeams: string[] = [];
   private seenLocations: Set<string> = new Set<string>();
+  private generalLogCollection: string[] = [];
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -212,6 +213,146 @@ export class Customreports extends Converter {
     return [orgs_to_keep, orgs_to_ignore];
   }
 
+  private pushInfoToLog(
+    ownershipChain,
+    orgs_to_keep_ixs,
+    orgs_to_ignore_ixs,
+    teamToParent
+  ): void {
+    this.generalLogCollection.push(
+      `Running special KeepCase for team ${ownershipChain[0]}`
+    );
+    this.generalLogCollection.push(`keep ` + JSON.stringify(orgs_to_keep_ixs));
+    this.generalLogCollection.push(
+      `ignore ` + JSON.stringify(orgs_to_ignore_ixs)
+    );
+    this.generalLogCollection.push(
+      `ownership Chain ` + JSON.stringify(ownershipChain)
+    );
+    this.generalLogCollection.push(
+      `current parent ${teamToParent[ownershipChain[0]]}`
+    );
+    this.generalLogCollection.push(
+      `Completed logs for team ${ownershipChain[0]}`
+    );
+  }
+
+  private specialKeepCase(
+    ownershipChain,
+    orgs_to_keep_ixs,
+    orgs_to_ignore_ixs,
+    teamToParent
+  ): void {
+    // Within this function, we find how to replace the kept team's parent to the correct one
+    // Note that the min index of an org kept in the chain is lower than min ignored
+    this.pushInfoToLog(
+      ownershipChain,
+      orgs_to_keep_ixs,
+      orgs_to_ignore_ixs,
+      teamToParent
+    );
+
+    // If the 'kept' team isn't the first team in the chain, we can ignore replacement
+    if (!(ownershipChain[orgs_to_keep_ixs[0]] == ownershipChain[0])) {
+      return;
+    }
+
+    // If the only keep team in the chain is this team, we point it to the root
+    if (orgs_to_keep_ixs.length == 1) {
+      teamToParent[ownershipChain[0]] = this.FAROS_TEAM_ROOT;
+      return;
+    }
+
+    const next_keep = orgs_to_keep_ixs[1];
+    const min_ignore = orgs_to_ignore_ixs[0];
+
+    // If the next closest keep team is less than the next ignore, we do nothing
+    if (next_keep < min_ignore) {
+      return;
+    }
+
+    // Now we have to iterate through the ignore indeces and search for
+    // when they cross the 'next_keep'
+    let cross_ix = null;
+    for (let i = 0; i < orgs_to_ignore_ixs.length; i++) {
+      if (orgs_to_ignore_ixs[i] > next_keep) {
+        cross_ix = i;
+        break;
+      }
+    }
+
+    // In the case where cross_ix was never found, this means that the next keep
+    // org is a parent of all of the ignored orgs, and we can set the parent of
+    // the current team to be the parent of the max ignored org.
+    if (!cross_ix) {
+      teamToParent[ownershipChain[0]] =
+        ownershipChain[orgs_to_ignore_ixs[orgs_to_ignore_ixs.length - 1] + 1];
+      return;
+    }
+
+    // Otherwise, the cross index is the first index in which ignore is reached.
+    // We find the next ignore down the tree and point to its parent
+    teamToParent[ownershipChain[0]] =
+      ownershipChain[orgs_to_ignore_ixs[cross_ix - 1] + 1];
+
+    return;
+  }
+
+  private KeepTeamLogic(
+    team,
+    ownershipChain,
+    orgs_to_keep,
+    orgs_to_ignore,
+    teamToParent
+  ): boolean {
+    // This continues the complicated logic which defines which teams to keep
+    // Ownership Chain lists teams up to root, e.g.
+    // ['C', 'B', 'A', 'all_teams', 'all_teams']
+    //let definite_false = false;
+    //let definite_true = false;
+    //let bottom_keep = null;
+    //let switchParentPossible = false;
+    //let last_keep_org = null;
+    const orgs_to_keep_ixs: number[] = [];
+    const orgs_to_ignore_ixs: number[] = [];
+    for (let i = 0; i < ownershipChain.length; i++) {
+      const org = ownershipChain[i];
+      if (orgs_to_keep.includes(org)) {
+        orgs_to_keep_ixs.push(i);
+      }
+      if (orgs_to_ignore.includes(org)) {
+        orgs_to_ignore_ixs.push(i);
+      }
+    }
+    // No orgs to keep in chain
+    if (orgs_to_keep_ixs.length == 0) {
+      return false;
+    }
+    // There is an org to keep but no orgs to ignore
+    if (orgs_to_ignore_ixs.length == 0) {
+      return true;
+    }
+    // Note for the following we have both keep and ignore
+    const min_keep_ix = orgs_to_keep_ixs[0];
+    const min_ignore_ix = orgs_to_ignore_ixs[0];
+    if (min_ignore_ix < min_keep_ix) {
+      // The closest parent to the team is ignored
+      return false;
+    } else if (min_ignore_ix == min_keep_ix) {
+      throw new Error(
+        `Keep and ignore teams are the same: ${ownershipChain[min_ignore_ix]}`
+      );
+    }
+    // We have a special case where included is underneath an ignored team
+    this.specialKeepCase(
+      ownershipChain,
+      orgs_to_keep_ixs,
+      orgs_to_ignore_ixs,
+      teamToParent
+    );
+    return true;
+  }
+
   private checkIfTeamIsAcceptable(
     team: string,
     teamToParent: Record<string, string>,
@@ -219,8 +360,8 @@ export class Customreports extends Converter {
     orgs_to_keep: string[],
     orgs_to_ignore: string[]
   ): boolean {
-    // This is the trickiest part of the code -
-    // we need to use the ownershipChain, which goes
+    // This continues the complicated logic which defines which teams to keep
+    // We need to use the ownershipChain, which goes
     // from lowest in the tree to highest in the tree,
     // Left to Right, how to keep certain teams,
     // and to repoint them to their correct parent.
@@ -237,55 +378,20 @@ export class Customreports extends Converter {
       teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    let definite_false = false;
-    let definite_true = false;
-    let bottom_keep = null;
-    let switchParentPossible = false;
-    let last_keep_org = null;
-    for (const org of ownershipChain) {
-      if (orgs_to_keep.includes(org)) {
-        if (!definite_false) {
-          definite_true = true;
-          if (!bottom_keep) {
-            bottom_keep = org;
-          }
-        }
-        last_keep_org = org;
-      }
-      if (orgs_to_ignore.includes(org)) {
-        if (!definite_true) {
-          // The team of interest is strictly below an ignored team
-          definite_false = true;
-        } else {
-          // The team of interest is included OR it is below an included team which is below an ignored
-          // team. So it's possible we need to switchParent
-          switchParentPossible = true;
-        }
-      }
-    }
-    if (switchParentPossible) {
-      if (team == last_keep_org) {
-        teamToParent[team] = this.FAROS_TEAM_ROOT;
-      } else if (team == bottom_keep) {
-        teamToParent[team] = last_keep_org;
-      }
-      // we don't switch the parent if it is simply a team below a kept team
-    }
-    if (definite_true && definite_false) {
-      throw Error(`Org ${team} determined to be kept and ignored..`);
-    }
-    if (definite_true) {
-      return true;
-    } else if (definite_false) {
-      return false;
-    }
-    return false;
+    return this.KeepTeamLogic(
+      team,
+      ownershipChain,
+      orgs_to_keep,
+      orgs_to_ignore,
+      teamToParent
+    );
   }
 
   private getAcceptableTeams(
     teamToParent: Record<string, string>,
     ctx: StreamContext
   ): Set<string> {
+    // This is the entry point for the complicated logic which defines which teams to keep
     // Note, ctx is included for potential debugging
     ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
@@ -314,6 +420,7 @@ export class Customreports extends Converter {
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
       cycleChains: this.cycleChains,
+      generalLogs: this.generalLogCollection,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
@@ -403,7 +510,8 @@ export class Customreports extends Converter {
     );
     const teamToParent: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
-    // Here we need to get a list of teams to keep
+
+    // Here we get a set of teams to keep
     const acceptable_teams: Set<string> = this.getAcceptableTeams(
       teamToParent,
       ctx
