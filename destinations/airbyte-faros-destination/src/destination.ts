@@ -689,7 +689,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 this.logger.info(`Stream context stats: ${ctx.stats()}`);
               }
             }
-            // Process the record immediately if converter has pending stream
+            // Process the record immediately if converter has no pending stream
             // dependencies, otherwise process it later once the required
             // streams are processed.
             if (
