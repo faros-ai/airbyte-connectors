@@ -1,11 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
+
+import {SurveysCommon} from '../common/surveys/surveys_common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AirtableConverter} from './common';
-import {SurveysCommon} from "../common/surveys/surveys_common";
 
 export class Surveys extends AirtableConverter {
   private surveys: SurveysCommon;
@@ -92,7 +89,9 @@ export class Surveys extends AirtableConverter {
   }
 
   /** Call surveys onProcessingComplete to add survey stats and metadata, and questions metadata (question category and response type) **/
-  async onProcessingComplete(ctx: StreamContext): Promise<ReadonlyArray<DestinationRecord>> {
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
     return this.surveys.onProcessingComplete(ctx);
   }
 }

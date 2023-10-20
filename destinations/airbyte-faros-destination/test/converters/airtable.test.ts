@@ -3,19 +3,19 @@ import {Utils} from 'faros-js-client';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {SurveysCommon} from '../../lib/converters/common/surveys/surveys_common';
 import {DestinationRecord, StreamContext} from '../../src';
+import {Surveys} from '../../src/converters/airtable/surveys';
 import {
   SurveyCategory,
   SurveyQuestionCategory,
   SurveyResponseCategory,
 } from '../../src/converters/common/surveys/models';
-import {Surveys} from '../../src/converters/airtable/surveys';
-import {SurveysConfig} from "../../lib/converters/common/surveys/surveys";
+import {SurveysConfig} from '../../src/converters/common/surveys/surveys_common';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
-import {SurveysCommon} from "../../lib/converters/common/surveys/surveys_common";
 
 describe('airtable', () => {
   const logger = testLogger();

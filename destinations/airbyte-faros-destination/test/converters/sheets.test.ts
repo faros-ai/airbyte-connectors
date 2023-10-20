@@ -9,8 +9,8 @@ import {
   SurveyQuestionCategory,
   SurveyResponseCategory,
 } from '../../src/converters/common/surveys/models';
+import {SurveysConfig} from '../../src/converters/common/surveys/surveys_common';
 import {Surveys} from '../../src/converters/sheets/surveys';
-import {SurveysConfig} from "../../lib/converters/common/surveys/surveys";
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {sheetsSurveysAllStreamsLog} from './data';
@@ -76,7 +76,7 @@ describe('sheets', () => {
       processed,
       cli
     );
-   });
+  });
 
   describe('survey responses', () => {
     const DEFAULT_CONFIG: SurveysConfig = {

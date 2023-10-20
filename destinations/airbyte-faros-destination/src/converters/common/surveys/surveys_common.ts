@@ -1,17 +1,26 @@
-import { DestinationRecord, parseObjectConfig, StreamContext, StreamName} from "../../converter";
+import {createHash} from 'crypto';
+import {toDate} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
+import _ from 'lodash';
+
+import {
+  DestinationRecord,
+  parseObjectConfig,
+  StreamContext,
+  StreamName,
+} from '../../converter';
 import {
   QuestionCategoryMapping,
-  Survey, SurveyCategory,
+  Survey,
+  SurveyCategory,
   SurveyQuestion,
-  SurveyQuestionCategory, SurveyResponseCategory,
-  SurveyStats, SurveyStatusCategory,
+  SurveyQuestionCategory,
+  SurveyResponseCategory,
+  SurveyStats,
+  SurveyStatusCategory,
   SurveyTeam,
-  SurveyUser
-} from "./models";
-import _ from "lodash";
-import {Utils} from "faros-js-client";
-import {toDate} from "faros-airbyte-cdk";
-import {createHash} from "crypto";
+  SurveyUser,
+} from './models';
 
 /** Configuration for the surveys stream */
 
@@ -249,10 +258,10 @@ export class SurveysCommon {
       source: this.source,
       questionCategory: category
         ? Utils.toCategoryDetail(
-          SurveyQuestionCategory,
-          category,
-          this.questionCategoryMapping
-        )
+            SurveyQuestionCategory,
+            category,
+            this.questionCategoryMapping
+          )
         : null,
       responseType: responseType
         ? Utils.toCategoryDetail(SurveyResponseCategory, responseType)
@@ -440,7 +449,7 @@ export class SurveysCommon {
       source: this.source,
       name: row[
         this.config.column_names_mapping.respondent_team_name_column_name
-        ],
+      ],
     };
   }
 
