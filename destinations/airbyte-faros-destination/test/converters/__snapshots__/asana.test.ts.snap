@@ -76,14 +76,13 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
-        "category": "Custom",
-        "detail": "undefined",
+        "category": "Todo",
+        "detail": "incomplete",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -119,14 +118,13 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
-        "category": "Custom",
-        "detail": "undefined",
+        "category": "Todo",
+        "detail": "incomplete",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -149,14 +147,13 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
         "category": "Done",
         "detail": "completed",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -179,14 +176,13 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
-        "category": "Custom",
-        "detail": "undefined",
+        "category": "Todo",
+        "detail": "incomplete",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -238,14 +234,13 @@ Array [
         "source": "Asana",
         "uid": "1205346703408261",
       },
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
-        "category": "Custom",
-        "detail": "undefined",
+        "category": "Todo",
+        "detail": "incomplete",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -272,41 +267,6 @@ Array [
 ]
 `;
 
-exports[`asana tasks status from custom_fields 1`] = `
-Array [
-  Object {
-    "model": "tms_Task",
-    "record": Object {
-      "additionalFields": Array [
-        Object {
-          "name": "status",
-          "value": "In Progress",
-        },
-      ],
-      "createdAt": 2023-08-24T15:52:00.014Z,
-      "description": "Task 1 notes",
-      "name": "Task 1",
-      "parent": null,
-      "points": null,
-      "priority": null,
-      "source": "Asana",
-      "status": Object {
-        "category": "InProgress",
-        "detail": "In Progress",
-      },
-      "statusChangedAt": 2023-08-25T20:59:25.575Z,
-      "type": Object {
-        "category": "Task",
-        "detail": "task",
-      },
-      "uid": "1205346703408262",
-      "updatedAt": 2023-08-25T20:59:25.575Z,
-      "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
-    },
-  },
-]
-`;
-
 exports[`asana tasks tags 1`] = `
 Array [
   Object {
@@ -317,14 +277,13 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
-      "points": null,
-      "priority": null,
       "source": "Asana",
       "status": Object {
-        "category": "Custom",
-        "detail": "undefined",
+        "category": "Todo",
+        "detail": "incomplete",
       },
       "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
       "type": Object {
         "category": "Task",
         "detail": "task",
@@ -356,6 +315,50 @@ Array [
         "source": "Asana",
         "uid": "1205346703408262",
       },
+    },
+  },
+]
+`;
+
+exports[`asana tasks task with stories writes statusChangelog 1`] = `
+Array [
+  Object {
+    "model": "tms_Task",
+    "record": Object {
+      "additionalFields": Array [],
+      "createdAt": 2023-08-24T15:52:00.014Z,
+      "description": "Task 1 notes",
+      "name": "Task 1",
+      "parent": null,
+      "source": "Asana",
+      "status": Object {
+        "category": "Todo",
+        "detail": "incomplete",
+      },
+      "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2023-08-24T15:52:00.014Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "marked_complete",
+          },
+        },
+        Object {
+          "changedAt": "2023-08-24T15:55:00.014Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "marked_incomplete",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Task",
+        "detail": "task",
+      },
+      "uid": "1205346703408262",
+      "updatedAt": 2023-08-25T20:59:25.575Z,
+      "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
     },
   },
 ]

@@ -1,0 +1,73 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Asana Spec",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "credentials": {
+        "title": "Authentication mechanism",
+        "description": "Choose how to authenticate to Asana",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Authenticate with Personal Access Token",
+            "required": [
+              "personal_access_token"
+            ],
+            "properties": {
+              "option_title": {
+                "type": "string",
+                "title": "Credentials title",
+                "description": "PAT Credentials",
+                "const": "PAT Credentials"
+              },
+              "personal_access_token": {
+                "type": "string",
+                "title": "Personal Access Token",
+                "description": "Asana Personal Access Token (generate yours <a href=\"https://app.asana.com/0/developer-console\">here</a>).",
+                "airbyte_secret": true
+              }
+            }
+          }
+        ]
+      },
+      "workspaces": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Workspace IDs",
+        "description": "The IDs of the workspaces to fetch. If not provided, all workspaces will be fetched.",
+        "examples": [
+          "123",
+          "456"
+        ]
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of records to request from the API per call.",
+        "default": 100
+      },
+      "api_timeout": {
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to Asana API. 0 means no timeout.",
+        "default": 0
+      },
+      "start_date": {
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      }      
+    }
+  }
+}

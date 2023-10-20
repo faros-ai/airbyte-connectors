@@ -29,6 +29,11 @@ interface TmsTaskStatus {
   detail: string;
 }
 
+interface TmsTaskStatusChange {
+  status: TmsTaskStatus;
+  changedAt: Date;
+}
+
 enum Tms_TaskStatusCategory {
   Custom = 'Custom',
   Done = 'Done',
@@ -36,7 +41,22 @@ enum Tms_TaskStatusCategory {
   Todo = 'Todo',
 }
 
+interface Config {
+  task_custom_fields?: ReadonlyArray<string>;
+}
+
 export class Tasks extends AsanaConverter {
+  private _config: Config = undefined;
+
+  private initialize(ctx?: StreamContext): void {
+    this._config =
+      this._config ?? ctx?.config.source_specific_configs?.asana ?? {};
+  }
+
+  private get config(): Config {
+    return this._config;
+  }
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskProjectRelationship',
@@ -56,6 +76,8 @@ export class Tasks extends AsanaConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
+
     const res: DestinationRecord[] = [];
 
     const source = this.streamName.source;
@@ -63,8 +85,29 @@ export class Tasks extends AsanaConverter {
 
     const taskKey = {uid: task.gid, source};
     const parent = task.parent ? {uid: task.parent.gid, source} : null;
-    const priority = this.findFieldByName(task.custom_fields, 'priority');
-    const points = this.findFieldByName(task.custom_fields, 'points');
+
+    const taskCustomFields = (task.custom_fields ?? []).filter((f) =>
+      this.config.task_custom_fields?.includes(f.gid)
+    );
+    const statusChangelog: TmsTaskStatusChange[] = [];
+
+    for (const story of task.stories ?? []) {
+      statusChangelog.push({
+        changedAt: story.created_at,
+        status: Utils.toCategoryDetail(
+          Tms_TaskStatusCategory,
+          story.resource_subtype,
+          {
+            marked_complete: Tms_TaskStatusCategory.Done,
+            marked_incomplete: Tms_TaskStatusCategory.Todo,
+            assigned: Tms_TaskStatusCategory.InProgress,
+            unassigned: Tms_TaskStatusCategory.Todo,
+            marked_duplicate: Tms_TaskStatusCategory.Done,
+            unmarked_duplicate: Tms_TaskStatusCategory.Todo,
+          }
+        ),
+      });
+    }
 
     res.push({
       model: 'tms_Task',
@@ -77,14 +120,13 @@ export class Tasks extends AsanaConverter {
         ),
         url: task.permalink_url ?? null,
         type: AsanaCommon.toTmsTaskType(task.resource_type),
-        priority: typeof priority === 'string' ? priority : null,
         status: this.getStatus(task),
-        points: typeof points === 'number' ? points : null,
-        additionalFields: task.custom_fields.map((f) => this.toTaskField(f)),
+        additionalFields: taskCustomFields.map((f) => this.toTaskField(f)),
         createdAt: Utils.toDate(task.created_at),
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
+        statusChangelog: statusChangelog ?? null,
       },
     });
 
@@ -154,14 +196,12 @@ export class Tasks extends AsanaConverter {
   }
 
   private getStatus(task: Dictionary<any>): TmsTaskStatus | null {
-    const status = this.findFieldByName(task.custom_fields, 'status');
-
-    if (typeof status === 'string') {
-      return this.toTmsTaskStatus(status);
-    } else if (task.completed) {
+    if (task.completed) {
       return {category: Tms_TaskStatusCategory.Done, detail: 'completed'};
     } else {
-      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
+      // In Asana, tasks are incomplete by default.
+      // Users may or may not have a custom field for status.
+      return {category: Tms_TaskStatusCategory.Todo, detail: 'incomplete'};
     }
   }
 

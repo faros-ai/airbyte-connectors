@@ -1,7 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteRecord,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
@@ -14,7 +11,7 @@ import {Users} from '../../src/converters/asana/users';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('asana', () => {
   const logger = testLogger();
@@ -67,7 +64,13 @@ describe('asana', () => {
       tms_User: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 
   describe('tasks', () => {
@@ -132,20 +135,6 @@ describe('asana', () => {
       expect(res).toMatchSnapshot();
     });
 
-    test('status from custom_fields', async () => {
-      const record = AirbyteRecord.make('tasks', {
-        ...TASK,
-        custom_fields: [
-          {
-            name: 'status',
-            text_value: 'In Progress',
-          },
-        ],
-      });
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-
     test('assignee', async () => {
       const record = AirbyteRecord.make('tasks', {
         ...TASK,
@@ -179,6 +168,36 @@ describe('asana', () => {
             section: {
               gid: '1205346703408260',
             },
+          },
+        ],
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('task with stories writes statusChangelog', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        stories: [
+          {
+            gid: '1205346703408261',
+            created_at: '2023-08-24T15:52:00.014Z',
+            created_by: {
+              gid: '7440298482110',
+            },
+            resource_subtype: 'marked_complete',
+            resource_type: 'story',
+            text: 'Story 2',
+          },
+          {
+            gid: '1205346703408261',
+            created_at: '2023-08-24T15:55:00.014Z',
+            created_by: {
+              gid: '7440298482110',
+            },
+            resource_subtype: 'marked_incomplete',
+            resource_type: 'story',
+            text: 'Story 2',
           },
         ],
       });
