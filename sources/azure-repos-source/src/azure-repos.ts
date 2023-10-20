@@ -9,6 +9,8 @@ import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
+import https from 'https';
+import url from 'url';
 
 import {
   Branch,
@@ -38,6 +40,8 @@ export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 export const DEFAULT_MAX_RETRIES = 3;
 export const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_API_URL = 'https://dev.azure.com';
+const DEFAULT_GRAPH_URL = 'https://vssps.dev.azure.com';
 
 export interface AzureRepoConfig {
   readonly access_token: string;
@@ -50,6 +54,9 @@ export interface AzureRepoConfig {
   readonly page_size?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly api_url?: string;
+  readonly graph_api_url?: string;
+  readonly reject_unauthorized?: boolean;
 }
 
 export class AzureRepos {
@@ -84,21 +91,34 @@ export class AzureRepos {
 
     const accessToken = base64Encode(`:${config.access_token}`);
 
+    function makeAgent(baseUrl: string): https.Agent {
+      const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
+      if (!isHttps) {
+        return undefined;
+      }
+      return new https.Agent({
+        rejectUnauthorized: config.reject_unauthorized ?? true,
+        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      });
+    }
+
     const httpClient = axios.create({
-      baseURL: `https://dev.azure.com/${config.organization}`,
+      baseURL: `${config.api_url ?? DEFAULT_API_URL}/${config.organization}`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
+      httpsAgent: makeAgent(config.api_url ?? DEFAULT_API_URL),
     });
     const graphClient = axios.create({
-      baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
+      baseURL: `${config.graph_api_url ?? DEFAULT_GRAPH_URL}/${config.organization}/_apis/graph`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
+      httpsAgent: makeAgent(config.graph_api_url ?? DEFAULT_GRAPH_URL)
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
