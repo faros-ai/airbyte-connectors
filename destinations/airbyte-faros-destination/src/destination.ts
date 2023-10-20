@@ -617,6 +617,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     });
     try {
       let sourceFailed: AirbyteSourceErrorStatus = undefined;
+      const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
         let stateMessage: AirbyteStateMessage = undefined;
@@ -688,12 +689,22 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 this.logger.info(`Stream context stats: ${ctx.stats()}`);
               }
             }
-            // Process the record immediately if converter has no dependencies,
-            // otherwise process it later once all streams are processed.
-            if (converter.dependencies.length === 0) {
-              await writeRecord(ctx);
-            } else {
+            // Process the record immediately if converter has pending stream
+            // dependencies, otherwise process it later once the required
+            // streams are processed.
+            if (
+              difference(
+                converter.dependencies.map((d) => d.asString),
+                [...processedStreams]
+              ).length > 0
+            ) {
               recordsToBeProcessedLast.push(writeRecord);
+            } else {
+              // Since streams are processed sequentially, we can assume that we
+              // won't see records from a different stream until all of this
+              // stream's records have been processed.
+              processedStreams.add(streamName);
+              await writeRecord(ctx);
             }
           }
         });
