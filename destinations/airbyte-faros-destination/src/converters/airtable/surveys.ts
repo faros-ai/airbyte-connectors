@@ -90,4 +90,9 @@ export class Surveys extends AirtableConverter {
 
     return [];
   }
+
+  /** Call surveys onProcessingComplete to add survey stats and metadata, and questions metadata (question category and response type) **/
+  async onProcessingComplete(ctx: StreamContext): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.surveys.onProcessingComplete(ctx);
+  }
 }
