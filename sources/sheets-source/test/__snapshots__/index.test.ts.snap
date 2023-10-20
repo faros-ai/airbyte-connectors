@@ -3,6 +3,7 @@
 exports[`index reads local spreadsheet 1`] = `
 Array [
   Object {
+    "id": "test_spreadsheet_sheet1_0",
     "row": Object {
       "Age": 28,
       "Country": "USA",
@@ -10,9 +11,11 @@ Array [
       "Occupation": "Engineer",
       "Salary": 75000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_1",
     "row": Object {
       "Age": 32,
       "Country": "Canada",
@@ -20,9 +23,11 @@ Array [
       "Occupation": "Designer",
       "Salary": 62000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_2",
     "row": Object {
       "Age": 45,
       "Country": "UK",
@@ -30,9 +35,11 @@ Array [
       "Occupation": "Manager",
       "Salary": 95000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_3",
     "row": Object {
       "Age": 23,
       "Country": "Germany",
@@ -40,9 +47,11 @@ Array [
       "Occupation": "Student",
       "Salary": 0,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_4",
     "row": Object {
       "Age": 35,
       "Country": "France",
@@ -50,9 +59,11 @@ Array [
       "Occupation": "Writer",
       "Salary": 42000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_5",
     "row": Object {
       "Age": 29,
       "Country": "Australia",
@@ -60,9 +71,11 @@ Array [
       "Occupation": "Doctor",
       "Salary": 120000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_6",
     "row": Object {
       "Age": 31,
       "Country": "Spain",
@@ -70,9 +83,11 @@ Array [
       "Occupation": "Teacher",
       "Salary": 52000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_7",
     "row": Object {
       "Age": 27,
       "Country": "Italy",
@@ -80,9 +95,11 @@ Array [
       "Occupation": "Artist",
       "Salary": 38000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_8",
     "row": Object {
       "Age": 40,
       "Country": "Japan",
@@ -90,9 +107,11 @@ Array [
       "Occupation": "Scientist",
       "Salary": 80000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
   Object {
+    "id": "test_spreadsheet_sheet1_9",
     "row": Object {
       "Age": 22,
       "Country": "Brazil",
@@ -100,6 +119,7 @@ Array [
       "Occupation": "Programmer",
       "Salary": 60000,
     },
+    "sheetId": "test_spreadsheet",
     "sheetName": "Sheet1",
   },
 ]

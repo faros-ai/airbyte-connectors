@@ -180,9 +180,14 @@ export class SheetsReader {
       } sheets: ${wb.SheetNames.join(', ')}`
     );
 
-    SheetsReader.sheetId = file;
+    // get sheetId from file name (without containing folders and extension)
+    SheetsReader.sheetId = this.getFileName(file);
 
     return wb;
+  }
+
+  private static getFileName(file: string) {
+    return file.split('/').pop().split('.')[0];
   }
 
   static async loadSheets(
