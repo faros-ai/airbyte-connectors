@@ -56,7 +56,7 @@ export class Surveys extends SheetsConverter {
     // Survey metadata
     if (
       normalizeSheetName(sheetName) ===
-      normalizeSheetName(this.surveys.config.question_metadata_table_name)
+      normalizeSheetName(this.surveys.config.survey_metadata_table_name)
     ) {
       this.surveys.processSurveyMetadata(sheetId, row);
       return [];
