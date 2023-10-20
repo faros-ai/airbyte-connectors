@@ -9,7 +9,6 @@ function randomDate(start, end) {
 }
 
 function generateRecord(employee_rec) {
-
     return {
         record: {
             stream: "mytestsource__workday__customreports",
@@ -20,26 +19,6 @@ function generateRecord(employee_rec) {
     };
 
 }
-// function tmp() {
-//     return {
-//         record: {
-//             stream: "mytestsource__workday__customreports",
-//             emitted_at: new Date().getTime(),
-//             data: {
-//                 Start_Date: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
-//                 Full_Name: `${employeeFirstName} ${lastNameSelected}`,
-//                 Employee_ID: (100 + id).toString(), // Making sure it's a string
-//                 Manager_Name: `${managerFirstName} ${lastNameSelected}`,
-//                 Manager_ID: (200 + id).toString(), // Making sure it's a string
-//                 Team_Name: teams[Math.floor(Math.random() * teams.length)],
-//                 Termination_Date: null, // you can set logic for this field depending on your need
-//                 Location: locations[Math.floor(Math.random() * locations.length)],
-//                 Email: `${employeeFirstName.toLowerCase()}${lastNameSelected.toLowerCase()}@co.co`,
-//             }
-//         },
-//         type: "RECORD"
-//     };
-// }
 
 function createEmployees(n) {
   // returns mapping of employee ID to data
@@ -197,7 +176,7 @@ function main() {
   }
 
   // Writing to a file in this dir
-  fs.writeFileSync('records_output.json', JSON.stringify(allRecords, null, 4)); // Indented 4 spaces
+  fs.writeFileSync('records_output.json', JSON.stringify(allRecords, null, 4)); 
 }
 
 // Execute the script - run

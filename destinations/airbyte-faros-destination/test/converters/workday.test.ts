@@ -138,4 +138,27 @@ describe('workday', () => {
       workdayV4StreamsLog
     );
   });
+  test('Saved and Ignored structured generated records v4 stream', async () => {
+    // Teams are:
+    const configPath = await getTempConfig(
+      ['TopDog', 'Engineering', 'Security'],
+      ['ChiefExecs']
+    );
+    const processedByStream = {
+      customreports: 100,
+    };
+    const writtenByModel = {
+      geo_Location: 4,
+      identity_Identity: 79,
+      org_Employee: 79,
+      org_Team: 9,
+      org_TeamMembership: 79,
+    };
+    await runTest(
+      configPath,
+      processedByStream,
+      writtenByModel,
+      workdayV4StreamsLog
+    );
+  });
 });

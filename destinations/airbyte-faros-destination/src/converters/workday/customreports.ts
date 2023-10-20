@@ -172,6 +172,7 @@ export class Customreports extends Converter {
     // last element in the chain points to the top team.
     // The length of the ownership chain will be at least
     // 2 if there is a cycle.
+    // You must return this in ascending order left to right
     let id = elementId;
     const ownershipChain = [];
     const visited = new Set<string>();
@@ -200,6 +201,11 @@ export class Customreports extends Converter {
         'Orgs_To_Keep or Orgs_To_Ignore missing from source specific configs'
       );
     }
+    for (const org of orgs_to_keep) {
+      if (orgs_to_ignore.includes(org)) {
+        throw new Error('Overlap between Orgs_To_Keep and Orgs_To_Ignore');
+      }
+    }
     if (orgs_to_keep.length == 0) {
       orgs_to_keep.push(this.FAROS_TEAM_ROOT);
     }
@@ -213,6 +219,11 @@ export class Customreports extends Converter {
     orgs_to_keep: string[],
     orgs_to_ignore: string[]
   ): boolean {
+    // This is the trickiest part of the code -
+    // we need to use the ownershipChain, which goes
+    // from lowest in the tree to highest in the tree,
+    // Left to Right, how to keep certain teams,
+    // and to repoint them to their correct parent.
     const ownershipInfo = this.computeOwnershipChain(
       team,
       this.FAROS_TEAM_ROOT,
@@ -226,18 +237,49 @@ export class Customreports extends Converter {
       teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    let include_bool = false;
-    for (const used_org of orgs_to_keep) {
-      if (ownershipChain.includes(used_org)) {
-        include_bool = true;
+    let definite_false = false;
+    let definite_true = false;
+    let bottom_keep = null;
+    let switchParentPossible = false;
+    let last_keep_org = null;
+    for (const org of ownershipChain) {
+      if (orgs_to_keep.includes(org)) {
+        if (!definite_false) {
+          definite_true = true;
+          if (!bottom_keep) {
+            bottom_keep = org;
+          }
+        }
+        last_keep_org = org;
+      }
+      if (orgs_to_ignore.includes(org)) {
+        if (!definite_true) {
+          // The team of interest is strictly below an ignored team
+          definite_false = true;
+        } else {
+          // The team of interest is included OR it is below an included team which is below an ignored
+          // team. So it's possible we need to switchParent
+          switchParentPossible = true;
+        }
       }
     }
-    for (const block_org of orgs_to_ignore) {
-      if (ownershipChain.includes(block_org)) {
-        include_bool = false;
+    if (switchParentPossible) {
+      if (team == last_keep_org) {
+        teamToParent[team] = this.FAROS_TEAM_ROOT;
+      } else if (team == bottom_keep) {
+        teamToParent[team] = last_keep_org;
       }
+      // we don't switch the parent if it is simply a team below a kept team
     }
-    return include_bool;
+    if (definite_true && definite_false) {
+      throw Error(`Org ${team} determined to be kept and ignored..`);
+    }
+    if (definite_true) {
+      return true;
+    } else if (definite_false) {
+      return false;
+    }
+    return false;
   }
 
   private getAcceptableTeams(
