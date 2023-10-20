@@ -98,6 +98,9 @@ export const farosFeedsAllStreamsLog = readTestResourceFile(
 export const semaphoreciAllStreamLogs = readTestResourceFile(
   'semaphoreci/all-streams.log'
 );
+export const sheetsSurveysAllStreamsLog = readTestResourceFile(
+  'sheets/surveys/all-streams.log'
+);
 export const hygieiaAllStreamsLog = readTestResourceFile(
   'hygieia/all-streams.log'
 );

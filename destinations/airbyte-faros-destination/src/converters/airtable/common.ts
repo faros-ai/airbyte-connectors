@@ -10,14 +10,6 @@ export abstract class AirtableConverter extends Converter {
     return record?.record?.data?._airtable_id;
   }
 
-  static getTeamUid(teamName: string): string | undefined {
-    if (!teamName) {
-      return undefined;
-    }
-
-    return AirtableConverter.digest(teamName);
-  }
-
   static getBaseId(fqTableId: string): string {
     // Get the first part of the fully qualified table id, which corresponds to the Airtable base id
     // E.g., appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU -> appwVNmuUAPCIxzSZ
@@ -28,9 +20,5 @@ export abstract class AirtableConverter extends Converter {
     // Get the second part of the fully qualified table name, which corresponds to the table name
     // E.g., my_surveys/Survey Responses => Survey Responses
     return fqTableName.split('/')[1];
-  }
-
-  static digest(input: string): string {
-    return createHash('sha256').update(input).digest('hex');
   }
 }

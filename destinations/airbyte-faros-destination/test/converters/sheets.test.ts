@@ -9,20 +9,19 @@ import {
   SurveyQuestionCategory,
   SurveyResponseCategory,
 } from '../../src/converters/common/surveys/models';
-import {Surveys} from '../../src/converters/airtable/surveys';
+import {Surveys} from '../../src/converters/sheets/surveys';
 import {SurveysConfig} from "../../lib/converters/common/surveys/surveys";
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {airtableSurveysAllStreamsLog} from './data';
+import {sheetsSurveysAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
-import {SurveysCommon} from "../../lib/converters/common/surveys/surveys_common";
 
-describe('airtable', () => {
+describe('sheets', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/airtable/surveys/catalog.json';
+  const catalogPath = 'test/resources/sheets/surveys/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__airtable__';
+  const streamNamePrefix = 'mytestsource__sheets__';
   let converter: Surveys;
 
   beforeEach(async () => {
@@ -46,7 +45,7 @@ describe('airtable', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(airtableSurveysAllStreamsLog, 'utf8');
+    cli.stdin.end(sheetsSurveysAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
@@ -77,7 +76,7 @@ describe('airtable', () => {
       processed,
       cli
     );
-  });
+   });
 
   describe('survey responses', () => {
     const DEFAULT_CONFIG: SurveysConfig = {
@@ -102,10 +101,9 @@ describe('airtable', () => {
       },
     };
     const RESPONSE = AirbyteRecord.make('surveys', {
-      _airtable_id: 'rec1',
-      _airtable_created_time: '2023-10-09T14:09:37.000Z',
-      _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-      _airtable_table_name: 'my_surveys/Survey Responses',
+      id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1',
+      sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+      sheetName: 'Survey Responses',
       row: {
         'How much do you like ice cream?': 5,
         'Team Name': 'X',
@@ -129,10 +127,9 @@ describe('airtable', () => {
 
     test('survey metadata', async () => {
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec2',
-        _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
-        _airtable_table_name: 'my_surveys/Survey Metadata',
+        id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_metadata_1',
+        sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+        sheetName: 'Survey Metadata',
         row: {
           'Survey Name': 'Survey1',
           'Survey Type': 'ENPS',
@@ -158,10 +155,9 @@ describe('airtable', () => {
 
     test('question metadata', async () => {
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec2',
-        _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl2',
-        _airtable_table_name: 'my_surveys/Question Metadata',
+        id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_question_metadata_1',
+        sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+        sheetName: 'Question Metadata',
         row: {
           Question: 'How much do you like ice cream?',
           Category: 'AlignmentAndGoals',
@@ -194,10 +190,9 @@ describe('airtable', () => {
         {}
       );
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec1',
-        _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-        _airtable_table_name: 'my_surveys/Survey Responses',
+        id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1',
+        sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+        sheetName: 'Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
           'Team Name': 'X',
@@ -221,10 +216,9 @@ describe('airtable', () => {
         {}
       );
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec1',
-        _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-        _airtable_table_name: 'my_surveys/Survey Responses',
+        id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1',
+        sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+        sheetName: 'Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
           'Team Name': 'X',
@@ -249,10 +243,9 @@ describe('airtable', () => {
         {}
       );
       const record = AirbyteRecord.make('surveys', {
-        _airtable_id: 'rec1',
-        _airtable_created_time: '2023-10-09T14:09:37.000Z',
-        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
-        _airtable_table_name: 'my_surveys/Survey Responses',
+        id: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1',
+        sheetId: '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4',
+        sheetName: 'Survey Responses',
         row: {
           'How much do you like ice cream?': 5,
           'Team Name': 'X',
@@ -373,17 +366,6 @@ describe('airtable', () => {
         category: SurveyResponseCategory.Custom,
         detail: 'NotARealCategory',
       });
-    });
-  });
-
-  describe('surveys common team uid', () => {
-    test('convert team name to team uid', () => {
-      expect(SurveysCommon.getTeamUid('My Team Name')).toMatchInlineSnapshot(
-        `"a8981623d7d1eb7e7fd16ba387f87e2c857c5d87a18d7da0e9cc246710d13c8a"`
-      );
-      expect(SurveysCommon.getTeamUid(undefined)).toBeUndefined();
-      expect(SurveysCommon.getTeamUid('')).toBeUndefined();
-      expect(SurveysCommon.getTeamUid(null)).toBeUndefined();
     });
   });
 });
