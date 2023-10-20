@@ -83,7 +83,7 @@ export class Customreports extends Converter {
     if (crt_last_rec.Manager_ID === rec.Manager_ID) {
       return;
     }
-    // TODO: Check that the Start_Date value is recorded as a string
+
     if (
       this.checkIfTime1GreaterThanTime2(
         Utils.toDate(rec.Start_Date),
