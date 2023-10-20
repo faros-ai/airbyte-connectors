@@ -253,7 +253,7 @@ export class Customreports extends Converter {
     );
 
     // If the 'kept' team isn't the first team in the chain, we can ignore replacement
-    if (!(ownershipChain[orgs_to_keep_ixs[0]] == ownershipChain[0])) {
+    if (ownershipChain[orgs_to_keep_ixs[0]] != ownershipChain[0]) {
       return;
     }
 
@@ -294,8 +294,6 @@ export class Customreports extends Converter {
     // We find the next ignore down the tree and point to its parent
     teamToParent[ownershipChain[0]] =
       ownershipChain[orgs_to_ignore_ixs[cross_ix - 1] + 1];
-
-    return;
   }
 
   private KeepTeamLogic(
