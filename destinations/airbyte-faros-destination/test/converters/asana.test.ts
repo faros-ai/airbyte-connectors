@@ -138,20 +138,6 @@ describe('asana', () => {
       expect(res).toMatchSnapshot();
     });
 
-    test('status from custom_fields', async () => {
-      const record = AirbyteRecord.make('tasks', {
-        ...TASK,
-        custom_fields: [
-          {
-            name: 'status',
-            text_value: 'In Progress',
-          },
-        ],
-      });
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-
     test('assignee', async () => {
       const record = AirbyteRecord.make('tasks', {
         ...TASK,
@@ -185,6 +171,36 @@ describe('asana', () => {
             section: {
               gid: '1205346703408260',
             },
+          },
+        ],
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('task with stories writes statusChangelog', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        stories: [
+          {
+            gid: '1205346703408261',
+            created_at: '2023-08-24T15:52:00.014Z',
+            created_by: {
+              gid: '7440298482110',
+            },
+            resource_subtype: 'marked_complete',
+            resource_type: 'story',
+            text: 'Story 2',
+          },
+          {
+            gid: '1205346703408261',
+            created_at: '2023-08-24T15:55:00.014Z',
+            created_by: {
+              gid: '7440298482110',
+            },
+            resource_subtype: 'marked_incomplete',
+            resource_type: 'story',
+            text: 'Story 2',
           },
         ],
       });

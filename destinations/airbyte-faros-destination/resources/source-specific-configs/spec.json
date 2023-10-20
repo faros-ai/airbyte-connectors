@@ -15,6 +15,9 @@
         "agileaccelerator": {
           "$ref": "agileaccelerator.json"
         },
+        "asana": {
+          "$ref": "asana.json"
+        },
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
