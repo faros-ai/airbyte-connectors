@@ -8,26 +8,45 @@ import {
   SurveyCategory,
   SurveyQuestionCategory,
   SurveyResponseCategory,
-} from '../../src/converters/airtable/models';
-import {Surveys, SurveysConfig} from '../../src/converters/airtable/surveys';
+} from '../../src/converters/abstract-surveys/models';
+import {SurveysConfig} from '../../src/converters/abstract-surveys/surveys';
+import {AbstractSurveys} from '../../src/converters/abstract-surveys/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
-describe('airtable', () => {
+describe('abstract-surveys', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/airtable/surveys/catalog.json';
+  const catalogPath = 'test/resources/abstract-surveys/surveys/catalog.json';
   let configPath: string;
   const streamNamePrefix = 'mytestsource__airtable__';
-  let converter: Surveys;
+  let converter: AbstractSurveys;
 
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
     jest.spyOn(Date, 'now').mockImplementation(() => 1697245567000);
-    converter = new Surveys();
+    converter = new (class extends AbstractSurveys {
+      source = 'Airtable';
+
+      id(record: AirbyteRecord): any {
+        return record?.record?.data?._airtable_id;
+      }
+
+      getSurveyId(record: AirbyteRecord): string | undefined {
+        return record?.record?.data?._airtable_table_id?.split('/')[0];
+      }
+
+      getTableName(record: AirbyteRecord): string | undefined {
+        return record?.record?.data?._airtable_table_name?.split('/')[1];
+      }
+
+      getSubmittedAt(record: AirbyteRecord): string | undefined {
+        return record?.record?.data?._airtable_created_time;
+      }
+    })();
   });
 
   afterEach(async () => {
@@ -269,7 +288,7 @@ describe('airtable', () => {
     });
 
     async function convert(
-      converter: Surveys,
+      converter: AbstractSurveys,
       ctx: StreamContext,
       ...recs: AirbyteRecord[]
     ): Promise<DestinationRecord[]> {
@@ -376,12 +395,12 @@ describe('airtable', () => {
 
   describe('team uid', () => {
     test('convert team name to team uid', () => {
-      expect(Surveys.getTeamUid('My Team Name')).toMatchInlineSnapshot(
+      expect(AbstractSurveys.getTeamUid('My Team Name')).toMatchInlineSnapshot(
         `"a8981623d7d1eb7e7fd16ba387f87e2c857c5d87a18d7da0e9cc246710d13c8a"`
       );
-      expect(Surveys.getTeamUid(undefined)).toBeUndefined();
-      expect(Surveys.getTeamUid('')).toBeUndefined();
-      expect(Surveys.getTeamUid(null)).toBeUndefined();
+      expect(AbstractSurveys.getTeamUid(undefined)).toBeUndefined();
+      expect(AbstractSurveys.getTeamUid('')).toBeUndefined();
+      expect(AbstractSurveys.getTeamUid(null)).toBeUndefined();
     });
   });
 });
