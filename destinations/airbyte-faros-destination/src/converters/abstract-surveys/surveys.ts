@@ -48,8 +48,6 @@ export interface SurveysConfig {
   column_names_mapping?: ColumnNameMapping;
 }
 
-export const RESPONSE_SUBMITTED_AT_DEFAULT_COLUMN_NAME = 'Timestamp';
-
 export abstract class AbstractSurveys extends Converter {
   abstract getSurveyId(record: AirbyteRecord): string | undefined;
   abstract getTableName(record: AirbyteRecord): string | undefined;

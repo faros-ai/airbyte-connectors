@@ -2,7 +2,6 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {
   AbstractSurveys,
-  RESPONSE_SUBMITTED_AT_DEFAULT_COLUMN_NAME,
 } from '../abstract-surveys/surveys';
 
 export class Surveys extends AbstractSurveys {
