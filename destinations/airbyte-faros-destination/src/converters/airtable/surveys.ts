@@ -1,97 +1,46 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import _ from 'lodash';
 
-import {SurveysCommon} from '../common/surveys/surveys_common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AirtableConverter} from './common';
+import {AbstractSurveys} from '../abstract-surveys/surveys';
 
-export class Surveys extends AirtableConverter {
-  private surveys: SurveysCommon;
+export class Surveys extends AbstractSurveys {
+  source = 'Airtable';
 
-  constructor() {
-    super();
-    this.surveys = new SurveysCommon(this.streamName, this.source);
+  id(record: AirbyteRecord): any {
+    return record?.record?.data?._airtable_id;
   }
 
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'survey_Survey',
-    'survey_Question',
-    'survey_SurveyQuestionAssociation',
-    'survey_QuestionResponse',
-    'survey_User',
-    'survey_Team',
-    'survey_TeamMembership',
-  ];
+  static getBaseId(fqTableId: string): string {
+    // Get the first part of the fully qualified table id, which corresponds to the Airtable base id
+    // E.g., appwVNmuUAPCIxzSZ/tblWFFSCLxi0gVtkU -> appwVNmuUAPCIxzSZ
+    return fqTableId.split('/')[0];
+  }
 
-  async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
-    this.surveys.initialize(ctx);
+  static getTableName(fqTableName: string): string {
+    // Get the second part of the fully qualified table name, which corresponds to the table name
+    // E.g., my_surveys/Survey Responses => Survey Responses
+    return fqTableName.split('/')[1];
+  }
 
-    const row = record?.record?.data?.row;
+  getSurveyId(record: AirbyteRecord): string | undefined {
     const fqTableId: string = record?.record?.data?._airtable_table_id;
-    const fqTableName: string = record?.record?.data?._airtable_table_name;
-
-    if (!row || !fqTableId || !fqTableName) {
-      return [];
+    if (!fqTableId) {
+      return undefined;
     }
 
-    const surveyId = Surveys.getBaseId(fqTableId);
-    const tableName = Surveys.getTableName(fqTableName);
-
-    // Be a bit more lenient with table names matching
-    const normalizeTableName = (tableName: string): string => {
-      return tableName.toLowerCase().split(' ').join('_');
-    };
-
-    // Question metadata
-    if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.question_metadata_table_name)
-    ) {
-      this.surveys.processQuestionMetadata(surveyId, row);
-      return [];
-    }
-
-    // Survey metadata
-    if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.survey_metadata_table_name)
-    ) {
-      this.surveys.processSurveyMetadata(surveyId, row);
-      return [];
-    }
-
-    // Survey response
-    if (
-      normalizeTableName(tableName) ===
-      normalizeTableName(this.surveys.config.survey_responses_table_name)
-    ) {
-      const responseId = this.id(record);
-      const submittedAt = record?.record?.data?._airtable_created_time;
-
-      const questions = this.surveys.getFilteredQuestions(row);
-      const res = this.surveys.processResponse(
-        surveyId,
-        row,
-        responseId,
-        submittedAt,
-        questions
-      );
-
-      // Update survey stats for pushing on processing complete
-      this.surveys.updateSurveyStats(surveyId, questions);
-
-      return res;
-    }
-
-    return [];
+    return Surveys.getBaseId(fqTableId);
   }
 
-  /** Call surveys onProcessingComplete to add survey stats and metadata, and questions metadata (question category and response type) **/
-  async onProcessingComplete(
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.surveys.onProcessingComplete(ctx);
+  getTableName(record: AirbyteRecord): string | undefined {
+    const fqTableName: string = record?.record?.data?._airtable_table_name;
+    if (!fqTableName) {
+      return undefined;
+    }
+
+    return Surveys.getTableName(fqTableName);
+  }
+
+  getSubmittedAt(record: AirbyteRecord): string | undefined {
+    return record?.record?.data?._airtable_created_time;
   }
 }

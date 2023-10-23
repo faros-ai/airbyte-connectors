@@ -46,6 +46,16 @@
         "description": "The number of items to retrieve per call. Corresponds to 'top' parameter in Azure DevOps API.",
         "default": 100
       },
+      "api_url": {
+        "type": "string",
+        "title": "API URL",
+        "default": "https://dev.azure.com"
+      },
+      "graph_api_url": {
+        "type": "string",
+        "title": "Graph API URL",
+        "default": "https://vssps.dev.azure.com"
+      },
       "api_version": {
         "type": "string",
         "title": "API Version",
@@ -67,6 +77,12 @@
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
+      },
+      "reject_unauthorized": {
+        "type": "boolean",
+        "title": "Reject Unauthorized",
+        "description": "If true, requests to Azure DevOps API with self-signed certificates will be rejected.",
+        "default": true
       }
     }
   }

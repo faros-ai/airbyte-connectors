@@ -1,4 +1,5 @@
 agileaccelerator-source
+asana-source
 azure-repos-source
 azure-workitems-source
 azurepipeline-source

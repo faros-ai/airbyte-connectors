@@ -20,6 +20,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__asana__tags"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__asana__tasks"
       },
       "destination_sync_mode": "append"
