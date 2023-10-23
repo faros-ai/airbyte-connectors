@@ -37,6 +37,7 @@ type ColumnNameMapping = {
   question_category_column_name?: string;
   response_type_column_name?: string;
   question_column_name?: string;
+  response_submitted_at_column_name?: string;
 };
 
 export interface SurveysConfig {
@@ -50,7 +51,12 @@ export interface SurveysConfig {
 export abstract class AbstractSurveys extends Converter {
   abstract getSurveyId(record: AirbyteRecord): string | undefined;
   abstract getTableName(record: AirbyteRecord): string | undefined;
-  abstract getSubmittedAt(record: AirbyteRecord): string | undefined;
+
+  getSubmittedAt(record: AirbyteRecord): string | undefined {
+    const submittedAtColumnName =
+      this.config.column_names_mapping.response_submitted_at_column_name;
+    return record?.record?.data?.row[submittedAtColumnName];
+  }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'survey_Survey',
@@ -86,7 +92,7 @@ export abstract class AbstractSurveys extends Converter {
       {};
   }
 
-  private get config(): SurveysConfig {
+  protected get config(): SurveysConfig {
     return this._config;
   }
 

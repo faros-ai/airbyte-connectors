@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 
-import {AbstractSurveys} from '../abstract-surveys/surveys';
+import {
+  AbstractSurveys,
+} from '../abstract-surveys/surveys';
 
 export class Surveys extends AbstractSurveys {
   source = 'Airtable';
@@ -41,6 +42,6 @@ export class Surveys extends AbstractSurveys {
   }
 
   getSubmittedAt(record: AirbyteRecord): string | undefined {
-    return record?.record?.data?._airtable_created_time;
+    return super.getSubmittedAt(record) ?? record?.record?.data?._airtable_created_time;
   }
 }
