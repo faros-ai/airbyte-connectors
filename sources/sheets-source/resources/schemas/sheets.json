@@ -9,8 +9,7 @@
       "type": "string"
     },
     "id": {
-      "type": "string",
-      "description": "The id of the row record"
+      "type": "string"
     },
     "row": {
       "type": "object",
