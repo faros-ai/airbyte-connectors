@@ -2,8 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "sheetId": {
+      "type": "string"
+    },
     "sheetName": {
       "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "description": "The id of the row record"
     },
     "row": {
       "type": "object",
