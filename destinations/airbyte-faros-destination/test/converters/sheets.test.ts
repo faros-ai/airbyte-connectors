@@ -8,8 +8,8 @@ import {
   SurveyCategory,
   SurveyQuestionCategory,
   SurveyResponseCategory,
-} from '../../src/converters/common/surveys/models';
-import {SurveysConfig} from '../../src/converters/common/surveys/surveys_common';
+} from '../../src/converters/abstract-surveys/models';
+import {SurveysConfig} from '../../src/converters/abstract-surveys/surveys';
 import {Surveys} from '../../src/converters/sheets/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';

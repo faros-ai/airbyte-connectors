@@ -37,6 +37,7 @@ type ColumnNameMapping = {
   question_category_column_name?: string;
   response_type_column_name?: string;
   question_column_name?: string;
+  response_submitted_at_column_name?: string;
 };
 
 export interface SurveysConfig {
@@ -46,6 +47,8 @@ export interface SurveysConfig {
   question_category_mapping?: QuestionCategoryMapping;
   column_names_mapping?: ColumnNameMapping;
 }
+
+export const RESPONSE_SUBMITTED_AT_DEFAULT_COLUMN_NAME = 'Timestamp';
 
 export abstract class AbstractSurveys extends Converter {
   abstract getSurveyId(record: AirbyteRecord): string | undefined;
@@ -86,7 +89,7 @@ export abstract class AbstractSurveys extends Converter {
       {};
   }
 
-  private get config(): SurveysConfig {
+  protected get config(): SurveysConfig {
     return this._config;
   }
 
