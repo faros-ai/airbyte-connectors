@@ -9,8 +9,10 @@ import {
   SurveyQuestionCategory,
   SurveyResponseCategory,
 } from '../../src/converters/abstract-surveys/models';
-import {SurveysConfig} from '../../src/converters/abstract-surveys/surveys';
-import {AbstractSurveys} from '../../src/converters/abstract-surveys/surveys';
+import {
+  AbstractSurveys,
+  SurveysConfig,
+} from '../../src/converters/abstract-surveys/surveys';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {airtableSurveysAllStreamsLog} from './data';
