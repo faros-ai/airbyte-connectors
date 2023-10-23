@@ -43,15 +43,6 @@ export class Surveys extends AbstractSurveys {
   }
 
   getSubmittedAt(record: AirbyteRecord): string | undefined {
-    const submittedAtColumnName =
-      this.config.column_names_mapping.response_submitted_at_column_name;
-    // check if the column name config was set and it is not default value
-    if (
-      submittedAtColumnName &&
-      submittedAtColumnName !== RESPONSE_SUBMITTED_AT_DEFAULT_COLUMN_NAME
-    ) {
-      return record?.record?.data?.row[submittedAtColumnName];
-    }
-    return record?.record?.data?._airtable_created_time;
+    return super.getSubmittedAt(record) ?? record?.record?.data?._airtable_created_time;
   }
 }

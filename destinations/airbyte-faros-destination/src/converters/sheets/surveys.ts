@@ -9,12 +9,6 @@ export class Surveys extends AbstractSurveys {
     return record?.record?.data?.id;
   }
 
-  getSubmittedAt(record: AirbyteRecord): string | undefined {
-    const submittedAtColumnName =
-      this.config.column_names_mapping.response_submitted_at_column_name;
-    return record?.record?.data?.row[submittedAtColumnName];
-  }
-
   getSurveyId(record: AirbyteRecord): string | undefined {
     return record.record.data.sheetId;
   }
