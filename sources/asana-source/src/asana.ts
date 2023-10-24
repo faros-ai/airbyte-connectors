@@ -20,6 +20,7 @@ export const MIN_DATE = new Date(0).toISOString();
 // January 1, 2200
 export const MAX_DATE = new Date(7258118400000).toISOString();
 
+const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
 
@@ -32,6 +33,7 @@ export interface AsanaConfig {
   api_timeout?: number;
   start_date?: string;
   end_date?: string;
+  cutoff_days?: number;
 }
 
 export class Asana {
@@ -52,8 +54,19 @@ export class Asana {
       throw new VError('Please provide a personal access token');
     }
 
-    const startDate = config.start_date ?? MIN_DATE;
-    const endDate = config.end_date ?? MAX_DATE;
+    let startDate: string;
+    let endDate: string;
+
+    if (config.start_date || config.end_date) {
+      startDate = config.start_date ?? MIN_DATE;
+      endDate = config.end_date ?? MAX_DATE;
+    } else {
+      const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
+      startDate = cutoffDate.toISOString();
+      endDate = new Date().toISOString();
+    }
 
     const httpClient = axios.create({
       baseURL: `https://app.asana.com/api/1.0`,
