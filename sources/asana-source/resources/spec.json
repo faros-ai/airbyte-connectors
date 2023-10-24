@@ -1,0 +1,91 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Asana Spec",
+    "type": "object",
+    "additionalProperties": true,
+    "required": [
+      "credentials"
+    ],
+    "properties": {
+      "credentials": {
+        "order": 0,
+        "title": "Authentication mechanism",
+        "description": "Choose how to authenticate to Asana",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Authenticate with Personal Access Token",
+            "required": [
+              "personal_access_token"
+            ],
+            "properties": {
+              "option_title": {
+                "type": "string",
+                "title": "Credentials title",
+                "description": "PAT Credentials",
+                "const": "PAT Credentials"
+              },
+              "personal_access_token": {
+                "type": "string",
+                "title": "Personal Access Token",
+                "description": "Asana Personal Access Token (generate yours <a href=\"https://app.asana.com/0/developer-console\">here</a>).",
+                "airbyte_secret": true
+              }
+            }
+          }
+        ]
+      },
+      "workspaces": {
+        "order": 1,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Workspace IDs",
+        "description": "The IDs of the workspaces to fetch. If not provided, all workspaces will be fetched.",
+        "examples": [
+          "123",
+          "456"
+        ]
+      },
+      "cutoff_days": {
+        "order": 2,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch data updated after cutoff.",
+        "default": 90
+      },
+      "page_size": {
+        "order": 3,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of records to request from the API per call.",
+        "default": 100
+      },
+      "api_timeout": {
+        "order": 4,
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to Asana API. 0 means no timeout.",
+        "default": 0
+      },
+      "start_date": {
+        "airbyte_hidden": true,
+        "order": 5,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "airbyte_hidden": true,
+        "order": 6,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      }      
+    }
+  }
+}

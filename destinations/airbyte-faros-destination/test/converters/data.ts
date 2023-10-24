@@ -10,7 +10,7 @@ export const jenkinsAllStreamsLog = readTestResourceFile(
 );
 export const jiraAllStreamsLog = readTestResourceFile('jira/all-streams.log');
 export const airtableSurveysAllStreamsLog = readTestResourceFile(
-  'airtable/surveys/all-streams.log'
+  'abstract-surveys/surveys/all-streams.log'
 );
 export const asanaAllStreamsLog = readTestResourceFile('asana/all-streams.log');
 export const gitlabAllStreamsLog = readTestResourceFile(
@@ -97,6 +97,9 @@ export const farosFeedsAllStreamsLog = readTestResourceFile(
 );
 export const semaphoreciAllStreamLogs = readTestResourceFile(
   'semaphoreci/all-streams.log'
+);
+export const sheetsSurveysAllStreamsLog = readTestResourceFile(
+  'sheets/surveys/all-streams.log'
 );
 export const hygieiaAllStreamsLog = readTestResourceFile(
   'hygieia/all-streams.log'

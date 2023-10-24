@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`airtable survey responses basic response 1`] = `
+exports[`abstract-surveys survey responses basic response 1`] = `
 Array [
   Object {
     "model": "survey_Team",
@@ -72,7 +72,7 @@ Array [
 ]
 `;
 
-exports[`airtable survey responses question metadata 1`] = `
+exports[`abstract-surveys survey responses question metadata 1`] = `
 Array [
   Object {
     "model": "survey_Team",
@@ -188,7 +188,7 @@ Array [
 ]
 `;
 
-exports[`airtable survey responses response with survey metadata 1`] = `
+exports[`abstract-surveys survey responses response with survey metadata 1`] = `
 Array [
   Object {
     "model": "survey_User",
@@ -291,7 +291,7 @@ Array [
 ]
 `;
 
-exports[`airtable survey responses response with user and team info 1`] = `
+exports[`abstract-surveys survey responses response with user and team info 1`] = `
 Array [
   Object {
     "model": "survey_User",
@@ -388,7 +388,7 @@ Array [
 ]
 `;
 
-exports[`airtable survey responses survey metadata 1`] = `
+exports[`abstract-surveys survey responses survey metadata 1`] = `
 Array [
   Object {
     "model": "survey_Team",
@@ -512,7 +512,7 @@ Array [
 ]
 `;
 
-exports[`airtable survey responses uses team id 1`] = `
+exports[`abstract-surveys survey responses uses team id 1`] = `
 Array [
   Object {
     "model": "survey_User",
