@@ -1,3 +1,5 @@
+import {FarosClient} from 'faros-js-client';
+
 export interface RefreshedAtInterface {
   refreshedAt: Date;
   id: string;
@@ -44,3 +46,8 @@ export interface DataSummaryInterface {
   elapsedMs?: number;
   counts?: faros_DataQualityRecordCount[];
 }
+
+export type GraphDoctorTestFunction = (
+  cfg: any,
+  fc: FarosClient
+) => AsyncGenerator<DataIssueInterface>;

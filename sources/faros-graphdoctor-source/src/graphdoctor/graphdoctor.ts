@@ -1,12 +1,8 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
-import {DataIssueInterface} from './models';
-
-type GraphDoctorTestFunction = (
-  cfg: any,
-  fc: FarosClient
-) => AsyncGenerator<DataIssueInterface>;
+import {DataIssueInterface, GraphDoctorTestFunction} from './models';
+import {runAllZScoreTests} from './z_scores';
 
 function simpleHash(str): string {
   let hash = 0;
@@ -87,6 +83,7 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
   const testFunctions: GraphDoctorTestFunction[] = [
     orgTeamParentNull,
     orgTeamAssignmentNullTeam,
+    runAllZScoreTests,
   ];
 
   for (const test_func of testFunctions) {

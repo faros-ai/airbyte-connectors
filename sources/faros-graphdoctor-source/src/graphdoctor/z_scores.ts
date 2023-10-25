@@ -2,14 +2,16 @@ import {FarosClient} from 'faros-js-client';
 
 import {
   DataIssueInterface,
+  GraphDoctorTestFunction,
   RefreshedAtInterface,
   ZScoreComputationResult,
 } from './models';
 
-export async function run_all_z_score(
+// Entrypoint
+export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   cfg: any,
   fc: FarosClient
-): Promise<DataIssueInterface[]> {
+) {
   cfg.logger.info('Starting to compute data recency tests');
 
   const amount_of_recently_added_to_compute: number = 500;
@@ -87,8 +89,10 @@ export async function run_all_z_score(
   if (computation_failed) {
     data_issues.push({uid: `ZScoreComputationFailure_${now_ts}`});
   }
-  return data_issues;
-}
+  for (const result of data_issues) {
+    yield result;
+  }
+};
 
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
@@ -247,20 +251,3 @@ function createSlackResult(res, z_score_thresh) {
     result_str: result_str,
   };
 }
-
-const res = {};
-// How many timestamps do we need in order to test this
-const amt_threshold = 20;
-
-for (const item of $input.all()) {
-  for (const obj_name of Object.keys(item.json.data)) {
-    console.log(`running for object ${obj_name}`);
-    const obj_time_stamps = item.json.data[obj_name];
-    if (obj_time_stamps.length > amt_threshold) {
-      res[obj_name] = compute_zscore_for_timestamps(obj_time_stamps);
-    }
-  }
-  slackResult = createSlackResult(res);
-}
-
-return slackResult;
