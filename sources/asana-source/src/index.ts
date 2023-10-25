@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Asana, AsanaConfig} from './asana';
-import {Projects, Sections, Tags, Tasks, Users} from './streams';
+import {Projects, Sections, Tags, Tasks, Users, Workspaces} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -40,6 +40,7 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
       new Tags(config, this.logger),
       new Tasks(config, this.logger),
       new Users(config, this.logger),
+      new Workspaces(config, this.logger),
     ];
   }
 }
