@@ -1,10 +1,12 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
+import {DataIssueInterface} from './models';
+
 type GraphDoctorTestFunction = (
   cfg: any,
   fc: FarosClient
-) => AsyncGenerator<any>;
+) => AsyncGenerator<DataIssueInterface>;
 
 function simpleHash(str): string {
   let hash = 0;
