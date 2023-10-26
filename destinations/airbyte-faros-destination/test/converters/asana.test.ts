@@ -2,12 +2,12 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {StreamContext, StreamName} from '../../src';
+import {StreamContext} from '../../src';
 import {Projects} from '../../src/converters/asana/projects';
-import {Sections} from '../../src/converters/asana/sections';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {Users} from '../../src/converters/asana/users';
+import {Workspaces} from '../../src/converters/asana/workspaces';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
@@ -170,6 +170,7 @@ describe('asana', () => {
             },
             section: {
               gid: '1205346703408260',
+              name: 'Section 1',
             },
           },
         ],
@@ -241,33 +242,13 @@ describe('asana', () => {
       modified_at: '2023-08-24T15:51:52.758Z',
       name: 'Project Uno',
       notes: 'Project Uno notes',
+      workspace: {
+        gid: '1205346833089989',
+      },
     };
 
     test('basic project', async () => {
       const record = AirbyteRecord.make('projects', PROJECT);
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-  });
-
-  describe('sections', () => {
-    const converter = new Sections();
-    const SECTION = {
-      gid: '1234567890',
-      name: 'Sample Section',
-    };
-
-    test('basic section with project', async () => {
-      const record = AirbyteRecord.make('sections', {
-        ...SECTION,
-        project: {gid: '9876543210'},
-      });
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-
-    test('basic section', async () => {
-      const record = AirbyteRecord.make('sections', SECTION);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });
@@ -305,6 +286,20 @@ describe('asana', () => {
         ...USER,
         email: 'johndoe@example.com',
       });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('workspaces', () => {
+    const converter = new Workspaces();
+    const WORKSPACE = {
+      gid: '1205346833089989',
+      name: 'Workspace Uno',
+    };
+
+    test('basic workspace', async () => {
+      const record = AirbyteRecord.make('workspaces', WORKSPACE);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

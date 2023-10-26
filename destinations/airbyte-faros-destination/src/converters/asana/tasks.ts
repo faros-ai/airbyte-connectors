@@ -8,7 +8,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {AsanaCommon, AsanaConverter} from './common';
+import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
 
 interface CustomField {
   gid: string;
@@ -85,6 +85,7 @@ export class Tasks extends AsanaConverter {
     const taskCustomFields = (task.custom_fields ?? []).filter((f) =>
       this.config.task_custom_fields?.includes(f.gid)
     );
+
     const statusChangelog: TmsTaskStatusChange[] = [];
 
     for (const story of task.stories ?? []) {
@@ -105,6 +106,39 @@ export class Tasks extends AsanaConverter {
       });
     }
 
+    const additionalFields = taskCustomFields.map((f) => this.toTaskField(f));
+
+    res.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: taskKey,
+        project: {uid: task.workspace.gid, source},
+      },
+    });
+
+    for (const membership of task.memberships ?? []) {
+      if (membership.project) {
+        res.push({
+          model: 'tms_TaskBoardRelationship',
+          record: {
+            task: taskKey,
+            board: {uid: membership.project.gid, source},
+          },
+        });
+      }
+
+      if (membership.section) {
+        additionalFields.push({
+          name: 'section_gid',
+          value: membership.section.gid,
+        });
+        additionalFields.push({
+          name: 'section_name',
+          value: membership.section.name,
+        });
+      }
+    }
+
     res.push({
       model: 'tms_Task',
       record: {
@@ -117,7 +151,7 @@ export class Tasks extends AsanaConverter {
         url: task.permalink_url ?? null,
         type: AsanaCommon.toTmsTaskType(task.resource_type),
         status: this.getStatus(task),
-        additionalFields: taskCustomFields.map((f) => this.toTaskField(f)),
+        additionalFields,
         createdAt: Utils.toDate(task.created_at),
         updatedAt: Utils.toDate(task.modified_at),
         statusChangedAt: Utils.toDate(task.modified_at),
@@ -125,28 +159,6 @@ export class Tasks extends AsanaConverter {
         statusChangelog: statusChangelog ?? null,
       },
     });
-
-    for (const membership of task.memberships ?? []) {
-      if (membership.project) {
-        res.push({
-          model: 'tms_TaskProjectRelationship',
-          record: {
-            task: taskKey,
-            project: {uid: membership.project.gid, source},
-          },
-        });
-      }
-
-      if (membership.section) {
-        res.push({
-          model: 'tms_TaskBoardRelationship',
-          record: {
-            task: taskKey,
-            board: {uid: membership.section.gid, source},
-          },
-        });
-      }
-    }
 
     if (task.assignee) {
       res.push({
@@ -226,21 +238,5 @@ export class Tasks extends AsanaConverter {
         customField.multi_enum_values?.name ??
         customField.display_value,
     };
-  }
-
-  private toTmsTaskStatus(status: string): TmsTaskStatus {
-    if (!status)
-      return {category: Tms_TaskStatusCategory.Custom, detail: 'undefined'};
-
-    switch (AsanaCommon.normalize(status)) {
-      case 'done':
-        return {category: Tms_TaskStatusCategory.Done, detail: status};
-      case 'inprogress':
-        return {category: Tms_TaskStatusCategory.InProgress, detail: status};
-      case 'todo':
-        return {category: Tms_TaskStatusCategory.Todo, detail: status};
-      default:
-        return {category: Tms_TaskStatusCategory.Custom, detail: status};
-    }
   }
 }
