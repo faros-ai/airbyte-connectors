@@ -18,7 +18,6 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
 ) {
   cfg.logger.info('Starting to compute data recency tests');
 
-  const data_issues: DataIssueInterface[] = [];
   const object_test_list_groupings = [
     ['ams_Activity', 'ams_Project'],
     ['cal_Event', 'cal_Calendar', 'cal_User'],
@@ -42,6 +41,7 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     refreshedAt,
     id
   }`;
+  const data_issues: DataIssueInterface[] = [];
   for (const object_list of object_test_list_groupings) {
     const new_data_issues = await runZScoreTestOnObjectGrouping(
       object_list,
@@ -52,6 +52,8 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     data_issues.push(...new_data_issues);
   }
 
+  // For testing:
+  console.log(data_issues);
   for (const result of data_issues) {
     yield result;
   }
@@ -64,7 +66,7 @@ async function runZScoreTestOnObjectGrouping(
   cfg: any
 ): Promise<DataIssueInterface[]> {
   const data_issues: DataIssueInterface[] = [];
-  // Note all of the object queries will combined into one
+  // Note all of the objects in the object_test_list queries will combined into one
   let query_internal = '';
   for (const obj_nm of object_test_list) {
     const obj_query = substitute_strings_into_queries(
