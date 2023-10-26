@@ -45,7 +45,6 @@ describe('asana', () => {
 
     const processedByStream = {
       projects: 1,
-      sections: 3,
       tags: 2,
       tasks: 3,
       users: 1,
@@ -59,10 +58,10 @@ describe('asana', () => {
 
     const writtenByModel = {
       tms_Label: 2,
-      tms_Project: 1,
       tms_Task: 3,
-      tms_TaskBoard: 3,
-      tms_TaskBoardProjectRelationship: 3,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskProjectRelationship: 3,
       tms_TaskTag: 2,
       tms_User: 1,
     };
