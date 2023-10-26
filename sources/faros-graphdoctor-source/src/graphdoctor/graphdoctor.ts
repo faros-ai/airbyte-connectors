@@ -1,7 +1,7 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
-import {DataIssueInterface, GraphDoctorTestFunction} from './models';
+import {GraphDoctorTestFunction} from './models';
 import {runAllZScoreTests} from './z_scores';
 
 function simpleHash(str): string {

@@ -128,7 +128,7 @@ function substitute_strings_into_queries(
   return op_str;
 }
 
-function find_clusters(data: number[], threshold = null) {
+function find_clusters(data: number[], threshold = null): number[][] {
   if (data.length === 0) {
     return null;
   }
@@ -161,7 +161,7 @@ function find_clusters(data: number[], threshold = null) {
   return clusters;
 }
 
-function get_stddev_from_list(l: number[]) {
+function get_stddev_from_list(l: number[]): number {
   // Step 1: Calculate the mean
   const mean = get_avg_per_list(l);
 
@@ -179,13 +179,13 @@ function get_stddev_from_list(l: number[]) {
   return standardDeviation;
 }
 
-function get_avg_per_list(l: number[]) {
+function get_avg_per_list(l: number[]): number {
   const list_sum = l.reduce((acc, val) => acc + val, 0);
   const average = list_sum / l.length;
   return average;
 }
 
-function get_avg_per_cluster(clusters: number[][]) {
+function get_avg_per_cluster(clusters: number[][]): number[] {
   const avgs = clusters.map((x) => get_avg_per_list(x));
   return avgs;
 }
@@ -199,9 +199,9 @@ export function compute_zscore_for_timestamps(
   const datetimes = responses.map((x) => new Date(x.refreshedAt));
   const seconds_timestamp = datetimes.map((x) => x.getTime() / 1000);
 
-  const clusters = find_clusters(seconds_timestamp, 10);
+  const clusters: number[][] = find_clusters(seconds_timestamp, 10);
 
-  const cluster_averages = get_avg_per_cluster(clusters);
+  const cluster_averages: number[] = get_avg_per_cluster(clusters);
 
   const cluster_avg_differences: number[] = [];
   for (let i = 1; i < cluster_averages.length; i++) {
@@ -232,22 +232,5 @@ export function compute_zscore_for_timestamps(
     last_difference_in_hours: last_difference / 3600,
     last_id: last_id,
     last_updated_time: last_updated_time,
-  };
-}
-
-function createSlackResult(res, z_score_thresh) {
-  let result_str = 'Objects whose Last Updated Time Passes Error Threshold: ';
-  let bad_z_score_found = false;
-  for (const [obj_nm, value] of Object.entries(res)) {
-    if (value['status'] == 0) {
-      if (value['z_score'] >= z_score_thresh) {
-        bad_z_score_found = true;
-        result_str += `|${obj_nm}:${value['z_score']};|    `;
-      }
-    }
-  }
-  return {
-    threshold_crossed: bad_z_score_found,
-    result_str: result_str,
   };
 }
