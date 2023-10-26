@@ -3,40 +3,11 @@
 exports[`asana projects basic project 1`] = `
 Array [
   Object {
-    "model": "tms_Project",
+    "model": "tms_TaskBoard",
     "record": Object {
-      "createdAt": 2023-08-24T15:51:52.758Z,
-      "description": "Project Uno notes",
       "name": "Project Uno",
       "source": "Asana",
       "uid": "1205346703408259",
-      "updatedAt": 2023-08-24T15:51:52.758Z,
-    },
-  },
-]
-`;
-
-exports[`asana sections basic section 1`] = `
-Array [
-  Object {
-    "model": "tms_TaskBoard",
-    "record": Object {
-      "name": "Sample Section",
-      "source": "Asana",
-      "uid": "1234567890",
-    },
-  },
-]
-`;
-
-exports[`asana sections basic section with project 1`] = `
-Array [
-  Object {
-    "model": "tms_TaskBoard",
-    "record": Object {
-      "name": "Sample Section",
-      "source": "Asana",
-      "uid": "1234567890",
     },
   },
   Object {
@@ -44,11 +15,11 @@ Array [
     "record": Object {
       "board": Object {
         "source": "Asana",
-        "uid": "1234567890",
+        "uid": "1205346703408259",
       },
       "project": Object {
         "source": "Asana",
-        "uid": "9876543210",
+        "uid": "1205346833089989",
       },
     },
   },
@@ -68,6 +39,19 @@ Array [
 
 exports[`asana tasks assignee 1`] = `
 Array [
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
   Object {
     "model": "tms_Task",
     "record": Object {
@@ -111,6 +95,19 @@ Array [
 exports[`asana tasks basic task 1`] = `
 Array [
   Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
     "model": "tms_Task",
     "record": Object {
       "additionalFields": Array [],
@@ -139,6 +136,19 @@ Array [
 
 exports[`asana tasks completed task converts to status Done 1`] = `
 Array [
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
   Object {
     "model": "tms_Task",
     "record": Object {
@@ -169,9 +179,44 @@ Array [
 exports[`asana tasks memberships 1`] = `
 Array [
   Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
     "model": "tms_Task",
     "record": Object {
-      "additionalFields": Array [],
+      "additionalFields": Array [
+        Object {
+          "name": "section_gid",
+          "value": "1205346703408260",
+        },
+        Object {
+          "name": "section_name",
+          "value": "Section 1",
+        },
+      ],
       "createdAt": 2023-08-24T15:52:00.014Z,
       "description": "Task 1 notes",
       "name": "Task 1",
@@ -192,37 +237,24 @@ Array [
       "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
     },
   },
-  Object {
-    "model": "tms_TaskProjectRelationship",
-    "record": Object {
-      "project": Object {
-        "source": "Asana",
-        "uid": "1205346703408259",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
-  Object {
-    "model": "tms_TaskBoardRelationship",
-    "record": Object {
-      "board": Object {
-        "source": "Asana",
-        "uid": "1205346703408260",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
 ]
 `;
 
 exports[`asana tasks parent 1`] = `
 Array [
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
   Object {
     "model": "tms_Task",
     "record": Object {
@@ -269,6 +301,19 @@ Array [
 
 exports[`asana tasks tags 1`] = `
 Array [
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
   Object {
     "model": "tms_Task",
     "record": Object {
@@ -322,6 +367,19 @@ Array [
 
 exports[`asana tasks task with stories writes statusChangelog 1`] = `
 Array [
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346833089989",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
   Object {
     "model": "tms_Task",
     "record": Object {
@@ -387,6 +445,19 @@ Array [
       "name": "John Doe",
       "source": "Asana",
       "uid": "user-123",
+    },
+  },
+]
+`;
+
+exports[`asana workspaces basic workspace 1`] = `
+Array [
+  Object {
+    "model": "tms_Project",
+    "record": Object {
+      "name": "Workspace Uno",
+      "source": "Asana",
+      "uid": "1205346833089989",
     },
   },
 ]

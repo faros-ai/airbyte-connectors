@@ -1,33 +1,37 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {AsanaCommon, AsanaConverter} from './common';
+import {AsanaConverter, AsanaProject} from './common';
 
 export class Projects extends AsanaConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
+  ];
 
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const project = record.record.data;
+    const project: AsanaProject = record.record.data as AsanaProject;
 
-    const tmsProject: DestinationRecord = {
-      model: 'tms_Project',
+    const board: DestinationRecord = {
+      model: 'tms_TaskBoard',
       record: {
         uid: project.gid,
         name: project.name,
-        description: project.notes?.substring(
-          0,
-          AsanaCommon.MAX_DESCRIPTION_LENGTH
-        ),
-        createdAt: Utils.toDate(project.created_at),
-        updatedAt: Utils.toDate(project.modified_at),
         source,
       },
     };
 
-    return [tmsProject];
+    const boardProjectRelationship: DestinationRecord = {
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: {uid: project.gid, source},
+        project: {uid: project.workspace.gid, source},
+      },
+    };
+
+    return [board, boardProjectRelationship];
   }
 }

@@ -160,6 +160,7 @@ export class Asana {
       'custom_fields',
       'memberships.project',
       'memberships.section',
+      'memberships.section.name',
       'modified_at',
       'name',
       'notes',
@@ -254,18 +255,6 @@ export class Asana {
     }
 
     return stories;
-  }
-
-  async *getSections(
-    project: string,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<Section> {
-    const opt_fields = ['name', 'created_at', 'modified_at', 'project'];
-    yield* this.fetchData<Section>(
-      `projects/${project}/sections`,
-      opt_fields,
-      logger
-    );
   }
 
   async *getTags(
