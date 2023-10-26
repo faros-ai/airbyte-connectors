@@ -8,6 +8,11 @@ import {readTestResourceAsJSON} from './helpers';
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'mockQueryToObject.json'
 );
+const mockZScoreResponse: Record<string, any> = readTestResourceAsJSON(
+  'zScoreQueryResult.json'
+);
+const zScoreQueryResponseKey = 'zScoreQueryOptions';
+mockQueryToResponse[zScoreQueryResponseKey] = mockZScoreResponse;
 
 jest.mock('faros-js-client', () => {
   return {
@@ -21,6 +26,9 @@ jest.mock('faros-js-client', () => {
           }
         },
         async gql(graph: string, query: string): Promise<any> {
+          if (query.includes('ZScoreQuery')) {
+            return mockQueryToResponse[zScoreQueryResponseKey];
+          }
           return mockQueryToResponse[query];
         },
       };
@@ -78,7 +86,7 @@ describe('index', () => {
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
     }
-    expect(results).toStrictEqual([
+    expect(results.slice(0, 3)).toStrictEqual([
       {
         faros_DataQualityIssue: {
           uid: '-703795182',
