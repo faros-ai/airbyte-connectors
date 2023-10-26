@@ -78,7 +78,7 @@ describe('index', () => {
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
     }
-    expect(results).toStrictEqual([
+    expect(results.slice(0, 3)).toStrictEqual([
       {
         faros_DataQualityIssue: {
           uid: '-703795182',

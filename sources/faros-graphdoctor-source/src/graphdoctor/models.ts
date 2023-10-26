@@ -13,6 +13,8 @@ export interface ZScoreComputationResult {
   last_difference_in_hours?: number;
   last_updated_time?: Date;
   last_id?: string;
+  msg?: string;
+  nResults?: number;
 }
 
 export interface DataSummaryKey {

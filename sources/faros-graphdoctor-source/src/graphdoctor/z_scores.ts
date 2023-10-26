@@ -7,6 +7,7 @@ import {
   ZScoreComputationResult,
 } from './models';
 
+const compute_number_min_threshold: number = 10;
 // Entrypoint
 export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   cfg: any,
@@ -60,34 +61,43 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     );
     query_internal = `${query_internal} ${obj_query} `;
   }
-
-  cfg.logger.info(`Will run the following query: ${query_internal}`);
+  const complete_query = normalizeWhitespace(
+    `query ZScoreQuery { ${query_internal} }`
+  );
+  cfg.logger.info(`Will run the following query: ${complete_query}`);
 
   // Keeping the current time stamp to compare
   const now_ts = new Date();
   const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
-  const response = await fc.gql(cfg.graph, query_internal);
+  const response = await fc.gql(cfg.graph, complete_query);
 
   const data_issues: DataIssueInterface[] = [];
-  let computation_failed: boolean = false;
+  let failure_msg: string;
   for (const obj_nm of object_test_list) {
+    failure_msg = '';
     const obj_resp: RefreshedAtInterface[] = response[obj_nm];
+    if (!obj_resp || obj_resp.length < compute_number_min_threshold) {
+      continue;
+    }
     const z_score_result: ZScoreComputationResult =
-      compute_zscore_for_timestamps(obj_resp, secondsSinceEpoch, obj_nm);
+      compute_zscore_for_timestamps(obj_resp, secondsSinceEpoch, obj_nm, cfg);
     if (z_score_result.status != 0) {
-      computation_failed = true;
+      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${obj_nm}. `;
+      data_issues.push({
+        uid: `ZScoreComputationFailure: ${now_ts}`,
+        description: failure_msg,
+      });
+      continue;
     }
     const data_issue: DataIssueInterface | null = convert_result_to_data_issue(
       z_score_result,
       obj_nm,
-      z_score_threshold
+      z_score_threshold,
+      cfg
     );
     if (data_issue) {
       data_issues.push(data_issue);
     }
-  }
-  if (computation_failed) {
-    data_issues.push({uid: `ZScoreComputationFailure_${now_ts}`});
   }
   for (const result of data_issues) {
     yield result;
@@ -97,13 +107,17 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
   object_nm: string,
-  threshold: number
+  threshold: number,
+  cfg: any
 ): DataIssueInterface | null {
   const z_score = z_score_result.z_score;
   if (!z_score) {
     return null;
   }
   if (!(z_score >= threshold)) {
+    cfg.logger.info(
+      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${object_nm}.`
+    );
     return null;
   }
   let desc_str: string = `Recency z score passed threshold ${threshold}: ${z_score}. `;
@@ -124,7 +138,6 @@ function substitute_strings_into_queries(
 ): string {
   let op_str = query_str.replace('{QUERY_NAME}', obj_nm);
   op_str = op_str.replace('{AMOUNT}', amt.toString());
-  console.log(`new output query: ${op_str}`);
   return op_str;
 }
 
@@ -193,13 +206,21 @@ function get_avg_per_cluster(clusters: number[][]): number[] {
 export function compute_zscore_for_timestamps(
   responses: RefreshedAtInterface[],
   secondsSinceEpoch: number,
-  obj_nm: string
+  obj_nm: string,
+  cfg: any
 ): ZScoreComputationResult {
+  const nResults: number = responses.length;
   // Converting timestamps to seconds since the epoch
   const datetimes = responses.map((x) => new Date(x.refreshedAt));
   const seconds_timestamp = datetimes.map((x) => x.getTime() / 1000);
 
   const clusters: number[][] = find_clusters(seconds_timestamp, 10);
+
+  if (!clusters) {
+    cfg.logger.info(JSON.stringify(datetimes));
+    cfg.logger.info(JSON.stringify(seconds_timestamp));
+    return {status: 1, msg: 'No clusters.'};
+  }
 
   const cluster_averages: number[] = get_avg_per_cluster(clusters);
 
@@ -207,8 +228,11 @@ export function compute_zscore_for_timestamps(
   for (let i = 1; i < cluster_averages.length; i++) {
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
-  if (cluster_avg_differences.length < 2) {
-    return {status: 1};
+  if (cluster_avg_differences.length < compute_number_min_threshold) {
+    return {
+      status: 1,
+      msg: `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}`,
+    };
   }
 
   const avg = get_avg_per_list(cluster_avg_differences);
@@ -232,5 +256,10 @@ export function compute_zscore_for_timestamps(
     last_difference_in_hours: last_difference / 3600,
     last_id: last_id,
     last_updated_time: last_updated_time,
+    nResults: nResults,
   };
+}
+
+function normalizeWhitespace(str): string {
+  return str.replace(/\s+/g, ' ');
 }
