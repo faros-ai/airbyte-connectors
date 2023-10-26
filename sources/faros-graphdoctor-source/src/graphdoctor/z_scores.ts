@@ -126,7 +126,7 @@ function convert_result_to_data_issue(
   if (!z_score) {
     return null;
   }
-  if (!(z_score >= threshold)) {
+  if (z_score < threshold) {
     cfg.logger.info(
       `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${object_nm}.`
     );

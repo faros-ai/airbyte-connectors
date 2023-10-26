@@ -34,7 +34,7 @@ export interface DataIssueInterface {
   summary?: DataSummaryKey;
 }
 
-export interface faros_DataQualityRecordCount {
+export interface FarosDataQualityRecordCount {
   model?: string;
   total?: number;
   phantoms?: number;
@@ -46,7 +46,7 @@ export interface DataSummaryInterface {
   source: string;
   createdAt?: Date;
   elapsedMs?: number;
-  counts?: faros_DataQualityRecordCount[];
+  counts?: FarosDataQualityRecordCount[];
 }
 
 export type GraphDoctorTestFunction = (
