@@ -8,6 +8,9 @@ import {readTestResourceAsJSON} from './helpers';
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'mockQueryToObject.json'
 );
+const zScoreQueryResponseKey = 'zScoreQueryOptions';
+const zModAmt = mockQueryToResponse[zScoreQueryResponseKey];
+let zScoreQueryResponseIndex = 0;
 
 jest.mock('faros-js-client', () => {
   return {
@@ -21,6 +24,12 @@ jest.mock('faros-js-client', () => {
           }
         },
         async gql(graph: string, query: string): Promise<any> {
+          if (query.includes('ZScoreQuery')) {
+            zScoreQueryResponseIndex += 1;
+            return mockQueryToResponse['zScoreQueryOptions'][
+              zScoreQueryResponseIndex % zModAmt
+            ];
+          }
           return mockQueryToResponse[query];
         },
       };

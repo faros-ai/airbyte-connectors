@@ -8,6 +8,9 @@ import {
 } from './models';
 
 const compute_number_min_threshold: number = 10;
+const amount_of_recently_added_to_compute: number = 500;
+const z_score_threshold: number = 2;
+
 // Entrypoint
 export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   cfg: any,
@@ -15,42 +18,52 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
 ) {
   cfg.logger.info('Starting to compute data recency tests');
 
-  const amount_of_recently_added_to_compute: number = 500;
-  const z_score_threshold: number = 2;
-
-  const object_test_list = [
-    'ams_Activity',
-    'ams_Project',
-    'vcs_RepositoryContribution',
-    'vcs_Commit',
-    'vcs_PullRequest',
-    'tms_Task',
-    'tms_Project',
-    'tms_Epic',
-    'qa_TestExecution',
-    'cal_Event',
-    'cal_Calendar',
-    'cal_User',
-    'faros_Tag',
-    'geo_Location',
-    'ims_Incident',
-    'ims_IncidentEvent',
-    'cicd_Deployment',
-    'cicd_Build',
-    'cicd_Artifact',
-    'cicd_Organization',
-    'cicd_Repository',
-    'cicd_BuildCommitAssociation',
-    'cicd_ArtifactCommitAssociation',
-    'compute_Application',
-    'compute_Instance',
-    'compute_Volume',
+  const data_issues: DataIssueInterface[] = [];
+  const object_test_list_groupings = [
+    ['ams_Activity', 'ams_Project'],
+    ['cal_Event', 'cal_Calendar', 'cal_User'],
+    [
+      'cicd_Deployment',
+      'cicd_Build',
+      'cicd_Artifact',
+      'cicd_Organization',
+      'cicd_Repository',
+      'cicd_BuildCommitAssociation',
+      'cicd_ArtifactCommitAssociation',
+    ],
+    ['compute_Application', 'compute_Instance', 'compute_Volume'],
+    ['faros_Tag', 'geo_Location'],
+    ['ims_Incident', 'ims_IncidentEvent'],
+    ['qa_TestExecution'],
+    ['tms_Task', 'tms_Project', 'tms_Epic'],
+    ['vcs_RepositoryContribution', 'vcs_Commit', 'vcs_PullRequest'],
   ];
   const base_object_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
     refreshedAt,
     id
   }`;
+  for (const object_list of object_test_list_groupings) {
+    const new_data_issues = await runZScoreTestOnObjectGrouping(
+      object_list,
+      base_object_query,
+      fc,
+      cfg
+    );
+    data_issues.push(...new_data_issues);
+  }
 
+  for (const result of data_issues) {
+    yield result;
+  }
+};
+
+async function runZScoreTestOnObjectGrouping(
+  object_test_list: string[],
+  base_object_query: string,
+  fc: FarosClient,
+  cfg: any
+): Promise<DataIssueInterface[]> {
+  const data_issues: DataIssueInterface[] = [];
   // Note all of the object queries will combined into one
   let query_internal = '';
   for (const obj_nm of object_test_list) {
@@ -71,7 +84,6 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
   const response = await fc.gql(cfg.graph, complete_query);
 
-  const data_issues: DataIssueInterface[] = [];
   let failure_msg: string;
   for (const obj_nm of object_test_list) {
     failure_msg = '';
@@ -99,10 +111,8 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
       data_issues.push(data_issue);
     }
   }
-  for (const result of data_issues) {
-    yield result;
-  }
-};
+  return data_issues;
+}
 
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
@@ -123,6 +133,7 @@ function convert_result_to_data_issue(
   let desc_str: string = `Recency z score passed threshold ${threshold}: ${z_score}. `;
   desc_str += `Last updated time: "${z_score_result.last_updated_time}". `;
   desc_str += `Last time difference in hours: "${z_score_result.last_difference_in_hours}". `;
+  desc_str += `Number of datetime stamps: ${z_score_result.nResults}.`;
 
   return {
     uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
@@ -240,7 +251,10 @@ export function compute_zscore_for_timestamps(
   if (std_dev === 0) {
     // We can't compute Z Score with STD of 0, which shouldn't occur
     // since nValues > 1, and each value should be a distinct number.
-    throw new Error(`Computed standard deviation of 0 for object "${obj_nm}".`);
+    return {
+      status: 1,
+      msg: `Computed standard deviation of 0.`,
+    };
   }
 
   // Difference between times in seconds
