@@ -11,10 +11,8 @@ export class Users extends AzureReposConverter {
   ];
 
   private checkUserItemValidity(userItem: User): boolean {
-    if (!userItem.principalName) {
-      return false;
-    }
-    return true;
+    // Add checks to record in this function
+    return !!userItem.principalName;
   }
 
   async convert(
