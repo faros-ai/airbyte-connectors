@@ -7,7 +7,7 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {EmployeeRecord, ManagerTimeRecord} from './models';
+import {EmployeeRecord, ManagerTimeRecord, recordKeyTyping} from './models';
 
 export class Customreports extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -105,7 +105,19 @@ export class Customreports extends Converter {
     }
   }
 
+  private convertRecordToStandardizedForm(rec: any): any {
+    const new_rec = {};
+    for (const [k, v] of Object.entries(rec)) {
+      const alphanum_key = k.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      if (alphanum_key in recordKeyTyping) {
+        new_rec[recordKeyTyping[alphanum_key]] = v;
+      }
+    }
+    return new_rec;
+  }
+
   private checkRecordValidity(rec: EmployeeRecord): boolean {
+    rec = this.convertRecordToStandardizedForm(rec);
     if (
       !rec.Employee_ID ||
       !rec.Full_Name ||
