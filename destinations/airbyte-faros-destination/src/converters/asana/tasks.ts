@@ -108,14 +108,6 @@ export class Tasks extends AsanaConverter {
 
     const additionalFields = taskCustomFields.map((f) => this.toTaskField(f));
 
-    res.push({
-      model: 'tms_TaskProjectRelationship',
-      record: {
-        task: taskKey,
-        project: {uid: task.workspace.gid, source},
-      },
-    });
-
     for (const membership of task.memberships ?? []) {
       if (membership.project) {
         res.push({
@@ -123,6 +115,13 @@ export class Tasks extends AsanaConverter {
           record: {
             task: taskKey,
             board: {uid: membership.project.gid, source},
+          },
+        });
+        res.push({
+          model: 'tms_TaskProjectRelationship',
+          record: {
+            task: taskKey,
+            project: {uid: membership.project.gid, source},
           },
         });
       }

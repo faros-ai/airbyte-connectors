@@ -6,6 +6,7 @@ import {AsanaConverter, AsanaProject} from './common';
 export class Projects extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskBoard',
+    'tms_Project',
     'tms_TaskBoardProjectRelationship',
   ];
 
@@ -24,14 +25,19 @@ export class Projects extends AsanaConverter {
       },
     };
 
+    const tmsProject: DestinationRecord = {
+      model: 'tms_Project',
+      ...board,
+    };
+
     const boardProjectRelationship: DestinationRecord = {
       model: 'tms_TaskBoardProjectRelationship',
       record: {
         board: {uid: project.gid, source},
-        project: {uid: project.workspace.gid, source},
+        project: {uid: project.gid, source},
       },
     };
 
-    return [board, boardProjectRelationship];
+    return [board, tmsProject, boardProjectRelationship];
   }
 }

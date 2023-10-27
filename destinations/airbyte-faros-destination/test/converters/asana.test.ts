@@ -7,7 +7,6 @@ import {Projects} from '../../src/converters/asana/projects';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {Users} from '../../src/converters/asana/users';
-import {Workspaces} from '../../src/converters/asana/workspaces';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
@@ -285,20 +284,6 @@ describe('asana', () => {
         ...USER,
         email: 'johndoe@example.com',
       });
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-  });
-
-  describe('workspaces', () => {
-    const converter = new Workspaces();
-    const WORKSPACE = {
-      gid: '1205346833089989',
-      name: 'Workspace Uno',
-    };
-
-    test('basic workspace', async () => {
-      const record = AirbyteRecord.make('workspaces', WORKSPACE);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });
