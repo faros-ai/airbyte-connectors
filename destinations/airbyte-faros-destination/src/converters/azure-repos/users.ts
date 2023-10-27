@@ -10,12 +10,22 @@ export class Users extends AzureReposConverter {
     'vcs_User',
   ];
 
+  private checkUserItemValidity(userItem: User): boolean {
+    if (!userItem.principalName) {
+      return false;
+    }
+    return true;
+  }
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const userItem = record.record.data as User;
     const res: DestinationRecord[] = [];
+    if (!this.checkUserItemValidity(userItem)) {
+      return res;
+    }
     const organizationName = this.getOrganizationFromUrl(
       userItem._links.self.href
     );
@@ -31,7 +41,6 @@ export class Users extends AzureReposConverter {
         user: {uid: userItem.principalName, source},
       },
     });
-
     res.push({
       model: 'vcs_User',
       record: {

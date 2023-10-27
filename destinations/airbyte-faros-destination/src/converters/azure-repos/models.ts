@@ -192,7 +192,7 @@ interface UserLink {
 export interface User {
   subjectKind: string;
   domain: string;
-  principalName: string;
+  principalName?: string;
   mailAddress: string;
   origin: string;
   originId: string;
