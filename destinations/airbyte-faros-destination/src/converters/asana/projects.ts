@@ -6,6 +6,7 @@ import {AsanaConverter, AsanaProject} from './common';
 export class Projects extends AsanaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskBoard',
+    'tms_Project',
     'tms_TaskBoardProjectRelationship',
   ];
 
@@ -14,6 +15,9 @@ export class Projects extends AsanaConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const project: AsanaProject = record.record.data as AsanaProject;
+
+    // Since Asana doesn't have a concept of a board, we create a board and a project from the same Asana project.
+    // This is the same behavior as the Jira connector when using project ownership.
 
     const board: DestinationRecord = {
       model: 'tms_TaskBoard',
@@ -24,14 +28,19 @@ export class Projects extends AsanaConverter {
       },
     };
 
+    const tmsProject: DestinationRecord = {
+      model: 'tms_Project',
+      ...board,
+    };
+
     const boardProjectRelationship: DestinationRecord = {
       model: 'tms_TaskBoardProjectRelationship',
       record: {
         board: {uid: project.gid, source},
-        project: {uid: project.workspace.gid, source},
+        project: {uid: project.gid, source},
       },
     };
 
-    return [board, boardProjectRelationship];
+    return [board, tmsProject, boardProjectRelationship];
   }
 }
