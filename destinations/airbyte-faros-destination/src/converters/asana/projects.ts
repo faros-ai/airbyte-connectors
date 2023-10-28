@@ -16,6 +16,9 @@ export class Projects extends AsanaConverter {
     const source = this.streamName.source;
     const project: AsanaProject = record.record.data as AsanaProject;
 
+    // Since Asana doesn't have a concept of a board, we create a board and a project from the same Asana project.
+    // This is the same behavior as the Jira connector when using project ownership.
+
     const board: DestinationRecord = {
       model: 'tms_TaskBoard',
       record: {

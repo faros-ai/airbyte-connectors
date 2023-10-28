@@ -58,9 +58,8 @@ describe('asana', () => {
     const writtenByModel = {
       tms_Label: 2,
       tms_Task: 3,
-      tms_TaskBoard: 1,
+      tms_TaskBoard: 2,
       tms_TaskBoardProjectRelationship: 1,
-      tms_TaskProjectRelationship: 3,
       tms_TaskTag: 2,
       tms_User: 1,
     };
