@@ -42,6 +42,15 @@ type ExtendedClient = Client & {
   [MEP]: any; // MEP: MoreEndpointsPrefix
 };
 
+interface PaginatedProjects extends Dict {
+  isLastPage?: boolean;
+  limit?: number;
+  size?: number;
+  start?: number;
+  values?: Project[];
+  [k: string]: any;
+}
+
 export class BitbucketServer {
   private static bitbucket: BitbucketServer = null;
 
@@ -103,9 +112,6 @@ export class BitbucketServer {
         'Invalid authentication details. Please provide either a ' +
           'Bitbucket access token OR a Bitbucket username and password',
       ];
-    }
-    if (!config.projects || config.projects.length < 1) {
-      return [false, 'No projects provided'];
     }
     if (!config.cutoff_days) {
       throw new VError('cutoff_days is null or empty');
@@ -448,6 +454,42 @@ export class BitbucketServer {
       return data;
     } catch (err) {
       throw new VError(innerError(err), `Error fetching project ${projectKey}`);
+    }
+  }
+
+  @Memoize()
+  async projects(
+    projects?: ReadonlyArray<string>
+  ): Promise<ReadonlyArray<Project>> {
+    const lowercaseProjectKeys = projects?.map((p) => p.toLowerCase());
+    try {
+      this.logger.debug(`Fetching projects`);
+      const results = [];
+      const iterator = this.paginate<PaginatedProjects, Project>(
+        (start) =>
+          this.client[MEP].projects.getProjects({
+            start,
+            limit: this.pageSize,
+          }),
+        (data): Project => {
+          return data as Project;
+        },
+        (project) => {
+          return {
+            shouldEmit:
+              !projects ||
+              projects.length === 0 ||
+              lowercaseProjectKeys.includes(project.key?.toLowerCase()),
+            shouldBreakEarly: false,
+          };
+        }
+      );
+      for await (const project of iterator) {
+        results.push(project);
+      }
+      return results;
+    } catch (err) {
+      throw new VError(innerError(err), `Error fetching projects`);
     }
   }
 

@@ -14,6 +14,23 @@
       },
       "url": "/rest/api/latest/projects/{projectKey}"
     },
+    "getProjects": {
+      "headers": {
+        "accept": "application/json"
+      },
+      "method": "GET",
+      "params": {
+        "start": {
+          "in": "query",
+          "type": "integer"
+        },
+        "limit": {
+          "in": "query",
+          "type": "integer"
+        }
+      },
+      "url": "/rest/api/latest/projects"
+    },
     "getRepositories": {
       "headers": {
         "accept": "application/json"

@@ -68,8 +68,8 @@ describe('index', () => {
         {
           [MEP]: {
             projects: {
-              getProject: fnProjectsFunc.mockResolvedValue({
-                data: testProject,
+              getProjects: fnProjectsFunc.mockResolvedValue({
+                data: {values: [testProject]},
               }),
             },
           },
@@ -83,9 +83,7 @@ describe('index', () => {
     const source = new sut.BitbucketServerSource(logger);
     const streams = source.streams({} as any);
     const projectsStream = streams[2];
-    const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH, undefined, {
-      project: 'PROJ1',
-    });
+    const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
     const projects = [];
     for await (const project of iter) {
       projects.push(project);
