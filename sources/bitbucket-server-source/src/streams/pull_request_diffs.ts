@@ -34,7 +34,7 @@ export class PullRequestDiffs extends PullRequestSubStream {
     streamSlice: StreamSlice,
     streamState?: PullRequestDiffState
   ): AsyncGenerator<PullRequestDiff> {
-    const {project, repo} = streamSlice;
+    const {projectKey: project, repo} = streamSlice;
     const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedDate
