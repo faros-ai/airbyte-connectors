@@ -1,5 +1,4 @@
 import axios, {AxiosInstance} from 'axios';
-import {log} from 'console';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -8,7 +7,6 @@ import {VError} from 'verror';
 import {
   AsanaResponse,
   Project,
-  Section,
   Story,
   Tag,
   Task,
