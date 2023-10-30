@@ -5,7 +5,6 @@
     "title": "Bitbucket Server Spec",
     "type": "object",
     "required": [
-      "cutoff_days",
       "server_url"
     ],
     "additionalProperties": true,
