@@ -4,6 +4,14 @@ import {Converter, DestinationRecord} from '../converter';
 
 export interface AsanaProject {
   gid: string;
+  created_at: string;
+  modified_at: string;
+  name: string;
+  notes: string;
+  workspace: {
+    gid: string;
+    resource_type: string;
+  };
 }
 
 export interface AsanaSection {

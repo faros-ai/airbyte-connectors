@@ -1,47 +1,48 @@
 {
-    "query MyQuery { org_Team { id name uid parentTeam { uid } } }": {
-        "org_Team": [
-            {
-                "id": "a",
-                "name": "b",
-                "uid": "c",
-                "parentTeam": {
-                    "uid": "d"
-                }
-            },
-            {
-                "id": "a",
-                "name": "b",
-                "uid": "c",
-                "parentTeam": null
-            }
-        ]
-    },
-    "query MyQuery { org_TeamMembership { team {id} member {id} id } }": {
-        "org_TeamMembership": [
-            {
-                "team": {
-                    "id": "a"
-                },
-                "member": {
-                    "id": "b"
-                },
-                "id": "c"
-            },
-            {
-                "team": {
-                    "id": "c"
-                },
-                "member": null,
-                "id": "c"
-            },
-            {
-                "team": null,
-                "member": {
-                    "id": "c"
-                },
-                "id": "c"
-            }
-        ]
-    }
+  "query MyQuery { org_Team { id name uid parentTeam { uid } } }": {
+    "org_Team": [
+      {
+        "id": "a",
+        "name": "b",
+        "uid": "c",
+        "parentTeam": {
+          "uid": "d"
+        }
+      },
+      {
+        "id": "a",
+        "name": "b",
+        "uid": "c",
+        "parentTeam": null
+      }
+    ]
+  },
+  "query MyQuery { org_TeamMembership { team {id} member {id} id } }": {
+    "org_TeamMembership": [
+      {
+        "team": {
+          "id": "a"
+        },
+        "member": {
+          "id": "b"
+        },
+        "id": "c"
+      },
+      {
+        "team": {
+          "id": "c"
+        },
+        "member": null,
+        "id": "c"
+      },
+      {
+        "team": null,
+        "member": {
+          "id": "c"
+        },
+        "id": "c"
+      }
+    ]
+  },
+  "zScoreQueryOptions": {"note": "This object should be replaced by an object in another file."}
 }

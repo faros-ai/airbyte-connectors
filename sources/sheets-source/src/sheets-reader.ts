@@ -6,7 +6,6 @@ import {
   GoogleSpreadsheetWorksheet,
   ServiceAccountCredentials,
 } from 'google-spreadsheet';
-import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 import XLSX from 'xlsx';
 
@@ -43,6 +42,7 @@ export interface SheetsConfig {
 
 export class SheetsReader {
   private static sheetsReader: SheetsReader = null;
+  private static sheetId: string = null; // Google Sheets ID for the current workbook
 
   constructor(private readonly wb: XLSX.WorkBook) {}
 
@@ -141,7 +141,7 @@ export class SheetsReader {
 
   async *readRows(
     logger?: AirbyteLogger
-  ): AsyncGenerator<Dictionary<any, string>> {
+  ): AsyncGenerator<{ sheetName: string, row: any, sheetId: string, id: string }>{
     for (const sheetName of this.getSheetNames()) {
       logger?.info(`Reading sheet: ${sheetName}`);
 
@@ -149,14 +149,21 @@ export class SheetsReader {
         defval: null,
       });
 
-      for (const row of rows) {
-        yield { sheetName, row };
+      for (let i = 0; i < rows.length; i++) {
+        // Generate a unique record ID for each row
+        const recordId = `${SheetsReader.sheetId}_${this.normalizeSheetName(sheetName)}_${i}`
+        const row = rows[i];
+        yield { sheetName, row, sheetId: SheetsReader.sheetId, id: recordId };
       }
     }
   }
 
   getSheetNames(): ReadonlyArray<string> {
     return this.wb.SheetNames;
+  }
+
+  normalizeSheetName(sheetName: string): string {
+    return sheetName.toLowerCase().split(' ').join('_');
   }
 
   static async loadFile(
@@ -173,7 +180,14 @@ export class SheetsReader {
       } sheets: ${wb.SheetNames.join(', ')}`
     );
 
+    // get sheetId from file name (without containing folders and extension)
+    SheetsReader.sheetId = this.getFileName(file);
+
     return wb;
+  }
+
+  private static getFileName(file: string) {
+    return file.split('/').pop().split('.')[0];
   }
 
   static async loadSheets(
@@ -206,6 +220,9 @@ export class SheetsReader {
         doc.sheetCount
       } sheets: ${Object.keys(doc.sheetsByTitle).join(', ')}`
     );
+
+    // Store sheets id in sheetId for returning it with rows
+    SheetsReader.sheetId = sheetId;
 
     const wb = XLSX.utils.book_new();
 
@@ -242,6 +259,8 @@ export class SheetsReader {
         wb.SheetNames.length
       } sheets: ${wb.SheetNames.join(', ')}`
     );
+
+    SheetsReader.sheetId = `${bucket}/${bucketPath}`;
 
     return wb;
   }

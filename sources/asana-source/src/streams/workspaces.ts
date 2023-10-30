@@ -7,10 +7,10 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Asana, AsanaConfig} from '../asana';
-import {Project} from '../models';
+import {Workspace} from '../models';
 import {StreamSlice} from './common';
 
-export class Projects extends AirbyteStreamBase {
+export class Workspaces extends AirbyteStreamBase {
   constructor(
     private readonly config: AsanaConfig,
     protected readonly logger: AirbyteLogger
@@ -19,28 +19,18 @@ export class Projects extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/projects.json');
+    return require('../../resources/schemas/workspaces.json');
   }
 
   get primaryKey(): StreamKey {
     return 'gid';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
+  async *readRecords(): AsyncGenerator<Workspace> {
     const asana = Asana.instance(this.config);
 
     for (const workspace of await asana.getWorkspaces()) {
-      yield {workspace: workspace.gid};
+      yield workspace;
     }
-  }
-
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: StreamSlice
-  ): AsyncGenerator<Project> {
-    const asana = Asana.instance(this.config);
-
-    yield* asana.getProjects(streamSlice.workspace, this.logger);
   }
 }

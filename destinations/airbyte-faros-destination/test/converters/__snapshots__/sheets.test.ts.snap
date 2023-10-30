@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sheets survey responses basic response convert and getters 1`] = `
+Array [
+  Object {
+    "model": "survey_Team",
+    "record": Object {
+      "name": "X",
+      "source": "Sheets",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": null,
+      "response": "5",
+      "source": "Sheets",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Sheets",
+          "uid": "3dbd78e458bab6402e2c370d65c3da160e8ff3f68585e176e0c0a0dd4801c56d",
+        },
+        "survey": Object {
+          "source": "Sheets",
+          "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
+        },
+      },
+      "team": Object {
+        "source": "Sheets",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+      },
+      "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "How much do you like ice cream?",
+      "source": "Sheets",
+      "uid": "3dbd78e458bab6402e2c370d65c3da160e8ff3f68585e176e0c0a0dd4801c56d",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Sheets",
+        "uid": "3dbd78e458bab6402e2c370d65c3da160e8ff3f68585e176e0c0a0dd4801c56d",
+      },
+      "survey": Object {
+        "source": "Sheets",
+        "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
+      },
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Sheets",
+      "startedAt": null,
+      "status": null,
+      "type": null,
+      "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": null,
+      "response": "2023-10-09T14:09:37.000Z",
+      "source": "Sheets",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Sheets",
+          "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
+        },
+        "survey": Object {
+          "source": "Sheets",
+          "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
+        },
+      },
+      "team": Object {
+        "source": "Sheets",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+      },
+      "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "Timestamp",
+      "source": "Sheets",
+      "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 2,
+      "question": Object {
+        "source": "Sheets",
+        "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
+      },
+      "survey": Object {
+        "source": "Sheets",
+        "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
+      },
+    },
+  },
+]
+`;
