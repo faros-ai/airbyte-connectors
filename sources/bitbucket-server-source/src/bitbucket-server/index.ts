@@ -33,6 +33,7 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly reject_unauthorized?: boolean;
 }
 
+const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 25;
 
 type Dict = {[k: string]: any};
@@ -87,7 +88,9 @@ export class BitbucketServer {
       : {type: 'basic', username: config.username, password: config.password};
     client.authenticate(auth as Client.Auth);
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    startDate.setDate(
+      startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS)
+    );
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
     const bb = new BitbucketServer(client, pageSize, logger, startDate);
@@ -112,9 +115,6 @@ export class BitbucketServer {
         'Invalid authentication details. Please provide either a ' +
           'Bitbucket access token OR a Bitbucket username and password',
       ];
-    }
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
     }
     return [true, undefined];
   }
