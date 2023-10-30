@@ -1,5 +1,4 @@
 import {FarosClient} from 'faros-js-client';
-import _ from 'lodash';
 
 import {DataIssueWrapper, GraphDoctorTestFunction} from './models';
 
