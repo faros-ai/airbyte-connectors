@@ -49,7 +49,11 @@ export interface DataSummaryInterface {
   counts?: FarosDataQualityRecordCount[];
 }
 
+export interface DataIssueWrapper {
+  faros_DataQualityIssue: DataIssueInterface;
+}
+
 export type GraphDoctorTestFunction = (
   cfg: any,
   fc: FarosClient
-) => AsyncGenerator<DataIssueInterface>;
+) => AsyncGenerator<DataIssueWrapper>;

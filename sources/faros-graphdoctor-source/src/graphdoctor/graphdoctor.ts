@@ -2,6 +2,7 @@ import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
 import {GraphDoctorTestFunction} from './models';
+import {teamOwnershipNulls} from './teamOwnershipNulls';
 import {runAllZScoreTests} from './z_scores';
 
 function simpleHash(str): string {
@@ -21,9 +22,6 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
   fc: FarosClient
 ) {
-  // We should add queries which return pages and yield results per page
-  // For now yielding all at once
-  cfg.logger.info('running orgTeamParentNull');
   const query = 'query MyQuery { org_Team { id name uid parentTeam { uid } } }';
   const response = await fc.gql(cfg.graph, query);
   const results = [];
@@ -50,9 +48,6 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
 
 export const orgTeamAssignmentNullTeam: GraphDoctorTestFunction =
   async function* (cfg: any, fc: FarosClient) {
-    // We should add queries which return pages and yield results per page
-    // For now yielding all at once
-    //cfg.logger.info('running orgTeamAssignmentNullTeam');
     const query =
       'query MyQuery { org_TeamMembership { team {id} member {id} id } }';
     const response = await fc.gql(cfg.graph, query);
@@ -84,9 +79,11 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     orgTeamParentNull,
     orgTeamAssignmentNullTeam,
     runAllZScoreTests,
+    teamOwnershipNulls,
   ];
 
   for (const test_func of testFunctions) {
+    cfg.logger.info(`Running test function "${test_func.name}".`);
     yield* test_func(cfg, fc);
   }
 }
