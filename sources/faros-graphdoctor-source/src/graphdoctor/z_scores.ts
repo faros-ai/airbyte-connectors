@@ -1,7 +1,7 @@
 import {FarosClient} from 'faros-js-client';
 
 import {
-  DataIssueInterface,
+  DataIssueWrapper,
   GraphDoctorTestFunction,
   RefreshedAtInterface,
   ZScoreComputationResult,
@@ -41,7 +41,7 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     refreshedAt,
     id
   }`;
-  const data_issues: DataIssueInterface[] = [];
+  const data_issues: DataIssueWrapper[] = [];
   for (const object_list of object_test_list_groupings) {
     const new_data_issues = await runZScoreTestOnObjectGrouping(
       object_list,
@@ -64,8 +64,8 @@ async function runZScoreTestOnObjectGrouping(
   base_object_query: string,
   fc: FarosClient,
   cfg: any
-): Promise<DataIssueInterface[]> {
-  const data_issues: DataIssueInterface[] = [];
+): Promise<DataIssueWrapper[]> {
+  const data_issues: DataIssueWrapper[] = [];
   // Note all of the objects in the object_test_list queries will combined into one
   let query_internal = '';
   for (const obj_nm of object_test_list) {
@@ -98,12 +98,14 @@ async function runZScoreTestOnObjectGrouping(
     if (z_score_result.status != 0) {
       failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${obj_nm}. `;
       data_issues.push({
-        uid: `ZScoreComputationFailure: ${now_ts}`,
-        description: failure_msg,
+        faros_DataQualityIssue: {
+          uid: `ZScoreComputationFailure: ${now_ts}`,
+          description: failure_msg,
+        },
       });
       continue;
     }
-    const data_issue: DataIssueInterface | null = convert_result_to_data_issue(
+    const data_issue: DataIssueWrapper | null = convert_result_to_data_issue(
       z_score_result,
       obj_nm,
       z_score_threshold,
@@ -121,7 +123,7 @@ function convert_result_to_data_issue(
   object_nm: string,
   threshold: number,
   cfg: any
-): DataIssueInterface | null {
+): DataIssueWrapper | null {
   const z_score = z_score_result.z_score;
   if (!z_score) {
     return null;
@@ -138,9 +140,11 @@ function convert_result_to_data_issue(
   desc_str += `Number of datetime stamps: ${z_score_result.nResults}.`;
 
   return {
-    uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
-    description: desc_str,
-    recordIds: [z_score_result.last_id],
+    faros_DataQualityIssue: {
+      uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
+      description: desc_str,
+      recordIds: [z_score_result.last_id],
+    },
   };
 }
 
