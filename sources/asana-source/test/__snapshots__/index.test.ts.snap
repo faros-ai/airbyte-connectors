@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index streams - tasks 1`] = `
+Array [
+  Object {
+    "gid": "t1",
+    "modified_at": "2021-01-01T00:00:00.000Z",
+    "name": "task1",
+    "stories": Array [
+      Object {
+        "created_at": "2021-01-01T00:00:00.000Z",
+        "gid": "s1",
+        "resource_subtype": "marked_complete",
+      },
+    ],
+    "workspace": Object {
+      "gid": "w1",
+    },
+  },
+]
+`;
