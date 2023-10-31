@@ -52,6 +52,28 @@
         }
       },
       "url": "/rest/api/latest/projects/{projectKey}/repos"
+    },
+    "getUsers": {
+      "headers": {
+        "accept": "application/json"
+      },
+      "method": "GET",
+      "params": {
+        "projectKey": {
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        "start": {
+          "in": "query",
+          "type": "integer"
+        },
+        "limit": {
+          "in": "query",
+          "type": "integer"
+        }
+      },
+      "url": "/rest/api/latest/projects/{projectKey}/permissions/users"
     }
   },
   "pullRequests": {

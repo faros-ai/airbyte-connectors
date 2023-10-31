@@ -71,6 +71,18 @@
         "title": "Enforce Certificate Validation",
         "default": true,
         "description": "Enforce certificate validation for the Bitbucket Server"
+      },
+      "repo_bucket_id": {
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of repos to pull. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "repo_bucket_total": {
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute repos across. Use it when distributing the load between multiple sources",
+        "default": 1
       }
     }
   }
