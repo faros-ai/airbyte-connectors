@@ -10,6 +10,7 @@ import {
   PullRequestDiff,
   Repository,
   Tag,
+  User,
 } from 'faros-airbyte-common/bitbucket-server';
 import {pick} from 'lodash';
 import parseDiff from 'parse-diff';
@@ -550,6 +551,24 @@ export class BitbucketServer {
         innerError(err),
         `Error fetching users for project ${projectKey}`
       );
+    }
+  }
+
+  async *users(): AsyncGenerator<User> {
+    try {
+      this.logger.debug(`Fetching users`);
+      yield* this.paginate<Schema.PaginatedUsers, User>(
+        (start) =>
+          this.client.api.getUsers({
+            start,
+            limit: this.pageSize,
+          }),
+        (data) => {
+          return data as User;
+        }
+      );
+    } catch (err) {
+      throw new VError(innerError(err), `Error fetching users`);
     }
   }
 
