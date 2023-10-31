@@ -28,6 +28,8 @@ jest.mock('faros-js-client', () => {
         async gql(graph: string, query: string): Promise<any> {
           if (query.includes('ZScoreQuery')) {
             return mockQueryToResponse[zScoreQueryResponseKey];
+          } else if (!(query in mockQueryToResponse)) {
+            return [];
           }
           return mockQueryToResponse[query];
         },

@@ -1,17 +1,18 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
-import {identityNulls} from './IdentityNulls';
+//import { identityNulls } from './identityNulls';
 import {GraphDoctorTestFunction} from './models';
-import {teamOwnershipNulls} from './teamOwnershipNulls';
-import {simpleHash} from './utils';
+//import {teamOwnershipNulls} from './teamOwnershipNulls';
+import {missingRelationsTest, simpleHash} from './utils';
 import {runAllZScoreTests} from './z_scores';
 
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
   fc: FarosClient
 ) {
-  const query = 'query MyQuery { org_Team { id name uid parentTeam { uid } } }';
+  const query =
+    'query orgTeamParentNull { org_Team { id name uid parentTeam { uid } } }';
   const response = await fc.gql(cfg.graph, query);
   const results = [];
   const org_Teams = response.org_Team;
@@ -33,6 +34,56 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   for (const result of results) {
     yield result;
   }
+};
+
+const identityNulls: GraphDoctorTestFunction = async function* (
+  cfg: any,
+  fc: FarosClient
+) {
+  // team Ownership objects:
+  const identityObjects = {
+    vcs_UserIdentity: {
+      obj_nm: 'vcsUser',
+    },
+    ims_UserIdentity: {
+      obj_nm: 'imsUser',
+    },
+    tms_UserIdentity: {
+      obj_nm: 'tmsUser',
+    },
+  };
+  const query =
+    'query identityNulls { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %obj_nm% {id} id } }';
+
+  yield* missingRelationsTest(cfg, fc, identityObjects, query, 'identity');
+};
+
+export const teamOwnershipNulls: GraphDoctorTestFunction = async function* (
+  cfg: any,
+  fc: FarosClient
+) {
+  // team Ownership objects:
+  const ownershipObjects = {
+    org_ApplicationOwnership: {
+      obj_nm: 'application',
+    },
+    org_BoardOwnership: {
+      obj_nm: 'board',
+    },
+    org_PipelineOwnership: {
+      obj_nm: 'pipeline',
+    },
+    org_RepositoryOwnership: {
+      obj_nm: 'repository',
+    },
+    org_TeamMembership: {
+      obj_nm: 'member',
+    },
+  };
+  const query =
+    'query teamOwnershipNulls { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %obj_nm% {id} id } }';
+
+  yield* missingRelationsTest(cfg, fc, ownershipObjects, query, 'team');
 };
 
 export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
