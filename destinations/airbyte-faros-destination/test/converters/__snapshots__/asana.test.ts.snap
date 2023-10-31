@@ -11,7 +11,7 @@ Array [
     },
   },
   Object {
-    "model": "tms_TaskBoard",
+    "model": "tms_Project",
     "record": Object {
       "name": "Project Uno",
       "source": "Asana",
