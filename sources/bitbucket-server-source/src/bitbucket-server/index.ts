@@ -1,4 +1,5 @@
 import Client, {Schema} from '@atlassian/bitbucket-server';
+import {createHmac} from 'crypto';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Commit,
@@ -31,6 +32,8 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly page_size?: number;
   readonly cutoff_days?: number;
   readonly reject_unauthorized?: boolean;
+  readonly repo_bucket_id?: number;
+  readonly repo_bucket_total?: number;
 }
 
 const DEFAULT_CUTOFF_DAYS = 90;
@@ -59,7 +62,9 @@ export class BitbucketServer {
     private readonly client: ExtendedClient,
     private readonly pageSize: number,
     private readonly logger: AirbyteLogger,
-    readonly startDate: Date
+    private readonly startDate: Date,
+    private readonly repoBucketId: number,
+    private readonly repoBucketTotal: number
   ) {}
 
   static instance(
@@ -93,7 +98,14 @@ export class BitbucketServer {
     );
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
 
-    const bb = new BitbucketServer(client, pageSize, logger, startDate);
+    const bb = new BitbucketServer(
+      client,
+      pageSize,
+      logger,
+      startDate,
+      config.repo_bucket_id ?? 1,
+      config.repo_bucket_total ?? 1
+    );
     BitbucketServer.bitbucket = bb;
     logger.debug(`Created Bitbucket Server instance with ${auth.type} auth`);
     return BitbucketServer.bitbucket;
@@ -115,6 +127,14 @@ export class BitbucketServer {
         'Invalid authentication details. Please provide either a ' +
           'Bitbucket access token OR a Bitbucket username and password',
       ];
+    }
+    const repoBucketTotal = config.repo_bucket_total ?? 1;
+    if (repoBucketTotal < 1) {
+      return [false, 'repo_bucket_total must be a positive integer'];
+    }
+    const repoBucketId = config.repo_bucket_id ?? 1;
+    if (repoBucketId < 1 || repoBucketId > repoBucketTotal) {
+      return [false, `repo_bucket_id must be between 1 and ${repoBucketTotal}`];
     }
     return [true, undefined];
   }
@@ -428,9 +448,11 @@ export class BitbucketServer {
           } as Repository;
         },
         (repo) => {
+          const repoFullName = repo.computedProperties.fullName;
           return {
             shouldEmit:
-              !include || include.includes(repo.computedProperties.fullName),
+              (!include || include.includes(repoFullName)) &&
+              this.bucket(repoFullName) === this.repoBucketId,
             shouldBreakEarly: false,
           };
         }
@@ -519,6 +541,13 @@ export class BitbucketServer {
         `Error fetching users for project ${project}`
       );
     }
+  }
+
+  bucket(repoFullName: string): number {
+    const md5 = createHmac('md5', 'farosai/airbyte-bitbucket-server-source');
+    md5.update(repoFullName);
+    const hex = md5.digest('hex').substring(0, 8);
+    return (parseInt(hex, 16) % this.repoBucketTotal) + 1; // 1-index for readability
   }
 }
 
