@@ -1,4 +1,4 @@
-import Client, {Schema} from '@atlassian/bitbucket-server';
+import Client, {ResponseError, Schema} from '@atlassian/bitbucket-server';
 import {createHmac} from 'crypto';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
@@ -35,7 +35,6 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly reject_unauthorized?: boolean;
   readonly repo_bucket_id?: number;
   readonly repo_bucket_total?: number;
-  readonly token_is_admin?: boolean;
 }
 
 const DEFAULT_CUTOFF_DAYS = 90;
@@ -517,39 +516,58 @@ export class BitbucketServer {
     }
   }
 
-  async *projectUsers(
-    projectKey: string,
-    isAdminToken?: boolean
-  ): AsyncGenerator<ProjectUser> {
+  async *projectUsers(projectKey: string): AsyncGenerator<ProjectUser> {
     try {
       this.logger.debug(`Fetching users for project ${projectKey}`);
       yield* this.paginate<Schema.PaginatedUsers, ProjectUser>(
         (start) =>
-          isAdminToken
-            ? this.client[MEP].projects.getUsers({
-                start,
-                limit: this.pageSize,
-                projectKey,
-              })
-            : this.client.api.getUsers({
-                start,
-                limit: this.pageSize,
-                q: {
-                  'permission.1': 'PROJECT_READ',
-                  'permission.1.projectKey': projectKey,
-                },
-              }),
+          this.client[MEP].projects.getUsers({
+            start,
+            limit: this.pageSize,
+            projectKey,
+          }),
         (data: Schema.User): ProjectUser => {
-          return {
-            user: isAdminToken ? data.user : data,
-            project: {key: projectKey},
-          } as ProjectUser;
+          return {user: data.user, project: {key: projectKey}} as ProjectUser;
+        }
+      );
+    } catch (err) {
+      if ((err as ResponseError).code === 401) {
+        this.logger.warn(
+          `Received 401 code fetching users for project ${projectKey}, falling back to global search`
+        );
+        yield* this.searchUsersByProject(projectKey);
+      } else {
+        throw new VError(
+          innerError(err),
+          `Error fetching users for project ${projectKey}`
+        );
+      }
+    }
+  }
+
+  private async *searchUsersByProject(
+    projectKey: string
+  ): AsyncGenerator<ProjectUser> {
+    try {
+      this.logger.debug(`Searching users by project ${projectKey}`);
+      yield* this.paginate<Schema.PaginatedUsers, ProjectUser>(
+        (start) =>
+          this.client.api.getUsers({
+            start,
+            limit: this.pageSize,
+            q: {
+              'permission.1': 'PROJECT_READ',
+              'permission.1.projectKey': projectKey,
+            },
+          }),
+        (data: Schema.User): ProjectUser => {
+          return {user: data, project: {key: projectKey}} as ProjectUser;
         }
       );
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching users for project ${projectKey}`
+        `Error searching for users by project ${projectKey}`
       );
     }
   }

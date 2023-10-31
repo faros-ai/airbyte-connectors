@@ -83,12 +83,6 @@
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute repos across. Use it when distributing the load between multiple sources",
         "default": 1
-      },
-      "token_is_admin": {
-        "type": "boolean",
-        "title": "Token has admin project permissions",
-        "default": true,
-        "description": "Use a possibly faster API endpoint for fetching project users if the token has admin project permissions"
       }
     }
   }
