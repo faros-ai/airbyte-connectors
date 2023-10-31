@@ -16,7 +16,7 @@ async function getDataQualityRecordCount(
 ): Promise<FarosDataQualityRecordCount> {
   // e.g. tms_Task_aggregate
   const aggregate_name = `${modelName}_aggregate`;
-  const base_query = `query MyQuery { ${aggregate_name}(where: {isPhantom: {_eq: %bool%}}) { aggregate { count } } }`;
+  const base_query = `query RecordCount_${modelName} { ${aggregate_name}(where: {isPhantom: {_eq: %bool%}}) { aggregate { count } } }`;
   const phantomCounter: Record<string, number> = {};
   for (const bool_val of ['true', 'false']) {
     const new_query = base_query.replace('%bool%', bool_val);
