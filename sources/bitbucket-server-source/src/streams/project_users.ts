@@ -34,6 +34,9 @@ export class ProjectUsers extends StreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<ProjectUser> {
-    yield* this.server.projectUsers(streamSlice.projectKey);
+    yield* this.server.projectUsers(
+      streamSlice.projectKey,
+      this.config.token_is_admin
+    );
   }
 }

@@ -75,14 +75,20 @@
       "repo_bucket_id": {
         "type": "integer",
         "title": "Bucket Number",
-        "description": "Bucket number for this source to determine which portion of repos to pull. Use it when distributing the load between multiple sources.",
+        "description": "Bucket number for this source to determine which portion of repos to pull. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "repo_bucket_total": {
         "type": "integer",
         "title": "Total Number of Buckets",
-        "description": "Total number of buckets to distribute repos across. Use it when distributing the load between multiple sources.",
+        "description": "Total number of buckets to distribute repos across. Use it when distributing the load between multiple sources",
         "default": 1
+      },
+      "token_is_admin": {
+        "type": "boolean",
+        "title": "Token has admin project permissions",
+        "default": true,
+        "description": "Use a possibly faster API endpoint for fetching project users if the token has admin project permissions"
       }
     }
   }

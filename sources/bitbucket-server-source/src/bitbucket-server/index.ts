@@ -34,6 +34,7 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly reject_unauthorized?: boolean;
   readonly repo_bucket_id?: number;
   readonly repo_bucket_total?: number;
+  readonly token_is_admin?: boolean;
 }
 
 const DEFAULT_CUTOFF_DAYS = 90;
@@ -515,30 +516,39 @@ export class BitbucketServer {
     }
   }
 
-  async *projectUsers(project: string): AsyncGenerator<ProjectUser> {
+  async *projectUsers(
+    projectKey: string,
+    isAdminToken?: boolean
+  ): AsyncGenerator<ProjectUser> {
     try {
-      this.logger.debug(`Fetching users for project ${project}`);
+      this.logger.debug(`Fetching users for project ${projectKey}`);
       yield* this.paginate<Schema.PaginatedUsers, ProjectUser>(
         (start) =>
-          this.client.api.getUsers({
-            start,
-            limit: this.pageSize,
-            q: {
-              'permission.1': 'PROJECT_READ',
-              'permission.1.projectKey': project,
-            },
-          }),
+          isAdminToken
+            ? this.client[MEP].projects.getUsers({
+                start,
+                limit: this.pageSize,
+                projectKey,
+              })
+            : this.client.api.getUsers({
+                start,
+                limit: this.pageSize,
+                q: {
+                  'permission.1': 'PROJECT_READ',
+                  'permission.1.projectKey': projectKey,
+                },
+              }),
         (data: Schema.User): ProjectUser => {
           return {
-            user: data,
-            project: {key: project},
+            user: isAdminToken ? data.user : data,
+            project: {key: projectKey},
           } as ProjectUser;
         }
       );
     } catch (err) {
       throw new VError(
         innerError(err),
-        `Error fetching users for project ${project}`
+        `Error fetching users for project ${projectKey}`
       );
     }
   }
