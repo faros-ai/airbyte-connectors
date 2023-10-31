@@ -53,7 +53,12 @@ export interface DataIssueWrapper {
   faros_DataQualityIssue: DataIssueInterface;
 }
 
+export interface DataSummaryWrapper {
+  faros_DataQualitySummary: DataSummaryInterface;
+}
+
 export type GraphDoctorTestFunction = (
   cfg: any,
-  fc: FarosClient
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
 ) => AsyncGenerator<DataIssueWrapper>;

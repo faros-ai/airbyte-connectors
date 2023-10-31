@@ -1,13 +1,18 @@
 import {FarosClient} from 'faros-js-client';
 
-import {DataIssueWrapper, GraphDoctorTestFunction} from './models';
+import {
+  DataIssueWrapper,
+  DataSummaryKey,
+  GraphDoctorTestFunction,
+} from './models';
 import {get_paginated_query_results, getCurrentTimestamp} from './utils';
 
 function process_name_query_results(
   query_results: any[],
   name_field: string,
   obj_nm: string,
-  crt_timestamp: string
+  crt_timestamp: string,
+  summaryKey: DataSummaryKey
 ): DataIssueWrapper[] {
   const results = [];
   const namesToIDs: Record<string, string> = {};
@@ -18,10 +23,11 @@ function process_name_query_results(
         faros_DataQualityIssue: {
           uid: `${crt_timestamp}|${obj_nm}|${recordCount}`,
           model: obj_nm,
-          description: `Duplicate names for two of the same object: "${obj_nm}", name: ${result_obj.get(
+          description: `Duplicate names for two of the same object: "${obj_nm}", name: "${result_obj.get(
             name_field
-          )}`,
+          )}".`,
           recordIds: [namesToIDs[result_obj.get(name_field)], result_obj.id],
+          summary: summaryKey,
         },
       });
       recordCount += 1;
@@ -32,7 +38,8 @@ function process_name_query_results(
 
 export const duplicateNames: GraphDoctorTestFunction = async function* (
   cfg: any,
-  fc: FarosClient
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
 ) {
   // For these queries we need to get all the results, so pagination may be necessary
   const test_objects = {
@@ -82,7 +89,8 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
       query_results,
       name_field,
       obj_nm,
-      crt_timestamp
+      crt_timestamp,
+      summaryKey
     );
     results.push(...new_data_issues);
   }

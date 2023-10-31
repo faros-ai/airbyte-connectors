@@ -2,6 +2,7 @@ import {FarosClient} from 'faros-js-client';
 
 import {
   DataIssueWrapper,
+  DataSummaryKey,
   GraphDoctorTestFunction,
   RefreshedAtInterface,
   ZScoreComputationResult,
@@ -14,7 +15,8 @@ const z_score_threshold: number = 2;
 // Entrypoint
 export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   cfg: any,
-  fc: FarosClient
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
 ) {
   cfg.logger.info('Starting to compute data recency tests');
 
@@ -47,7 +49,8 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
       object_list,
       base_object_query,
       fc,
-      cfg
+      cfg,
+      summaryKey
     );
     data_issues.push(...new_data_issues);
   }
@@ -63,7 +66,8 @@ async function runZScoreTestOnObjectGrouping(
   object_test_list: string[],
   base_object_query: string,
   fc: FarosClient,
-  cfg: any
+  cfg: any,
+  summaryKey: DataSummaryKey
 ): Promise<DataIssueWrapper[]> {
   const data_issues: DataIssueWrapper[] = [];
   // Note all of the objects in the object_test_list queries will combined into one
@@ -101,6 +105,7 @@ async function runZScoreTestOnObjectGrouping(
         faros_DataQualityIssue: {
           uid: `ZScoreComputationFailure: ${now_ts}`,
           description: failure_msg,
+          summary: summaryKey,
         },
       });
       continue;
@@ -109,7 +114,8 @@ async function runZScoreTestOnObjectGrouping(
       z_score_result,
       obj_nm,
       z_score_threshold,
-      cfg
+      cfg,
+      summaryKey
     );
     if (data_issue) {
       data_issues.push(data_issue);
@@ -122,7 +128,8 @@ function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
   object_nm: string,
   threshold: number,
-  cfg: any
+  cfg: any,
+  summaryKey: DataSummaryKey
 ): DataIssueWrapper | null {
   const z_score = z_score_result.z_score;
   if (!z_score) {
@@ -144,6 +151,7 @@ function convert_result_to_data_issue(
       uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
       description: desc_str,
       recordIds: [z_score_result.last_id],
+      summary: summaryKey,
     },
   };
 }

@@ -1,6 +1,6 @@
 import {FarosClient} from 'faros-js-client';
 
-import {DataIssueWrapper} from './models';
+import {DataIssueWrapper, DataSummaryKey} from './models';
 
 export function simpleHash(str): string {
   let hash = 0;
@@ -69,7 +69,8 @@ export async function* missingRelationsTest(
   fc: FarosClient,
   relationObjects,
   query: string,
-  fixed_field: string
+  fixed_field: string,
+  summaryKey: DataSummaryKey
 ): AsyncGenerator<DataIssueWrapper> {
   const currentTimestamp: string = getCurrentTimestamp();
 
@@ -87,7 +88,8 @@ export async function* missingRelationsTest(
         result_list,
         main_obj,
         currentTimestamp,
-        fixed_field
+        fixed_field,
+        summaryKey
       );
     results.push(...data_issues);
   }
@@ -100,7 +102,8 @@ export function get_missing_relation_data_issues_from_result_list(
   res_list: any[],
   main_obj: string,
   crt_timestamp: string,
-  fixed_field: string
+  fixed_field: string,
+  summaryKey: DataSummaryKey
 ): DataIssueWrapper[] {
   const data_issues: DataIssueWrapper[] = [];
   let recordCount: number = 0;
@@ -113,6 +116,7 @@ export function get_missing_relation_data_issues_from_result_list(
         model: main_obj,
         description: desc_str,
         recordIds: [rec.id],
+        summary: summaryKey,
       },
     });
   }
