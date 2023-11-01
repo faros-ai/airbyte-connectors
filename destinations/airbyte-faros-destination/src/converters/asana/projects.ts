@@ -29,8 +29,8 @@ export class Projects extends AsanaConverter {
     };
 
     const tmsProject: DestinationRecord = {
-      ...board,
       model: 'tms_Project',
+      record: board.record,
     };
 
     const boardProjectRelationship: DestinationRecord = {
