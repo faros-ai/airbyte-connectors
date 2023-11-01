@@ -77,12 +77,15 @@ export async function* missingRelationsTest(
   const results = [];
   for (const [main_obj, related_obj] of Object.entries(relationObjects)) {
     const obj_nm = related_obj['obj_nm'];
-    const new_query: string = query;
-    new_query.replace('%main_object%', main_obj);
-    new_query.replace('%obj_nm%', obj_nm);
-    new_query.replace('%where_test%', obj_nm);
-    const response = await fc.gql(cfg.graph, query);
+    let new_query: string = query;
+    new_query = new_query.replace('%main_object%', main_obj);
+    new_query = new_query.replace('%obj_nm%', obj_nm);
+    new_query = new_query.replace('%where_test%', obj_nm);
+    const response = await fc.gql(cfg.graph, new_query);
     const result_list = response[main_obj];
+    if (!result_list) {
+      throw new Error(`Failed to get result for query "${new_query}".`);
+    }
     const data_issues: DataIssueWrapper[] =
       get_missing_relation_data_issues_from_result_list(
         result_list,

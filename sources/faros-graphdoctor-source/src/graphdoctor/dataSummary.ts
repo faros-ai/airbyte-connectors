@@ -22,6 +22,11 @@ async function getDataQualityRecordCount(
     const new_query = base_query.replace('%bool%', bool_val);
     const result = await fc.gql(cfg.graph, new_query, {phantoms: 'include'});
     let count = result?.[aggregate_name]?.aggregate?.count;
+    if (!count) {
+      throw new Error(
+        `Failed to get count for model ${modelName}, query: ${new_query}`
+      );
+    }
     count = count ? count : 0;
     phantomCounter[bool_val] = count;
   }

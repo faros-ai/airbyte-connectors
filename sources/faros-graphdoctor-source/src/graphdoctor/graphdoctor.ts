@@ -19,6 +19,9 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   const response = await fc.gql(cfg.graph, query);
   const results = [];
   const org_Teams = response.org_Team;
+  if (!org_Teams) {
+    throw new Error(`Failed to get org_Teams from query "${query}".`);
+  }
   let uid = 0;
   for (const team of org_Teams) {
     if (_.isNull(team.parentTeam) && team.uid !== 'all_teams') {
