@@ -16,13 +16,16 @@ describe('workday', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/workday/catalog.json';
   const streamNamePrefix = 'mytestsource__workday__';
-  const getTempConfig = async (orgs_to_keep, orgs_to_ignore) => {
+  const getTempConfig = async (
+    orgs_to_keep,
+    orgs_to_ignore
+  ): Promise<string> => {
     return await tempConfig(
       mockttp.url,
       InvalidRecordStrategy.SKIP,
       Edition.CLOUD,
       {},
-      {Orgs_To_Keep: orgs_to_keep, Orgs_To_Ignore: orgs_to_ignore}
+      {orgs_to_keep, orgs_to_ignore}
     );
   };
   const runTest = async (
@@ -30,7 +33,7 @@ describe('workday', () => {
     processedByStream,
     writtenByModel,
     workdayStreamsLog
-  ) => {
+  ): Promise<void> => {
     const cli = await CLI.runWith([
       'write',
       '--config',

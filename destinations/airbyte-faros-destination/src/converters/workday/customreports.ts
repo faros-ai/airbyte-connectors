@@ -1,4 +1,3 @@
-import {error} from 'console';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
@@ -311,6 +310,27 @@ export class Customreports extends Converter {
       ownershipChain[orgs_to_ignore_ixs[cross_ix - 1] + 1];
   }
 
+  private KeepTeamLogicNew(
+    ownershipChain,
+    orgs_to_keep,
+    orgs_to_ignore
+  ): boolean {
+    // To determine whether a team is kept, we simply go up the ownership chain.
+    // if we first hit an ignored team, we return false (not kept).
+    // Otherwise if we first hit a kept team, we return true (keep the team)
+    // If we hit neither kept nor ignored, we return false (not kept).
+    for (let i = 0; i < ownershipChain.length; i++) {
+      const org = ownershipChain[i];
+      if (orgs_to_keep.includes(org)) {
+        return true;
+      }
+      if (orgs_to_ignore.includes(org)) {
+        return false;
+      }
+    }
+    return false;
+  }
+
   private KeepTeamLogic(
     team,
     ownershipChain,
@@ -391,21 +411,15 @@ export class Customreports extends Converter {
       teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    return this.KeepTeamLogic(
-      team,
-      ownershipChain,
-      orgs_to_keep,
-      orgs_to_ignore,
-      teamToParent
-    );
+    return this.KeepTeamLogicNew(ownershipChain, orgs_to_keep, orgs_to_ignore);
   }
 
   private getAcceptableTeams(
     teamToParent: Record<string, string>,
     ctx: StreamContext
   ): Set<string> {
-    // This is the entry point for the complicated logic which defines which teams to keep
-    // Note, ctx is included for potential debugging
+    // This is the entry point for the logic which defines which teams to keep
+    // (ctx is included for potential debugging)
     ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
     const [orgs_to_keep, orgs_to_ignore] = this.getOrgsToKeepAndIgnore(ctx);
@@ -520,6 +534,34 @@ export class Customreports extends Converter {
     };
   }
 
+  private replaceTeamParents(
+    acceptable_teams: Set<string>,
+    teamToParent: Record<string, string>
+  ): Record<string, string> {
+    // Within this function we use the new acceptable teams set to
+    // ensure team's parents are within the system.
+    const newTeamToParent: Record<string, string> = {};
+    for (const team of acceptable_teams) {
+      const seenParentTeams: Set<string> = new Set<string>();
+      let parent_team = teamToParent[team];
+      while (parent_team && !acceptable_teams.has(parent_team)) {
+        if (seenParentTeams.has(parent_team)) {
+          throw new Error(
+            'Cycle found in team Parent Replace function. Please reach out to Faros Support.'
+          );
+        }
+        seenParentTeams.add(parent_team);
+        parent_team = teamToParent[team];
+      }
+      if (parent_team) {
+        newTeamToParent[team] = parent_team;
+      } else {
+        newTeamToParent[team] = this.FAROS_TEAM_ROOT;
+      }
+    }
+    return newTeamToParent;
+  }
+
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -532,6 +574,7 @@ export class Customreports extends Converter {
       this.computeTeamToParentTeamMapping(ctx);
 
     // Here we get a set of teams to keep
+    // This is the entry point to the densest logical aspect of the connector
     const acceptable_teams: Set<string> = this.getAcceptableTeams(
       teamToParent,
       ctx
@@ -542,22 +585,16 @@ export class Customreports extends Converter {
     ctx.logger.info(
       'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
     );
-
     ctx.logger.info('Finished computing ownership chains.');
 
-    ctx.logger.info('Replacing non existent teams with root');
-
-    for (const team of acceptable_teams) {
-      const parent_team = teamToParent[team];
-      if (!acceptable_teams.has(parent_team)) {
-        teamToParent[team] = this.FAROS_TEAM_ROOT;
-        this.replacedParentTeams.push(team);
-      }
-    }
+    const newTeamToParent: Record<string, string> = this.replaceTeamParents(
+      acceptable_teams,
+      teamToParent
+    );
 
     for (const team of acceptable_teams) {
       if (team != 'all_teams') {
-        res.push(this.createOrgTeamRecord(team, teamToParent));
+        res.push(this.createOrgTeamRecord(team, newTeamToParent));
       }
     }
     for (const employeeID of Object.keys(this.employeeIDtoRecord)) {

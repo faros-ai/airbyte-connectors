@@ -4,7 +4,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {CLI, read} from '../cli';
 
-type ProcessedAndWrittenModels = {
+export type ProcessedAndWrittenModels = {
   processedTotal: number;
   writtenTotal: number;
 };
