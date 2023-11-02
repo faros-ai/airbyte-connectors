@@ -6,7 +6,7 @@ export interface AsanaResponse<T> {
 export type Workspace = {
   gid: string;
   name: string;
-  resource_type: 'workspace';
+  resource_type: string;
 };
 
 export type Task = {

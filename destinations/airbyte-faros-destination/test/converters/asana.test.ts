@@ -2,9 +2,8 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {StreamContext, StreamName} from '../../src';
+import {StreamContext} from '../../src';
 import {Projects} from '../../src/converters/asana/projects';
-import {Sections} from '../../src/converters/asana/sections';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {Users} from '../../src/converters/asana/users';
@@ -45,7 +44,6 @@ describe('asana', () => {
 
     const processedByStream = {
       projects: 1,
-      sections: 3,
       tags: 2,
       tasks: 3,
       users: 1,
@@ -61,8 +59,8 @@ describe('asana', () => {
       tms_Label: 2,
       tms_Project: 1,
       tms_Task: 3,
-      tms_TaskBoard: 3,
-      tms_TaskBoardProjectRelationship: 3,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
       tms_TaskTag: 2,
       tms_User: 1,
     };
@@ -170,6 +168,7 @@ describe('asana', () => {
             },
             section: {
               gid: '1205346703408260',
+              name: 'Section 1',
             },
           },
         ],
@@ -241,33 +240,13 @@ describe('asana', () => {
       modified_at: '2023-08-24T15:51:52.758Z',
       name: 'Project Uno',
       notes: 'Project Uno notes',
+      workspace: {
+        gid: '1205346833089989',
+      },
     };
 
     test('basic project', async () => {
       const record = AirbyteRecord.make('projects', PROJECT);
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-  });
-
-  describe('sections', () => {
-    const converter = new Sections();
-    const SECTION = {
-      gid: '1234567890',
-      name: 'Sample Section',
-    };
-
-    test('basic section with project', async () => {
-      const record = AirbyteRecord.make('sections', {
-        ...SECTION,
-        project: {gid: '9876543210'},
-      });
-      const res = await converter.convert(record);
-      expect(res).toMatchSnapshot();
-    });
-
-    test('basic section', async () => {
-      const record = AirbyteRecord.make('sections', SECTION);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

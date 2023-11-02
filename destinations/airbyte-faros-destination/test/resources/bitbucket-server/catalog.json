@@ -47,6 +47,12 @@
         "name": "mytestsource__bitbucket-server__tags"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__bitbucket-server__users"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

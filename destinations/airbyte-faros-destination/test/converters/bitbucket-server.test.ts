@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {bitbucketServerAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('bitbucket-server', () => {
   const logger = testLogger();
@@ -45,6 +45,7 @@ describe('bitbucket-server', () => {
       project_users: 3,
       projects: 1,
       tags: 1,
+      users: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -65,9 +66,15 @@ describe('bitbucket-server', () => {
       vcs_PullRequest__Update: 5,
       vcs_Repository: 1,
       vcs_Tag: 1,
-      vcs_User: 4,
+      vcs_User: 6,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

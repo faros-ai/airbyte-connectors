@@ -31,7 +31,7 @@ export class PullRequestActivities extends PullRequestSubStream {
     streamSlice: StreamSlice,
     streamState?: PullRequestActivityState
   ): AsyncGenerator<PullRequestActivity> {
-    const {project, repo} = streamSlice;
+    const {projectKey: project, repo} = streamSlice;
     const lastUpdatedDate =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[repo.fullName]?.lastUpdatedDate

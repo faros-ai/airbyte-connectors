@@ -44,7 +44,9 @@ describe('index', () => {
         {api: {getUsers: jest.fn().mockResolvedValue({})}} as any,
         100,
         logger,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        1
       );
     });
 
@@ -68,8 +70,8 @@ describe('index', () => {
         {
           [MEP]: {
             projects: {
-              getProject: fnProjectsFunc.mockResolvedValue({
-                data: testProject,
+              getProjects: fnProjectsFunc.mockResolvedValue({
+                data: {values: [testProject]},
               }),
             },
           },
@@ -77,20 +79,65 @@ describe('index', () => {
         } as any,
         100,
         logger,
-        new Date('2010-03-27T14:03:51-0800')
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        1
       );
     });
     const source = new sut.BitbucketServerSource(logger);
     const streams = source.streams({} as any);
     const projectsStream = streams[2];
-    const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH, undefined, {
-      project: 'PROJ1',
-    });
+    const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH);
     const projects = [];
     for await (const project of iter) {
       projects.push(project);
     }
     expect(fnProjectsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(projects))).toStrictEqual([testProject]);
+  });
+
+  test('streams - repositories, use full_refresh sync mode with bucketing', async () => {
+    const fnReposFunc = jest.fn();
+    BitbucketServer.instance = jest.fn().mockImplementation(() => {
+      return new BitbucketServer(
+        {
+          [MEP]: {
+            projects: {
+              getRepositories: fnReposFunc.mockResolvedValue({
+                data: {values: [{slug: 'repo1'}, {slug: 'repo2'}]},
+              }),
+            },
+          },
+          repos: {
+            getDefaultBranch: jest
+              .fn()
+              .mockResolvedValue({data: {displayId: 'main'}}),
+          },
+          hasNextPage: jest.fn(),
+        } as any,
+        100,
+        logger,
+        new Date('2010-03-27T14:03:51-0800'),
+        1,
+        2
+      );
+    });
+    const source = new sut.BitbucketServerSource(logger);
+    const streams = source.streams({} as any);
+    const projectsStream = streams[6];
+    const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH, null, {
+      projectKey: 'PROJ1',
+    });
+    const repos = [];
+    for await (const repo of iter) {
+      repos.push(repo);
+    }
+    expect(fnReposFunc).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(JSON.stringify(repos))).toStrictEqual([
+      {
+        slug: 'repo1',
+        computedProperties: {fullName: 'proj1/repo1', mainBranch: 'main'},
+      },
+    ]);
   });
 });

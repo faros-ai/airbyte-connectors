@@ -5,7 +5,7 @@ import {Dictionary} from 'ts-essentials';
 import {BitbucketServerConfig} from '../bitbucket-server';
 import {StreamBase} from './common';
 
-type StreamSlice = {project: string};
+type StreamSlice = {projectKey: string};
 
 export class Repositories extends StreamBase {
   constructor(
@@ -24,8 +24,8 @@ export class Repositories extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const key of this.config.projects) {
-      yield {project: await this.fetchProjectKey(key)};
+    for await (const project of this.projects()) {
+      yield {projectKey: project.key};
     }
   }
 
@@ -35,7 +35,7 @@ export class Repositories extends StreamBase {
     streamSlice?: StreamSlice
   ): AsyncGenerator<Repository> {
     for (const repo of await this.server.repositories(
-      streamSlice.project,
+      streamSlice.projectKey,
       this.config.repositories
     )) {
       yield repo;

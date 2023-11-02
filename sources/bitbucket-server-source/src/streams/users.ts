@@ -1,11 +1,11 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Project} from 'faros-airbyte-common/bitbucket-server';
+import {User} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
 import {BitbucketServerConfig} from '../bitbucket-server';
 import {StreamBase} from './common';
 
-export class Projects extends StreamBase {
+export class Users extends StreamBase {
   constructor(
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
@@ -14,14 +14,14 @@ export class Projects extends StreamBase {
   }
 
   getJsonSchema(): Dictionary<any> {
-    return require('../../resources/schemas/projects.json');
+    return require('../../resources/schemas/users.json');
   }
 
   get primaryKey(): StreamKey {
-    return 'key';
+    return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<Project> {
-    yield* this.projects();
+  async *readRecords(): AsyncGenerator<User> {
+    yield* this.server.users();
   }
 }

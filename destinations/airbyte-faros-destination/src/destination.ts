@@ -693,6 +693,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             // dependencies, otherwise process it later once the required
             // streams are processed.
             if (
+              converter.dependencies.length > 0 &&
               difference(
                 converter.dependencies.map((d) => d.asString),
                 [...processedStreams]
@@ -703,7 +704,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               // Since streams are processed sequentially, we can assume that we
               // won't see records from a different stream until all of this
               // stream's records have been processed.
-              processedStreams.add(streamName);
+              if (!processedStreams.has(streamName)) {
+                processedStreams.add(streamName);
+              }
               await writeRecord(ctx);
             }
           }
