@@ -25,7 +25,7 @@ describe('workday', () => {
       InvalidRecordStrategy.SKIP,
       Edition.CLOUD,
       {},
-      {orgs_to_keep, orgs_to_ignore}
+      {workday: {orgs_to_keep, orgs_to_ignore}}
     );
   };
   const runTest = async (

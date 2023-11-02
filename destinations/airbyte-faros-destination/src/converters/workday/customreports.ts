@@ -331,60 +331,60 @@ export class Customreports extends Converter {
     return false;
   }
 
-  private KeepTeamLogic(
-    team,
-    ownershipChain,
-    orgs_to_keep,
-    orgs_to_ignore,
-    teamToParent
-  ): boolean {
-    // This continues the complicated logic which defines which teams to keep
-    // Ownership Chain lists teams up to root, e.g.
-    // ['C', 'B', 'A', 'all_teams', 'all_teams']
-    //let definite_false = false;
-    //let definite_true = false;
-    //let bottom_keep = null;
-    //let switchParentPossible = false;
-    //let last_keep_org = null;
-    const orgs_to_keep_ixs: number[] = [];
-    const orgs_to_ignore_ixs: number[] = [];
-    for (let i = 0; i < ownershipChain.length; i++) {
-      const org = ownershipChain[i];
-      if (orgs_to_keep.includes(org)) {
-        orgs_to_keep_ixs.push(i);
-      }
-      if (orgs_to_ignore.includes(org)) {
-        orgs_to_ignore_ixs.push(i);
-      }
-    }
-    // No orgs to keep in chain
-    if (orgs_to_keep_ixs.length == 0) {
-      return false;
-    }
-    // There is an org to keep but no orgs to ignore
-    if (orgs_to_ignore_ixs.length == 0) {
-      return true;
-    }
-    // Note for the following we have both keep and ignore
-    const min_keep_ix = orgs_to_keep_ixs[0];
-    const min_ignore_ix = orgs_to_ignore_ixs[0];
-    if (min_ignore_ix < min_keep_ix) {
-      // The closest parent to the team is ignored
-      return false;
-    } else if (min_ignore_ix == min_keep_ix) {
-      throw new Error(
-        `Keep and ignore teams are the same: ${ownershipChain[min_ignore_ix]}`
-      );
-    }
-    // We have a special case where included is underneath an ignored team
-    this.specialKeepCase(
-      ownershipChain,
-      orgs_to_keep_ixs,
-      orgs_to_ignore_ixs,
-      teamToParent
-    );
-    return true;
-  }
+  // private KeepTeamLogic(
+  //   team,
+  //   ownershipChain,
+  //   orgs_to_keep,
+  //   orgs_to_ignore,
+  //   teamToParent
+  // ): boolean {
+  //   // This continues the complicated logic which defines which teams to keep
+  //   // Ownership Chain lists teams up to root, e.g.
+  //   // ['C', 'B', 'A', 'all_teams', 'all_teams']
+  //   //let definite_false = false;
+  //   //let definite_true = false;
+  //   //let bottom_keep = null;
+  //   //let switchParentPossible = false;
+  //   //let last_keep_org = null;
+  //   const orgs_to_keep_ixs: number[] = [];
+  //   const orgs_to_ignore_ixs: number[] = [];
+  //   for (let i = 0; i < ownershipChain.length; i++) {
+  //     const org = ownershipChain[i];
+  //     if (orgs_to_keep.includes(org)) {
+  //       orgs_to_keep_ixs.push(i);
+  //     }
+  //     if (orgs_to_ignore.includes(org)) {
+  //       orgs_to_ignore_ixs.push(i);
+  //     }
+  //   }
+  //   // No orgs to keep in chain
+  //   if (orgs_to_keep_ixs.length == 0) {
+  //     return false;
+  //   }
+  //   // There is an org to keep but no orgs to ignore
+  //   if (orgs_to_ignore_ixs.length == 0) {
+  //     return true;
+  //   }
+  //   // Note for the following we have both keep and ignore
+  //   const min_keep_ix = orgs_to_keep_ixs[0];
+  //   const min_ignore_ix = orgs_to_ignore_ixs[0];
+  //   if (min_ignore_ix < min_keep_ix) {
+  //     // The closest parent to the team is ignored
+  //     return false;
+  //   } else if (min_ignore_ix == min_keep_ix) {
+  //     throw new Error(
+  //       `Keep and ignore teams are the same: ${ownershipChain[min_ignore_ix]}`
+  //     );
+  //   }
+  //   // We have a special case where included is underneath an ignored team
+  //   this.specialKeepCase(
+  //     ownershipChain,
+  //     orgs_to_keep_ixs,
+  //     orgs_to_ignore_ixs,
+  //     teamToParent
+  //   );
+  //   return true;
+  // }
 
   private checkIfTeamIsAcceptable(
     team: string,
@@ -546,12 +546,13 @@ export class Customreports extends Converter {
       let parent_team = teamToParent[team];
       while (parent_team && !acceptable_teams.has(parent_team)) {
         if (seenParentTeams.has(parent_team)) {
-          throw new Error(
-            'Cycle found in team Parent Replace function. Please reach out to Faros Support.'
-          );
+          let err_str = `Cycle found in team Parent Replace function. Team: "${parent_team}". `;
+          err_str += `All teams: ${JSON.stringify([...seenParentTeams])}`;
+          err_str += `Please reach out to Faros Support.`;
+          throw new Error(err_str);
         }
         seenParentTeams.add(parent_team);
-        parent_team = teamToParent[team];
+        parent_team = teamToParent[parent_team];
       }
       if (parent_team) {
         newTeamToParent[team] = parent_team;
@@ -585,6 +586,7 @@ export class Customreports extends Converter {
     ctx.logger.info(
       'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
     );
+    ctx.logger.info('real');
     ctx.logger.info('Finished computing ownership chains.');
 
     const newTeamToParent: Record<string, string> = this.replaceTeamParents(
