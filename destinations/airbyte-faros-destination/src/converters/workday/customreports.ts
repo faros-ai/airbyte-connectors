@@ -227,89 +227,6 @@ export class Customreports extends Converter {
     return [orgs_to_keep, orgs_to_ignore];
   }
 
-  private pushInfoToLog(
-    ownershipChain,
-    orgs_to_keep_ixs,
-    orgs_to_ignore_ixs,
-    teamToParent
-  ): void {
-    this.generalLogCollection.push(
-      `Running special KeepCase for team ${ownershipChain[0]}`
-    );
-    this.generalLogCollection.push(`keep ` + JSON.stringify(orgs_to_keep_ixs));
-    this.generalLogCollection.push(
-      `ignore ` + JSON.stringify(orgs_to_ignore_ixs)
-    );
-    this.generalLogCollection.push(
-      `ownership Chain ` + JSON.stringify(ownershipChain)
-    );
-    this.generalLogCollection.push(
-      `current parent ${teamToParent[ownershipChain[0]]}`
-    );
-    this.generalLogCollection.push(
-      `Completed logs for team ${ownershipChain[0]}`
-    );
-  }
-
-  private specialKeepCase(
-    ownershipChain,
-    orgs_to_keep_ixs,
-    orgs_to_ignore_ixs,
-    teamToParent
-  ): void {
-    // Within this function, we find how to replace the kept team's parent to the correct one
-    // Note that the min index of an org kept in the chain is lower than min ignored
-    this.pushInfoToLog(
-      ownershipChain,
-      orgs_to_keep_ixs,
-      orgs_to_ignore_ixs,
-      teamToParent
-    );
-
-    // If the 'kept' team isn't the first team in the chain, we can ignore replacement
-    if (ownershipChain[orgs_to_keep_ixs[0]] != ownershipChain[0]) {
-      return;
-    }
-
-    // If the only keep team in the chain is this team, we point it to the root
-    if (orgs_to_keep_ixs.length == 1) {
-      teamToParent[ownershipChain[0]] = this.FAROS_TEAM_ROOT;
-      return;
-    }
-
-    const next_keep = orgs_to_keep_ixs[1];
-    const min_ignore = orgs_to_ignore_ixs[0];
-
-    // If the next closest keep team is less than the next ignore, we do nothing
-    if (next_keep < min_ignore) {
-      return;
-    }
-
-    // Now we have to iterate through the ignore indeces and search for
-    // when they cross the 'next_keep'
-    let cross_ix = null;
-    for (let i = 0; i < orgs_to_ignore_ixs.length; i++) {
-      if (orgs_to_ignore_ixs[i] > next_keep) {
-        cross_ix = i;
-        break;
-      }
-    }
-
-    // In the case where cross_ix was never found, this means that the next keep
-    // org is a parent of all of the ignored orgs, and we can set the parent of
-    // the current team to be the parent of the max ignored org.
-    if (!cross_ix) {
-      teamToParent[ownershipChain[0]] =
-        ownershipChain[orgs_to_ignore_ixs[orgs_to_ignore_ixs.length - 1] + 1];
-      return;
-    }
-
-    // Otherwise, the cross index is the first index in which ignore is reached.
-    // We find the next ignore down the tree and point to its parent
-    teamToParent[ownershipChain[0]] =
-      ownershipChain[orgs_to_ignore_ixs[cross_ix - 1] + 1];
-  }
-
   private KeepTeamLogicNew(
     ownershipChain,
     orgs_to_keep,
@@ -319,8 +236,7 @@ export class Customreports extends Converter {
     // if we first hit an ignored team, we return false (not kept).
     // Otherwise if we first hit a kept team, we return true (keep the team)
     // If we hit neither kept nor ignored, we return false (not kept).
-    for (let i = 0; i < ownershipChain.length; i++) {
-      const org = ownershipChain[i];
+    for (const org of ownershipChain) {
       if (orgs_to_keep.includes(org)) {
         return true;
       }
@@ -330,61 +246,6 @@ export class Customreports extends Converter {
     }
     return false;
   }
-
-  // private KeepTeamLogic(
-  //   team,
-  //   ownershipChain,
-  //   orgs_to_keep,
-  //   orgs_to_ignore,
-  //   teamToParent
-  // ): boolean {
-  //   // This continues the complicated logic which defines which teams to keep
-  //   // Ownership Chain lists teams up to root, e.g.
-  //   // ['C', 'B', 'A', 'all_teams', 'all_teams']
-  //   //let definite_false = false;
-  //   //let definite_true = false;
-  //   //let bottom_keep = null;
-  //   //let switchParentPossible = false;
-  //   //let last_keep_org = null;
-  //   const orgs_to_keep_ixs: number[] = [];
-  //   const orgs_to_ignore_ixs: number[] = [];
-  //   for (let i = 0; i < ownershipChain.length; i++) {
-  //     const org = ownershipChain[i];
-  //     if (orgs_to_keep.includes(org)) {
-  //       orgs_to_keep_ixs.push(i);
-  //     }
-  //     if (orgs_to_ignore.includes(org)) {
-  //       orgs_to_ignore_ixs.push(i);
-  //     }
-  //   }
-  //   // No orgs to keep in chain
-  //   if (orgs_to_keep_ixs.length == 0) {
-  //     return false;
-  //   }
-  //   // There is an org to keep but no orgs to ignore
-  //   if (orgs_to_ignore_ixs.length == 0) {
-  //     return true;
-  //   }
-  //   // Note for the following we have both keep and ignore
-  //   const min_keep_ix = orgs_to_keep_ixs[0];
-  //   const min_ignore_ix = orgs_to_ignore_ixs[0];
-  //   if (min_ignore_ix < min_keep_ix) {
-  //     // The closest parent to the team is ignored
-  //     return false;
-  //   } else if (min_ignore_ix == min_keep_ix) {
-  //     throw new Error(
-  //       `Keep and ignore teams are the same: ${ownershipChain[min_ignore_ix]}`
-  //     );
-  //   }
-  //   // We have a special case where included is underneath an ignored team
-  //   this.specialKeepCase(
-  //     ownershipChain,
-  //     orgs_to_keep_ixs,
-  //     orgs_to_ignore_ixs,
-  //     teamToParent
-  //   );
-  //   return true;
-  // }
 
   private checkIfTeamIsAcceptable(
     team: string,
