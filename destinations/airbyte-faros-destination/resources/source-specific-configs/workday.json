@@ -12,7 +12,7 @@
           "const": "Workday",
           "order": 0
         },
-        "Orgs_To_Keep": {
+        "orgs_to_keep": {
           "type": "array",
           "items": {
             "type": "string"
@@ -21,7 +21,7 @@
           "description": "The teams underneath these orgs will be kept",
           "default": []
         },
-        "Orgs_To_Ignore": {
+        "orgs_to_ignore": {
           "type": "array",
           "items": {
             "type": "string"

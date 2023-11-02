@@ -1,3 +1,4 @@
+import {error} from 'console';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
@@ -206,8 +207,10 @@ export class Customreports extends Converter {
   }
 
   private getOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
-    const orgs_to_keep = ctx.config.source_specific_configs.orgs_to_keep;
-    const orgs_to_ignore = ctx.config.source_specific_configs.orgs_to_ignore;
+    const orgs_to_keep =
+      ctx.config.source_specific_configs?.workday?.orgs_to_keep;
+    const orgs_to_ignore =
+      ctx.config.source_specific_configs?.workday?.orgs_to_ignore;
     if (!orgs_to_keep || !orgs_to_ignore) {
       throw new Error(
         'orgs_to_keep or orgs_to_ignore missing from source specific configs'
@@ -434,6 +437,13 @@ export class Customreports extends Converter {
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
+    if (this.cycleChains.length > 0) {
+      let error_str: string = 'Cycles found. Please address the issue. ';
+      error_str +=
+        'The cycle chains are listed in log message above, and here: ';
+      error_str += JSON.stringify(this.cycleChains);
+      throw new Error(error_str);
+    }
   }
 
   private createEmployeeRecordList(
