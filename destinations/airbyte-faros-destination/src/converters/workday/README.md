@@ -17,8 +17,8 @@ Expecting fields (? implies optional):
 
 Source Specific Configs:
 ```
-Orgs_To_Keep: string[];
-Orgs_To_Ignore: string[]
+orgs_to_keep: string[];
+orgs_to_ignore: string[]
 ```
 
 ## Testing:

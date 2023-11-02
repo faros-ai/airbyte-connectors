@@ -33,13 +33,12 @@ export class Customreports extends Converter {
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.Empoyee_Id;
+    return record?.record?.data?.Employee_Id;
   }
 
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const res: DestinationRecord[] = [];
     const rec = record.record.data as EmployeeRecord;
     if (!this.checkRecordValidity(rec)) {
       this.recordCount.skippedRecords += 1;
@@ -47,7 +46,7 @@ export class Customreports extends Converter {
       this.recordCount.storedRecords += 1;
       this.extractRecordInfo(rec);
     }
-    return res;
+    return [];
   }
 
   private extractRecordInfo(rec: EmployeeRecord): void {
@@ -62,7 +61,7 @@ export class Customreports extends Converter {
 
     // We check if the Team Name happens to be FAROS_TEAM_ROOT.
     // If this is the case, then the rest of the processing won't work.
-    if (rec.Team_Name == this.FAROS_TEAM_ROOT) {
+    if (rec.Team_Name === this.FAROS_TEAM_ROOT) {
       let error_str = `Record team name is the same as Faros Team Root, ${this.FAROS_TEAM_ROOT}:`;
       error_str += `Record: ${JSON.stringify(rec)}`;
       throw new Error(error_str);
@@ -207,19 +206,20 @@ export class Customreports extends Converter {
   }
 
   private getOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
-    const orgs_to_keep = ctx.config.source_specific_configs.Orgs_To_Keep;
-    const orgs_to_ignore = ctx.config.source_specific_configs.Orgs_To_Ignore;
+    const orgs_to_keep = ctx.config.source_specific_configs.orgs_to_keep;
+    const orgs_to_ignore = ctx.config.source_specific_configs.orgs_to_ignore;
     if (!orgs_to_keep || !orgs_to_ignore) {
       throw new Error(
-        'Orgs_To_Keep or Orgs_To_Ignore missing from source specific configs'
+        'orgs_to_keep or orgs_to_ignore missing from source specific configs'
       );
     }
     for (const org of orgs_to_keep) {
       if (orgs_to_ignore.includes(org)) {
-        throw new Error('Overlap between Orgs_To_Keep and Orgs_To_Ignore');
+        throw new Error('Overlap between orgs_to_keep and orgs_to_ignore');
       }
     }
     if (orgs_to_keep.length == 0) {
+      // we keep all teams
       orgs_to_keep.push(this.FAROS_TEAM_ROOT);
     }
     return [orgs_to_keep, orgs_to_ignore];
