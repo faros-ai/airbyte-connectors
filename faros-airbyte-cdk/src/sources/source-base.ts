@@ -17,6 +17,7 @@ import {
   SyncMode,
 } from '../protocol';
 import {AirbyteSource} from './source';
+import {State} from './state';
 import {AirbyteStreamBase} from './streams/stream-base';
 
 /**
@@ -110,7 +111,7 @@ export abstract class AirbyteSourceBase<
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info(`Syncing ${this.name}`);
-    const connectorState = cloneDeep(state ?? {});
+    const connectorState = State.decompress(cloneDeep(state ?? {}));
     // TODO: assert all streams exist in the connector
     // get the streams once in case the connector needs to make any queries to
     // generate them
@@ -131,8 +132,15 @@ export abstract class AirbyteSourceBase<
           configuredStream,
           connectorState
         );
+
         for await (const message of generator) {
-          yield message;
+          if (isStateMessage(message) && config.compress_state) {
+            yield new AirbyteStateMessage({
+              data: State.compress(message.state.data),
+            });
+          } else {
+            yield message;
+          }
         }
       } catch (e: any) {
         this.logger.error(
@@ -142,7 +150,11 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield new AirbyteStateMessage(
-          {data: connectorState},
+          {
+            data: config.compress_state
+              ? State.compress(connectorState)
+              : connectorState,
+          },
           {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
         );
         throw e;
@@ -290,4 +302,8 @@ export abstract class AirbyteSourceBase<
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
   }
+}
+
+function isStateMessage(msg: AirbyteMessage): msg is AirbyteStateMessage {
+  return msg.type === AirbyteMessageType.STATE;
 }
