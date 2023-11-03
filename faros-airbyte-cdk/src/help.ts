@@ -247,7 +247,7 @@ async function promptValue(row: TableRow) {
   const type = row.items_type ?? row.type;
   ok(type);
 
-  const message = row.description
+  let message = row.description
     ? `${row.title}: ${row.description}`
     : row.title;
 
@@ -255,8 +255,10 @@ async function promptValue(row: TableRow) {
     case 'boolean':
       return await runBooleanPrompt({message});
     case 'integer':
+      message += ' (integer)';
       return Math.floor(await runNumberPrompt({message}));
     case 'number':
+      message += ' (float)';
       return await runNumberPrompt({message});
     case 'string':
       if (row.airbyte_secret) {
