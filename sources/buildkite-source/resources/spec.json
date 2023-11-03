@@ -38,6 +38,11 @@
         "type": "string",
         "title": "GraphQL Version",
         "default": "v1"
+      },
+      "include_job_env": {
+        "type": "boolean",
+        "title": "Include Job Env",
+        "default": false
       }
     }
   }

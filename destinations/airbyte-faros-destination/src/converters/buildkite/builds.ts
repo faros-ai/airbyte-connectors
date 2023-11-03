@@ -56,6 +56,7 @@ export class Builds extends BuildkiteConverter {
           name: job.label,
           ...this.convertBuildStepTime(job),
           command: job.command,
+          env: job.env,
           type: this.convertBuildStepType(job.type),
           createdAt: Utils.toDate(job.createdAt),
           startedAt: Utils.toDate(job.startedAt),

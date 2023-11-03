@@ -131,6 +131,7 @@ export interface BuildkiteConfig {
   readonly organization?: string;
   readonly rest_api_version?: string;
   readonly graphql_version?: string;
+  readonly include_job_env?: boolean;
 }
 
 interface PaginateResponse<T> {
@@ -151,7 +152,8 @@ export class Buildkite {
     private readonly restClient: AxiosInstance,
     readonly startDate: Date,
     private readonly pageSize?: number,
-    private readonly organization?: string
+    private readonly organization?: string,
+    private readonly includeJobEnv?: boolean
   ) {}
 
   static instance(config: BuildkiteConfig, logger: AirbyteLogger): Buildkite {
@@ -189,7 +191,8 @@ export class Buildkite {
       httpClient,
       startDate,
       pageSize,
-      config.organization
+      config.organization,
+      config.include_job_env
     );
     return Buildkite.buildkite;
   }
@@ -310,6 +313,7 @@ export class Buildkite {
         after: pageInfo ? pageInfo.endCursor : cursor,
         maxJobsPerBuild: 500,
         createdAtFrom,
+        shouldFetchEnv: !!this.includeJobEnv,
       };
       const data: any = await this.graphClient.request(
         PIPELINES_BUILDS_QUERY,

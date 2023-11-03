@@ -50,6 +50,7 @@ export interface Job {
 
   readonly url?: string;
   readonly command: string;
+  readonly env?: string[];
   readonly build?: {
     uuid?: string;
     readonly pipeline?: {

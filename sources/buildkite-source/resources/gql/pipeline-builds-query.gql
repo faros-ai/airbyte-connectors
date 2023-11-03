@@ -1,4 +1,4 @@
-query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime, $after: String,$maxJobsPerBuild: Int) {
+query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime, $after: String, $maxJobsPerBuild: Int, $shouldFetchEnv: Boolean!) {
   pipeline(slug: $slug) { 
       builds(first: $pageSize, createdAtFrom: $createdAtFrom, after: $after) {
         edges {
@@ -38,6 +38,7 @@ query pipelineBuildsQuery($slug: ID!, $pageSize: Int!, $createdAtFrom: DateTime,
                     startedAt
                     url
                     command
+                    env @include(if: $shouldFetchEnv)
                   }
                   ... on JobTypeBlock {
                     uuid

@@ -45,6 +45,12 @@
     "command": {
       "type": "string"
     },
+    "env": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
     "build": {
       "type": "object",
       "properties": {
