@@ -12,6 +12,7 @@ import {
   intersection,
   isEmpty,
   isNil,
+  isObject,
   keys,
   max,
   orderBy,
@@ -115,11 +116,15 @@ export class UpsertBuffer {
   }
 }
 
-export function serialize(obj: Dictionary<number | string>): string {
+export function serialize(obj: Dictionary<any>): string {
   return keys(obj)
     .sort()
-    .map((k) => `${k}:${obj[k]}`)
+    .map((k) => `${k}:${serializeValue(obj[k])}`)
     .join('|');
+}
+
+export function serializeValue(obj: any): string {
+  return isObject(obj) ? serialize(obj) : String(obj);
 }
 
 /**
