@@ -12,6 +12,27 @@ exports[`graphql-client write batch upsert basic end-to-end 2`] = `"mutation { i
 
 exports[`graphql-client write batch upsert basic end-to-end 3`] = `"mutation { insert_vcs_Branch (objects: [{name: \\"foo\\", origin: \\"mytestsource\\", repositoryId: \\"t1|gql-e2e-v2|metis|t1|gql-e2e-v2|GitHub|faros-ai\\"}, {name: \\"main\\", origin: \\"mytestsource\\", repositoryId: \\"t1|gql-e2e-v2|hermes|t1|gql-e2e-v2|GitHub|faros-ai\\"}], on_conflict: {constraint: vcs_Branch_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt name repositoryId } } }"`;
 
+exports[`graphql-client write batch upsert mergeByPrimaryKey - object value 1`] = `
+Array [
+  Object {
+    "origin": "c1d1-2",
+    "type": Object {
+      "category": "c1",
+      "detail": "d1",
+    },
+    "uid": "tovbinm",
+  },
+  Object {
+    "origin": "c1d2",
+    "type": Object {
+      "category": "c1",
+      "detail": "d2",
+    },
+    "uid": "tovbinm",
+  },
+]
+`;
+
 exports[`graphql-client write batch upsert mergeByPrimaryKey 1`] = `
 Array [
   Object {
