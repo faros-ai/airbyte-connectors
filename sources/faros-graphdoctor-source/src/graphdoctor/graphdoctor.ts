@@ -48,25 +48,25 @@ const identityNulls: GraphDoctorTestFunction = async function* (
   fc: FarosClient,
   summaryKey: DataSummaryKey
 ) {
-  // team Ownership objects:
-  const identityObjects = {
+  // team Ownership models:
+  const identityModels = {
     vcs_UserIdentity: {
-      obj_nm: 'vcsUser',
+      modelName: 'vcsUser',
     },
     ims_UserIdentity: {
-      obj_nm: 'imsUser',
+      modelName: 'imsUser',
     },
     tms_UserIdentity: {
-      obj_nm: 'tmsUser',
+      modelName: 'tmsUser',
     },
   };
   const query =
-    'query identityNulls { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %obj_nm% {id} id } }';
+    'query identityNulls_%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %modelName% {id} id } }';
 
   yield* missingRelationsTest(
     cfg,
     fc,
-    identityObjects,
+    identityModels,
     query,
     'identity',
     summaryKey
@@ -79,30 +79,30 @@ export const teamOwnershipNulls: GraphDoctorTestFunction = async function* (
   summaryKey: DataSummaryKey
 ) {
   // team Ownership objects:
-  const ownershipObjects = {
+  const ownershipModels = {
     org_ApplicationOwnership: {
-      obj_nm: 'application',
+      modelName: 'application',
     },
     org_BoardOwnership: {
-      obj_nm: 'board',
+      modelName: 'board',
     },
     org_PipelineOwnership: {
-      obj_nm: 'pipeline',
+      modelName: 'pipeline',
     },
     org_RepositoryOwnership: {
-      obj_nm: 'repository',
+      modelName: 'repository',
     },
     org_TeamMembership: {
-      obj_nm: 'member',
+      modelName: 'member',
     },
   };
   const query =
-    'query teamOwnershipNulls { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %obj_nm% {id} id } }';
+    'query teamOwnershipNulls_%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %modelName% {id} id } }';
 
   yield* missingRelationsTest(
     cfg,
     fc,
-    ownershipObjects,
+    ownershipModels,
     query,
     'team',
     summaryKey
@@ -129,9 +129,7 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     yield* test_func(cfg, fc, summaryKey);
   }
 
-  cfg.logger.info(
-    'Running Graph Doctor Diagnostic Summary (Incomplete - Skipping)'
-  );
+  cfg.logger.info('Running Graph Doctor Diagnostic Summary');
   const dataQualitySummary = await getDataQualitySummary(
     fc,
     cfg,

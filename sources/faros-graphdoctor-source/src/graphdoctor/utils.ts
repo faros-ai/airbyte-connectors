@@ -16,7 +16,7 @@ export function simpleHash(str): string {
 }
 
 export async function get_paginated_query_results(
-  obj_nm: string,
+  modelName: string,
   query: string,
   sort_replace: string,
   fc: FarosClient,
@@ -25,7 +25,7 @@ export async function get_paginated_query_results(
   sort_obj: string = 'id'
 ): Promise<any[]> {
   // Any query run through this here function has to have "id" in the outermost layer of the response
-  // e.g. "obj_nm": {"a": "b", "id": "123"}
+  // e.g. "modelName": {"a": "b", "id": "123"}
   const results = [];
   // upper limit on number of objects in order to avoid running endless while loop
   const max_object_size = 100000;
@@ -33,7 +33,7 @@ export async function get_paginated_query_results(
   // First we run the query on the empty id
   let new_query = query.replace(sort_replace, crt_id);
   let gql_pre_results = await fc.gql(cfg.graph, new_query);
-  let gql_results = gql_pre_results[obj_nm];
+  let gql_results = gql_pre_results[modelName];
   const seenIds = new Set<string>();
   while (gql_results && gql_results.length == limit) {
     results.push(...gql_results);
@@ -53,7 +53,7 @@ export async function get_paginated_query_results(
     // Now we run the query with the last id
     new_query = query.replace(sort_replace, crt_id);
     gql_pre_results = await fc.gql(cfg.graph, new_query);
-    gql_results = gql_pre_results[obj_nm];
+    gql_results = gql_pre_results[modelName];
   }
   if (gql_results) {
     results.push(...gql_results);
@@ -69,7 +69,7 @@ export function getCurrentTimestamp(): string {
 export async function* missingRelationsTest(
   cfg: any,
   fc: FarosClient,
-  relationObjects,
+  relationModels,
   query: string,
   fixed_field: string,
   summaryKey: DataSummaryKey
@@ -77,12 +77,14 @@ export async function* missingRelationsTest(
   const currentTimestamp: string = getCurrentTimestamp();
 
   const results = [];
-  for (const [main_obj, related_obj] of Object.entries(relationObjects)) {
-    const obj_nm = related_obj['obj_nm'];
+  for (const [main_obj, related_obj] of Object.entries(relationModels)) {
+    const modelName = related_obj['modelName'];
     let new_query: string = query;
+    // We replace the main_object part of the string twice
     new_query = new_query.replace('%main_object%', main_obj);
-    new_query = new_query.replace('%obj_nm%', obj_nm);
-    new_query = new_query.replace('%where_test%', obj_nm);
+    new_query = new_query.replace('%main_object%', main_obj);
+    new_query = new_query.replace('%modelName%', modelName);
+    new_query = new_query.replace('%where_test%', modelName);
     const response = await fc.gql(cfg.graph, new_query);
     const result_list = response[main_obj];
     if (!result_list) {

@@ -10,7 +10,7 @@ import {get_paginated_query_results, getCurrentTimestamp} from './utils';
 function process_name_query_results(
   query_results: any[],
   name_field: string,
-  obj_nm: string,
+  modelName: string,
   crt_timestamp: string,
   summaryKey: DataSummaryKey
 ): DataIssueWrapper[] {
@@ -21,9 +21,9 @@ function process_name_query_results(
     if (result_obj[name_field] in namesToIDs) {
       results.push({
         faros_DataQualityIssue: {
-          uid: `${crt_timestamp}|${obj_nm}|${recordCount}`,
-          model: obj_nm,
-          description: `Duplicate names for two of the same object: "${obj_nm}", name: "${result_obj.get(
+          uid: `${crt_timestamp}|${modelName}|${recordCount}`,
+          model: modelName,
+          description: `Duplicate names for two of the same object: "${modelName}", name: "${result_obj.get(
             name_field
           )}".`,
           recordIds: [namesToIDs[result_obj[name_field]], result_obj.id],
@@ -42,7 +42,7 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
   summaryKey: DataSummaryKey
 ) {
   // For these queries we need to get all the results, so pagination may be necessary
-  const test_objects = {
+  const test_models = {
     org_Team: {
       name_field: 'name',
     },
@@ -69,17 +69,20 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
   const limit = 1000;
   const sort_replace = '%sort_id%';
   const name_replace = '%name_field%';
-  let query = `query duplicateNameQuery { %obj_nm%( limit: ${limit}, order_by: { id: asc } where: { id: { _gt: "${sort_replace}" } } ) { id, ${name_replace} }}`;
+  const query = `query duplicateNameQuery_%modelName% { %modelName%( limit: ${limit}, order_by: { id: asc } where: { id: { _gt: "${sort_replace}" } } ) { id, ${name_replace} }}`;
 
   const results = [];
   const crt_timestamp = getCurrentTimestamp();
-  for (const [obj_nm, val] of Object.entries(test_objects)) {
+  for (const [modelName, val] of Object.entries(test_models)) {
     const name_field = val['name_field'];
-    query = query.replace('%obj_nm%', obj_nm);
-    query = query.replace(name_replace, name_field);
+    // Note each replace only runs once, we want it to run twice
+    let new_query = query.replace('%modelName%', modelName);
+    new_query = new_query.replace('%modelName%', modelName);
+    new_query = new_query.replace(name_replace, name_field);
+    cfg.logger.info('Duplicate Name Query: ' + new_query);
     const query_results = await get_paginated_query_results(
-      obj_nm,
-      query,
+      modelName,
+      new_query,
       sort_replace,
       fc,
       cfg,
@@ -88,7 +91,7 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
     const new_data_issues = process_name_query_results(
       query_results,
       name_field,
-      obj_nm,
+      modelName,
       crt_timestamp,
       summaryKey
     );

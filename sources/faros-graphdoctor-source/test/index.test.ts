@@ -28,15 +28,29 @@ jest.mock('faros-js-client', () => {
         async gql(graph: string, query: string): Promise<any> {
           if (query.includes('ZScoreQuery')) {
             return mockQueryToResponse[zScoreQueryResponseKey];
-          } else if (!(query in mockQueryToResponse)) {
+          } else if (query in mockQueryToResponse) {
+            return mockQueryToResponse[query];
+          } else if (checkQueryNameValidity(query)) {
+            // TODO
+            throw new Error(`query not handled by mock: "${query}" `);
             return [];
+          } else {
+            throw new Error(`query not handled by mock: "${query}" `);
           }
-          return mockQueryToResponse[query];
         },
       };
     }),
   };
 });
+
+function checkQueryNameValidity(query: string): boolean {
+  if (!query.startsWith('query ')) {
+    return false;
+  }
+  const query_title = query.split(' ')[1];
+  console.log('query title: ' + query_title);
+  return true;
+}
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
