@@ -50,7 +50,10 @@ export enum AirbyteTraceFailureType {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AirbyteConfig {}
+export interface AirbyteConfig {
+  compress_state?: boolean;
+  [k: string]: any;
+}
 
 export function parseAirbyteMessage(s: string): AirbyteMessage {
   try {
