@@ -18,7 +18,7 @@ function process_name_query_results(
   const namesToIDs: Record<string, string> = {};
   let recordCount = 1;
   for (const result_obj of query_results) {
-    if (result_obj.get(name_field) in namesToIDs) {
+    if (result_obj[name_field] in namesToIDs) {
       results.push({
         faros_DataQualityIssue: {
           uid: `${crt_timestamp}|${obj_nm}|${recordCount}`,
@@ -26,7 +26,7 @@ function process_name_query_results(
           description: `Duplicate names for two of the same object: "${obj_nm}", name: "${result_obj.get(
             name_field
           )}".`,
-          recordIds: [namesToIDs[result_obj.get(name_field)], result_obj.id],
+          recordIds: [namesToIDs[result_obj[name_field]], result_obj.id],
           summary: summaryKey,
         },
       });

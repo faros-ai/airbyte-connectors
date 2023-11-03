@@ -35,7 +35,7 @@ export async function get_paginated_query_results(
   let gql_pre_results = await fc.gql(cfg.graph, new_query);
   let gql_results = gql_pre_results[obj_nm];
   const seenIds = new Set<string>();
-  while (gql_results.length == limit) {
+  while (gql_results && gql_results.length == limit) {
     results.push(...gql_results);
     if (results.length > max_object_size) {
       throw new Error(
@@ -55,7 +55,9 @@ export async function get_paginated_query_results(
     gql_pre_results = await fc.gql(cfg.graph, new_query);
     gql_results = gql_pre_results[obj_nm];
   }
-  results.push(...gql_results);
+  if (gql_results) {
+    results.push(...gql_results);
+  }
 
   return results;
 }
