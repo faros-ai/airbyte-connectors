@@ -255,6 +255,8 @@ async function promptValue(row: TableRow) {
     case 'boolean':
       return await runBooleanPrompt({message});
     case 'integer':
+      return Math.floor(await runNumberPrompt({message}));
+    case 'number':
       return await runNumberPrompt({message});
     case 'string':
       if (row.airbyte_secret) {
@@ -274,6 +276,7 @@ function choiceAsType(row: TableRow, choice: string) {
     case 'boolean':
       return choice === 'true';
     case 'integer':
+    case 'number':
       return +choice;
     case 'string':
       return choice;
