@@ -135,9 +135,12 @@ export abstract class AirbyteSourceBase<
 
         for await (const message of generator) {
           if (isStateMessage(message) && config.compress_state) {
-            yield new AirbyteStateMessage({
-              data: State.compress(message.state.data),
-            });
+            yield new AirbyteStateMessage(
+              {
+                data: State.compress(message.state.data),
+              },
+              message.sourceStatus
+            );
           } else {
             yield message;
           }
