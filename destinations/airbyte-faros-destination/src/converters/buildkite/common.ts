@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 
 export interface Organization {
   readonly id: string;
@@ -129,12 +129,21 @@ export interface RepoExtract {
 export interface Provider {
   readonly name: RepoSource;
 }
+
+export interface BuildkiteConfig {
+  readonly environment_variables_to_sync?: string[];
+}
+
 /** Buildkite converter base */
 export abstract class BuildkiteConverter extends Converter {
   source = 'Buildkite';
   /** Almost every Buildkite record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected config(ctx: StreamContext): BuildkiteConfig {
+    return ctx.config.source_specific_configs?.buildkite ?? {};
   }
 
   convertBuildState(state: string | undefined): {

@@ -22,7 +22,8 @@
         "startedAt": null,
         "state": "SCHEDULED",
         "url": "https://buildkite.com/devcube/kelvin-test/builds/2",
-        "uuid": "4c55126e-0f8e-4d48-9ce2-7071fecb70cd"
+        "uuid": "4c55126e-0f8e-4d48-9ce2-7071fecb70cd",
+        "env": ["key1=value1", "key2=value2"]
     },
     {
         "commit": "HEAD",
@@ -47,6 +48,7 @@
         "startedAt": null,
         "state": "SCHEDULED",
         "url": "https://buildkite.com/devcube/kelvin-test/builds/1",
-        "uuid": "ee00ecd6-8d97-426d-9f0f-1a618b8f5023"
+        "uuid": "ee00ecd6-8d97-426d-9f0f-1a618b8f5023",
+        "env": ["key1=value1", "key2=value2"]
     }
 ]

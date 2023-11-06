@@ -22,7 +22,8 @@
             "finishedAt": null,
             "state": "SCHEDULED",
             "url": "https://buildkite.com/devcube/kelvin-test/builds/2",
-            "commit": "HEAD"
+            "commit": "HEAD",
+            "env": ["key1=value1", "key2=value2"]
         },
         "cursor": "kaEy"
     },
@@ -49,7 +50,8 @@
             "finishedAt": null,
             "state": "SCHEDULED",
             "url": "https://buildkite.com/devcube/kelvin-test/builds/1",
-            "commit": "HEAD"
+            "commit": "HEAD",
+            "env": ["key1=value1", "key2=value2"]
         },
         "cursor": "kaEx"
     }

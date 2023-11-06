@@ -41,7 +41,7 @@ describe('index', () => {
     );
   });
 
-  const sourceConfig = {token: '', cutoff_days: 90};
+  const sourceConfig = {token: '', cutoff_days: 90, include_job_env: true};
 
   test('check connection', async () => {
     Buildkite.instance = jest.fn().mockImplementation(() => {

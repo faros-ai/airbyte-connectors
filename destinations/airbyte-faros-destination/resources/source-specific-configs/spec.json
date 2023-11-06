@@ -30,6 +30,9 @@
         "bitbucket": {
           "$ref": "bitbucket.json"
         },
+        "buildkite": {
+          "$ref": "buildkite.json"
+        },
         "circleci": {
           "$ref": "circleci.json"
         },

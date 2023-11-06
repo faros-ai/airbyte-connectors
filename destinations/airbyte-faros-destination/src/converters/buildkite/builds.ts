@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Build, BuildkiteConverter} from './common';
 
 export class Builds extends BuildkiteConverter {
@@ -13,7 +13,8 @@ export class Builds extends BuildkiteConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data as Build;
@@ -49,6 +50,20 @@ export class Builds extends BuildkiteConverter {
       },
     });
     for (const job of build.jobs) {
+      const envVarsToSync = this.config(ctx).environment_variables_to_sync;
+      let envVars: {key: string; value: string}[];
+      if (envVarsToSync?.length) {
+        envVars = job.env
+          ?.map((s) => {
+            const keyValue = s.split('=');
+            return {
+              key: keyValue[0],
+              value: keyValue[1],
+            };
+          })
+          .filter(({key}) => envVarsToSync.includes(key));
+      }
+
       res.push({
         model: 'cicd_BuildStep',
         record: {
@@ -56,7 +71,7 @@ export class Builds extends BuildkiteConverter {
           name: job.label,
           ...this.convertBuildStepTime(job),
           command: job.command,
-          env: job.env,
+          environmentVariables: envVars,
           type: this.convertBuildStepType(job.type),
           createdAt: Utils.toDate(job.createdAt),
           startedAt: Utils.toDate(job.startedAt),
