@@ -30,12 +30,12 @@ jest.mock('faros-js-client', () => {
             return mockQueryToResponse[zScoreQueryResponseKey];
           } else if (query in mockQueryToResponse) {
             return mockQueryToResponse[query];
-          } else if (checkQueryNameValidity(query)) {
-            // TODO
-            throw new Error(`query not handled by mock: "${query}" `);
-            return [];
           } else {
-            throw new Error(`query not handled by mock: "${query}" `);
+            const resp = getQueryResponse(query);
+            if (!resp) {
+              throw new Error(`query not handled by mock: "${query}" `);
+            }
+            return resp;
           }
         },
       };
@@ -43,13 +43,33 @@ jest.mock('faros-js-client', () => {
   };
 });
 
-function checkQueryNameValidity(query: string): boolean {
+function getQueryResponse(query: string): Record<string, any> | null {
+  // Query must start with 'query ', then the query name will be listed
+  // Query name must look like Grouping__ModelName
   if (!query.startsWith('query ')) {
-    return false;
+    return null;
   }
   const query_title = query.split(' ')[1];
   console.log('query title: ' + query_title);
-  return true;
+  const title_list: string[] = query_title.split('__');
+  if (!(title_list.length == 2)) {
+    throw new Error(
+      `Improper title format. query not handled by mock: "${query}" `
+    );
+  }
+  const [title_grouping, model_name] = title_list;
+  console.log(`title_grouping: ${title_grouping}, model_name: ${model_name}`);
+  const test_by_groups: Record<
+    string,
+    Record<string, any>
+  > = mockQueryToResponse['queryTitleToResponse'];
+  const grouping = test_by_groups[title_grouping];
+  if (!grouping) {
+    throw new Error(
+      `Grouping not found in mock query response: "${title_grouping}".`
+    );
+  }
+  return grouping[model_name];
 }
 
 function readResourceFile(fileName: string): any {

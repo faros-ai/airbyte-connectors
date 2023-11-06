@@ -61,7 +61,7 @@ const identityNulls: GraphDoctorTestFunction = async function* (
     },
   };
   const query =
-    'query identityNulls_%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %modelName% {id} id } }';
+    'query identityNulls__%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %modelName% {id} id } }';
 
   yield* missingRelationsTest(
     cfg,
@@ -97,7 +97,7 @@ export const teamOwnershipNulls: GraphDoctorTestFunction = async function* (
     },
   };
   const query =
-    'query teamOwnershipNulls_%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %modelName% {id} id } }';
+    'query teamOwnershipNulls__%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %modelName% {id} id } }';
 
   yield* missingRelationsTest(
     cfg,

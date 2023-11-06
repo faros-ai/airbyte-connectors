@@ -44,5 +44,9 @@
       }
     ]
   },
-  "zScoreQueryOptions": {"note": "This object should be replaced by an object in another file."}
+  "zScoreQueryOptions": {"note": "This object should be replaced by an object in another file."},
+  "queryTitleToResponse": {
+    "Not": "Implemented"
+  }
+
 }

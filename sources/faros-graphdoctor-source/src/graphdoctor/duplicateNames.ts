@@ -69,7 +69,7 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
   const limit = 1000;
   const sort_replace = '%sort_id%';
   const name_replace = '%name_field%';
-  const query = `query duplicateNameQuery_%modelName% { %modelName%( limit: ${limit}, order_by: { id: asc } where: { id: { _gt: "${sort_replace}" } } ) { id, ${name_replace} }}`;
+  const query = `query duplicateNameQuery__%modelName% { %modelName%( limit: ${limit}, order_by: { id: asc } where: { id: { _gt: "${sort_replace}" } } ) { id, ${name_replace} }}`;
 
   const results = [];
   const crt_timestamp = getCurrentTimestamp();
