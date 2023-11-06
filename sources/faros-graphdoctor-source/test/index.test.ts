@@ -59,7 +59,7 @@ function getQueryResponse(query: string): Record<string, any> | null {
   const query_title = query.split(' ')[1];
   console.log('query title: ' + query_title);
   const title_list: string[] = query_title.split('__');
-  if (!(title_list.length == 2)) {
+  if (title_list.length !== 2) {
     throw new Error(
       `Improper title format. The following query is not handled by mock: "${query}" `
     );

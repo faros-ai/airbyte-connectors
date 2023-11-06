@@ -3,6 +3,7 @@
 import {FarosClient} from 'faros-js-client';
 import {Phantom} from 'faros-js-client/lib/types';
 import {sum} from 'lodash';
+import _ from 'lodash';
 
 import {
   DataSummaryKey,
@@ -18,19 +19,24 @@ async function getDataQualityRecordCount(
 ): Promise<FarosDataQualityRecordCount> {
   // e.g. tms_Task_aggregate
   const aggregate_name = `${modelName}_aggregate`;
-  const base_query = `query RecordCount__${modelName} { ${aggregate_name}(where: {isPhantom: {_eq: %bool%}}) { aggregate { count } } }`;
+  const base_query = `query RecordCount__${aggregate_name} { ${aggregate_name}(where: {isPhantom: {_eq: %bool%}}) { aggregate { count } } }`;
   const phantomCounter: Record<string, number> = {};
   for (const bool_val of ['true', 'false']) {
     const new_query: string = base_query.replace('%bool%', bool_val);
-    cfg.logger.info('Record Count query: ' + new_query);
     let result: any;
     if (bool_val === 'false') {
       result = await fc.gql(cfg.graph, new_query);
     } else {
       result = await phantomFC.gql(cfg.graph, new_query);
     }
-    let count = result?.[aggregate_name]?.aggregate?.count;
-    count = count ? count : 0;
+    const count = result?.[aggregate_name]?.aggregate?.count;
+    if (!_.isNumber(count)) {
+      throw new Error(
+        `Could not compute count for query ${new_query}. Res: "${JSON.stringify(
+          result
+        )}"`
+      );
+    }
     phantomCounter[bool_val] = count;
   }
   const recordCount = {

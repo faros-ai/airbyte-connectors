@@ -3,9 +3,7 @@ import _ from 'lodash';
 
 import {getDataQualitySummary} from './dataSummary';
 import {duplicateNames} from './duplicateNames';
-//import { identityNulls } from './identityNulls';
 import {DataSummaryKey, GraphDoctorTestFunction} from './models';
-//import {teamOwnershipNulls} from './teamOwnershipNulls';
 import {getCurrentTimestamp, missingRelationsTest, simpleHash} from './utils';
 import {runAllZScoreTests} from './z_scores';
 

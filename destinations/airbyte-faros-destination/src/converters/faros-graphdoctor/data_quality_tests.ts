@@ -6,7 +6,7 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {DataQualityIssue, DataQualitySummary, SummaryKey} from './models';
+import {DataQualityIssue, DataQualitySummary} from './models';
 
 export class DataQualityTests extends Converter {
   source = 'faros-graphdoctor';
@@ -43,8 +43,6 @@ export class DataQualityTests extends Converter {
   }
 
   private getDataQualityIssue(issue: DataQualityIssue): DestinationRecord[] {
-    // const summary_obj = this.getSummaryObjectFromDataIssue(issue);
-    // issue['summary'] = summary_obj
     return [
       {
         model: 'faros_DataQualityIssue',
@@ -62,16 +60,6 @@ export class DataQualityTests extends Converter {
         record: issue,
       },
     ];
-  }
-
-  private getSummaryObjectFromDataIssue(
-    issue: DataQualityIssue
-  ): SummaryKey | null {
-    let summary_obj = null;
-    if (issue.summary) {
-      summary_obj = issue.summary;
-    }
-    return summary_obj;
   }
 
   private AirbyterRecordsToString(l: AirbyteRecord[]): string {
