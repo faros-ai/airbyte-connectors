@@ -53,6 +53,7 @@ export class Builds extends BuildkiteConverter {
       const envVarsToSync = this.config(ctx).environment_variables_to_sync;
       let envVars: {key: string; value: string}[];
       if (envVarsToSync?.length) {
+        const syncAll = envVarsToSync.length === 1 && envVarsToSync[0] === '*';
         envVars = job.env
           ?.map((s) => {
             const keyValue = s.split('=');
@@ -61,7 +62,7 @@ export class Builds extends BuildkiteConverter {
               value: keyValue[1],
             };
           })
-          ?.filter(({key}) => envVarsToSync.includes(key));
+          ?.filter(({key}) => syncAll || envVarsToSync.includes(key));
       }
 
       res.push({

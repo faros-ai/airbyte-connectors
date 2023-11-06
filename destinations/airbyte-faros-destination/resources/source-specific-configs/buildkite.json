@@ -15,7 +15,7 @@
         "environment_variables_to_sync": {
           "type": "array",
           "title": "Environment Variables to Sync",
-          "description": "An array of environment variables to sync from the context of Buildkite jobs",
+          "description": "An array of environment variables to sync from the context of Buildkite jobs. To sync them all, provide only '*'.",
           "items": {
             "type": "string"
           }
