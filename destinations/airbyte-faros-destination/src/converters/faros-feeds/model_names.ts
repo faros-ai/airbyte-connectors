@@ -68,6 +68,7 @@ export const ALL_MODEL_NAMES = [
   'org_BoardOwnership',
   'org_Department',
   'org_Employee',
+  'org_EmployeeTool',
   'org_PipelineOwnership',
   'org_ProjectOwnership',
   'org_RepositoryOwnership',
