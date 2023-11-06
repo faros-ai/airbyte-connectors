@@ -1,6 +1,7 @@
 // Within this file we intend to summarize phantoms vs nonPhantom data
 
 import {FarosClient} from 'faros-js-client';
+import {Phantom} from 'faros-js-client/lib/types';
 import {sum} from 'lodash';
 
 import {
@@ -11,6 +12,7 @@ import {
 
 async function getDataQualityRecordCount(
   fc: FarosClient,
+  phantomFC: FarosClient,
   cfg: any,
   modelName: string
 ): Promise<FarosDataQualityRecordCount> {
@@ -19,8 +21,14 @@ async function getDataQualityRecordCount(
   const base_query = `query RecordCount__${modelName} { ${aggregate_name}(where: {isPhantom: {_eq: %bool%}}) { aggregate { count } } }`;
   const phantomCounter: Record<string, number> = {};
   for (const bool_val of ['true', 'false']) {
-    const new_query = base_query.replace('%bool%', bool_val);
-    const result = await fc.gql(cfg.graph, new_query, {phantoms: 'include'});
+    const new_query: string = base_query.replace('%bool%', bool_val);
+    cfg.logger.info('Record Count query: ' + new_query);
+    let result: any;
+    if (bool_val === 'false') {
+      result = await fc.gql(cfg.graph, new_query);
+    } else {
+      result = await phantomFC.gql(cfg.graph, new_query);
+    }
     let count = result?.[aggregate_name]?.aggregate?.count;
     count = count ? count : 0;
     phantomCounter[bool_val] = count;
@@ -60,9 +68,15 @@ export async function getDataQualitySummary(
     'vcs_Commit',
   ];
   const dataQualityRecordCounts: FarosDataQualityRecordCount[] = [];
+  const phantomFarosClient = new FarosClient({
+    url: cfg.api_url,
+    apiKey: cfg.api_key,
+    phantoms: Phantom.Include,
+    useGraphQLV2: true,
+  });
   for (const modelName of modelsOfInterest) {
     dataQualityRecordCounts.push(
-      await getDataQualityRecordCount(fc, cfg, modelName)
+      await getDataQualityRecordCount(fc, phantomFarosClient, cfg, modelName)
     );
   }
 

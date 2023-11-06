@@ -42,7 +42,7 @@ export async function get_paginated_query_results(
         `Number of results stored so far exceeds the max object size: ${max_object_size}`
       );
     }
-    crt_id = gql_results[gql_results.length - 1].get(sort_obj);
+    crt_id = gql_results[gql_results.length - 1][sort_obj];
     if (!crt_id) {
       return results;
     }

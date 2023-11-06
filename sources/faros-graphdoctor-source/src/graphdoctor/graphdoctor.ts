@@ -116,6 +116,7 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     source: 'faros-graphdoctor',
   };
   cfg.logger.info('Running Graph Doctor Tests');
+
   const testFunctions: GraphDoctorTestFunction[] = [
     orgTeamParentNull,
     teamOwnershipNulls,
