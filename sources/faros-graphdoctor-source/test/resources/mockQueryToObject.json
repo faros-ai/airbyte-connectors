@@ -1,5 +1,5 @@
 {
-  "query MyQuery { org_Team { id name uid parentTeam { uid } } }": {
+  "query orgTeamParentNull { org_Team { id name uid parentTeam { uid } } }": {
     "org_Team": [
       {
         "id": "a",
@@ -17,7 +17,7 @@
       }
     ]
   },
-  "query MyQuery { org_TeamMembership { team {id} member {id} id } }": {
+  "query  { teamOwnershipNulls { team {id} member {id} id } }": {
     "org_TeamMembership": [
       {
         "team": {
@@ -44,5 +44,7 @@
       }
     ]
   },
-  "zScoreQueryOptions": {"note": "This object should be replaced by an object in another file."}
+  "zScoreQueryOptions": {"note": "This object is replaced by an object in another file (mockQueryToObject.json)."},
+  "queryTitleToResponse": {"note": "This object is replaced by an object in another file (queryTitleToResponse.json)."}
+
 }

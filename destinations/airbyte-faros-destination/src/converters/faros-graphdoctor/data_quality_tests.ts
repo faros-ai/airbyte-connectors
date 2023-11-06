@@ -6,7 +6,7 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {DataQualityIssue, SummaryKey} from './models';
+import {DataQualityIssue, DataQualitySummary} from './models';
 
 export class DataQualityTests extends Converter {
   source = 'faros-graphdoctor';
@@ -27,10 +27,15 @@ export class DataQualityTests extends Converter {
     const res: DestinationRecord[] = [];
     const data_obj = record.record.data;
     if ('faros_DataQualityIssue' in data_obj) {
-      const data_quality_issue: DataQualityIssue = data_obj[
+      const data_quality_issue = data_obj[
         'faros_DataQualityIssue'
       ] as DataQualityIssue;
       return this.getDataQualityIssue(data_quality_issue);
+    } else if ('faros_DataQualitySummary' in data_obj) {
+      const data_quality_summary = data_obj[
+        'faros_DataQualitySummary'
+      ] as DataQualitySummary;
+      return this.getDataQualitySummary(data_quality_summary);
     } else {
       this.unRecognizedDataIssueRecords.push(record);
     }
@@ -38,33 +43,23 @@ export class DataQualityTests extends Converter {
   }
 
   private getDataQualityIssue(issue: DataQualityIssue): DestinationRecord[] {
-    const summary_obj = this.getSummaryObjectFromDataIssue(issue);
     return [
       {
         model: 'faros_DataQualityIssue',
-        record: {
-          uid: issue.uid,
-          model: issue.model,
-          description: issue.description,
-          recordIds: issue.recordIds,
-          createdAt: issue.created_at,
-          summary: summary_obj,
-        },
+        record: issue,
       },
     ];
   }
 
-  private getSummaryObjectFromDataIssue(
-    issue: DataQualityIssue
-  ): SummaryKey | null {
-    let summary_obj = null;
-    if (issue.summary) {
-      summary_obj = {
-        uid: issue.summary.uid,
-        source: issue.summary.source,
-      };
-    }
-    return summary_obj;
+  private getDataQualitySummary(
+    issue: DataQualitySummary
+  ): DestinationRecord[] {
+    return [
+      {
+        model: 'faros_DataQualitySummary',
+        record: issue,
+      },
+    ];
   }
 
   private AirbyterRecordsToString(l: AirbyteRecord[]): string {
