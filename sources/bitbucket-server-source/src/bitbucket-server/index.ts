@@ -218,9 +218,9 @@ export class BitbucketServer {
       );
     } catch (err) {
       const innerErr = innerError(err);
-      if (innerErr.message === 'No default branch defined') {
+      if (innerErr.message === 'No default branch is defined') {
         this.logger.warn(
-          `No default branch defined for repository ${fullName}. Please set one to enable fetching commits.`
+          `No default branch is defined for repository ${fullName}. Please set one to enable fetching commits.`
         );
       } else {
         throw new VError(
@@ -409,9 +409,9 @@ export class BitbucketServer {
       return results;
     } catch (err) {
       const innerErr = innerError(err);
-      if (innerErr.message === 'No default branch defined') {
+      if (innerErr.message === 'No default branch is defined') {
         this.logger.warn(
-          `No default branch defined for repository ${fullName}. Please set one to enable fetching pull requests.`
+          `No default branch is defined for repository ${fullName}. Please set one to enable fetching pull requests.`
         );
       } else {
         throw new VError(
