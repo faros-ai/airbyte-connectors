@@ -217,10 +217,17 @@ export class BitbucketServer {
         }
       );
     } catch (err) {
-      throw new VError(
-        innerError(err),
-        `Error fetching commits for repository ${fullName}`
-      );
+      const innerErr = innerError(err);
+      if (innerErr.message === 'No default branch defined') {
+        this.logger.warn(
+          `No default branch defined for repository ${fullName}. Please set one to enable fetching commits.`
+        );
+      } else {
+        throw new VError(
+          innerErr,
+          `Error fetching commits for repository ${fullName}`
+        );
+      }
     }
   }
 
@@ -401,10 +408,17 @@ export class BitbucketServer {
       }
       return results;
     } catch (err) {
-      throw new VError(
-        innerError(err),
-        `Error fetching pull requests for repository ${fullName}`
-      );
+      const innerErr = innerError(err);
+      if (innerErr.message === 'No default branch defined') {
+        this.logger.warn(
+          `No default branch defined for repository ${fullName}. Please set one to enable fetching pull requests.`
+        );
+      } else {
+        throw new VError(
+          innerErr,
+          `Error fetching pull requests for repository ${fullName}`
+        );
+      }
     }
   }
 
