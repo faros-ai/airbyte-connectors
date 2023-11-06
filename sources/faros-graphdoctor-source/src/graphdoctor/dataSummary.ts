@@ -2,7 +2,6 @@
 
 import {FarosClient} from 'faros-js-client';
 import {Phantom} from 'faros-js-client/lib/types';
-import {sum} from 'lodash';
 import _ from 'lodash';
 
 import {
@@ -41,7 +40,7 @@ async function getDataQualityRecordCount(
   }
   const recordCount = {
     model: modelName,
-    total: sum(Object.values(phantomCounter)),
+    total: _.sum(Object.values(phantomCounter)),
     phantoms: phantomCounter.true,
     nonPhantoms: phantomCounter.false,
   };
