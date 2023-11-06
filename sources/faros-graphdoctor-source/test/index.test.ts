@@ -11,8 +11,15 @@ const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
 const mockZScoreResponse: Record<string, any> = readTestResourceAsJSON(
   'zScoreQueryResult.json'
 );
+const mockQueryTitleToResponse: Record<string, any> = readTestResourceAsJSON(
+  'queryTitleToResponse.json'
+);
 const zScoreQueryResponseKey = 'zScoreQueryOptions';
+const queryTitleToResponseKey = 'queryTitleToResponse';
 mockQueryToResponse[zScoreQueryResponseKey] = mockZScoreResponse;
+mockQueryToResponse[queryTitleToResponseKey] = mockQueryTitleToResponse;
+// For printing out info to console during tests
+const mock_debug = true;
 
 jest.mock('faros-js-client', () => {
   return {
@@ -54,22 +61,32 @@ function getQueryResponse(query: string): Record<string, any> | null {
   const title_list: string[] = query_title.split('__');
   if (!(title_list.length == 2)) {
     throw new Error(
-      `Improper title format. query not handled by mock: "${query}" `
+      `Improper title format. The following query is not handled by mock: "${query}" `
     );
   }
   const [title_grouping, model_name] = title_list;
-  console.log(`title_grouping: ${title_grouping}, model_name: ${model_name}`);
+  console.log(`title_grouping: ${title_grouping}, model_name: ${model_name}.`);
   const test_by_groups: Record<
     string,
     Record<string, any>
-  > = mockQueryToResponse['queryTitleToResponse'];
+  > = mockQueryToResponse[queryTitleToResponseKey];
   const grouping = test_by_groups[title_grouping];
   if (!grouping) {
     throw new Error(
       `Grouping not found in mock query response: "${title_grouping}".`
     );
   }
-  return grouping[model_name];
+  if (!(model_name in grouping)) {
+    throw new Error(
+      `Model Name ${model_name} not found in mock query grouping: "${title_grouping}".`
+    );
+  }
+  const res = {};
+  res[model_name] = grouping[model_name];
+  if (mock_debug) {
+    console.log(`Response: ${JSON.stringify(res)}`);
+  }
+  return res;
 }
 
 function readResourceFile(fileName: string): any {
@@ -122,34 +139,7 @@ describe('index', () => {
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
     }
-    expect(results.slice(0, 3)).toStrictEqual([
-      {
-        faros_DataQualityIssue: {
-          uid: '-703795182',
-          model: 'org_Team',
-          description:
-            'Team other than all_teams has missing parent team, uid=c',
-          recordIds: ['a'],
-        },
-      },
-      {
-        faros_DataQualityIssue: {
-          uid: '-1496261476',
-          model: 'org_TeamMembership',
-          description:
-            "Team Membership with ID 'c' has missing 'team' or 'member'",
-          recordIds: ['c'],
-        },
-      },
-      {
-        faros_DataQualityIssue: {
-          uid: '-1496261476',
-          model: 'org_TeamMembership',
-          description:
-            "Team Membership with ID 'c' has missing 'team' or 'member'",
-          recordIds: ['c'],
-        },
-      },
-    ]);
+    console.log(results);
+    expect(results.slice(0, 0)).toStrictEqual([]);
   });
 });

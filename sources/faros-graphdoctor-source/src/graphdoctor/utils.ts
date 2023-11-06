@@ -88,7 +88,9 @@ export async function* missingRelationsTest(
     const response = await fc.gql(cfg.graph, new_query);
     const result_list = response[main_obj];
     if (!result_list) {
-      throw new Error(`Failed to get result for query "${new_query}".`);
+      throw new Error(
+        `Failed to get result for query "${new_query}". Res: ${result_list}`
+      );
     }
     const data_issues: DataIssueWrapper[] =
       get_missing_relation_data_issues_from_result_list(

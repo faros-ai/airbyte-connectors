@@ -1,0 +1,42 @@
+{
+    "teamOwnershipNulls": {
+        "org_ApplicationOwnership": [],
+        "org_BoardOwnership": [],
+        "org_PipelineOwnership": [],
+        "org_RepositoryOwnership": [],
+        "org_TeamMembership": []
+    },
+    "identityNulls": {
+        "vcs_UserIdentity": [],
+        "ims_UserIdentity": [],
+        "tms_UserIdentity": []
+    },
+    "duplicateNameQuery": {
+        "org_Team": [],
+        "identity_Identity": [],
+        "compute_Application": [],
+        "tms_Project": [],
+        "tms_TaskBoard": [],
+        "vcs_Organization": [],
+        "vcs_Repository": []
+    },
+    "RecordCount": {
+        "ams_Project": {},
+        "ams_Activity": {},
+        "cal_Event": {},
+        "cicd_Pipeline": {},
+        "cicd_Build": {},
+        "cicd_Repository": {},
+        "cicd_Artifact": {},
+        "cicd_Deployment": {},
+        "faros_Tag": {},
+        "ims_Incident": {},
+        "qa_TestCase": {},
+        "qa_TestExecution": {},
+        "survey_Survey": {},
+        "tms_Task": {},
+        "tms_Project": {},
+        "vcs_PullRequest": {},
+        "vcs_Commit": {}
+    }
+}
