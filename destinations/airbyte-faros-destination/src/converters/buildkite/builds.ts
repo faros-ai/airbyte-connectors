@@ -61,7 +61,7 @@ export class Builds extends BuildkiteConverter {
               value: keyValue[1],
             };
           })
-          .filter(({key}) => envVarsToSync.includes(key));
+          ?.filter(({key}) => envVarsToSync.includes(key));
       }
 
       res.push({
