@@ -28,11 +28,13 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     ['cicd_Artifact', 'cicd_ArtifactCommitAssociation'],
     ['cicd_Organization', 'cicd_Repository'],
     ['compute_Application', 'compute_Instance', 'compute_Volume'],
-    ['faros_Tag', 'geo_Location'],
+    ['faros_Tag'],
     ['ims_Incident', 'ims_IncidentEvent'],
     ['qa_TestExecution'],
     ['tms_Task', 'tms_Project', 'tms_Epic'],
-    ['vcs_RepositoryContribution', 'vcs_Commit', 'vcs_PullRequest'],
+    ['vcs_RepositoryContribution'],
+    ['vcs_Commit'],
+    ['vcs_PullRequest'],
   ];
   const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
     refreshedAt,
