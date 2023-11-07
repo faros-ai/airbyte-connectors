@@ -55,8 +55,6 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     data_issues.push(...new_data_issues);
   }
 
-  // For testing:
-  console.log(data_issues);
   for (const result of data_issues) {
     yield result;
   }
@@ -105,11 +103,12 @@ async function runZScoreTestOnObjectGrouping(
         cfg
       );
     if (z_score_result.status != 0) {
-      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. `;
+      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. Message: "${z_score_result.msg}"`;
       data_issues.push({
         faros_DataQualityIssue: {
           uid: `ZScoreComputationFailure: ${now_ts}`,
           description: failure_msg,
+          model: modelName,
           summary: summaryKey,
         },
       });
