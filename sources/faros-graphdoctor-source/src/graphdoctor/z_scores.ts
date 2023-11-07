@@ -255,7 +255,7 @@ export function compute_zscore_for_timestamps(
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
   if (cluster_avg_differences.length < compute_number_min_threshold) {
-    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}. `;
+    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length} < ${compute_number_min_threshold}. `;
     msg_str += ` nResults: "${nResults}"`;
     return {
       status: 1,
