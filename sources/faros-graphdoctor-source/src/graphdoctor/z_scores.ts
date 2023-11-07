@@ -123,7 +123,7 @@ async function runZScoreTestOnObjectGrouping(
 
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
-  object_nm: string,
+  modelName: string,
   threshold: number,
   cfg: any,
   summaryKey: DataSummaryKey
@@ -134,7 +134,7 @@ function convert_result_to_data_issue(
   }
   if (z_score < threshold) {
     cfg.logger.info(
-      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${object_nm}.`
+      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${modelName}.`
     );
     return null;
   }
@@ -145,7 +145,9 @@ function convert_result_to_data_issue(
 
   return {
     faros_DataQualityIssue: {
-      uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
+      uid: `Z_Score_Issue_${modelName}_${z_score_result.last_updated_time}`,
+      title: 'z-score',
+      model: modelName,
       description: desc_str,
       recordIds: [z_score_result.last_id],
       summary: summaryKey,
