@@ -85,7 +85,9 @@ export async function* missingRelationsTest(
     new_query = new_query.replace('%main_object%', main_obj);
     new_query = new_query.replace('%modelName%', modelName);
     new_query = new_query.replace('%where_test%', modelName);
+    cfg.logger.info('Will run query: ' + new_query);
     const response = await fc.gql(cfg.graph, new_query);
+    cfg.logger.info('Response: ' + JSON.stringify(response));
     const result_list = response[main_obj];
     if (!result_list) {
       throw new Error(
