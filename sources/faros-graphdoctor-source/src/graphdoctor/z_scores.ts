@@ -83,9 +83,7 @@ async function runZScoreTestOnObjectGrouping(
   const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
   const response = await fc.gql(cfg.graph, complete_query);
 
-  let failure_msg: string;
   for (const modelName of object_test_list) {
-    failure_msg = '';
     const obj_resp: RefreshedAtInterface[] = response[modelName];
     if (!obj_resp || obj_resp.length < compute_number_min_threshold) {
       continue;
@@ -98,7 +96,7 @@ async function runZScoreTestOnObjectGrouping(
         cfg
       );
     if (z_score_result.status != 0) {
-      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. Message: "${z_score_result.msg}"`;
+      const failure_msg: string = `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. Message: "${z_score_result.msg}"`;
       data_issues.push({
         faros_DataQualityIssue: {
           uid: `ZScoreComputationFailure: ${now_ts}`,
@@ -243,7 +241,7 @@ export function compute_zscore_for_timestamps(
   if (!clusters) {
     cfg.logger.info(JSON.stringify(datetimes));
     cfg.logger.info(JSON.stringify(seconds_timestamp));
-    return {status: 1, msg: 'No clusters.'};
+    return {status: 1, msg: `No clusters, nResults: "${nResults}".`};
   }
 
   const cluster_averages: number[] = get_avg_per_cluster(clusters);
@@ -253,9 +251,11 @@ export function compute_zscore_for_timestamps(
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
   if (cluster_avg_differences.length < compute_number_min_threshold) {
+    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}. `;
+    msg_str += ` nResults: "${nResults}"`;
     return {
       status: 1,
-      msg: `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}`,
+      msg: msg_str,
     };
   }
 
@@ -266,7 +266,7 @@ export function compute_zscore_for_timestamps(
     // since nValues > 1, and each value should be a distinct number.
     return {
       status: 1,
-      msg: `Computed standard deviation of 0.`,
+      msg: `Computed standard deviation of 0, nResults: "${nResults}".`,
     };
   }
 
