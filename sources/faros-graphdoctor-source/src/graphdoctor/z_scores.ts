@@ -23,21 +23,18 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   const object_test_list_groupings = [
     ['ams_Activity', 'ams_Project'],
     ['cal_Event', 'cal_Calendar', 'cal_User'],
-    [
-      'cicd_Deployment',
-      'cicd_Build',
-      'cicd_Artifact',
-      'cicd_Organization',
-      'cicd_Repository',
-      'cicd_BuildCommitAssociation',
-      'cicd_ArtifactCommitAssociation',
-    ],
+    ['cicd_Deployment'],
+    ['cicd_Build', 'cicd_BuildCommitAssociation'],
+    ['cicd_Artifact', 'cicd_ArtifactCommitAssociation'],
+    ['cicd_Organization', 'cicd_Repository'],
     ['compute_Application', 'compute_Instance', 'compute_Volume'],
-    ['faros_Tag', 'geo_Location'],
+    ['faros_Tag'],
     ['ims_Incident', 'ims_IncidentEvent'],
     ['qa_TestExecution'],
     ['tms_Task', 'tms_Project', 'tms_Epic'],
-    ['vcs_RepositoryContribution', 'vcs_Commit', 'vcs_PullRequest'],
+    ['vcs_RepositoryContribution'],
+    ['vcs_Commit'],
+    ['vcs_PullRequest'],
   ];
   const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
     refreshedAt,
@@ -55,8 +52,6 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     data_issues.push(...new_data_issues);
   }
 
-  // For testing:
-  console.log(data_issues);
   for (const result of data_issues) {
     yield result;
   }
@@ -90,9 +85,7 @@ async function runZScoreTestOnObjectGrouping(
   const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
   const response = await fc.gql(cfg.graph, complete_query);
 
-  let failure_msg: string;
   for (const modelName of object_test_list) {
-    failure_msg = '';
     const obj_resp: RefreshedAtInterface[] = response[modelName];
     if (!obj_resp || obj_resp.length < compute_number_min_threshold) {
       continue;
@@ -105,11 +98,12 @@ async function runZScoreTestOnObjectGrouping(
         cfg
       );
     if (z_score_result.status != 0) {
-      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. `;
+      const failure_msg: string = `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. Message: "${z_score_result.msg}"`;
       data_issues.push({
         faros_DataQualityIssue: {
           uid: `ZScoreComputationFailure: ${now_ts}`,
           description: failure_msg,
+          model: modelName,
           summary: summaryKey,
         },
       });
@@ -131,7 +125,7 @@ async function runZScoreTestOnObjectGrouping(
 
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
-  object_nm: string,
+  modelName: string,
   threshold: number,
   cfg: any,
   summaryKey: DataSummaryKey
@@ -142,7 +136,7 @@ function convert_result_to_data_issue(
   }
   if (z_score < threshold) {
     cfg.logger.info(
-      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${object_nm}.`
+      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${modelName}.`
     );
     return null;
   }
@@ -153,7 +147,9 @@ function convert_result_to_data_issue(
 
   return {
     faros_DataQualityIssue: {
-      uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
+      uid: `Z_Score_Issue_${modelName}_${z_score_result.last_updated_time}`,
+      title: 'z-score',
+      model: modelName,
       description: desc_str,
       recordIds: [z_score_result.last_id],
       summary: summaryKey,
@@ -249,7 +245,7 @@ export function compute_zscore_for_timestamps(
   if (!clusters) {
     cfg.logger.info(JSON.stringify(datetimes));
     cfg.logger.info(JSON.stringify(seconds_timestamp));
-    return {status: 1, msg: 'No clusters.'};
+    return {status: 1, msg: `No clusters, nResults: "${nResults}".`};
   }
 
   const cluster_averages: number[] = get_avg_per_cluster(clusters);
@@ -259,9 +255,11 @@ export function compute_zscore_for_timestamps(
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
   if (cluster_avg_differences.length < compute_number_min_threshold) {
+    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length} < ${compute_number_min_threshold}. `;
+    msg_str += ` nResults: "${nResults}"`;
     return {
       status: 1,
-      msg: `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}`,
+      msg: msg_str,
     };
   }
 
@@ -272,7 +270,7 @@ export function compute_zscore_for_timestamps(
     // since nValues > 1, and each value should be a distinct number.
     return {
       status: 1,
-      msg: `Computed standard deviation of 0.`,
+      msg: `Computed standard deviation of 0, nResults: "${nResults}".`,
     };
   }
 

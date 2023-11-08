@@ -129,6 +129,8 @@ describe('index', () => {
   });
 
   test('Data Quality Tests', async () => {
+    // Proper tests should be run by trying the source on available graphs
+    // and tenants. Unit tests validate that the logic works minimally.
     const source = new sut.FarosGraphDoctorSource(logger);
     const dq_tests = new DataQualityTests(
       sourceConfig,
@@ -139,7 +141,10 @@ describe('index', () => {
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
     }
-    console.log(results);
+
+    if (mock_debug) {
+      console.log(JSON.stringify(results));
+    }
     expect(results.slice(0, 0)).toStrictEqual([]);
   });
 });

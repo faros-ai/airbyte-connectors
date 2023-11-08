@@ -88,6 +88,7 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
       cfg,
       limit
     );
+    cfg.logger.info('Results: ' + JSON.stringify(query_results));
     const new_data_issues = process_name_query_results(
       query_results,
       name_field,
