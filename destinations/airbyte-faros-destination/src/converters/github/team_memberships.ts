@@ -22,7 +22,7 @@ export class TeamMemberships extends GitHubConverter {
       source,
     };
     const user = {
-      uid: toLower(membership.username),
+      uid: membership.username,
       source,
     };
 
