@@ -261,12 +261,7 @@ export interface AirbyteState {
 }
 
 export interface AirbyteSourceStatusBase {
-  status: 'RUNNING' | 'ERRORED';
-}
-
-export interface AirbyteSourceRunningStatus extends AirbyteSourceStatusBase {
-  status: 'RUNNING';
-  message?: string;
+  status: 'ERRORED' | 'RUNNING' | 'SUCCESS';
 }
 
 export interface AirbyteSourceErrorStatus extends AirbyteSourceStatusBase {
@@ -274,9 +269,20 @@ export interface AirbyteSourceErrorStatus extends AirbyteSourceStatusBase {
   error: string;
 }
 
+export interface AirbyteSourceRunningStatus extends AirbyteSourceStatusBase {
+  status: 'RUNNING';
+  message?: string;
+}
+
+export interface AirbyteSourceSuccessStatus extends AirbyteSourceStatusBase {
+  status: 'SUCCESS';
+  message?: string;
+}
+
 export type AirbyteSourceStatus =
   | AirbyteSourceErrorStatus
-  | AirbyteSourceRunningStatus;
+  | AirbyteSourceRunningStatus
+  | AirbyteSourceSuccessStatus;
 
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
