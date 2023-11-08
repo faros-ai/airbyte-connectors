@@ -143,8 +143,8 @@ export class Tasks extends AsanaConverter {
       record: {
         ...taskKey,
         name: task.name,
-        description: task.notes?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          task.notes,
           AsanaCommon.MAX_DESCRIPTION_LENGTH
         ),
         url: task.permalink_url ?? null,

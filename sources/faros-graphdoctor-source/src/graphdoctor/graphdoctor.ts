@@ -1,43 +1,36 @@
 import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
-import {GraphDoctorTestFunction} from './models';
+import {getDataQualitySummary} from './dataSummary';
+import {duplicateNames} from './duplicateNames';
+import {DataSummaryKey, GraphDoctorTestFunction} from './models';
+import {getCurrentTimestamp, missingRelationsTest, simpleHash} from './utils';
 import {runAllZScoreTests} from './z_scores';
-
-function simpleHash(str): string {
-  let hash = 0;
-  if (str.length === 0) return '0';
-
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-
-  return hash.toString();
-}
 
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
-  fc: FarosClient
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
 ) {
-  // We should add queries which return pages and yield results per page
-  // For now yielding all at once
-  cfg.logger.info('running orgTeamParentNull');
-  const query = 'query MyQuery { org_Team { id name uid parentTeam { uid } } }';
+  const query =
+    'query orgTeamParentNull { org_Team { id name uid parentTeam { uid } } }';
   const response = await fc.gql(cfg.graph, query);
   const results = [];
   const org_Teams = response.org_Team;
+  if (!org_Teams) {
+    throw new Error(`Failed to get org_Teams from query "${query}".`);
+  }
   let uid = 0;
   for (const team of org_Teams) {
     if (_.isNull(team.parentTeam) && team.uid !== 'all_teams') {
-      const desc_str = `Team other than all_teams has missing parent team, uid=${team.uid}`;
+      const desc_str = `Missing parent team issue: team with uid "${team.uid}".`;
       results.push({
         faros_DataQualityIssue: {
           uid: simpleHash(`${uid.toString}${desc_str}`),
           model: 'org_Team',
           description: desc_str,
           recordIds: [team.id],
+          summary: summaryKey,
         },
       });
       uid += 1;
@@ -48,45 +41,99 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   }
 };
 
-export const orgTeamAssignmentNullTeam: GraphDoctorTestFunction =
-  async function* (cfg: any, fc: FarosClient) {
-    // We should add queries which return pages and yield results per page
-    // For now yielding all at once
-    //cfg.logger.info('running orgTeamAssignmentNullTeam');
-    const query =
-      'query MyQuery { org_TeamMembership { team {id} member {id} id } }';
-    const response = await fc.gql(cfg.graph, query);
-    const results = [];
-    const org_Teams = response.org_TeamMembership;
-    let uid = 0;
-    for (const rec of org_Teams) {
-      if (_.isNull(rec.team) || _.isNull(rec.member)) {
-        const desc_str = `Team Membership with ID '${rec.id}' has missing 'team' or 'member'`;
-        results.push({
-          faros_DataQualityIssue: {
-            uid: simpleHash(`${uid.toString}${desc_str}`),
-            model: 'org_TeamMembership',
-            description: desc_str,
-            recordIds: [rec.id],
-          },
-        });
-        uid += 1;
-      }
-    }
-    for (const result of results) {
-      yield result;
-    }
+const identityNulls: GraphDoctorTestFunction = async function* (
+  cfg: any,
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
+) {
+  // team Ownership models:
+  const identityModels = {
+    vcs_UserIdentity: {
+      modelName: 'vcsUser',
+    },
+    ims_UserIdentity: {
+      modelName: 'imsUser',
+    },
+    tms_UserIdentity: {
+      modelName: 'tmsUser',
+    },
   };
+  const query =
+    'query identityNulls__%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {identity: {}} }] }) { identity {id} %modelName% {id} id } }';
+
+  yield* missingRelationsTest(
+    cfg,
+    fc,
+    identityModels,
+    query,
+    'identity',
+    summaryKey
+  );
+};
+
+export const teamOwnershipNulls: GraphDoctorTestFunction = async function* (
+  cfg: any,
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
+) {
+  // team Ownership objects:
+  const ownershipModels = {
+    org_ApplicationOwnership: {
+      modelName: 'application',
+    },
+    org_BoardOwnership: {
+      modelName: 'board',
+    },
+    org_PipelineOwnership: {
+      modelName: 'pipeline',
+    },
+    org_RepositoryOwnership: {
+      modelName: 'repository',
+    },
+    org_TeamMembership: {
+      modelName: 'member',
+    },
+  };
+  const query =
+    'query teamOwnershipNulls__%main_object% { %main_object%(where: { _or: [ {_not: {%where_test%: {}}}, {_not: {team: {}} }] }) { team {id} %modelName% {id} id } }';
+
+  yield* missingRelationsTest(
+    cfg,
+    fc,
+    ownershipModels,
+    query,
+    'team',
+    summaryKey
+  );
+};
 
 export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
+  const start_timestamp = getCurrentTimestamp();
+  const summaryKey: DataSummaryKey = {
+    uid: start_timestamp,
+    source: 'faros-graphdoctor',
+  };
   cfg.logger.info('Running Graph Doctor Tests');
+
   const testFunctions: GraphDoctorTestFunction[] = [
     orgTeamParentNull,
-    orgTeamAssignmentNullTeam,
+    teamOwnershipNulls,
+    identityNulls,
+    duplicateNames,
     runAllZScoreTests,
   ];
 
   for (const test_func of testFunctions) {
-    yield* test_func(cfg, fc);
+    cfg.logger.info(`Running test function "${test_func.name}".`);
+    yield* test_func(cfg, fc, summaryKey);
   }
+
+  cfg.logger.info('Running Graph Doctor Diagnostic Summary');
+  const dataQualitySummary = await getDataQualitySummary(
+    fc,
+    cfg,
+    summaryKey,
+    start_timestamp
+  );
+  yield dataQualitySummary;
 }

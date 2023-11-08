@@ -1,7 +1,8 @@
 import {FarosClient} from 'faros-js-client';
 
 import {
-  DataIssueInterface,
+  DataIssueWrapper,
+  DataSummaryKey,
   GraphDoctorTestFunction,
   RefreshedAtInterface,
   ZScoreComputationResult,
@@ -14,46 +15,43 @@ const z_score_threshold: number = 2;
 // Entrypoint
 export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
   cfg: any,
-  fc: FarosClient
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
 ) {
   cfg.logger.info('Starting to compute data recency tests');
 
   const object_test_list_groupings = [
     ['ams_Activity', 'ams_Project'],
     ['cal_Event', 'cal_Calendar', 'cal_User'],
-    [
-      'cicd_Deployment',
-      'cicd_Build',
-      'cicd_Artifact',
-      'cicd_Organization',
-      'cicd_Repository',
-      'cicd_BuildCommitAssociation',
-      'cicd_ArtifactCommitAssociation',
-    ],
+    ['cicd_Deployment'],
+    ['cicd_Build', 'cicd_BuildCommitAssociation'],
+    ['cicd_Artifact', 'cicd_ArtifactCommitAssociation'],
+    ['cicd_Organization', 'cicd_Repository'],
     ['compute_Application', 'compute_Instance', 'compute_Volume'],
-    ['faros_Tag', 'geo_Location'],
+    ['faros_Tag'],
     ['ims_Incident', 'ims_IncidentEvent'],
     ['qa_TestExecution'],
     ['tms_Task', 'tms_Project', 'tms_Epic'],
-    ['vcs_RepositoryContribution', 'vcs_Commit', 'vcs_PullRequest'],
+    ['vcs_RepositoryContribution'],
+    ['vcs_Commit'],
+    ['vcs_PullRequest'],
   ];
-  const base_object_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
+  const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
     refreshedAt,
     id
   }`;
-  const data_issues: DataIssueInterface[] = [];
+  const data_issues: DataIssueWrapper[] = [];
   for (const object_list of object_test_list_groupings) {
     const new_data_issues = await runZScoreTestOnObjectGrouping(
       object_list,
-      base_object_query,
+      base_model_query,
       fc,
-      cfg
+      cfg,
+      summaryKey
     );
     data_issues.push(...new_data_issues);
   }
 
-  // For testing:
-  console.log(data_issues);
   for (const result of data_issues) {
     yield result;
   }
@@ -61,17 +59,18 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
 
 async function runZScoreTestOnObjectGrouping(
   object_test_list: string[],
-  base_object_query: string,
+  base_model_query: string,
   fc: FarosClient,
-  cfg: any
-): Promise<DataIssueInterface[]> {
-  const data_issues: DataIssueInterface[] = [];
+  cfg: any,
+  summaryKey: DataSummaryKey
+): Promise<DataIssueWrapper[]> {
+  const data_issues: DataIssueWrapper[] = [];
   // Note all of the objects in the object_test_list queries will combined into one
   let query_internal = '';
-  for (const obj_nm of object_test_list) {
+  for (const modelName of object_test_list) {
     const obj_query = substitute_strings_into_queries(
-      base_object_query,
-      obj_nm,
+      base_model_query,
+      modelName,
       amount_of_recently_added_to_compute
     );
     query_internal = `${query_internal} ${obj_query} `;
@@ -86,28 +85,36 @@ async function runZScoreTestOnObjectGrouping(
   const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
   const response = await fc.gql(cfg.graph, complete_query);
 
-  let failure_msg: string;
-  for (const obj_nm of object_test_list) {
-    failure_msg = '';
-    const obj_resp: RefreshedAtInterface[] = response[obj_nm];
+  for (const modelName of object_test_list) {
+    const obj_resp: RefreshedAtInterface[] = response[modelName];
     if (!obj_resp || obj_resp.length < compute_number_min_threshold) {
       continue;
     }
     const z_score_result: ZScoreComputationResult =
-      compute_zscore_for_timestamps(obj_resp, secondsSinceEpoch, obj_nm, cfg);
+      compute_zscore_for_timestamps(
+        obj_resp,
+        secondsSinceEpoch,
+        modelName,
+        cfg
+      );
     if (z_score_result.status != 0) {
-      failure_msg += `Non-zero z-score status: "${z_score_result.status}" for ${obj_nm}. `;
+      const failure_msg: string = `Non-zero z-score status: "${z_score_result.status}" for ${modelName}. Message: "${z_score_result.msg}"`;
       data_issues.push({
-        uid: `ZScoreComputationFailure: ${now_ts}`,
-        description: failure_msg,
+        faros_DataQualityIssue: {
+          uid: `ZScoreComputationFailure: ${now_ts}`,
+          description: failure_msg,
+          model: modelName,
+          summary: summaryKey,
+        },
       });
       continue;
     }
-    const data_issue: DataIssueInterface | null = convert_result_to_data_issue(
+    const data_issue: DataIssueWrapper | null = convert_result_to_data_issue(
       z_score_result,
-      obj_nm,
+      modelName,
       z_score_threshold,
-      cfg
+      cfg,
+      summaryKey
     );
     if (data_issue) {
       data_issues.push(data_issue);
@@ -118,17 +125,18 @@ async function runZScoreTestOnObjectGrouping(
 
 function convert_result_to_data_issue(
   z_score_result: ZScoreComputationResult,
-  object_nm: string,
+  modelName: string,
   threshold: number,
-  cfg: any
-): DataIssueInterface | null {
+  cfg: any,
+  summaryKey: DataSummaryKey
+): DataIssueWrapper | null {
   const z_score = z_score_result.z_score;
   if (!z_score) {
     return null;
   }
   if (z_score < threshold) {
     cfg.logger.info(
-      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${object_nm}.`
+      `Got z-score of ${z_score} out of ${z_score_result.nResults} results for object ${modelName}.`
     );
     return null;
   }
@@ -138,18 +146,23 @@ function convert_result_to_data_issue(
   desc_str += `Number of datetime stamps: ${z_score_result.nResults}.`;
 
   return {
-    uid: `Z_Score_Issue_${object_nm}_${z_score_result.last_updated_time}`,
-    description: desc_str,
-    recordIds: [z_score_result.last_id],
+    faros_DataQualityIssue: {
+      uid: `Z_Score_Issue_${modelName}_${z_score_result.last_updated_time}`,
+      title: 'z-score',
+      model: modelName,
+      description: desc_str,
+      recordIds: [z_score_result.last_id],
+      summary: summaryKey,
+    },
   };
 }
 
 function substitute_strings_into_queries(
   query_str: string,
-  obj_nm: string,
+  modelName: string,
   amt: number
 ): string {
-  let op_str = query_str.replace('{QUERY_NAME}', obj_nm);
+  let op_str = query_str.replace('{QUERY_NAME}', modelName);
   op_str = op_str.replace('{AMOUNT}', amt.toString());
   return op_str;
 }
@@ -219,7 +232,7 @@ function get_avg_per_cluster(clusters: number[][]): number[] {
 export function compute_zscore_for_timestamps(
   responses: RefreshedAtInterface[],
   secondsSinceEpoch: number,
-  obj_nm: string,
+  modelName: string,
   cfg: any
 ): ZScoreComputationResult {
   const nResults: number = responses.length;
@@ -232,7 +245,7 @@ export function compute_zscore_for_timestamps(
   if (!clusters) {
     cfg.logger.info(JSON.stringify(datetimes));
     cfg.logger.info(JSON.stringify(seconds_timestamp));
-    return {status: 1, msg: 'No clusters.'};
+    return {status: 1, msg: `No clusters, nResults: "${nResults}".`};
   }
 
   const cluster_averages: number[] = get_avg_per_cluster(clusters);
@@ -242,9 +255,11 @@ export function compute_zscore_for_timestamps(
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
   if (cluster_avg_differences.length < compute_number_min_threshold) {
+    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length} < ${compute_number_min_threshold}. `;
+    msg_str += ` nResults: "${nResults}"`;
     return {
       status: 1,
-      msg: `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length}`,
+      msg: msg_str,
     };
   }
 
@@ -255,7 +270,7 @@ export function compute_zscore_for_timestamps(
     // since nValues > 1, and each value should be a distinct number.
     return {
       status: 1,
-      msg: `Computed standard deviation of 0.`,
+      msg: `Computed standard deviation of 0, nResults: "${nResults}".`,
     };
   }
 

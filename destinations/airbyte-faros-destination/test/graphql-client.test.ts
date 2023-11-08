@@ -417,6 +417,27 @@ describe('graphql-client write batch upsert', () => {
     const primaryKeys = ['uid', 'source'];
     expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
   });
+  test('mergeByPrimaryKey - object value', async () => {
+    const objs = [
+      {
+        uid: 'tovbinm',
+        type: {category: 'c1', detail: 'd1'},
+        origin: 'c1d1',
+      },
+      {
+        uid: 'tovbinm',
+        type: {category: 'c1', detail: 'd1'},
+        origin: 'c1d1-2',
+      },
+      {
+        uid: 'tovbinm',
+        type: {category: 'c1', detail: 'd2'},
+        origin: 'c1d2',
+      },
+    ];
+    const primaryKeys = ['uid', 'type'];
+    expect(mergeByPrimaryKey(objs, primaryKeys)).toMatchSnapshot();
+  });
   test('self-referent model', async () => {
     const responses = [
       // #1

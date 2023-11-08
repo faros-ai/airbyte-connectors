@@ -84,6 +84,7 @@ export enum SurveyQuestionCategory {
   Quality = 'Quality',
   Satisfaction = 'Satisfaction',
   SpeedAndAgility = 'SpeedAndAgility',
+  CodingAssistants = 'CodingAssistants',
   Custom = 'Custom',
 }
 
