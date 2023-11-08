@@ -443,6 +443,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
         for await (const stateMessage of this.writeEntries(
+          config,
           streamContext,
           stdin,
           streams,
@@ -487,6 +488,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
 
         for await (const stateMessage of this.writeEntries(
+          config,
           streamContext,
           stdin,
           streams,
@@ -539,6 +541,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               );
               // Process input and write entries
               for await (const stateMessage of this.writeEntries(
+                config,
                 streamContext,
                 stdin,
                 streams,
@@ -596,6 +599,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private async *writeEntries(
+    config: DestinationConfig,
     ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
@@ -617,6 +621,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     });
     try {
       let sourceFailed: AirbyteSourceErrorStatus = undefined;
+      let sourceSucceeded = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
@@ -628,7 +633,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             const message = msg as AirbyteStateMessage;
-            if (message.sourceStatus?.status === 'ERRORED') {
+            if (message.sourceStatus?.status === 'SUCCESS') {
+              sourceSucceeded = true;
+            } else if (message.sourceStatus?.status === 'ERRORED') {
               this.logger.error(
                 'Airbyte Source has failed: ' + message.sourceStatus.error
               );
@@ -743,8 +750,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           'Skipping reset of non-incremental models due to' +
             ` Airbyte Source failure: ${sourceFailed.error}`
         );
-      } else {
+      } else if (sourceSucceeded || config.skip_source_success_check) {
         await resetData?.();
+      } else {
+        this.logger.warn(
+          'No success status received from Airbyte Source. Skipping reset of non-incremental models.'
+        );
       }
 
       // Don't forget to close the writer

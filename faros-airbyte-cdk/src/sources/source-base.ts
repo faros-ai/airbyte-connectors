@@ -163,6 +163,14 @@ export abstract class AirbyteSourceBase<
         throw e;
       }
     }
+    yield new AirbyteStateMessage(
+      {
+        data: config.compress_state
+          ? State.compress(connectorState)
+          : connectorState,
+      },
+      {status: 'SUCCESS'}
+    );
     this.logger.info(`Finished syncing ${this.name}`);
   }
 
