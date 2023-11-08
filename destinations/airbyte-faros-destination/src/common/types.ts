@@ -26,6 +26,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly exclude_fields_map?: string;
   readonly source_specific_configs?: Dictionary<any>;
   readonly keep_alive?: boolean;
+  readonly skip_source_success_check?: boolean;
 }
 
 export enum Operation {

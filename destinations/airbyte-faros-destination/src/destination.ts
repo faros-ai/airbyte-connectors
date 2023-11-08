@@ -443,6 +443,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger.info("Dry run is ENABLED. Won't write any records");
 
         for await (const stateMessage of this.writeEntries(
+          config,
           streamContext,
           stdin,
           streams,
@@ -487,6 +488,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
 
         for await (const stateMessage of this.writeEntries(
+          config,
           streamContext,
           stdin,
           streams,
@@ -539,6 +541,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               );
               // Process input and write entries
               for await (const stateMessage of this.writeEntries(
+                config,
                 streamContext,
                 stdin,
                 streams,
@@ -596,6 +599,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private async *writeEntries(
+    config: DestinationConfig,
     ctx: StreamContext,
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
@@ -746,11 +750,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           'Skipping reset of non-incremental models due to' +
             ` Airbyte Source failure: ${sourceFailed.error}`
         );
-      } else if (sourceSucceeded) {
+      } else if (sourceSucceeded || config.skip_source_success_check) {
         await resetData?.();
       } else {
         this.logger.warn(
-          'No success message received from Airbyte Source. Skipping reset of non-incremental models.'
+          'No success status received from Airbyte Source. Skipping reset of non-incremental models.'
         );
       }
 
