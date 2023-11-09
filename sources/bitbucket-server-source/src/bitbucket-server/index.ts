@@ -201,6 +201,7 @@ export class BitbucketServer {
             start,
             since: lastCommitId,
             limit: this.pageSize,
+            ignoreMissing: true,
           } as Client.Params.ReposGetCommits),
         (data) => {
           return {

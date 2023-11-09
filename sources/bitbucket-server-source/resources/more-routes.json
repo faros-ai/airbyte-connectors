@@ -134,6 +134,10 @@
         "limit": {
           "in": "query",
           "type": "integer"
+        },
+        "ignoreMissing": {
+          "in": "query",
+          "type": "boolean"
         }
       },
       "url": "/rest/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits"
