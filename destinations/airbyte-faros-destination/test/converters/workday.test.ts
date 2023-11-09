@@ -1,5 +1,5 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import _, {update} from 'lodash';
+import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy, StreamContext} from '../../src';
@@ -30,7 +30,12 @@ function updateCustomReportWithFields(
     throw new Error(`Key ${k} missing from testFieldsInput`);
   }
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
-  const fieldNames = [];
+  const fieldNames = [
+    'teamNameToManagerIDs',
+    'employeeIDtoRecord',
+    'cycleChains',
+    'generalLogCollection',
+  ];
   for (const fieldName of fieldNames) {
     if (!(fieldName in fieldNameToValue)) {
       throw new Error(`Field name ${fieldName} missing from fieldValues`);
@@ -217,7 +222,7 @@ describe('workday', () => {
       workdayV4StreamsLog
     );
   });
-  test('check resulting org structure from input (1)', () => {
+  test('check resulting org structure from empty input', () => {
     const customReportDestination = new Customreports();
     const orgs_to_keep = [];
     const orgs_to_ignore = [];
@@ -244,4 +249,31 @@ describe('workday', () => {
     );
     expect(JSON.stringify(res)).toMatch('[]');
   });
+  // test('check resulting org structure from basic input', () => {
+  //   const customReportDestination = new Customreports();
+  //   const orgs_to_keep = [];
+  //   const orgs_to_ignore = [];
+  //   const cfg = getConf(
+  //     mockttp.url,
+  //     InvalidRecordStrategy.SKIP,
+  //     Edition.CLOUD,
+  //     {},
+  //     {workday: {orgs_to_keep, orgs_to_ignore}}
+  //   );
+
+  //   const ctx: StreamContext = new StreamContext(
+  //     new AirbyteLogger(AirbyteLogLevel.WARN),
+  //     cfg,
+  //     {},
+  //     'workday-test-graph-1',
+  //     'workday-test-origin-1'
+  //   );
+  //   updateCustomReportWithFields(customReportDestination, 'basic');
+  //   const [res, finalTeamToParent] =
+  //     customReportDestination.generateFinalRecords(ctx);
+  //   // expect(JSON.stringify(finalTeamToParent)).toMatch(
+  //   //   '{"all_teams":"all_teams"}'
+  //   // );
+  //   // expect(JSON.stringify(res)).toMatch('[]');
+  // });
 });

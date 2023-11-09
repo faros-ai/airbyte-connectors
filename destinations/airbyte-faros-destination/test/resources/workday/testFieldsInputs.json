@@ -1,8 +1,37 @@
 {
-  "empty": {
-    "teamNameToManagerIDs": {},
-    "employeeIDtoRecord": {},
-    "cycleChains": [],
-    "generalLogCollection": []
-  }
+    "empty": {
+        "teamNameToManagerIDs": {},
+        "employeeIDtoRecord": {},
+        "cycleChains": [],
+        "generalLogCollection": []
+    },
+    "basic": {
+        "teamNameToManagerIDs": {
+            "A": [
+                {
+                    "Manager_ID": "001",
+                    "Timestamp": ""
+                }
+            ],
+            "B": [
+                {
+                    "Manager_ID": "002",
+                    "Timestamp": ""
+                }
+            ],
+            "C": [
+                {
+                    "Manager_ID": "003",
+                    "Timestamp": ""
+                }
+            ]
+        },
+        "employeeIDtoRecord": {
+            "1": {},
+            "2": {},
+            "3": {}
+        },
+        "cycleChains": [],
+        "generalLogCollection": []
+    }
 }
