@@ -1,6 +1,6 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
-import {getLocal} from 'mockttp';
+import {getLocal, Mockttp} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy, StreamContext} from '../../src';
 import {Customreports} from '../../src/converters/workday/customreports';
@@ -43,6 +43,32 @@ function updateCustomReportWithFields(
     crDest.setField(fieldName, fieldNameToValue[fieldName]);
   }
   return crDest;
+}
+
+function getCustomReportandCtxGivenKey(
+  mockttp: Mockttp,
+  k: string
+): [Customreports, StreamContext] {
+  const customReportDestination = new Customreports();
+  const orgs_to_keep = [];
+  const orgs_to_ignore = [];
+  const cfg = getConf(
+    mockttp.url,
+    InvalidRecordStrategy.SKIP,
+    Edition.CLOUD,
+    {},
+    {workday: {orgs_to_keep, orgs_to_ignore}}
+  );
+
+  const ctx: StreamContext = new StreamContext(
+    new AirbyteLogger(AirbyteLogLevel.WARN),
+    cfg,
+    {},
+    'workday-test-graph-1',
+    'workday-test-origin-1'
+  );
+  updateCustomReportWithFields(customReportDestination, k);
+  return [customReportDestination, ctx];
 }
 
 describe('workday', () => {
@@ -223,23 +249,9 @@ describe('workday', () => {
     );
   });
   test('check resulting org structure from "empty" input', () => {
-    const customReportDestination = new Customreports();
-    const orgs_to_keep = [];
-    const orgs_to_ignore = [];
-    const cfg = getConf(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {workday: {orgs_to_keep, orgs_to_ignore}}
-    );
-
-    const ctx: StreamContext = new StreamContext(
-      new AirbyteLogger(AirbyteLogLevel.WARN),
-      cfg,
-      {},
-      'workday-test-graph-1',
-      'workday-test-origin-1'
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'empty'
     );
     updateCustomReportWithFields(customReportDestination, 'empty');
     const [res, finalTeamToParent] =
@@ -250,25 +262,10 @@ describe('workday', () => {
     expect(JSON.stringify(res)).toMatch('[]');
   });
   test('check resulting org structure from "basic works" input', () => {
-    const customReportDestination = new Customreports();
-    const orgs_to_keep = [];
-    const orgs_to_ignore = [];
-    const cfg = getConf(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {workday: {orgs_to_keep, orgs_to_ignore}}
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'basic works'
     );
-
-    const ctx: StreamContext = new StreamContext(
-      new AirbyteLogger(AirbyteLogLevel.WARN),
-      cfg,
-      {},
-      'workday-test-graph-1',
-      'workday-test-origin-1'
-    );
-    updateCustomReportWithFields(customReportDestination, 'basic works');
     const [res, finalTeamToParent] =
       customReportDestination.generateFinalRecords(ctx);
 
@@ -278,23 +275,9 @@ describe('workday', () => {
     expect(res.length).toEqual(14);
   });
   test('check resulting org structure from "failing 1" input', () => {
-    const customReportDestination = new Customreports();
-    const orgs_to_keep = [];
-    const orgs_to_ignore = [];
-    const cfg = getConf(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {workday: {orgs_to_keep, orgs_to_ignore}}
-    );
-
-    const ctx: StreamContext = new StreamContext(
-      new AirbyteLogger(AirbyteLogLevel.WARN),
-      cfg,
-      {},
-      'workday-test-graph-1',
-      'workday-test-origin-1'
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'failing 1'
     );
     updateCustomReportWithFields(customReportDestination, 'failing 1');
 
