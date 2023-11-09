@@ -45,7 +45,8 @@ We have implemented [a lot of converters](https://github.com/faros-ai/airbyte-co
 
 ### Custom Sources
 
-For custom or internal sources you can use Faros Destination as npm package in your project without having to fork or open PRs against this repo:
+For custom or internal sources, you can use Faros Destination as an npm package in your project without having to fork or open PRs against this repo.
+For a complete example, check out the [Custom Faros Destination Example](https://github.com/faros-ai/custom-faros-destination-example) repository.
 
 ```
 npm i airbyte-faros-destination
