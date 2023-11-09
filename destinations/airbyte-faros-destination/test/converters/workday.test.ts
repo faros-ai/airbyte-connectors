@@ -282,9 +282,7 @@ describe('workday', () => {
     updateCustomReportWithFields(customReportDestination, 'failing cycle 1');
 
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [res, finalTeamToParent] =
-        customReportDestination.generateFinalRecords(ctx);
+      customReportDestination.generateFinalRecords(ctx);
     }).toThrow();
   });
 });
