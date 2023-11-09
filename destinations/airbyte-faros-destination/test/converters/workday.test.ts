@@ -1,15 +1,44 @@
-import _ from 'lodash';
+import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import _, {update} from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
+import {Edition, InvalidRecordStrategy, StreamContext} from '../../src';
+import {Customreports} from '../../src/converters/workday/customreports';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {
+  getConf,
+  initMockttp,
+  readTestResourceFile,
+  tempConfig,
+  testLogger,
+} from '../testing-tools';
 import {
   workdayV1StreamsLog,
   workdayV3StreamsLog,
   workdayV4StreamsLog,
 } from './data';
 import {assertProcessedAndWrittenModels} from './utils';
+
+function updateCustomReportWithFields(
+  crDest: Customreports,
+  k: string
+): Customreports {
+  const testFieldsInput: Record<string, Record<string, any>> = JSON.parse(
+    readTestResourceFile('workday/testFieldsInputs.json')
+  );
+  if (!(k in testFieldsInput)) {
+    throw new Error(`Key ${k} missing from testFieldsInput`);
+  }
+  const fieldNameToValue: Record<string, any> = testFieldsInput[k];
+  const fieldNames = [];
+  for (const fieldName of fieldNames) {
+    if (!(fieldName in fieldNameToValue)) {
+      throw new Error(`Field name ${fieldName} missing from fieldValues`);
+    }
+    crDest.setField(fieldName, fieldNameToValue[fieldName]);
+  }
+  return crDest;
+}
 
 describe('workday', () => {
   const logger = testLogger();
@@ -187,5 +216,32 @@ describe('workday', () => {
       writtenByModel,
       workdayV4StreamsLog
     );
+  });
+  test('check resulting org structure from input (1)', () => {
+    const customReportDestination = new Customreports();
+    const orgs_to_keep = [];
+    const orgs_to_ignore = [];
+    const cfg = getConf(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {workday: {orgs_to_keep, orgs_to_ignore}}
+    );
+
+    const ctx: StreamContext = new StreamContext(
+      new AirbyteLogger(AirbyteLogLevel.WARN),
+      cfg,
+      {},
+      'workday-test-graph-1',
+      'workday-test-origin-1'
+    );
+    updateCustomReportWithFields(customReportDestination, 'empty');
+    const [res, finalTeamToParent] =
+      customReportDestination.generateFinalRecords(ctx);
+    expect(JSON.stringify(finalTeamToParent)).toMatch(
+      '{"all_teams":"all_teams"}'
+    );
+    expect(JSON.stringify(res)).toMatch('[]');
   });
 });

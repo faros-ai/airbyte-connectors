@@ -18,18 +18,19 @@ export class Customreports extends Converter {
     'org_TeamMembership',
   ];
   source = 'workday';
-  private employeeIDtoRecord: Record<string, EmployeeRecord> = {};
-  private teamNameToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
-  private recordCount = {
+  FAROS_TEAM_ROOT = 'all_teams';
+  recordCount = {
     skippedRecords: 0,
     storedRecords: 0,
   };
-  private cycleChains: ReadonlyArray<string>[] = [];
-  FAROS_TEAM_ROOT = 'all_teams';
-
-  private replacedParentTeams: string[] = [];
-  private seenLocations: Set<string> = new Set<string>();
-  private generalLogCollection: string[] = [];
+  employeeIDtoRecord: Record<string, EmployeeRecord> = {};
+  teamNameToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
+  cycleChains: ReadonlyArray<string>[] = [];
+  replacedParentTeams: string[] = [];
+  seenLocations: Set<string> = new Set<string>();
+  generalLogCollection: string[] = [];
+  orgs_to_keep = null;
+  orgs_to_ignore = null;
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -55,6 +56,7 @@ export class Customreports extends Converter {
     this.employeeIDtoRecord[rec.Employee_ID] = rec;
     this.updateTeamToManagerRecord(rec);
   }
+
   private updateTeamToManagerRecord(rec: EmployeeRecord): void {
     // We store all the possible Manager IDs for a Team,
     // The last one in the list will be the most recent time.
@@ -205,7 +207,7 @@ export class Customreports extends Converter {
     return {cycle: false, ownershipChain};
   }
 
-  private getOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
+  setOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
     const orgs_to_keep =
       ctx.config.source_specific_configs?.workday?.orgs_to_keep;
     const orgs_to_ignore =
@@ -224,23 +226,22 @@ export class Customreports extends Converter {
       // we keep all teams
       orgs_to_keep.push(this.FAROS_TEAM_ROOT);
     }
+    // Setting the values
+    this.orgs_to_keep = orgs_to_keep;
+    this.orgs_to_ignore = orgs_to_ignore;
     return [orgs_to_keep, orgs_to_ignore];
   }
 
-  private KeepTeamLogicNew(
-    ownershipChain,
-    orgs_to_keep,
-    orgs_to_ignore
-  ): boolean {
+  private KeepTeamLogicNew(ownershipChain): boolean {
     // To determine whether a team is kept, we simply go up the ownership chain.
     // if we first hit an ignored team, we return false (not kept).
     // Otherwise if we first hit a kept team, we return true (keep the team)
     // If we hit neither kept nor ignored, we return false (not kept).
     for (const org of ownershipChain) {
-      if (orgs_to_keep.includes(org)) {
+      if (this.orgs_to_keep.includes(org)) {
         return true;
       }
-      if (orgs_to_ignore.includes(org)) {
+      if (this.orgs_to_ignore.includes(org)) {
         return false;
       }
     }
@@ -250,9 +251,7 @@ export class Customreports extends Converter {
   private checkIfTeamIsAcceptable(
     team: string,
     teamToParent: Record<string, string>,
-    ctx: StreamContext,
-    orgs_to_keep: string[],
-    orgs_to_ignore: string[]
+    ctx: StreamContext
   ): boolean {
     // This continues the complicated logic which defines which teams to keep
     // We need to use the ownershipChain, which goes
@@ -272,7 +271,7 @@ export class Customreports extends Converter {
       teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    return this.KeepTeamLogicNew(ownershipChain, orgs_to_keep, orgs_to_ignore);
+    return this.KeepTeamLogicNew(ownershipChain);
   }
 
   private getAcceptableTeams(
@@ -283,15 +282,13 @@ export class Customreports extends Converter {
     // (ctx is included for potential debugging)
     ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
-    const [orgs_to_keep, orgs_to_ignore] = this.getOrgsToKeepAndIgnore(ctx);
+    this.setOrgsToKeepAndIgnore(ctx);
     ctx.logger.info('Computing ownership chains.');
     for (const team of Object.keys(teamToParent)) {
       const include_bool = this.checkIfTeamIsAcceptable(
         team,
         teamToParent,
-        ctx,
-        orgs_to_keep,
-        orgs_to_ignore
+        ctx
       );
       if (include_bool) {
         acceptableTeams.add(team);
@@ -424,9 +421,17 @@ export class Customreports extends Converter {
     return newTeamToParent;
   }
 
-  async onProcessingComplete(
+  // This method is used during testing
+  setField(fieldName: string, value: any): void {
+    this[fieldName] = value;
+  }
+
+  generateFinalRecords(
     ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
+  ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
+    // Class fields required to be filled (reference for testing):
+    // recordCount, teamNameToManagerIDs, employeeIDtoRecord
+    // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
     ctx.logger.info(
       `Starting 'onProcessingComplete'. Records skipped: '${this.recordCount.skippedRecords}',` +
@@ -447,7 +452,6 @@ export class Customreports extends Converter {
     ctx.logger.info(
       'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
     );
-    ctx.logger.info('real');
     ctx.logger.info('Finished computing ownership chains.');
 
     const newTeamToParent: Record<string, string> = this.replaceTeamParents(
@@ -465,6 +469,16 @@ export class Customreports extends Converter {
     }
     this.printReport(ctx, acceptable_teams);
     ctx.logger.info(res.length.toString());
+    return [res, newTeamToParent];
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const [res, finalTeamToParent] = this.generateFinalRecords(ctx);
+    ctx.logger.debug(
+      `final team to parent mapping: ${JSON.stringify(finalTeamToParent)}`
+    );
     return res;
   }
 }

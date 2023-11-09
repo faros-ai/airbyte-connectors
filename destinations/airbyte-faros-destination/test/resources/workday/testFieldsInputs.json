@@ -1,0 +1,8 @@
+{
+  "empty": {
+    "teamNameToManagerIDs": {},
+    "employeeIDtoRecord": {},
+    "cycleChains": [],
+    "generalLogCollection": []
+  }
+}
