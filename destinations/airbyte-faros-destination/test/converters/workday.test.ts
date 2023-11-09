@@ -222,7 +222,7 @@ describe('workday', () => {
       workdayV4StreamsLog
     );
   });
-  test('check resulting org structure from empty input', () => {
+  test('check resulting org structure from "empty" input', () => {
     const customReportDestination = new Customreports();
     const orgs_to_keep = [];
     const orgs_to_ignore = [];
@@ -249,31 +249,59 @@ describe('workday', () => {
     );
     expect(JSON.stringify(res)).toMatch('[]');
   });
-  // test('check resulting org structure from basic input', () => {
-  //   const customReportDestination = new Customreports();
-  //   const orgs_to_keep = [];
-  //   const orgs_to_ignore = [];
-  //   const cfg = getConf(
-  //     mockttp.url,
-  //     InvalidRecordStrategy.SKIP,
-  //     Edition.CLOUD,
-  //     {},
-  //     {workday: {orgs_to_keep, orgs_to_ignore}}
-  //   );
+  test('check resulting org structure from "basic works" input', () => {
+    const customReportDestination = new Customreports();
+    const orgs_to_keep = [];
+    const orgs_to_ignore = [];
+    const cfg = getConf(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {workday: {orgs_to_keep, orgs_to_ignore}}
+    );
 
-  //   const ctx: StreamContext = new StreamContext(
-  //     new AirbyteLogger(AirbyteLogLevel.WARN),
-  //     cfg,
-  //     {},
-  //     'workday-test-graph-1',
-  //     'workday-test-origin-1'
-  //   );
-  //   updateCustomReportWithFields(customReportDestination, 'basic');
-  //   const [res, finalTeamToParent] =
-  //     customReportDestination.generateFinalRecords(ctx);
-  //   // expect(JSON.stringify(finalTeamToParent)).toMatch(
-  //   //   '{"all_teams":"all_teams"}'
-  //   // );
-  //   // expect(JSON.stringify(res)).toMatch('[]');
-  // });
+    const ctx: StreamContext = new StreamContext(
+      new AirbyteLogger(AirbyteLogLevel.WARN),
+      cfg,
+      {},
+      'workday-test-graph-1',
+      'workday-test-origin-1'
+    );
+    updateCustomReportWithFields(customReportDestination, 'basic works');
+    const [res, finalTeamToParent] =
+      customReportDestination.generateFinalRecords(ctx);
+
+    expect(finalTeamToParent['all_teams']).toMatch('all_teams');
+    expect(finalTeamToParent['A']).toMatch('all_teams');
+    expect(finalTeamToParent['B']).toMatch('A');
+    expect(res.length).toEqual(14);
+  });
+  test('check resulting org structure from "failing 1" input', () => {
+    const customReportDestination = new Customreports();
+    const orgs_to_keep = [];
+    const orgs_to_ignore = [];
+    const cfg = getConf(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      {},
+      {workday: {orgs_to_keep, orgs_to_ignore}}
+    );
+
+    const ctx: StreamContext = new StreamContext(
+      new AirbyteLogger(AirbyteLogLevel.WARN),
+      cfg,
+      {},
+      'workday-test-graph-1',
+      'workday-test-origin-1'
+    );
+    updateCustomReportWithFields(customReportDestination, 'failing 1');
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [res, finalTeamToParent] =
+        customReportDestination.generateFinalRecords(ctx);
+    }).toThrow();
+  });
 });
