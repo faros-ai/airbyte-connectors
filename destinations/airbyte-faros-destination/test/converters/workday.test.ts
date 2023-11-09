@@ -253,7 +253,6 @@ describe('workday', () => {
       mockttp,
       'empty'
     );
-    updateCustomReportWithFields(customReportDestination, 'empty');
     const [res, finalTeamToParent] =
       customReportDestination.generateFinalRecords(ctx);
     expect(JSON.stringify(finalTeamToParent)).toMatch(
@@ -277,9 +276,8 @@ describe('workday', () => {
   test('check resulting org structure from "failing cycle 1" input', () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
-      'failing 1'
+      'failing cycle 1'
     );
-    updateCustomReportWithFields(customReportDestination, 'failing cycle 1');
 
     expect(() => {
       customReportDestination.generateFinalRecords(ctx);
