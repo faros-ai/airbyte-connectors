@@ -274,12 +274,12 @@ describe('workday', () => {
     expect(finalTeamToParent['B']).toMatch('A');
     expect(res.length).toEqual(14);
   });
-  test('check resulting org structure from "failing 1" input', () => {
+  test('check resulting org structure from "failing cycle 1" input', () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'failing 1'
     );
-    updateCustomReportWithFields(customReportDestination, 'failing 1');
+    updateCustomReportWithFields(customReportDestination, 'failing cycle 1');
 
     expect(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

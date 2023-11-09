@@ -65,7 +65,7 @@
         "cycleChains": [],
         "generalLogCollection": []
     },
-    "failing 1": {
+    "failing cycle 1": {
         "teamNameToManagerIDs": {
             "A": [
                 {
@@ -91,7 +91,7 @@
                 "Start_Date": "2021-08-14T09:24:16.027Z",
                 "Full_Name": "C Smith",
                 "Employee_ID": "002",
-                "Manager_Name": "C Smith",
+                "Manager_Name": "A Smith",
                 "Manager_ID": "004",
                 "Team_Name": "A",
                 "Termination_Date": null,
