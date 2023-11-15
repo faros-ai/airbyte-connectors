@@ -20,12 +20,3 @@ Source Specific Configs:
 orgs_to_keep: string[];
 orgs_to_ignore: string[]
 ```
-
-## Testing:
-In order to test, use the files in test/resources/workday.
-Specifically: generate_records.txt. Move it to generate_records.js
-Then uncomment everything. You can modify it to generate a JSON of records.
-```node generate_records.js```
-Once that JSON is generated, you can use 'flatten_json.js' to turn that JSON
-file of records into streams:
-```node flatten_json.js input_file.json output.log```
