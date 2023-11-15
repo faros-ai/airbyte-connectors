@@ -2,7 +2,12 @@ import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal, Mockttp} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy, StreamContext} from '../../src';
+import {
+  DestinationRecord,
+  Edition,
+  InvalidRecordStrategy,
+  StreamContext,
+} from '../../src';
 import {Customreports} from '../../src/converters/workday/customreports';
 import {CLI, read} from '../cli';
 import {
@@ -69,6 +74,15 @@ function getCustomReportandCtxGivenKey(
   );
   updateCustomReportWithFields(customReportDestination, k);
   return [customReportDestination, ctx];
+}
+
+function runCustomReportDestination(
+  customReportDestination,
+  ctx
+): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
+  // HERE
+  customReportDestination.setOrgsToKeepAndIgnore(ctx);
+  return customReportDestination.generateFinalRecords(ctx);
 }
 
 describe('workday', () => {
@@ -253,8 +267,10 @@ describe('workday', () => {
       mockttp,
       'empty'
     );
-    const [res, finalTeamToParent] =
-      customReportDestination.generateFinalRecords(ctx);
+    const [res, finalTeamToParent] = runCustomReportDestination(
+      customReportDestination,
+      ctx
+    );
     expect(JSON.stringify(finalTeamToParent)).toMatch(
       '{"all_teams":"all_teams"}'
     );
@@ -265,8 +281,11 @@ describe('workday', () => {
       mockttp,
       'basic works'
     );
-    const [res, finalTeamToParent] =
-      customReportDestination.generateFinalRecords(ctx);
+
+    const [res, finalTeamToParent] = runCustomReportDestination(
+      customReportDestination,
+      ctx
+    );
 
     expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
@@ -280,7 +299,7 @@ describe('workday', () => {
     );
 
     expect(() => {
-      customReportDestination.generateFinalRecords(ctx);
+      runCustomReportDestination(customReportDestination, ctx);
     }).toThrow();
   });
 });

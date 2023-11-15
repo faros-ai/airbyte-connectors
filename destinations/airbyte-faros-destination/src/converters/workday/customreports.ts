@@ -85,24 +85,11 @@ export class Customreports extends Converter {
       return;
     }
 
-    if (
-      this.checkIfTime1GreaterThanTime2(
-        Utils.toDate(rec.Start_Date),
-        Utils.toDate(crt_last_rec.Timestamp)
-      )
-    ) {
+    if (Utils.toDate(rec.Start_Date) > Utils.toDate(crt_last_rec.Timestamp)) {
       this.teamNameToManagerIDs[rec.Team_Name].push({
         Manager_ID: rec.Manager_ID,
         Timestamp: rec.Start_Date,
       });
-    }
-  }
-
-  private checkIfTime1GreaterThanTime2(time1: Date, time2: Date): boolean {
-    if (time1.getTime() > time2.getTime()) {
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -154,6 +141,13 @@ export class Customreports extends Converter {
     const potential_root_teams: string[] = [];
     for (const [teamName, recs] of Object.entries(this.teamNameToManagerIDs)) {
       const manager_id = this.getManagerIDFromList(recs);
+      if (!manager_id) {
+        this.generalLogCollection.push(
+          `Failed to get manager id for team ${teamName}`
+        );
+        teamNameToParentTeamName[teamName] = this.FAROS_TEAM_ROOT;
+        continue;
+      }
       let parent_team_uid: string = this.FAROS_TEAM_ROOT;
       if (manager_id in this.employeeIDtoRecord) {
         // This is the expected case
@@ -197,9 +191,7 @@ export class Customreports extends Converter {
       }
       visited.add(id);
 
-      const element = teamToParent[id];
-      if (!element) break;
-      id = element;
+      id = teamToParent[id];
     } while (id);
 
     ownershipChain.push(allOrgId);
@@ -232,7 +224,7 @@ export class Customreports extends Converter {
     return [orgs_to_keep, orgs_to_ignore];
   }
 
-  private KeepTeamLogicNew(ownershipChain): boolean {
+  private shouldKeepTeam(ownershipChain: ReadonlyArray<string>): boolean {
     // To determine whether a team is kept, we simply go up the ownership chain.
     // if we first hit an ignored team, we return false (not kept).
     // Otherwise if we first hit a kept team, we return true (keep the team)
@@ -271,7 +263,7 @@ export class Customreports extends Converter {
       teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    return this.KeepTeamLogicNew(ownershipChain);
+    return this.shouldKeepTeam(ownershipChain);
   }
 
   private getAcceptableTeams(
@@ -282,7 +274,6 @@ export class Customreports extends Converter {
     // (ctx is included for potential debugging)
     ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
-    this.setOrgsToKeepAndIgnore(ctx);
     ctx.logger.info('Computing ownership chains.');
     for (const team of Object.keys(teamToParent)) {
       const include_bool = this.checkIfTeamIsAcceptable(
@@ -433,10 +424,6 @@ export class Customreports extends Converter {
     // recordCount, teamNameToManagerIDs, employeeIDtoRecord
     // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
-    ctx.logger.info(
-      `Starting 'onProcessingComplete'. Records skipped: '${this.recordCount.skippedRecords}',` +
-        ` records kept: '${this.recordCount.storedRecords}'.`
-    );
     const teamToParent: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
 
@@ -475,6 +462,12 @@ export class Customreports extends Converter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    ctx.logger.info(
+      `Starting 'onProcessingComplete'. Records skipped: '${this.recordCount.skippedRecords}',` +
+        ` records kept: '${this.recordCount.storedRecords}'.`
+    );
+    // Checking orgs to keep / ignore
+    this.setOrgsToKeepAndIgnore(ctx);
     const [res, finalTeamToParent] = this.generateFinalRecords(ctx);
     ctx.logger.debug(
       `final team to parent mapping: ${JSON.stringify(finalTeamToParent)}`
