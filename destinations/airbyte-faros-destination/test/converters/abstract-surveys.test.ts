@@ -163,7 +163,7 @@ describe('abstract-surveys', () => {
           edition_configs: {},
           source_specific_configs: {
             surveys: DEFAULT_CONFIG,
-          }
+          },
         },
         {}
       );
