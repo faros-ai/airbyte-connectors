@@ -146,6 +146,31 @@ describe('abstract-surveys', () => {
       expect(res).toMatchSnapshot();
     });
 
+    test('basic response with team name as lookup array', async () => {
+      const response = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          'Team Name': ['X'],
+        },
+      });
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          }
+        },
+        {}
+      );
+      const res = await converter.convert(response, ctx);
+      expect(res).toMatchSnapshot();
+    });
+
     test('survey metadata', async () => {
       const record = AirbyteRecord.make('surveys', {
         _airtable_id: 'rec2',
