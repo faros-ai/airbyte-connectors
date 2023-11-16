@@ -42,6 +42,28 @@ export async function tempConfig(
   replace_origin_map?: Dictionary<any>,
   exclude_fields_map?: Dictionary<any>
 ): Promise<string> {
+  const conf = getConf(
+    url,
+    invalid_record_strategy,
+    edition,
+    edition_configs,
+    source_specific_configs,
+    replace_origin_map,
+    exclude_fields_map
+  );
+
+  return tempFile(JSON.stringify(conf), '.json');
+}
+
+export function getConf(
+  url: string,
+  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
+  edition = Edition.CLOUD,
+  edition_configs?: Dictionary<any>,
+  source_specific_configs?: Dictionary<any>,
+  replace_origin_map?: Dictionary<any>,
+  exclude_fields_map?: Dictionary<any>
+): any {
   const edition_configs_defaults =
     edition === Edition.CLOUD
       ? {
@@ -73,8 +95,7 @@ export async function tempConfig(
     replace_origin_map: JSON.stringify(replace_origin_map),
     exclude_fields_map: JSON.stringify(exclude_fields_map),
   };
-
-  return tempFile(JSON.stringify(conf), '.json');
+  return conf;
 }
 
 export function sourceSpecificTempConfig(
