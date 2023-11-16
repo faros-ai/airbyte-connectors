@@ -271,9 +271,7 @@ describe('workday', () => {
       customReportDestination,
       ctx
     );
-    expect(JSON.stringify(finalTeamToParent)).toMatch(
-      '{"all_teams":"all_teams"}'
-    );
+    expect(finalTeamToParent).toMatchSnapshot({all_teams: 'all_teams'});
     expect(JSON.stringify(res)).toMatch('[]');
   });
   test('check resulting org structure from "basic works" input', () => {

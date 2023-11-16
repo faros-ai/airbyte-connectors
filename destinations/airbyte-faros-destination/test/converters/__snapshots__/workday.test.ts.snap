@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`workday check resulting org structure from "empty" input 1`] = `
+Object {
+  "all_teams": "all_teams",
+}
+`;

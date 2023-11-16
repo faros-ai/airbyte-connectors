@@ -18,7 +18,7 @@
             "type": "string"
           },
           "title": "Orgs To Keep",
-          "description": "The teams underneath these orgs will be kept",
+          "description": "Teams belonging to these orgs will be kept",
           "default": []
         },
         "orgs_to_ignore": {
@@ -27,7 +27,7 @@
             "type": "string"
           },
           "title": "Orgs To Ignore",
-          "description": "The teams underneath these orgs will be ignored. If there is a keep org as a child of ignored, child will be kept.",
+          "description": "The teams underneath these orgs will be ignored.",
           "default": []
         }
       }
