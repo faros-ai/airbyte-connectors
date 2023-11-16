@@ -144,6 +144,78 @@ Array [
 ]
 `;
 
+exports[`abstract-surveys survey responses basic response with team name as lookup array 1`] = `
+Array [
+  Object {
+    "model": "survey_Team",
+    "record": Object {
+      "name": "X",
+      "source": "Airtable",
+      "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": null,
+      "response": "5",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "How much do you like ice cream?",
+      "source": "Airtable",
+      "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Airtable",
+      "startedAt": null,
+      "status": null,
+      "type": null,
+      "uid": "app0z7JKgJ19t13fw",
+    },
+  },
+]
+`;
+
 exports[`abstract-surveys survey responses question metadata 1`] = `
 Array [
   Object {

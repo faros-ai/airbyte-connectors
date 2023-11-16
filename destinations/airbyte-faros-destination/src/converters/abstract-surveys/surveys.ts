@@ -56,7 +56,10 @@ export abstract class AbstractSurveys extends Converter {
   getSubmittedAt(record: AirbyteRecord): string | undefined {
     const submittedAtColumnName =
       this.config.column_names_mapping.response_submitted_at_column_name;
-    return record?.record?.data?.row[submittedAtColumnName];
+    return AbstractSurveys.getColumnValue(
+      record?.record?.data?.row,
+      submittedAtColumnName
+    );
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -301,16 +304,23 @@ export abstract class AbstractSurveys extends Converter {
   }
 
   private getQuestionWithMetadata(surveyId: string, row: any): SurveyQuestion {
-    const question = row[this.config.column_names_mapping.question_column_name];
+    const question = AbstractSurveys.getColumnValue(
+      row,
+      this.config.column_names_mapping.question_column_name
+    );
 
     if (!question) {
       return undefined;
     }
 
-    const category =
-      row[this.config.column_names_mapping.question_category_column_name];
-    const responseType =
-      row[this.config.column_names_mapping.response_type_column_name];
+    const category = AbstractSurveys.getColumnValue(
+      row,
+      this.config.column_names_mapping.question_category_column_name
+    );
+    const responseType = AbstractSurveys.getColumnValue(
+      row,
+      this.config.column_names_mapping.response_type_column_name
+    );
 
     return {
       uid: AbstractSurveys.createQuestionUid(surveyId, question),
@@ -359,7 +369,7 @@ export abstract class AbstractSurveys extends Converter {
           uid: responseId,
           source: this.source,
           submittedAt,
-          response: row[question].toString(),
+          response: AbstractSurveys.getColumnValue(row, question).toString(),
           surveyQuestion: {
             survey: {uid: surveyId, source: this.source},
             question: {uid: questionRecord.uid, source: this.source},
@@ -459,26 +469,43 @@ export abstract class AbstractSurveys extends Converter {
   } {
     return {
       name:
-        row[this.config.column_names_mapping.survey_name_column_name] ?? null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_name_column_name
+        ) ?? null,
       type:
-        row[this.config.column_names_mapping.survey_type_column_name] ?? null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_type_column_name
+        ) ?? null,
       description:
-        row[this.config.column_names_mapping.survey_description_column_name] ??
-        null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_description_column_name
+        ) ?? null,
       startedAt:
-        row[this.config.column_names_mapping.survey_started_at_column_name] ??
-        null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_started_at_column_name
+        ) ?? null,
       endedAt:
-        row[this.config.column_names_mapping.survey_ended_at_column_name] ??
-        null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_ended_at_column_name
+        ) ?? null,
       status:
-        row[this.config.column_names_mapping.survey_status_column_name] ?? null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.survey_status_column_name
+        ) ?? null,
     };
   }
 
   private getSurveyUser(row: any): SurveyUser | undefined {
-    const uid =
-      row[this.config.column_names_mapping.respondent_email_column_name];
+    const uid = AbstractSurveys.getColumnValue(
+      row,
+      this.config.column_names_mapping.respondent_email_column_name
+    );
 
     if (!uid) {
       return undefined;
@@ -489,16 +516,24 @@ export abstract class AbstractSurveys extends Converter {
       source: this.source,
       email: uid,
       name:
-        row[this.config.column_names_mapping.respondent_name_column_name] ??
-        null,
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.respondent_name_column_name
+        ) ?? null,
     };
   }
 
   private getSurveyTeam(row: any): SurveyTeam | undefined {
     const uid =
-      row[this.config.column_names_mapping.respondent_team_id_column_name] ??
+      AbstractSurveys.getColumnValue(
+        row,
+        this.config.column_names_mapping.respondent_team_id_column_name
+      ) ??
       AbstractSurveys.getTeamUid(
-        row[this.config.column_names_mapping.respondent_team_name_column_name]
+        AbstractSurveys.getColumnValue(
+          row,
+          this.config.column_names_mapping.respondent_team_name_column_name
+        )
       );
 
     if (!uid) {
@@ -508,9 +543,10 @@ export abstract class AbstractSurveys extends Converter {
     return {
       uid,
       source: this.source,
-      name: row[
+      name: AbstractSurveys.getColumnValue(
+        row,
         this.config.column_names_mapping.respondent_team_name_column_name
-      ],
+      ),
     };
   }
 
@@ -528,5 +564,17 @@ export abstract class AbstractSurveys extends Converter {
 
   static digest(input: string): string {
     return createHash('sha256').update(input).digest('hex');
+  }
+
+  // Get column value either from string or an array of single string (lookup result)
+  static getColumnValue(row: any, columnName: string): string | null {
+    const columnValue = row[columnName];
+    if (!columnValue) {
+      return null;
+    }
+    if (Array.isArray(columnValue)) {
+      return columnValue.length === 0 ? null : columnValue[0];
+    }
+    return columnValue;
   }
 }
