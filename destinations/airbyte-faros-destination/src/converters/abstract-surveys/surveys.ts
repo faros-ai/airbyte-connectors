@@ -46,6 +46,7 @@ export interface SurveysConfig {
   question_metadata_table_name?: string;
   question_category_mapping?: QuestionCategoryMapping;
   column_names_mapping?: ColumnNameMapping;
+  exclude_columns?: ReadonlyArray<string>;
 }
 
 export abstract class AbstractSurveys extends Converter {
@@ -145,7 +146,7 @@ export abstract class AbstractSurveys extends Converter {
       const responseId = this.id(record);
       const submittedAt = this.getSubmittedAt(record);
 
-      const questions = this.getFilteredQuestions(row);
+      const questions = this.getFilteredQuestions(row, this.config.exclude_columns);
       const res = this.processResponse(
         surveyId,
         row,
@@ -428,7 +429,7 @@ export abstract class AbstractSurveys extends Converter {
     this.surveyStats.set(surveyId, stats);
   }
 
-  private getFilteredQuestions(row: any) {
+  private getFilteredQuestions(row: any, excludeColumns: ReadonlyArray<string>): string[] {
     return Object.keys(row).filter(
       (question) =>
         ![
@@ -442,6 +443,8 @@ export abstract class AbstractSurveys extends Converter {
           this.config.column_names_mapping.respondent_email_column_name,
           this.config.column_names_mapping.respondent_team_name_column_name,
           this.config.column_names_mapping.respondent_team_id_column_name,
+          this.config.column_names_mapping.response_submitted_at_column_name,
+          ...excludeColumns,
         ].includes(question)
     );
   }
