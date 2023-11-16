@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__workday__customreports"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

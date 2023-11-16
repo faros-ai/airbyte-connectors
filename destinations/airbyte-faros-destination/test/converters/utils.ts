@@ -1,15 +1,21 @@
-import {CLI, read} from '../cli';
-import _ from 'lodash';
 import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {CLI, read} from '../cli';
 
-type ProcessedAndWrittenModels = {
+export type ProcessedAndWrittenModels = {
   processedTotal: number;
   writtenTotal: number;
-}
+};
 /** Function to assert records written and processed from stream */
-export async function assertProcessedAndWrittenModels<T>(processedByStream: Dictionary<number>, writtenByModel: Dictionary<number>, stdout: string, processed: Dictionary<T>, cli: CLI): Promise<ProcessedAndWrittenModels> {
+export async function assertProcessedAndWrittenModels<T>(
+  processedByStream: Dictionary<number>,
+  writtenByModel: Dictionary<number>,
+  stdout: string,
+  processed: Dictionary<T>,
+  cli: CLI
+): Promise<ProcessedAndWrittenModels> {
   const processedTotal = _(processedByStream).values().sum();
   const writtenTotal = _(writtenByModel).values().sum();
   expect(stdout).toMatch(`Processed ${processedTotal} records`);
@@ -34,5 +40,5 @@ export async function assertProcessedAndWrittenModels<T>(processedByStream: Dict
   );
   expect(await read(cli.stderr)).toBe('');
   expect(await cli.wait()).toBe(0);
-  return { processedTotal, writtenTotal };
+  return {processedTotal, writtenTotal};
 }

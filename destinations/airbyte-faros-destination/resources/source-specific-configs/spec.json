@@ -80,6 +80,9 @@
         },
         "victorops": {
           "$ref": "victorops.json"
+        },
+        "workday": {
+          "$ref": "workday.json"
         }
       }
     }
