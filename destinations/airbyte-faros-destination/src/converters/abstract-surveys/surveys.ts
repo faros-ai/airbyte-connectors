@@ -149,7 +149,7 @@ export abstract class AbstractSurveys extends Converter {
       const responseId = this.id(record);
       const submittedAt = this.getSubmittedAt(record);
 
-      const questions = this.getFilteredQuestions(row, this.config.exclude_columns);
+      const questions = this.getFilteredQuestions(row);
       const res = this.processResponse(
         surveyId,
         row,
@@ -439,7 +439,8 @@ export abstract class AbstractSurveys extends Converter {
     this.surveyStats.set(surveyId, stats);
   }
 
-  private getFilteredQuestions(row: any, excludeColumns: ReadonlyArray<string>): string[] {
+  private getFilteredQuestions(row: any): string[] {
+    const excludeColumns = this.config.exclude_columns ?? [];
     return Object.keys(row).filter(
       (question) =>
         ![

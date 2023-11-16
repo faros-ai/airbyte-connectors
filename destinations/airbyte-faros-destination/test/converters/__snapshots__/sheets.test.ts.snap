@@ -69,51 +69,5 @@ Array [
       "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
     },
   },
-  Object {
-    "model": "survey_QuestionResponse",
-    "record": Object {
-      "respondent": null,
-      "response": "2023-10-09T14:09:37.000Z",
-      "source": "Sheets",
-      "submittedAt": "2023-10-09T14:09:37.000Z",
-      "surveyQuestion": Object {
-        "question": Object {
-          "source": "Sheets",
-          "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
-        },
-        "survey": Object {
-          "source": "Sheets",
-          "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
-        },
-      },
-      "team": Object {
-        "source": "Sheets",
-        "uid": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
-      },
-      "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1",
-    },
-  },
-  Object {
-    "model": "survey_Question",
-    "record": Object {
-      "question": "Timestamp",
-      "source": "Sheets",
-      "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
-    },
-  },
-  Object {
-    "model": "survey_SurveyQuestionAssociation",
-    "record": Object {
-      "order": 2,
-      "question": Object {
-        "source": "Sheets",
-        "uid": "988a004857faab0ad1c66cb97af33657090ad54f908391f6d21184acde2c3968",
-      },
-      "survey": Object {
-        "source": "Sheets",
-        "uid": "10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4",
-      },
-    },
-  },
 ]
 `;
