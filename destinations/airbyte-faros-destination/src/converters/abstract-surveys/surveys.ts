@@ -569,6 +569,9 @@ export abstract class AbstractSurveys extends Converter {
     if (!columnValue) {
       return null;
     }
-    return Array.isArray(columnValue) ? columnValue[0] : columnValue;
+    if (Array.isArray(columnValue)) {
+      return columnValue.length === 0 ? null : columnValue[0];
+    }
+    return columnValue;
   }
 }
