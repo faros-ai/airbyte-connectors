@@ -24,6 +24,12 @@
         "title": "Project Names",
         "description": "Names should be in the format \"vcs-slug/org-name/repo-name\""
       },
+      "slugs_as_repos": {
+        "type": "boolean",
+        "default": false,
+        "title": "Project Names are Repos",
+        "description": "List input projects and block-list as only the \"repo-name\" instead of the entire slug \"vcs-slug/org-name/repo-name\""
+      },
       "project_block_list": {
         "type": "array",
         "items": {
@@ -48,7 +54,7 @@
         "type": "string",
         "title": "API URL",
         "default": "https://circleci.com/api/v2",
-        "description": "CircleCI API URL"
+        "description": "CircleCI API URL, e.g. \"https://circleci.com/api/v2\""
       },
       "request_timeout": {
         "type": "integer",

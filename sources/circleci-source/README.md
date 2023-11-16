@@ -8,6 +8,19 @@ Use this source to import [CircleCI](https://circleci) API data into Airbyte.
 
 A recommended approach if you'd like more detailed message delivery metrics is to enable the [CircleCI -> S3 data warehouse integration](https://circleci/docs/data-warehouse-sync/#s3-bucket), and then use the [S3 Airbyte source connector](https://docs.airbyte.io/integrations/sources/s3) to import the parquet files as needed.
 
+## Source config description
+
+If you set 'slugs_as_repos' to true, then both the block_list and the project_names lists
+are expected to have repo names, and not the complete slugs, although the project_names
+list can contain a wildcard instead of project names. If the project names list contains a 
+wildcard, then it should be the first item in the list.
+
+```
+```
+
+
+
+
 This source is useful for importing CircleCI resource metadata (such as campaign or action names). The following CircleCI resources are currently available:
 
 - `campaigns`

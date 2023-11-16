@@ -20,16 +20,16 @@ export function mainCommand(): Command {
 
 /** Customer.io source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
-  circleCI: CircleCI;
   async spec(): Promise<AirbyteSpec> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    this.logger.info('Running spec');
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
   async checkConnection(config: CircleCIConfig): Promise<[boolean, VError]> {
+    this.logger.info('Running check Connection');
     try {
-      const circleCI = await CircleCI.instance(config, this.logger, false);
-      await circleCI.checkConnection(config);
+      const circleCI = await CircleCI.instance(config, this.logger);
+      await circleCI.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -37,7 +37,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    // const circleCI = CircleCI.instance(config, this.logger);
+    this.logger.info('Running streams');
     return [
       new Projects(config, this.logger),
       new Pipelines(config, this.logger),

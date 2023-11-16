@@ -15,7 +15,7 @@ export class Projects extends CircleCIStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.cfg.project_names) {
+    for (const projectName of this.cfg.filtered_project_names) {
       yield {projectName};
     }
   }
@@ -25,6 +25,12 @@ export class Projects extends CircleCIStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
+    this.logger.info(`Project ${streamSlice.projectName}`);
+    this.logger.info(
+      `Filtered project names: ${JSON.stringify(
+        this.cfg.filtered_project_names
+      )}`
+    );
     const circleCI = await CircleCI.instance(this.cfg, this.logger);
     yield await circleCI.fetchProject(streamSlice.projectName);
   }
