@@ -24,6 +24,14 @@
         "title": "Project Names",
         "description": "Names should be in the format \"vcs-slug/org-name/repo-name\""
       },
+      "project_block_list": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project Block List",
+        "description": "Names should be in the format \"vcs-slug/org-name/repo-name\""
+      },
       "cutoff_days": {
         "type": "integer",
         "title": "Cutoff Days",

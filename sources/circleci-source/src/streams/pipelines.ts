@@ -1,6 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {CircleCI} from '../circleci/circleci';
 import {Pipeline} from '../circleci/typings';
 import {CircleCIStreamBase, StreamSlice} from './common';
 
@@ -35,7 +36,8 @@ export class Pipelines extends CircleCIStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
         : undefined;
-    yield* this.circleCI.fetchPipelines(streamSlice.projectName, since);
+    const circleCI = await CircleCI.instance(this.cfg, this.logger);
+    yield* circleCI.fetchPipelines(streamSlice.projectName, since);
   }
 
   getUpdatedState(

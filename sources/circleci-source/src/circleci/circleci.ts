@@ -21,6 +21,7 @@ export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
   readonly reject_unauthorized: boolean;
+  readonly project_block_list?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly url?: string;
   readonly request_timeout?: number;
@@ -34,10 +35,15 @@ export class CircleCI {
     private readonly logger: AirbyteLogger,
     readonly axios: AxiosInstance,
     readonly cutoffDays: number,
-    private readonly maxRetries: number
+    private readonly maxRetries: number,
+    readonly filtered_project_names: string[]
   ) {}
 
-  static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
+  static async instance(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    applyBlocklist: boolean = true
+  ): Promise<CircleCI> {
     if (CircleCI.circleCI) return CircleCI.circleCI;
 
     if (!config.token) {
@@ -50,25 +56,68 @@ export class CircleCI {
 
     const rejectUnauthorized = config.reject_unauthorized ?? true;
     const url = config.url ?? DEFAULT_API_URL;
+    const axiosInstance: AxiosInstance = axios.create({
+      baseURL: url,
+      headers: {
+        accept: 'application/json',
+        'Circle-Token': config.token,
+      },
+      httpsAgent: new https.Agent({rejectUnauthorized}),
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      // CircleCI responses can be are very large hence the infinity
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+    throw Error(
+      'Make it so only repo names are needed and we add slug to them'
+    );
+    let filtered_project_names: string[] = Array.from(config.project_names);
+    if (config.project_block_list && applyBlocklist) {
+      filtered_project_names = await this.updateProjectNamesWithBlocklist(
+        config,
+        logger,
+        axiosInstance
+      );
+    }
 
     CircleCI.circleCI = new CircleCI(
       logger,
-      axios.create({
-        baseURL: url,
-        headers: {
-          accept: 'application/json',
-          'Circle-Token': config.token,
-        },
-        httpsAgent: new https.Agent({rejectUnauthorized}),
-        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-        // CircleCI responses can be are very large hence the infinity
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-      }),
+      axiosInstance,
       cutoffDays,
-      config.max_retries ?? DEFAULT_MAX_RETRIES
+      config.max_retries ?? DEFAULT_MAX_RETRIES,
+      filtered_project_names
     );
     return CircleCI.circleCI;
+  }
+
+  static async updateProjectNamesWithBlocklist(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    axiosInstance: AxiosInstance
+  ): Promise<string[]> {
+    const res: string[] = [];
+    if (config.project_names.includes('*')) {
+      // project names has the wildcard, which means we need to
+      // get all the project names and then remove the projects in the
+      // block list
+      logger.info(
+        'Wildcard Project name found - calling API to get all project names.'
+      );
+      // ORG SLUG:
+      // https://circleci.com/api/v2/me/collaborations
+      // Using org slug, projects can be accessed with slug/repo_name
+      axiosInstance.get('/project/*');
+    } else {
+      // In this case the assumption is that they're placing all
+      // the projects in the project_names list but also have project names in
+      // the block list which they want to avoid
+      for (const project_name in config.project_names) {
+        if (!config.project_block_list.includes(project_name)) {
+          res.push(project_name);
+        }
+      }
+    }
+    return res;
   }
 
   async checkConnection(config: CircleCIConfig): Promise<void> {
