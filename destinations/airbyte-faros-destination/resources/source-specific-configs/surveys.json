@@ -155,7 +155,7 @@
           "title": "Exclude Columns",
           "description": "Columns to exclude from the source records so they are not processed as questions.",
           "items": {
-              "type": "string"
+            "type": "string"
           },
           "default": [],
           "order": 6
