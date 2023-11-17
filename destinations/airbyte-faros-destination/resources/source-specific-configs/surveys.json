@@ -149,6 +149,16 @@
             "{\"Technical Practices\": \"SpeedAndAgility\", \"Planning\": \"AlignmentAndGoals\"}"
           ],
           "order": 5
+        },
+        "exclude_columns": {
+          "type": "array",
+          "title": "Exclude Columns",
+          "description": "Columns to exclude from the source records so they are not processed as questions.",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 6
         }
       }
     }

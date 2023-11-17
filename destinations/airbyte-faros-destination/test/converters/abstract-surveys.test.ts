@@ -119,6 +119,7 @@ describe('abstract-surveys', () => {
         response_type_column_name: 'Response Type',
         question_column_name: 'Question',
       },
+      exclude_columns: [],
     };
     const RESPONSE = AirbyteRecord.make('surveys', {
       _airtable_id: 'rec1',
@@ -143,6 +144,35 @@ describe('abstract-surveys', () => {
         {}
       );
       const res = await converter.convert(RESPONSE, ctx);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('basic response excluding columns that are not questions', async () => {
+      const response = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          'Team Name': 'X',
+          'Team Info': 'Team X is a great team',
+        },
+      });
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: {
+              ...DEFAULT_CONFIG,
+              exclude_columns: ['Team Info'],
+            }
+          }
+        },
+        {}
+      );
+      const res = await converter.convert(response, ctx);
       expect(res).toMatchSnapshot();
     });
 
