@@ -22,6 +22,9 @@ export abstract class AirbyteSource<
    */
   abstract discover(config: Config): Promise<AirbyteCatalogMessage>;
 
+  /**
+   * Override this method to update the config before running the connector
+   */
   async onBeforeRead(
     config: Config,
     catalog: AirbyteConfiguredCatalog,
