@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {Command} from 'commander';
 import {
   AirbyteConfiguredCatalog,
