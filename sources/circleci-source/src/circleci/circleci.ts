@@ -20,7 +20,11 @@ const DEFAULT_REQUEST_TIMEOUT = 60000;
 export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
+  readonly project_block_list: ReadonlyArray<string>;
+  // Applying block list to project names results in filtered_project_names
+  filtered_project_names?: string[];
   readonly reject_unauthorized: boolean;
+  readonly slugs_as_repos: boolean;
   readonly cutoff_days?: number;
   readonly url?: string;
   readonly request_timeout?: number;
@@ -47,24 +51,11 @@ export class CircleCI {
       throw new VError('No project names provided');
     }
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-
-    const rejectUnauthorized = config.reject_unauthorized ?? true;
-    const url = config.url ?? DEFAULT_API_URL;
+    const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
     CircleCI.circleCI = new CircleCI(
       logger,
-      axios.create({
-        baseURL: url,
-        headers: {
-          accept: 'application/json',
-          'Circle-Token': config.token,
-        },
-        httpsAgent: new https.Agent({rejectUnauthorized}),
-        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-        // CircleCI responses can be are very large hence the infinity
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-      }),
+      axios_v2_instance,
       cutoffDays,
       config.max_retries ?? DEFAULT_MAX_RETRIES
     );
@@ -88,6 +79,113 @@ export class CircleCI {
         `CircleCI API request failed: ${(error as Error).message}`
       );
     }
+  }
+
+  static async getOrgSlug(
+    circleCIV2Instance: AxiosInstance,
+    logger: AirbyteLogger
+  ): Promise<string> {
+    logger.info('Getting Org Slug');
+    const resp = await circleCIV2Instance.get('/me/collaborations');
+    if (resp.status != 200) {
+      throw new Error(
+        `Failed response from endpoint 'me/collaborations' for getting slug.`
+      );
+    }
+    const resp_data = resp.data[0];
+    const slug: string = resp_data['slug'];
+    if (!slug) {
+      throw new Error(
+        `Failed to get slug from response data: ${JSON.stringify(resp_data)}`
+      );
+    }
+    logger.info(`Got Org Slug: ${slug}`);
+    return slug;
+  }
+
+  static async updateProjectNamesWithBlocklist(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    org_slug: string
+  ): Promise<string[]> {
+    // If slugs are repos, we return list of repos
+    // If slugs are slugs, we return a list of slugs
+    //curl -X GET -H "Accept: application/json" -H "Content-Type: application/json" -H "Circle-Token: CCIPAT_HUNg1jN1N46UJ7TxmYpwYb_e98661d581e2bb095c31d3b1df2fd0528930a86f" "https://circleci.com/api/v2/pipeline?org-slug=circleci%2FHTXYvX1HhYV2oSuYKHCHgr"
+    let project_names = config.project_names;
+    if (project_names.includes('*')) {
+      // project names has the wildcard, which means we need to
+      // get all the project names and then remove the projects in the
+      // block list
+      logger.info(
+        'Wildcard Project name found - calling API to get all project names.'
+      );
+      const repoNames = await this.getAllRepoNames(config, logger);
+      logger.info(`Got these repo names: ${JSON.stringify(repoNames)}`);
+      if (!config.slugs_as_repos) {
+        project_names = repoNames.map((v) => `${org_slug}/${v}`);
+      } else {
+        project_names = repoNames;
+      }
+      logger.info(`Got these project names: ${JSON.stringify(project_names)}`);
+    }
+    let res: string[] = [];
+    for (const project_name of project_names) {
+      if (!config.project_block_list.includes(project_name)) {
+        res.push(project_name);
+      }
+    }
+    if (config.slugs_as_repos) {
+      res = res.map((v) => `${org_slug}/${v}`);
+    }
+    return res;
+  }
+
+  static getAxiosInstance(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    api_version: string = 'v2'
+  ): AxiosInstance {
+    const rejectUnauthorized = config.reject_unauthorized ?? true;
+    let url = config.url ?? DEFAULT_API_URL;
+    if (api_version != 'v2') {
+      const original_url = url;
+      url = url.replace('v2', api_version);
+      logger.info(
+        `Replacing URL version. Original url: ${original_url}, new: ${url}.`
+      );
+    }
+    const axiosInstance: AxiosInstance = axios.create({
+      baseURL: url,
+      headers: {
+        accept: 'application/json',
+        'Circle-Token': config.token,
+      },
+      httpsAgent: new https.Agent({rejectUnauthorized}),
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      // CircleCI responses can be very large hence the infinity
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+    return axiosInstance;
+  }
+
+  static async getAllRepoNames(config, logger): Promise<string[]> {
+    const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
+      config,
+      logger,
+      'v1.1'
+    );
+    // ORG SLUG:
+    // https://circleci.com/api/v2/me/collaborations
+    // Using org slug, projects can be accessed with slug/repo_name
+    const response = await v1AxiosInstance.get('/projects');
+    const projects_data = response.data;
+    logger.info(projects_data.data);
+    const op: string[] = [];
+    for (const item of projects_data) {
+      op.push(item['reponame']);
+    }
+    return op;
   }
 
   private async iterate<V>(

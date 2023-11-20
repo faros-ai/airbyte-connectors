@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {Command} from 'commander';
 import {
   AirbyteConfiguredCatalog,
@@ -47,6 +48,19 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     // We update the config with the projects - the blocklist
+    //const circleCI = CircleCI.instance(config, this.logger)
+    const axiosV2Instance = CircleCI.getAxiosInstance(config, this.logger);
+    const org_slug: string = await CircleCI.getOrgSlug(
+      axiosV2Instance,
+      this.logger
+    );
+    const filtered_project_names: string[] =
+      await CircleCI.updateProjectNamesWithBlocklist(
+        config,
+        this.logger,
+        org_slug
+      );
+    config.filtered_project_names = filtered_project_names;
     return {config, catalog, state};
   }
 

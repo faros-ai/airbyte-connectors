@@ -8,7 +8,7 @@ import {
 import fs from 'fs-extra';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI} from '../src/circleci/circleci';
+import {CircleCI, CircleCIConfig} from '../src/circleci/circleci';
 import * as sut from '../src/index';
 
 function readResourceFile(fileName: string): any {
@@ -35,9 +35,11 @@ describe('index', () => {
     jest.restoreAllMocks();
   });
 
-  const sourceConfig = {
+  const sourceConfig: CircleCIConfig = {
     token: '',
     project_names: ['test-project'],
+    project_block_list: [],
+    slugs_as_repos: true,
     cutoff_days: 90,
     reject_unauthorized: true,
   };
