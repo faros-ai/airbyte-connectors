@@ -23,7 +23,11 @@ export abstract class AirbyteSource<
   abstract discover(config: Config): Promise<AirbyteCatalogMessage>;
 
   /**
-   * Override this method to update the config before running the connector
+   * Override this method to update the config before running the connector.
+   * For example - you might want to run a filter on a list of strings, one
+   * which would require an async call. In that case, this method should be
+   * added to your base class, e.g. the "{AirbyteName}Source" class, for an
+   * example look at the CircleCISource.
    */
   async onBeforeRead(
     config: Config,
