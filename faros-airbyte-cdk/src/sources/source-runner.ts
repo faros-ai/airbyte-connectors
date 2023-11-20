@@ -98,7 +98,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           try {
-            const iter = this.source.read(config, catalog, state);
+            const res = await this.source.onBeforeRead(config, catalog, state);
+            const iter = this.source.read(res.config, res.catalog, res.state);
             for await (const message of iter) {
               this.logger.write(message);
             }
