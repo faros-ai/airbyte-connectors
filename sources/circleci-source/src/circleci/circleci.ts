@@ -62,9 +62,9 @@ export class CircleCI {
     return CircleCI.circleCI;
   }
 
-  async checkConnection(config: CircleCIConfig): Promise<void> {
+  async checkConnection(): Promise<void> {
     try {
-      await this.axios.get(`/project/${config.project_names[0]}`);
+      await this.axios.get(`/me`);
     } catch (error) {
       if (
         (error as AxiosError).response &&

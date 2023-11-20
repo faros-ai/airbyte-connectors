@@ -30,7 +30,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   async checkConnection(config: CircleCIConfig): Promise<[boolean, VError]> {
     try {
       const circleCI = CircleCI.instance(config, this.logger);
-      await circleCI.checkConnection(config);
+      await circleCI.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -47,7 +47,6 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     // We update the config with the projects - the blocklist
-    //const circleCI = CircleCI.instance(config, this.logger)
     const axiosV2Instance = CircleCI.getAxiosInstance(config, this.logger);
     const org_slug: string = await CircleCI.getOrgSlug(
       axiosV2Instance,
