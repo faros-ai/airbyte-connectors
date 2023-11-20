@@ -1,9 +1,11 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
@@ -33,6 +35,19 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       return [false, err];
     }
     return [true, undefined];
+  }
+
+  async onBeforeRead(
+    config: CircleCIConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: CircleCIConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    // We update the config with the projects - the blocklist
+    return {config, catalog, state};
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
