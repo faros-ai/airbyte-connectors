@@ -15,7 +15,7 @@
         "application_mapping": {
           "type": "string",
           "title": "Application Mapping",
-          "description": "JSON map of Datadog service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object.",
+          "description": "JSON map of Datadog service(s) name, to compute platform specific app name and platform name. imsIncident -> compute_Application.",
           "multiline": true,
           "default": "{}",
           "examples": [
@@ -29,9 +29,6 @@
           "pattern": "^(Sev[1-5])?(Custom)?$",
           "examples": [
             "Sev1",
-            "Sev2",
-            "Sev3",
-            "Sev4",
             "Sev5",
             "Custom"
           ]

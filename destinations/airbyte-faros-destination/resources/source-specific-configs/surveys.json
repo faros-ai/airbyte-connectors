@@ -14,21 +14,21 @@
         },
         "survey_responses_table_name": {
           "title": "Survey Responses Table Name",
-          "description": "The name of the table that contains survey responses.",
+          "description": "Table name",
           "type": "string",
           "default": "Survey Responses",
           "order": 1
         },
         "survey_metadata_table_name": {
           "title": "Survey Metadata Table Name",
-          "description": "The name of the table that contains survey metadata.",
+          "description": "Table name",
           "type": "string",
           "default": "Survey Metadata",
           "order": 2
         },
         "question_metadata_table_name": {
           "title": "Question Metadata Table Name",
-          "description": "The name of the table that contains question metadata.",
+          "description": "Table name",
           "type": "string",
           "default": "Question Metadata",
           "order": 3
@@ -40,98 +40,98 @@
           "properties": {
             "survey_name_column_name": {
               "title": "Survey Name Column Name",
-              "description": "The name of the column that contains the survey name.",
+              "description": "",
               "type": "string",
               "default": "Survey Name",
               "order": 0
             },
             "survey_description_column_name": {
               "title": "Survey Description Column Name",
-              "description": "The name of the column that contains the survey description.",
+              "description": "",
               "type": "string",
               "default": "Survey Description",
               "order": 1
             },
             "survey_type_column_name": {
               "title": "Survey Type Column Name",
-              "description": "The name of the column that contains the survey type.",
+              "description": "",
               "type": "string",
               "default": "Survey Type",
               "order": 2
             },
             "survey_status_column_name": {
               "title": "Survey Status Column Name",
-              "description": "The name of the column that contains the survey status.",
+              "description": "",
               "type": "string",
               "default": "Survey Status",
               "order": 3
             },
             "survey_started_at_column_name": {
               "title": "Survey Started At Column Name",
-              "description": "The name of the column that contains the survey started at timestamp.",
+              "description": "",
               "type": "string",
               "default": "Survey Started At",
               "order": 4
             },
             "survey_ended_at_column_name": {
               "title": "Survey Ended At Column Name",
-              "description": "The name of the column that contains the survey ended at timestamp.",
+              "description": "",
               "type": "string",
               "default": "Survey Ended At",
               "order": 5
             },            
             "respondent_name_column_name": {
               "title": "Name Column Name",
-              "description": "The name of the column that contains the respondent name.",
+              "description": "",
               "type": "string",
               "default": "Name",
               "order": 6
             },
             "respondent_email_column_name": {
               "title": "Email Column Name",
-              "description": "The name of the column that contains the respondent email.",
+              "description": "",
               "type": "string",
               "default": "Email",
               "order": 7
             },
             "respondent_team_id_column_name": {
               "title": "Respondent Team ID Column Name",
-              "description": "The name of the column that contains the unique identifier for the respondent's team.",
+              "description": "",
               "type": "string",
               "default": "Team ID",
               "order": 8
             },
             "respondent_team_name_column_name": {
               "title": "Team Name Column Name",
-              "description": "The name of the column that contains the name of the respondent's team.",
+              "description": "",
               "type": "string",
               "default": "Team Name",
               "order": 9
             },
             "question_column_name": {
               "title": "Question Column Name",
-              "description": "The name of the column that contains the question text.",
+              "description": "",
               "type": "string",
               "default": "Question",
               "order": 10
             },            
             "question_category_column_name": {
               "title": "Question Category Column Name",
-              "description": "The name of the column that contains the question category.",
+              "description": "",
               "type": "string",
               "default": "Category",
               "order": 11
             },
             "response_type_column_name": {
               "title": "Response Type Column Name",
-              "description": "The name of the column that contains the question response type.",
+              "description": "",
               "type": "string",
               "default": "Response Type",
               "order": 12
             },
             "response_submitted_at_column_name": {
               "title": "Response Submitted At Column Name",
-              "description": "The name of the column that contains the response submitted at timestamp.",
+              "description": "",
               "type": "string",
               "default": "Timestamp",
               "order": 13
@@ -153,7 +153,7 @@
         "exclude_columns": {
           "type": "array",
           "title": "Exclude Columns",
-          "description": "Columns to exclude from the source records so they are not processed as questions.",
+          "description": "Columns to exclude from the source records",
           "items": {
             "type": "string"
           },
