@@ -24,10 +24,9 @@ export class Releases extends GitHubConverter {
 
     if (!repository) return res;
 
-    const author =
-      release.author && Object.keys(release.author).length != 0
-        ? {uid: release.author.login, source}
-        : null;
+    const author = release.author?.login
+      ? {uid: release.author.login, source}
+      : null;
 
     res.push({
       model: 'cicd_Release',

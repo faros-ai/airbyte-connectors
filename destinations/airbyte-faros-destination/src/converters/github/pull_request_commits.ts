@@ -25,10 +25,9 @@ export class PullRequestCommits extends GitHubConverter {
 
     if (!repository) return [];
 
-    const author =
-      prCommit.author && Object.keys(prCommit.author).length != 0
-        ? {uid: prCommit.author.login, source}
-        : null;
+    const author = prCommit.author?.login
+      ? {uid: prCommit.author.login, source}
+      : null;
 
     const commit = {
       uid: prCommit.sha,
