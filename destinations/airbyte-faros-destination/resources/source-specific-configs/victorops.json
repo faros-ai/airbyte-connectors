@@ -15,7 +15,7 @@
         "application_mapping": {
           "type": "string",
           "title": "Application Mapping",
-          "description": "JSON map of VictorOps service(s) name, to compute a Faros Application and Platform name. imsIncident -> compute_Application. If specified, and such service exists, the feed will write a compute_Application object.",
+          "description": "JSON map of VictorOps service(s) name, to compute a Faros Application and Platform name. If specified, and such service exists, the feed will write a compute_Application object.",
           "multiline": true,
           "default": "{}",
           "examples": [
