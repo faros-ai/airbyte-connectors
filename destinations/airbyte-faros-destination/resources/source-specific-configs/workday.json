@@ -27,7 +27,7 @@
             "type": "string"
           },
           "title": "Orgs To Ignore",
-          "description": "The teams underneath these orgs will be ignored.",
+          "description": "The teams belonging to these orgs will be ignored.",
           "default": []
         }
       }
