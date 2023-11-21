@@ -368,7 +368,7 @@ export abstract class AbstractSurveys extends Converter {
       const questionResponse = AbstractSurveys.getColumnValue(
         row,
         question
-      )?.toString();
+      )
 
       if (questionResponse) {
         const questionResponseRecord = {
@@ -377,7 +377,7 @@ export abstract class AbstractSurveys extends Converter {
             uid: responseId,
             source: this.source,
             submittedAt,
-            response: AbstractSurveys.getColumnValue(row, question)?.toString(),
+            response: questionResponse.toString(),
             surveyQuestion: {
               survey: {uid: surveyId, source: this.source},
               question: {uid: questionRecord.uid, source: this.source},
