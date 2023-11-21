@@ -51,7 +51,7 @@
                 "kind": {
                   "type": "string",
                   "title": "Project Kind",
-                  "description": "kind value"
+                  "description": "Kind value"
                 },
                 "properties": {
                   "type": "object",
@@ -61,13 +61,13 @@
                     "name": {
                       "type": "string",
                       "title": "Name",
-                      "description": "project's name",
+                      "description": "Project's name",
                       "default": "Name"
                     },
                     "description": {
                       "type": "string",
                       "title": "Description",
-                      "description": "project's description",
+                      "description": "Project's description",
                       "default": "Description"
                     }
                   }
@@ -96,7 +96,7 @@
                 "kind": {
                   "type": "string",
                   "title": "Epic Kind",
-                  "description": "epic's kind"
+                  "description": "Epic's kind"
                 },
                 "properties": {
                   "type": "object",
@@ -106,25 +106,25 @@
                     "name": {
                       "type": "string",
                       "title": "Name",
-                      "description": "epic's name",
+                      "description": "Epic's name",
                       "default": "Name"
                     },
                     "description": {
                       "type": "string",
                       "title": "Description",
-                      "description": "epic's description",
+                      "description": "Epic's description",
                       "default": "Description"
                     },
                     "project": {
                       "type": "string",
                       "title": "Project",
-                      "description": "epic's project. Needs relation type.",
+                      "description": "Epic's project. Needs relation type.",
                       "default": "Project"
                     },
                     "status": {
                       "type": "string",
                       "title": "Status",
-                      "description": "epic's status",
+                      "description": "Epic's status",
                       "default": "Status"
                     }
                   }
@@ -153,7 +153,7 @@
                 "kind": {
                   "type": "string",
                   "title": "Sprint Kind",
-                  "description": "sprint kind"
+                  "description": "Sprint kind"
                 },
                 "properties": {
                   "type": "object",
@@ -163,37 +163,37 @@
                     "name": {
                       "type": "string",
                       "title": "Name",
-                      "description": "sprint's name",
+                      "description": "Sprint's name",
                       "default": "Name"
                     },
                     "description": {
                       "type": "string",
                       "title": "Description",
-                      "description": "sprint's description",
+                      "description": "Sprint's description",
                       "default": "Description"
                     },
                     "status": {
                       "type": "string",
                       "title": "Status",
-                      "description": "sprint's status",
+                      "description": "Sprint's status",
                       "default": "Status"
                     },
                     "started_at": {
                       "type": "string",
                       "title": "Started At",
-                      "description": "sprint's start timestamp",
+                      "description": "Sprint's start timestamp",
                       "default": "Started At"
                     },
                     "ended_at": {
                       "type": "string",
                       "title": "Ended At",
-                      "description": "sprint's end timestamp",
+                      "description": "Sprint's end timestamp",
                       "default": "Ended At"
                     },
                     "closed_at": {
                       "type": "string",
                       "title": "Closed At",
-                      "description": "sprint's closed timestamp",
+                      "description": "Sprint's closed timestamp",
                       "default": "Closed At"
                     }
                   }
@@ -238,67 +238,67 @@
                     "name": {
                       "type": "string",
                       "title": "Name",
-                      "description": "task's name",
+                      "description": "Task's name",
                       "default": "Name"
                     },
                     "description": {
                       "type": "string",
                       "title": "Description",
-                      "description": "task's description",
+                      "description": "Task's description",
                       "default": "Description"
                     },
                     "type": {
                       "type": "string",
                       "title": "Task Type",
-                      "description": "task's type, e.g., story, bug, etc.",
+                      "description": "Task's type, e.g., story, bug, etc.",
                       "default": "Type"
                     },
                     "project": {
                       "type": "string",
                       "title": "Project",
-                      "description": "task's project. Needs relation type.",
+                      "description": "Task's project. Needs relation type.",
                       "default": "Project"
                     },
                     "epic": {
                       "type": "string",
                       "title": "Epic",
-                      "description": "task's epic. Needs relation type.",
+                      "description": "Task's epic. Needs relation type.",
                       "default": "Epic"
                     },
                     "sprint": {
                       "type": "string",
                       "title": "Sprint",
-                      "description": "task's sprint. Needs relation type",
+                      "description": "Task's sprint. Needs relation type",
                       "default": "Sprint"
                     },
                     "status": {
                       "type": "string",
                       "title": "Status",
-                      "description": "task's status",
+                      "description": "Task's status",
                       "default": "Status"
                     },
                     "priority": {
                       "type": "string",
                       "title": "Priority",
-                      "description": "task's priority",
+                      "description": "Task's priority",
                       "default": "Priority"
                     },
                     "points": {
                       "type": "string",
                       "title": "Points",
-                      "description": "task's points",
+                      "description": "Task's points",
                       "default": "Points"
                     },
                     "assignee": {
                       "type": "string",
                       "title": "Assignee",
-                      "description": "task's assignee.",
+                      "description": "Task's assignee.",
                       "default": "Assignee"
                     },
                     "resolved_at": {
                       "type": "string",
                       "title": "Resolved At",
-                      "description": "task's resolved timestamp",
+                      "description": "Task's resolved timestamp",
                       "default": "Resolved At"
                     }
                   }
