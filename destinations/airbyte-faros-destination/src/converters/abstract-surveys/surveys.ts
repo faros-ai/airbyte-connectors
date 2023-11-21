@@ -369,7 +369,7 @@ export abstract class AbstractSurveys extends Converter {
           uid: responseId,
           source: this.source,
           submittedAt,
-          response: AbstractSurveys.getColumnValue(row, question).toString(),
+          response: AbstractSurveys.getColumnValue(row, question)?.toString(),
           surveyQuestion: {
             survey: {uid: surveyId, source: this.source},
             question: {uid: questionRecord.uid, source: this.source},
