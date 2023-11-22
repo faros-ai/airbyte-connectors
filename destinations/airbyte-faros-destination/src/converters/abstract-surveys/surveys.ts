@@ -363,25 +363,35 @@ export abstract class AbstractSurveys extends Converter {
         order: index + 1,
       };
 
-      const questionResponse = {
-        model: 'survey_QuestionResponse',
-        record: {
-          uid: responseId,
-          source: this.source,
-          submittedAt,
-          response: AbstractSurveys.getColumnValue(row, question).toString(),
-          surveyQuestion: {
-            survey: {uid: surveyId, source: this.source},
-            question: {uid: questionRecord.uid, source: this.source},
-          },
-          respondent: surveyUser
-            ? {uid: surveyUser.uid, source: this.source}
-            : null,
-          team: surveyTeam ? {uid: surveyTeam.uid, source: this.source} : null,
-        },
-      };
+      const res: DestinationRecord[] = [];
 
-      const res: DestinationRecord[] = [questionResponse];
+      const questionResponse = AbstractSurveys.getColumnValue(
+        row,
+        question
+      )
+
+      if (questionResponse) {
+        const questionResponseRecord = {
+          model: 'survey_QuestionResponse',
+          record: {
+            uid: responseId,
+            source: this.source,
+            submittedAt,
+            response: questionResponse.toString(),
+            surveyQuestion: {
+              survey: {uid: surveyId, source: this.source},
+              question: {uid: questionRecord.uid, source: this.source},
+            },
+            respondent: surveyUser
+              ? {uid: surveyUser.uid, source: this.source}
+              : null,
+            team: surveyTeam
+              ? {uid: surveyTeam.uid, source: this.source}
+              : null,
+          },
+        };
+        res.push(questionResponseRecord);
+      }
 
       if (!this.questionsSeen.has(questionRecord.uid)) {
         this.questionsSeen.add(questionRecord.uid);

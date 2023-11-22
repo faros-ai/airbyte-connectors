@@ -15,7 +15,7 @@
         "application_mapping": {
           "type": "string",
           "title": "Application Mapping",
-          "description": "JSON map of Statuspage service(s) name, to compute platform specific app name and platform name. Used to reference compute_Application object, from an ims_Incident object.",
+          "description": "JSON map of Statuspage service(s) name, to compute platform specific app name and platform name.",
           "multiline": true,
           "default": "{}",
           "examples": [

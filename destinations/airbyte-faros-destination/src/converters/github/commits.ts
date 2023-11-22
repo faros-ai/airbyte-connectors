@@ -24,7 +24,9 @@ export class Commits extends GitHubConverter {
 
     if (!repository) return res;
 
-    const author = commit.author ? {uid: commit.author.login, source} : null;
+    const author = commit.author?.login
+      ? {uid: commit.author.login, source}
+      : null;
 
     res.push({
       model: 'vcs_Commit',
