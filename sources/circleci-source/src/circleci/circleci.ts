@@ -86,18 +86,23 @@ export class CircleCI {
     logger: AirbyteLogger
   ): Promise<string> {
     logger.info('Getting Org Slug');
-    const resp = await circleCIV2Instance.get('/me/collaborations');
-    if (resp.status != 200) {
+    let slug: string = '';
+    try {
+      const resp = await circleCIV2Instance.get('/me/collaborations');
+      if (resp.status != 200) {
+        throw new Error(
+          `Failed response from endpoint 'me/collaborations' for getting slug.`
+        );
+      }
+      const resp_data = resp.data[0];
+      slug = resp_data['slug'];
+    } catch (error: any) {
       throw new Error(
-        `Failed response from endpoint 'me/collaborations' for getting slug.`
+        `Failed to get org slug from '/me/collaborations' endpoint`
       );
     }
-    const resp_data = resp.data[0];
-    const slug: string = resp_data['slug'];
-    if (!slug) {
-      throw new Error(
-        `Failed to get slug from response data: ${JSON.stringify(resp_data)}`
-      );
+    if (slug === '') {
+      throw new Error(`Failed to get slug from '/me/collaborations' endpoint`);
     }
     logger.info(`Got Org Slug: ${slug}`);
     return slug;
@@ -118,6 +123,7 @@ export class CircleCI {
       logger.info(
         'Wildcard Project name found - calling API to get all project names.'
       );
+
       const repoNames = await this.getAllRepoNames(config, logger);
       logger.info(`Got these repo names: ${JSON.stringify(repoNames)}`);
       if (!config.slugs_as_repos) {
@@ -177,12 +183,19 @@ export class CircleCI {
     // ORG SLUG:
     // https://circleci.com/api/v2/me/collaborations
     // Using org slug, projects can be accessed with slug/repo_name
-    const response = await v1AxiosInstance.get('/projects');
-    const projects_data = response.data;
-    logger.info(projects_data.data);
     const op: string[] = [];
-    for (const item of projects_data) {
-      op.push(item['reponame']);
+    try {
+      const response = await v1AxiosInstance.get('/projects');
+      const projects_data = response.data;
+      logger.info(`Projects data: ${JSON.stringify(projects_data)}`);
+      for (const item of projects_data) {
+        op.push(item['reponame']);
+      }
+    } catch (error: any) {
+      throw new Error(`Failed to get all repo names from '/projects' endpoint`);
+    }
+    if (op.length == 0) {
+      throw new Error('No reponames found for this user');
     }
     return op;
   }
