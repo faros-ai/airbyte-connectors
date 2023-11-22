@@ -52,20 +52,20 @@ export class CircleCI {
     }
     if (config.project_names.includes('*') && config.project_names.length > 1) {
       throw new VError(
-        'If wildcard is included in project names, do not include other project names.'
+        'If wildcard is included in project names, do not include other project names'
+      );
+    }
+    if (
+      config.project_block_list.length > 0 &&
+      !config.project_names.includes('*')
+    ) {
+      throw new VError(
+        'If blocklist is non-zero, you must use only wildcard "*" in project names'
       );
     }
     if (typeof config.slugs_as_repos !== 'boolean') {
       throw new VError(
-        `Config variable "slugs_as_repos" should be set as boolean, instead ${typeof config.slugs_as_repos}.`
-      );
-    }
-    if (
-      !config.project_names.includes('*') &&
-      config.project_block_list.length > 0
-    ) {
-      throw new VError(
-        'If blocklist included, you must use wildcard "*" in project names.'
+        `Config variable "slugs_as_repos" should be set as boolean, instead it is set as "${typeof config.slugs_as_repos}"`
       );
     }
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
