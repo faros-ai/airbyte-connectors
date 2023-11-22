@@ -110,7 +110,6 @@ export class CircleCI {
   ): Promise<string[]> {
     // If slugs are repos, we return list of repos
     // If slugs are slugs, we return a list of slugs
-    //curl -X GET -H "Accept: application/json" -H "Content-Type: application/json" -H "Circle-Token: CCIPAT_HUNg1jN1N46UJ7TxmYpwYb_e98661d581e2bb095c31d3b1df2fd0528930a86f" "https://circleci.com/api/v2/pipeline?org-slug=circleci%2FHTXYvX1HhYV2oSuYKHCHgr"
     let project_names = config.project_names;
     if (project_names.includes('*')) {
       // project names has the wildcard, which means we need to
