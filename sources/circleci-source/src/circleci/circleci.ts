@@ -206,15 +206,11 @@ export class CircleCI {
     api_version: string = 'v2'
   ): AxiosInstance {
     const rejectUnauthorized = config.reject_unauthorized ?? true;
-    // Logic here relies on the fact that the default API URL contains v2 in it
+    // Logic here relies on the fact that the config/ default API URL contains v2 in it
     let url = config.url ?? DEFAULT_API_URL;
-    if (api_version != 'v2') {
-      const original_url = url;
-      url = url.replace('v2', api_version);
-      logger.info(
-        `Replacing URL version. Original url: ${original_url}, new: ${url}.`
-      );
-    }
+    const versionRegex = /v\d+(\.\d+)?/g;
+    url = url.replace(versionRegex, api_version);
+    logger.info(`New URL for axios: "${url}"`);
     const axiosInstance: AxiosInstance = axios.create({
       baseURL: url,
       headers: {
