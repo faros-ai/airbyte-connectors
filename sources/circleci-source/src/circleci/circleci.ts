@@ -55,7 +55,7 @@ export class CircleCI {
         'If wildcard is included in project names, do not include other project names.'
       );
     }
-    if (!(typeof config.slugs_as_repos === 'boolean')) {
+    if (typeof config.slugs_as_repos !== 'boolean') {
       throw new VError(
         `Config variable "slugs_as_repos" should be set as boolean, instead ${typeof config.slugs_as_repos}.`
       );
