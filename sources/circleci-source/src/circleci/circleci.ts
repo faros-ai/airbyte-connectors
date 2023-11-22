@@ -50,6 +50,24 @@ export class CircleCI {
     if (!config.project_names || config.project_names.length == 0) {
       throw new VError('No project names provided');
     }
+    if (config.project_names.includes('*') && config.project_names.length > 1) {
+      throw new VError(
+        'If wildcard is included in project names, do not include other project names.'
+      );
+    }
+    if (!(typeof config.slugs_as_repos === 'boolean')) {
+      throw new VError(
+        `Config variable "slugs_as_repos" should be set as boolean, instead ${typeof config.slugs_as_repos}.`
+      );
+    }
+    if (
+      !config.project_names.includes('*') &&
+      config.project_block_list.length > 0
+    ) {
+      throw new VError(
+        'If blocklist included, you must use wildcard "*" in project names.'
+      );
+    }
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
@@ -108,41 +126,78 @@ export class CircleCI {
     return slug;
   }
 
-  static async updateProjectNamesWithBlocklist(
+  static async getFilteredProjectsFromRepoNames(
     config: CircleCIConfig,
-    logger: AirbyteLogger,
-    org_slug: string
+    logger: AirbyteLogger
   ): Promise<string[]> {
-    // If slugs are repos, we return list of repos
-    // If slugs are slugs, we return a list of slugs
-    let project_names = config.project_names;
-    if (project_names.includes('*')) {
-      // project names has the wildcard, which means we need to
-      // get all the project names and then remove the projects in the
-      // block list
-      logger.info(
-        'Wildcard Project name found - calling API to get all project names.'
-      );
+    // Note the project names are not full slugs but only the repo names,
+    // e.g. repo-name rather than vcs-slug/org-name/repo-name
+    const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
+    const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [repoNamesToProjectIds, repoNames, _projectIds] =
+      await this.getAllRepoNamesAndProjectIds(config, logger);
 
-      const repoNames = await this.getAllRepoNames(config, logger);
-      logger.info(`Got these repo names: ${JSON.stringify(repoNames)}`);
-      if (!config.slugs_as_repos) {
-        project_names = repoNames.map((v) => `${org_slug}/${v}`);
-      } else {
-        project_names = repoNames;
-      }
-      logger.info(`Got these project names: ${JSON.stringify(project_names)}`);
+    if (!config.project_names.includes('*')) {
+      const repo_names = config.project_names;
+      const project_names = repo_names.map(
+        (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
+      );
+      return project_names;
     }
-    let res: string[] = [];
+    // In this case there is a wildcard to get project names
+    // We already have all the repo names stored as repoNames
+    const res: string[] = [];
+    for (const project_name of repoNames) {
+      if (!config.project_block_list.includes(project_name)) {
+        res.push(project_name);
+      }
+    }
+    const project_names = res.map(
+      (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
+    );
+    return project_names;
+  }
+
+  static async getFilteredProjects(
+    config: CircleCIConfig,
+    logger: AirbyteLogger
+  ): Promise<string[]> {
+    // Note the project names are not repo names but also include the slug,
+    // e.g.  vcs-slug/org-name/repo-name rather than repo-name
+    if (!config.project_names.includes('*')) {
+      return Array.from(config.project_names);
+    }
+    const project_names = await this.getWildCardProjectNames(config, logger);
+    const res: string[] = [];
     for (const project_name of project_names) {
       if (!config.project_block_list.includes(project_name)) {
         res.push(project_name);
       }
     }
-    if (config.slugs_as_repos) {
-      res = res.map((v) => `${org_slug}/${v}`);
-    }
     return res;
+  }
+
+  static async getWildCardProjectNames(
+    config: CircleCIConfig,
+    logger: AirbyteLogger
+  ): Promise<string[]> {
+    // We return list of updated project names
+    // In this case we know project names has a wildcard
+    // Always returns list of complete project names (not just repo names)
+    if (!config.project_names.includes('*')) {
+      throw new Error('We expect project names to just be the wildcard');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_repoNamesToProjectIds, _repoNames, projectIds] =
+      await this.getAllRepoNamesAndProjectIds(config, logger);
+    const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
+    const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
+    const project_names = projectIds.map((v) => `${org_slug}/${v}`);
+    logger.info(
+      `Project names based on config: ${JSON.stringify(project_names)}`
+    );
+    return project_names;
   }
 
   static getAxiosInstance(
@@ -151,6 +206,7 @@ export class CircleCI {
     api_version: string = 'v2'
   ): AxiosInstance {
     const rejectUnauthorized = config.reject_unauthorized ?? true;
+    // Logic here relies on the fact that the default API URL contains v2 in it
     let url = config.url ?? DEFAULT_API_URL;
     if (api_version != 'v2') {
       const original_url = url;
@@ -174,7 +230,10 @@ export class CircleCI {
     return axiosInstance;
   }
 
-  static async getAllRepoNames(config, logger): Promise<string[]> {
+  static async getAllRepoNamesAndProjectIds(
+    config,
+    logger
+  ): Promise<[Map<string, string>, string[], string[]]> {
     const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
       config,
       logger,
@@ -183,21 +242,32 @@ export class CircleCI {
     // ORG SLUG:
     // https://circleci.com/api/v2/me/collaborations
     // Using org slug, projects can be accessed with slug/repo_name
-    const op: string[] = [];
+    const repo_names: string[] = [];
+    const project_ids: string[] = [];
     try {
       const response = await v1AxiosInstance.get('/projects');
       const projects_data = response.data;
       logger.info(`Projects data: ${JSON.stringify(projects_data)}`);
       for (const item of projects_data) {
-        op.push(item['reponame']);
+        repo_names.push(item['reponame']);
+        project_ids.push(item['vcs_url'].split('/').pop());
       }
     } catch (error: any) {
-      throw new Error(`Failed to get all repo names from '/projects' endpoint`);
+      throw new Error(
+        `Failed to get all project "repo names" or "project ids" from '/projects' endpoint`
+      );
     }
-    if (op.length == 0) {
+    if (repo_names.length == 0) {
       throw new Error('No reponames found for this user');
     }
-    return op;
+    const repoNamesToProjectIds: Map<string, string> = new Map<
+      string,
+      string
+    >();
+    for (let i = 0; i < repo_names.length; i++) {
+      repoNamesToProjectIds.set(repo_names[i], project_ids[i]);
+    }
+    return [repoNamesToProjectIds, repo_names, project_ids];
   }
 
   private async iterate<V>(
@@ -266,7 +336,7 @@ export class CircleCI {
         await this.maybeSleepOnResponse(path, err?.response);
         return await this.get(path, conf, attempt + 1);
       }
-      throw wrapApiError(err, `Failed to get ${path}. `);
+      throw wrapApiError(err, `Failed to get "${path}". `);
     }
   }
 

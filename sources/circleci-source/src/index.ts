@@ -46,18 +46,21 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    // We update the config with the projects - the blocklist
-    const axiosV2Instance = CircleCI.getAxiosInstance(config, this.logger);
-    const org_slug: string = await CircleCI.getOrgSlug(
-      axiosV2Instance,
-      this.logger
-    );
-    const filtered_project_names: string[] =
-      await CircleCI.updateProjectNamesWithBlocklist(
+    let filtered_project_names: string[] = [];
+    if (config.slugs_as_repos === true) {
+      filtered_project_names = await CircleCI.getFilteredProjectsFromRepoNames(
         config,
-        this.logger,
-        org_slug
+        this.logger
       );
+    } else if (config.slugs_as_repos === false) {
+      filtered_project_names = await CircleCI.getFilteredProjects(
+        config,
+        this.logger
+      );
+    } else {
+      throw new Error('Variables slugs_as_repos not set');
+    }
+
     config.filtered_project_names = filtered_project_names;
     return {config, catalog, state};
   }
