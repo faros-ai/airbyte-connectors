@@ -21,7 +21,7 @@ export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
   readonly project_block_list: ReadonlyArray<string>;
-  // Applying block list to project names results in filtered_project_names
+  // Applying project_block_list to project_names results in filtered_project_names
   filtered_project_names?: string[];
   readonly reject_unauthorized: boolean;
   readonly slugs_as_repos: boolean;
@@ -60,7 +60,7 @@ export class CircleCI {
       !config.project_names.includes('*')
     ) {
       throw new VError(
-        'If blocklist is non-zero, you must use only wildcard "*" in project names'
+        'If blocklist contains values, project_names should only include wildcard "*".'
       );
     }
     if (typeof config.slugs_as_repos !== 'boolean') {
