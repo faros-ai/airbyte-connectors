@@ -186,7 +186,11 @@ export class CircleCI {
     // In this case we know project names has a wildcard
     // Always returns list of complete project names (not just repo names)
     if (!config.project_names.includes('*')) {
-      throw new Error('We expect project names to just be the wildcard');
+      throw new Error(
+        `We expect project names to just be the wildcard, instead: ${JSON.stringify(
+          config.project_names
+        )}`
+      );
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_repoNamesToProjectIds, _repoNames, projectIds] =
@@ -205,12 +209,14 @@ export class CircleCI {
     logger: AirbyteLogger,
     api_version: string = 'v2'
   ): AxiosInstance {
-    const rejectUnauthorized = config.reject_unauthorized ?? true;
-    // Logic here relies on the fact that the config/ default API URL contains v2 in it
+    // In this function we rely on the fact that the  API URL contains 'v{X}' in it,
+    // where X is the version number, e.g. "2" or "1.1". We replace the
+    // version number with the one we want to use, stored in the param 'api_version'
     let url = config.url ?? DEFAULT_API_URL;
     const versionRegex = /v\d+(\.\d+)?/g;
     url = url.replace(versionRegex, api_version);
     logger.info(`New URL for axios: "${url}"`);
+    const rejectUnauthorized = config.reject_unauthorized ?? true;
     const axiosInstance: AxiosInstance = axios.create({
       baseURL: url,
       headers: {
