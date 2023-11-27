@@ -116,6 +116,7 @@ export const ALL_MODEL_NAMES = [
   'vcs_Label',
   'vcs_Membership',
   'vcs_Organization',
+  'vcs_OrganizationTool',
   'vcs_PullRequest',
   'vcs_PullRequestComment',
   'vcs_PullRequestCommit',
@@ -129,5 +130,7 @@ export const ALL_MODEL_NAMES = [
   'vcs_Team',
   'vcs_TeamMembership',
   'vcs_User',
+  'vcs_UserTool',
+  'vcs_UserToolUsage',
   'vcs_UserIdentity',
 ];
