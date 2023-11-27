@@ -10,9 +10,11 @@ import {
   groupBy,
   has,
   intersection,
+  isDate,
   isEmpty,
   isNil,
   isObject,
+  isString,
   keys,
   max,
   orderBy,
@@ -128,13 +130,27 @@ export function serializeValue(obj: any): string {
 }
 
 /**
- * Like lodash pick but with null value replacement.
+ * Like lodash pick with (1) null value replacement and (2) type-aware normalization.
  */
-export function strictPick(obj: any, keys: string[], nullValue = 'null'): any {
-  return keys.reduce(
-    (result, key) => set(result, key, obj[key] ?? nullValue),
-    {}
-  );
+export function strictPick(
+  obj: any,
+  keys: string[],
+  keyTypes: Dictionary<string> = {},
+  nullValue = 'null'
+): any {
+  function keyValue(key: string): any {
+    let rawValue = obj[key];
+    // normalize dates and string timestamps to epochs
+    if (rawValue && keyTypes[key] === 'timestamptz') {
+      rawValue = isDate(rawValue)
+        ? rawValue.getTime()
+        : isString(rawValue)
+        ? Date.parse(rawValue)
+        : rawValue;
+    }
+    return rawValue ?? nullValue;
+  }
+  return keys.reduce((result, key) => set(result, key, keyValue(key)), {});
 }
 
 /**
@@ -787,7 +803,12 @@ export class GraphQLClient {
    * returns serialized version of keys fields
    */
   private serializedPrimaryKey(model: string, obj: any): string {
-    return serialize(strictPick(obj, this.schema.primaryKeys[model]));
+    const keyObj = strictPick(
+      obj,
+      this.schema.primaryKeys[model],
+      this.schema.scalars[model]
+    );
+    return serialize(keyObj);
   }
 
   private toUpsertOps(model: string, modelUpserts: Upsert[]): UpsertOp[] {
