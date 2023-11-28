@@ -80,6 +80,14 @@ exports[`graphql-client write batch upsert on_conflict update_columns bug 4`] = 
 
 exports[`graphql-client write batch upsert record with null primary key field 1`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"faros-ai\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt source uid } } }"`;
 
+exports[`graphql-client write batch upsert record with timestamptz primary key field 1`] = `"mutation { insert_vcs_User (objects: [{uid: \\"dbruno21\\", source: \\"GitHub\\"}], on_conflict: {constraint: vcs_User_pkey, update_columns: [source, uid]}) { returning { id refreshedAt source uid } } }"`;
+
+exports[`graphql-client write batch upsert record with timestamptz primary key field 2`] = `"mutation { insert_vcs_Organization (objects: [{uid: \\"princode-ar\\", source: \\"GitHub\\"}], on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}) { returning { id refreshedAt source uid } } }"`;
+
+exports[`graphql-client write batch upsert record with timestamptz primary key field 3`] = `"mutation { insert_vcs_UserTool (objects: [{tool: {category: \\"GitHubCopilot\\", detail: \\"\\"}, userId: \\"65ecc2833915a71fb0157d2b0d3d9e2b0c6de441\\", organizationId: \\"d48dfb1908821e827f371cf370964d7131b69f4c\\"}], on_conflict: {constraint: vcs_UserTool_pkey, update_columns: [organizationId, tool, userId]}) { returning { id refreshedAt organizationId tool userId } } }"`;
+
+exports[`graphql-client write batch upsert record with timestamptz primary key field 4`] = `"mutation { insert_vcs_UserToolUsage (objects: [{usedAt: \\"2021-10-14T00:53:33-06:00\\", origin: \\"mytestsource\\", userToolId: \\"f1e4d99accb71ba8ac1b8a1204f84b8211909212\\"}], on_conflict: {constraint: vcs_UserToolUsage_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt usedAt userToolId } } }"`;
+
 exports[`graphql-client write batch upsert self-referent model 1`] = `"mutation { insert_org_Employee (objects: [{uid: \\"7\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [uid]}) { returning { id refreshedAt uid } } }"`;
 
 exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation { insert_org_Employee (objects: [{uid: \\"9\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt uid } } }"`;

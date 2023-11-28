@@ -377,6 +377,94 @@ describe('graphql-client write batch upsert', () => {
     await client.flush();
     expect(queries).toEqual(1);
   });
+  test('record with timestamptz primary key field', async () => {
+    const res1 = JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_User": {
+          "returning": [
+            {
+              "id": "65ecc2833915a71fb0157d2b0d3d9e2b0c6de441",
+              "refreshedAt": "2023-11-27T21:58:24.728607+00:00",
+              "source": "GitHub",
+              "uid": "dbruno21"
+            }
+          ]
+        }
+      }
+    }`);
+    const res2 = JSON.parse(`{
+      "data": {
+        "insert_vcs_Organization": {
+          "returning": [
+            {
+              "id": "d48dfb1908821e827f371cf370964d7131b69f4c",
+              "refreshedAt": "2023-11-27T22:01:28.016928+00:00",
+              "source": "GitHub",
+              "uid": "princode-ar"
+            }
+          ]
+        }
+      }
+    }`);
+    const res3 = JSON.parse(`{
+      "data": {
+        "insert_vcs_UserTool": {
+          "returning": [
+            {
+              "id": "f1e4d99accb71ba8ac1b8a1204f84b8211909212",
+              "refreshedAt": "2023-11-27T22:03:22.424094+00:00",
+              "organizationId": "d48dfb1908821e827f371cf370964d7131b69f4c",
+              "tool": {
+                "detail": "",
+                "category": "GitHubCopilot"
+              },
+              "userId": "65ecc2833915a71fb0157d2b0d3d9e2b0c6de441"
+            }
+          ]
+        }
+      }
+    }`);
+    const res4 = JSON.parse(`{
+      "data": {
+        "insert_vcs_UserToolUsage": {
+          "returning": [
+            {
+              "id": "191d6b4be221e45bfe12b1821796a9cdb0fc0b15",
+              "refreshedAt": "2023-11-27T22:05:13.195912+00:00",
+              "usedAt": "2021-10-14T06:53:33+00:00",
+              "userToolId": "f1e4d99accb71ba8ac1b8a1204f84b8211909212"
+            }
+          ]
+        }
+      }
+    }`);
+    const responses = [res1, res2, res3, res4];
+    const record1 = JSON.parse(
+      '{"userTool":{"user":{"uid":"dbruno21","source":"GitHub"},"organization":{"uid":"princode-ar","source":"GitHub"},"tool":{"category":"GitHubCopilot","detail":""}},"usedAt":"2021-10-14T00:53:33-06:00"}'
+    );
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return Promise.resolve(responses[queries++]);
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_UserToolUsage', record1, 'mytestsource');
+    await client.flush();
+    expect(queries).toEqual(4);
+  });
   test('mergeByPrimaryKey', async () => {
     const users = [
       {
@@ -845,6 +933,17 @@ describe('graphql-client utilities', () => {
     expect(strictPick({z: 0, a: 'bar'}, ['z', 'b'])).toEqual({z: 0, b: 'null'});
     expect(strictPick({z: 1, a: 'bar'}, ['z', 'b'])).toEqual({z: 1, b: 'null'});
     expect(strictPick({z: 1, a: 'bar'}, ['b'])).toEqual({b: 'null'});
+    expect(strictPick({a: 1634194413000}, ['a'], {a: 'timestamptz'})).toEqual({
+      a: 1634194413000,
+    });
+    expect(
+      strictPick({a: '2021-10-14T00:53:33-06:00'}, ['a'], {
+        a: 'timestamptz',
+      })
+    ).toEqual({a: 1634194413000});
+    expect(
+      strictPick({a: '2021-10-14T06:53:33+00:00'}, ['a'], {a: 'timestamptz'})
+    ).toEqual({a: 1634194413000});
   });
 });
 

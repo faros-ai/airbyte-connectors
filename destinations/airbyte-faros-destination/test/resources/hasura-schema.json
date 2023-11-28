@@ -26,6 +26,15 @@
     "vcs_User": [
       "source",
       "uid"
+    ],
+    "vcs_UserTool": [
+      "organizationId",
+      "tool",
+      "userId"
+    ],
+    "vcs_UserToolUsage": [
+      "usedAt",
+      "userToolId"
     ]
   },
   "scalars": {
@@ -120,6 +129,22 @@
       "source": "String",
       "type": "jsonb",
       "uid": "String"
+    },
+    "vcs_UserTool": {
+      "endedAt": "timestamptz",
+      "inactive": "Boolean",
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz",
+      "tool": "jsonb",
+      "userId": "String"
+    },
+    "vcs_UserToolUsage": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "usedAt": "timestamptz",
+      "userToolId": "String"
     }
   },
   "references": {
@@ -244,7 +269,41 @@
         "foreignKey": "repositoryId"
       }
     },
-    "vcs_User": {}
+    "vcs_User": {},
+    "vcs_UserTool": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "userId": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      },
+      "user": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      }
+    },
+    "vcs_UserToolUsage": {
+      "userToolId": {
+        "field": "userTool",
+        "model": "vcs_UserTool",
+        "foreignKey": "userToolId"
+      },
+      "userTool": {
+        "field": "userTool",
+        "model": "vcs_UserTool",
+        "foreignKey": "userToolId"
+      }
+    }
   },
   "backReferences": {},
   "sortedModelDependencies": [
@@ -253,6 +312,8 @@
     "vcs_PullRequest",
     "vcs_Commit",
     "vcs_Repository",
+    "vcs_UserToolUsage",
+    "vcs_UserTool",
     "vcs_Organization",
     "vcs_User"
   ],
@@ -263,6 +324,8 @@
     "vcs_Commit",
     "vcs_Organization",
     "vcs_Repository",
-    "vcs_User"
+    "vcs_User",
+    "vcs_UserTool",
+    "vcs_UserToolUsage"
   ]
 }
