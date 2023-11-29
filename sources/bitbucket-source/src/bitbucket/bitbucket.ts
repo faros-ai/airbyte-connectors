@@ -1126,16 +1126,18 @@ export class Bitbucket {
           name: data.source?.branch?.name,
         },
       },
-      author: {
-        displayName: data.author.display_name,
-        uuid: data.author.uuid,
-        type: data.author.type,
-        nickname: data.author.nickname,
-        accountId: data.author.account_id,
-        links: {
-          htmlUrl: data.author.links?.html?.href,
-        },
-      },
+      author: data.author
+        ? {
+            displayName: data.author.display_name,
+            uuid: data.author.uuid,
+            type: data.author.type,
+            nickname: data.author.nickname,
+            accountId: data.author.account_id,
+            links: {
+              htmlUrl: data.author.links?.html?.href,
+            },
+          }
+        : null,
       mergeCommit: data.merge_commit
         ? {
             hash: data.merge_commit.hash,
@@ -1169,31 +1171,35 @@ export class Bitbucket {
       approval: data.approval
         ? {
             ...data.approval,
-            user: {
-              displayName: data.approval?.user.display_name,
-              uuid: data.approval?.user.uuid,
-              type: data.approval?.user.type,
-              nickname: data.approval?.user.nickname,
-              accountId: data.approval?.user.account_id,
-              links: {
-                htmlUrl: data.approval?.user.links?.html?.href,
-              },
-            },
+            user: data.approval?.user
+              ? {
+                  displayName: data.approval?.user.display_name,
+                  uuid: data.approval?.user.uuid,
+                  type: data.approval?.user.type,
+                  nickname: data.approval?.user.nickname,
+                  accountId: data.approval?.user.account_id,
+                  links: {
+                    htmlUrl: data.approval?.user.links?.html?.href,
+                  },
+                }
+              : undefined,
           }
         : undefined,
       changes_requested: data.changes_requested
         ? {
             ...data.changes_requested,
-            user: {
-              displayName: data.changes_requested?.user.display_name,
-              uuid: data.changes_requested?.user.uuid,
-              type: data.changes_requested?.user.type,
-              nickname: data.changes_requested?.user.nickname,
-              accountId: data.changes_requested?.user.account_id,
-              links: {
-                htmlUrl: data.changes_requested?.user.links?.html?.href,
-              },
-            },
+            user: data.changes_requested?.user
+              ? {
+                  displayName: data.changes_requested?.user?.display_name,
+                  uuid: data.changes_requested?.user?.uuid,
+                  type: data.changes_requested?.user.type,
+                  nickname: data.changes_requested?.user.nickname,
+                  accountId: data.changes_requested?.user.account_id,
+                  links: {
+                    htmlUrl: data.changes_requested?.user.links?.html?.href,
+                  },
+                }
+              : undefined,
           }
         : undefined,
       update: data.update
@@ -1246,16 +1252,18 @@ export class Bitbucket {
                 name: data.update?.source?.branch?.name,
               },
             },
-            author: {
-              displayName: data.update?.author.display_name,
-              uuid: data.update?.author.uuid,
-              type: data.update?.author.type,
-              nickname: data.update?.author.nickname,
-              accountId: data.update?.author.account_id,
-              links: {
-                htmlUrl: data.update?.author.links?.html?.href,
-              },
-            },
+            author: data.update?.author
+              ? {
+                  displayName: data.update?.author.display_name,
+                  uuid: data.update?.author.uuid,
+                  type: data.update?.author.type,
+                  nickname: data.update?.author.nickname,
+                  accountId: data.update?.author.account_id,
+                  links: {
+                    htmlUrl: data.update?.author.links?.html?.href,
+                  },
+                }
+              : undefined,
             changes: {
               status: {
                 new: data.update?.changes.status?.new,
@@ -1277,16 +1285,18 @@ export class Bitbucket {
       comment: data.comment
         ? {
             ...data.comment,
-            user: {
-              displayName: data.comment?.user.display_name,
-              uuid: data.comment?.user.uuid,
-              type: data.comment?.user.type,
-              nickname: data.comment?.user.nickname,
-              accountId: data.comment?.user.account_id,
-              links: {
-                htmlUrl: data.comment?.user.links?.html?.href,
-              },
-            },
+            user: data.comment?.user
+              ? {
+                  displayName: data.comment?.user.display_name,
+                  uuid: data.comment?.user.uuid,
+                  type: data.comment?.user.type,
+                  nickname: data.comment?.user.nickname,
+                  accountId: data.comment?.user.account_id,
+                  links: {
+                    htmlUrl: data.comment?.user.links?.html?.href,
+                  },
+                }
+              : undefined,
           }
         : undefined,
     };
@@ -1321,33 +1331,39 @@ export class Bitbucket {
       forkPolicy: data.fork_policy,
       fullName: data.full_name,
       name: data.name,
-      project: {
-        links: {htmlUrl: project.links?.html?.href},
-        type: project.type,
-        name: project.name,
-        key: project.key,
-        uuid: project.uuid,
-      },
+      project: project
+        ? {
+            links: {htmlUrl: project.links?.html?.href},
+            type: project.type,
+            name: project.name,
+            key: project.key,
+            uuid: project.uuid,
+          }
+        : null,
       language: data.language,
       createdOn: data.created_on,
       mainBranch: {
         type: data.mainbranch.type,
         name: data.mainbranch.name,
       },
-      workspace: {
-        type: workspace.type,
-        name: workspace.name,
-        slug: workspace.slug,
-        links: {htmlUrl: workspace.links?.html?.href},
-        uuid: workspace.uuid,
-      },
+      workspace: workspace
+        ? {
+            type: workspace.type,
+            name: workspace.name,
+            slug: workspace.slug,
+            links: {htmlUrl: workspace.links?.html?.href},
+            uuid: workspace.uuid,
+          }
+        : null,
       hasIssues: data.has_issues,
-      owner: {
-        displayName: owner.display_name,
-        type: owner.type,
-        uuid: owner.uuid,
-        links: {htmlUrl: owner.links?.html?.href},
-      },
+      owner: owner
+        ? {
+            displayName: owner.display_name,
+            type: owner.type,
+            uuid: owner.uuid,
+            links: {htmlUrl: owner.links?.html?.href},
+          }
+        : null,
       updatedOn: data.updated_on,
       size: data.size,
       type: data.type,
