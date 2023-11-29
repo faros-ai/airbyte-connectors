@@ -22,7 +22,7 @@
           "type": "string"
         },
         "title": "Project Names",
-        "description": "\"repo-name\" or \"vcs-slug/org-name/repo-name\". \"*\" for all projects"
+        "description": "Project names should look like \"vcs-slug/org-name/repo-name\" or \"repo-name\" if slugs as repos is set to true. Only enter \"*\" for all projects."
       },
       "project_block_list": {
         "type": "array",
@@ -30,7 +30,7 @@
           "type": "string"
         },
         "title": "Project Name Blocklist",
-        "description": "If project_names is \"*\", then list of \"repo-name\" or \"vcs-slug/org-name/repo-name\""
+        "description": "If project_names is \"*\", then enter a list of \"repo-name\" or \"vcs-slug/org-name/repo-name\""
       },
       "cutoff_days": {
         "type": "integer",

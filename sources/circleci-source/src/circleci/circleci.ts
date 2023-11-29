@@ -109,14 +109,14 @@ export class CircleCI {
       const resp = await circleCIV2Instance.get('/me/collaborations');
       if (resp.status != 200) {
         throw new Error(
-          `Failed response from endpoint 'me/collaborations' for getting slug.`
+          `Non-200 response from endpoint 'me/collaborations' for getting slug.`
         );
       }
       const resp_data = resp.data[0];
       slug = resp_data['slug'];
     } catch (error: any) {
       throw new Error(
-        `Failed to get org slug from '/me/collaborations' endpoint`
+        `Failed to get org slug from '/me/collaborations' endpoint for this reason: ${error}`
       );
     }
     if (slug === '') {
@@ -187,7 +187,7 @@ export class CircleCI {
     // Always returns list of complete project names (not just repo names)
     if (!config.project_names.includes('*')) {
       throw new Error(
-        `We expect project names to just be the wildcard, instead: ${JSON.stringify(
+        `Expected project_names to just be the wildcard, instead got: ${JSON.stringify(
           config.project_names
         )}`
       );
@@ -215,7 +215,7 @@ export class CircleCI {
     let url = config.url ?? DEFAULT_API_URL;
     const versionRegex = /v\d+(\.\d+)?/g;
     url = url.replace(versionRegex, api_version);
-    logger.info(`New URL for axios: "${url}"`);
+    logger.info(`Using API URL: "${url}"`);
     const rejectUnauthorized = config.reject_unauthorized ?? true;
     const axiosInstance: AxiosInstance = axios.create({
       baseURL: url,

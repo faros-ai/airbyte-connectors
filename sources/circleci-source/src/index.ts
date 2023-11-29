@@ -58,7 +58,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
         this.logger
       );
     } else {
-      throw new Error('Variables slugs_as_repos not set');
+      throw new Error('slugs_as_repos param not set');
     }
 
     config.filtered_project_names = filtered_project_names;
