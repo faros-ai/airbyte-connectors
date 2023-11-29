@@ -28,21 +28,20 @@ import {
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGELEN = 100;
-export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
-
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
 export class Bitbucket {
-  private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
+  private static clientIndex: number = 0;
 
   constructor(
-    private readonly client: APIClient,
+    private readonly clients: APIClient[],
     private readonly pagelen: number,
     private readonly logger: AirbyteLogger,
-    readonly startDate: Date
+    readonly startDate: Date,
+    readonly limiter: Bottleneck
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -54,12 +53,10 @@ export class Bitbucket {
       throw new VError(errorMessage);
     }
 
-    const auth = config.token
-      ? {token: config.token}
-      : {username: config.username, password: config.password};
+    const auths = Bitbucket.buildAuths(config);
 
     const baseUrl = config.serverUrl || DEFAULT_BITBUCKET_URL;
-    const client = new BitbucketClient({baseUrl, auth});
+    const clients = auths.map((auth) => new BitbucketClient({baseUrl, auth}));
     const pagelen = config.pagelen || DEFAULT_PAGELEN;
 
     if (!config.cutoff_days) {
@@ -67,7 +64,26 @@ export class Bitbucket {
     }
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Bitbucket.bitbucket = new Bitbucket(client, pagelen, logger, startDate);
+
+    /**
+     * Bitbucket API has a rate limit of 1k requests per user per hour.
+     * To prevent being rate limited we will perform max one request every
+     * 4 seconds per client, or 900 requests per client per hour.
+     *
+     * https://support.atlassian.com/bitbucket-cloud/docs/api-request-limits/
+     *  */
+    const limiter = new Bottleneck({
+      maxConcurrent: 1,
+      minTime: 4000 / clients.length,
+    });
+
+    Bitbucket.bitbucket = new Bitbucket(
+      clients,
+      pagelen,
+      logger,
+      startDate,
+      limiter
+    );
     return Bitbucket.bitbucket;
   }
 
@@ -78,7 +94,9 @@ export class Bitbucket {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.client.workspaces.getWorkspaces();
+      for (const client of this.clients) {
+        await client.workspaces.getWorkspaces();
+      }
     } catch (error: any) {
       let errorMessage;
       try {
@@ -116,6 +134,36 @@ export class Bitbucket {
     return [true, undefined];
   }
 
+  private static buildAuths(config: BitbucketConfig): any[] {
+    let auths = [];
+
+    if (config.token) {
+      auths = config.token.split(',').map((item) => ({token: item}));
+    } else {
+      const usernames = config.username.split(',');
+      const passwords = config.password.split(',');
+
+      if (usernames.length !== passwords.length) {
+        throw new VError(
+          'please provide the same number of usernames and passwords'
+        );
+      }
+
+      for (let i = 0; i < usernames.length; i++) {
+        auths.push({username: usernames[i], password: passwords[i]});
+      }
+    }
+    return auths;
+  }
+
+  private client(): APIClient {
+    const client = this.clients[Bitbucket.clientIndex];
+    // Move to the next item or loop back to the start
+    Bitbucket.clientIndex = (Bitbucket.clientIndex + 1) % this.clients.length;
+
+    return client;
+  }
+
   private getStartDateMax(lastUpdatedAt?: string): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
@@ -128,7 +176,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Branch>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.listBranches({
+          this.client().repositories.listBranches({
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
@@ -155,7 +203,7 @@ export class Bitbucket {
       const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.listCommits({
+          this.client().repositories.listCommits({
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
@@ -186,7 +234,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Deployment>> =>
         this.limiter.schedule(() =>
-          this.client.deployments.list({
+          this.client().deployments.list({
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
@@ -263,7 +311,7 @@ export class Bitbucket {
     envID: string
   ): Promise<Environment> {
     const {data} = (await this.limiter.schedule(() =>
-      this.client.deployments.getEnvironment({
+      this.client().deployments.getEnvironment({
         workspace,
         repo_slug: repoSlug,
         environment_uuid: envID,
@@ -279,7 +327,7 @@ export class Bitbucket {
     workspace: string,
     repoSlug: string
   ): Promise<Repository> {
-    const response = await this.client.repositories.get({
+    const response = await this.client().repositories.get({
       workspace,
       repo_slug: repoSlug,
     });
@@ -304,7 +352,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Issue>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.listIssues(params)
+          this.client().repositories.listIssues(params)
         ) as any;
 
       yield* this.paginate<Issue>(func, (data) => this.buildIssue(data));
@@ -329,7 +377,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Pipeline>> =>
         this.limiter.schedule(() =>
-          this.client.pipelines.list({
+          this.client().pipelines.list({
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pagelen,
@@ -362,7 +410,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<PipelineStep>> =>
         this.limiter.schedule(() =>
-          this.client.pipelines.listSteps({
+          this.client().pipelines.listSteps({
             workspace,
             repo_slug: repoSlug,
             pipeline_uuid: pipelineUUID,
@@ -406,7 +454,7 @@ export class Bitbucket {
 
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.listPullRequests({
+          this.client().repositories.listPullRequests({
             workspace,
             repo_slug: repoSlug,
             paglen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
@@ -485,7 +533,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.listPullRequestActivities({
+          this.client().repositories.listPullRequestActivities({
             workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
@@ -516,7 +564,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<PRDiffStat>> =>
         this.limiter.schedule(() =>
-          this.client.pullrequests.getDiffStat({
+          this.client().pullrequests.getDiffStat({
             workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
@@ -559,7 +607,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.list({workspace, pagelen: this.pagelen})
+          this.client().repositories.list({workspace, pagelen: this.pagelen})
         );
       const isIncluded = (data: Repository): boolean => {
         return (
@@ -590,7 +638,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Workspace>> =>
         this.limiter.schedule(() =>
-          this.client.workspaces.getWorkspaces({pagelen: this.pagelen})
+          this.client().workspaces.getWorkspaces({pagelen: this.pagelen})
         );
 
       yield* this.paginate<Workspace>(func, (data) =>
@@ -605,7 +653,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<WorkspaceUser>> =>
         this.limiter.schedule(() =>
-          this.client.workspaces.getMembersForWorkspace({
+          this.client().workspaces.getMembersForWorkspace({
             workspace,
             pagelen: this.pagelen,
           })
@@ -626,12 +674,12 @@ export class Bitbucket {
   private async nextPage<T>(
     currentData: PaginatedResponseData<any>
   ): Promise<T | undefined> {
-    if (!this.client.hasNextPage(currentData)) {
+    if (!this.client().hasNextPage(currentData)) {
       return;
     }
 
     const {data} = await this.limiter.schedule(() =>
-      this.client.getNextPage(currentData)
+      this.client().getNextPage(currentData)
     );
     return data;
   }
