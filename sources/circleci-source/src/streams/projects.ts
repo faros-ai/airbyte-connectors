@@ -14,7 +14,7 @@ export class Projects extends CircleCIStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.cfg.project_names) {
+    for (const projectName of this.cfg.filtered_project_names) {
       yield {projectName};
     }
   }

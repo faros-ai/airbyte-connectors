@@ -22,7 +22,15 @@
           "type": "string"
         },
         "title": "Project Names",
-        "description": "Names should be in the format \"vcs-slug/org-name/repo-name\""
+        "description": "Project names should look like \"vcs-slug/org-name/repo-name\" or \"repo-name\" if slugs as repos is set to true. Only enter \"*\" for all projects."
+      },
+      "project_block_list": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project Name Blocklist",
+        "description": "If project_names is \"*\", then enter a list of \"repo-name\" or \"vcs-slug/org-name/repo-name\""
       },
       "cutoff_days": {
         "type": "integer",
@@ -35,6 +43,12 @@
         "title": "Enforce Authorized Requests",
         "default": true,
         "description": "Enable certificate validation for the CircleCI server"
+      },
+      "slugs_as_repos": {
+        "type": "boolean",
+        "title": "Projects Listed as Repos",
+        "default": false,
+        "description": "List projects as \"repo-name\" instead of \"vcs-slug/org-name/repo-name\""
       },
       "url": {
         "type": "string",

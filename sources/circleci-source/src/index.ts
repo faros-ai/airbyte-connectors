@@ -1,9 +1,11 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
@@ -28,11 +30,39 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   async checkConnection(config: CircleCIConfig): Promise<[boolean, VError]> {
     try {
       const circleCI = CircleCI.instance(config, this.logger);
-      await circleCI.checkConnection(config);
+      await circleCI.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
+  }
+
+  async onBeforeRead(
+    config: CircleCIConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: CircleCIConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    let filtered_project_names: string[] = [];
+    if (config.slugs_as_repos === true) {
+      filtered_project_names = await CircleCI.getFilteredProjectsFromRepoNames(
+        config,
+        this.logger
+      );
+    } else if (config.slugs_as_repos === false) {
+      filtered_project_names = await CircleCI.getFilteredProjects(
+        config,
+        this.logger
+      );
+    } else {
+      throw new Error('slugs_as_repos param not set');
+    }
+
+    config.filtered_project_names = filtered_project_names;
+    return {config, catalog, state};
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
