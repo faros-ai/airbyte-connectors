@@ -20,11 +20,11 @@ const DEFAULT_REQUEST_TIMEOUT = 60000;
 export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
-  readonly project_block_list: ReadonlyArray<string>;
+  readonly project_block_list?: ReadonlyArray<string>;
   // Applying project_block_list to project_names results in filtered_project_names
   filtered_project_names?: string[];
   readonly reject_unauthorized: boolean;
-  readonly slugs_as_repos: boolean;
+  readonly slugs_as_repos?: boolean;
   readonly cutoff_days?: number;
   readonly url?: string;
   readonly request_timeout?: number;
@@ -56,14 +56,17 @@ export class CircleCI {
       );
     }
     if (
-      config.project_block_list.length > 0 &&
+      config.project_block_list?.length > 0 &&
       !config.project_names.includes('*')
     ) {
       throw new VError(
         'If blocklist contains values, project_names should only include wildcard "*".'
       );
     }
-    if (typeof config.slugs_as_repos !== 'boolean') {
+    if (
+      typeof config.slugs_as_repos !== 'undefined' &&
+      typeof config.slugs_as_repos !== 'boolean'
+    ) {
       throw new VError(
         `Config variable "slugs_as_repos" should be set as boolean, instead it is set as "${typeof config.slugs_as_repos}"`
       );
@@ -149,7 +152,7 @@ export class CircleCI {
     // We already have all the repo names stored as repoNames
     const res: string[] = [];
     for (const project_name of repoNames) {
-      if (!config.project_block_list.includes(project_name)) {
+      if (!config.project_block_list?.includes(project_name)) {
         res.push(project_name);
       }
     }
@@ -171,7 +174,7 @@ export class CircleCI {
     const project_names = await this.getWildCardProjectNames(config, logger);
     const res: string[] = [];
     for (const project_name of project_names) {
-      if (!config.project_block_list.includes(project_name)) {
+      if (!config.project_block_list?.includes(project_name)) {
         res.push(project_name);
       }
     }

@@ -47,18 +47,16 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     let filtered_project_names: string[] = [];
-    if (config.slugs_as_repos === true) {
+    if (config.slugs_as_repos) {
       filtered_project_names = await CircleCI.getFilteredProjectsFromRepoNames(
         config,
         this.logger
       );
-    } else if (config.slugs_as_repos === false) {
+    } else {
       filtered_project_names = await CircleCI.getFilteredProjects(
         config,
         this.logger
       );
-    } else {
-      throw new Error('slugs_as_repos param not set');
     }
 
     config.filtered_project_names = filtered_project_names;
