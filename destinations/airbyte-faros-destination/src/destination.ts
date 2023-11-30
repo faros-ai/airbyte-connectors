@@ -629,7 +629,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
-
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             const message = msg as AirbyteStateMessage;

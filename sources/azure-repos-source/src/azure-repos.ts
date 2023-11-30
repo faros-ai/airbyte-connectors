@@ -1,16 +1,21 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
 import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import https from 'https';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
-import {VError} from 'verror';
-import https from 'https';
 import url from 'url';
+import {VError} from 'verror';
 
 import {
   Branch,
@@ -112,13 +117,15 @@ export class AzureRepos {
       httpsAgent: makeAgent(config.api_url ?? DEFAULT_API_URL),
     });
     const graphClient = axios.create({
-      baseURL: `${config.graph_api_url ?? DEFAULT_GRAPH_URL}/${config.organization}/_apis/graph`,
+      baseURL: `${config.graph_api_url ?? DEFAULT_GRAPH_URL}/${
+        config.organization
+      }/_apis/graph`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
-      httpsAgent: makeAgent(config.graph_api_url ?? DEFAULT_GRAPH_URL)
+      httpsAgent: makeAgent(config.graph_api_url ?? DEFAULT_GRAPH_URL),
     });
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -131,7 +138,7 @@ export class AzureRepos {
         isRetryAllowed(error) // Prevents retrying unsafe errors
       );
     };
-    const retryCondition = (error: Error): boolean => {
+    const retryCondition = (error: AxiosError): boolean => {
       return isNetworkError(error) || isIdempotentRequestError(error);
     };
 

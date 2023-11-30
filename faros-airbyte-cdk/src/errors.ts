@@ -39,11 +39,12 @@ export function wrapApiError(error: Error, message?: string): Error {
   }
 
   const prefix = message ? `${message}: ` : '';
-  const res = error.response;
+  const res: AxiosResponse<any, any> | undefined = error.response;
   const info = {
-    req: error.request
-      ? formatRequest({...error.config, ...error.request})
-      : formatRequest(error.config),
+    req:
+      error.config || error.request
+        ? formatRequest({...error.config, ...error.request})
+        : undefined,
     res: res ? formatResponse(res) : undefined,
   };
   if (!res) {
