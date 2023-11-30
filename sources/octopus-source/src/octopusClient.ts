@@ -5,6 +5,7 @@ import axiosRetry, {
 } from 'axios-retry';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import isRetryAllowed from 'is-retry-allowed';
+import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -75,7 +76,7 @@ export class OctopusClient {
         error.response &&
         error.response.status >= 500 &&
         error.response.status <= 599 &&
-        error.response.data?.ErrorMessage?.includes(
+        _.get(error, 'response.data.ErrorMessage', '').includes(
           'We received a request for a version-controlled resource'
         )
       );

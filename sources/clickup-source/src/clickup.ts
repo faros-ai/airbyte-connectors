@@ -1,4 +1,9 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
 import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
@@ -64,7 +69,7 @@ export class ClickUp {
         isRetryAllowed(error) // Prevents retrying unsafe errors
       );
     };
-    const retryCondition = (error: Error): boolean => {
+    const retryCondition = (error: AxiosError): boolean => {
       return isNetworkError(error) || isIdempotentRequestError(error);
     };
     const maxRetries = cfg.max_retries ?? DEFAULT_MAX_RETRIES;

@@ -29,8 +29,8 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^0.26.0",
-    "axios-retry": "^3.3.1",
+    "axios": "^1.6.2",
+    "axios-retry": "^4.0.0",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "0.0.1",
     "parse-link-header": "^2.0.0",
