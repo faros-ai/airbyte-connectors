@@ -628,9 +628,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         let stateMessage: AirbyteStateMessage = undefined;
 
         await this.handleRecordProcessingError(stats, async () => {
-          this.logger.info(`Received message: ${JSON.stringify(line)}`);
           const msg = parseAirbyteMessage(line);
-          this.logger.info(`Parsed message: ${JSON.stringify(msg)}`);
           stats.messagesRead++;
           if (msg.type === AirbyteMessageType.STATE) {
             const message = msg as AirbyteStateMessage;
