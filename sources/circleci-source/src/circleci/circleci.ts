@@ -194,27 +194,56 @@ export class CircleCI {
       );
     }
     logger.info('Pulling blocklist of projects from Faros');
-    const query: string =
-      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
+    const limit = 500;
+    const query: string = `query BlockedRepos($after: String) {
+      vcs_Repository(
+        limit: ${limit} 
+        order_by: {id: asc}
+        where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}, _and: {id: {_gt: $after}}}
+      ) {
+        name
+        id
+      }
+    }
+    `;
     const fcConfig: FarosClientConfig = {
       url: config.faros_api_url,
       apiKey: config.faros_api_key,
       useGraphQLV2: true,
     };
     const fc = new FarosClient(fcConfig);
-    const result = await fc.gql(config.faros_graph_name, query);
+    const result = await fc.gql(config.faros_graph_name, query, {after: ''});
     if (!result) {
       throw new Error(
         `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
       );
     }
-    const ignored_repo_infos = result.vcs_Repository;
-    if (!ignored_repo_infos) {
+    const all_ignored_repo_infos = [];
+    let crt_ignored_repo_infos = result.vcs_Repository;
+    if (!crt_ignored_repo_infos) {
       throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
     }
-    logger.debug(`Ignored repo infos: ${JSON.stringify(ignored_repo_infos)}`);
+    all_ignored_repo_infos.push(...crt_ignored_repo_infos);
+    while (crt_ignored_repo_infos.length == limit) {
+      const last_repo_info =
+        crt_ignored_repo_infos[crt_ignored_repo_infos.length - 1];
+      const last_repo_id = last_repo_info.id;
+      const result = await fc.gql(config.faros_graph_name, query, {
+        after: last_repo_id,
+      });
+      if (!result) {
+        throw new Error(
+          `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
+        );
+      }
+      all_ignored_repo_infos.push(...crt_ignored_repo_infos);
+      crt_ignored_repo_infos = result.vcs_Repository;
+    }
+    logger.debug(
+      `Ignored repo infos: ${JSON.stringify(all_ignored_repo_infos)}`
+    );
     const updated_blocklist: string[] = [];
-    for (const ignored_repo_info of ignored_repo_infos) {
+    for (const ignored_repo_info of all_ignored_repo_infos) {
       updated_blocklist.push(ignored_repo_info.name);
     }
     logger.debug(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
