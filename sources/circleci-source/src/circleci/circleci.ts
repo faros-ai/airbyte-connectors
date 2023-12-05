@@ -194,44 +194,21 @@ export class CircleCI {
       );
     }
     logger.info('Pulling blocked projects from Faros');
+    const query: string =
+      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
     const fcConfig: FarosClientConfig = {
       url: config.faros_api_url,
       apiKey: config.faros_api_key,
       useGraphQLV2: true,
     };
     const fc = new FarosClient(fcConfig);
-
-    const axiosV2Instance = axios.create({
-      baseURL: config.faros_api_url,
-      headers: {
-        accept: 'application/json',
-        contentType: 'application/json',
-        authorization: config.faros_api_key,
-        'x-faros-graph-version': 'v2',
-        graph: config.faros_graph_name,
-      },
-      httpsAgent: new https.Agent({rejectUnauthorized: true}),
-      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    });
-    const query: string =
-      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
-
     const result = await fc.gql(config.faros_graph_name, query);
-    logger.info(result);
-    logger.info(result.data);
-    throw new Error(`Stop.`);
-    // const result = await axiosV2Instance.post(
-    //   `/graphs/${config.faros_graph_name}/graphql`,
-    //   {query}
-    // );
-    if (result.status != 200) {
+    if (!result) {
       throw new Error(
-        `Non-200 response from endpoint 'graphql' for getting blocked repos.`
+        `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
       );
     }
-    const ignored_repo_infos = result.data?.data?.vcs_Repository;
+    const ignored_repo_infos = result.vcs_Repository;
     if (!ignored_repo_infos) {
       throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
     }
