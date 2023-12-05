@@ -83,7 +83,7 @@
       "faros_api_key": {
         "type": "string",
         "title": "Faros API Key",
-        "description": "Faros API Token for pulling data from Faros"
+        "description": "Faros API Key"
       },
       "faros_graph_name": {
         "type": "string",
