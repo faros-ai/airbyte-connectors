@@ -185,7 +185,7 @@ export class CircleCI {
     }
     if (!config.slugs_as_repos) {
       throw new Error(
-        `When pulling blocked repos from Faros, slugs_as_repos must be set to true`
+        `When pulling blocklist projects from Faros, slugs_as_repos must be set to true`
       );
     }
     if (!config.project_names.includes('*')) {
