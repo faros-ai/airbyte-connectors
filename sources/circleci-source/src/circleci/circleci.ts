@@ -180,7 +180,7 @@ export class CircleCI {
       !config.faros_graph_name
     ) {
       throw new Error(
-        `Faros API URL, Faros API Key, and Faros Graph Name are required to pull blocked projects from Faros`
+        `Faros API URL, Faros API Key, and Faros Graph Name are required to pull blocklist of projects from Faros`
       );
     }
     if (!config.slugs_as_repos) {
