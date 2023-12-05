@@ -168,7 +168,7 @@ export class CircleCI {
     return project_names;
   }
 
-  static async pullBlockedProjectsFromGraph(
+  static async pullProjectsBlocklistFromGraph(
     config: CircleCIConfig,
     logger: AirbyteLogger
   ): Promise<string[]> {
