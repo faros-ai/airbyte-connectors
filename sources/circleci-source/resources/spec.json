@@ -77,7 +77,7 @@
       "faros_api_url": {
         "type": "string",
         "title": "Faros API URL",
-        "default": "https://api.faros.ai",
+        "default": "https://prod.api.faros.ai",
         "description": "Faros API URL for pulling data from Faros graph"
       },
       "faros_api_token": {
