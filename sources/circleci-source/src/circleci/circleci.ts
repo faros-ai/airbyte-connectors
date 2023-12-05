@@ -193,7 +193,7 @@ export class CircleCI {
         `When pulling blocked repos from Faros, project_names must include wildcard "*"`
       );
     }
-    logger.info('Pulling blocked projects from Faros');
+    logger.info('Pulling blocklist of projects from Faros');
     const query: string =
       'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
     const fcConfig: FarosClientConfig = {
