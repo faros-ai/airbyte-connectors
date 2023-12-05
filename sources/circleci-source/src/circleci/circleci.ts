@@ -194,7 +194,7 @@ export class CircleCI {
       );
     }
     logger.info('Pulling blocklist of projects from Faros');
-    const limit = 500;
+    const limit = 1000;
     const query: string = `query BlockedRepos($after: String) {
       vcs_Repository(
         limit: ${limit} 
@@ -224,6 +224,7 @@ export class CircleCI {
       throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
     }
     all_ignored_repo_infos.push(...crt_ignored_repo_infos);
+    let nCalls: number = 1;
     while (crt_ignored_repo_infos.length == limit) {
       const last_repo_info =
         crt_ignored_repo_infos[crt_ignored_repo_infos.length - 1];
@@ -231,13 +232,19 @@ export class CircleCI {
       const result = await fc.gql(config.faros_graph_name, query, {
         after: last_repo_id,
       });
-      if (!result) {
+      if (!result || !result.vcs_Repository) {
         throw new Error(
           `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
         );
       }
-      all_ignored_repo_infos.push(...crt_ignored_repo_infos);
       crt_ignored_repo_infos = result.vcs_Repository;
+      all_ignored_repo_infos.push(...crt_ignored_repo_infos);
+      nCalls += 1;
+      if (nCalls > 100) {
+        throw new Error(
+          `Too many calls to Faros GraphQL to get blocked projects.`
+        );
+      }
     }
     logger.debug(
       `Ignored repo infos: ${JSON.stringify(all_ignored_repo_infos)}`
@@ -246,12 +253,7 @@ export class CircleCI {
     for (const ignored_repo_info of all_ignored_repo_infos) {
       updated_blocklist.push(ignored_repo_info.name);
     }
-    logger.debug(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
-    if (updated_blocklist.length == 1000) {
-      throw new Error(
-        "Block list reached graphql's max limit of 1000. Please reach out to Faros for support."
-      );
-    }
+    logger.info(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
     logger.info(
       `Finished pulling blocked projects from Faros' graph. Got ${updated_blocklist.length} blocked projects.`
     );

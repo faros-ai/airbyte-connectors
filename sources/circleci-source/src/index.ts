@@ -50,7 +50,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       ? config.project_blocklist
       : [];
     if (config.pull_blocklist_from_graph) {
-      blocklist = await CircleCI.pullBlockedProjectsFromGraph(
+      blocklist = await CircleCI.pullProjectsBlocklistFromGraph(
         config,
         this.logger
       );
