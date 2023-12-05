@@ -60,8 +60,14 @@ export class FilesReader {
   }
 
   async *readFiles(
+    lastModified?: number,
     logger?: AirbyteLogger
-  ): AsyncGenerator<{fileName: string; content: any}> {
+  ): AsyncGenerator<{
+    type: string;
+    fileName: string;
+    lastModified: number;
+    content: any;
+  }> {
     const s3client = new S3Client({
       region: this.config.files_source.aws_region,
       credentials: {
@@ -73,30 +79,44 @@ export class FilesReader {
     const [bucketName, ...pathParts] = this.config.files_source.path
       .replace('s3://', '')
       .split('/');
-    const res = await s3client.send(
-      new ListObjectsV2Command({
-        Bucket: bucketName,
-        Prefix: pathParts.join('/'),
-      })
-    );
-    logger.info(JSON.stringify(res.Contents));
+    let isTruncated = true;
+    let continuationToken: string;
+    while (isTruncated) {
+      const {Contents, IsTruncated, NextContinuationToken} =
+        await s3client.send(
+          new ListObjectsV2Command({
+            Bucket: bucketName,
+            Prefix: pathParts.join('/'),
+            ...(continuationToken && {ContinuationToken: continuationToken}),
+          })
+        );
 
-    for (const object of res.Contents) {
-      if (object.Key.slice(-1) === '/') continue;
-      logger?.info(`Reading file: ${object.Key}`);
+      for (const object of Contents) {
+        if (object.Key.slice(-1) === '/') continue;
+        if (lastModified && object.LastModified.getTime() <= lastModified)
+          continue;
+        logger?.info(`Reading file: ${object.Key}`);
 
-      const res = await s3client.send(
-        new GetObjectCommand({Bucket: bucketName, Key: object.Key})
-      );
-      const asString = await res.Body.transformToString();
-      logger?.info(asString);
-      let content = null;
-      try {
-        content = JSON.parse(asString);
-      } catch (e) {
-        logger?.error(`File ${object.Key} is not a JSON file`);
+        const res = await s3client.send(
+          new GetObjectCommand({Bucket: bucketName, Key: object.Key})
+        );
+        const asString = await res.Body.transformToString();
+        let content = null;
+        try {
+          content = JSON.parse(asString);
+        } catch (e) {
+          logger?.error(`File ${object.Key} is not a JSON file`);
+        }
+        yield {
+          type: 'S3',
+          fileName: object.Key,
+          lastModified: object.LastModified.getTime(),
+          content,
+        };
       }
-      yield {fileName: object.Key, content};
+
+      isTruncated = IsTruncated;
+      continuationToken = NextContinuationToken;
     }
   }
 }

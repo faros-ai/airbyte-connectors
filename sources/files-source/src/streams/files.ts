@@ -27,11 +27,34 @@ export class Files extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return undefined;
+    return 'fileName';
   }
 
-  async *readRecords(): AsyncGenerator<Dictionary<any, string>> {
+  get cursorField(): string | string[] {
+    return 'lastModified';
+  }
+
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: Dictionary<any>
+  ): AsyncGenerator<Dictionary<any, string>> {
     const files = await FilesReader.instance(this.config, this.logger);
-    yield* files.readFiles(this.logger);
+    const lastModified =
+      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
+    yield* files.readFiles(lastModified, this.logger);
+  }
+
+  getUpdatedState(
+    currentStreamState: Dictionary<any>,
+    latestRecord: Dictionary<any>
+  ): Dictionary<any> {
+    return {
+      cutoff: Math.max(
+        currentStreamState.cutoff ?? 0,
+        latestRecord.lastModified ?? 0
+      ),
+    };
   }
 }
