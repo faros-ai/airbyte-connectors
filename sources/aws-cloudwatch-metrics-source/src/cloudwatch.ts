@@ -4,7 +4,7 @@ import {
   GetMetricDataInput,
   GetMetricDataOutput,
   ListMetricsCommand,
-} from '@aws-sdk/client-cloudwatch'; // ES Modules import
+} from '@aws-sdk/client-cloudwatch';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {VError} from 'verror';
