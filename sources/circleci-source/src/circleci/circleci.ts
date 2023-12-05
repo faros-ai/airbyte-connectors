@@ -194,7 +194,7 @@ export class CircleCI {
       );
     }
     logger.info('Pulling blocklist of projects from Faros');
-    const limit = 1000;
+    const limit = 100;
     const query: string = `query BlockedRepos($after: String) {
       vcs_Repository(
         limit: ${limit} 
@@ -221,7 +221,6 @@ export class CircleCI {
     const all_ignored_repo_infos = [];
     let crt_ignored_repo_infos = result.vcs_Repository;
     all_ignored_repo_infos.push(...crt_ignored_repo_infos);
-    let nCalls: number = 1;
     while (crt_ignored_repo_infos.length == limit) {
       const last_repo_info =
         crt_ignored_repo_infos[crt_ignored_repo_infos.length - 1];
@@ -236,12 +235,6 @@ export class CircleCI {
       }
       crt_ignored_repo_infos = result.vcs_Repository;
       all_ignored_repo_infos.push(...crt_ignored_repo_infos);
-      nCalls += 1;
-      if (nCalls > 100) {
-        throw new Error(
-          `Too many calls to Faros GraphQL to get blocked projects.`
-        );
-      }
     }
     logger.debug(
       `Ignored repo infos: ${JSON.stringify(all_ignored_repo_infos)}`
