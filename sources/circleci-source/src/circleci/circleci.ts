@@ -5,6 +5,7 @@ import axios, {
   AxiosResponse,
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {FarosClient, FarosClientConfig} from 'faros-js-client';
 import https from 'https';
 import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -193,6 +194,13 @@ export class CircleCI {
       );
     }
     logger.info('Pulling blocked projects from Faros');
+    const fcConfig: FarosClientConfig = {
+      url: config.faros_api_url,
+      apiKey: config.faros_api_key,
+      useGraphQLV2: true,
+    };
+    const fc = new FarosClient(fcConfig);
+
     const axiosV2Instance = axios.create({
       baseURL: config.faros_api_url,
       headers: {
@@ -209,10 +217,15 @@ export class CircleCI {
     });
     const query: string =
       'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
-    const result = await axiosV2Instance.post(
-      `/graphs/${config.faros_graph_name}/graphql`,
-      {query}
-    );
+
+    const result = await fc.gql(config.faros_graph_name, query);
+    logger.info(result);
+    logger.info(result.data);
+    throw new Error(`Stop.`);
+    // const result = await axiosV2Instance.post(
+    //   `/graphs/${config.faros_graph_name}/graphql`,
+    //   {query}
+    // );
     if (result.status != 200) {
       throw new Error(
         `Non-200 response from endpoint 'graphql' for getting blocked repos.`
