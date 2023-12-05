@@ -190,7 +190,7 @@ export class CircleCI {
     }
     if (!config.project_names.includes('*')) {
       throw new Error(
-        `When pulling blocked repos from Faros, project_names must include wildcard "*"`
+        `When pulling blocklist of projects from Faros, project_names must include wildcard "*"`
       );
     }
     logger.info('Pulling blocklist of projects from Faros');
