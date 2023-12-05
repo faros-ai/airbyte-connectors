@@ -70,25 +70,24 @@
       },
       "pull_block_list_from_graph": {
         "type": "boolean",
-        "title": "Pull Block List from Faros Graph",
+        "title": "Pull Projects Blocklist from Faros Graph",
         "default": false,
-        "description": "Boolean flag whether block list from Faros graph"
+        "description": "Should pull projects blocklist from Faros"
       },
       "faros_api_url": {
         "type": "string",
         "title": "Faros API URL",
         "default": "https://prod.api.faros.ai",
-        "description": "Faros API URL for pulling data from Faros graph"
+        "description": "Faros API URL"
       },
-      "faros_api_token": {
+      "faros_api_key": {
         "type": "string",
-        "title": "Faros API Token",
-        "description": "Faros API Token for pulling data from Faros graph"
+        "title": "Faros API Key",
+        "description": "Faros API Token for pulling data from Faros"
       },
       "faros_graph_name": {
         "type": "string",
-        "title": "Faros Graph",
-        "description": "Faros Graph name for pulling data from Faros graph"
+        "title": "Faros Graph"
       }
     }
   }

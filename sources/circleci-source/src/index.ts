@@ -46,11 +46,11 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let block_list: string[] = config.project_block_list
-      ? config.project_block_list
+    let blocklist: string[] = config.project_blocklist
+      ? config.project_blocklist
       : [];
-    if (config.pull_block_list_from_graph) {
-      block_list = await CircleCI.pullBlockedProjectsFromGraph(
+    if (config.pull_blocklist_from_graph) {
+      blocklist = await CircleCI.pullBlockedProjectsFromGraph(
         config,
         this.logger
       );
@@ -60,13 +60,13 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       filtered_project_names = await CircleCI.getFilteredProjectsFromRepoNames(
         config,
         this.logger,
-        block_list
+        blocklist
       );
     } else {
       filtered_project_names = await CircleCI.getFilteredProjects(
         config,
         this.logger,
-        block_list
+        blocklist
       );
     }
 
