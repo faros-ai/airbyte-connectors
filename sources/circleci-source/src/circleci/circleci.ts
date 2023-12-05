@@ -182,6 +182,17 @@ export class CircleCI {
         `Faros API URL, Faros API Token, and Faros Graph Name are required to pull blocked projects from graph`
       );
     }
+    if (!config.slugs_as_repos) {
+      throw new Error(
+        `When pulling blocked repos from Faros graph, slugs_as_repos must be set to true`
+      );
+    }
+    if (!config.project_names.includes('*')) {
+      throw new Error(
+        `When pulling blocked repos from Faros graph, project_names must include wildcard "*"`
+      );
+    }
+    logger.info("Pulling blocked projects from Faros' graph");
     const axiosV2Instance = axios.create({
       baseURL: config.faros_api_url,
       headers: {
@@ -197,7 +208,7 @@ export class CircleCI {
       maxBodyLength: Infinity,
     });
     const query: string =
-      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name  farosOptions { inclusionCategory } } }';
+      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name } }';
     const result = await axiosV2Instance.post(
       `/graphs/${config.faros_graph_name}/graphql`,
       {query}
@@ -222,6 +233,9 @@ export class CircleCI {
         "Block list reached graphql's max limit of 1000. Please reach out to Faros for support."
       );
     }
+    logger.info(
+      `Finished pulling blocked projects from Faros' graph. Got ${updated_block_list.length} blocked projects.`
+    );
     return updated_block_list;
   }
 
