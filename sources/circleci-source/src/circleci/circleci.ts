@@ -20,7 +20,7 @@ const DEFAULT_REQUEST_TIMEOUT = 60000;
 export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
-  readonly project_block_list?: ReadonlyArray<string>;
+  readonly project_block_list?: string[];
   // Applying project_block_list to project_names results in filtered_project_names
   filtered_project_names?: string[];
   readonly reject_unauthorized: boolean;
@@ -29,6 +29,10 @@ export interface CircleCIConfig {
   readonly url?: string;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly pull_block_list_from_graph?: boolean;
+  readonly faros_api_url?: string;
+  readonly faros_api_token?: string;
+  readonly faros_graph_name?: string;
 }
 
 export class CircleCI {
@@ -131,7 +135,8 @@ export class CircleCI {
 
   static async getFilteredProjectsFromRepoNames(
     config: CircleCIConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    block_list: string[] = []
   ): Promise<string[]> {
     // Note the project names are not full slugs but only the repo names,
     // e.g. repo-name rather than vcs-slug/org-name/repo-name
@@ -152,7 +157,7 @@ export class CircleCI {
     // We already have all the repo names stored as repoNames
     const res: string[] = [];
     for (const project_name of repoNames) {
-      if (!config.project_block_list?.includes(project_name)) {
+      if (!block_list.includes(project_name)) {
         res.push(project_name);
       }
     }
@@ -162,19 +167,50 @@ export class CircleCI {
     return project_names;
   }
 
-  static async getFilteredProjects(
+  static async pullBlockedProjectsFromGraph(
     config: CircleCIConfig,
     logger: AirbyteLogger
   ): Promise<string[]> {
+    // We check if the user has provided the necessary information to pull blocked
+    // projects from graph
+    if (
+      !config.faros_api_url ||
+      !config.faros_api_token ||
+      !config.faros_graph_name
+    ) {
+      throw new Error(
+        `Faros API URL, Faros API Token, and Faros Graph Name are required to pull blocked projects from graph`
+      );
+    }
+    const axiosV2Instance = axios.create({
+      baseURL: config.faros_api_url,
+      headers: {
+        accept: 'application/json',
+        'Circle-Token': config.token,
+      },
+      httpsAgent: new https.Agent({rejectUnauthorized: true}),
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      // CircleCI responses can be very large hence the infinity
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+    return [];
+  }
+
+  static async getFilteredProjects(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    block_list: string[] = []
+  ): Promise<string[]> {
     // Note the project names are not repo names but also include the slug,
-    // e.g.  vcs-slug/org-name/repo-name rather than repo-name
+    // e.g.  `vcs-slug/org-name/repo-name` rather than `repo-name`
     if (!config.project_names.includes('*')) {
       return Array.from(config.project_names);
     }
     const project_names = await this.getWildCardProjectNames(config, logger);
     const res: string[] = [];
     for (const project_name of project_names) {
-      if (!config.project_block_list?.includes(project_name)) {
+      if (!block_list.includes(project_name)) {
         res.push(project_name);
       }
     }
