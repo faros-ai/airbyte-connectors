@@ -211,12 +211,17 @@ export class CircleCI {
     if (!ignored_repo_infos) {
       throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
     }
-    logger.info(`Ignored repo infos: ${JSON.stringify(ignored_repo_infos)}`);
+    logger.debug(`Ignored repo infos: ${JSON.stringify(ignored_repo_infos)}`);
     const updated_block_list: string[] = [];
     for (const ignored_repo_info of ignored_repo_infos) {
       updated_block_list.push(ignored_repo_info.name);
     }
-    logger.info(`Updated block list: ${JSON.stringify(updated_block_list)}`);
+    logger.debug(`Updated block list: ${JSON.stringify(updated_block_list)}`);
+    if (updated_block_list.length == 1000) {
+      throw new Error(
+        "Block list reached graphql's max limit of 1000. Please reach out to Faros for support."
+      );
+    }
     return updated_block_list;
   }
 
