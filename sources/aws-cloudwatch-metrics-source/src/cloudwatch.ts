@@ -21,6 +21,12 @@ export interface NamedQuery {
   query: string;
 }
 
+export interface DataPoint {
+  timestamp: string;
+  value: number;
+  label: string;
+}
+
 export interface Config {
   aws_region: string;
   credentials: {
@@ -109,7 +115,7 @@ export class CloudWatch {
     query: string,
     after?: string,
     logger?: AirbyteLogger
-  ): AsyncGenerator<any> {
+  ): AsyncGenerator<DataPoint> {
     const params: GetMetricDataInput = {
       StartTime: new Date(after ?? this.startDate),
       EndTime: new Date(this.endDate),
@@ -130,6 +136,7 @@ export class CloudWatch {
             label: result.Label,
           };
         }
+        logger?.info(`Fetched ${result.Timestamps?.length} data points`);
       }
 
       params.NextToken = response?.NextToken;

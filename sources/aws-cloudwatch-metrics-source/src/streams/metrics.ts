@@ -8,9 +8,16 @@ import {
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {CloudWatch, Config, MIN_DATE, NamedQuery} from '../cloudwatch';
+import {
+  CloudWatch,
+  Config,
+  DataPoint,
+  MIN_DATE,
+  NamedQuery,
+} from '../cloudwatch';
 
 const DEFAULT_STREAM_NAME = 'metrics';
+
 type StreamState = {
   [queryName: string]: {[queryHash: string]: {timestamp: string}};
 };
@@ -57,7 +64,7 @@ export class Metrics extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<Dictionary<any>> {
+  ): AsyncGenerator<{queryName: string} & DataPoint> {
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
 
     const timestamp = _.get(this.state, [
