@@ -38,7 +38,7 @@ describe('index', () => {
   const sourceConfig: CircleCIConfig = {
     token: '',
     project_names: ['test-project'],
-    project_block_list: [],
+    project_blocklist: [],
     slugs_as_repos: true,
     cutoff_days: 90,
     reject_unauthorized: true,
