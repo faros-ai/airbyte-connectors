@@ -68,7 +68,7 @@
         "description": "The max number of retries before giving up on retrying requests to CircleCI API",
         "default": 3
       },
-      "pull_block_list_from_graph": {
+      "pull_blocklist_from_graph": {
         "type": "boolean",
         "title": "Pull Projects Blocklist from Faros Graph",
         "default": false,
@@ -83,7 +83,8 @@
       "faros_api_key": {
         "type": "string",
         "title": "Faros API Key",
-        "description": "Faros API Key"
+        "description": "Faros API Key",
+        "airbyte_secret": true
       },
       "faros_graph_name": {
         "type": "string",
