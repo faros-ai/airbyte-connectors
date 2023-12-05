@@ -1,0 +1,86 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CloudWatch Spec",
+    "type": "object",
+    "required": [
+      "aws_region",
+      "credentials",
+      "queries"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "aws_region": {
+        "type": "string",
+        "title": "AWS Region",
+        "description": "The AWS region for the CloudWatch service."
+      },
+      "credentials": {
+        "type": "object",
+        "required": [
+          "aws_access_key_id",
+          "aws_secret_access_key"
+        ],
+        "properties": {
+          "aws_access_key_id": {
+            "type": "string",
+            "title": "AWS Access Key ID",
+            "description": "Your AWS access key ID."
+          },
+          "aws_secret_access_key": {
+            "type": "string",
+            "title": "AWS Secret Access Key",
+            "description": "Your AWS secret access key."
+          },
+          "aws_session_token": {
+            "type": "string",
+            "title": "AWS Session Token",
+            "description": "Your AWS session token, if using temporary credentials."
+          }
+        }
+      },
+      "queries": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "query"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Query Name",
+              "description": "A unique name for the query."
+            },
+            "query": {
+              "type": "string",
+              "title": "Query",
+              "description": "The CloudWatch query in JSON format."
+            }
+          }
+        },
+        "title": "Queries",
+        "description": "An array of named queries to execute against CloudWatch."
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of records to fetch in each request.",
+        "default": 100
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Number of days before the current date to start fetching data."
+      },
+      "stream_name": {
+        "title": "Stream Name",
+        "description": "Name of the data stream",
+        "type": "string",
+        "default": "metrics",
+        "examples": [
+          "aws_billing"
+        ]
+      }
+    }
+  }
+}
