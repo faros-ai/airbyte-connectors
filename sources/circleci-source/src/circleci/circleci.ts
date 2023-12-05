@@ -197,14 +197,27 @@ export class CircleCI {
       maxBodyLength: Infinity,
     });
     const query: string =
-      'query BlockedRepos { vcs_Repository { included name } }';
+      'query BlockedRepos { vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) { name  farosOptions { inclusionCategory } } }';
     const result = await axiosV2Instance.post(
       `/graphs/${config.faros_graph_name}/graphql`,
       {query}
     );
-    logger.info(`Blocked repos result: ${JSON.stringify(result.data)}`);
-    throw new Error(`Not implemented yet`);
-    return [];
+    if (result.status != 200) {
+      throw new Error(
+        `Non-200 response from endpoint 'graphql' for getting blocked repos.`
+      );
+    }
+    const ignored_repo_infos = result.data?.data?.vcs_Repository;
+    if (!ignored_repo_infos) {
+      throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
+    }
+    logger.info(`Ignored repo infos: ${JSON.stringify(ignored_repo_infos)}`);
+    const updated_block_list: string[] = [];
+    for (const ignored_repo_info of ignored_repo_infos) {
+      updated_block_list.push(ignored_repo_info.name);
+    }
+    logger.info(`Updated block list: ${JSON.stringify(updated_block_list)}`);
+    return updated_block_list;
   }
 
   static async getFilteredProjects(
