@@ -213,16 +213,13 @@ export class CircleCI {
     };
     const fc = new FarosClient(fcConfig);
     const result = await fc.gql(config.faros_graph_name, query, {after: ''});
-    if (!result) {
+    if (!result?.vcs_Repository) {
       throw new Error(
         `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
       );
     }
     const all_ignored_repo_infos = [];
     let crt_ignored_repo_infos = result.vcs_Repository;
-    if (!crt_ignored_repo_infos) {
-      throw new Error(`Failed to get ignored repos from '/graphql' endpoint.`);
-    }
     all_ignored_repo_infos.push(...crt_ignored_repo_infos);
     let nCalls: number = 1;
     while (crt_ignored_repo_infos.length == limit) {
@@ -232,7 +229,7 @@ export class CircleCI {
       const result = await fc.gql(config.faros_graph_name, query, {
         after: last_repo_id,
       });
-      if (!result || !result.vcs_Repository) {
+      if (!result?.vcs_Repository) {
         throw new Error(
           `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
         );
@@ -253,9 +250,9 @@ export class CircleCI {
     for (const ignored_repo_info of all_ignored_repo_infos) {
       updated_blocklist.push(ignored_repo_info.name);
     }
-    logger.info(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
+    logger.debug(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
     logger.info(
-      `Finished pulling blocked projects from Faros' graph. Got ${updated_blocklist.length} blocked projects.`
+      `Finished pulling ${updated_blocklist.length} blocked projects from Faros' graph`
     );
     return updated_blocklist;
   }
