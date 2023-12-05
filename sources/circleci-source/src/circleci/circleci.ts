@@ -186,14 +186,24 @@ export class CircleCI {
       baseURL: config.faros_api_url,
       headers: {
         accept: 'application/json',
-        'Circle-Token': config.token,
+        contentType: 'application/json',
+        authorization: config.faros_api_token,
+        'x-faros-graph-version': 'v2',
+        graph: config.faros_graph_name,
       },
       httpsAgent: new https.Agent({rejectUnauthorized: true}),
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-      // CircleCI responses can be very large hence the infinity
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
     });
+    const query: string =
+      'query BlockedRepos { vcs_Repository { included name } }';
+    const result = await axiosV2Instance.post(
+      `/graphs/${config.faros_graph_name}/graphql`,
+      {query}
+    );
+    logger.info(`Blocked repos result: ${JSON.stringify(result.data)}`);
+    throw new Error(`Not implemented yet`);
     return [];
   }
 
