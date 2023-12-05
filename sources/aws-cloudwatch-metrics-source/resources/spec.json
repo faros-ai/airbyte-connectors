@@ -19,7 +19,7 @@
       "credentials": {
         "type": "object",
         "title": "Credentials",
-        "description": "AWS credentials for the CloudWatch service. cloudwatch:ListMetrics and cloudwatch:GetMetricData permissions are required.",
+        "description": "AWS credentials for the CloudWatch service. cloudwatch:ListMetrics, cloudwatch:GetMetricData and cloudwatch:GetMetricStatistics permissions are required.",
         "required": [
           "aws_access_key_id",
           "aws_secret_access_key"
