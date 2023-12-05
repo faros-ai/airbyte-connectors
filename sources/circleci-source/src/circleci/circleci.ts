@@ -20,7 +20,7 @@ const DEFAULT_REQUEST_TIMEOUT = 60000;
 export interface CircleCIConfig {
   readonly token: string;
   readonly project_names: ReadonlyArray<string>;
-  readonly project_block_list?: ReadonlyArray<string>;
+  readonly project_block_list?: string[];
   // Applying project_block_list to project_names results in filtered_project_names
   filtered_project_names?: string[];
   readonly reject_unauthorized: boolean;
