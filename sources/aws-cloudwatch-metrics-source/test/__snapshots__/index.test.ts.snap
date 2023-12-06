@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index metrics full 1`] = `
+Array [
+  Object {
+    "label": "CPUUtilization",
+    "queryName": "ExampleQuery1",
+    "timestamp": "2021-01-01T00:00:00.000Z",
+    "value": 0.5,
+  },
+  Object {
+    "label": "CPUUtilization",
+    "queryName": "ExampleQuery1",
+    "timestamp": "2021-01-02T00:00:00.000Z",
+    "value": 0.6,
+  },
+]
+`;
+
+exports[`index metrics incremental 1`] = `
+Array [
+  Object {
+    "label": "CPUUtilization",
+    "queryName": "ExampleQuery1",
+    "timestamp": "2021-01-01T00:00:00.000Z",
+    "value": 0.5,
+  },
+  Object {
+    "label": "CPUUtilization",
+    "queryName": "ExampleQuery1",
+    "timestamp": "2021-01-02T00:00:00.000Z",
+    "value": 0.6,
+  },
+]
+`;

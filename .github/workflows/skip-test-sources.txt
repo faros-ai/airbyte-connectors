@@ -1,5 +1,6 @@
 agileaccelerator-source
 asana-source
+aws-cloudwatch-metrics-source
 azure-repos-source
 azure-workitems-source
 azurepipeline-source
