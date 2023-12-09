@@ -6,9 +6,18 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {FilesConfig, FilesReader} from '../files-reader';
+import {
+  FileProcessingStrategy,
+  FilesConfig,
+  FilesReader,
+  OutputRecord,
+} from '../files-reader';
 
 const DEFAULT_STREAM_NAME = 'files';
+
+type StreamState = {
+  lastFileName: string;
+};
 
 export class Files extends AirbyteStreamBase {
   constructor(
@@ -27,34 +36,42 @@ export class Files extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'fileName';
+    return undefined;
   }
 
   get cursorField(): string | string[] {
-    return 'lastModified';
+    return 'fileName';
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Dictionary<any, string>> {
+    streamState?: StreamState
+  ): AsyncGenerator<OutputRecord> {
     const files = await FilesReader.instance(this.config, this.logger);
-    const lastModified =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-    yield* files.readFiles(lastModified, this.logger);
+    const lastFileName =
+      syncMode === SyncMode.INCREMENTAL &&
+      this.config.files_source?.file_processing_strategy ===
+        FileProcessingStrategy.IMMUTABLE_LEXICOGRAPHICAL_ORDER
+        ? streamState?.lastFileName
+        : undefined;
+    yield* files.readFiles(this.logger, lastFileName);
   }
 
   getUpdatedState(
-    currentStreamState: Dictionary<any>,
-    latestRecord: Dictionary<any>
-  ): Dictionary<any> {
+    currentStreamState: StreamState,
+    latestRecord: OutputRecord
+  ): StreamState {
+    if (!currentStreamState?.lastFileName) {
+      return {lastFileName: latestRecord.fileName};
+    }
+
     return {
-      cutoff: Math.max(
-        currentStreamState.cutoff ?? 0,
-        latestRecord.lastModified ?? 0
-      ),
+      lastFileName:
+        currentStreamState.lastFileName > latestRecord.fileName
+          ? currentStreamState.lastFileName
+          : latestRecord.fileName,
     };
   }
 }

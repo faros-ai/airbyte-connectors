@@ -6,14 +6,27 @@ import {
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
+export enum FileProcessingStrategy {
+  PROCESS_ALL_FILES = 'PROCESS_ALL_FILES',
+  IMMUTABLE_LEXICOGRAPHICAL_ORDER = 'IMMUTABLE_LEXICOGRAPHICAL_ORDER',
+}
+
 type S3 = {
-  type: 'S3';
+  source_type: 'S3';
   path: string;
   aws_region: string;
   aws_access_key_id: string;
   aws_secret_access_key: string;
   aws_session_token?: string;
+  file_processing_strategy?: FileProcessingStrategy;
 };
+
+export interface OutputRecord {
+  type: string;
+  fileName: string;
+  lastModified: number;
+  content: string;
+}
 
 type FilesSource = S3;
 
@@ -33,7 +46,7 @@ export class FilesReader {
   ): Promise<FilesReader> {
     if (FilesReader.filesReader) return FilesReader.filesReader;
 
-    switch (config.files_source?.type) {
+    switch (config.files_source?.source_type) {
       case 'S3': {
         if (
           !config.files_source.path ||
@@ -52,6 +65,18 @@ export class FilesReader {
         if (!config.files_source.aws_secret_access_key) {
           throw new VError('Please specify AWS secret access key');
         }
+        if (
+          config.files_source?.file_processing_strategy &&
+          !Object.values(FileProcessingStrategy).includes(
+            config.files_source?.file_processing_strategy
+          )
+        ) {
+          throw new VError(
+            `Please specify a valid file processing strategy. Valid values are: ${Object.values(
+              FileProcessingStrategy
+            ).join(', ')}`
+          );
+        }
         return new FilesReader(config);
       }
       default:
@@ -60,14 +85,9 @@ export class FilesReader {
   }
 
   async *readFiles(
-    lastModified?: number,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<{
-    type: string;
-    fileName: string;
-    lastModified: number;
-    content: any;
-  }> {
+    logger?: AirbyteLogger,
+    lastFileName?: string
+  ): AsyncGenerator<OutputRecord> {
     const s3client = new S3Client({
       region: this.config.files_source.aws_region,
       credentials: {
@@ -88,25 +108,18 @@ export class FilesReader {
             Bucket: bucketName,
             Prefix: pathParts.join('/'),
             ...(continuationToken && {ContinuationToken: continuationToken}),
+            ...(lastFileName && {StartAfter: lastFileName}),
           })
         );
 
-      for (const object of Contents) {
+      for (const object of Contents || []) {
         if (object.Key.slice(-1) === '/') continue;
-        if (lastModified && object.LastModified.getTime() <= lastModified)
-          continue;
         logger?.info(`Reading file: ${object.Key}`);
 
         const res = await s3client.send(
           new GetObjectCommand({Bucket: bucketName, Key: object.Key})
         );
-        const asString = await res.Body.transformToString();
-        let content = null;
-        try {
-          content = JSON.parse(asString);
-        } catch (e) {
-          logger?.error(`File ${object.Key} is not a JSON file`);
-        }
+        const content = await res.Body.transformToString();
         yield {
           type: 'S3',
           fileName: object.Key,

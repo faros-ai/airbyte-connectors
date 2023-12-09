@@ -50,7 +50,7 @@ describe('index', () => {
     testConnectionWithExpectedError(
       {
         files_source: {
-          type: 'S3',
+          source_type: 'S3',
           aws_region: 'your-aws-region',
           aws_access_key_id: 'your-access-key-id',
           aws_secret_access_key: 'your-secret-access-key',
@@ -63,7 +63,7 @@ describe('index', () => {
     testConnectionWithExpectedError(
       {
         files_source: {
-          type: 'S3',
+          source_type: 'S3',
           path: 'your-bucket/your-path',
           aws_region: 'your-aws-region',
           aws_access_key_id: 'your-access-key-id',
@@ -77,7 +77,7 @@ describe('index', () => {
     testConnectionWithExpectedError(
       {
         files_source: {
-          type: 'S3',
+          source_type: 'S3',
           path: 's3://your-bucket/your-path',
           aws_access_key_id: 'your-access-key-id',
           aws_secret_access_key: 'your-secret-access-key',
@@ -90,7 +90,7 @@ describe('index', () => {
     testConnectionWithExpectedError(
       {
         files_source: {
-          type: 'S3',
+          source_type: 'S3',
           path: 's3://your-bucket/your-path',
           aws_region: 'your-aws-region',
           aws_secret_access_key: 'your-secret-access-key',
@@ -103,7 +103,7 @@ describe('index', () => {
     testConnectionWithExpectedError(
       {
         files_source: {
-          type: 'S3',
+          source_type: 'S3',
           path: 's3://your-bucket/your-path',
           aws_region: 'your-aws-region',
           aws_access_key_id: 'your-access-key-id',
