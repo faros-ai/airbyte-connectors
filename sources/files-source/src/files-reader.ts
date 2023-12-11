@@ -77,7 +77,17 @@ export class FilesReader {
             ).join(', ')}`
           );
         }
-        return new FilesReader(config);
+        const s3Reader = new FilesReader(config);
+        const s3Client = s3Reader.getS3Client();
+        const {bucketName, prefix} = s3Reader.parseS3Path();
+        await s3Client.send(
+          new ListObjectsV2Command({
+            Bucket: bucketName,
+            Prefix: prefix,
+          })
+        );
+        FilesReader.filesReader = s3Reader;
+        return FilesReader.filesReader;
       }
       default:
         throw new VError('Please configure a files source');
@@ -88,17 +98,8 @@ export class FilesReader {
     logger?: AirbyteLogger,
     lastFileName?: string
   ): AsyncGenerator<OutputRecord> {
-    const s3client = new S3Client({
-      region: this.config.files_source.aws_region,
-      credentials: {
-        accessKeyId: this.config.files_source.aws_access_key_id,
-        secretAccessKey: this.config.files_source.aws_secret_access_key,
-        sessionToken: this.config.files_source.aws_session_token,
-      },
-    });
-    const [bucketName, ...pathParts] = this.config.files_source.path
-      .replace('s3://', '')
-      .split('/');
+    const s3client = this.getS3Client();
+    const {bucketName, prefix} = this.parseS3Path();
     let isTruncated = true;
     let continuationToken: string;
     while (isTruncated) {
@@ -106,7 +107,7 @@ export class FilesReader {
         await s3client.send(
           new ListObjectsV2Command({
             Bucket: bucketName,
-            Prefix: pathParts.join('/'),
+            Prefix: prefix,
             ...(continuationToken && {ContinuationToken: continuationToken}),
             ...(lastFileName && {StartAfter: lastFileName}),
           })
@@ -131,5 +132,23 @@ export class FilesReader {
       isTruncated = IsTruncated;
       continuationToken = NextContinuationToken;
     }
+  }
+
+  getS3Client(): S3Client {
+    return new S3Client({
+      region: this.config.files_source.aws_region,
+      credentials: {
+        accessKeyId: this.config.files_source.aws_access_key_id,
+        secretAccessKey: this.config.files_source.aws_secret_access_key,
+        sessionToken: this.config.files_source.aws_session_token,
+      },
+    });
+  }
+
+  parseS3Path(): {bucketName: string; prefix: string} {
+    const [bucketName, ...pathParts] = this.config.files_source.path
+      .replace('s3://', '')
+      .split('/');
+    return {bucketName, prefix: pathParts.join('/')};
   }
 }
