@@ -53,7 +53,7 @@
               "aws_access_key_id": {
                 "order": 2,
                 "title": "AWS Access Key Id",
-                "description": "AWS Access Key Id",
+                "description": "AWS Access Key Id (required IAM permissions: s3:ListBucket, s3:GetObject)",
                 "type": "string",
                 "airbyte_secret": true
               },
