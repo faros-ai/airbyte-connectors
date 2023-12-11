@@ -35,10 +35,10 @@ export interface FilesConfig extends AirbyteConfig {
   readonly stream_name?: string;
 }
 
-export class FilesReader {
+export abstract class FilesReader {
   private static filesReader: FilesReader = null;
 
-  constructor(private readonly config: FilesConfig) {}
+  protected constructor(readonly config: FilesConfig) {}
 
   static async instance(
     config: FilesConfig,
@@ -48,45 +48,7 @@ export class FilesReader {
 
     switch (config.files_source?.source_type) {
       case 'S3': {
-        if (
-          !config.files_source.path ||
-          !config.files_source.path.startsWith('s3://')
-        ) {
-          throw new VError(
-            'Please specify S3 bucket path in s3://bucket/path format'
-          );
-        }
-        if (!config.files_source.aws_region) {
-          throw new VError('Please specify AWS region');
-        }
-        if (!config.files_source.aws_access_key_id) {
-          throw new VError('Please specify AWS access key ID');
-        }
-        if (!config.files_source.aws_secret_access_key) {
-          throw new VError('Please specify AWS secret access key');
-        }
-        if (
-          config.files_source?.file_processing_strategy &&
-          !Object.values(FileProcessingStrategy).includes(
-            config.files_source?.file_processing_strategy
-          )
-        ) {
-          throw new VError(
-            `Please specify a valid file processing strategy. Valid values are: ${Object.values(
-              FileProcessingStrategy
-            ).join(', ')}`
-          );
-        }
-        const s3Reader = new FilesReader(config);
-        const s3Client = s3Reader.getS3Client();
-        const {bucketName, prefix} = s3Reader.parseS3Path();
-        await s3Client.send(
-          new ListObjectsV2Command({
-            Bucket: bucketName,
-            Prefix: prefix,
-          })
-        );
-        FilesReader.filesReader = s3Reader;
+        FilesReader.filesReader = await S3Reader.instance(config, logger);
         return FilesReader.filesReader;
       }
       default:
@@ -94,20 +56,81 @@ export class FilesReader {
     }
   }
 
+  abstract readFiles(
+    logger?: AirbyteLogger,
+    lastFileName?: string
+  ): AsyncGenerator<OutputRecord>;
+
+  abstract checkConnection(): Promise<void>;
+}
+
+export class S3Reader {
+  constructor(
+    readonly config: FilesConfig,
+    private readonly s3Client: S3Client,
+    private readonly bucketName: string,
+    private readonly prefix: string
+  ) {}
+
+  static async instance(
+    config: FilesConfig,
+    logger?: AirbyteLogger
+  ): Promise<FilesReader> {
+    if (
+      !config.files_source.path ||
+      !config.files_source.path.startsWith('s3://')
+    ) {
+      throw new VError(
+        'Please specify S3 bucket path in s3://bucket/path format'
+      );
+    }
+    if (!config.files_source.aws_region) {
+      throw new VError('Please specify AWS region');
+    }
+    if (!config.files_source.aws_access_key_id) {
+      throw new VError('Please specify AWS access key ID');
+    }
+    if (!config.files_source.aws_secret_access_key) {
+      throw new VError('Please specify AWS secret access key');
+    }
+    if (
+      config.files_source?.file_processing_strategy &&
+      !Object.values(FileProcessingStrategy).includes(
+        config.files_source?.file_processing_strategy
+      )
+    ) {
+      throw new VError(
+        `Please specify a valid file processing strategy. Valid values are: ${Object.values(
+          FileProcessingStrategy
+        ).join(', ')}`
+      );
+    }
+    const s3Client = S3Reader.getS3Client(config);
+    const {bucketName, prefix} = S3Reader.parseS3Path(config);
+    return new S3Reader(config, s3Client, bucketName, prefix);
+  }
+
+  async checkConnection(): Promise<void> {
+    await this.s3Client.send(
+      new ListObjectsV2Command({
+        Bucket: this.bucketName,
+        Prefix: this.prefix,
+      })
+    );
+  }
+
   async *readFiles(
     logger?: AirbyteLogger,
     lastFileName?: string
   ): AsyncGenerator<OutputRecord> {
-    const s3client = this.getS3Client();
-    const {bucketName, prefix} = this.parseS3Path();
     let isTruncated = true;
     let continuationToken: string;
     while (isTruncated) {
       const {Contents, IsTruncated, NextContinuationToken} =
-        await s3client.send(
+        await this.s3Client.send(
           new ListObjectsV2Command({
-            Bucket: bucketName,
-            Prefix: prefix,
+            Bucket: this.bucketName,
+            Prefix: this.prefix,
             ...(continuationToken && {ContinuationToken: continuationToken}),
             ...(lastFileName && {StartAfter: lastFileName}),
           })
@@ -117,8 +140,8 @@ export class FilesReader {
         if (object.Key.slice(-1) === '/') continue;
         logger?.info(`Reading file: ${object.Key}`);
 
-        const res = await s3client.send(
-          new GetObjectCommand({Bucket: bucketName, Key: object.Key})
+        const res = await this.s3Client.send(
+          new GetObjectCommand({Bucket: this.bucketName, Key: object.Key})
         );
         const content = await res.Body.transformToString();
         yield {
@@ -134,19 +157,22 @@ export class FilesReader {
     }
   }
 
-  getS3Client(): S3Client {
+  private static getS3Client(config: FilesConfig): S3Client {
     return new S3Client({
-      region: this.config.files_source.aws_region,
+      region: config.files_source.aws_region,
       credentials: {
-        accessKeyId: this.config.files_source.aws_access_key_id,
-        secretAccessKey: this.config.files_source.aws_secret_access_key,
-        sessionToken: this.config.files_source.aws_session_token,
+        accessKeyId: config.files_source.aws_access_key_id,
+        secretAccessKey: config.files_source.aws_secret_access_key,
+        sessionToken: config.files_source.aws_session_token,
       },
     });
   }
 
-  parseS3Path(): {bucketName: string; prefix: string} {
-    const [bucketName, ...pathParts] = this.config.files_source.path
+  private static parseS3Path(config: FilesConfig): {
+    bucketName: string;
+    prefix: string;
+  } {
+    const [bucketName, ...pathParts] = config.files_source.path
       .replace('s3://', '')
       .split('/');
     return {bucketName, prefix: pathParts.join('/')};

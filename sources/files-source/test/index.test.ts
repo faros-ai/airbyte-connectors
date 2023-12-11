@@ -1,7 +1,13 @@
-import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteSpec,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
+import {FilesConfig, S3Reader} from '../lib/files-reader';
 import {FilesReader} from '../src/files-reader';
 import * as sut from '../src/index';
 
@@ -15,6 +21,16 @@ describe('index', () => {
       : AirbyteLogLevel.INFO
   );
 
+  const validConfig: FilesConfig = {
+    files_source: {
+      source_type: 'S3',
+      path: 's3://your-bucket/your-path',
+      aws_region: 'your-aws-region',
+      aws_access_key_id: 'your-access-key-id',
+      aws_secret_access_key: 'your-secret-access-key',
+    },
+  };
+
   beforeEach(() => {
     FilesReader.instance = files;
   });
@@ -23,16 +39,15 @@ describe('index', () => {
     return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
   }
 
+  const source = new sut.FilesSource(logger);
+
   test('spec', async () => {
-    const source = new sut.FilesSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
-  test('check connection', async () => {
-    const source = new sut.FilesSource(logger);
-
+  test('check connection - invalid', async () => {
     async function testConnectionWithExpectedError(
       inputObject: any,
       expectedErrorMessage: string
@@ -111,5 +126,70 @@ describe('index', () => {
       },
       'Please specify AWS secret access key'
     );
+  });
+
+  test('check connection', async () => {
+    FilesReader.instance = jest.fn().mockImplementation(() => {
+      return new S3Reader(
+        validConfig,
+        {
+          send: jest.fn(),
+        } as any,
+        'your-bucket',
+        'your-path'
+      );
+    });
+    await expect(source.checkConnection(validConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
+  });
+
+  test('files full', async () => {
+    const fnSend = jest.fn();
+    const listObjects = {
+      Contents: [
+        {
+          Key: 'your-path/',
+          LastModified: new Date('2023-12-03T01:18:03.000Z'),
+        },
+        {
+          Key: 'your-path/1.json',
+          LastModified: new Date('2023-12-03T01:18:03.000Z'),
+        },
+      ],
+      IsTruncated: false,
+    };
+    const getObject = {
+      Body: {
+        transformToString: () => {
+          return '{"id": 1, "name": "test"}';
+        },
+      },
+    };
+    FilesReader.instance = jest.fn().mockImplementation(() => {
+      return new S3Reader(
+        validConfig,
+        {
+          send: fnSend
+            .mockResolvedValueOnce(listObjects)
+            .mockResolvedValueOnce(getObject),
+        } as any,
+        'your-bucket',
+        'your-path'
+      );
+    });
+
+    const streams = source.streams(validConfig);
+    const stream = streams[0];
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH);
+
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+
+    expect(fnSend).toHaveBeenCalledTimes(2);
+    expect(items).toMatchSnapshot();
   });
 });

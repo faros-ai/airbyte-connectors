@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index files full 1`] = `
+[
+  {
+    "content": "{"id": 1, "name": "test"}",
+    "fileName": "your-path/1.json",
+    "lastModified": 1701566283000,
+    "type": "S3",
+  },
+]
+`;

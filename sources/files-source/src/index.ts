@@ -26,7 +26,8 @@ export class FilesSource extends AirbyteSourceBase<FilesConfig> {
 
   async checkConnection(config: FilesConfig): Promise<[boolean, VError]> {
     try {
-      await FilesReader.instance(config, this.logger);
+      const filesReader = await FilesReader.instance(config, this.logger);
+      await filesReader.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
