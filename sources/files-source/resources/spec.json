@@ -51,28 +51,28 @@
                 ]
               },
               "aws_access_key_id": {
-                "order": 2,
+                "order": 3,
                 "title": "AWS Access Key Id",
                 "description": "AWS Access Key Id (required IAM permissions: s3:ListBucket, s3:GetObject)",
                 "type": "string",
                 "airbyte_secret": true
               },
               "aws_secret_access_key": {
-                "order": 3,
+                "order": 4,
                 "title": "AWS Secret Access Key",
                 "description": "AWS Secret Access Key",
                 "type": "string",
                 "airbyte_secret": true
               },
               "aws_session_token": {
-                "order": 4,
+                "order": 5,
                 "title": "AWS Session Token (Optional)",
                 "description": "AWS Session Token",
                 "type": "string",
                 "airbyte_secret": true
               },
               "file_processing_strategy": {
-                "order": 5,
+                "order": 6,
                 "type": "string",
                 "title": "File Processing Strategy",
                 "description": "Strategy to use for deciding whether to process or ignore files.",
