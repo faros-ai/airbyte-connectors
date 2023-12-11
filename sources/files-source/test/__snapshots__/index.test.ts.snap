@@ -5,8 +5,8 @@ exports[`index files full 1`] = `
   {
     "content": "{"id": 1, "name": "test"}",
     "fileName": "your-path/1.json",
+    "filesSource": "S3",
     "lastModified": 1701566283000,
-    "type": "S3",
   },
 ]
 `;

@@ -22,7 +22,7 @@ type S3 = {
 };
 
 export interface OutputRecord {
-  type: string;
+  filesSource: string;
   fileName: string;
   lastModified: number;
   content: string;
@@ -145,7 +145,7 @@ export class S3Reader {
         );
         const content = await res.Body.transformToString();
         yield {
-          type: 'S3',
+          filesSource: 'S3',
           fileName: object.Key,
           lastModified: object.LastModified.getTime(),
           content,
