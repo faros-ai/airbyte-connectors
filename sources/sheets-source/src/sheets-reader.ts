@@ -313,12 +313,13 @@ export class SheetsReader {
     const res: GoogleSpreadsheetRow[] = [];
     let total = 0;
     let fetchedRows = 0;
+    // Fetch rows in batches of pageSize until we reach the end of the sheet
     do {
       const rows = await sheet.getRows({limit: pageSize, offset: total});
       res.push(...rows);
       fetchedRows = rows.length;
       total += fetchedRows;
-    } while (fetchedRows > 0);
+    } while (fetchedRows > 0 && total < sheet.rowCount - 1); // -1 because row count includes header row, but it's excluded from getRows
 
     logger?.info(`Fetched ${res.length} rows from '${name}' sheet`);
     return res;
