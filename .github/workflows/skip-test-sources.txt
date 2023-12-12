@@ -9,6 +9,7 @@ datadog-source
 docker-source
 faros-graphdoctor-source
 faros-graphql-source
+files-source
 gitlab-ci-source
 googlecalendar-source
 harness-source
