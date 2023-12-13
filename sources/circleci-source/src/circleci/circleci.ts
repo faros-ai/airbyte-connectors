@@ -148,12 +148,15 @@ export class CircleCI {
       await this.getAllRepoNamesAndProjectIds(config, logger);
 
     if (!config.project_names.includes('*')) {
+      logger.info('Project names do not include wildcard');
       const repo_names = config.project_names;
       const project_names = repo_names.map(
         (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
       );
       return project_names;
     }
+
+    logger.info('Project names include wildcard');
     // In this case there is a wildcard to get project names
     // We already have all the repo names stored as repoNames
     const res: string[] = [];
@@ -299,7 +302,8 @@ export class CircleCI {
   static getAxiosInstance(
     config: CircleCIConfig,
     logger: AirbyteLogger,
-    api_version: string = 'v2'
+    api_version: string = 'v2',
+    params: Record<string, any> = {}
   ): AxiosInstance {
     // In this function we rely on the fact that the  API URL contains 'v{X}' in it,
     // where X is the version number, e.g. "2" or "1.1". We replace the
@@ -320,6 +324,7 @@ export class CircleCI {
       // CircleCI responses can be very large hence the infinity
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
+      params: params,
     });
     return axiosInstance;
   }
@@ -331,7 +336,8 @@ export class CircleCI {
     const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
       config,
       logger,
-      'v1.1'
+      'v1.1',
+      {shallow: 'true'}
     );
     // ORG SLUG:
     // https://circleci.com/api/v2/me/collaborations
@@ -339,7 +345,9 @@ export class CircleCI {
     const repo_names: string[] = [];
     const project_ids: string[] = [];
     try {
+      logger.info(`Getting all projects from "/projects" endpoint`);
       const response = await v1AxiosInstance.get('/projects');
+      logger.info(`Finished getting all projects from "/projects" endpoint.`);
       const projects_data = response.data;
       logger.info(`Projects data: ${JSON.stringify(projects_data)}`);
       for (const item of projects_data) {
@@ -348,12 +356,15 @@ export class CircleCI {
       }
     } catch (error: any) {
       throw new Error(
-        `Failed to get all project "repo names" or "project ids" from '/projects' endpoint`
+        `Failed to get all project "repo names" or "project ids" from '/projects' endpoint. Error: ${error}`
       );
     }
     if (repo_names.length == 0) {
-      throw new Error('No reponames found for this user');
+      throw new Error(
+        'No reponames found for this user: Make sure to "Follow All" projects on CircleCI.'
+      );
     }
+    logger.info(`Number of repo names found: ${repo_names.length}`);
     const repoNamesToProjectIds: Map<string, string> = new Map<
       string,
       string
@@ -361,6 +372,9 @@ export class CircleCI {
     for (let i = 0; i < repo_names.length; i++) {
       repoNamesToProjectIds.set(repo_names[i], project_ids[i]);
     }
+    logger.info(
+      `Repo names to project ids: ${JSON.stringify(repoNamesToProjectIds)}`
+    );
     return [repoNamesToProjectIds, repo_names, project_ids];
   }
 
