@@ -1,0 +1,72 @@
+[
+  [
+    {
+      "model": "faros_MetricDefinition",
+      "record": {
+        "uid": "TotalCharacterCount",
+        "name": "TotalCharacterCount",
+        "description": "TotalCharacterCount",
+        "valueType": "Numeric"
+      }
+    },
+    {
+      "model": "faros_MetricValue",
+      "record": {
+        "uid": "TotalCharacterCount-2023-12-11T19:38:00.000Z",
+        "value": "22",
+        "computedAt": "2023-12-11T19:38:00.000Z",
+        "definition": {
+          "uid": "TotalCharacterCount"
+        }
+      }
+    }
+  ],
+  [
+    {
+      "model": "faros_MetricValue",
+      "record": {
+        "uid": "TotalCharacterCount-2023-12-11T19:23:00.000Z",
+        "value": "1976",
+        "computedAt": "2023-12-11T19:23:00.000Z",
+        "definition": {
+          "uid": "TotalCharacterCount"
+        }
+      }
+    }
+  ],
+  [
+    {
+      "model": "faros_MetricDefinition",
+      "record": {
+        "uid": "CodeWhispererCharacterCount",
+        "name": "CodeWhispererCharacterCount",
+        "description": "CodeWhispererCharacterCount",
+        "valueType": "Numeric"
+      }
+    },
+    {
+      "model": "faros_MetricValue",
+      "record": {
+        "uid": "CodeWhispererCharacterCount-2023-12-11T19:38:00.000Z",
+        "value": "0",
+        "computedAt": "2023-12-11T19:38:00.000Z",
+        "definition": {
+          "uid": "CodeWhispererCharacterCount"
+        }
+      }
+    }
+  ],
+  [
+    {
+      "model": "faros_MetricValue",
+      "record": {
+        "uid": "CodeWhispererCharacterCount-2023-12-11T19:23:00.000Z",
+        "value": "0",
+        "computedAt": "2023-12-11T19:23:00.000Z",
+        "definition": {
+          "uid": "CodeWhispererCharacterCount"
+        }
+      }
+    }
+  ]
+]
