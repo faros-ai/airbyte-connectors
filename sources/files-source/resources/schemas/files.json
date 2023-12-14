@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "filesSource": {
+      "type": "string"
+    },
+    "fileName": {
+      "type": "string"
+    },
+    "lastModified": {
+      "type": "number"
+    },
+    "contents": {
+      "type": "string"
+    }
+  }
+}
