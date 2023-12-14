@@ -139,9 +139,12 @@ export class SheetsReader {
     return SheetsReader.sheetsReader;
   }
 
-  async *readRows(
-    logger?: AirbyteLogger
-  ): AsyncGenerator<{ sheetName: string, row: any, sheetId: string, id: string }>{
+  async *readRows(logger?: AirbyteLogger): AsyncGenerator<{
+    sheetName: string;
+    row: any;
+    sheetId: string;
+    id: string;
+  }> {
     for (const sheetName of this.getSheetNames()) {
       logger?.info(`Reading sheet: ${sheetName}`);
 
@@ -151,9 +154,11 @@ export class SheetsReader {
 
       for (let i = 0; i < rows.length; i++) {
         // Generate a unique record ID for each row
-        const recordId = `${SheetsReader.sheetId}_${this.normalizeSheetName(sheetName)}_${i}`
+        const recordId = `${SheetsReader.sheetId}_${this.normalizeSheetName(
+          sheetName
+        )}_${i}`;
         const row = rows[i];
-        yield { sheetName, row, sheetId: SheetsReader.sheetId, id: recordId };
+        yield {sheetName, row, sheetId: SheetsReader.sheetId, id: recordId};
       }
     }
   }
@@ -196,7 +201,7 @@ export class SheetsReader {
     creds: GoogleCreds,
     logger?: AirbyteLogger
   ): Promise<XLSX.WorkBook> {
-    logger?.info('Opening Google Spreadsheet with ID ${sheetId}');
+    logger?.info(`Opening Google Spreadsheet with ID ${sheetId}`);
     const doc = new GoogleSpreadsheet(sheetId);
 
     if (typeof creds === 'string') {
@@ -208,7 +213,7 @@ export class SheetsReader {
       );
 
       logger?.info(
-        `Expecting that ${creds.client_email} has Viewer access to ${sheetId}`
+        `Expecting that ${creds.client_email} has Viewer access to Google Spreadsheet with ID ${sheetId}`
       );
 
       await doc.useServiceAccountAuth(creds);
