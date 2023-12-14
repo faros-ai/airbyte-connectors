@@ -391,7 +391,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     }
 
     // Determine origin from stream prefixes
-    const origins = uniq(
+    const origins: string[] = uniq(
       catalog.streams.map((s) => s.stream.name.split(StreamNameSeparator, 1)[0])
     );
     if (origins.length === 0) {
