@@ -62,7 +62,7 @@ export class AirbyteLogger {
    * @param level logging level
    * @returns Pino Logger
    */
-  asPino(level: Level = 'info'): Logger {
+  asPino(level: Level = 'info'): Logger<string> {
     const defaultLevel = AirbyteLogLevel[level.toUpperCase()];
 
     const destination: DestinationStream = new stream.Writable({
