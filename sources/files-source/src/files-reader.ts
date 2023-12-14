@@ -25,7 +25,7 @@ export interface OutputRecord {
   filesSource: string;
   fileName: string;
   lastModified: number;
-  content: string;
+  contents: string;
 }
 
 type FilesSource = S3;
@@ -143,12 +143,12 @@ export class S3Reader {
         const res = await this.s3Client.send(
           new GetObjectCommand({Bucket: this.bucketName, Key: object.Key})
         );
-        const content = await res.Body.transformToString();
+        const contents = await res.Body.transformToString('base64');
         yield {
           filesSource: 'S3',
           fileName: object.Key,
           lastModified: object.LastModified.getTime(),
-          content,
+          contents,
         };
       }
 

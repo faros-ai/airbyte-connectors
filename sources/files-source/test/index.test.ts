@@ -163,7 +163,7 @@ describe('index', () => {
     const getObject = {
       Body: {
         transformToString: () => {
-          return '{"id": 1, "name": "test"}';
+          return 'test';
         },
       },
     };
