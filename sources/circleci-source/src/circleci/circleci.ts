@@ -71,7 +71,6 @@ export class CircleCI {
     const blocklist: string[] = config.project_blocklist
       ? config.project_blocklist
       : [];
-    const blocklist_is_empty = blocklist.length == 0;
     const blocklist_is_nonempty = blocklist.length > 0;
     const wildCardProjects = config.project_names.includes('*');
     if (blocklist_is_nonempty && wildCardProjects) {
