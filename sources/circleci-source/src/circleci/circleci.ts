@@ -34,6 +34,7 @@ export interface CircleCIConfig {
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
   readonly faros_graph_name?: string;
+  readonly uses_github_or_gitlab?: boolean;
 }
 
 export class CircleCI {
@@ -259,6 +260,7 @@ export class CircleCI {
     // Note the project names are not repo names but also include the slug,
     // e.g.  `vcs-slug/org-name/repo-name` rather than `repo-name`
     if (!config.project_names.includes('*')) {
+      // The simplest case - where we only use the given project names
       return Array.from(config.project_names);
     }
     const project_names = await this.getWildCardProjectNames(config, logger);
@@ -330,7 +332,7 @@ export class CircleCI {
   static async getAllRepoNamesAndProjectIds(
     config,
     logger
-  ): Promise<[Map<string, string>, string[], string[]]> {
+  ): Promise<[Map<string, string>, string[], string[], string[]]> {
     const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
       config,
       logger,
@@ -342,6 +344,7 @@ export class CircleCI {
     // Using org slug, projects can be accessed with slug/repo_name
     const repo_names: string[] = [];
     const project_ids: string[] = [];
+    const organization_ids: string[] = [];
     try {
       logger.debug(`Getting all projects from "/projects" endpoint`);
       const response = await v1AxiosInstance.get('/projects');
@@ -350,7 +353,9 @@ export class CircleCI {
       logger.debug(`Projects data: ${JSON.stringify(projects_data)}`);
       for (const item of projects_data) {
         repo_names.push(item['reponame']);
-        project_ids.push(item['vcs_url'].split('/').pop());
+        const vcs_url_segments = item['vcs_url'].split('/');
+        project_ids.push(vcs_url_segments.pop());
+        organization_ids.push(vcs_url_segments.pop());
       }
     } catch (error: any) {
       throw new Error(
@@ -375,7 +380,7 @@ export class CircleCI {
     logger.debug(
       `Repo names to project ids: ${JSON.stringify(repoNamesToProjectIds)}`
     );
-    return [repoNamesToProjectIds, repo_names, project_ids];
+    return [repoNamesToProjectIds, repo_names, project_ids, organization_ids];
   }
 
   private async iterate<V>(

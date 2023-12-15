@@ -1,95 +1,100 @@
 {
-  "documentationUrl": "https://docs.faros.ai",
-  "connectionSpecification": {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CircleCI Spec",
-    "type": "object",
-    "required": [
-      "token",
-      "project_names"
-    ],
-    "additionalProperties": true,
-    "properties": {
-      "token": {
-        "type": "string",
-        "title": "token",
-        "description": "CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
-        "airbyte_secret": true
-      },
-      "project_names": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Project Names",
-        "description": "Project names should look like \"vcs-slug/org-name/repo-name\" or \"repo-name\" if slugs as repos is set to true. Only enter \"*\" for all projects."
-      },
-      "project_block_list": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "title": "Project Name Blocklist",
-        "description": "If project_names is \"*\", then enter a list of \"repo-name\" or \"vcs-slug/org-name/repo-name\""
-      },
-      "cutoff_days": {
-        "type": "integer",
-        "title": "Cutoff Days",
-        "default": 90,
-        "description": "Only fetch data updated after cutoff"
-      },
-      "reject_unauthorized": {
-        "type": "boolean",
-        "title": "Enforce Authorized Requests",
-        "default": true,
-        "description": "Enable certificate validation for the CircleCI server"
-      },
-      "slugs_as_repos": {
-        "type": "boolean",
-        "title": "Projects Listed as Repos",
-        "default": false,
-        "description": "List projects as \"repo-name\" instead of \"vcs-slug/org-name/repo-name\""
-      },
-      "url": {
-        "type": "string",
-        "title": "API URL",
-        "default": "https://circleci.com/api/v2",
-        "description": "CircleCI API URL"
-      },
-      "request_timeout": {
-        "type": "integer",
-        "title": "Request Timeout",
-        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
-        "default": 60000
-      },
-      "max_retries": {
-        "type": "integer",
-        "title": "Max Number of Retries",
-        "description": "The max number of retries before giving up on retrying requests to CircleCI API",
-        "default": 3
-      },
-      "pull_blocklist_from_graph": {
-        "type": "boolean",
-        "title": "Pull Projects Blocklist from Faros Graph",
-        "default": false,
-        "description": "Should pull projects blocklist from Faros"
-      },
-      "faros_api_url": {
-        "type": "string",
-        "title": "Faros API URL",
-        "default": "https://prod.api.faros.ai",
-        "description": "Faros API URL"
-      },
-      "faros_api_key": {
-        "type": "string",
-        "title": "Faros API Key",
-        "description": "Faros API Key",
-        "airbyte_secret": true
-      },
-      "faros_graph_name": {
-        "type": "string",
-        "title": "Faros Graph"
-      }
+    "documentationUrl": "https://docs.faros.ai",
+    "connectionSpecification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "CircleCI Spec",
+        "type": "object",
+        "required": [
+            "token",
+            "project_names"
+        ],
+        "additionalProperties": true,
+        "properties": {
+            "token": {
+                "type": "string",
+                "title": "token",
+                "description": "CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
+                "airbyte_secret": true
+            },
+            "project_names": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "title": "Project Names",
+                "description": "Project names should look like \"vcs-slug/org-name/repo-name\" or \"repo-name\" if slugs as repos is set to true. Only enter \"*\" for all projects."
+            },
+            "project_block_list": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "title": "Project Name Blocklist",
+                "description": "If project_names is \"*\", then enter a list of \"repo-name\" or \"vcs-slug/org-name/repo-name\""
+            },
+            "cutoff_days": {
+                "type": "integer",
+                "title": "Cutoff Days",
+                "default": 90,
+                "description": "Only fetch data updated after cutoff"
+            },
+            "reject_unauthorized": {
+                "type": "boolean",
+                "title": "Enforce Authorized Requests",
+                "default": true,
+                "description": "Enable certificate validation for the CircleCI server"
+            },
+            "slugs_as_repos": {
+                "type": "boolean",
+                "title": "Projects Listed as Repos",
+                "default": false,
+                "description": "List projects as \"repo-name\" instead of \"vcs-slug/org-name/repo-name\""
+            },
+            "url": {
+                "type": "string",
+                "title": "API URL",
+                "default": "https://circleci.com/api/v2",
+                "description": "CircleCI API URL"
+            },
+            "request_timeout": {
+                "type": "integer",
+                "title": "Request Timeout",
+                "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
+                "default": 120000
+            },
+            "max_retries": {
+                "type": "integer",
+                "title": "Max Number of Retries",
+                "description": "The max number of retries before giving up on retrying requests to CircleCI API",
+                "default": 3
+            },
+            "pull_blocklist_from_graph": {
+                "type": "boolean",
+                "title": "Pull Projects Blocklist from Faros Graph",
+                "default": false,
+                "description": "Should pull projects blocklist from Faros"
+            },
+            "faros_api_url": {
+                "type": "string",
+                "title": "Faros API URL",
+                "default": "https://prod.api.faros.ai",
+                "description": "Faros API URL"
+            },
+            "faros_api_key": {
+                "type": "string",
+                "title": "Faros API Key",
+                "description": "Faros API Key",
+                "airbyte_secret": true
+            },
+            "faros_graph_name": {
+                "type": "string",
+                "title": "Faros Graph"
+            },
+            "uses_github_or_gitlab": {
+                "type": "boolean",
+                "title": "Uses Github or Gitlab",
+                "description": "Does the project use Github or Gitlab"
+            }
+        }
     }
-  }
 }
