@@ -145,29 +145,69 @@ export class CircleCI {
     const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
     const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [repoNamesToProjectIds, repoNames, _projectIds] =
-      await this.getAllRepoNamesAndProjectIds(config, logger);
+    const [allRepoNamesToProjectIds, allRepoNames, _projectIds, orgIds] =
+      await this.getAllRepoNamesAndProjectIds(config, logger, org_slug);
 
     if (!config.project_names.includes('*')) {
-      const repo_names = config.project_names;
-      const project_names = repo_names.map(
-        (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
+      return this.getFilteredProjectsFromReponamesNoWildcard(
+        config,
+        org_slug,
+        allRepoNamesToProjectIds,
+        allRepoNames,
+        orgIds
       );
-      return project_names;
     }
 
     // In this case there is a wildcard to get project names
-    // We already have all the repo names stored as repoNames
+    // We already have all the repo names stored as allRepoNames
     const res: string[] = [];
-    for (const project_name of repoNames) {
+    for (const project_name of allRepoNames) {
       if (!blocklist.includes(project_name)) {
         res.push(project_name);
       }
     }
-    const project_names = res.map(
-      (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
-    );
+    logger.debug(`Filtered project names: ${JSON.stringify(res)}`);
+    let project_names: string[] = [];
+    if (!config.uses_github_or_gitlab) {
+      project_names = res.map(
+        (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
+      );
+    } else {
+      // Yes uses github or gitlab
+      project_names = res.map(
+        (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
+      );
+    }
     return project_names;
+  }
+  static getFilteredProjectsFromReponamesNoWildcard(
+    config,
+    org_slug,
+    allRepoNamesToProjectIds,
+    repoNames,
+    orgIds
+  ): string[] {
+    if (!config.uses_github_or_gitlab) {
+      const input_repo_names = config.project_names;
+      const project_names = input_repo_names.map(
+        (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
+      );
+      return project_names;
+    } else {
+      // Github or Gitlab configuration
+      const repoNamesToOrgIds = new Map<string, string>();
+      for (let i = 0; i < repoNames.length; i++) {
+        repoNamesToOrgIds.set(repoNames[i], orgIds[i]);
+      }
+      const input_repo_names = config.project_names;
+      const project_names = input_repo_names.map(
+        (v) =>
+          `circleci/${repoNamesToOrgIds.get(v)}/${allRepoNamesToProjectIds.get(
+            v
+          )}`
+      );
+      return project_names;
+    }
   }
 
   static async pullProjectsBlocklistFromGraph(
@@ -287,11 +327,11 @@ export class CircleCI {
         )}`
       );
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_repoNamesToProjectIds, _repoNames, projectIds] =
-      await this.getAllRepoNamesAndProjectIds(config, logger);
     const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
     const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_repoNamesToProjectIds, _repoNames, projectIds, orgIds] =
+      await this.getAllRepoNamesAndProjectIds(config, logger, org_slug);
     const project_names = projectIds.map((v) => `${org_slug}/${v}`);
     logger.info(
       `Project names based on config: ${JSON.stringify(project_names)}`
@@ -331,7 +371,8 @@ export class CircleCI {
 
   static async getAllRepoNamesAndProjectIds(
     config,
-    logger
+    logger,
+    org_slug: string
   ): Promise<[Map<string, string>, string[], string[], string[]]> {
     const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
       config,
@@ -380,7 +421,49 @@ export class CircleCI {
     logger.debug(
       `Repo names to project ids: ${JSON.stringify(repoNamesToProjectIds)}`
     );
+    await CircleCI.runDiagnostic(
+      repoNamesToProjectIds,
+      repo_names,
+      project_ids,
+      organization_ids,
+      org_slug,
+      config,
+      logger
+    );
     return [repoNamesToProjectIds, repo_names, project_ids, organization_ids];
+  }
+
+  static async runDiagnostic(
+    repoNamesToProjectIds,
+    repo_names,
+    project_ids,
+    organization_ids,
+    org_slug,
+    config,
+    logger
+  ): Promise<void> {
+    // We are guaranteed to have at least one repo name
+    const first_repo = repo_names[0];
+    const axios_v2_instance = CircleCI.getAxiosInstance(config, logger, 'v2');
+    const projectSlug = `${org_slug}/${first_repo}`;
+    const urlExtension = `/project/${projectSlug}`;
+    const res = await axios_v2_instance.get(urlExtension);
+    logger.info(
+      `Diagnostic on ${urlExtension}: status: ${
+        res.status
+      }, data: ${JSON.stringify(res.data)}`
+    );
+    const first_org_id = organization_ids[0];
+    const first_project_id = project_ids[0];
+    const gitProjectSlug = `circleci/${first_org_id}/${first_project_id}`;
+    const gitUrlExtension = `/project/${gitProjectSlug}`;
+    const gitRes = await axios_v2_instance.get(gitUrlExtension);
+    logger.info(
+      `Diagnostic on ${gitUrlExtension}: status: ${
+        gitRes.status
+      }, data: ${JSON.stringify(gitRes.data)}`
+    );
+    logger.info('Finished running diagnostic');
   }
 
   private async iterate<V>(
