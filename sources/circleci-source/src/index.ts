@@ -124,6 +124,18 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
           this.logger
         );
       }
+    } else {
+      if (config.slugs_as_repos) {
+        filtered_project_names = CircleCI.getCompleteProjectNamesFromRepoNames(
+          this.logger,
+          config.project_names,
+          cci
+        );
+      } else {
+        throw new Error(
+          'Input config case not covered. Please contact support.'
+        );
+      }
     }
     config.filtered_project_names = filtered_project_names;
     return {config, catalog, state};

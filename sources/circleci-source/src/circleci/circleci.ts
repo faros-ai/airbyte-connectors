@@ -645,9 +645,10 @@ export class CircleCI {
     } else {
       config.uses_github_or_gitlab = false;
     }
-    logger.info(
-      `Finished running diagnostic. Uses github or gitlab: ${config.uses_github_or_gitlab}`
-    );
+    const git_log_message = config.uses_github_or_gitlab
+      ? 'Uses Github or Gitlab'
+      : 'Does not use Github or Gitlab';
+    logger.info(`Finished running diagnostic. ${git_log_message}.`);
     return config.uses_github_or_gitlab;
   }
 
