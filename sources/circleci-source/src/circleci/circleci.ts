@@ -88,25 +88,11 @@ export class CircleCI {
     }
 
     if (config.pull_blocklist_from_graph) {
-      if (blocklist_is_nonempty) {
-        throw new VError(
-          'If pull_blocklist_from_graph is true, project_blocklist should be empty.'
-        );
-      }
-      if (
-        !config.faros_api_url ||
-        !config.faros_api_key ||
-        !config.faros_graph_name
-      ) {
-        throw new VError(
-          'If pull_blocklist_from_graph is true, faros_api_url, faros_api_key, and faros_graph_name must be provided.'
-        );
-      }
-      if (!wildCardProjects) {
-        throw new VError(
-          'If pull_blocklist_from_graph is true, project_names must include wildcard "*".'
-        );
-      }
+      CircleCI.validatePullingBlocklist(
+        config,
+        blocklist_is_nonempty,
+        wildCardProjects
+      );
     }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
@@ -119,6 +105,33 @@ export class CircleCI {
       config.max_retries ?? DEFAULT_MAX_RETRIES
     );
     return CircleCI.circleCI;
+  }
+
+  static validatePullingBlocklist(
+    config,
+    blocklist_is_nonempty,
+    wildCardProjects
+  ): void {
+    // In this case blocklist is pulled from Faros' graph
+    if (blocklist_is_nonempty) {
+      throw new VError(
+        'If pull_blocklist_from_graph is true, project_blocklist should be empty.'
+      );
+    }
+    if (
+      !config.faros_api_url ||
+      !config.faros_api_key ||
+      !config.faros_graph_name
+    ) {
+      throw new VError(
+        'If pull_blocklist_from_graph is true, faros_api_url, faros_api_key, and faros_graph_name must be provided.'
+      );
+    }
+    if (!wildCardProjects) {
+      throw new VError(
+        'If pull_blocklist_from_graph is true, project_names must include wildcard "*".'
+      );
+    }
   }
 
   // used by ../index.ts
