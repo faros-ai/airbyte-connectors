@@ -11,7 +11,14 @@ import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Job, Pipeline, Project, TestMetadata, Workflow} from './typings';
+import {
+  CircleCIOnReadInfo,
+  Job,
+  Pipeline,
+  Project,
+  TestMetadata,
+  Workflow,
+} from './typings';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -77,6 +84,32 @@ export class CircleCI {
         `Config variable "slugs_as_repos" should be set as boolean, instead it is set as "${typeof config.slugs_as_repos}"`
       );
     }
+    const blocklist: string[] = config.project_blocklist
+      ? config.project_blocklist
+      : [];
+
+    if (config.pull_blocklist_from_graph) {
+      if (blocklist.length > 0) {
+        throw new VError(
+          'If pull_blocklist_from_graph is true, project_blocklist should be empty.'
+        );
+      }
+      if (
+        !config.faros_api_url ||
+        !config.faros_api_key ||
+        !config.faros_graph_name
+      ) {
+        throw new VError(
+          'If pull_blocklist_from_graph is true, faros_api_url, faros_api_key, and faros_graph_name must be provided.'
+        );
+      }
+      if (!config.project_names.includes('*')) {
+        throw new VError(
+          'If pull_blocklist_from_graph is true, project_names must include wildcard "*".'
+        );
+      }
+    }
+
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
@@ -87,6 +120,33 @@ export class CircleCI {
       config.max_retries ?? DEFAULT_MAX_RETRIES
     );
     return CircleCI.circleCI;
+  }
+
+  static async getProjectsWhilePullingBlocklistFromGraph(
+    cci: CircleCIOnReadInfo,
+    config: CircleCIConfig,
+    logger: AirbyteLogger
+  ): Promise<string[]> {
+    logger.info(
+      'Getting filtered project names while pulling blocklist from graph'
+    );
+    // note blocklist is in 'repo names' format
+    const blocklist = await CircleCI.pullProjectsBlocklistFromGraph(
+      config,
+      logger
+    );
+    const filteredRepoNames = [];
+    for (const repoName of cci.repoNames) {
+      if (!blocklist.includes(repoName)) {
+        filteredRepoNames.push(repoName);
+      }
+    }
+    logger.info(`Filtered repo names: ${JSON.stringify(filteredRepoNames)}`);
+    return CircleCI.getCompleteProjectNamesFromRepoNames(
+      logger,
+      filteredRepoNames,
+      cci
+    );
   }
 
   async checkConnection(): Promise<void> {
@@ -108,14 +168,12 @@ export class CircleCI {
     }
   }
 
-  static async getOrgSlug(
-    circleCIV2Instance: AxiosInstance,
-    logger: AirbyteLogger
-  ): Promise<string> {
+  static async getOrgSlug(config, logger: AirbyteLogger): Promise<string> {
+    const axiosV2Instance = this.getAxiosInstance(config, logger);
     logger.info('Getting Org Slug');
     let slug: string = '';
     try {
-      const resp = await circleCIV2Instance.get('/me/collaborations');
+      const resp = await axiosV2Instance.get('/me/collaborations');
       if (resp.status != 200) {
         throw new Error(
           `Non-200 response from endpoint 'me/collaborations' for getting slug.`
@@ -135,29 +193,76 @@ export class CircleCI {
     return slug;
   }
 
+  static isNoChangeCase(config): boolean {
+    // The case where we don't need to change the project names
+    const blocklist: string[] = config.project_blocklist
+      ? config.project_blocklist
+      : [];
+    if (
+      blocklist.length == 0 &&
+      !config.project_names.includes('*') &&
+      !config.slugs_as_repos
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static async getBasicInfo(config, logger): Promise<CircleCIOnReadInfo> {
+    const org_slug = await CircleCI.getOrgSlug(config, logger);
+    const [
+      repoNamesToProjectIds,
+      repoNamesToOrgIds,
+      repoNames,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      orgIds,
+    ] = await CircleCI.getAllRepoNamesAndProjectIds(config, logger, org_slug);
+    return {
+      org_slug: org_slug,
+      repoNamesToProjectIds: repoNamesToProjectIds,
+      repoNamesToOrgIds: repoNamesToOrgIds,
+      repoNames: repoNames,
+      orgIds: orgIds,
+      uses_github_or_gitlab: config.uses_github_or_gitlab,
+    };
+  }
+
   static async getFilteredProjectsFromRepoNames(
     config: CircleCIConfig,
     logger: AirbyteLogger,
     blocklist: string[] = []
   ): Promise<string[]> {
     // Note the project names are not full slugs but only the repo names,
-    // e.g. repo-name rather than vcs-slug/org-name/repo-name
+    // e.g. repo-name rather than vcs-slug/org-name/repo-name.
+    // We need to know how to convert this in project names
     const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
     const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [allRepoNamesToProjectIds, allRepoNames, _projectIds, orgIds] =
-      await this.getAllRepoNamesAndProjectIds(config, logger, org_slug);
+    const [
+      allRepoNamesToProjectIds,
+      repoNamesToOrgIds,
+      allRepoNames,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _projectIds,
+    ] = await this.getAllRepoNamesAndProjectIds(config, logger, org_slug);
 
+    let project_names: string[] = [];
     if (!config.project_names.includes('*')) {
-      return this.getFilteredProjectsFromReponamesNoWildcard(
-        config,
-        org_slug,
-        allRepoNamesToProjectIds,
-        allRepoNames,
-        orgIds
-      );
+      if (!config.uses_github_or_gitlab) {
+        project_names = config.project_names.map(
+          (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
+        );
+      } else {
+        // Github or Gitlab configuration
+        project_names = config.project_names.map(
+          (v) =>
+            `circleci/${repoNamesToOrgIds.get(
+              v
+            )}/${allRepoNamesToProjectIds.get(v)}`
+        );
+      }
+      return project_names;
     }
-
     // In this case there is a wildcard to get project names
     // We already have all the repo names stored as allRepoNames
     const res: string[] = [];
@@ -167,7 +272,6 @@ export class CircleCI {
       }
     }
     logger.debug(`Filtered project names: ${JSON.stringify(res)}`);
-    let project_names: string[] = [];
     if (!config.uses_github_or_gitlab) {
       project_names = res.map(
         (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
@@ -175,39 +279,74 @@ export class CircleCI {
     } else {
       // Yes uses github or gitlab
       project_names = res.map(
-        (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
+        (v) => `circleci/${org_slug}/${allRepoNamesToProjectIds.get(v)}`
       );
     }
     return project_names;
   }
-  static getFilteredProjectsFromReponamesNoWildcard(
+
+  static getCompleteProjectNames(
     config,
-    org_slug,
-    allRepoNamesToProjectIds,
+    logger,
+    repoNamesToProjectIds,
+    repoNamesToOrgIds,
     repoNames,
-    orgIds
+    org_slug
   ): string[] {
-    if (!config.uses_github_or_gitlab) {
-      const input_repo_names = config.project_names;
-      const project_names = input_repo_names.map(
-        (v) => `${org_slug}/${allRepoNamesToProjectIds.get(v)}`
-      );
-      return project_names;
+    logger.info('Getting complete project names');
+    // Two cases - project names is wildcard, or project names is list of repo names
+    let repoNamesToConvert = [];
+    if (config.project_names.includes('*')) {
+      repoNamesToConvert = repoNames;
     } else {
-      // Github or Gitlab configuration
-      const repoNamesToOrgIds = new Map<string, string>();
-      for (let i = 0; i < repoNames.length; i++) {
-        repoNamesToOrgIds.set(repoNames[i], orgIds[i]);
-      }
-      const input_repo_names = config.project_names;
-      const project_names = input_repo_names.map(
-        (v) =>
-          `circleci/${repoNamesToOrgIds.get(v)}/${allRepoNamesToProjectIds.get(
-            v
-          )}`
-      );
-      return project_names;
+      repoNamesToConvert = config.project_names;
     }
+    logger.info('Repo names to convert: ' + repoNamesToConvert);
+    let project_names: string[] = [];
+    if (config.uses_github_or_gitlab) {
+      project_names = repoNamesToConvert.map(
+        (v) =>
+          `circleci/${repoNamesToOrgIds.get(v)}/${repoNamesToProjectIds.get(v)}`
+      );
+    } else {
+      project_names = repoNamesToConvert.map((v) => `${org_slug}/${v}`);
+    }
+    return project_names;
+  }
+
+  static filterOnBlocklist(
+    start_names: string[],
+    blocklist: string[],
+    logger
+  ): string[] {
+    logger.info('Filtering on blocklist');
+    const res: string[] = [];
+    for (const start_name of start_names) {
+      if (!blocklist.includes(start_name)) {
+        res.push(start_name);
+      }
+    }
+    return res;
+  }
+
+  static getCompleteProjectNamesFromRepoNames(
+    logger,
+    repoNames,
+    cci: CircleCIOnReadInfo
+  ): string[] {
+    logger.info('Getting complete project names from repo names');
+    let project_names: string[] = [];
+    if (cci.uses_github_or_gitlab) {
+      project_names = repoNames.map(
+        (v) =>
+          `circleci/${cci.repoNamesToOrgIds.get(
+            v
+          )}/${cci.repoNamesToProjectIds.get(v)}`
+      );
+    } else {
+      project_names = repoNames.map((v) => `${cci.org_slug}/${v}`);
+    }
+    return project_names;
   }
 
   static async pullProjectsBlocklistFromGraph(
@@ -299,10 +438,11 @@ export class CircleCI {
   ): Promise<string[]> {
     // Note the project names are not repo names but also include the slug,
     // e.g.  `vcs-slug/org-name/repo-name` rather than `repo-name`
-    if (!config.project_names.includes('*')) {
-      // The simplest case - where we only use the given project names
-      return Array.from(config.project_names);
-    }
+    // if (!config.project_names.includes('*')) {
+    //   // The simplest case - where we only use the given project names
+    //   return Array.from(config.project_names);
+    // }
+
     const project_names = await this.getWildCardProjectNames(config, logger);
     const res: string[] = [];
     for (const project_name of project_names) {
@@ -320,19 +460,21 @@ export class CircleCI {
     // We return list of updated project names
     // In this case we know project names has a wildcard
     // Always returns list of complete project names (not just repo names)
-    if (!config.project_names.includes('*')) {
-      throw new Error(
-        `Expected project_names to just be the wildcard, instead got: ${JSON.stringify(
-          config.project_names
-        )}`
-      );
-    }
+
     const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
     const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_repoNamesToProjectIds, _repoNames, projectIds, orgIds] =
+    const [repoNamesToProjectIds, repoNamesToOrgIds, repoNames, projectIds] =
       await this.getAllRepoNamesAndProjectIds(config, logger, org_slug);
-    const project_names = projectIds.map((v) => `${org_slug}/${v}`);
+
+    let project_names: string[] = [];
+    if (config.uses_github_or_gitlab) {
+      project_names = repoNames.map(
+        (v) =>
+          `circleci/${repoNamesToOrgIds.get(v)}/${repoNamesToProjectIds.get(v)}`
+      );
+    } else {
+      project_names = projectIds.map((v) => `${org_slug}/${v}`);
+    }
     logger.info(
       `Project names based on config: ${JSON.stringify(project_names)}`
     );
@@ -373,16 +515,16 @@ export class CircleCI {
     config,
     logger,
     org_slug: string
-  ): Promise<[Map<string, string>, string[], string[], string[]]> {
+  ): Promise<[Map<string, string>, Map<string, string>, string[], string[]]> {
     const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
       config,
       logger,
       'v1.1',
       {shallow: 'true'}
     );
-    // ORG SLUG:
-    // https://circleci.com/api/v2/me/collaborations
-    // Using org slug, projects can be accessed with slug/repo_name
+    // org_slug captured through this api call: e.g. https://circleci.com/api/v2/me/collaborations
+    // Using org slug, projects can be accessed with slug/repo_name (if not github or gitlab)
+    // or circleci/org_id/project_id (if github or gitlab)
     const repo_names: string[] = [];
     const project_ids: string[] = [];
     const organization_ids: string[] = [];
@@ -411,18 +553,7 @@ export class CircleCI {
       );
     }
     logger.debug(`Number of repo names found: ${repo_names.length}`);
-    const repoNamesToProjectIds: Map<string, string> = new Map<
-      string,
-      string
-    >();
-    for (let i = 0; i < repo_names.length; i++) {
-      repoNamesToProjectIds.set(repo_names[i], project_ids[i]);
-    }
-    logger.debug(
-      `Repo names to project ids: ${JSON.stringify(repoNamesToProjectIds)}`
-    );
-    await CircleCI.runDiagnostic(
-      repoNamesToProjectIds,
+    await CircleCI.checkIfUsesGithubOrGitlab(
       repo_names,
       project_ids,
       organization_ids,
@@ -430,20 +561,43 @@ export class CircleCI {
       config,
       logger
     );
-    return [repoNamesToProjectIds, repo_names, project_ids, organization_ids];
+
+    const repoNamesToProjectIds: Map<string, string> = new Map<
+      string,
+      string
+    >();
+    const repoNamesToOrgIds: Map<string, string> = new Map<string, string>();
+    for (let i = 0; i < repo_names.length; i++) {
+      repoNamesToProjectIds.set(repo_names[i], project_ids[i]);
+      repoNamesToOrgIds.set(repo_names[i], organization_ids[i]);
+    }
+    logger.debug(
+      `Repo names to project ids: ${JSON.stringify(repoNamesToProjectIds)}, ` +
+        `Repo names to org ids: ${JSON.stringify(repoNamesToOrgIds)}`
+    );
+    return [
+      repoNamesToProjectIds,
+      repoNamesToOrgIds,
+      repo_names,
+      organization_ids,
+    ];
   }
 
-  static async runDiagnostic(
-    repoNamesToProjectIds,
+  static async checkIfUsesGithubOrGitlab(
     repo_names,
     project_ids,
     organization_ids,
     org_slug,
     config,
     logger
-  ): Promise<void> {
+  ): Promise<boolean> {
+    // Note: Within this function we set the 'config.uses_github_or_gitlab' variable to true or false
+    // In this function we check if the project name is "gitlab or github" format,
+    // or the "regular" format. We do this by running the query on both formats
+    // and seeing which one works.  Explanation of the formats at the link below:
+    // https://circleci.com/docs/api/v2/index.html#operation/getProjectBySlug
     logger.info('Running diagnostics on CircleCI API');
-    // We are guaranteed to have at least one repo name
+    // If we enter this function we are guaranteed to have at least one repo name
     const first_repo = repo_names[0];
     const axios_v2_instance = CircleCI.getAxiosInstance(config, logger, 'v2');
     const projectSlug = `${org_slug}/${first_repo}`;
@@ -494,6 +648,7 @@ export class CircleCI {
     logger.info(
       `Finished running diagnostic. Uses github or gitlab: ${config.uses_github_or_gitlab}`
     );
+    return config.uses_github_or_gitlab;
   }
 
   private async iterate<V>(

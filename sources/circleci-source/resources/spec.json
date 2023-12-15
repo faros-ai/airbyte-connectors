@@ -89,11 +89,6 @@
             "faros_graph_name": {
                 "type": "string",
                 "title": "Faros Graph"
-            },
-            "uses_github_or_gitlab": {
-                "type": "boolean",
-                "title": "Uses Github or Gitlab",
-                "description": "Does the project use Github or Gitlab"
             }
         }
     }
