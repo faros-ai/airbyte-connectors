@@ -34,7 +34,7 @@ export interface CircleCIConfig {
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
   readonly faros_graph_name?: string;
-  readonly uses_github_or_gitlab?: boolean;
+  uses_github_or_gitlab?: boolean;
 }
 
 export class CircleCI {
@@ -442,28 +442,58 @@ export class CircleCI {
     config,
     logger
   ): Promise<void> {
+    logger.info('Running diagnostics on CircleCI API');
     // We are guaranteed to have at least one repo name
     const first_repo = repo_names[0];
     const axios_v2_instance = CircleCI.getAxiosInstance(config, logger, 'v2');
     const projectSlug = `${org_slug}/${first_repo}`;
     const urlExtension = `/project/${projectSlug}`;
-    const res = await axios_v2_instance.get(urlExtension);
-    logger.info(
-      `Diagnostic on ${urlExtension}: status: ${
-        res.status
-      }, data: ${JSON.stringify(res.data)}`
-    );
+    let regular_success = true;
+    try {
+      const res = await axios_v2_instance.get(urlExtension);
+      logger.info(
+        `Diagnostic on ${urlExtension}: status: ${
+          res.status
+        }, data: ${JSON.stringify(res.data)}`
+      );
+    } catch (error: any) {
+      logger.info(
+        `Failed to get project from CircleCI API using ${urlExtension}. Error: ` +
+          error
+      );
+      regular_success = false;
+    }
+    let git_success = true;
     const first_org_id = organization_ids[0];
     const first_project_id = project_ids[0];
     const gitProjectSlug = `circleci/${first_org_id}/${first_project_id}`;
     const gitUrlExtension = `/project/${gitProjectSlug}`;
-    const gitRes = await axios_v2_instance.get(gitUrlExtension);
+    try {
+      const gitRes = await axios_v2_instance.get(gitUrlExtension);
+      logger.info(
+        `Diagnostic on ${gitUrlExtension}: status: ${
+          gitRes.status
+        }, data: ${JSON.stringify(gitRes.data)}`
+      );
+    } catch (error: any) {
+      logger.info(
+        `Failed to get project from CircleCI API using ${gitUrlExtension}. Error: ` +
+          error
+      );
+      git_success = false;
+    }
+    if (!regular_success && !git_success) {
+      throw new Error(
+        `Failed to get project from CircleCI API using ${urlExtension} and ${gitUrlExtension}.`
+      );
+    } else if (!regular_success) {
+      config.uses_github_or_gitlab = true;
+    } else {
+      config.uses_github_or_gitlab = false;
+    }
     logger.info(
-      `Diagnostic on ${gitUrlExtension}: status: ${
-        gitRes.status
-      }, data: ${JSON.stringify(gitRes.data)}`
+      `Finished running diagnostic. Uses github or gitlab: ${config.uses_github_or_gitlab}`
     );
-    logger.info('Finished running diagnostic');
   }
 
   private async iterate<V>(
