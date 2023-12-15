@@ -68,10 +68,13 @@ export class CircleCI {
         'If wildcard is included in project names, do not include other project names'
       );
     }
-    if (
-      config.project_blocklist?.length > 0 &&
-      !config.project_names.includes('*')
-    ) {
+    const blocklist: string[] = config.project_blocklist
+      ? config.project_blocklist
+      : [];
+    const blocklist_is_empty = blocklist.length == 0;
+    const blocklist_is_nonempty = blocklist.length > 0;
+    const wildCardProjects = config.project_names.includes('*');
+    if (blocklist_is_nonempty && wildCardProjects) {
       throw new VError(
         'If blocklist contains values, project_names should only include wildcard "*".'
       );
@@ -84,12 +87,9 @@ export class CircleCI {
         `Config variable "slugs_as_repos" should be set as boolean, instead it is set as "${typeof config.slugs_as_repos}"`
       );
     }
-    const blocklist: string[] = config.project_blocklist
-      ? config.project_blocklist
-      : [];
 
     if (config.pull_blocklist_from_graph) {
-      if (blocklist.length > 0) {
+      if (blocklist_is_nonempty) {
         throw new VError(
           'If pull_blocklist_from_graph is true, project_blocklist should be empty.'
         );
@@ -103,7 +103,7 @@ export class CircleCI {
           'If pull_blocklist_from_graph is true, faros_api_url, faros_api_key, and faros_graph_name must be provided.'
         );
       }
-      if (!config.project_names.includes('*')) {
+      if (!wildCardProjects) {
         throw new VError(
           'If pull_blocklist_from_graph is true, project_names must include wildcard "*".'
         );
