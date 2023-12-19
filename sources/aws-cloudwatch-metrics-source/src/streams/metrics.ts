@@ -54,7 +54,9 @@ export class Metrics extends AirbyteStreamBase {
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const query of this.config.queries) {
-      const queryHash = createHash('md5').update(query.query).digest('hex');
+      const queryHash = createHash('md5')
+        .update(CloudWatch.toQueryString(query.query))
+        .digest('hex');
       yield {query, queryHash};
     }
   }

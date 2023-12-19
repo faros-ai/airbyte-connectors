@@ -88,6 +88,12 @@ describe('index', () => {
       true,
       undefined,
     ]);
+    await expect(
+      source.checkConnection({
+        ...validConfig,
+        queries: [{name: 'ExampleQuery1', query: {metric: 'CPUUtilization'}}],
+      })
+    ).resolves.toStrictEqual([true, undefined]);
   });
 
   test('metrics incremental', async () => {
@@ -123,7 +129,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {
-        query: {name: 'ExampleQuery1', query: '{"metric":"CPUUtilization"}'},
+        query: {name: 'ExampleQuery1', query: {metric: 'CPUUtilization'}},
         queryHash: 'hash',
       },
       {
