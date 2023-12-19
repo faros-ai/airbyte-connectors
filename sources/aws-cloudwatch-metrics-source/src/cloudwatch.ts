@@ -4,6 +4,7 @@ import {
   GetMetricDataInput,
   GetMetricDataOutput,
   ListMetricsCommand,
+  MetricDataQuery,
 } from '@aws-sdk/client-cloudwatch';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
@@ -18,7 +19,7 @@ const DEFAULT_PAGE_SIZE = 100;
 
 export interface NamedQuery {
   name: string;
-  query: string;
+  query: any;
 }
 
 export interface DataPoint {
@@ -76,7 +77,7 @@ export class CloudWatch {
       }
 
       try {
-        JSON.parse(query.query);
+        this.toMetricDataQuery(query.query);
       } catch {
         throw new Error(`Query ${query.name} is not valid JSON`);
       }
@@ -112,7 +113,7 @@ export class CloudWatch {
   }
 
   async *getMetricData(
-    query: string,
+    query: any,
     after?: string,
     logger?: AirbyteLogger
   ): AsyncGenerator<DataPoint> {
@@ -120,7 +121,7 @@ export class CloudWatch {
       StartTime: new Date(after ?? this.startDate),
       EndTime: new Date(this.endDate),
       MaxDatapoints: this.pageSize,
-      MetricDataQueries: [JSON.parse(query)],
+      MetricDataQueries: [CloudWatch.toMetricDataQuery(query)],
     };
 
     do {
@@ -141,5 +142,29 @@ export class CloudWatch {
 
       params.NextToken = response?.NextToken;
     } while (params.NextToken);
+  }
+
+  static toMetricDataQuery(query: any): MetricDataQuery | undefined {
+    if (typeof query === 'object') {
+      return query;
+    }
+
+    if (typeof query === 'string') {
+      return JSON.parse(query);
+    }
+
+    return undefined;
+  }
+
+  static toQueryString(query: any): string | undefined {
+    if (typeof query === 'string') {
+      return query;
+    }
+
+    if (typeof query === 'object') {
+      return JSON.stringify(query);
+    }
+
+    return undefined;
   }
 }
