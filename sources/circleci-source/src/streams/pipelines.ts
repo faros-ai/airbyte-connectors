@@ -1,7 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Pipeline} from '../circleci/typings';
+import {Pipeline} from '../circleci/types';
 import {CircleCIStreamBase, StreamSlice} from './common';
 
 type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
@@ -20,8 +20,8 @@ export class Pipelines extends CircleCIStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.cfg.filtered_project_names) {
-      yield {projectName};
+    for (const projectSlug of this.cfg.project_slugs) {
+      yield {projectSlug};
     }
   }
 
@@ -33,9 +33,9 @@ export class Pipelines extends CircleCIStreamBase {
   ): AsyncGenerator<Pipeline, any, unknown> {
     const since =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
+        ? streamState?.[streamSlice.projectSlug]?.lastUpdatedAt
         : undefined;
-    yield* this.circleCI.fetchPipelines(streamSlice.projectName, since);
+    yield* this.circleCI.fetchPipelines(streamSlice.projectSlug, since);
   }
 
   getUpdatedState(
