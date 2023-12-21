@@ -5,8 +5,6 @@ import {
   paginatedQueryV2,
 } from 'faros-js-client';
 
-export type ExcludedRepos = Record<string, Record<string, Set<string>>>;
-
 interface RepoKey {
   name: string;
   organization: {
@@ -25,9 +23,9 @@ export class Faros {
     this.faros = new FarosClient(config);
   }
 
-  async getExcludedRepos(graph: string): Promise<ExcludedRepos> {
-    this.logger.info(
-      `Checking which repos are excluded in ${graph} Faros graph`
+  async getExcludedRepos(graph: string): Promise<RepoKey[]> {
+    this.logger.debug(
+      `Checking which repos are excluded in [${graph}] Faros graph`
     );
     const query: string = `query ExcludedRepos {
         vcs_Repository(where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}}) {
@@ -44,19 +42,15 @@ export class Faros {
       undefined,
       paginatedQueryV2
     );
-    const res = {};
+    const res = [];
     for await (const repoKey of iter) {
-      const source = repoKey.organization.source.toLowerCase();
-      const org = repoKey.organization.uid.toLowerCase();
-      const repo = repoKey.name.toLowerCase();
-
-      if (!res[source]) {
-        res[source] = {};
-      }
-      if (!res[source][org]) {
-        res[source][org] = new Set();
-      }
-      res[source][org].add(repo);
+      res.push({
+        name: repoKey.name.toLowerCase(),
+        organization: {
+          uid: repoKey.organization.uid.toLowerCase(),
+          source: repoKey.organization.source.toLowerCase(),
+        },
+      });
     }
     return res;
   }

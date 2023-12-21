@@ -160,7 +160,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         logger,
-        null, // TODO: fix this
+        null,
         {
           get: fnTestsList
             .mockResolvedValueOnce({

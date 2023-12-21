@@ -54,7 +54,7 @@ export class CircleCI {
     }
     if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
       throw new VError(
-        'If wildcard is included in project slugs, do not include other project slugs'
+        'If wildcard "*" is included in project slugs, do not include other project slugs'
       );
     }
 
@@ -121,34 +121,35 @@ export class CircleCI {
     }
   }
 
-  async getAllProjects(): Promise<Project[]> {
+  async getAllProjectSlugs(): Promise<string[]> {
     // Using org slug, projects can be accessed with slug/repo_name (if not github or gitlab)
     // or circleci/org_id/project_id (if github or gitlab)
-    const res = [];
+    const res: string[] = [];
     try {
-      this.logger.debug(`Getting all projects from "/api/v1.1/me"`);
+      this.logger.debug(`Getting all project slugs"`);
       const meRes = await this.get({path: '/me', api: this.v1});
       const projectsData = meRes.data.projects;
 
       if (!projectsData) {
-        throw new Error('Could not retrieve projects from "/api/v1.1/me"');
+        throw new Error('Could not retrieve all project slugs');
       }
 
-      const projects = Object.keys(projectsData);
-      this.logger.debug(`Retrieved projects from "/api/v1.1/me: ${projects}`);
-
-      for (const project of projects) {
-        // Isolate projectId (ex: //circleci.com/85466249-1421-4025-9df7-253efd670dff/26ff2ef9-dd37-41a5-a62a-c129909783d3)
-        const projectMatch = project.match(/^.*\/([^/]*)$/);
-        if (!projectMatch) {
-          this.logger.error(`Could not parse projectId name from "${project}"`);
+      for (const projectVCSUrl of Object.keys(projectsData)) {
+        // Isolate id fields from vcs urls of the following form:
+        // //circleci.com/organization_id/project_id
+        // https://github.com/organization/repository
+        const projectMatch = projectVCSUrl.match(
+          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([^./]+)$/
+        );
+        if (!projectMatch || projectMatch.length < 1) {
+          this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const projectId = projectMatch[1];
-        const projectRes = await this.get({path: `/project/${projectId}`});
-        const projectData = projectRes.data;
+        const vcsProvider = projectMatch[1];
+        const orgId = projectMatch[2];
+        const projectId = projectMatch[3];
 
-        res.push(projectData);
+        res.push(`${vcsProvider}/${orgId}/${projectId}`);
       }
     } catch (error: any) {
       throw new Error(
@@ -156,6 +157,7 @@ export class CircleCI {
       );
     }
 
+    this.logger.info(`Retrieved project slugs: ${res}`);
     return res;
   }
 

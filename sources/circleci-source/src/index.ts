@@ -11,8 +11,7 @@ import {
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
-import {Project} from './circleci/types';
-import {ExcludedRepos, Faros} from './faros/faros';
+import {Faros} from './faros/faros';
 import {Pipelines, Projects, Tests} from './streams';
 
 /** The main entry point. */
@@ -60,41 +59,39 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
 
     const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
 
-    let excludedRepos: ExcludedRepos;
+    let excludedRepoSlugs: string[] | undefined;
     if (config.pull_blocklist_from_graph) {
-      excludedRepos = await faros.getExcludedRepos(config.faros_graph_name);
+      const excludedRepos = await faros.getExcludedRepos(
+        config.faros_graph_name
+      );
+      excludedRepoSlugs = excludedRepos.map(
+        (repo) =>
+          `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
+      );
+      this.logger.debug(
+        `Excluded repos in [${
+          config.faros_graph_name
+        }] Faros graph: ${JSON.stringify(excludedRepoSlugs)}`
+      );
     }
+    const excludedSlugs = new Set(excludedRepoSlugs ?? []);
 
-    const allProjects: Project[] = [];
+    const allProjectSlugs: string[] = [];
     if (config.project_slugs.includes('*')) {
-      const projects = await circleCI.getAllProjects();
-      allProjects.push(...projects);
+      const projects = await circleCI.getAllProjectSlugs();
+      allProjectSlugs.push(...projects);
     } else {
-      for (const projectSlug of config.project_slugs) {
-        allProjects.push(await circleCI.fetchProject(projectSlug));
-      }
+      allProjectSlugs.push(...config.project_slugs);
     }
 
-    config.project_slugs = allProjects
-      .filter((project) => {
-        let shouldInclude = true;
-        if (projectSlugBlocklist.has(project.slug)) {
-          shouldInclude = false;
-        }
-        if (excludedRepos) {
-          const vcsProvider = project.vcs_info.provider.toLowerCase();
-          const org = project.organization_name.toLowerCase();
-          const repo = project.name.toLowerCase();
-          if (excludedRepos[vcsProvider]?.[org]?.has(repo)) {
-            shouldInclude = false;
-          }
-        }
-        if (!shouldInclude) {
-          this.logger.debug(`Excluding project ${project.slug}`);
-        }
-        return shouldInclude;
-      })
-      .map((project) => project.slug);
+    config.project_slugs = allProjectSlugs.filter((slug) => {
+      this.logger.debug(`Checking if project ${slug} should be included`);
+      if (projectSlugBlocklist.has(slug) || excludedSlugs.has(slug)) {
+        this.logger.debug(`Excluding project ${slug}`);
+        return false;
+      }
+      return true;
+    });
 
     this.logger.debug(`Will sync project slugs: ${config.project_slugs}`);
 
