@@ -138,12 +138,12 @@ export class CircleCI {
     // or circleci/org_id/project_id (if github or gitlab)
     const res: string[] = [];
     try {
-      this.logger.debug(`Getting all project slugs"`);
+      this.logger.debug('Getting all project slugs from CircleCI');
       const meRes = await this.get({path: '/me', api: this.v1});
       const projectsData = meRes.data.projects;
 
       if (!projectsData) {
-        throw new Error('Could not retrieve all project slugs');
+        throw new Error('Could not retrieve all project slugs from CircleCI');
       }
 
       for (const projectVCSUrl of Object.keys(projectsData)) {
@@ -165,7 +165,9 @@ export class CircleCI {
       }
     } catch (error: any) {
       throw new Error(
-        `Failed to get all projects. Error: ${wrapApiError(error)}`
+        `Failed to get all projects from CircleCI. Error: ${wrapApiError(
+          error
+        )}`
       );
     }
 
