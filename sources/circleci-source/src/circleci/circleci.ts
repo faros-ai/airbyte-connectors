@@ -57,6 +57,23 @@ export class CircleCI {
         'If wildcard "*" is included in project slugs, do not include other project slugs'
       );
     }
+    if (config.pull_blocklist_from_graph) {
+      if (!config.faros_api_url) {
+        throw new VError(
+          'Faros API URL must be provided if pull_blocklist_from_graph is true'
+        );
+      }
+      if (!config.faros_api_key) {
+        throw new VError(
+          'Faros API key must be provided if pull_blocklist_from_graph is true'
+        );
+      }
+      if (!config.faros_graph_name) {
+        throw new VError(
+          'Faros graph name must be provided if pull_blocklist_from_graph is true'
+        );
+      }
+    }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const axios_v1_instance = this.getAxiosInstance(config, logger, 'v1.1');

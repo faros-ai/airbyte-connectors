@@ -48,19 +48,18 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     const circleCI = CircleCI.instance(config, this.logger);
-    const faros = new Faros(
-      {
-        url: config.faros_api_url,
-        apiKey: config.faros_api_key,
-        useGraphQLV2: true,
-      },
-      this.logger
-    );
-
     const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
 
     let excludedRepoSlugs: string[] | undefined;
     if (config.pull_blocklist_from_graph) {
+      const faros = new Faros(
+        {
+          url: config.faros_api_url,
+          apiKey: config.faros_api_key,
+          useGraphQLV2: true,
+        },
+        this.logger
+      );
       const excludedRepos = await faros.getExcludedRepos(
         config.faros_graph_name
       );
