@@ -36,7 +36,7 @@ export class ConverterRegistry {
     try {
       // Load the necessary module dynamically
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const converterDir = streamName.source.replace('_', '-');
+      const converterDir = streamName.source.replace(/_/g, '-');
       const mod = require(`./${converterDir}/${streamName.name}`);
 
       // Create converter instance by name

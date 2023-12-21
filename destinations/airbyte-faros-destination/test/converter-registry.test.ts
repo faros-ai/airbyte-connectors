@@ -153,9 +153,16 @@ describe('converter registry', () => {
   });
 
   test('loads a converter with underscore instead of dash', async () => {
-    const res = sut.getConverter(new StreamName('okta-faros', 'groups'));
-    expect(res).toBeDefined();
-    sut.getConverter(new StreamName('okta_faros', 'groups'));
-    expect(res).toBeDefined();
+    const streamNames = [
+      new StreamName('okta-faros', 'groups'),
+      new StreamName('okta_faros', 'groups'),
+      new StreamName('aws-cloudwatch-metrics', 'metrics'),
+      new StreamName('aws_cloudwatch_metrics', 'metrics'),
+    ];
+
+    streamNames.forEach((streamName) => {
+      const res = sut.getConverter(streamName);
+      expect(res).toBeDefined();
+    });
   });
 });
