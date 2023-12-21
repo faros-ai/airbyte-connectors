@@ -37,9 +37,8 @@ describe('index', () => {
 
   const sourceConfig: CircleCIConfig = {
     token: '',
-    project_names: ['test-project'],
+    project_slugs: ['gh/faros-ai/test-project'],
     project_blocklist: [],
-    slugs_as_repos: true,
     cutoff_days: 90,
     reject_unauthorized: true,
   };
@@ -55,6 +54,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         logger,
+        null,
         {
           get: jest.fn().mockResolvedValue({}),
         } as unknown as AxiosInstance,
@@ -72,7 +72,7 @@ describe('index', () => {
 
   test('check connection - incorrect config', async () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(logger, null, 10000, 1);
+      return new CircleCI(logger, null, null, 10000, 1);
     });
     const source = new sut.CircleCISource(logger);
     const res = await source.checkConnection(sourceConfig);
@@ -87,6 +87,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         logger,
+        null,
         {
           get: fnProjectsList.mockResolvedValue({
             data: readTestResourceFile('projects.json'),
@@ -103,7 +104,7 @@ describe('index', () => {
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_names[0]}
+      {projectName: sourceConfig.project_slugs[0]}
     );
     const projects = [];
     for await (const project of projectsIter) {
@@ -115,28 +116,24 @@ describe('index', () => {
 
   test('streams - pipelines, use full_refresh sync mode', async () => {
     const fnPipelinesList = jest.fn();
-    const circleCI = new CircleCI(
-      logger,
-      {
-        get: fnPipelinesList
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('pipelines_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          })
-          .mockResolvedValue({
-            data: {
-              items: [],
-              next_page_token: null,
-            },
-            status: 200,
-          }),
-      } as any,
-      10000,
-      1
-    );
+    const v2 = {
+      get: fnPipelinesList
+        .mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('pipelines_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        })
+        .mockResolvedValue({
+          data: {
+            items: [],
+            next_page_token: null,
+          },
+          status: 200,
+        }),
+    } as any;
+    const circleCI = new CircleCI(logger, null, v2, 10000, 1);
     CircleCI.instance = jest.fn().mockReturnValue(circleCI);
     const source = new sut.CircleCISource(logger);
     const streams = source.streams(sourceConfig);
@@ -145,7 +142,7 @@ describe('index', () => {
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_names[0]}
+      {projectName: sourceConfig.project_slugs[0]}
     );
     const pipelines = [];
     let state: Dictionary<{lastUpdatedAt?: string}> = {};
@@ -163,6 +160,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(
         logger,
+        null,
         {
           get: fnTestsList
             .mockResolvedValueOnce({
@@ -204,7 +202,7 @@ describe('index', () => {
     const testsIter = testsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_names[0]}
+      {projectName: sourceConfig.project_slugs[0]}
     );
     const tests = [];
     for await (const test of testsIter) {
