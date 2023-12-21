@@ -79,7 +79,9 @@
       },
       "faros_graph_name": {
         "type": "string",
-        "title": "Faros Graph"
+        "title": "Faros Graph",
+        "description": "Faros Graph Name",
+        "default": "default"
       }
     }
   }

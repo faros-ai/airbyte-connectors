@@ -13,6 +13,8 @@ interface RepoKey {
   };
 }
 
+const DEFAULT_FAROS_GRAPH = 'default';
+
 export class Faros {
   private readonly faros: FarosClient;
 
@@ -23,7 +25,7 @@ export class Faros {
     this.faros = new FarosClient(config);
   }
 
-  async getExcludedRepos(graph: string): Promise<RepoKey[]> {
+  async getExcludedRepos(graph = DEFAULT_FAROS_GRAPH): Promise<RepoKey[]> {
     this.logger.debug(
       `Checking which repos are excluded in [${graph}] Faros graph`
     );
