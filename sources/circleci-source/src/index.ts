@@ -50,7 +50,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     const circleCI = CircleCI.instance(config, this.logger);
     const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
 
-    let excludedRepoSlugs: string[] | undefined;
+    let excludedRepoSlugs: Set<string>;
     if (config.pull_blocklist_from_graph) {
       const faros = new Faros(
         {
@@ -62,12 +62,13 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       const excludedRepos = await faros.getExcludedRepos(
         config.faros_graph_name
       );
-      excludedRepoSlugs = excludedRepos.map(
-        (repo) =>
-          `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
+      excludedRepoSlugs = new Set(
+        excludedRepos.map(
+          (repo) =>
+            `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
+        )
       );
     }
-    const excludedSlugs = new Set(excludedRepoSlugs ?? []);
 
     const allProjectSlugs: string[] = [];
     if (config.project_slugs.includes('*')) {
@@ -77,11 +78,11 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       allProjectSlugs.push(...config.project_slugs);
     }
 
-    config.project_slugs = allProjectSlugs.filter((slug) => {
-      return !projectSlugBlocklist.has(slug) && !excludedSlugs.has(slug);
-    });
+    config.project_slugs = allProjectSlugs.filter(
+      (slug) => !projectSlugBlocklist.has(slug) && !excludedRepoSlugs?.has(slug)
+    );
 
-    this.logger.debug(`Will sync project slugs: ${config.project_slugs}`);
+    this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
 
     return {config, catalog, state};
   }
