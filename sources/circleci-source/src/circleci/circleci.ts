@@ -68,11 +68,6 @@ export class CircleCI {
           'Faros API key must be provided if pull_blocklist_from_graph is true'
         );
       }
-      if (!config.faros_graph_name) {
-        throw new VError(
-          'Faros graph name must be provided if pull_blocklist_from_graph is true'
-        );
-      }
     }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;

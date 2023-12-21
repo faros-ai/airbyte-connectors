@@ -56,7 +56,6 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
         {
           url: config.faros_api_url,
           apiKey: config.faros_api_key,
-          useGraphQLV2: true,
         },
         this.logger
       );
@@ -66,11 +65,6 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       excludedRepoSlugs = excludedRepos.map(
         (repo) =>
           `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
-      );
-      this.logger.debug(
-        `Excluded repos in [${
-          config.faros_graph_name
-        }] Faros graph: ${JSON.stringify(excludedRepoSlugs)}`
       );
     }
     const excludedSlugs = new Set(excludedRepoSlugs ?? []);
@@ -84,12 +78,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     }
 
     config.project_slugs = allProjectSlugs.filter((slug) => {
-      this.logger.debug(`Checking if project ${slug} should be included`);
-      if (projectSlugBlocklist.has(slug) || excludedSlugs.has(slug)) {
-        this.logger.debug(`Excluding project ${slug}`);
-        return false;
-      }
-      return true;
+      return !projectSlugBlocklist.has(slug) && !excludedSlugs.has(slug);
     });
 
     this.logger.debug(`Will sync project slugs: ${config.project_slugs}`);
