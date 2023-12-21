@@ -50,7 +50,7 @@ export class CircleCI {
       throw new VError('No token provided');
     }
     if (!config.project_slugs || config.project_slugs.length == 0) {
-      throw new VError('No project names provided');
+      throw new VError('No project slugs provided');
     }
     if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
       throw new VError(
@@ -59,7 +59,7 @@ export class CircleCI {
     }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    const axios_v1_instance = this.getAxiosInstance(config, logger, 'v1');
+    const axios_v1_instance = this.getAxiosInstance(config, logger, 'v1.1');
     const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
     CircleCI.circleCI = new CircleCI(

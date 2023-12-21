@@ -22,7 +22,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** Customer.io source implementation. */
+/** CircleCI source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -58,6 +58,8 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       this.logger
     );
 
+    const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
+
     let excludedRepos: ExcludedRepos;
     if (config.pull_blocklist_from_graph) {
       excludedRepos = await faros.getExcludedRepos(config.faros_graph_name);
@@ -76,7 +78,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     config.project_slugs = allProjects
       .filter((project) => {
         let shouldInclude = true;
-        if (config.project_blocklist?.includes(project.slug)) {
+        if (projectSlugBlocklist.has(project.slug)) {
           shouldInclude = false;
         }
         if (excludedRepos) {
@@ -88,11 +90,13 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
           }
         }
         if (!shouldInclude) {
-          this.logger.warn(`Excluding project ${project.slug}`);
+          this.logger.debug(`Excluding project ${project.slug}`);
         }
         return shouldInclude;
       })
       .map((project) => project.slug);
+
+    this.logger.debug(`Will sync project slugs: ${config.project_slugs}`);
 
     return {config, catalog, state};
   }

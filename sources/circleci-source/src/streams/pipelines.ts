@@ -42,8 +42,8 @@ export class Pipelines extends CircleCIStreamBase {
     currentStreamState: PipelineState,
     latestRecord: Pipeline
   ): PipelineState {
-    const projectName = latestRecord.project_slug;
-    const projectState = currentStreamState[projectName] ?? {};
+    const projectSlug = latestRecord.project_slug;
+    const projectState = currentStreamState[projectSlug] ?? {};
 
     const newProjectState = {
       lastUpdatedAt:
@@ -52,6 +52,6 @@ export class Pipelines extends CircleCIStreamBase {
           ? latestRecord.computedProperties.updatedAt
           : projectState.lastUpdatedAt,
     };
-    return {...currentStreamState, [projectName]: newProjectState};
+    return {...currentStreamState, [projectSlug]: newProjectState};
   }
 }
