@@ -6,7 +6,10 @@
         "uid": "TotalCharacterCount",
         "name": "TotalCharacterCount",
         "description": "TotalCharacterCount",
-        "valueType": "Numeric"
+        "valueType": {
+          "category": "Numeric",
+          "detail": null
+        }
       }
     },
     {
@@ -41,7 +44,10 @@
         "uid": "CodeWhispererCharacterCount",
         "name": "CodeWhispererCharacterCount",
         "description": "CodeWhispererCharacterCount",
-        "valueType": "Numeric"
+        "valueType": {
+          "category": "Numeric",
+          "detail": null
+        }
       }
     },
     {
