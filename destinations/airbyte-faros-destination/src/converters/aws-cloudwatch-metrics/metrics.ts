@@ -36,7 +36,10 @@ export class Metrics extends Converter {
         uid: metric.queryName,
         name: metric.queryName,
         description: metric.queryName,
-        valueType: 'Numeric',
+        valueType: {
+          category: 'Numeric',
+          detail: null,
+        },
       },
     };
     if (!this.metricDefinitions.has(metricDefinition.record.uid)) {

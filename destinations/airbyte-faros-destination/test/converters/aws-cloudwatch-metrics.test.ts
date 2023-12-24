@@ -13,7 +13,6 @@ import {
 import {
   awsCloudwatchMetricsStreamsInput,
   awsCloudwatchMetricsStreamsLog,
-  awsCloudwatchMetricsStreamsOutput,
 } from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
@@ -78,29 +77,13 @@ describe('AWS Cloudwatch Metrics', () => {
       awsCloudwatchMetricsStreamsInput
     );
 
-    const expectedOutputRecords: DestinationRecord[] = JSON.parse(
-      awsCloudwatchMetricsStreamsOutput
-    );
+    const outputRecords: DestinationRecord[] = [];
 
-    for (let i = 0; i < inputRecords.length; i++) {
-      const outputRecord = await converter.convert(inputRecords[i]);
-
-      for (let j = 0; j < outputRecord.length; j++) {
-        const expectedRecord =
-          'record' in expectedOutputRecords[i][j] &&
-          'computedAt' in expectedOutputRecords[i][j]['record']
-            ? {
-                ...expectedOutputRecords[i][j],
-                record: {
-                  ...expectedOutputRecords[i][j]['record'],
-                  computedAt: new Date(
-                    expectedOutputRecords[i][j]['record']['computedAt']
-                  ),
-                },
-              }
-            : expectedOutputRecords[i][j];
-        expect(outputRecord[j]).toEqual(expectedRecord);
-      }
+    for (const record of inputRecords) {
+      const convertedRecords = await converter.convert(record);
+      outputRecords.push(...convertedRecords);
     }
+
+    expect(outputRecords).toMatchSnapshot();
   });
 });
