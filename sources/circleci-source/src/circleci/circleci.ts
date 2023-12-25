@@ -157,9 +157,9 @@ export class CircleCI {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const vcsProvider = projectMatch[1];
-        const orgId = projectMatch[2];
-        const projectId = projectMatch[3];
+        const vcsProvider = projectMatch[1].toLowerCase();
+        const orgId = projectMatch[2].toLowerCase();
+        const projectId = projectMatch[3].toLowerCase();
 
         res.push(`${vcsProvider}/${orgId}/${projectId}`);
       }

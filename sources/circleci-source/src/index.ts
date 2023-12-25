@@ -63,10 +63,12 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
         config.faros_graph_name
       );
       excludedRepoSlugs = new Set(
-        excludedRepos.map(
-          (repo) =>
-            `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
-        )
+        excludedRepos.map((repo) => {
+          const source = repo.organization.source.toLowerCase();
+          const orgUid = repo.organization.uid.toLowerCase();
+          const repoName = repo.name.toLowerCase();
+          return `${source}/${orgUid}/${repoName}`;
+        })
       );
     }
 
