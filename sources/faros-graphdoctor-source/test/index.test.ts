@@ -111,6 +111,7 @@ describe('index', () => {
     api_url: 'prod.com',
     api_key: 'best_key',
     graph: 'best_graph',
+    day_delay_threshold: 3,
     logger: logger,
   };
 

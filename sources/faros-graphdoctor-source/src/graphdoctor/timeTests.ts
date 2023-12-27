@@ -1,10 +1,10 @@
 import {FarosClient} from 'faros-js-client';
 
 import {
-  amount_of_recently_added_to_compute,
-  compute_number_min_threshold,
-  DEFAULT_WITHIN_DAYS,
-  z_score_threshold,
+  amountOfRecentlyAddedToCompute,
+  computeNumberMinThreshold,
+  defaultWithinDays,
+  zScoreThreshold,
 } from './constants';
 import {
   DataIssueWrapper,
@@ -96,11 +96,13 @@ async function checkForDataRecencyIssue(
   const last_difference: number =
     secondsSinceEpoch - last_updated_time.getTime() / 1000;
   if (last_difference > 86400 * withinDays) {
-    const desc_str: string = `Recency issue: ${modelName} last updated time greater than ${withinDays} days in the past: "${last_updated_time}".`;
+    // We round the days difference to 1 decimal place:
+    const days_difference = (last_difference / 86400).toFixed(1);
+    const desc_str: string = `Recency issue: ${modelName} last updated time greater than ${withinDays} days in the past. Days difference: ${days_difference}. Last datetime: "${last_updated_time}".`;
     return {
       faros_DataQualityIssue: {
         uid: `RecencyIssue_${modelName}_${obj_data.refreshedAt}`,
-        title: 'recency',
+        title: 'daily recency count issue',
         model: modelName,
         description: desc_str,
         recordIds: [obj_data.id],
@@ -124,7 +126,7 @@ async function runZScoreTestOnObjectGrouping(
     const obj_query = substitute_strings_into_queries(
       base_model_query,
       modelName,
-      amount_of_recently_added_to_compute
+      amountOfRecentlyAddedToCompute
     );
     query_internal = `${query_internal} ${obj_query} `;
   }
@@ -140,7 +142,7 @@ async function runZScoreTestOnObjectGrouping(
 
   for (const modelName of object_test_list) {
     const obj_resp: RefreshedAtInterface[] = response[modelName];
-    if (!obj_resp || obj_resp.length < compute_number_min_threshold) {
+    if (!obj_resp || obj_resp.length < computeNumberMinThreshold) {
       continue;
     }
     const z_score_result: ZScoreComputationResult =
@@ -165,7 +167,7 @@ async function runZScoreTestOnObjectGrouping(
     const data_issue: DataIssueWrapper | null = convert_result_to_data_issue(
       z_score_result,
       modelName,
-      z_score_threshold,
+      zScoreThreshold,
       cfg,
       summaryKey
     );
@@ -307,8 +309,8 @@ export function compute_zscore_for_timestamps(
   for (let i = 1; i < cluster_averages.length; i++) {
     cluster_avg_differences.push(cluster_averages[i - 1] - cluster_averages[i]);
   }
-  if (cluster_avg_differences.length < compute_number_min_threshold) {
-    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length} < ${compute_number_min_threshold}. `;
+  if (cluster_avg_differences.length < computeNumberMinThreshold) {
+    let msg_str: string = `Number of cluster average differences less than compute number min threshold: ${cluster_avg_differences.length} < ${computeNumberMinThreshold}. `;
     msg_str += ` nResults: "${nResults}"`;
     return {
       status: 1,
@@ -353,7 +355,9 @@ export const checkIfWithinLastXDays: GraphDoctorTestFunction = async function* (
   fc: FarosClient,
   summaryKey: DataSummaryKey
 ) {
-  const days = cfg.withinDays ? cfg.withinDays : DEFAULT_WITHIN_DAYS;
+  const days = cfg.day_delay_threshold
+    ? cfg.day_delay_threshold
+    : defaultWithinDays;
   const model_test_list = [
     'cicd_Deployment',
     'cicd_Build',
