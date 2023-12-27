@@ -15,7 +15,7 @@ export class Projects extends CircleCIConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const project = record.record.data as Project;
-    const projectUid = CircleCICommon.getProject(project.slug);
+    const projectUid = CircleCICommon.getProject(project.slug).toLowerCase();
     const orgUid = CircleCICommon.getOrganization(project.slug);
     const res: DestinationRecord[] = [];
     res.push({
