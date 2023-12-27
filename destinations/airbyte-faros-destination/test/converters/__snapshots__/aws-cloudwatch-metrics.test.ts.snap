@@ -72,3 +72,53 @@ Array [
   },
 ]
 `;
+
+exports[`AWS Cloudwatch Metrics should use tag configuration 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_Tag",
+    "record": Object {
+      "key": "tag-key",
+      "uid": "tag-uid",
+      "value": "tag-value",
+    },
+  },
+  Object {
+    "model": "faros_MetricValueTag",
+    "record": Object {
+      "tag": Object {
+        "uid": "tag-uid",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "TotalCharacterCount",
+        },
+        "uid": "tag-uid-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "tag-uid-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+]
+`;
