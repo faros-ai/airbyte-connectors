@@ -17,9 +17,9 @@ export const MAX_DATE = new Date(7258118400000).toISOString();
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 
-export interface NamedQuery {
+export interface QueryGroup {
   name: string;
-  query: any;
+  queries: ReadonlyArray<any>;
 }
 
 export interface DataPoint {
@@ -35,7 +35,7 @@ export interface Config {
     aws_secret_access_key: string;
     aws_session_token?: string;
   };
-  queries: ReadonlyArray<NamedQuery>;
+  query_groups: ReadonlyArray<QueryGroup>;
   page_size?: number;
   cutoff_days?: number;
   stream_name?: string;
@@ -67,19 +67,27 @@ export class CloudWatch {
       throw new VError('Please specify AWS secret access key');
     }
 
-    if (config.queries.length === 0) {
-      throw new Error('Please specify at least one query');
+    if (config.query_groups.length === 0) {
+      throw new Error('Please specify at least one query group');
     }
 
-    for (const query of config.queries) {
-      if (!query.name || !query.query) {
-        throw new Error('Please specify a name and query for each query');
+    for (const group of config.query_groups) {
+      if (!group.name || !group.queries || group.queries.length === 0) {
+        throw new Error(
+          'Please specify a name and at least one query for each query group'
+        );
       }
 
-      try {
-        this.toMetricDataQuery(query.query);
-      } catch {
-        throw new Error(`Query ${query.name} is not valid JSON`);
+      for (const query of group.queries) {
+        try {
+          CloudWatch.toMetricDataQuery(query);
+        } catch (e) {
+          throw new VError(
+            `Query group "${
+              group.name
+            }" contains invalid query: ${JSON.stringify(query)}`
+          );
+        }
       }
     }
 
@@ -113,7 +121,7 @@ export class CloudWatch {
   }
 
   async *getMetricData(
-    query: any,
+    queries: ReadonlyArray<any>,
     after?: string,
     logger?: AirbyteLogger
   ): AsyncGenerator<DataPoint> {
@@ -121,7 +129,7 @@ export class CloudWatch {
       StartTime: new Date(after ?? this.startDate),
       EndTime: new Date(this.endDate),
       MaxDatapoints: this.pageSize,
-      MetricDataQueries: [CloudWatch.toMetricDataQuery(query)],
+      MetricDataQueries: queries.map(CloudWatch.toMetricDataQuery),
     };
 
     do {
