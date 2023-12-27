@@ -102,7 +102,7 @@ async function checkForDataRecencyIssue(
     return {
       faros_DataQualityIssue: {
         uid: `RecencyIssue_${modelName}_${obj_data.refreshedAt}`,
-        title: 'daily recency count issue',
+        title: 'daily-recency',
         model: modelName,
         description: desc_str,
         recordIds: [obj_data.id],
