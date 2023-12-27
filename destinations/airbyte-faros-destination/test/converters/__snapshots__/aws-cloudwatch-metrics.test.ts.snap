@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AWS Cloudwatch Metrics should correctly convert records 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:23:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "TotalCharacterCount-2023-12-11T19:23:00.000Z",
+      "value": "1976",
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "CodeWhispererCharacterCount",
+      "name": "CodeWhispererCharacterCount",
+      "uid": "CodeWhispererCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "CodeWhispererCharacterCount",
+      },
+      "uid": "CodeWhispererCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "0",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:23:00.000Z,
+      "definition": Object {
+        "uid": "CodeWhispererCharacterCount",
+      },
+      "uid": "CodeWhispererCharacterCount-2023-12-11T19:23:00.000Z",
+      "value": "0",
+    },
+  },
+]
+`;

@@ -131,6 +131,3 @@ export const awsCloudwatchMetricsStreamsLog = readTestResourceFile(
 export const awsCloudwatchMetricsStreamsInput = readTestResourceFile(
   'aws-cloudwatch-metrics/input.json'
 );
-export const awsCloudwatchMetricsStreamsOutput = readTestResourceFile(
-  'aws-cloudwatch-metrics/output.json'
-);

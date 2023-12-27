@@ -14,9 +14,14 @@ const mockZScoreResponse: Record<string, any> = readTestResourceAsJSON(
 const mockQueryTitleToResponse: Record<string, any> = readTestResourceAsJSON(
   'queryTitleToResponse.json'
 );
+const mockDataRecencyResponse: Record<string, any> = readTestResourceAsJSON(
+  'dataRecencyQueryResult.json'
+);
 const zScoreQueryResponseKey = 'zScoreQueryOptions';
+const dataRecencyQueryResponseKey = 'dataRecencyQuery';
 const queryTitleToResponseKey = 'queryTitleToResponse';
 mockQueryToResponse[zScoreQueryResponseKey] = mockZScoreResponse;
+mockQueryToResponse[dataRecencyQueryResponseKey] = mockDataRecencyResponse;
 mockQueryToResponse[queryTitleToResponseKey] = mockQueryTitleToResponse;
 // For printing out info to console during tests
 const mock_debug = true;
@@ -35,6 +40,8 @@ jest.mock('faros-js-client', () => {
         async gql(graph: string, query: string): Promise<any> {
           if (query.includes('ZScoreQuery')) {
             return mockQueryToResponse[zScoreQueryResponseKey];
+          } else if (query.includes('DataRecencyQuery')) {
+            return mockQueryToResponse[dataRecencyQueryResponseKey];
           } else if (query in mockQueryToResponse) {
             return mockQueryToResponse[query];
           } else {
@@ -104,6 +111,7 @@ describe('index', () => {
     api_url: 'prod.com',
     api_key: 'best_key',
     graph: 'best_graph',
+    day_delay_threshold: 3,
     logger: logger,
   };
 

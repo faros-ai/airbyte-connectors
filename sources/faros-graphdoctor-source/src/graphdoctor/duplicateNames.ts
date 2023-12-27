@@ -22,6 +22,7 @@ function process_name_query_results(
       results.push({
         faros_DataQualityIssue: {
           uid: `${crt_timestamp}|${modelName}|${recordCount}`,
+          title: 'duplicate-names',
           model: modelName,
           description: `Duplicate names for two of the same object: "${modelName}", name: "${result_obj.get(
             name_field

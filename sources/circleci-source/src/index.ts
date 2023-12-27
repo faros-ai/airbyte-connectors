@@ -48,33 +48,29 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     const circleCI = CircleCI.instance(config, this.logger);
-    const faros = new Faros(
-      {
-        url: config.faros_api_url,
-        apiKey: config.faros_api_key,
-        useGraphQLV2: true,
-      },
-      this.logger
-    );
-
     const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
 
-    let excludedRepoSlugs: string[] | undefined;
+    let excludedRepoSlugs: Set<string>;
     if (config.pull_blocklist_from_graph) {
+      const faros = new Faros(
+        {
+          url: config.faros_api_url,
+          apiKey: config.faros_api_key,
+        },
+        this.logger
+      );
       const excludedRepos = await faros.getExcludedRepos(
         config.faros_graph_name
       );
-      excludedRepoSlugs = excludedRepos.map(
-        (repo) =>
-          `${repo.organization.source}/${repo.organization.uid}/${repo.name}`
-      );
-      this.logger.debug(
-        `Excluded repos in [${
-          config.faros_graph_name
-        }] Faros graph: ${JSON.stringify(excludedRepoSlugs)}`
+      excludedRepoSlugs = new Set(
+        excludedRepos.map((repo) => {
+          const source = repo.organization.source.toLowerCase();
+          const orgUid = repo.organization.uid.toLowerCase();
+          const repoName = repo.name.toLowerCase();
+          return `${source}/${orgUid}/${repoName}`;
+        })
       );
     }
-    const excludedSlugs = new Set(excludedRepoSlugs ?? []);
 
     const allProjectSlugs: string[] = [];
     if (config.project_slugs.includes('*')) {
@@ -84,16 +80,13 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       allProjectSlugs.push(...config.project_slugs);
     }
 
-    config.project_slugs = allProjectSlugs.filter((slug) => {
-      this.logger.debug(`Checking if project ${slug} should be included`);
-      if (projectSlugBlocklist.has(slug) || excludedSlugs.has(slug)) {
-        this.logger.debug(`Excluding project ${slug}`);
-        return false;
-      }
-      return true;
-    });
+    config.project_slugs = allProjectSlugs.filter(
+      (slug) =>
+        !projectSlugBlocklist.has(slug.toLowerCase()) &&
+        !excludedRepoSlugs?.has(slug.toLowerCase())
+    );
 
-    this.logger.debug(`Will sync project slugs: ${config.project_slugs}`);
+    this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
 
     return {config, catalog, state};
   }

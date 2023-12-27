@@ -62,7 +62,7 @@ export class Metrics extends Converter {
         description: metric.queryName,
         valueType: {
           category: 'Numeric',
-          detail: '',
+          detail: null,
         },
       },
     };

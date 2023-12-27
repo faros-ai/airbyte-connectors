@@ -27,6 +27,13 @@
         "type": "string",
         "title": "Graph name",
         "description": "The graph name."
+      },
+      "day_delay_threshold": {
+        "order": 3,
+        "type": "integer",
+        "title": "Day Threshold For Alert",
+        "description": "How many days can pass before we raise an alert for data that has stopped being ingested.",
+        "default": 2
       }
     }
   }

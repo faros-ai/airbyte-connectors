@@ -124,6 +124,7 @@ export function get_missing_relation_data_issues_from_result_list(
     data_issues.push({
       faros_DataQualityIssue: {
         uid: `${crt_timestamp}|${main_obj}|${recordCount}`,
+        title: 'missing-relation',
         model: main_obj,
         description: desc_str,
         recordIds: [rec.id],
