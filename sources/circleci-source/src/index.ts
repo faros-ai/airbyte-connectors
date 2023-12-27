@@ -81,7 +81,9 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     }
 
     config.project_slugs = allProjectSlugs.filter(
-      (slug) => !projectSlugBlocklist.has(slug) && !excludedRepoSlugs?.has(slug)
+      (slug) =>
+        !projectSlugBlocklist.has(slug.toLowerCase()) &&
+        !excludedRepoSlugs?.has(slug.toLowerCase())
     );
 
     this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
