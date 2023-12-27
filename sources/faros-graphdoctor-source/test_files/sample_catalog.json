@@ -2,12 +2,12 @@
   "streams": [
     {
       "stream": {
-        "name": "data_quality_tests",
+        "name": "<source_name>__faros_graphdoctor__data_quality_tests",
         "json_schema": {},
         "supported_sync_modes": ["full_refresh", "incremental"]
       },
-      "sync_mode": "full_refresh",
-      "destination_sync_mode": "overwrite"
+      "sync_mode": "incremental",
+      "destination_sync_mode": "append"
     }
   ]
 }

@@ -44,7 +44,7 @@
       }
     ]
   },
-  "zScoreQueryOptions": {"note": "This object is replaced by an object in another file (mockQueryToObject.json)."},
-  "queryTitleToResponse": {"note": "This object is replaced by an object in another file (queryTitleToResponse.json)."}
-
+  "zScoreQueryOptions": {"note": "This object is replaced by an object in another file (zScoreQueryResult.json)."},
+  "queryTitleToResponse": {"note": "This object is replaced by an object in another file (queryTitleToResponse.json)."},
+  "dataRecencyQuery": {"note": "This object is replaced by an object in another file (dataRecencyQueryResult.json)."}
 }
