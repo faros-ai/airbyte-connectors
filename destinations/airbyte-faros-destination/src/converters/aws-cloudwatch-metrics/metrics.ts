@@ -31,7 +31,7 @@ export class Metrics extends Converter {
       throw new VError('timestamp is required');
     }
 
-    const prefix = this.config.tag_uid ? `${this.config.tag_uid}-` : '';
+    const prefix = this.config?.tag_uid ? `${this.config.tag_uid}-` : '';
     return `${prefix}${record.record.data['queryName']}-${record.record.data['timestamp']}`;
   }
 
