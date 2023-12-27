@@ -144,6 +144,13 @@ describe('index', () => {
 
     expect(fnSend).toHaveBeenCalledTimes(1);
     expect(items).toMatchSnapshot();
+    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
+      ExampleQueryGroup: {
+        hash: {
+          timestamp: latestTimestamp,
+        },
+      },
+    });
   });
 
   test('metrics full', async () => {
