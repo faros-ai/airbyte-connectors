@@ -1,16 +1,18 @@
 import {FarosClient} from 'faros-js-client';
 
 import {
+  amount_of_recently_added_to_compute,
+  compute_number_min_threshold,
+  DEFAULT_WITHIN_DAYS,
+  z_score_threshold,
+} from './constants';
+import {
   DataIssueWrapper,
   DataSummaryKey,
   GraphDoctorTestFunction,
   RefreshedAtInterface,
   ZScoreComputationResult,
 } from './models';
-
-const compute_number_min_threshold: number = 10;
-const amount_of_recently_added_to_compute: number = 500;
-const z_score_threshold: number = 2;
 
 // Entrypoint
 export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
@@ -56,6 +58,57 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     yield result;
   }
 };
+
+async function checkForDataRecencyIssue(
+  modelName: string,
+  base_model_query: string,
+  withinDays: number,
+  fc: FarosClient,
+  cfg: any,
+  summaryKey: DataSummaryKey
+): Promise<DataIssueWrapper> {
+  const obj_query = substitute_strings_into_queries(
+    base_model_query,
+    modelName,
+    1
+  );
+  const complete_query = normalizeWhitespace(
+    `query DataRecencyQuery { ${obj_query} }`
+  );
+  cfg.logger.info(
+    `Will run the following query to check day recency: ${complete_query}`
+  );
+
+  // Keeping the current time stamp to compare
+  const now_ts = new Date();
+  const secondsSinceEpoch = Math.floor(now_ts.getTime() / 1000);
+  const response = await fc.gql(cfg.graph, complete_query);
+  const obj_resp: RefreshedAtInterface[] = response[modelName];
+  if (!obj_resp || obj_resp.length < 1) {
+    return null;
+  }
+  const obj_data: RefreshedAtInterface = obj_resp[0];
+  const last_updated_time: Date = new Date(obj_data.refreshedAt);
+  const last_updated_time_str: string = last_updated_time.toISOString();
+  cfg.logger.info(
+    `Last updated time for ${modelName}: ${last_updated_time_str}`
+  );
+  const last_difference: number =
+    secondsSinceEpoch - last_updated_time.getTime() / 1000;
+  if (last_difference > 86400 * withinDays) {
+    const desc_str: string = `Recency issue: ${modelName} last updated time greater than ${withinDays} days in the past: "${last_updated_time}".`;
+    return {
+      faros_DataQualityIssue: {
+        uid: `RecencyIssue_${modelName}_${obj_data.refreshedAt}`,
+        title: 'recency',
+        model: modelName,
+        description: desc_str,
+        recordIds: [obj_data.id],
+        summary: summaryKey,
+      },
+    };
+  }
+}
 
 async function runZScoreTestOnObjectGrouping(
   object_test_list: string[],
@@ -294,3 +347,46 @@ export function compute_zscore_for_timestamps(
 function normalizeWhitespace(str): string {
   return str.replace(/\s+/g, ' ');
 }
+
+export const checkIfWithinLastXDays: GraphDoctorTestFunction = async function* (
+  cfg: any,
+  fc: FarosClient,
+  summaryKey: DataSummaryKey
+) {
+  const days = cfg.withinDays ? cfg.withinDays : DEFAULT_WITHIN_DAYS;
+  const model_test_list = [
+    'cicd_Deployment',
+    'cicd_Build',
+    'cicd_Artifact',
+    'vcs_Commit',
+    'vcs_PullRequest',
+    'tms_Task',
+  ];
+  cfg.logger.info(
+    `Starting to compute if objects appeared within the last ${days} days for models: ${model_test_list}`
+  );
+
+  const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
+    refreshedAt,
+    id
+  }`;
+  const data_issues: DataIssueWrapper[] = [];
+
+  for (const modelName of model_test_list) {
+    const new_data_issue = await checkForDataRecencyIssue(
+      modelName,
+      base_model_query,
+      days,
+      fc,
+      cfg,
+      summaryKey
+    );
+    if (new_data_issue) {
+      data_issues.push(new_data_issue);
+    }
+  }
+
+  for (const result of data_issues) {
+    yield result;
+  }
+};
