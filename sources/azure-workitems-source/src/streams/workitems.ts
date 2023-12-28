@@ -1,4 +1,9 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
@@ -20,7 +25,10 @@ export class Workitems extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<WorkItem> {
-    const azureWorkitem = await AzureWorkitems.instance(this.config);
+    const azureWorkitem = await AzureWorkitems.instance(
+      this.config,
+      this.logger
+    );
     yield* azureWorkitem.getWorkitems();
   }
 }

@@ -144,6 +144,12 @@ export interface PullRequest {
   repository: PullRequestRepository;
   commits: PullRequestCommit[];
   threads: PullRequestThread[];
+  workItems?: PullRequestWorkItem[];
+}
+
+export interface PullRequestWorkItem {
+  id: string;
+  url: string;
 }
 
 interface CommitAuthor {

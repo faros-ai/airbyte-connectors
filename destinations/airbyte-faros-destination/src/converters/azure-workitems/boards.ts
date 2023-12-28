@@ -12,13 +12,17 @@ export class Boards extends AzureWorkitemsConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const Board = record.record.data as Board;
+    const source = this.streamName.source;
+    const board = record.record.data as Board;
+    const organizationName = this.getOrganizationFromUrl(board.url);
+    const organization = {uid: organizationName, source};
     return [
       {
         model: 'tms_TaskBoard',
         record: {
-          uid: String(Board.id),
-          name: Board.name,
+          uid: String(board.id),
+          name: board.name,
+          organization,
         },
       },
     ];

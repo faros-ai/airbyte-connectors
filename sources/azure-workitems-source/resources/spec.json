@@ -21,6 +21,12 @@
         "type": "string",
         "title": "Azure Project"
       },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "The threshold after which data should be synced. Applicable only to WorkItems",
+        "default": 90
+      },
       "graph_version": {
         "type": "string",
         "title": "Graph API Version",

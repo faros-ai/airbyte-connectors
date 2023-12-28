@@ -104,6 +104,11 @@ export interface PullRequestThreadResponse {
   value: PullRequestThread[];
 }
 
+export interface PullRequestWorkItemResponse {
+  count: number;
+  value: PullRequestWorkItem[];
+}
+
 export interface RepositoryResponse {
   count: number;
   value: Repository[];
@@ -178,6 +183,13 @@ export interface PullRequest {
   supportsIterations: boolean;
   repository: PullRequestRepository;
   threads?: PullRequestThread[];
+  commits?: PullRequestCommit[];
+  workItems?: PullRequestWorkItem[];
+}
+
+export interface PullRequestWorkItem {
+  id: string;
+  url: string;
 }
 
 export interface PullRequestResponse {

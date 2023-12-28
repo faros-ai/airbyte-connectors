@@ -12,6 +12,8 @@ export class Users extends AzureWorkitemsConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const userItem = record.record.data as User;
+    const organizationName = this.getOrganizationFromUrl(userItem.url);
+    const organization = {uid: organizationName, source};
     const res: DestinationRecord[] = [];
 
     res.push({
@@ -21,6 +23,7 @@ export class Users extends AzureWorkitemsConverter {
         name: userItem.displayName,
         emailAddress: userItem.mailAddress,
         source,
+        organization,
       },
     });
     return res;

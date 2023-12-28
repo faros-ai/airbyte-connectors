@@ -10,6 +10,8 @@ export class PullRequests extends AzureReposConverter {
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
+    'vcs_PullRequestCommit',
+    'tms_TaskPullRequestAssociation',
   ];
 
   async convert(
@@ -53,6 +55,30 @@ export class PullRequests extends AzureReposConverter {
       }
     }
 
+    for (const commit of pullRequestItem.commits ?? []) {
+      res.push({
+        model: 'vcs_PullRequestCommit',
+        record: {
+          commit,
+          pullRequest,
+          origin,
+        },
+      });
+    }
+
+    for (const workItem of pullRequestItem.workItems ?? []) {
+      res.push({
+        model: 'tms_TaskPullRequestAssociation',
+        record: {
+          task: {
+            uid: workItem.id.toString(),
+            organization,
+          },
+          pullRequest,
+        },
+      });
+    }
+
     const mergeCommitId = pullRequestItem.lastMergeCommit?.commitId;
     const mergeCommit = mergeCommitId
       ? {
@@ -70,6 +96,7 @@ export class PullRequests extends AzureReposConverter {
         title: pullRequestItem.title,
         state: this.convertPullRequestState(pullRequestItem.status),
         htmlUrl: pullRequestItem.url,
+        url: pullRequestItem.url,
         createdAt: Utils.toDate(pullRequestItem.creationDate),
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
         mergedAt: Utils.toDate(pullRequestItem.closedDate),

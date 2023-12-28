@@ -20,7 +20,10 @@ export class Iterations extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Iteration> {
-    const azureWorkitem = await AzureWorkitems.instance(this.config);
+    const azureWorkitem = await AzureWorkitems.instance(
+      this.config,
+      this.logger
+    );
     yield* azureWorkitem.getIterations();
   }
 }

@@ -1,12 +1,14 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {chunk, flatten} from 'lodash';
+import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
 import {User, UserResponse, WorkItemResponse} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
+export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 
 export interface AzureWorkitemsConfig {
@@ -16,6 +18,7 @@ export interface AzureWorkitemsConfig {
   readonly api_version?: string;
   readonly request_timeout?: number;
   readonly graph_version?: string;
+  readonly cutoff_days?: number;
 }
 
 export class AzureWorkitems {
@@ -23,10 +26,15 @@ export class AzureWorkitems {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly graphClient: AxiosInstance
+    private readonly graphClient: AxiosInstance,
+    private readonly cutoffDays: number,
+    private readonly logger: AirbyteLogger
   ) {}
 
-  static async instance(config: AzureWorkitemsConfig): Promise<AzureWorkitems> {
+  static async instance(
+    config: AzureWorkitemsConfig,
+    logger: AirbyteLogger
+  ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
     if (!config.access_token) {
@@ -40,6 +48,8 @@ export class AzureWorkitems {
     if (!config.project) {
       throw new VError('project must not be an empty string');
     }
+
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
     const accessToken = base64Encode(`:${config.access_token}`);
 
@@ -67,7 +77,9 @@ export class AzureWorkitems {
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,
-      graphClient
+      graphClient,
+      cutoffDays,
+      logger
     );
     return AzureWorkitems.azure_Workitems;
   }
@@ -182,12 +194,22 @@ export class AzureWorkitems {
   async getIdsFromAWorkItemType(
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
+    const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
+    const cutoffDateFormatted = cutoffDate.toFormat('MM-dd-yyyy');
+
     const data = {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
+        'AND [System.CreatedDate] > ' +
+        "'" +
+        cutoffDateFormatted +
+        "'" +
         ' order by [id] asc',
     };
+
+    this.logger.info(`Work Items Query: ${data.query}`);
+
     const list = await this.post<any>('wit/wiql', data);
     const ids = [];
     for (let i = 0; i < list.data.workItems.length; i++) {
@@ -227,6 +249,13 @@ export class AzureWorkitems {
 
   async *getBoards(): AsyncGenerator<any> {
     const res = await this.get<any>('work/boards');
+    for (const item of res.data?.value ?? []) {
+      yield item;
+    }
+  }
+
+  async *getProjects(): AsyncGenerator<any> {
+    const res = await this.get<any>('projects');
     for (const item of res.data?.value ?? []) {
       yield item;
     }

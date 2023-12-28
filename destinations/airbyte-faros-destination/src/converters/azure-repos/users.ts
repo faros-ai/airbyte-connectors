@@ -46,6 +46,8 @@ export class Users extends AzureReposConverter {
         name: userItem.displayName,
         type,
         htmlUrl: userItem.url,
+        url: userItem.url,
+        email: userItem.mailAddress,
         source,
       },
     });

@@ -1,8 +1,8 @@
-# Azure-Repos Source
+# Azure-WorkItems Source
 
-This is the repository for the Azure-Repos source connector, written in Typescript.
+This is the WorkItemsitory for the Azure-WorkItems source connector, written in Typescript.
 For information about how to use this connector within Airbyte, see [the
-documentation](https://docs.airbyte.io/integrations/sources/azure-repos).
+documentation](https://docs.airbyte.io/integrations/sources/azure-workitems).
 
 ## Local development
 
@@ -22,10 +22,10 @@ npm run prepare
 ```
 
 This will install all required dependencies and build all included connectors,
-including the Azure-Repos source connector.
+including the Azure-WorkItems source connector.
 
-Now you can cd into the Azure-Repos connector directory, `sources/azure-repos-source`,
-and iterate on the Azure-Repos source connector. After making code changes, run:
+Now you can cd into the Azure-WorkItems connector directory, `sources/azure-workitems-source`,
+and iterate on the Azure-WorkItems source connector. After making code changes, run:
 
 ```
 npm run build
@@ -34,7 +34,7 @@ npm run build
 #### Create credentials
 
 Follow the instructions in the
-[documentation](https://docs.airbyte.io/integrations/sources/azure-repos) to
+[documentation](https://docs.airbyte.io/integrations/sources/azure-workitems) to
 generate the necessary credentials. Then create a file `secrets/config.json`
 conforming to the `resources/spec.json` file. Note that any directory named
 `secrets` is gitignored across the entire `airbyte-connectors` repos, so there is
@@ -47,10 +47,6 @@ no danger of accidentally checking in sensitive information. See
 bin/main spec
 bin/main check --config secrets/config.json
 bin/main discover --config secrets/config.json
-```
-
-Now you can run the source and output the content to `log.json`
-```
 bin/main read --config secrets/config.json --catalog test_files/full_configured_catalog.json > log.json
 ```
 
@@ -62,26 +58,26 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/azure-repos-source --build-arg version=0.0.1 -t flowyzer/azure-repos-source
+docker build . --build-arg path=sources/azure-workitems-source --build-arg version=0.0.1 -t flowyzer/azure-workitems-source
 ```
 
 #### Run
 
-Then return to the Azure-Repos connector directory and run any of the connector
+Then return to the Azure-WorkItems connector directory and run any of the connector
 commands as follows:
 
 ```
-docker run --rm azure-repos-source spec
-docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-repos-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm azure-workitems-source spec
+docker run --rm -v $(pwd)/secrets:/secrets azure-workitems-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets azure-workitems-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-workitems-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing
 
 ### Unit Tests
 
-To run unit tests locally, from the Azure-Repos connector directory run:
+To run unit tests locally, from the Azure-WorkItems connector directory run:
 
 ```
 npm test
@@ -102,7 +98,7 @@ docker pull airbyte/source-acceptance-test
 To run the acceptance tests, from the root repository directory, run
 
 ```
-./scripts/source-acceptance-test.sh azure-repos-source
+./scripts/source-acceptance-test.sh azure-repoworkitemss-source
 ```
 
 ## Dependency Management
@@ -116,4 +112,4 @@ connectors, such as linting/formatting tools, should go in the root
 
 ## Use in AirByte Portal
 
-Now you can import this as a new destination in AirByte. Use `flowyzer/azure-repos-source` as the docker image name. 
+Now you can import this as a new destination in AirByte. Use `flowyzer/azure-workitems-source` as the docker image name. 

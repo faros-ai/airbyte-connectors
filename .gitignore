@@ -10,6 +10,7 @@ acceptance_tests_logs/
 acceptance-test-*.log
 *.code-workspace
 lerna-debug.log
+log.json
 
 faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json

@@ -22,7 +22,11 @@ import {
   Commit,
   CommitRepository,
   ProjectResponse,
+  PullRequestCommit,
+  PullRequestCommitResponse,
   PullRequestThreadResponse,
+  PullRequestWorkItem,
+  PullRequestWorkItemResponse,
   TagCommit,
   User,
   UserResponse,
@@ -416,13 +420,30 @@ export class AzureRepos {
         if (pullRequest.status === 'completed' && closedDate <= since) {
           continue;
         }
-
+        // threads
         const threadResponse = await this.get<PullRequestThreadResponse>(
           `${project}/_apis/git/repositories/${repo.id}/pullRequests/${pullRequest.pullRequestId}/threads`
         );
         pullRequest.threads = [];
         const threads = threadResponse?.data?.value ?? [];
         pullRequest.threads.push(...threads);
+
+        // commits
+        const prCommitsResponse = await this.get<PullRequestCommitResponse>(
+          `${project}/_apis/git/repositories/${repo.id}/pullRequests/${pullRequest.pullRequestId}/commits`
+        );
+        pullRequest.commits = [];
+        const commits = prCommitsResponse?.data?.value ?? [];
+        pullRequest.commits.push(...commits);
+
+        // work items
+        const prWorkItemsResponse = await this.get<PullRequestWorkItemResponse>(
+          `${project}/_apis/git/repositories/${repo.id}/pullRequests/${pullRequest.pullRequestId}/workitems`
+        );
+        pullRequest.workItems = [];
+        const workItems = prWorkItemsResponse?.data?.value ?? [];
+        pullRequest.workItems.push(...workItems);
+
         yield pullRequest;
       }
     }

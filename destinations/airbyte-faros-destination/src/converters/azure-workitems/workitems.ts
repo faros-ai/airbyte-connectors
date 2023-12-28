@@ -15,6 +15,9 @@ export class Workitems extends AzureWorkitemsConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const WorkItem = record.record.data as WorkItem;
+    const organizationName = this.getOrganizationFromUrl(WorkItem.url);
+    const organization = {uid: organizationName, source};
+
     return [
       {
         model: 'tms_Task',
@@ -40,6 +43,7 @@ export class Workitems extends AzureWorkitemsConverter {
           },
           sprint: {uid: String(WorkItem.fields['System.IterationId']), source},
           source,
+          organization,
         },
       },
       {

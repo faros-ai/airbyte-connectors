@@ -9,4 +9,8 @@ export abstract class AzureWorkitemsConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
+
+  getOrganizationFromUrl(url: string): string {
+    return url.split('/')[3];
+  }
 }
