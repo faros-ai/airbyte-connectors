@@ -17,9 +17,13 @@
         "type": "string",
         "title": "Azure Organization"
       },
-      "project": {
-        "type": "string",
-        "title": "Azure Project"
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Azure Projects",
+        "description": "List of projects."
       },
       "cutoff_days": {
         "type": "integer",
