@@ -24,6 +24,7 @@ export class Projects extends CircleCIConverter {
       orgUid,
       project.organization_name
     );
+    // avoiding writing the same organization multiple times to reduce runtime
     if (!this.seenOrganizations.has(organizationKey)) {
       res.push({
         model: 'cicd_Organization',
@@ -47,6 +48,7 @@ export class Projects extends CircleCIConverter {
   }
 
   private getOrganizationKey(orgUid: string, organizationName: string): string {
+    // gets a key that is unique for the organization to avoid duplicates
     return `${orgUid}__${organizationName}`;
   }
 }
