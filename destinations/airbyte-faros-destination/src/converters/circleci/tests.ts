@@ -161,7 +161,10 @@ export class Tests extends CircleCIConverter {
     return res;
   }
 
-  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    ctx.logger.info('tests - onProcessingComplete');
     const res: DestinationRecord[] = [];
     for (const record of Object.values(this.testExecutions)) {
       res.push({model: 'qa_TestExecution', record});
