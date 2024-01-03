@@ -4,7 +4,7 @@ import {chunk, flatten} from 'lodash';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
-import {User, UserResponse, WorkItemResponse} from './models';
+import {Board, User, UserResponse, WorkItemResponse} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
@@ -46,8 +46,8 @@ export class AzureWorkitems {
       throw new VError('organization must not be an empty string');
     }
 
-    if (!config.projects) {
-      throw new VError('project must not be an empty string');
+    if (config.projects.length === 0) {
+      throw new VError('projects must not be an empty string');
     }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
@@ -86,22 +86,16 @@ export class AzureWorkitems {
     return AzureWorkitems.azure_Workitems;
   }
 
+  //TODO: Check connection does nothing once you import the source to a conector and click Test Connection button on UI
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getStories();
-      await iter.next();
+      const board = await this.getBoards().next();
+      this.logger.info(`Found board ${board.value.name}`);
     } catch (err: any) {
-      let errorMessage = 'Please verify your access token is correct. Error: ';
-      if (err.error_code || err.error_info) {
-        errorMessage += `${err.error_code}: ${err.error_info}`;
-        throw new VError(errorMessage);
-      }
-      try {
-        errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
-      } catch (wrapError: any) {
-        errorMessage += wrapError.message;
-      }
-      throw new VError(errorMessage);
+      throw new VError(
+        err,
+        'Please verify your access token and other information are correct'
+      );
     }
   }
 
@@ -133,72 +127,21 @@ export class AzureWorkitems {
     );
   }
 
-  async *getStories(): AsyncGenerator<any> {
-    for (const project of this.projects) {
-      const data = {
-        query:
-          'Select [System.Id], [System.Title], [System.State] From WorkItems ' +
-          "Where [System.WorkItemType] = 'User Story' order by [id] asc",
-      };
-      const list = await this.post<any>(`/${project}/_apis/wit/wiql`, data);
-      const ids: string[] = [];
-      for (let i = 0; i < list.data.workItems.length; i++) {
-        ids.push(list.data.workItems[i].id);
-      }
-      const ids2: string[] = [];
-      const userStories = [];
-      for (const id of ids) {
-        if (ids2.length == MAX_BATCH_SIZE) {
-          userStories.push(
-            await this.get<WorkItemResponse>(
-              `wit/workitems?ids=${ids2}&$expand=all`
-            )
-          );
-          ids2.splice(0);
-        }
-        ids2.push(id);
-      }
-      if (ids2.length > 0) {
-        userStories.push(
-          await this.get<WorkItemResponse>(
-            `wit/workitems?ids=${ids2}&$expand=all`
-          )
-        );
-      }
-      for (const item of userStories) {
-        yield item;
-      }
-    }
-  }
-
   async *getWorkitems(): AsyncGenerator<any> {
-    const promises = [
-      "'Task'",
-      "'User Story'",
-      "'BUG'",
-      "'Feature'",
-      "'Epic'",
-      "'Issue'",
-      "'Product Backlog Item'",
-      "'Requirement'",
-    ].map((n) => this.getIdsFromAWorkItemType(n));
-
+    const promises = await this.getIdsFromAWorkItemType();
     const results = await Promise.all(promises);
     const ids: ReadonlyArray<string> = flatten(results);
 
     for (const c of chunk(ids, MAX_BATCH_SIZE)) {
-      const res = await this.get<WorkItemResponse>(
-        `wit/workitems?ids=${c}&$expand=all`
-      );
+      const url = `/_apis/wit/workitems?ids=${c}&$expand=all`;
+      const res = await this.get<WorkItemResponse>(url);
       for (const item of res?.data?.value ?? []) {
         yield item;
       }
     }
   }
 
-  async getIdsFromAWorkItemType(
-    workItemsType: string
-  ): Promise<ReadonlyArray<string>> {
+  async getIdsFromAWorkItemType(): Promise<ReadonlyArray<string>> {
     const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
     const cutoffDateFormatted = cutoffDate.toFormat('MM-dd-yyyy');
     const ids = [];
@@ -206,16 +149,17 @@ export class AzureWorkitems {
     for (const project of this.projects) {
       const data = {
         query:
-          'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
-          workItemsType +
-          ' AND [System.CreatedDate] > ' +
+          'Select [System.Id] From WorkItems WHERE' +
+          " [System.TeamProject] = '" +
+          project +
           "'" +
+          " AND [System.CreatedDate] > '" +
           cutoffDateFormatted +
           "'" +
           ' order by [id] asc',
       };
 
-      const list = await this.post<any>(`/${project}/_apis/wit/wiql`, data);
+      const list = await this.post<any>(`/_apis/wit/wiql`, data);
 
       for (let i = 0; i < list.data.workItems.length; i++) {
         ids.push(list.data.workItems[i].id);
@@ -257,10 +201,12 @@ export class AzureWorkitems {
     }
   }
 
-  async *getBoards(): AsyncGenerator<any> {
+  async *getBoards(): AsyncGenerator<Board> {
     for (const project of this.projects) {
       const res = await this.get<any>(`/${project}/_apis/work/boards`);
-      for (const item of res.data?.value ?? []) {
+      const boards = res.data?.value ?? [];
+      this.logger.info(`Found ${boards.length} boards for project ${project}`);
+      for (const item of boards) {
         yield item;
       }
     }

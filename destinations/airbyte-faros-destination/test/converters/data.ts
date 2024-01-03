@@ -86,6 +86,9 @@ export const servicenowAllStreamsLog = readTestResourceFile(
 export const azurereposAllStreamsLog = readTestResourceFile(
   'azure-repos/all-streams.log'
 );
+export const azureworkitemsAllStreamsLog = readTestResourceFile(
+  'azure-workitems/all-streams.log'
+);
 export const circleciAllStreamsLog = readTestResourceFile(
   'circleci/all-streams.log'
 );

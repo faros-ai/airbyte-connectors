@@ -67,10 +67,10 @@ Then return to the Azure-WorkItems connector directory and run any of the connec
 commands as follows:
 
 ```
-docker run --rm azure-workitems-source spec
-docker run --rm -v $(pwd)/secrets:/secrets azure-workitems-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets azure-workitems-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-workitems-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+docker run --rm flowyzer/azure-workitems-source spec
+docker run --rm -v $(pwd)/secrets:/secrets flowyzer/azure-workitems-source check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets flowyzer/azure-workitems-source discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files flowyzer/azure-workitems-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
 ```
 
 ## Testing

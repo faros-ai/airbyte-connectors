@@ -32,3 +32,12 @@ Now you can import this as a new destination in AirByte. Use `flowyzer/airbyte-f
 
  - [Azure Repos Sorce](./sources/azure-repos-source/README.md)
  - [Azure WorkItems Sorce](./sources/azure-workitems-source/README.md)
+
+## URLs
+Airbyte	http://localhost:8000
+
+Hasura	http://localhost:8080
+
+Metabase http://localhost:3000 - default admin credentials are admin@admin.com/admin
+
+n8n	http://localhost:5678
