@@ -1,9 +1,25 @@
 import enquirer from 'enquirer';
 
+export enum ChoiceType {
+  SKIP = 'SKIP',
+  DEFAULT = 'DEFAULT',
+  EXAMPLE = 'EXAMPLE',
+  ENVIRONMENT_VARIABLE = 'ENVIRONMENT_VARIABLE',
+  BOOLEAN = 'BOOLEAN',
+  ENUM = 'ENUM',
+  USER_INPUT = 'USER_INPUT',
+}
+
+export interface UserChoice {
+  message: string;
+  value: string | number | boolean;
+  type: ChoiceType;
+}
+
 export interface SelectConfig {
   name: string;
   message: string;
-  choices: ReadonlyArray<any>;
+  choices: ReadonlyArray<ChoiceType>;
 }
 
 export function runSelect(cfg: SelectConfig): Promise<string> {

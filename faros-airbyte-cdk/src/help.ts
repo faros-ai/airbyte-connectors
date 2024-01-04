@@ -6,6 +6,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {
+  ChoiceType,
   runBooleanPrompt,
   runNumberPrompt,
   runPassword,
@@ -311,6 +312,7 @@ async function promptLeaf(row: TableRow, tail = false) {
       // If `tail` is true, this means we're prompting for the second or later element of an array.
       message: tail ? 'Done' : 'Skip this section',
       value: 'Skipped.',
+      type: ChoiceType.SKIP,
     });
   }
 
@@ -320,13 +322,18 @@ async function promptLeaf(row: TableRow, tail = false) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
+      type: ChoiceType.DEFAULT,
     });
   }
   if (!enumChoices && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
-      choices.push({message: `example ${idx} (${example})`, value: example});
+      choices.push({
+        message: `example ${idx} (${example})`,
+        value: example,
+        type: ChoiceType.EXAMPLE,
+      });
     }
   }
 
@@ -339,6 +346,7 @@ async function promptLeaf(row: TableRow, tail = false) {
     choices.push({
       message: `Use environment variable ${variableName}`,
       value: `\${${variableName}}`,
+      type: ChoiceType.ENVIRONMENT_VARIABLE,
     });
   }
 
@@ -350,11 +358,13 @@ async function promptLeaf(row: TableRow, tail = false) {
           choices.push({
             message: `${row.default} (default)`,
             value: 'Used default.',
+            type: ChoiceType.DEFAULT,
           });
         } else {
           choices.push({
             message: `${choice}`,
             value: `${choice}`,
+            type: ChoiceType.ENUM,
           });
         }
       }
@@ -362,6 +372,7 @@ async function promptLeaf(row: TableRow, tail = false) {
       choices.push({
         message: 'Enter your own value',
         value: ' ',
+        type: ChoiceType.USER_INPUT,
       });
     }
     const message = row.description
