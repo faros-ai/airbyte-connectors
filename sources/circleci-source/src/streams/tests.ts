@@ -2,7 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {TestMetadata} from '../circleci/types';
-import {CircleCIStreamBase, StreamSlice} from './common';
+import {CircleCIStreamBase} from './common';
 
 type TestsState = Dictionary<{lastUpdatedAt?: string}>;
 
@@ -19,69 +19,65 @@ export class Tests extends CircleCIStreamBase {
     return ['job_stopped_at'];
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectSlug of this.cfg.project_slugs) {
-      yield {projectSlug};
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
+    streamSlice?: any,
     streamState?: TestsState
   ): AsyncGenerator<TestMetadata, any, unknown> {
-    const since =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[streamSlice.projectSlug]?.lastUpdatedAt
-        : undefined;
+    for (const projectSlug of this.cfg.project_slugs) {
+      const since =
+        syncMode === SyncMode.INCREMENTAL
+          ? streamState?.[projectSlug]?.lastUpdatedAt
+          : undefined;
 
-    // We store the logs of undefined job numbers to a variable and log it at the end of the stream
-    let undefinedJobNumberLogs: string =
-      'Undefined job numbers and related projects:\n';
+      // We store the logs of undefined job numbers to a variable and log it at the end of the stream
+      let undefinedJobNumberLogs: string =
+        'Undefined job numbers and related projects:\n';
 
-    for await (const pipeline of this.circleCI.fetchPipelines(
-      streamSlice.projectSlug,
-      since
-    )) {
-      const seenJobs = new Set<number>();
-      for (const workflow of pipeline.workflows ?? []) {
-        for (const job of workflow.jobs ?? []) {
-          const jobNum = job.job_number;
-          if (jobNum === undefined) {
-            undefinedJobNumberLogs += `${job.id} - ${pipeline.project_slug}\n`;
-            continue;
-          }
-          if (seenJobs.has(jobNum)) {
-            this.logger.warn(
-              `Tests already seen for job [${jobNum}] in project [${pipeline.project_slug}] - Skipping additional occurrence`
+      for await (const pipeline of this.circleCI.fetchPipelines(
+        projectSlug,
+        since
+      )) {
+        const seenJobs = new Set<number>();
+        for (const workflow of pipeline.workflows ?? []) {
+          for (const job of workflow.jobs ?? []) {
+            const jobNum = job.job_number;
+            if (jobNum === undefined) {
+              undefinedJobNumberLogs += `${job.id} - ${pipeline.project_slug}\n`;
+              continue;
+            }
+            if (seenJobs.has(jobNum)) {
+              this.logger.warn(
+                `Tests already seen for job [${jobNum}] in project [${pipeline.project_slug}] - Skipping additional occurrence`
+              );
+              continue;
+            }
+            seenJobs.add(jobNum);
+
+            const tests = await this.circleCI.fetchTests(
+              pipeline.project_slug,
+              job.job_number
             );
-            continue;
-          }
-          seenJobs.add(jobNum);
-
-          const tests = await this.circleCI.fetchTests(
-            pipeline.project_slug,
-            job.job_number
-          );
-          for (const test of tests) {
-            yield {
-              ...test,
-              pipeline_id: pipeline.id,
-              pipeline_vcs: pipeline.vcs,
-              project_slug: pipeline.project_slug,
-              workflow_id: workflow.id,
-              workflow_name: workflow.name,
-              job_id: job.id,
-              job_number: job.job_number,
-              job_started_at: job.started_at,
-              job_stopped_at: job.stopped_at,
-            };
+            for (const test of tests) {
+              yield {
+                ...test,
+                pipeline_id: pipeline.id,
+                pipeline_vcs: pipeline.vcs,
+                project_slug: pipeline.project_slug,
+                workflow_id: workflow.id,
+                workflow_name: workflow.name,
+                job_id: job.id,
+                job_number: job.job_number,
+                job_started_at: job.started_at,
+                job_stopped_at: job.stopped_at,
+              };
+            }
           }
         }
       }
+      this.logger.debug(undefinedJobNumberLogs);
     }
-    this.logger.debug(undefinedJobNumberLogs);
   }
 
   getUpdatedState(

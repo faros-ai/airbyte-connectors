@@ -260,6 +260,10 @@ export class CircleCI {
     projectName: string,
     since?: string
   ): AsyncGenerator<Pipeline> {
+    this.logger.debug(
+      `Fetching pipelines for project ${projectName} since ${since}`
+    );
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - this.cutoffDays);
 

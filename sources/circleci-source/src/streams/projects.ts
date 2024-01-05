@@ -1,8 +1,7 @@
-import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Project} from '../circleci/types';
-import {CircleCIStreamBase, StreamSlice} from './common';
+import {CircleCIStreamBase} from './common';
 
 export class Projects extends CircleCIStreamBase {
   getJsonSchema(): Dictionary<any, string> {
@@ -13,17 +12,9 @@ export class Projects extends CircleCIStreamBase {
     return 'id';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectSlug of this.cfg.project_slugs) {
-      yield {projectSlug};
+  async *readRecords(): AsyncGenerator<Project, any, unknown> {
+    for await (const project of this.cfg.project_slugs) {
+      yield await this.circleCI.fetchProject(project);
     }
-  }
-
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: StreamSlice
-  ): AsyncGenerator<Project, any, unknown> {
-    yield await this.circleCI.fetchProject(streamSlice.projectSlug);
   }
 }
