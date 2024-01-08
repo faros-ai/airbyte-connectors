@@ -161,6 +161,11 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
         'Include fields marked as hidden in the spec',
         false
       )
+      .option(
+        '--autofill',
+        'Automatically fill in the source configuration with default/placeholder values',
+        false
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
@@ -183,12 +188,12 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
         );
 
         if (opts.json) {
-          fs.writeFileSync(opts.json, await buildJson(rows));
+          fs.writeFileSync(opts.json, await buildJson(rows, opts.autofill));
         } else {
           console.log(
             '\n\nUse the arguments below when running this source' +
               ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
-              `\n\n${await buildArgs(rows)}`
+              `\n\n${await buildArgs(rows, opts.autofill)}`
           );
         }
       });
