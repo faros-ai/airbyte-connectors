@@ -76,7 +76,7 @@ export class AirbyteLogger {
       },
     });
 
-    const logger = pino({level}, destination);
+    const logger: Logger<string> = pino({level}, destination);
     return logger;
   }
 
