@@ -488,7 +488,9 @@ async function acceptUserInput(
             }
           }
         }
-        action(row, results);
+        if (results.length) {
+          action(row, results);
+        }
       } else {
         for (let idx = row.children.length - 1; idx >= 0; idx--) {
           process.push(row.children[idx]);
