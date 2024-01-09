@@ -267,10 +267,7 @@ export abstract class AirbyteSourceBase<
               )}: ${e.message ?? JSON.stringify(e)}`,
               e.stack
             );
-            yield new AirbyteStateMessage(
-              {data: connectorState},
-              {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
-            );
+            yield this.errorState(streamName, streamState, connectorState, e);
             continue;
           }
         } else {
@@ -344,6 +341,19 @@ export abstract class AirbyteSourceBase<
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
+  }
+
+  private errorState(
+    streamName: string,
+    streamState: any,
+    connectorState: AirbyteState,
+    error: Error
+  ): AirbyteStateMessage {
+    connectorState[streamName] = streamState;
+    return new AirbyteStateMessage(
+      {data: connectorState},
+      {status: 'ERRORED', error: error.message ?? JSON.stringify(error)}
+    );
   }
 }
 
