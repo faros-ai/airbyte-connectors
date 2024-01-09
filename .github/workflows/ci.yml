@@ -23,7 +23,7 @@ jobs:
       FORCE_COLOR: true
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Jenkins server
         run: |
@@ -93,7 +93,7 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache Node modules
         uses: actions/cache@v3
@@ -109,7 +109,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -133,10 +133,10 @@ jobs:
       HUSKY: 0
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org
