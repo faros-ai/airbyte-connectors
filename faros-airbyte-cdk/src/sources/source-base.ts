@@ -256,7 +256,7 @@ export abstract class AirbyteSourceBase<
         }
       } catch (err: any) {
         if (slice) {
-          // Slices should not cause the entire stream to fail
+          // Slice failure should not cause the entire stream to fail
           this.logger.error(
             `Error processing ${streamName} stream slice ${JSON.stringify(
               slice
