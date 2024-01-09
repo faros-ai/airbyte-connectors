@@ -272,12 +272,11 @@ export abstract class AirbyteSourceBase<
               {data: connectorState},
               {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
             );
-            // Checkpoint the state before continuing with the next slice
-            yield this.checkpointState(streamName, streamState, connectorState);
             continue;
           }
+        } else {
+          throw e;
         }
-        throw e;
       }
       yield this.checkpointState(streamName, streamState, connectorState);
       if (slice) {
