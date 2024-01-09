@@ -244,14 +244,32 @@ export abstract class AirbyteSourceBase<
         slice,
         streamState
       );
-      for await (const recordData of records) {
-        recordCounter++;
-        yield AirbyteRecord.make(streamName, recordData);
-        streamState = streamInstance.getUpdatedState(streamState, recordData);
-        if (checkpointInterval && recordCounter % checkpointInterval === 0) {
+
+      try {
+        for await (const recordData of records) {
+          recordCounter++;
+          yield AirbyteRecord.make(streamName, recordData);
+          streamState = streamInstance.getUpdatedState(streamState, recordData);
+          if (checkpointInterval && recordCounter % checkpointInterval === 0) {
+            yield this.checkpointState(streamName, streamState, connectorState);
+          }
+        }
+      } catch (err: any) {
+        if (slice) {
+          // Slices should not cause the entire stream to fail
+          this.logger.error(
+            `Error processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}`
+          );
+          // Checkpoint the state before continuing with the next slice
           yield this.checkpointState(streamName, streamState, connectorState);
+          continue;
+        } else {
+          throw err;
         }
       }
+
       yield this.checkpointState(streamName, streamState, connectorState);
       if (slice) {
         this.logger.info(
