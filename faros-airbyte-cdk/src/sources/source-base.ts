@@ -266,13 +266,8 @@ export abstract class AirbyteSourceBase<
         if (!slice || !configuredStream.maxSliceFailures) {
           throw e;
         }
+
         failedSlices.push(slice);
-        if (
-          configuredStream.maxSliceFailures !== -1 && // -1 means unlimited allowed slice failures
-          failedSlices.length > configuredStream.maxSliceFailures
-        ) {
-          break;
-        }
         this.logger.error(
           `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
             slice
@@ -280,6 +275,16 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield this.errorState(streamName, streamState, connectorState, e);
+
+        if (
+          configuredStream.maxSliceFailures !== -1 && // -1 means unlimited allowed slice failures
+          failedSlices.length > configuredStream.maxSliceFailures
+        ) {
+          this.logger.error(
+            `Exceeded maximum number of allowed slice failures: ${configuredStream.maxSliceFailures}`
+          );
+          break;
+        }
       }
     }
     if (failedSlices.length > 0) {
