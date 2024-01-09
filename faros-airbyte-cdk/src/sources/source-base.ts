@@ -229,6 +229,7 @@ export abstract class AirbyteSourceBase<
       configuredStream.cursor_field,
       streamState
     );
+    const failedSlices = [];
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -254,22 +255,30 @@ export abstract class AirbyteSourceBase<
             yield this.checkpointState(streamName, streamState, connectorState);
           }
         }
-      } catch (err: any) {
-        if (slice) {
-          // Slice failure should not cause the entire stream to fail
-          this.logger.error(
-            `Error processing ${streamName} stream slice ${JSON.stringify(
-              slice
-            )}`
-          );
-          // Checkpoint the state before continuing with the next slice
-          yield this.checkpointState(streamName, streamState, connectorState);
-          continue;
-        } else {
-          throw err;
+      } catch (e: any) {
+        if (slice && configuredStream.maxSliceFailures) {
+          failedSlices.push(slice);
+          if (
+            configuredStream.maxSliceFailures === -1 || // Unlimited allowed slice failures
+            failedSlices.length <= configuredStream.maxSliceFailures
+          ) {
+            this.logger.error(
+              `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
+                slice
+              )}: ${e.message ?? JSON.stringify(e)}`,
+              e.stack
+            );
+            yield new AirbyteStateMessage(
+              {data: connectorState},
+              {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
+            );
+            // Checkpoint the state before continuing with the next slice
+            yield this.checkpointState(streamName, streamState, connectorState);
+            continue;
+          }
         }
+        throw e;
       }
-
       yield this.checkpointState(streamName, streamState, connectorState);
       if (slice) {
         this.logger.info(
@@ -278,6 +287,13 @@ export abstract class AirbyteSourceBase<
           )}. Read ${recordCounter} records`
         );
       }
+    }
+    if (failedSlices.length > 0) {
+      throw new VError(
+        `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
+          failedSlices
+        )}`
+      );
     }
     this.logger.info(
       `Last recorded state of ${streamName} stream is ${JSON.stringify(
