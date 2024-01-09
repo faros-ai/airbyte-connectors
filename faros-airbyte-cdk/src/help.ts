@@ -31,14 +31,17 @@ export interface TableRow {
   enum?: ReadonlyArray<string>;
 }
 
+function convertPathToTitle(path: string[]): string {
+  return path.slice(-1)[0].split('_').map(upperFirst).join(' ');
+}
+
 function visitLeaf(
   o: Dictionary<any>,
   curPath: string[],
   section: number,
   required = false
 ): TableRow {
-  const title =
-    o.title || curPath.slice(-1)[0].split('_').map(upperFirst).join(' ');
+  const title = o.title || convertPathToTitle(curPath);
   const leaf = {
     title,
     path: curPath.join('.'),
@@ -79,7 +82,14 @@ export function traverseObject(
   ];
   let newIdx = section + 1;
   while (process.length > 0) {
-    const [curObject, curPath, idx, req] = process.shift();
+    const shifted = process.shift();
+    let [curObject] = shifted;
+    const [, curPath, idx, req] = shifted;
+    const isArrayOfObjects =
+      curObject['type'] === 'array' && curObject['items']['type'] === 'object';
+    if (isArrayOfObjects) {
+      curObject = curObject['items'];
+    }
     if (curObject['type'] !== 'object') {
       result.push(visitLeaf(curObject, curPath, idx, req));
       continue;
@@ -87,7 +97,6 @@ export function traverseObject(
 
     ok(curObject.properties || curObject.oneOf);
     ok(curObject.properties === undefined || curObject.oneOf === undefined);
-    ok(curObject.title);
 
     if (curObject.properties) {
       const children = Object.values(curObject.properties).filter(
@@ -95,7 +104,7 @@ export function traverseObject(
       ).length;
       if (!children) {
         result.push({
-          title: curObject.title,
+          title: curObject.title || convertPathToTitle(curPath),
           path: curPath.join('.'),
           section: idx,
           description: 'Skip this section',
@@ -106,7 +115,7 @@ export function traverseObject(
         continue;
       }
       result.push({
-        title: curObject.title,
+        title: curObject.title || convertPathToTitle(curPath),
         path: curPath.join('.'),
         section: idx,
         children: _.range(newIdx, newIdx + children),
@@ -115,7 +124,8 @@ export function traverseObject(
           children > 1 ? 's' : ''
         } ${_.range(newIdx, newIdx + children).join()} as needed`,
         required: req,
-        type: 'object',
+        type: isArrayOfObjects ? 'array' : 'object',
+        items_type: isArrayOfObjects ? 'object' : undefined,
         examples: [],
       });
       const requiredProperties: string[] = curObject.required || [];
@@ -151,7 +161,7 @@ export function traverseObject(
 
       ok(children > 0);
       result.push({
-        title: curObject.title,
+        title: curObject.title || convertPathToTitle(curPath),
         path: curPath.join('.'),
         section: idx,
         children: _.range(newIdx, newIdx + children),
@@ -428,7 +438,7 @@ async function acceptUserInput(
   );
 
   // Stack of sections to process in DFS
-  const process = [0];
+  const process = [rows[0].section];
   const processed = [];
   while (process.length) {
     const section = process.pop();
@@ -439,6 +449,47 @@ async function acceptUserInput(
         const choice = await promptOneOf(row, sections);
         if (choice) {
           process.push(choice);
+        }
+      } else if (row.type === 'array' && row.items_type === 'object') {
+        const results = [];
+        let tail = false,
+          done = false;
+        while (!done) {
+          const choices = [];
+          if (!row.required || tail) {
+            choices.push({
+              // If `tail` is true, this means we're prompting for the second or later element of an array.
+              message: tail ? 'Done' : 'Skip this section',
+              value: 'Skipped.',
+            });
+          }
+          choices.push({
+            message: 'Enter your own value',
+            value: ' ',
+          });
+          const choice = await runSelect({
+            name: 'array',
+            message: row.title,
+            choices,
+          });
+          switch (choice) {
+            case 'Skipped.':
+              done = true;
+              break;
+            case ' ': {
+              const result = {};
+              for (const child of row.children) {
+                await acceptUserInput([sections.get(child)], (row, choice) =>
+                  _.set(result, row.path.split('.').slice(-1), choice)
+                );
+              }
+              results.push(result);
+              tail = true;
+            }
+          }
+        }
+        if (results.length) {
+          action(row, results);
         }
       } else {
         for (let idx = row.children.length - 1; idx >= 0; idx--) {
