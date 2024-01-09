@@ -263,25 +263,23 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
-        if (slice && configuredStream.maxSliceFailures) {
-          failedSlices.push(slice);
-          if (
-            configuredStream.maxSliceFailures === -1 || // Unlimited allowed slice failures
-            failedSlices.length <= configuredStream.maxSliceFailures
-          ) {
-            this.logger.error(
-              `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
-                slice
-              )}: ${e.message ?? JSON.stringify(e)}`,
-              e.stack
-            );
-            yield this.errorState(streamName, streamState, connectorState, e);
-          } else {
-            break;
-          }
-        } else {
+        if (!slice || !configuredStream.maxSliceFailures) {
           throw e;
         }
+        failedSlices.push(slice);
+        if (
+          configuredStream.maxSliceFailures !== -1 && // -1 means unlimited allowed slice failures
+          failedSlices.length > configuredStream.maxSliceFailures
+        ) {
+          break;
+        }
+        this.logger.error(
+          `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
+            slice
+          )}: ${e.message ?? JSON.stringify(e)}`,
+          e.stack
+        );
+        yield this.errorState(streamName, streamState, connectorState, e);
       }
     }
     if (failedSlices.length > 0) {
