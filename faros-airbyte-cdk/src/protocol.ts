@@ -119,7 +119,7 @@ export interface AirbyteConfiguredStream {
   cursor_field?: string[];
   destination_sync_mode?: DestinationSyncMode;
   primary_key?: string[][];
-  maxSliceFailures?: number; // -1 means no limit
+  maxSliceFailures?: number; // -1 means unlimited
 }
 
 export interface AirbyteConfiguredCatalog {

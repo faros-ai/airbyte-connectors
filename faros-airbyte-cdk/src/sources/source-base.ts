@@ -245,7 +245,6 @@ export abstract class AirbyteSourceBase<
         slice,
         streamState
       );
-
       try {
         for await (const recordData of records) {
           recordCounter++;
