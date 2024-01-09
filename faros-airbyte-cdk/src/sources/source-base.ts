@@ -276,6 +276,8 @@ export abstract class AirbyteSourceBase<
               e.stack
             );
             yield this.errorState(streamName, streamState, connectorState, e);
+          } else {
+            break;
           }
         } else {
           throw e;
