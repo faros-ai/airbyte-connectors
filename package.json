@@ -43,7 +43,7 @@
     "ts-essentials": "^9.1.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.4"
+    "typescript": "^5.3.3"
   },
   "overrides": {
     "degenerator": "^5.0.0"
