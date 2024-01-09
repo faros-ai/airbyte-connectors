@@ -254,6 +254,14 @@ export abstract class AirbyteSourceBase<
             yield this.checkpointState(streamName, streamState, connectorState);
           }
         }
+        yield this.checkpointState(streamName, streamState, connectorState);
+        if (slice) {
+          this.logger.info(
+            `Finished processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}. Read ${recordCounter} records`
+          );
+        }
       } catch (e: any) {
         if (slice && configuredStream.maxSliceFailures) {
           failedSlices.push(slice);
@@ -273,14 +281,6 @@ export abstract class AirbyteSourceBase<
         } else {
           throw e;
         }
-      }
-      yield this.checkpointState(streamName, streamState, connectorState);
-      if (slice) {
-        this.logger.info(
-          `Finished processing ${streamName} stream slice ${JSON.stringify(
-            slice
-          )}. Read ${recordCounter} records`
-        );
       }
     }
     if (failedSlices.length > 0) {
