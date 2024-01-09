@@ -500,16 +500,19 @@ async function acceptUserInput(
               // If `tail` is true, this means we're prompting for the second or later element of an array.
               message: tail ? 'Done' : 'Skip this section',
               value: 'Skipped.',
+              type: ChoiceType.SKIP,
             });
           }
           choices.push({
             message: 'Enter your own value',
             value: ' ',
+            type: ChoiceType.USER_INPUT,
           });
           const choice = await runSelect({
             name: 'array',
             message: row.title,
             choices,
+            autofill,
           });
           switch (choice) {
             case 'Skipped.':
@@ -518,8 +521,12 @@ async function acceptUserInput(
             case ' ': {
               const result = {};
               for (const child of row.children) {
-                await acceptUserInput([sections.get(child)], (row, choice) =>
-                  _.set(result, row.path.split('.').slice(-1), choice)
+                await acceptUserInput(
+                  [sections.get(child)],
+                  (row, choice) =>
+                    _.set(result, row.path.split('.').slice(-1), choice),
+                  autofill,
+                  useEnvVars
                 );
               }
               results.push(result);
