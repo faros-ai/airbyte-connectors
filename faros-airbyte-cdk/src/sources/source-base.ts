@@ -1,4 +1,4 @@
-import {cloneDeep, keyBy} from 'lodash';
+import {cloneDeep, keyBy, max} from 'lodash';
 import VError from 'verror';
 
 import {AirbyteLogger} from '../logger';
@@ -130,7 +130,8 @@ export abstract class AirbyteSourceBase<
         const generator = this.readStream(
           streamInstance,
           configuredStream,
-          connectorState
+          connectorState,
+          config.max_slice_failures
         );
 
         for await (const message of generator) {
@@ -177,14 +178,20 @@ export abstract class AirbyteSourceBase<
   private async *readStream(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
-    connectorState: AirbyteState
+    connectorState: AirbyteState,
+    maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const useIncremental =
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
       streamInstance.supportsIncremental;
 
     const recordGenerator = useIncremental
-      ? this.readIncremental(streamInstance, configuredStream, connectorState)
+      ? this.readIncremental(
+          streamInstance,
+          configuredStream,
+          connectorState,
+          maxSliceFailures
+        )
       : this.readFullRefresh(streamInstance, configuredStream);
 
     let recordCounter = 0;
@@ -206,7 +213,8 @@ export abstract class AirbyteSourceBase<
   private async *readIncremental(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
-    connectorState: AirbyteState
+    connectorState: AirbyteState,
+    maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
     let streamState = connectorState[streamName] ?? {};
@@ -263,7 +271,7 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
-        if (!slice || !configuredStream.maxSliceFailures) {
+        if (!slice || typeof maxSliceFailures === 'undefined') {
           throw e;
         }
 
@@ -276,12 +284,10 @@ export abstract class AirbyteSourceBase<
         );
         yield this.errorState(streamName, streamState, connectorState, e);
 
-        if (
-          configuredStream.maxSliceFailures !== -1 && // -1 means unlimited allowed slice failures
-          failedSlices.length > configuredStream.maxSliceFailures
-        ) {
+        // -1 means unlimited allowed slice failures
+        if (maxSliceFailures !== -1 && failedSlices.length > maxSliceFailures) {
           this.logger.error(
-            `Exceeded maximum number of allowed slice failures: ${configuredStream.maxSliceFailures}`
+            `Exceeded maximum number of allowed slice failures: ${maxSliceFailures}`
           );
           break;
         }

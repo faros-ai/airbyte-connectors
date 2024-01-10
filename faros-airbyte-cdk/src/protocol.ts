@@ -52,6 +52,7 @@ export enum AirbyteTraceFailureType {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AirbyteConfig {
   compress_state?: boolean;
+  max_slice_failures?: number; // -1 means unlimited
   [k: string]: any;
 }
 
@@ -119,7 +120,6 @@ export interface AirbyteConfiguredStream {
   cursor_field?: string[];
   destination_sync_mode?: DestinationSyncMode;
   primary_key?: string[][];
-  maxSliceFailures?: number; // -1 means unlimited
 }
 
 export interface AirbyteConfiguredCatalog {
