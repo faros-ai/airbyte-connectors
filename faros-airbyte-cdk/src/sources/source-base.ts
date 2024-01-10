@@ -1,4 +1,4 @@
-import {cloneDeep, keyBy, max} from 'lodash';
+import {cloneDeep, keyBy} from 'lodash';
 import VError from 'verror';
 
 import {AirbyteLogger} from '../logger';
