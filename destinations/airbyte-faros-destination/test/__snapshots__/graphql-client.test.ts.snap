@@ -65,6 +65,12 @@ Array [
     },
     "uid": "vitalyg",
   },
+  Object {
+    "email": "some-email",
+    "htmlUrl": "https://github.com/jeniii",
+    "name": "some-name",
+    "uid": "jeniii",
+  },
 ]
 `;
 
@@ -103,6 +109,8 @@ exports[`graphql-client write batch upsert update as upsert 3`] = `"mutation { i
 exports[`graphql-client write batch upsert update as upsert 4`] = `"mutation { insert_vcs_PullRequest (objects: [{number: 2, origin: \\"my-origin\\", repositoryId: \\"f9b8248bfcbd563eb23d05a8b1c188a873de787e\\"}], on_conflict: {constraint: vcs_PullRequest_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt number repositoryId } } }"`;
 
 exports[`graphql-client write batch upsert update as upsert 5`] = `"mutation { m0: insert_vcs_PullRequest_one (object: {number: 2, repository: {data: {name: \\"repo1\\", organization: {data: {uid: \\"playg\\", source: \\"Bitbucket\\"}, on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}}}, on_conflict: {constraint: vcs_Repository_pkey, update_columns: [name, organizationId]}}, mergeCommit: {data: {sha: \\"b500332b58c74fc15302c8961e54facf66c16c44\\", repository: {data: {name: \\"repo1\\", organization: {data: {uid: \\"playg\\", source: \\"Bitbucket\\"}, on_conflict: {constraint: vcs_Organization_pkey, update_columns: [source, uid]}}}, on_conflict: {constraint: vcs_Repository_pkey, update_columns: [name, organizationId]}}}, on_conflict: {constraint: vcs_Commit_pkey, update_columns: [repositoryId, sha]}}, mergedAt: \\"2022-09-21T03:00:27.505Z\\", origin: \\"my-transform-origin\\"}, on_conflict: {constraint: vcs_PullRequest_pkey, update_columns: [mergeCommitId, mergedAt]}) { id } }"`;
+
+exports[`graphql-client write batch upsert upsert same object 1`] = `"mutation { insert_vcs_User (objects: [{uid: \\"jeniii\\", name: \\"some-name\\", email: \\"some-email\\", htmlUrl: \\"https://github.com/jeniii\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: vcs_User_pkey, update_columns: [email, htmlUrl, name, origin, refreshedAt]}) { returning { id refreshedAt source uid } } }"`;
 
 exports[`groupByKeys 1 group of 2 1`] = `
 Array [
