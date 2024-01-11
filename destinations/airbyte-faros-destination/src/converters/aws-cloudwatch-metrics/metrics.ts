@@ -10,9 +10,9 @@ import {
 } from '../converter';
 
 export interface MetricsConfig {
-  tag_uid?: string;
   tag_key?: string;
   tag_value?: string;
+  should_tag_definition?: boolean;
 }
 
 export class Metrics extends Converter {
@@ -31,14 +31,28 @@ export class Metrics extends Converter {
       throw new VError('timestamp is required');
     }
 
-    const prefix = this.config?.tag_uid ? `${this.config.tag_uid}-` : '';
+    const tagUid = this.getTagUid();
+    const prefix = tagUid ? `${tagUid}-` : '';
     return `${prefix}${record.record.data['queryName']}-${record.record.data['timestamp']}`;
+  }
+
+  private getTagUid(): string | undefined {
+    if (this.config?.tag_key && this.config?.tag_value) {
+      const tagUid = `${this.config.tag_key}-${this.config.tag_value}`;
+      return tagUid;
+    }
+    return undefined;
+  }
+
+  private shouldTagDefinition() {
+    return this.config?.should_tag_definition ?? true;
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
     'faros_MetricValue',
     'faros_Tag',
+    'faros_MetricDefinitionTag',
     'faros_MetricValueTag',
   ];
 
@@ -53,6 +67,21 @@ export class Metrics extends Converter {
 
     const res: DestinationRecord[] = [];
     const metric = record.record.data;
+
+    const tagUid = this.getTagUid();
+    if (tagUid) {
+      if (!this.tags.has(tagUid)) {
+        res.push({
+          model: 'faros_Tag',
+          record: {
+            uid: tagUid,
+            key: this.config.tag_key,
+            value: this.config.tag_value,
+          },
+        });
+        this.tags.add(tagUid);
+      }
+    }
 
     const metricDefinition = {
       model: 'faros_MetricDefinition',
@@ -70,32 +99,16 @@ export class Metrics extends Converter {
     if (!this.metricDefinitions.has(metricDefinition.record.uid)) {
       res.push(metricDefinition);
       this.metricDefinitions.add(metricDefinition.record.uid);
-    }
 
-    if (this.config.tag_uid) {
-      const tagUid = this.config.tag_uid;
-      if (!this.tags.has(tagUid)) {
+      if (this.shouldTagDefinition() && tagUid) {
         res.push({
-          model: 'faros_Tag',
+          model: 'faros_MetricDefinitionTag',
           record: {
-            uid: tagUid,
-            key: this.config.tag_key ?? null,
-            value: this.config.tag_value ?? null,
-          },
-        });
-        this.tags.add(tagUid);
-      }
-
-      res.push({
-        model: 'faros_MetricValueTag',
-        record: {
-          tag: {uid: tagUid},
-          value: {
-            uid: this.id(record),
+            tag: {uid: tagUid},
             definition: {uid: metricDefinition.record.uid},
           },
-        },
-      });
+        });
+      }
     }
 
     const metricValue = {
@@ -109,6 +122,19 @@ export class Metrics extends Converter {
     };
 
     res.push(metricValue);
+
+    if (!this.shouldTagDefinition() && tagUid) {
+      res.push({
+        model: 'faros_MetricValueTag',
+        record: {
+          tag: {uid: tagUid},
+          value: {
+            uid: this.id(record),
+            definition: {uid: metricDefinition.record.uid},
+          },
+        },
+      });
+    }
 
     return res;
   }

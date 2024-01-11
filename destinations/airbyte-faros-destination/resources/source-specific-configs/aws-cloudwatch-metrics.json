@@ -12,22 +12,23 @@
           "const": "AWS Cloudwatch Metrics",
           "order": 0
         },
-        "tag_uid": {
-          "type": "string",
-          "title": "Tag UID",
-          "description": "Unique identifier for the tag. If provided, all metric values will be associated with the tag.",
-          "order": 1
-        },
         "tag_key": {
           "type": "string",
           "title": "Tag Key",
-          "description": "Key of the tag.",
-          "order": 2
+          "description": "Key of the tag. If both key and value are provided, a tag will be associated to metrics definitions/values.",
+          "order": 1
         },
         "tag_value": {
           "type": "string",
           "title": "Tag Value",
           "description": "Value of the tag.",
+          "order": 2
+        },
+        "should_tag_definition": {
+          "type": "boolean",
+          "title": "Tag Definition",
+          "description": "If true, the tag will be associated to metrics definitions. Otherwise, it will be associated to metrics values.",
+          "default": true,
           "order": 3
         }
       }
