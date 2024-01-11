@@ -130,7 +130,8 @@ export abstract class AirbyteSourceBase<
         const generator = this.readStream(
           streamInstance,
           configuredStream,
-          connectorState
+          connectorState,
+          config.max_slice_failures
         );
 
         for await (const message of generator) {
@@ -177,15 +178,25 @@ export abstract class AirbyteSourceBase<
   private async *readStream(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
-    connectorState: AirbyteState
+    connectorState: AirbyteState,
+    maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const useIncremental =
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
       streamInstance.supportsIncremental;
 
     const recordGenerator = useIncremental
-      ? this.readIncremental(streamInstance, configuredStream, connectorState)
-      : this.readFullRefresh(streamInstance, configuredStream);
+      ? this.readIncremental(
+          streamInstance,
+          configuredStream,
+          connectorState,
+          maxSliceFailures
+        )
+      : this.readFullRefresh(
+          streamInstance,
+          configuredStream,
+          maxSliceFailures
+        );
 
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
@@ -206,7 +217,8 @@ export abstract class AirbyteSourceBase<
   private async *readIncremental(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
-    connectorState: AirbyteState
+    connectorState: AirbyteState,
+    maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
     let streamState = connectorState[streamName] ?? {};
@@ -229,6 +241,7 @@ export abstract class AirbyteSourceBase<
       configuredStream.cursor_field,
       streamState
     );
+    const failedSlices = [];
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -244,22 +257,50 @@ export abstract class AirbyteSourceBase<
         slice,
         streamState
       );
-      for await (const recordData of records) {
-        recordCounter++;
-        yield AirbyteRecord.make(streamName, recordData);
-        streamState = streamInstance.getUpdatedState(streamState, recordData);
-        if (checkpointInterval && recordCounter % checkpointInterval === 0) {
-          yield this.checkpointState(streamName, streamState, connectorState);
+      try {
+        for await (const recordData of records) {
+          recordCounter++;
+          yield AirbyteRecord.make(streamName, recordData);
+          streamState = streamInstance.getUpdatedState(streamState, recordData);
+          if (checkpointInterval && recordCounter % checkpointInterval === 0) {
+            yield this.checkpointState(streamName, streamState, connectorState);
+          }
+        }
+        yield this.checkpointState(streamName, streamState, connectorState);
+        if (slice) {
+          this.logger.info(
+            `Finished processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}. Read ${recordCounter} records`
+          );
+        }
+      } catch (e: any) {
+        if (!slice || maxSliceFailures == null) {
+          throw e;
+        }
+        failedSlices.push(slice);
+        this.logger.error(
+          `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
+            slice
+          )}: ${e.message ?? JSON.stringify(e)}`,
+          e.stack
+        );
+        yield this.errorState(streamName, streamState, connectorState, e);
+        // -1 means unlimited allowed slice failures
+        if (maxSliceFailures !== -1 && failedSlices.length > maxSliceFailures) {
+          this.logger.error(
+            `Exceeded maximum number of allowed slice failures: ${maxSliceFailures}`
+          );
+          break;
         }
       }
-      yield this.checkpointState(streamName, streamState, connectorState);
-      if (slice) {
-        this.logger.info(
-          `Finished processing ${streamName} stream slice ${JSON.stringify(
-            slice
-          )}. Read ${recordCounter} records`
-        );
-      }
+    }
+    if (failedSlices.length > 0) {
+      throw new VError(
+        `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
+          failedSlices
+        )}`
+      );
     }
     this.logger.info(
       `Last recorded state of ${streamName} stream is ${JSON.stringify(
@@ -270,13 +311,15 @@ export abstract class AirbyteSourceBase<
 
   private async *readFullRefresh(
     streamInstance: AirbyteStreamBase,
-    configuredStream: AirbyteConfiguredStream
+    configuredStream: AirbyteConfiguredStream,
+    maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
     const slices = streamInstance.streamSlices(
       SyncMode.FULL_REFRESH,
       configuredStream.cursor_field
     );
+    const failedSlices = [];
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -291,17 +334,44 @@ export abstract class AirbyteSourceBase<
         configuredStream.cursor_field,
         slice
       );
-      for await (const record of records) {
-        recordCounter++;
-        yield AirbyteRecord.make(configuredStream.stream.name, record);
-      }
-      if (slice) {
-        this.logger.info(
-          `Finished processing ${streamName} stream slice ${JSON.stringify(
+      try {
+        for await (const record of records) {
+          recordCounter++;
+          yield AirbyteRecord.make(configuredStream.stream.name, record);
+        }
+        if (slice) {
+          this.logger.info(
+            `Finished processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}. Read ${recordCounter} records`
+          );
+        }
+      } catch (e: any) {
+        if (!slice || maxSliceFailures == null) {
+          throw e;
+        }
+        failedSlices.push(slice);
+        this.logger.error(
+          `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
             slice
-          )}. Read ${recordCounter} records`
+          )}: ${e.message ?? JSON.stringify(e)}`,
+          e.stack
         );
+        // -1 means unlimited allowed slice failures
+        if (maxSliceFailures !== -1 && failedSlices.length > maxSliceFailures) {
+          this.logger.error(
+            `Exceeded maximum number of allowed slice failures: ${maxSliceFailures}`
+          );
+          break;
+        }
       }
+    }
+    if (failedSlices.length > 0) {
+      throw new VError(
+        `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
+          failedSlices
+        )}`
+      );
     }
   }
 
@@ -312,6 +382,19 @@ export abstract class AirbyteSourceBase<
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage({data: connectorState});
+  }
+
+  private errorState(
+    streamName: string,
+    streamState: any,
+    connectorState: AirbyteState,
+    error: Error
+  ): AirbyteStateMessage {
+    connectorState[streamName] = streamState;
+    return new AirbyteStateMessage(
+      {data: connectorState},
+      {status: 'ERRORED', error: error.message ?? JSON.stringify(error)}
+    );
   }
 }
 
