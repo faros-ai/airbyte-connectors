@@ -18,6 +18,9 @@
         "asana": {
           "$ref": "asana.json"
         },
+        "aws-cloudwatch-metrics": {
+          "$ref": "aws-cloudwatch-metrics.json"
+        },
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
