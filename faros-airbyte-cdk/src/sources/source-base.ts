@@ -275,7 +275,7 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
-        if (!slice || typeof maxSliceFailures === 'undefined') {
+        if (!slice || maxSliceFailures == null) {
           throw e;
         }
         failedSlices.push(slice);
@@ -347,7 +347,7 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
-        if (!slice || typeof maxSliceFailures === 'undefined') {
+        if (!slice || maxSliceFailures == null) {
           throw e;
         }
         failedSlices.push(slice);
@@ -365,13 +365,13 @@ export abstract class AirbyteSourceBase<
           break;
         }
       }
-      if (failedSlices.length > 0) {
-        throw new VError(
-          `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
-            failedSlices
-          )}`
-        );
-      }
+    }
+    if (failedSlices.length > 0) {
+      throw new VError(
+        `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
+          failedSlices
+        )}`
+      );
     }
   }
 
