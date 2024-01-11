@@ -630,7 +630,7 @@ export class Bitbucket {
       return;
     }
 
-    const {data} = await this.limiter.schedule(() =>
+    const {data}: {data: T} = await this.limiter.schedule(() =>
       this.client.getNextPage(currentData)
     );
     return data;
@@ -641,10 +641,10 @@ export class Bitbucket {
     buildTo: (data: Dictionary<any>) => T,
     isNew?: (data: T) => boolean
   ): AsyncGenerator<T> {
-    let {data} = await func();
+    let {data}: {data: T | {values: T[]}} = await func();
 
     if (!data) return undefined;
-    const existValues = 'values' in data && Array.isArray(data.values);
+    const existValues = data['values'] && Array.isArray(data['values']);
     if (!existValues) {
       yield buildTo(data) as any;
       return undefined;
