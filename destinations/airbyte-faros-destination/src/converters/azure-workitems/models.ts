@@ -3,11 +3,42 @@ export interface WorkItemResponse {
   value: WorkItem[];
 }
 
-export interface WorkItem {
+export interface WorkItem1 {
   fields: fields;
   id: string;
   rev: string;
   url: string;
+  relations: Relations[];
+}
+
+export interface WorkItem {
+  item: WorkItem1;
+  item2: WorkItem2[];
+}
+
+export interface WorkItem2 {
+  fields: fields;
+  id: string;
+  workItemId: string;
+  revisedBy: string;
+  revisedDate: string;
+  rev: string;
+  url: string;
+}
+
+export interface Relations {
+  rel: string;
+  url: string;
+  attributes: Attribute;
+}
+
+export interface Attribute {
+  authorizedDate: string;
+  id: string;
+  resourceCreatedDate: string;
+  resourceModifiedDate: string;
+  revisedDate: string;
+  name: string;
 }
 
 export interface System {
@@ -15,7 +46,7 @@ export interface System {
   AssignedTo: user;
   BoardColumn: string;
   ChangedBy: user;
-  ChangedDate: string;
+  ChangedDate: ChangedDate;
   CreatedDate: string;
 
   IterationLevel3: string;
@@ -24,13 +55,28 @@ export interface System {
   Reason: string;
   Rev: string;
   RevisedDate: string;
-  State: string;
+  State: State;
   TeamProject: string;
   Title: string;
   Watermark: string;
   WorkItemType: string;
   parent: string | null;
   Description: string;
+}
+
+export interface ChangedDate {
+  oldValue: Date;
+  newValue: Date;
+}
+
+export interface StatusValue {
+  oldValue: string;
+  newValue: string;
+}
+
+export interface State {
+  oldValue: string;
+  newValue: string;
 }
 
 export interface user {

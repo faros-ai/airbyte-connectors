@@ -1,10 +1,16 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, base64Encode} from 'faros-airbyte-cdk';
 import {chunk, flatten} from 'lodash';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
-import {Board, User, UserResponse, WorkItemResponse} from './models';
+import {
+  Board,
+  User,
+  UserResponse,
+  WorkItemResponse1,
+  WorkItemResponse2,
+} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
@@ -134,9 +140,13 @@ export class AzureWorkitems {
 
     for (const c of chunk(ids, MAX_BATCH_SIZE)) {
       const url = `/_apis/wit/workitems?ids=${c}&$expand=all`;
-      const res = await this.get<WorkItemResponse>(url);
+      const res = await this.get<WorkItemResponse1>(url);
       for (const item of res?.data?.value ?? []) {
-        yield item;
+        const id = item?.id;
+        const url2 = `/_apis/wit/workitems/${id}/updates`;
+        const res2 = await this.get<WorkItemResponse2>(url2);
+        const item2 = res2?.data?.value;
+        yield {item, item2};
       }
     }
   }

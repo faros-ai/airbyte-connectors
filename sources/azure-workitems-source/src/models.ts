@@ -1,11 +1,26 @@
-export interface WorkItemResponse {
+export interface WorkItemResponse1 {
   count: number;
-  value: WorkItem[];
+  value: WorkItem1[];
 }
 
-export interface WorkItem {
+export interface WorkItemResponse2 {
+  count: number;
+  value: WorkItem2[];
+}
+
+export interface WorkItem1 {
+  fields: any;
+  id: string;
+  rev: string;
+  url: string;
+}
+
+export interface WorkItem2 {
   fields: fields;
   id: string;
+  workItemId: string;
+  revisedBy: string;
+  revisedDate: string;
   rev: string;
   url: string;
 }

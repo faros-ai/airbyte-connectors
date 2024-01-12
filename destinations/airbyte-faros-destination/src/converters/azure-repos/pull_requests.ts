@@ -44,7 +44,7 @@ export class PullRequests extends AzureReposConverter {
           model: 'vcs_PullRequestComment',
           record: {
             number: comment.id,
-            uid: comment.id.toString(),
+            uid: thread.id + '/' + comment.id.toString(),
             comment: comment.content?.substring(0, MAX_DESCRIPTION_LENGTH),
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
@@ -59,9 +59,10 @@ export class PullRequests extends AzureReposConverter {
       res.push({
         model: 'vcs_PullRequestCommit',
         record: {
-          commit,
+          commit: {
+            uid: commit.commitId.toString(),
+          },
           pullRequest,
-          origin,
         },
       });
     }
