@@ -42,6 +42,7 @@ export const ALL_MODEL_NAMES = [
   'faros_MetricThresholdGroup',
   'faros_MetricThresholdGroupTag',
   'faros_MetricValue',
+  'faros_MetricValueTag',
   'faros_Path',
   'faros_Scorecard',
   'faros_ScorecardMetric',
