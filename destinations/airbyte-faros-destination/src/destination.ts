@@ -744,12 +744,23 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
+      const isResetSync =
+        process.env.WORKER_JOB_ID &&
+        stats.recordsProcessed === 0 &&
+        Object.values(streams)
+          .map((s) => s.destination_sync_mode)
+          .every((m) => m === DestinationSyncMode.OVERWRITE);
+
       if (sourceFailed) {
         this.logger.error(
           'Skipping reset of non-incremental models due to' +
             ` Airbyte Source failure: ${sourceFailed.error}`
         );
-      } else if (sourceSucceeded || config.skip_source_success_check) {
+      } else if (
+        sourceSucceeded ||
+        config.skip_source_success_check ||
+        isResetSync
+      ) {
         await resetData?.();
       } else {
         this.logger.warn(
