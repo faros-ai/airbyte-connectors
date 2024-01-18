@@ -9,10 +9,11 @@
                 "Employee_ID": "001",
                 "Manager_Name": "B Smith",
                 "Manager_ID": "002",
+                "Team_ID": "Team B",
                 "Team_Name": "Team B",
                 "Termination_Date": null,
                 "Location": "Connecticut",
-                "Email": "asmith@co.co" 
+                "Email": "asmith@co.co"
             }
         },
         "type": "RECORD"
@@ -27,10 +28,11 @@
                 "Employee_ID": "002",
                 "Manager_Name": "C Smith",
                 "Manager_ID": "003",
+                "Team_ID": "Team A",
                 "Team_Name": "Team A",
                 "Termination_Date": null,
                 "Location": "Connecticut",
-                "Email": "bsmith@co.co" 
+                "Email": "bsmith@co.co"
             }
         },
         "type": "RECORD"
@@ -46,9 +48,10 @@
                 "Manager_Name": "B Smith",
                 "Manager_ID": "002",
                 "Team_Name": "Team B",
+                "Team_ID": "Team B",
                 "Termination_Date": null,
                 "Location": "Alabama",
-                "Email": "dsmith@co.co" 
+                "Email": "dsmith@co.co"
             }
         },
         "type": "RECORD"

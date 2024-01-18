@@ -1,12 +1,12 @@
 {
     "empty": {
-        "teamNameToManagerIDs": {},
+        "teamIDToManagerIDs": {},
         "employeeIDtoRecord": {},
         "cycleChains": [],
         "generalLogCollection": []
     },
     "basic works": {
-        "teamNameToManagerIDs": {
+        "teamIDToManagerIDs": {
             "A": [
                 {
                     "Manager_ID": "001",
@@ -34,6 +34,7 @@
                 "Manager_Name": "C Smith",
                 "Manager_ID": "001",
                 "Team_Name": "A",
+                "Team_ID": "A",
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co" 
@@ -45,6 +46,7 @@
                 "Employee_ID": "003",
                 "Manager_Name": "C Smith",
                 "Manager_ID": "002",
+                "Team_ID": "B",
                 "Team_Name": "B",
                 "Termination_Date": null,
                 "Location": "Alabama",
@@ -56,6 +58,7 @@
                 "Employee_ID": "004",
                 "Manager_Name": "B Smith",
                 "Manager_ID": "003",
+                "Team_ID": "C",
                 "Team_Name": "C",
                 "Termination_Date": null,
                 "Location": "Connecticut",
@@ -66,7 +69,7 @@
         "generalLogCollection": []
     },
     "failing cycle 1": {
-        "teamNameToManagerIDs": {
+        "teamIDToManagerIDs": {
             "A": [
                 {
                     "Manager_ID": "004",
@@ -93,6 +96,7 @@
                 "Employee_ID": "002",
                 "Manager_Name": "A Smith",
                 "Manager_ID": "004",
+                "Team_ID": "A",
                 "Team_Name": "A",
                 "Termination_Date": null,
                 "Location": "Connecticut",
@@ -105,6 +109,7 @@
                 "Employee_ID": "003",
                 "Manager_Name": "C Smith",
                 "Manager_ID": "002",
+                "Team_ID": "B",
                 "Team_Name": "B",
                 "Termination_Date": null,
                 "Location": "Alabama",
@@ -116,6 +121,7 @@
                 "Employee_ID": "004",
                 "Manager_Name": "B Smith",
                 "Manager_ID": "003",
+                "Team_ID": "C",
                 "Team_Name": "C",
                 "Termination_Date": null,
                 "Location": "Connecticut",
