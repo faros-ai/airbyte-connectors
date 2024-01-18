@@ -15,7 +15,7 @@ import {Job, Pipeline, Project, TestMetadata, Workflow} from './types';
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_REQUEST_TIMEOUT = 60000;
+const DEFAULT_REQUEST_TIMEOUT = 120000;
 
 export interface CircleCIConfig {
   readonly token: string;
@@ -104,7 +104,7 @@ export class CircleCI {
         accept: 'application/json',
         'Circle-Token': config.token,
       },
-      httpsAgent: new https.Agent({rejectUnauthorized}),
+      httpsAgent: new https.Agent({rejectUnauthorized, keepAlive: true}),
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       // CircleCI responses can be very large hence the infinity
       maxContentLength: Infinity,
@@ -228,11 +228,13 @@ export class CircleCI {
     api = this.v2,
     config = {},
     attempt = 1,
+    sleepMs = 1000,
   }: {
     path: string;
     api?: AxiosInstance;
     config?: AxiosRequestConfig<D>;
     attempt?: number;
+    sleepMs?: number;
   }): Promise<AxiosResponse<T> | undefined> {
     try {
       const res = await api.get<T, AxiosResponse<T>>(path, config);
@@ -241,13 +243,27 @@ export class CircleCI {
     } catch (err: any) {
       if (err?.response?.status === 429 && attempt <= this.maxRetries) {
         this.logger.warn(
-          `Request to ${path} was rate limited. Retrying... ` +
+          `Request to ${path}" was rate limited. Retrying... ` +
             `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.maybeSleepOnResponse(path, err?.response);
         return await this.get({path, api, config, attempt: attempt + 1});
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } seconds... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.get({
+          path,
+          api,
+          config,
+          attempt: attempt + 1,
+          sleepMs: sleepMs * 2,
+        });
       }
-      throw wrapApiError(err, `Failed to get "${path}". `);
+      throw wrapApiError(err, `Failed to get "${path}"`);
     }
   }
 
