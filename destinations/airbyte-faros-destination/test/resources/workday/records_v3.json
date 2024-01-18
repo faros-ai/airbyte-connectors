@@ -13,7 +13,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -32,7 +32,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -51,7 +51,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cwhite@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -70,7 +70,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "abrown@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -89,7 +89,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "janebrown@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -108,7 +108,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnwhite@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -127,7 +127,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -146,7 +146,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "csmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -165,7 +165,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -184,7 +184,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "janedoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -203,7 +203,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cblack@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -222,7 +222,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -241,7 +241,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "csmith@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -260,7 +260,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -279,7 +279,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johnbrown@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -298,7 +298,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "johnsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -317,7 +317,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bblack@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -336,7 +336,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "janedoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -355,7 +355,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bbrown@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -374,7 +374,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "cwhite@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -393,7 +393,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "asmith@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -412,7 +412,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bwhite@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -431,7 +431,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -450,7 +450,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "johnsmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -469,7 +469,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -488,7 +488,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -507,7 +507,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -526,7 +526,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cdoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -545,7 +545,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -564,7 +564,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -583,7 +583,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "janesmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -602,7 +602,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -621,7 +621,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -640,7 +640,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bblack@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -659,7 +659,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "asmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -678,7 +678,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -697,7 +697,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -716,7 +716,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bbrown@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -735,7 +735,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -754,7 +754,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "janebrown@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -773,7 +773,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cdoe@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -792,7 +792,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "bblack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -811,7 +811,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -830,7 +830,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "janeblack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -849,7 +849,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -868,7 +868,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -887,7 +887,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -906,7 +906,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "cdoe@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -925,7 +925,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -944,7 +944,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnwhite@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -963,7 +963,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "awhite@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -982,7 +982,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1001,7 +1001,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1020,7 +1020,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1039,7 +1039,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cwhite@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1058,7 +1058,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1077,7 +1077,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "cdoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1096,7 +1096,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cblack@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1115,7 +1115,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1134,7 +1134,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1153,7 +1153,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "bwhite@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1172,7 +1172,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "johnwhite@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1191,7 +1191,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "awhite@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1210,7 +1210,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1229,7 +1229,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1248,7 +1248,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "csmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1267,7 +1267,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "janesmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1286,7 +1286,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johnbrown@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1305,7 +1305,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "janedoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1324,7 +1324,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1343,7 +1343,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "bdoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1362,7 +1362,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "janeblack@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1381,7 +1381,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1400,7 +1400,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1419,7 +1419,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1438,7 +1438,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1457,7 +1457,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "bwhite@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1476,7 +1476,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "johnsmith@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1495,7 +1495,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1514,7 +1514,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "adoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1533,7 +1533,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "janeblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1552,7 +1552,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "johnsmith@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1571,7 +1571,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnbrown@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1590,7 +1590,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnblack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1609,7 +1609,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "janedoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1628,7 +1628,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cblack@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1647,7 +1647,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "ablack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1666,7 +1666,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "johndoe@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1685,7 +1685,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1704,7 +1704,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "cwhite@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1723,7 +1723,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bblack@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1742,7 +1742,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1761,7 +1761,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "awhite@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1780,7 +1780,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "janedoe@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1799,7 +1799,7 @@
                 "Termination_Date": null,
                 "Location": "California",
                 "Email": "johnbrown@co.co",
-                "Team_ID": "Team B"
+                "Team_ID": "B"
             }
         },
         "type": "RECORD"
@@ -1818,7 +1818,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bwhite@co.co",
-                "Team_ID": "Team A"
+                "Team_ID": "A"
             }
         },
         "type": "RECORD"
@@ -1837,7 +1837,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "janebrown@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1856,7 +1856,7 @@
                 "Termination_Date": null,
                 "Location": "Texas",
                 "Email": "johnwhite@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"
@@ -1875,7 +1875,7 @@
                 "Termination_Date": null,
                 "Location": "New York",
                 "Email": "bbrown@co.co",
-                "Team_ID": "Team C"
+                "Team_ID": "C"
             }
         },
         "type": "RECORD"
@@ -1894,7 +1894,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "cbrown@co.co",
-                "Team_ID": "Team D"
+                "Team_ID": "D"
             }
         },
         "type": "RECORD"

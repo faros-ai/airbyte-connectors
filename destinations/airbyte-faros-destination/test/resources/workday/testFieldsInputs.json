@@ -33,7 +33,7 @@
                 "Employee_ID": "002",
                 "Manager_Name": "C Smith",
                 "Manager_ID": "001",
-                "Team_Name": "A",
+                "Team_Name": "Team A",
                 "Team_ID": "A",
                 "Termination_Date": null,
                 "Location": "Connecticut",
@@ -47,7 +47,7 @@
                 "Manager_Name": "C Smith",
                 "Manager_ID": "002",
                 "Team_ID": "B",
-                "Team_Name": "B",
+                "Team_Name": "Team B",
                 "Termination_Date": null,
                 "Location": "Alabama",
                 "Email": "dsmith@co.co"  
@@ -59,7 +59,7 @@
                 "Manager_Name": "B Smith",
                 "Manager_ID": "003",
                 "Team_ID": "C",
-                "Team_Name": "C",
+                "Team_Name": "Team C",
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co"
@@ -97,7 +97,7 @@
                 "Manager_Name": "A Smith",
                 "Manager_ID": "004",
                 "Team_ID": "A",
-                "Team_Name": "A",
+                "Team_Name": "Team A",
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co" 
@@ -110,7 +110,7 @@
                 "Manager_Name": "C Smith",
                 "Manager_ID": "002",
                 "Team_ID": "B",
-                "Team_Name": "B",
+                "Team_Name": "Team B",
                 "Termination_Date": null,
                 "Location": "Alabama",
                 "Email": "dsmith@co.co"  
@@ -122,7 +122,7 @@
                 "Manager_Name": "B Smith",
                 "Manager_ID": "003",
                 "Team_ID": "C",
-                "Team_Name": "C",
+                "Team_Name": "Team C",
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co"
