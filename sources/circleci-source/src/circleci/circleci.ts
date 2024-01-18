@@ -252,7 +252,7 @@ export class CircleCI {
         this.logger.warn(
           `Request to "${path}" failed. Retrying in ${
             sleepMs / 1000
-          } seconds... ` + `(attempt ${attempt} of ${this.maxRetries})`
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.sleep(sleepMs);
         return await this.get({
