@@ -67,16 +67,16 @@ export class Customreports extends Converter {
     // We store all the possible Manager IDs for a Team,
     // The last one in the list will be the most recent time.
 
-    // We check if the Team Name happens to be FAROS_TEAM_ROOT.
+    // We check if the Team ID happens to be FAROS_TEAM_ROOT.
     // If this is the case, then the rest of the processing won't work.
-    if (rec.Team_Name === this.FAROS_TEAM_ROOT) {
-      let error_str = `Record team name is the same as Faros Team Root, ${this.FAROS_TEAM_ROOT}:`;
+    if (rec.Team_ID === this.FAROS_TEAM_ROOT) {
+      let error_str = `Record team ID is the same as Faros Team Root, ${this.FAROS_TEAM_ROOT}:`;
       error_str += `Record: ${JSON.stringify(rec)}`;
       throw new Error(error_str);
     }
 
-    // Here we check if we haven't yet stored info for this Team Name:
-    if (!(rec.Team_Name in this.teamIDToManagerIDs)) {
+    // Here we check if we haven't yet stored info for this Team ID:
+    if (!(rec.Team_ID in this.teamIDToManagerIDs)) {
       this.teamIDToManagerIDs[rec.Team_ID] = [
         {Manager_ID: rec.Manager_ID, Timestamp: rec.Start_Date},
       ];
@@ -122,6 +122,7 @@ export class Customreports extends Converter {
       !rec.Manager_ID ||
       !rec.Manager_Name ||
       !rec.Start_Date ||
+      !rec.Team_ID ||
       !rec.Team_Name
     ) {
       return false;
@@ -328,7 +329,7 @@ export class Customreports extends Converter {
     // org_Employee, identity_Identity, geo_Location, org_TeamMembership
     const records = [];
     const employee_record: EmployeeRecord = this.employeeIDtoRecord[employeeID];
-    if (!acceptable_teams.has(employee_record.Team_Name)) {
+    if (!acceptable_teams.has(employee_record.Team_ID)) {
       return records;
     }
     records.push(
@@ -356,7 +357,7 @@ export class Customreports extends Converter {
       {
         model: 'org_TeamMembership',
         record: {
-          team: {uid: employee_record.Team_Name},
+          team: {uid: employee_record.Team_ID},
           member: {uid: employee_record.Employee_ID},
         },
       }
