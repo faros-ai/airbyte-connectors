@@ -301,10 +301,10 @@ export class Customreports extends Converter {
   }
 
   private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
-    const teamNames = Object.keys(this.teamIDToManagerIDs);
+    const teamIDs = Object.keys(this.teamIDToManagerIDs);
     const report_obj = {
       nAcceptableTeams: acceptableTeams.size,
-      nOriginalTeams: teamNames ? teamNames.length : 0,
+      nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
       cycleChains: this.cycleChains,
