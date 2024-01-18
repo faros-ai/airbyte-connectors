@@ -243,7 +243,7 @@ export class CircleCI {
     } catch (err: any) {
       if (err?.response?.status === 429 && attempt <= this.maxRetries) {
         this.logger.warn(
-          `Request to ${path}" was rate limited. Retrying... ` +
+          `Request to "${path}" was rate limited. Retrying... ` +
             `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.maybeSleepOnResponse(path, err?.response);
