@@ -24,13 +24,18 @@ export class Customreports extends Converter {
     storedRecords: 0,
   };
   employeeIDtoRecord: Record<string, EmployeeRecord> = {};
-  teamNameToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
+  teamIDToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
+  teamIDToTeamName: Record<string, string> = {
+    all_teams: 'all_teams',
+    unassigned: 'Unassigned',
+  };
   cycleChains: ReadonlyArray<string>[] = [];
   replacedParentTeams: string[] = [];
   seenLocations: Set<string> = new Set<string>();
   generalLogCollection: string[] = [];
-  orgs_to_keep = null;
-  orgs_to_ignore = null;
+  // These are set in setOrgsToKeepAndIgnore
+  org_ids_to_keep = null;
+  org_ids_to_ignore = null;
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -55,30 +60,31 @@ export class Customreports extends Converter {
     // in order to be used once all records are processed
     this.employeeIDtoRecord[rec.Employee_ID] = rec;
     this.updateTeamToManagerRecord(rec);
+    this.updateTeamIDToTeamNameMapping(rec);
   }
 
   private updateTeamToManagerRecord(rec: EmployeeRecord): void {
     // We store all the possible Manager IDs for a Team,
     // The last one in the list will be the most recent time.
 
-    // We check if the Team Name happens to be FAROS_TEAM_ROOT.
+    // We check if the Team ID happens to be FAROS_TEAM_ROOT.
     // If this is the case, then the rest of the processing won't work.
-    if (rec.Team_Name === this.FAROS_TEAM_ROOT) {
-      let error_str = `Record team name is the same as Faros Team Root, ${this.FAROS_TEAM_ROOT}:`;
+    if (rec.Team_ID === this.FAROS_TEAM_ROOT) {
+      let error_str = `Record team ID is the same as Faros Team Root, ${this.FAROS_TEAM_ROOT}:`;
       error_str += `Record: ${JSON.stringify(rec)}`;
       throw new Error(error_str);
     }
 
-    // Here we check if we haven't yet stored info for this Team Name:
-    if (!(rec.Team_Name in this.teamNameToManagerIDs)) {
-      this.teamNameToManagerIDs[rec.Team_Name] = [
+    // Here we check if we haven't yet stored info for this Team ID:
+    if (!(rec.Team_ID in this.teamIDToManagerIDs)) {
+      this.teamIDToManagerIDs[rec.Team_ID] = [
         {Manager_ID: rec.Manager_ID, Timestamp: rec.Start_Date},
       ];
       return;
     }
 
     // We have already stored info for this team. This should be a list
-    const recs_list = this.teamNameToManagerIDs[rec.Team_Name];
+    const recs_list = this.teamIDToManagerIDs[rec.Team_ID];
 
     const crt_last_rec = recs_list[recs_list.length - 1];
     if (crt_last_rec.Manager_ID === rec.Manager_ID) {
@@ -86,11 +92,15 @@ export class Customreports extends Converter {
     }
 
     if (Utils.toDate(rec.Start_Date) > Utils.toDate(crt_last_rec.Timestamp)) {
-      this.teamNameToManagerIDs[rec.Team_Name].push({
+      this.teamIDToManagerIDs[rec.Team_ID].push({
         Manager_ID: rec.Manager_ID,
         Timestamp: rec.Start_Date,
       });
     }
+  }
+
+  private updateTeamIDToTeamNameMapping(rec: EmployeeRecord): void {
+    this.teamIDToTeamName[rec.Team_ID] = rec.Team_Name;
   }
 
   private convertRecordToStandardizedForm(rec: any): any {
@@ -112,6 +122,7 @@ export class Customreports extends Converter {
       !rec.Manager_ID ||
       !rec.Manager_Name ||
       !rec.Start_Date ||
+      !rec.Team_ID ||
       !rec.Team_Name
     ) {
       return false;
@@ -136,28 +147,28 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): Record<string, string> {
     ctx.logger.info('Computing team to parent mapping');
-    const teamNameToParentTeamName: Record<string, string> = {};
-    teamNameToParentTeamName[this.FAROS_TEAM_ROOT] = null;
+    const teamIDToParentTeamID: Record<string, string> = {};
+    teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
-    for (const [teamName, recs] of Object.entries(this.teamNameToManagerIDs)) {
+    for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
       const manager_id = this.getManagerIDFromList(recs);
       if (!manager_id) {
         this.generalLogCollection.push(
-          `Failed to get manager id for team ${teamName}`
+          `Failed to get manager id for team ${teamID}`
         );
-        teamNameToParentTeamName[teamName] = this.FAROS_TEAM_ROOT;
+        teamIDToParentTeamID[teamID] = this.FAROS_TEAM_ROOT;
         continue;
       }
       let parent_team_uid: string = this.FAROS_TEAM_ROOT;
       if (manager_id in this.employeeIDtoRecord) {
         // This is the expected case
-        parent_team_uid = this.employeeIDtoRecord[manager_id].Team_Name;
+        parent_team_uid = this.employeeIDtoRecord[manager_id].Team_ID;
       } else {
         // This is in the rare case where manager ID isn't in one of the employee records.
         // It can occur if the currently observed team is the root team in the org
-        potential_root_teams.push(teamName);
+        potential_root_teams.push(teamID);
       }
-      teamNameToParentTeamName[teamName] = parent_team_uid;
+      teamIDToParentTeamID[teamID] = parent_team_uid;
     }
     if (potential_root_teams.length > 1) {
       ctx.logger.warn(
@@ -167,12 +178,12 @@ export class Customreports extends Converter {
       );
     }
 
-    return teamNameToParentTeamName;
+    return teamIDToParentTeamID;
   }
   private computeOwnershipChain(
     elementId: string,
     allOrgId: string,
-    teamToParent: Record<string, string>
+    teamIDToParentID: Record<string, string>
   ): {cycle: boolean; ownershipChain: ReadonlyArray<string>} {
     // In the case of a cycle, it means that the second to last
     // team in the cycle is has a parent that has been previously
@@ -191,7 +202,7 @@ export class Customreports extends Converter {
       }
       visited.add(id);
 
-      id = teamToParent[id];
+      id = teamIDToParentID[id];
     } while (id);
 
     ownershipChain.push(allOrgId);
@@ -199,29 +210,31 @@ export class Customreports extends Converter {
     return {cycle: false, ownershipChain};
   }
 
-  setOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
-    const orgs_to_keep =
+  private setOrgsToKeepAndIgnore(ctx: StreamContext): [string[], string[]] {
+    const org_ids_to_keep =
       ctx.config.source_specific_configs?.workday?.orgs_to_keep;
-    const orgs_to_ignore =
+    const org_ids_to_ignore =
       ctx.config.source_specific_configs?.workday?.orgs_to_ignore;
-    if (!orgs_to_keep || !orgs_to_ignore) {
+    if (!org_ids_to_keep || !org_ids_to_ignore) {
       throw new Error(
-        'orgs_to_keep or orgs_to_ignore missing from source specific configs'
+        'org_ids_to_keep or org_ids_to_ignore missing from source specific configs'
       );
     }
-    for (const org of orgs_to_keep) {
-      if (orgs_to_ignore.includes(org)) {
-        throw new Error('Overlap between orgs_to_keep and orgs_to_ignore');
+    for (const org_id of org_ids_to_keep) {
+      if (org_ids_to_ignore.includes(org_id)) {
+        throw new Error(
+          'Overlap between org_ids_to_keep and org_ids_to_ignore'
+        );
       }
     }
-    if (orgs_to_keep.length == 0) {
+    if (org_ids_to_keep.length == 0) {
       // we keep all teams
-      orgs_to_keep.push(this.FAROS_TEAM_ROOT);
+      org_ids_to_keep.push(this.FAROS_TEAM_ROOT);
     }
     // Setting the values
-    this.orgs_to_keep = orgs_to_keep;
-    this.orgs_to_ignore = orgs_to_ignore;
-    return [orgs_to_keep, orgs_to_ignore];
+    this.org_ids_to_keep = org_ids_to_keep;
+    this.org_ids_to_ignore = org_ids_to_ignore;
+    return [org_ids_to_keep, org_ids_to_ignore];
   }
 
   private shouldKeepTeam(ownershipChain: ReadonlyArray<string>): boolean {
@@ -230,10 +243,10 @@ export class Customreports extends Converter {
     // Otherwise if we first hit a kept team, we return true (keep the team)
     // If we hit neither kept nor ignored, we return false (not kept).
     for (const org of ownershipChain) {
-      if (this.orgs_to_keep.includes(org)) {
+      if (this.org_ids_to_keep.includes(org)) {
         return true;
       }
-      if (this.orgs_to_ignore.includes(org)) {
+      if (this.org_ids_to_ignore.includes(org)) {
         return false;
       }
     }
@@ -242,7 +255,7 @@ export class Customreports extends Converter {
 
   private checkIfTeamIsAcceptable(
     team: string,
-    teamToParent: Record<string, string>,
+    teamIDToParentID: Record<string, string>,
     ctx: StreamContext
   ): boolean {
     // This continues the complicated logic which defines which teams to keep
@@ -253,21 +266,21 @@ export class Customreports extends Converter {
     const ownershipInfo = this.computeOwnershipChain(
       team,
       this.FAROS_TEAM_ROOT,
-      teamToParent
+      teamIDToParentID
     );
     const ownershipChain: ReadonlyArray<string> = ownershipInfo.ownershipChain;
     if (ownershipInfo.cycle) {
       // Cycle found - this should mean ownershipChain exists with length greater than 1
       ctx.logger.info(JSON.stringify(ownershipChain));
       const fix_team = ownershipChain[ownershipChain.length - 2];
-      teamToParent[fix_team] = this.FAROS_TEAM_ROOT;
+      teamIDToParentID[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
     return this.shouldKeepTeam(ownershipChain);
   }
 
   private getAcceptableTeams(
-    teamToParent: Record<string, string>,
+    teamIDToParentID: Record<string, string>,
     ctx: StreamContext
   ): Set<string> {
     // This is the entry point for the logic which defines which teams to keep
@@ -275,24 +288,24 @@ export class Customreports extends Converter {
     ctx.logger.info('Getting Acceptable teams');
     const acceptableTeams = new Set<string>();
     ctx.logger.info('Computing ownership chains.');
-    for (const team of Object.keys(teamToParent)) {
+    for (const team_id of Object.keys(teamIDToParentID)) {
       const include_bool = this.checkIfTeamIsAcceptable(
-        team,
-        teamToParent,
+        team_id,
+        teamIDToParentID,
         ctx
       );
       if (include_bool) {
-        acceptableTeams.add(team);
+        acceptableTeams.add(team_id);
       }
     }
     return acceptableTeams;
   }
 
   private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
-    const teamNames = Object.keys(this.teamNameToManagerIDs);
+    const teamIDs = Object.keys(this.teamIDToManagerIDs);
     const report_obj = {
       nAcceptableTeams: acceptableTeams.size,
-      nOriginalTeams: teamNames ? teamNames.length : 0,
+      nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
       cycleChains: this.cycleChains,
@@ -316,7 +329,7 @@ export class Customreports extends Converter {
     // org_Employee, identity_Identity, geo_Location, org_TeamMembership
     const records = [];
     const employee_record: EmployeeRecord = this.employeeIDtoRecord[employeeID];
-    if (!acceptable_teams.has(employee_record.Team_Name)) {
+    if (!acceptable_teams.has(employee_record.Team_ID)) {
       return records;
     }
     records.push(
@@ -344,7 +357,7 @@ export class Customreports extends Converter {
       {
         model: 'org_TeamMembership',
         record: {
-          team: {uid: employee_record.Team_Name},
+          team: {uid: employee_record.Team_ID},
           member: {uid: employee_record.Employee_ID},
         },
       }
@@ -366,33 +379,33 @@ export class Customreports extends Converter {
   }
 
   private createOrgTeamRecord(
-    team: string,
-    teamToParent: Record<string, string>
+    teamID: string,
+    teamIDToParentID: Record<string, string>
   ): DestinationRecord {
     const manager_id = this.getManagerIDFromList(
-      this.teamNameToManagerIDs[team]
+      this.teamIDToManagerIDs[teamID]
     );
     return {
       model: 'org_Team',
       record: {
-        uid: team,
-        name: team,
+        uid: teamID,
+        name: this.teamIDToTeamName[teamID],
         lead: {uid: manager_id},
-        parentTeam: {uid: teamToParent[team]},
+        parentTeam: {uid: teamIDToParentID[teamID]},
       },
     };
   }
 
   private replaceTeamParents(
     acceptable_teams: Set<string>,
-    teamToParent: Record<string, string>
+    teamIDToParentID: Record<string, string>
   ): Record<string, string> {
     // Within this function we use the new acceptable teams set to
     // ensure team's parents are within the system.
     const newTeamToParent: Record<string, string> = {};
     for (const team of acceptable_teams) {
       const seenParentTeams: Set<string> = new Set<string>();
-      let parent_team = teamToParent[team];
+      let parent_team = teamIDToParentID[team];
       while (parent_team && !acceptable_teams.has(parent_team)) {
         if (seenParentTeams.has(parent_team)) {
           let err_str = `Cycle found in team Parent Replace function. Team: "${parent_team}". `;
@@ -401,7 +414,7 @@ export class Customreports extends Converter {
           throw new Error(err_str);
         }
         seenParentTeams.add(parent_team);
-        parent_team = teamToParent[parent_team];
+        parent_team = teamIDToParentID[parent_team];
       }
       if (parent_team) {
         newTeamToParent[team] = parent_team;
@@ -421,16 +434,16 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
     // Class fields required to be filled (reference for testing):
-    // recordCount, teamNameToManagerIDs, employeeIDtoRecord
+    // recordCount, teamIDToManagerIDs, employeeIDtoRecord
     // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
-    const teamToParent: Record<string, string> =
+    const teamIDToParentID: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
 
     // Here we get a set of teams to keep
     // This is the entry point to the densest logical aspect of the connector
     const acceptable_teams: Set<string> = this.getAcceptableTeams(
-      teamToParent,
+      teamIDToParentID,
       ctx
     );
     ctx.logger.info(
@@ -443,7 +456,7 @@ export class Customreports extends Converter {
 
     const newTeamToParent: Record<string, string> = this.replaceTeamParents(
       acceptable_teams,
-      teamToParent
+      teamIDToParentID
     );
 
     for (const team of acceptable_teams) {

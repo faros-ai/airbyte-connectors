@@ -36,7 +36,7 @@ function updateCustomReportWithFields(
   }
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
   const fieldNames = [
-    'teamNameToManagerIDs',
+    'teamIDToManagerIDs',
     'employeeIDtoRecord',
     'cycleChains',
     'generalLogCollection',
@@ -144,7 +144,7 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream accept all', async () => {
-    const configPath = await getTempConfig(['Team A', 'Team B'], []);
+    const configPath = await getTempConfig(['A', 'B'], []);
     const processedByStream = {
       customreports: 3,
     };
@@ -164,7 +164,7 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream reject all', async () => {
-    const configPath = await getTempConfig([], ['Team A', 'Team B']);
+    const configPath = await getTempConfig([], ['A', 'B']);
     const processedByStream = {
       customreports: 3,
     };

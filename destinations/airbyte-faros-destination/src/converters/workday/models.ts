@@ -4,10 +4,12 @@ export declare type EmployeeRecord = {
   Employee_ID: string;
   Manager_Name: string;
   Manager_ID: string;
+  Team_ID: string;
   Team_Name: string;
   Termination_Date?: Date;
   Location?: string;
   Email?: string;
+  Employee_Type?: string;
 };
 
 export declare type ManagerTimeRecord = {
@@ -22,7 +24,9 @@ export const recordKeyTyping = {
   managername: 'Manager_Name',
   managerid: 'Manager_ID',
   teamname: 'Team_Name',
+  teamid: 'Team_ID',
   terminationdate: 'Termination_Date',
   location: 'Location',
   email: 'Email',
+  employeetype: 'Employee_Type',
 };
