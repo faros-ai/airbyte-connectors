@@ -26,6 +26,8 @@ jobs:
 
       - name: Extract tag version
         id: extract-tag-version
+        env:
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           echo "GITHUB_REF is ${GITHUB_REF}"
           echo "RELEASE_TAG_NAME is ${RELEASE_TAG_NAME}"
