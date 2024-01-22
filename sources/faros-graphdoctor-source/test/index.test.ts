@@ -64,7 +64,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
     return null;
   }
   const query_title = query.split(' ')[1];
-  console.log('query title: ' + query_title);
   const title_list: string[] = query_title.split('__');
   if (title_list.length !== 2) {
     throw new Error(
@@ -72,7 +71,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
     );
   }
   const [title_grouping, model_name] = title_list;
-  console.log(`title_grouping: ${title_grouping}, model_name: ${model_name}.`);
   const test_by_groups: Record<
     string,
     Record<string, any>
@@ -90,9 +88,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
   }
   const res = {};
   res[model_name] = grouping[model_name];
-  if (mock_debug) {
-    console.log(`Response: ${JSON.stringify(res)}`);
-  }
   return res;
 }
 
@@ -148,10 +143,6 @@ describe('index', () => {
     const results = [];
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
-    }
-
-    if (mock_debug) {
-      console.log(JSON.stringify(results));
     }
     expect(results.slice(0, 0)).toStrictEqual([]);
   });
