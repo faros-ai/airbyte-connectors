@@ -19,3 +19,4 @@ in order to use the destination, we require the field names to contain the follo
   Employee_Type?: string;
 ```
 For the Custom Report, the conventional credentials are a username and password.
+You can optionally include OAuth using a clientId, a clientSecret, and a refreshToken.
