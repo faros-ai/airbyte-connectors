@@ -22,7 +22,7 @@
   ],
   "main": "./lib",
   "engines": {
-    "node": ">=16"
+    "node": ">=21"
   },
   "exports": {
     "./bitbucket-server": "./lib/bitbucket-server/index.js",

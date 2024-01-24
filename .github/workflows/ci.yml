@@ -111,7 +111,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 21
 
       - name: Install dependencies
         run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist

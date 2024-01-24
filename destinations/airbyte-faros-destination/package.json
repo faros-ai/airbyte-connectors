@@ -20,7 +20,7 @@
   ],
   "main": "./lib",
   "engines": {
-    "node": ">=16"
+    "node": ">=21"
   },
   "scripts": {
     "build": "tsc -p src",

@@ -19,7 +19,7 @@
     "resources/"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=21"
   },
   "main": "./lib",
   "scripts": {
