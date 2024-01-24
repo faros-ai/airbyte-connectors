@@ -44,7 +44,7 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 # Development
 
 1. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Install Node.js `nvm install 16 && nvm use 16`
+2. Install Node.js `nvm install 21 && nvm use 21`
 3. Install `lerna` by running `npm install -g lerna`
 4. Run `npm i` to install dependencies for all projects (`npm run clean` to clean all)
 5. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope airbyte-faros-destination`)
