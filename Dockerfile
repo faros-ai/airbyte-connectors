@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:current-alpine3.18
 
 WORKDIR /home/node/airbyte
 
@@ -10,7 +10,7 @@ COPY ./sources ./sources
 COPY ./destinations ./destinations
 
 RUN apk -U upgrade
-RUN apk add --no-cache --virtual .gyp python3 make g++ \
+RUN apk add --no-cache --virtual .gyp python3 make g++ curl \
     && npm install -g lerna @lerna/legacy-package-management tsc
 RUN lerna bootstrap --hoist
 
