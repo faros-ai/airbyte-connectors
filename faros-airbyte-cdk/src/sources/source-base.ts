@@ -1,6 +1,7 @@
 import {cloneDeep, keyBy} from 'lodash';
 import VError from 'verror';
 
+import {NonFatalError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {
   AirbyteCatalogMessage,
@@ -299,6 +300,17 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
+        if (e instanceof NonFatalError) {
+          this.logger.warn(
+            `Encountered a non-fatal error while processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}: ${e.message ?? JSON.stringify(e)}`,
+            e.stack
+          );
+          yield this.errorState(streamName, streamState, connectorState, e);
+          continue;
+        }
+
         if (!slice || maxSliceFailures == null) {
           throw e;
         }
