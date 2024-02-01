@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "axios": "^1.6.5",
-    "commander": "^9.3.0",
+    "commander": "^11.1.0",
     "faros-airbyte-cdk": "0.0.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
