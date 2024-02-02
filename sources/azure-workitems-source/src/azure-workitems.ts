@@ -1,5 +1,10 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import axiosRetry, {
+  IAxiosRetryConfig,
+  isIdempotentRequestError,
+} from 'axios-retry';
 import {AirbyteLogger, base64Encode} from 'faros-airbyte-cdk';
+import isRetryAllowed from 'is-retry-allowed';
 import {chunk, flatten} from 'lodash';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
@@ -16,6 +21,7 @@ const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
+export const DEFAULT_MAX_RETRIES = 5;
 
 export interface AzureWorkitemsConfig {
   readonly access_token: string;
@@ -57,6 +63,7 @@ export class AzureWorkitems {
     }
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+    const maxRetries = DEFAULT_MAX_RETRIES;
 
     const accessToken = base64Encode(`:${config.access_token}`);
 
@@ -81,6 +88,33 @@ export class AzureWorkitems {
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
     });
+
+    const isNetworkError = (error): boolean => {
+      return (
+        !error.response &&
+        Boolean(error.code) && // Prevents retrying cancelled requests
+        isRetryAllowed(error) // Prevents retrying unsafe errors
+      );
+    };
+    const retryCondition = (error: AxiosError): boolean => {
+      return isNetworkError(error) || isIdempotentRequestError(error);
+    };
+
+    const retryConfig: IAxiosRetryConfig = {
+      retryDelay: axiosRetry.exponentialDelay,
+      shouldResetTimeout: true,
+      retries: maxRetries,
+      retryCondition,
+      onRetry(retryCount, error, requestConfig) {
+        logger.info(
+          `Retrying request ${requestConfig.url} due to an error: ${error.message} ` +
+            `(attempt ${retryCount} of ${maxRetries})`
+        );
+      },
+    };
+
+    axiosRetry(httpClient, retryConfig);
+    axiosRetry(graphClient, retryConfig);
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,

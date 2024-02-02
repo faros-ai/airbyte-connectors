@@ -25,7 +25,8 @@ export class Workitems extends AzureWorkitemsConverter {
           item.fields &&
           item.fields['System.State'] &&
           item.fields['System.State'].oldValue &&
-          item.fields['System.ChangedDate']
+          item.fields['System.ChangedDate'] &&
+          this.isValidDate(item.fields['System.ChangedDate'].newValue)
         ) {
           statusChangelog.push({
             status: {
@@ -39,6 +40,10 @@ export class Workitems extends AzureWorkitemsConverter {
     }
 
     return statusChangelog;
+  }
+  private isValidDate(dateString: string): boolean {
+    const timestamp = Date.parse(dateString);
+    return !isNaN(timestamp);
   }
 
   async convert(
@@ -68,13 +73,21 @@ export class Workitems extends AzureWorkitemsConverter {
           },
           description: WorkItem?.item?.fields['System.Description'],
           status: {category: WorkItem?.item?.fields['System.State']},
-          statusChangedAt: new Date(
-            WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
-          ),
+          statusChangedAt: WorkItem?.item?.fields[
+            'Microsoft.VSTS.Common.StateChangeDate'
+          ]
+            ? new Date(
+                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
+              )
+            : null,
           statusChangelog: statusChangelog,
-          updatedAt: new Date(
-            WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
-          ),
+          updatedAt: WorkItem?.item?.fields[
+            'Microsoft.VSTS.Common.StateChangeDate'
+          ]
+            ? new Date(
+                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
+              )
+            : null,
           creator: {
             uid: WorkItem?.item?.fields['System.CreatedBy']['uniqueName'],
             source,
