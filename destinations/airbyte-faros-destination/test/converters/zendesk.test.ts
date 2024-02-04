@@ -1,4 +1,3 @@
-import exp from 'constants';
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
@@ -7,16 +6,16 @@ import {StreamContext} from '../../src/converters/converter';
 import {
   TicketFieldsStream,
   TicketMetricsStream,
-} from '../../src/converters/zendesk-support/common';
-import {Tags} from '../../src/converters/zendesk-support/tags';
-import {Tickets} from '../../src/converters/zendesk-support/tickets';
-import {Users} from '../../src/converters/zendesk-support/users';
+} from '../../src/converters/zendesk/common';
+import {Tags} from '../../src/converters/zendesk/tags';
+import {Tickets} from '../../src/converters/zendesk/tickets';
+import {Users} from '../../src/converters/zendesk/users';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {zendeskSupportAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
-describe('zendesk-support', () => {
+describe('zendesk', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/zendesk-support/catalog.json';

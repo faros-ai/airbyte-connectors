@@ -2,31 +2,31 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__zendesk-support__ticket_metrics"
+        "name": "mytestsource__zendesk__ticket_metrics"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__zendesk-support__ticket_fields"
+        "name": "mytestsource__zendesk__ticket_fields"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__zendesk-support__tickets"
+        "name": "mytestsource__zendesk__tickets"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__zendesk-support__users"
+        "name": "mytestsource__zendesk__users"
       },
       "destination_sync_mode": "append"
     },
     {
       "stream": {
-        "name": "mytestsource__zendesk-support__tags"
+        "name": "mytestsource__zendesk__tags"
       },
       "destination_sync_mode": "append"
     }

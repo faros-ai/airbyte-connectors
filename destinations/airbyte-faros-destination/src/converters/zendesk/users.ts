@@ -2,14 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toString} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {ZendeskSupportConverter} from './common';
+import {ZendeskConverter} from './common';
 
-export class Users extends ZendeskSupportConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_Task',
-    'tms_TaskTag',
-    'tms_TaskAssignment',
-  ];
+export class Users extends ZendeskConverter {
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   async convert(
     record: AirbyteRecord

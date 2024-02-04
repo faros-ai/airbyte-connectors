@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ZendeskSupportConverter} from './common';
+import {ZendeskConverter} from './common';
 
-export class TicketMetrics extends ZendeskSupportConverter {
+export class TicketMetrics extends ZendeskConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(

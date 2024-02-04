@@ -11,10 +11,10 @@ import {
 import {
   TicketFieldsStream,
   TicketMetricsStream,
-  ZendeskSupportConverter,
+  ZendeskConverter,
 } from './common';
 
-export class Tickets extends ZendeskSupportConverter {
+export class Tickets extends ZendeskConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',

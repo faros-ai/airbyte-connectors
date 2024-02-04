@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {ZendeskSupportConverter} from './common';
+import {ZendeskConverter} from './common';
 
-export class Tags extends ZendeskSupportConverter {
+export class Tags extends ZendeskConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Label'];
 
   async convert(

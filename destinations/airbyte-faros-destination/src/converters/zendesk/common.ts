@@ -11,7 +11,7 @@ export const TicketFieldsStream = new StreamName(
   'ticket_fields'
 );
 
-export abstract class ZendeskSupportConverter extends Converter {
+export abstract class ZendeskConverter extends Converter {
   source = 'Zendesk';
 
   id(record: AirbyteRecord): any {
