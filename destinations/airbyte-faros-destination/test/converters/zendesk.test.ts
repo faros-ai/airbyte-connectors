@@ -12,15 +12,15 @@ import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {zendeskSupportAllStreamsLog} from './data';
+import {zendeskAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
 describe('zendesk', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/zendesk-support/catalog.json';
+  const catalogPath = 'test/resources/zendesk/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__zendesk-support__';
+  const streamNamePrefix = 'mytestsource__zendesk__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -40,7 +40,7 @@ describe('zendesk', () => {
       catalogPath,
       '--dry-run',
     ]);
-    cli.stdin.end(zendeskSupportAllStreamsLog, 'utf8');
+    cli.stdin.end(zendeskAllStreamsLog, 'utf8');
 
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
@@ -230,7 +230,6 @@ describe('tickets', () => {
 describe('tags', () => {
   const converter = new Tags();
   const tag = {name: 'support', count: 1};
-  const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}}, {});
   test('tag', async () => {
     const record = AirbyteRecord.make('tag', tag);
 
