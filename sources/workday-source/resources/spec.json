@@ -84,10 +84,10 @@
             "baseUrl": {
                 "type": "string",
                 "title": "REST/Auth API base URL",
-                "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip 'api/v2/{tenant}' and just paste 'https://wd2-impl-services1.workday.com/ccx/'.",
+                "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip '/api/v2/{tenant}' and paste 'https://wd2-impl-services1.workday.com/ccx'.",
                 "examples": [
-                    "https://wd2-impl-services1.workday.com/ccx/",
-                    "https://wd5-impl-services1.workday.com/ccx/"
+                    "https://wd2-impl-services1.workday.com/ccx",
+                    "https://wd5-impl-services1.workday.com/ccx"
                 ]
             },
             "limit": {
