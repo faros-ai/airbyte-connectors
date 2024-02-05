@@ -4,6 +4,6 @@
         "username": "foo",
         "password": "bar"
     },
-    "baseUrl": "test.test",
+    "baseUrl": "https://test.com",
     "customReportName": "CR"
   }
