@@ -42,10 +42,10 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
-    "globals": {
-      "ts-jest": {
+    "transform": {
+      "\\.[jt]sx?$": [ "ts-jest", {
         "tsconfig": "test/tsconfig.json"
-      }
+      }]
     }
   }
 }
