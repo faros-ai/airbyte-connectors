@@ -29,7 +29,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "bitbucket": "^2.7.0",
     "bottleneck": "^2.19.5",
     "date-format": "^4.0.6",
