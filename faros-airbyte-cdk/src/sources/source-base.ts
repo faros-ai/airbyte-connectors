@@ -1,6 +1,7 @@
 import {cloneDeep, keyBy} from 'lodash';
 import VError from 'verror';
 
+import {NonFatalError} from '../errors';
 import {AirbyteLogger} from '../logger';
 import {
   AirbyteCatalogMessage,
@@ -116,17 +117,18 @@ export abstract class AirbyteSourceBase<
     // get the streams once in case the connector needs to make any queries to
     // generate them
     const streamInstances = keyBy(this.streams(config), (s) => s.name);
+    const failedStreams = [];
     for (const configuredStream of catalog.streams) {
       const streamName = configuredStream.stream.name;
-      const streamInstance = streamInstances[streamName];
-      if (!streamInstance) {
-        throw new VError(
-          `The requested stream ${streamName} was not found in the source. Available streams: ${Object.keys(
-            streamInstances
-          )}`
-        );
-      }
       try {
+        const streamInstance = streamInstances[streamName];
+        if (!streamInstance) {
+          throw new VError(
+            `The requested stream ${streamName} was not found in the source. Available streams: ${Object.keys(
+              streamInstances
+            )}`
+          );
+        }
         const generator = this.readStream(
           streamInstance,
           configuredStream,
@@ -161,9 +163,32 @@ export abstract class AirbyteSourceBase<
           },
           {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
         );
-        throw e;
+
+        if (config.max_stream_failures == null) {
+          throw e;
+        }
+        failedStreams.push(streamName);
+        // -1 means unlimited allowed stream failures
+        if (
+          config.max_stream_failures !== -1 &&
+          failedStreams.length > config.max_stream_failures
+        ) {
+          this.logger.error(
+            `Exceeded maximum number of allowed stream failures: ${config.max_stream_failures}`
+          );
+          break;
+        }
       }
     }
+
+    if (failedStreams.length > 0) {
+      throw new VError(
+        `Encountered an error while reading stream(s): ${JSON.stringify(
+          failedStreams
+        )}`
+      );
+    }
+
     yield new AirbyteStateMessage(
       {
         data: config.compress_state
@@ -275,6 +300,17 @@ export abstract class AirbyteSourceBase<
           );
         }
       } catch (e: any) {
+        if (e instanceof NonFatalError) {
+          this.logger.warn(
+            `Encountered a non-fatal error while processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )}: ${e.message ?? JSON.stringify(e)}`,
+            e.stack
+          );
+          yield this.errorState(streamName, streamState, connectorState, e);
+          continue;
+        }
+
         if (!slice || maxSliceFailures == null) {
           throw e;
         }

@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "analytics-node": "^6.0.0",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "date-format": "^4.0.6",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",
@@ -65,10 +65,10 @@
       "out/"
     ],
     "testTimeout": 30000,
-    "globals": {
-      "ts-jest": {
+    "transform": {
+      "\\.[jt]sx?$": [ "ts-jest", {
         "tsconfig": "test/tsconfig.json"
-      }
+      }]
     },
     "snapshotFormat": {
       "printBasicPrototype": true,
