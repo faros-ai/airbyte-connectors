@@ -12,6 +12,10 @@ export class Users extends JiraConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data;
     const uid = user.accountId ?? user.name;
+    const source = this.streamName.source;
+    const organizationName = this.getOrganizationFromUrl(user.self);
+    const organization = {uid: organizationName, source};
+
     if (!uid) {
       ctx.logger.warn(
         `Skipping user. User has no accountId or name defined: ${JSON.stringify(
@@ -29,6 +33,7 @@ export class Users extends JiraConverter {
           emailAddress: user.emailAddress,
           source: this.streamName.source,
           inactive: user.active != null && !user.active,
+          organization,
         },
       },
     ];

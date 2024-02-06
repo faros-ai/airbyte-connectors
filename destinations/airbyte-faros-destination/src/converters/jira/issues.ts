@@ -431,8 +431,12 @@ export class Issues extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data;
+    console.log('🚀 ~ Issues ~ issue:', issue);
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
+    console.log('🚀 ~ Issues ~ issue.url:', issue.self);
+    const organizationName = this.getOrganizationFromUrl(issue.self);
+    const organization = {uid: organizationName, source};
 
     if (!this.fieldIdsByName) {
       this.fieldIdsByName = Issues.getFieldIdsByName(ctx);
@@ -662,6 +666,7 @@ export class Issues extends JiraConverter {
       sprint: sprint ? {uid: sprint, source} : null,
       source,
       additionalFields,
+      organization,
     };
 
     const excludeFields = this.excludeFields(ctx);

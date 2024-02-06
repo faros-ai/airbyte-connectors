@@ -104,4 +104,10 @@ export abstract class JiraConverter extends Converter {
   protected useBoardOwnership(ctx: StreamContext): boolean {
     return this.jiraConfig(ctx).use_board_ownership ?? false;
   }
+
+  protected getOrganizationFromUrl(url: string): string {
+    const parts = url.split('/');
+    const username = parts[2].split('.')[0];
+    return username;
+  }
 }
