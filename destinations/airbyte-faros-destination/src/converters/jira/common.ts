@@ -32,6 +32,11 @@ export interface Status {
   readonly detail: string;
 }
 
+export interface StatusValue {
+  oldValue: string;
+  newValue: string;
+}
+
 export interface SprintIssue {
   id: number;
   key: string;

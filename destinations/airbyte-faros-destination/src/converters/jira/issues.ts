@@ -27,6 +27,7 @@ import {
   Repo,
   RepoSource,
   Status,
+  StatusValue,
 } from './common';
 
 const dependencyRegex = /((is (?<type>\w+))|tested) by/;
@@ -38,9 +39,9 @@ const typeCategories: ReadonlyMap<string, string> = new Map(
   ['Bug', 'Story', 'Task'].map((t) => [JiraCommon.normalize(t), t])
 );
 
-interface StatusChange {
-  readonly status: Status;
-  readonly changedAt: Date;
+interface IssueStatusChange {
+  readonly status: StatusValue;
+  readonly changedAt: string;
 }
 
 export class Issues extends JiraConverter {
@@ -198,31 +199,29 @@ export class Issues extends JiraConverter {
   }
 
   private statusChangelog(
-    changelog: ReadonlyArray<any>,
-    currentStatus: string,
-    created: Date
-  ): ReadonlyArray<StatusChange> {
-    const statusChangelog: Array<StatusChange> = [];
+    changelog: ReadonlyArray<any>
+  ): ReadonlyArray<IssueStatusChange> {
+    const statusChangelog: Array<IssueStatusChange> = [];
 
-    const pushStatusChange = (statusName: string, date: Date): void => {
-      const status = this.statusByName[statusName];
-      if (status) statusChangelog.push({status, changedAt: date});
+    const pushStatusChange = (
+      oldValue: string,
+      newValue: string,
+      date: Date
+    ): void => {
+      const status = {
+        newValue: newValue,
+        oldValue: oldValue,
+      };
+      const isoDateString = new Date(date).toISOString();
+      if (status) statusChangelog.push({status, changedAt: isoDateString});
     };
 
     const statusChanges = Issues.fieldChangelog(changelog, 'status');
 
     if (statusChanges.length) {
-      // status that was assigned at creation
-      const firstChange = statusChanges[0];
-      if (firstChange.from) {
-        pushStatusChange(firstChange.from, created);
-      }
       for (const change of statusChanges) {
-        pushStatusChange(change.value, change.changed);
+        pushStatusChange(change.value, change.from, change.changed);
       }
-    } else if (currentStatus) {
-      // if task was given status at creation and never changed
-      pushStatusChange(currentStatus, created);
     }
     return statusChangelog;
   }
@@ -431,10 +430,8 @@ export class Issues extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data;
-    console.log('🚀 ~ Issues ~ issue:', issue);
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
-    console.log('🚀 ~ Issues ~ issue.url:', issue.self);
     const organizationName = this.getOrganizationFromUrl(issue.self);
     const organization = {uid: organizationName, source};
 
@@ -565,13 +562,9 @@ export class Issues extends JiraConverter {
       });
     }
 
-    const statusChangelog = this.statusChangelog(
-      changelog,
-      issue.fields.status?.name,
-      created
-    );
+    const statusChangelog = this.statusChangelog(changelog);
     // Timestamp of most recent status change
-    let statusChanged: Date | undefined;
+    let statusChanged: string | undefined;
     if (statusChangelog.length) {
       statusChanged = statusChangelog[statusChangelog.length - 1].changedAt;
     }
@@ -628,7 +621,7 @@ export class Issues extends JiraConverter {
     }
 
     const creator =
-      issue.fields.creator?.accountId || issue.fields.creator?.name;
+      issue.fields.creator?.emailAddress || issue.fields.creator?.accountId;
     const parent = issue.fields.parent?.key
       ? {
           key: issue.fields.parent?.key,
@@ -667,6 +660,7 @@ export class Issues extends JiraConverter {
       source,
       additionalFields,
       organization,
+      url: issue?.self,
     };
 
     const excludeFields = this.excludeFields(ctx);
