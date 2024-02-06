@@ -47,6 +47,7 @@
   },
   "overrides": {
     "axios": "^1.6.5",
-    "degenerator": "^5.0.0"
+    "degenerator": "^5.0.0",
+    "semver": "^7.5.4"
   }
 }
