@@ -3,6 +3,7 @@ asana-source
 aws-cloudwatch-metrics-source
 azure-repos-source
 azure-workitems-source
+azureactivedirectory-source
 azurepipeline-source
 bamboohr-source
 bitbucket-server-source
