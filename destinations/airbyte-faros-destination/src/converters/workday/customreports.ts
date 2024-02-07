@@ -318,7 +318,7 @@ export class Customreports extends Converter {
       error_str +=
         'The cycle chains are listed in log message above, and here: ';
       error_str += JSON.stringify(this.cycleChains);
-      ctx.logger.error(error_str);
+      ctx.logger.warn(error_str);
       if (ctx.config.source_specific_configs?.workday?.fail_on_cycles) {
         throw new Error(error_str);
       }
