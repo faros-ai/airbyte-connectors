@@ -52,7 +52,8 @@ function updateCustomReportWithFields(
 
 function getCustomReportandCtxGivenKey(
   mockttp: Mockttp,
-  k: string
+  k: string,
+  fail_on_cycles: boolean = false
 ): [Customreports, StreamContext] {
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
@@ -62,7 +63,7 @@ function getCustomReportandCtxGivenKey(
     InvalidRecordStrategy.SKIP,
     Edition.CLOUD,
     {},
-    {workday: {orgs_to_keep, orgs_to_ignore}}
+    {workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles}}
   );
 
   const ctx: StreamContext = new StreamContext(
@@ -291,13 +292,27 @@ describe('workday', () => {
     expect(res.length).toEqual(14);
   });
   test('check resulting org structure from "failing cycle 1" input', () => {
+    const fail_on_cycles = true;
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
-      'failing cycle 1'
+      'failing cycle 1',
+      fail_on_cycles
     );
 
     expect(() => {
       runCustomReportDestination(customReportDestination, ctx);
     }).toThrow();
+  });
+  test('check resulting org structure from "failing cycle 1" skip input', () => {
+    const fail_on_cycles = true;
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'failing cycle 1'
+    );
+
+    //We expect it to not throw errors
+    expect(() => {
+      runCustomReportDestination(customReportDestination, ctx);
+    }).not.toThrow();
   });
 });
