@@ -192,38 +192,31 @@ export class Tickets extends ZendeskConverter {
     }
   }
 
-  /** Create default project and board for the tickets. */
+  /** Create default project and board for the tickets with same key */
   private getProjectBoardModels(): ReadonlyArray<DestinationRecord> {
-    const projectKey = {uid: this.projectUid, source: this.streamName.source};
-    const boardKey = {uid: this.projectUid, source: this.streamName.source};
+    const key = {uid: this.projectUid, source: this.streamName.source};
     return [
       {
         model: 'tms_Project',
         record: {
-          ...projectKey,
+          ...key,
           name: this.projectName,
         },
       },
       {
         model: 'tms_TaskBoard',
         record: {
-          ...boardKey,
+          ...key,
           name: this.projectName,
         },
       },
       {
         model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: boardKey,
-          project: projectKey,
-        },
+        record: {board: key, project: key},
       },
       {
         model: 'faros_TmsTaskBoardOptions',
-        record: {
-          board: boardKey,
-          inclusion: {category: 'Included'},
-        },
+        record: {board: key, inclusion: {category: 'Included'}},
       },
     ];
   }
