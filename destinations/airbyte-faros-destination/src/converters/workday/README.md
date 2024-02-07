@@ -10,6 +10,7 @@ Expecting fields (? implies optional):
   Manager_Name: string;
   Manager_ID: string;
   Team_Name: string;
+  Team_ID: string;
   Termination_Date?: Date;
   Location?: string;
   Email?: string;
@@ -19,4 +20,5 @@ Source Specific Configs:
 ```
 orgs_to_keep: string[];
 orgs_to_ignore: string[]
+fail_on_cycles: bool (default is false)
 ```
