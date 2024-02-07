@@ -303,8 +303,7 @@ describe('workday', () => {
       runCustomReportDestination(customReportDestination, ctx);
     }).toThrow();
   });
-  test('check resulting org structure from "failing cycle 1" skip input', () => {
-    const fail_on_cycles = true;
+  test('check resulting org structure from "failing cycle 1" ignore fail input', () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'failing cycle 1'

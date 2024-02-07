@@ -314,11 +314,11 @@ export class Customreports extends Converter {
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
     if (this.cycleChains.length > 0) {
-      let error_str: string = 'Cycles found. Please address the issue. ';
+      let error_str: string = 'Cycles found. Please note the issue. ';
       error_str +=
         'The cycle chains are listed in log message above, and here: ';
       error_str += JSON.stringify(this.cycleChains);
-      ctx.logger.error(JSON.stringify(report_obj));
+      ctx.logger.error(error_str);
       if (ctx.config.source_specific_configs?.workday?.fail_on_cycles) {
         throw new Error(error_str);
       }
