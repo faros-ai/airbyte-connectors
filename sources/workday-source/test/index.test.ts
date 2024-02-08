@@ -18,8 +18,17 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
+const test_base_url = 'https://testurl.com/ccx';
+
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
-  return new Workday(logger, axios_instance, limit, 'base-url', 'acme', true);
+  return new Workday(
+    logger,
+    axios_instance,
+    limit,
+    test_base_url,
+    'acme',
+    true
+  );
 }
 
 describe('index', () => {
@@ -193,7 +202,7 @@ describe('index', () => {
           get: fnCustomreports.mockResolvedValue({data: expected}),
         } as any,
         0,
-        'base-url',
+        test_base_url,
         'my_tenant',
         true
       );
