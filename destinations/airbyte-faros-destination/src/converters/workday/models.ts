@@ -10,6 +10,7 @@ export declare type EmployeeRecord = {
   Location?: string;
   Email?: string;
   Employee_Type?: string;
+  Job_Title?: string;
 };
 
 export declare type ManagerTimeRecord = {
