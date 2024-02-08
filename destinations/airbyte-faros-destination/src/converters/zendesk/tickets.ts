@@ -51,9 +51,15 @@ export class Tickets extends ZendeskConverter {
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'faros_TmsTaskBoardOptions',
+    'tms_Project',
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
+    'tms_TaskBoardRelationship',
     'tms_TaskDependency',
+    'tms_TaskProjectRelationship',
     'tms_TaskTag',
   ];
 
