@@ -18,6 +18,11 @@ export declare type ManagerTimeRecord = {
   Timestamp: Date;
 };
 
+export declare type org_EmploymentType = {
+  category: string;
+  detail: string;
+};
+
 export const recordKeyTyping = {
   startdate: 'Start_Date',
   fullname: 'Full_Name',

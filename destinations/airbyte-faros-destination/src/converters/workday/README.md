@@ -23,4 +23,5 @@ Source Specific Configs:
 orgs_to_keep: string[];
 orgs_to_ignore: string[]
 fail_on_cycles: bool (default is false)
+
 ```
