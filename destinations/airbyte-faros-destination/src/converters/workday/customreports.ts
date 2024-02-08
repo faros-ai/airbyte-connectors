@@ -308,12 +308,12 @@ export class Customreports extends Converter {
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       records_stored: this.recordCount.storedRecords,
-      cycleChains: this.cycleChains,
+      nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
       generalLogs: this.generalLogCollection,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
-    if (this.cycleChains.length > 0) {
+    if (report_obj.nCycleChains > 0) {
       let error_str: string = 'Cycles found. Please note the issue. ';
       error_str +=
         'The cycle chains are listed in log message above, and here: ';
@@ -452,9 +452,6 @@ export class Customreports extends Converter {
     ctx.logger.info(
       'Got acceptable teams and computed team to parent team mapping.'
     );
-    ctx.logger.info(
-      'Acceptable teams: ' + JSON.stringify(Array.from(acceptable_teams))
-    );
     ctx.logger.info('Finished computing ownership chains.');
 
     const newTeamToParent: Record<string, string> = this.replaceTeamParents(
@@ -471,7 +468,6 @@ export class Customreports extends Converter {
       res.push(...this.createEmployeeRecordList(employeeID, acceptable_teams));
     }
     this.printReport(ctx, acceptable_teams);
-    ctx.logger.info(res.length.toString());
     return [res, newTeamToParent];
   }
 
