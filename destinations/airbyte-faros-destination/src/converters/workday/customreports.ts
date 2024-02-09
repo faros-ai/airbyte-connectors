@@ -125,7 +125,6 @@ export class Customreports extends Converter {
       !rec.Employee_ID ||
       !rec.Full_Name ||
       !rec.Manager_ID ||
-      !rec.Manager_Name ||
       !rec.Start_Date ||
       !rec.Team_ID ||
       !rec.Team_Name
