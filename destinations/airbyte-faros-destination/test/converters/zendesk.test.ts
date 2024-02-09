@@ -7,6 +7,7 @@ import {
   TicketFieldsStream,
   TicketMetricsStream,
 } from '../../src/converters/zendesk/common';
+import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_ratings';
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
@@ -46,6 +47,7 @@ describe('zendesk', () => {
     logger.debug(stdout);
 
     const processedByStream = {
+      satisfaction_ratings: 2,
       tags: 8,
       ticket_fields: 9,
       ticket_metrics: 14,
@@ -60,6 +62,8 @@ describe('zendesk', () => {
       .value();
 
     const writtenByModel = {
+      faros_MetricDefinition: 1,
+      faros_MetricValue: 2,
       faros_TmsTaskBoardOptions: 1,
       tms_Label: 8,
       tms_Project: 1,
@@ -344,6 +348,26 @@ describe('users', () => {
       suspended: true,
     });
     const res = await converter.convert(record);
+    expect(res).toMatchSnapshot();
+  });
+});
+
+describe('satisfaction ratings', () => {
+  const converter = new SatisfactionRatings();
+  const rating = {
+    id: 1,
+    ticket_id: 15,
+    score: 'offered',
+    created_at: '2024-02-07T21:51:23Z',
+    updated_at: '2024-02-07T21:51:23Z',
+    comment: null,
+  };
+
+  test('rating', async () => {
+    const record = AirbyteRecord.make('satisfaction_rating', rating);
+
+    const res = await converter.convert(record);
+    expect(res).toHaveLength(2);
     expect(res).toMatchSnapshot();
   });
 });

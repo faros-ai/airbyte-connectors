@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`satisfaction ratings rating 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "name": "Zendesk Satisfaction Ratings",
+      "uid": "zendesk-satisfaction-ratings",
+      "valueSourceType": "MetricValueEntries",
+      "valueType": "String",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2024-02-07T21:51:23.000Z,
+      "definition": Object {
+        "uid": "zendesk-satisfaction-ratings",
+      },
+      "uid": "zendesk-satisfaction-rating-1",
+      "value": "offered",
+    },
+  },
+]
+`;
+
 exports[`tags tag 1`] = `
 Array [
   Object {
