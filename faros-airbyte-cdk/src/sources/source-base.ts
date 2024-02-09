@@ -429,7 +429,15 @@ export abstract class AirbyteSourceBase<
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage(
       {data: connectorState},
-      {status: 'ERRORED', error: error.message ?? JSON.stringify(error)}
+      {
+        status: 'ERRORED',
+        // TODO: complete error object with info from Source
+        error: {
+          summary: error.message ?? JSON.stringify(error),
+          code: 0, // placeholder
+          action: '', // placeholder
+        },
+      }
     );
   }
 }

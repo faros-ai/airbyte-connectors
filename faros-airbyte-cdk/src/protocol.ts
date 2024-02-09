@@ -262,13 +262,22 @@ export interface AirbyteState {
   [stream: string]: any;
 }
 
+export interface SyncMessage {
+  summary: string;
+  code: number;
+  action: string;
+  entity?: string;
+  details?: any;
+  messages?: SyncMessage[];
+}
+
 export interface AirbyteSourceStatusBase {
   status: 'ERRORED' | 'RUNNING' | 'SUCCESS';
 }
 
 export interface AirbyteSourceErrorStatus extends AirbyteSourceStatusBase {
   status: 'ERRORED';
-  error: string;
+  error: string | SyncMessage;
 }
 
 export interface AirbyteSourceRunningStatus extends AirbyteSourceStatusBase {
