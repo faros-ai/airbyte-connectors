@@ -250,7 +250,7 @@ export class Customreports extends Converter {
     // if we first hit an ignored team, we return false (not kept).
     // Otherwise if we first hit a kept team, we return true (keep the team)
     // If we hit neither kept nor ignored, we return false (not kept).
-    // Addition: if there is a cycle and we want to keep cycle teams, we keep true.
+    // Addition: if we keep cycle teams and there is a cycle then we return true.
     for (const org of ownershipChain) {
       if (this.org_ids_to_keep.includes(org)) {
         return true;
