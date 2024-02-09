@@ -14,6 +14,7 @@ export enum RepoSource {
   GITHUB = 'GitHub',
   GITLAB = 'GitLab',
   VCS = 'VCS',
+  AZURE = 'AZURE-REPOS',
 }
 
 export interface Repo {
@@ -114,5 +115,9 @@ export abstract class JiraConverter extends Converter {
     const parts = url.split('/');
     const username = parts[2].split('.')[0];
     return username;
+  }
+
+  protected getRepoOrganizationFromUrl(url: string): string {
+    return url.split('/')[3];
   }
 }

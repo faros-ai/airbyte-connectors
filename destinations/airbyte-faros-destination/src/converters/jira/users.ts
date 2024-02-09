@@ -11,7 +11,7 @@ export class Users extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data;
-    const uid = user.accountId ?? user.name;
+    const uid = user.emailAddress ?? user.accountId;
     const source = this.streamName.source;
     const organizationName = this.getOrganizationFromUrl(user.self);
     const organization = {uid: organizationName, source};

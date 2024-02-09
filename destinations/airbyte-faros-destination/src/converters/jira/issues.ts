@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
@@ -309,6 +310,7 @@ export class Issues extends JiraConverter {
     if (lowerSource?.includes('bitbucket')) source = RepoSource.BITBUCKET;
     else if (lowerSource?.includes('gitlab')) source = RepoSource.GITLAB;
     else if (lowerSource?.includes('github')) source = RepoSource.GITHUB;
+    else if (lowerSource?.includes('azure')) source = RepoSource.AZURE;
     else source = RepoSource.VCS;
     return {
       source,
@@ -404,7 +406,7 @@ export class Issues extends JiraConverter {
         branchToRepoUrl.set(branch.url, branch.repository.url);
       }
       for (const pull of detail.pullRequests ?? []) {
-        const repoUrl = branchToRepoUrl.get(pull.source?.url);
+        const repoUrl = pull?.repositoryUrl;
         if (!repoUrl) {
           continue;
         }
@@ -457,7 +459,7 @@ export class Issues extends JiraConverter {
         model: 'tms_TaskBoardRelationship',
         record: {
           task: {uid: issue.key, source},
-          board: {uid: issue.projectKey, source},
+          board: {uid: issue.projectKey, source, organization},
         },
       });
     }
@@ -470,29 +472,30 @@ export class Issues extends JiraConverter {
 
     const pulls = this.getPullRequests(ctx, issue.id);
     for (const pull of pulls) {
+      const projectRepo = pull?.repo?.name;
+      const repository = {
+        name: projectRepo,
+        uid: projectRepo,
+        organization,
+      };
+      const pullRequest = {
+        number: pull.number,
+        uid: pull.number.toString(),
+        repository,
+      };
+
       results.push({
         model: 'tms_TaskPullRequestAssociation',
         record: {
-          task: {uid: issue.key, source},
-          pullRequest: {
-            repository: {
-              organization: {
-                source: pull.repo.source,
-                uid: toLower(pull.repo.org),
-              },
-              name: toLower(pull.repo.name),
-              uid: toLower(pull.repo.name),
-            },
-            number: pull.number,
-            uid: pull.number.toString(),
-          },
+          task: {uid: issue.key, organization},
+          pullRequest,
         },
       });
     }
 
     const created = Utils.toDate(issue.fields.created);
     const assignee =
-      issue.fields.assignee?.accountId || issue.fields.assignee?.name;
+      issue.fields.assignee?.emailAddress || issue.fields.assignee?.name;
     const changelog: any[] = issue.changelog?.histories || [];
     changelog.sort((e1, e2) => {
       // Sort changes from least to most recent
@@ -512,6 +515,7 @@ export class Issues extends JiraConverter {
           task: {uid: issue.key, source},
           assignee: {uid: assignee.uid || 'Unassigned', source},
           assignedAt: assignee.assignedAt,
+          source,
         },
       });
     }

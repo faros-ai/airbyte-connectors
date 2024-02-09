@@ -23,7 +23,7 @@ export class Boards extends JiraConverter {
     return [
       {
         model: 'tms_TaskBoard',
-        record: {uid, name: board.name, source, organization},
+        record: {uid, name: board.name, organization},
       },
       {
         model: 'tms_TaskBoardProjectRelationship',
