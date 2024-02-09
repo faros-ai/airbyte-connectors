@@ -86,6 +86,9 @@
         },
         "workday": {
           "$ref": "workday.json"
+        },
+        "zendesk": {
+          "$ref": "zendesk.json"
         }
       }
     }
