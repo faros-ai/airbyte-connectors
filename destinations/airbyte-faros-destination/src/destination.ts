@@ -777,7 +777,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         const errorSummary = sourceErrors.map((e) => e.summary).join('; ');
         this.logger.error(
           'Skipping reset of non-incremental models due to' +
-            ` Airbyte Source failures: ${errorSummary}`
+            ` Airbyte Source errors: ${errorSummary}`
         );
       } else if (
         sourceSucceeded ||
