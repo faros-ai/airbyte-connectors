@@ -15,9 +15,11 @@ describe('FarosSyncClient', () => {
     await mockttp.stop();
   });
 
+  const accountId = 'test-account';
+  const missingAccountId = 'missing-account';
+
   describe('createAccountSync', () => {
     it('should create an account sync', async () => {
-      const accountId = 'test-account';
       const startedAt = new Date();
       await mockttp
         .forPut(`/accounts/${accountId}/syncs`)
@@ -47,36 +49,30 @@ describe('FarosSyncClient', () => {
     });
 
     it('should not fail if account is not found', async () => {
-      const accountId = 'missing-account';
-      const startedAt = new Date();
       await mockttp
-        .forPut(`/accounts/${accountId}/syncs`)
+        .forPut(`/accounts/${missingAccountId}/syncs`)
         .once()
-        .withJsonBody({startedAt: startedAt.toISOString()})
         .thenReply(
           404,
-          JSON.stringify({error: 'Account missing-account does not exist'})
+          JSON.stringify({error: `Account ${missingAccountId} does not exist`})
         );
 
       const accountSync = await farosSyncClient.createAccountSync(
-        accountId,
-        startedAt
+        missingAccountId,
+        new Date()
       );
       expect(accountSync).toBeUndefined();
     });
 
     it('should not fail if server error returned', async () => {
-      const accountId = 'missing-account';
-      const startedAt = new Date();
       await mockttp
         .forPut(`/accounts/${accountId}/syncs`)
         .always()
-        .withJsonBody({startedAt: startedAt.toISOString()})
         .thenReply(500);
 
       const accountSync = await farosSyncClient.createAccountSync(
         accountId,
-        startedAt
+        new Date()
       );
       expect(accountSync).toBeUndefined();
     });
@@ -84,7 +80,6 @@ describe('FarosSyncClient', () => {
 
   describe('updateAccountSync', () => {
     it('should update an account sync', async () => {
-      const accountId = 'test-account';
       const syncId = '1';
       const status = 'success';
       const endedAt = new Date();
@@ -138,18 +133,17 @@ describe('FarosSyncClient', () => {
   });
 
   it('should not fail if account is not found', async () => {
-    const accountId = 'missing-account';
     const syncId = '1';
     await mockttp
-      .forPatch(`/accounts/${accountId}/syncs/${syncId}`)
+      .forPatch(`/accounts/${missingAccountId}/syncs/${syncId}`)
       .once()
       .thenReply(
         404,
-        JSON.stringify({error: 'Account missing-account does not exist'})
+        JSON.stringify({error: `Account ${missingAccountId} does not exist`})
       );
 
     const accountSync = await farosSyncClient.updateAccountSync(
-      accountId,
+      missingAccountId,
       syncId,
       {status: 'success'}
     );
@@ -157,10 +151,9 @@ describe('FarosSyncClient', () => {
   });
 
   it('should not fail if sync is not found', async () => {
-    const accountId = 'missing-account';
-    const syncId = 'missing-sync';
+    const missingSyncId = 'missing-sync';
     await mockttp
-      .forPatch(`/accounts/${accountId}/syncs/${syncId}`)
+      .forPatch(`/accounts/${missingAccountId}/syncs/${missingSyncId}`)
       .once()
       .thenReply(
         404,
@@ -168,16 +161,15 @@ describe('FarosSyncClient', () => {
       );
 
     const accountSync = await farosSyncClient.updateAccountSync(
-      accountId,
-      syncId,
+      missingAccountId,
+      missingSyncId,
       {status: 'success'}
     );
     expect(accountSync).toBeUndefined();
   });
 
   it('should not fail if server error returned', async () => {
-    const accountId = 'missing-account';
-    const syncId = 'missing-sync';
+    const syncId = '1';
     await mockttp
       .forPatch(`/accounts/${accountId}/syncs/${syncId}`)
       .always()
