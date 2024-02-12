@@ -97,8 +97,4 @@ function syncResult(response?: AccountSyncResponse): AccountSync | undefined {
   };
 }
 
-function errorStatusCode(error: any): number | undefined {
-  return error instanceof VError ? VError.info(error).res?.status : undefined;
-}
-
 export default FarosSyncClient;
