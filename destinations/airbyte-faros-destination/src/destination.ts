@@ -8,7 +8,6 @@ import {
   AirbyteLogger,
   AirbyteMessageType,
   AirbyteRecord,
-  AirbyteSourceErrorStatus,
   AirbyteSpec,
   AirbyteStateMessage,
   DestinationSyncMode,
@@ -18,12 +17,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
-import {
-  FarosClient,
-  FarosClientConfig,
-  HasuraSchemaLoader,
-  Schema,
-} from 'faros-js-client';
+import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
 import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';

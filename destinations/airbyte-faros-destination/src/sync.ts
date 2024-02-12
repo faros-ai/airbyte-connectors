@@ -2,7 +2,6 @@ import {AxiosRequestConfig} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient, FarosClientConfig} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-import VError from 'verror';
 
 export interface SyncMessage {
   summary: string;
