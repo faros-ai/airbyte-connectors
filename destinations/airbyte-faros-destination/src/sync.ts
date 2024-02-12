@@ -36,10 +36,10 @@ interface AccountSyncResponse {
 class FarosSyncClient extends FarosClient {
   constructor(
     cfg: FarosClientConfig,
-    private readonly airbyteLogger: AirbyteLogger,
+    private readonly airbyteLogger?: AirbyteLogger,
     axiosConfig?: AxiosRequestConfig
   ) {
-    super(cfg, airbyteLogger.asPino('info'), axiosConfig);
+    super(cfg, airbyteLogger?.asPino('info'), axiosConfig);
   }
 
   async createAccountSync(
@@ -74,8 +74,8 @@ class FarosSyncClient extends FarosClient {
 
   private attemptRequest<T>(f: Promise<T>, failureMessage: string): Promise<T> {
     return f.catch((error) => {
-      this.airbyteLogger.warn(failureMessage);
-      this.airbyteLogger.traceError(error);
+      this.airbyteLogger?.warn(failureMessage);
+      this.airbyteLogger?.traceError(error);
       return undefined;
     });
   }

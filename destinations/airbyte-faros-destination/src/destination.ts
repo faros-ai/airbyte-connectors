@@ -658,7 +658,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             } else if (message.sourceStatus?.status === 'ERRORED') {
               const syncMessage = getSyncMessage(message.sourceStatus.error);
               this.logger.error(
-                `Airbyte Source has failed: ${syncMessage.summary}`
+                `Airbyte Source has encountered an error: ${syncMessage.summary}`
               );
               sourceErrors.push(syncMessage);
             } else {
