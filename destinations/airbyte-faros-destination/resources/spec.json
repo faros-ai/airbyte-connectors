@@ -137,7 +137,7 @@
       },
       "faros_source_id": {
         "order": 12,
-        "type": "boolean",
+        "type": "string",
         "title": "Faros Source Id",
         "description": "The Id of the Faros Source that is being used to track sync statuses. If left blank, it will use the determined origin value as the source id."
       }

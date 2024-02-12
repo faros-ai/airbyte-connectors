@@ -66,6 +66,9 @@ class FarosSyncClient extends FarosClient {
         this.request('PATCH', `/accounts/${accountId}/syncs/${syncId}`, {
           ...props,
           endedAt: props.endedAt?.toISOString(),
+          warnings: props.warnings ?? [],
+          errors: props.errors ?? [],
+          metrics: props.metrics ?? {},
         }),
         `Failed to update sync ${syncId} for account ${accountId}`
       )
