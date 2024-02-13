@@ -265,8 +265,8 @@ export interface AirbyteState {
 export interface SyncMessage {
   summary: string;
   code: number;
-  action: string;
-  entity?: string;
+  action: string; // Describes what the user can do to resolve the error
+  entity?: string; // The project/repository/branch/etc. that the error is associated with
   details?: any;
   messages?: SyncMessage[];
 }
