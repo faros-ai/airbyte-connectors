@@ -161,7 +161,15 @@ export abstract class AirbyteSourceBase<
               ? State.compress(connectorState)
               : connectorState,
           },
-          {status: 'ERRORED', error: e.message ?? JSON.stringify(e)}
+          // TODO: complete error object with info from Source
+          {
+            status: 'ERRORED',
+            error: {
+              summary: e.message ?? JSON.stringify(e),
+              code: 0, // placeholder
+              action: 'Contact Faros support', // placeholder
+            },
+          }
         );
 
         if (config.max_stream_failures == null) {
@@ -429,7 +437,15 @@ export abstract class AirbyteSourceBase<
     connectorState[streamName] = streamState;
     return new AirbyteStateMessage(
       {data: connectorState},
-      {status: 'ERRORED', error: error.message ?? JSON.stringify(error)}
+      {
+        status: 'ERRORED',
+        // TODO: complete error object with info from Source
+        error: {
+          summary: error.message ?? JSON.stringify(error),
+          code: 0, // placeholder
+          action: 'Contact Faros support', // placeholder
+        },
+      }
     );
   }
 }
