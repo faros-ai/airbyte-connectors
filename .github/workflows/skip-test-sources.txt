@@ -25,5 +25,6 @@ servicenow-source
 sheets-source
 squadcast-source
 testrails-source
+trello-source
 victorops-source
 workday-source
