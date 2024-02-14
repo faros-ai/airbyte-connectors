@@ -14,6 +14,8 @@ Expecting fields (? implies optional):
   Termination_Date?: Date;
   Location?: string;
   Email?: string;
+  Employee_Type?: string;
+  Job_Title?: string;
 ```
 
 Source Specific Configs:
@@ -21,4 +23,5 @@ Source Specific Configs:
 orgs_to_keep: string[];
 orgs_to_ignore: string[]
 fail_on_cycles: bool (default is false)
+
 ```

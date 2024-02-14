@@ -10,11 +10,17 @@ export declare type EmployeeRecord = {
   Location?: string;
   Email?: string;
   Employee_Type?: string;
+  Job_Title?: string;
 };
 
 export declare type ManagerTimeRecord = {
   Manager_ID: string;
   Timestamp: Date;
+};
+
+export declare type org_EmploymentType = {
+  category: string;
+  detail: string;
 };
 
 export const recordKeyTyping = {
