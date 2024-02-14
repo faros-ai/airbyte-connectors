@@ -415,10 +415,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     await this.init(config);
 
     let sync: AccountSync;
-    if (!dryRunEnabled && this.edition === Edition.CLOUD) {
+    // WORKER_JOB_ID is populated by Airbyte
+    const workerJobId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
+    if (!dryRunEnabled && this.edition === Edition.CLOUD && workerJobId) {
       sync = await this.getFarosClient().createAccountSync(
         accountId,
-        startedAt
+        startedAt,
+        workerJobId
       );
     }
 

@@ -34,16 +34,22 @@ class FarosSyncClient extends FarosClient {
 
   async createAccountSync(
     accountId: string,
-    startedAt: Date
+    startedAt: Date,
+    logId?: string
   ): Promise<AccountSync | undefined> {
-    return syncResult(
+    const sync = syncResult(
       await this.attemptRequest(
         this.request('PUT', `/accounts/${accountId}/syncs`, {
           startedAt: startedAt.toISOString(),
+          logId,
         }),
         `Failed to create sync for account ${accountId}`
       )
     );
+    if (sync) {
+      this.airbyteLogger?.info(`Created sync id: ${sync?.syncId}`);
+    }
+    return sync;
   }
 
   async updateAccountSync(
