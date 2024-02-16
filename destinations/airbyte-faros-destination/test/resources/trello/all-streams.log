@@ -1,0 +1,2 @@
+{"record":{"stream":"mytestsource__trello__boards","emitted_at":1708096878884,"data":{"id":"b98e01d14cf778006ae8e8d1","name":"Innovative Venture"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__trello__users","emitted_at":1708102747010,"data":{"id":"1735be8ade395c72d43d6603","fullName":"Jamie Williams","username":"jwilliams80"}},"type":"RECORD"}
