@@ -134,3 +134,6 @@ export const awsCloudwatchMetricsStreamsInput = readTestResourceFile(
 export const zendeskAllStreamsLog = readTestResourceFile(
   'zendesk/all-streams.log'
 );
+export const trelloAllStreamsLog = readTestResourceFile(
+  'trello/all-streams.log'
+);
