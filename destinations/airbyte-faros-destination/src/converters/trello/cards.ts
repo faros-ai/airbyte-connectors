@@ -1,5 +1,6 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
+import {paginatedQueryV2,Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {
   DestinationModel,
@@ -181,7 +182,7 @@ export class Cards extends TrelloConverter {
         name: card.name,
         description: Utils.cleanAndTruncate(card.desc) ?? null,
         url: card.url ?? null,
-        type: {category: TmsTaskCategory.Custom, detail: null},
+        type: {category: TmsTaskCategory.Task, detail: null},
         status: this.getStatus(card),
         createdAt: Utils.toDate(this.createActions.get(cardId)?.date) ?? null,
         updatedAt: Utils.toDate(card.dateLastActivity) ?? null,
@@ -207,6 +208,37 @@ export class Cards extends TrelloConverter {
     cardId: string,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    if (
+      !ctx ||
+      ctx.streamsSyncMode[this.streamName.asString] ===
+        DestinationSyncMode.OVERWRITE ||
+      isNil(ctx.farosClient) ||
+      isNil(ctx.graph)
+    ) {
+      return [];
+    }
+
+    const query = `
+    {
+      tms_Task(
+        where: {_and: [{uid: {_eq: "${cardId}"}}, {source: {_eq: "${this.source}"}}]}
+      ) {
+        statusChangelog
+      }
+    }`;
+
+    for await (const task of ctx.farosClient.nodeIterable(
+      ctx.graph,
+      query,
+      100,
+      paginatedQueryV2
+    )) {
+      // Update all the fields from the card
+      // Merge the statusChangelog from the graph with the new statusChangelog
+      // Update the relationships if necessary (board, project, assignee)
+      // Verify whether the card board changes right away after moving the card to another board (trello source)
+    }
+
     return [];
   }
 
