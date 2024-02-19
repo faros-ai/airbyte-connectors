@@ -6,6 +6,7 @@ export interface WorkItemResponse {
 export interface WorkItem1 {
   fields: fields;
   id: string;
+  name: string;
   rev: string;
   url: string;
   relations: Relations[];

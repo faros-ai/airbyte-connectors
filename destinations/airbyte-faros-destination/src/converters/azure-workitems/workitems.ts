@@ -13,6 +13,7 @@ export class Workitems extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskProjectRelationship',
   ];
 
   private statusChangelog(workItem: WorkItem): ReadonlyArray<StatusChange> {
@@ -76,17 +77,13 @@ export class Workitems extends AzureWorkitemsConverter {
           statusChangedAt: WorkItem?.item?.fields[
             'Microsoft.VSTS.Common.StateChangeDate'
           ]
-            ? new Date(
-                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
-              )
+            ? WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
             : null,
           statusChangelog: statusChangelog,
           updatedAt: WorkItem?.item?.fields[
             'Microsoft.VSTS.Common.StateChangeDate'
           ]
-            ? new Date(
-                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
-              )
+            ? WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
             : null,
           creator: {
             uid: WorkItem?.item?.fields['System.CreatedBy']['uniqueName'],
@@ -111,6 +108,13 @@ export class Workitems extends AzureWorkitemsConverter {
             source,
           },
           source,
+        },
+      },
+      {
+        model: 'tms_TaskProjectRelationship',
+        record: {
+          task: {uid: String(WorkItem?.item?.id), source},
+          project: {uid: WorkItem?.item?.name, source},
         },
       },
     ];
