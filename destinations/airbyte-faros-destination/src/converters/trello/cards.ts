@@ -1,10 +1,12 @@
 import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
-import {paginatedQueryV2,Utils} from 'faros-js-client';
+import {paginatedQueryV2, Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
+import _ from 'lodash';
 
 import {
   DestinationModel,
   DestinationRecord,
+  parseObjectConfig,
   StreamContext,
   StreamName,
 } from '../converter';
@@ -40,6 +42,10 @@ enum TmsTaskCategory {
   Task = 'Task',
 }
 
+export interface TrelloConfig {
+  task_status_category_mapping?: Record<string, string>;
+}
+
 export class Cards extends TrelloConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
@@ -49,6 +55,20 @@ export class Cards extends TrelloConverter {
     'tms_TaskAssignment',
     'tms_TaskTag',
   ];
+
+  private config: TrelloConfig = undefined;
+
+  private initialize(ctx: StreamContext): void {
+    this.config =
+      this.config ?? ctx.config.source_specific_configs?.trello ?? {};
+    this.config.task_status_category_mapping =
+      this.config.task_status_category_mapping ??
+      parseObjectConfig(
+        this.config?.task_status_category_mapping,
+        'Task Status Category Mapping'
+      ) ??
+      {};
+  }
 
   static readonly actionsStream = new StreamName('trello', 'actions');
 
@@ -67,6 +87,7 @@ export class Cards extends TrelloConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
     const card = record.record.data as Card;
     this.seenCards.set(card.id, card);
     return [];
@@ -155,25 +176,10 @@ export class Cards extends TrelloConverter {
     }
 
     const res: DestinationRecord[] = [];
-    const taskKey = {uid: card.id, source: this.source};
-    const statusChangelog: TmsTaskStatusChange[] = [];
 
-    if (card?.idBoard) {
-      res.push({
-        model: 'tms_TaskBoardRelationship',
-        record: {
-          task: taskKey,
-          board: {uid: card.idBoard, source: this.source},
-        },
-      });
-      res.push({
-        model: 'tms_TaskProjectRelationship',
-        record: {
-          task: taskKey,
-          project: {uid: card.idBoard, source: this.source},
-        },
-      });
-    }
+    const taskKey = {uid: card.id, source: this.source};
+    const statusChangelog: TmsTaskStatusChange[] =
+      this.getStatusChangelog(cardId);
 
     res.push({
       model: 'tms_Task',
@@ -191,12 +197,50 @@ export class Cards extends TrelloConverter {
       },
     });
 
+    res.push(...(await this.processBoard(card, taskKey)));
+    res.push(...(await this.processAssignment(card, taskKey)));
+
+    return res;
+  }
+
+  private async processAssignment(
+    card: Card,
+    taskKey: {uid: string; source: string}
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+
     if ((card?.idMembers ?? []).length > 0) {
       res.push({
         model: 'tms_TaskAssignment',
         record: {
           task: taskKey,
           assignee: {uid: card.idMembers[0], source: this.source},
+        },
+      });
+    }
+
+    return res;
+  }
+
+  private async processBoard(
+    card: Card,
+    taskKey: {uid: string; source: string}
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+
+    if (card?.idBoard) {
+      res.push({
+        model: 'tms_TaskBoardRelationship',
+        record: {
+          task: taskKey,
+          board: {uid: card.idBoard, source: this.source},
+        },
+      });
+      res.push({
+        model: 'tms_TaskProjectRelationship',
+        record: {
+          task: taskKey,
+          project: {uid: card.idBoard, source: this.source},
         },
       });
     }
@@ -218,14 +262,33 @@ export class Cards extends TrelloConverter {
       return [];
     }
 
+    const card = this.seenCards.get(cardId);
+    if (!card) {
+      return [];
+    }
+
     const query = `
     {
       tms_Task(
         where: {_and: [{uid: {_eq: "${cardId}"}}, {source: {_eq: "${this.source}"}}]}
       ) {
         statusChangelog
+        boards {
+          board {
+            uid
+            source
+          }
+        }
+        assignees {
+          assignee {
+            uid
+            source
+          }
+        }
       }
     }`;
+
+    const res: DestinationRecord[] = [];
 
     for await (const task of ctx.farosClient.nodeIterable(
       ctx.graph,
@@ -233,13 +296,80 @@ export class Cards extends TrelloConverter {
       100,
       paginatedQueryV2
     )) {
-      // Update all the fields from the card
-      // Merge the statusChangelog from the graph with the new statusChangelog
-      // Update the relationships if necessary (board, project, assignee)
-      // Verify whether the card board changes right away after moving the card to another board (trello source)
+      const taskKey = {uid: task.uid, source: task.source};
+      const statusChangelog: TmsTaskStatusChange[] = this.getStatusChangelog(
+        task.uid,
+        task.statusChangelog
+      );
+      res.push({
+        model: 'tms_Task__Update',
+        record: {
+          at: Date.now(),
+          where: taskKey,
+          mask: [
+            'name',
+            'description',
+            'url',
+            'type',
+            'status',
+            'updatedAt',
+            'statusChangedAt',
+            'statusChangelog',
+          ],
+          patch: {
+            name: card.name,
+            description: Utils.cleanAndTruncate(card.desc) ?? null,
+            url: card.url ?? null,
+            type: {category: TmsTaskCategory.Task, detail: null},
+            status: this.getStatus(card),
+            updatedAt: Utils.toDate(card.dateLastActivity) ?? null,
+            statusChangedAt: Utils.toDate(card.dateLastActivity) ?? null,
+            statusChangelog: statusChangelog ?? null,
+          },
+        },
+      });
+
+      for (const board of task.boards || []) {
+        if (
+          board.board.uid !== card.idBoard &&
+          board.board.source === this.source
+        ) {
+          res.push({
+            model: 'tms_TaskBoardRelationship__Deletion',
+            record: {
+              where: {
+                task: taskKey,
+                board: board.board,
+              },
+            },
+          });
+        }
+      }
+
+      res.push(...(await this.processBoard(card, taskKey)));
+
+      const assigneeId = card.idMembers?.[0];
+      for (const assignee of task.assignees || []) {
+        if (
+          assignee.assignee.uid !== assigneeId &&
+          assignee.assignee.source === this.source
+        ) {
+          res.push({
+            model: 'tms_TaskAssignment__Deletion',
+            record: {
+              where: {
+                task: taskKey,
+                assignee: assignee.assignee,
+              },
+            },
+          });
+        }
+      }
+
+      res.push(...(await this.processAssignment(card, taskKey)));
     }
 
-    return [];
+    return res;
   }
 
   private async processDelete(
@@ -264,5 +394,49 @@ export class Cards extends TrelloConverter {
     } else {
       return {category: Tms_TaskStatusCategory.Todo, detail: 'incomplete'};
     }
+  }
+
+  private getStatusChangelog(
+    cardId: string,
+    initialChangelog: TmsTaskStatusChange[] = []
+  ): TmsTaskStatusChange[] {
+    const changelog: TmsTaskStatusChange[] = [...initialChangelog];
+
+    for (const action of this.updateActions.get(cardId) ?? []) {
+      const changedAt: Date = Utils.toDate(action.date);
+      if (action.data?.listAfter) {
+        const status: TmsTaskStatus = this.getStatusFromList(
+          action.data.listAfter
+        );
+        changelog.push({status, changedAt});
+      } else if (
+        _.get(action, 'data.card.closed', false) !==
+        _.get(action, 'old.closed', false)
+      ) {
+        const status: TmsTaskStatus = this.getStatus(action.data.card);
+        changelog.push({status, changedAt});
+      }
+    }
+
+    return _.sortBy(changelog, (item) => -item.changedAt.getTime());
+  }
+
+  private getStatusFromList(list: {id?: string; name?: string}): TmsTaskStatus {
+    // Try to map using the id first
+    // If there is no mapping for the id, try to map using the name
+    let result: TmsTaskStatus = Utils.toCategoryDetail(
+      Tms_TaskStatusCategory,
+      list.id,
+      this.config.task_status_category_mapping
+    );
+    if (result.category !== Tms_TaskStatusCategory.Custom) {
+      return result;
+    }
+    result = Utils.toCategoryDetail(
+      Tms_TaskStatusCategory,
+      list.name,
+      this.config.task_status_category_mapping
+    );
+    return result;
   }
 }

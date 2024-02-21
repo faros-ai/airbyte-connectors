@@ -81,6 +81,9 @@
         "surveys": {
           "$ref": "surveys.json"
         },
+        "trello": {
+          "$ref": "trello.json"
+        },
         "victorops": {
           "$ref": "victorops.json"
         },
