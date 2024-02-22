@@ -11,7 +11,7 @@ import {
   StreamName,
 } from '../converter';
 import {TrelloConverter} from './common';
-import {Action, Card} from './models';
+import {Action, Card, Label} from './models';
 
 interface TmsTaskStatus {
   category: Tms_TaskStatusCategory;
@@ -71,9 +71,10 @@ export class Cards extends TrelloConverter {
   }
 
   static readonly actionsStream = new StreamName('trello', 'actions');
+  static readonly labelsStream = new StreamName('trello', 'labels');
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [Cards.actionsStream];
+    return [Cards.actionsStream, Cards.labelsStream];
   }
 
   private seenCards: Map<string, Card> = new Map();
@@ -82,6 +83,7 @@ export class Cards extends TrelloConverter {
   private createdCards: Set<string> = new Set();
   private updatedCards: Set<string> = new Set();
   private deletedCards: Set<string> = new Set();
+  private labelNames: Map<string, string> = new Map();
 
   async convert(
     record: AirbyteRecord,
@@ -126,6 +128,13 @@ export class Cards extends TrelloConverter {
         default:
           continue;
       }
+    }
+
+    for (const record of Object.values(
+      ctx.getAll(Cards.labelsStream.asString)
+    )) {
+      const label = record.record?.data as Label;
+      this.labelNames.set(label.id, label.name);
     }
 
     const res: DestinationRecord[] = [];
@@ -199,6 +208,32 @@ export class Cards extends TrelloConverter {
 
     res.push(...(await this.processBoard(card, taskKey)));
     res.push(...(await this.processAssignment(card, taskKey)));
+    res.push(...(await this.processLabels(card, taskKey)));
+
+    return res;
+  }
+
+  private async processLabels(
+    card: Card,
+    taskKey: {uid: string; source: string}
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+
+    if ((card?.idLabels ?? []).length > 0) {
+      for (const labelId of card.idLabels) {
+        const labelName = this.labelNames.get(labelId);
+        if (!labelName) {
+          continue;
+        }
+        res.push({
+          model: 'tms_TaskTag',
+          record: {
+            task: taskKey,
+            label: {name: labelName},
+          },
+        });
+      }
+    }
 
     return res;
   }
@@ -285,6 +320,11 @@ export class Cards extends TrelloConverter {
             source
           }
         }
+        tags {
+          label {
+            name
+          }
+        }
       }
     }`;
 
@@ -367,6 +407,23 @@ export class Cards extends TrelloConverter {
       }
 
       res.push(...(await this.processAssignment(card, taskKey)));
+
+      const labels = new Set(card.idLabels);
+      for (const tag of task.tags || []) {
+        if (!labels.has(tag.label.name)) {
+          res.push({
+            model: 'tms_TaskTag__Deletion',
+            record: {
+              where: {
+                task: taskKey,
+                label: {name: tag.label.name},
+              },
+            },
+          });
+        }
+      }
+
+      res.push(...(await this.processLabels(card, taskKey)));
     }
 
     return res;
