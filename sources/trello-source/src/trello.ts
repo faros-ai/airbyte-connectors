@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Action, Board, Card, User} from './models';
+import {Action, Board, Card, Label, User} from './models';
 
 export const MIN_DATE = new Date(0).toISOString();
 // January 1, 2200
@@ -205,6 +205,16 @@ export class Trello {
     if (Array.isArray(res.data)) {
       for (const member of res.data) {
         yield member;
+      }
+    }
+  }
+
+  async *getLabels(board: string): AsyncGenerator<Label> {
+    const res = await this.httpClient.get<Label>(`boards/${board}/labels`);
+
+    if (Array.isArray(res.data)) {
+      for (const label of res.data) {
+        yield label;
       }
     }
   }

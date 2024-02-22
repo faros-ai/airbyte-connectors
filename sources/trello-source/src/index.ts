@@ -8,7 +8,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Actions, Boards, Cards, Users} from './streams';
+import {Actions, Boards, Cards, Labels, Users} from './streams';
 import {Trello, TrelloConfig} from './trello';
 
 /** The main entry point. */
@@ -38,6 +38,7 @@ export class TrelloSource extends AirbyteSourceBase<TrelloConfig> {
       new Actions(config, this.logger),
       new Boards(config, this.logger),
       new Cards(config, this.logger),
+      new Labels(config, this.logger),
       new Users(config, this.logger),
     ];
   }

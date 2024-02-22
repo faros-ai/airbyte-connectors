@@ -279,3 +279,11 @@ export type User = {
   username?: string;
   fullName?: string;
 };
+
+export type Label = {
+  id?: string;
+  idBoard?: string;
+  name?: string;
+  color?: string;
+  uses?: number;
+};
