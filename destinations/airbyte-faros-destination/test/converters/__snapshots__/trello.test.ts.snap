@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`trello boards basic board 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskBoard",
+    "record": Object {
+      "name": "Innovative Venture",
+      "source": "Trello",
+      "uid": "b98e01d14cf778006ae8e8d1",
+    },
+  },
+  Object {
+    "model": "tms_Project",
+    "record": Object {
+      "name": "Innovative Venture",
+      "source": "Trello",
+      "uid": "b98e01d14cf778006ae8e8d1",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardProjectRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Trello",
+        "uid": "b98e01d14cf778006ae8e8d1",
+      },
+      "project": Object {
+        "source": "Trello",
+        "uid": "b98e01d14cf778006ae8e8d1",
+      },
+    },
+  },
+]
+`;
+
+exports[`trello users basic user 1`] = `
+Array [
+  Object {
+    "model": "tms_User",
+    "record": Object {
+      "emailAddress": "jwilliams80",
+      "name": "Jamie Williams",
+      "source": "Trello",
+      "uid": "1735be8ade395c72d43d6603",
+    },
+  },
+]
+`;
