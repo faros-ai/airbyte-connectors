@@ -494,6 +494,14 @@ export class Cards extends TrelloConverter {
       list.name,
       this.config.task_status_category_mapping
     );
+
+    if (result.category === Tms_TaskStatusCategory.Custom) {
+      // Since in practice we see so many different list names,
+      // we'll try to provide an exhaustive list of TODO and DONE statuses
+      // and default to InProgress
+      result.category = Tms_TaskStatusCategory.InProgress;
+    }
+
     return result;
   }
 }
