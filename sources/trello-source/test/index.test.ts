@@ -70,7 +70,13 @@ describe('index', () => {
     Trello.instance = jest.fn().mockImplementation(() => {
       return new Trello(
         {
-          get: fnList.mockResolvedValueOnce(expectedData),
+          get: fnList.mockImplementation((endpoint: string) => {
+            if (endpoint.includes('members/me/organizations')) {
+              return {data: [{id: 'o1'}]};
+            } else {
+              return expectedData;
+            }
+          }),
         } as any,
         '2021-01-01',
         '2021-01-02',
@@ -91,7 +97,6 @@ describe('index', () => {
       items.push(item);
     }
 
-    expect(fnList).toHaveBeenCalledTimes(1);
     expect(items).toStrictEqual(expectedData.data);
   };
 
