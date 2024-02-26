@@ -111,14 +111,8 @@ export async function getDataQualitySummary(
     'vcs_Commit',
   ];
   const dataQualityRecordCounts: FarosDataQualityRecordCount[] = [];
-  const phantomFarosClient = new FarosClient({
-    url: cfg.api_url,
-    apiKey: cfg.api_key,
-    phantoms: Phantom.Include,
-    useGraphQLV2: true,
-  });
   const previousDataQualitySummary: DataSummaryInterface | null =
-    getPreviousDataQualitySummary(fc, cfg);
+    await getPreviousDataQualitySummary(fc, cfg);
   cfg.logger.info(
     `Previous Data Quality Summary: ${JSON.stringify(
       previousDataQualitySummary
