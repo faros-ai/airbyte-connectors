@@ -141,7 +141,7 @@ async function getPreviousDataQualitySummary(
   fc: FarosClient,
   cfg: any
 ): Promise<DataSummaryInterface | null> {
-  const query = `query DQS_Query { faros_DataQualitySummary({order_by: {createdAt: desc}}) { uid createdAt counts }`;
+  const query = `query DQS_Query { faros_DataQualitySummary(order_by: {createdAt: desc}, limit: 1) { uid createdAt counts }`;
   const result = await fc.gql(cfg.graph, query);
   if (result?.faros_DataQualitySummary?.length == 0) {
     return null;
