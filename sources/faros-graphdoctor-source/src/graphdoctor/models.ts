@@ -44,9 +44,9 @@ export interface FarosDataQualityRecordCount {
 export interface DataSummaryInterface {
   uid: string;
   source: string;
+  counts: FarosDataQualityRecordCount[];
   createdAt?: Date;
   elapsedMs?: number;
-  counts?: FarosDataQualityRecordCount[];
 }
 
 export interface DataIssueWrapper {
