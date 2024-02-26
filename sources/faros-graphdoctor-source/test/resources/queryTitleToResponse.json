@@ -38,5 +38,115 @@
         "tms_Project_aggregate": {"aggregate": {"count": 0}},
         "vcs_PullRequest_aggregate": {"aggregate": {"count": 0}},
         "vcs_Commit_aggregate": {"aggregate": {"count": 0}}
+    },
+    "Last": {
+        "faros_DataQualitySummary":  [{
+              "uid": "2024-02-26T02:32:01.579Z",
+              "createdAt": "2024-02-26T02:33:58.764+00:00",
+              "counts": [
+                {
+                  "model": "ams_Project",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "ams_Activity",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "cal_Event",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "cicd_Pipeline",
+                  "total": 6,
+                  "phantoms": 0,
+                  "nonPhantoms": 6
+                },
+                {
+                  "model": "cicd_Build",
+                  "total": 2461,
+                  "phantoms": 0,
+                  "nonPhantoms": 2461
+                },
+                {
+                  "model": "cicd_Repository",
+                  "total": 2,
+                  "phantoms": 0,
+                  "nonPhantoms": 2
+                },
+                {
+                  "model": "cicd_Artifact",
+                  "total": 2377,
+                  "phantoms": 2,
+                  "nonPhantoms": 2375
+                },
+                {
+                  "model": "cicd_Deployment",
+                  "total": 2187,
+                  "phantoms": 0,
+                  "nonPhantoms": 2187
+                },
+                {
+                  "model": "faros_Tag",
+                  "total": 1,
+                  "phantoms": 0,
+                  "nonPhantoms": 1
+                },
+                {
+                  "model": "ims_Incident",
+                  "total": 15547,
+                  "phantoms": 0,
+                  "nonPhantoms": 15547
+                },
+                {
+                  "model": "qa_TestCase",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "qa_TestExecution",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "survey_Survey",
+                  "total": 0,
+                  "phantoms": 0,
+                  "nonPhantoms": 0
+                },
+                {
+                  "model": "tms_Task",
+                  "total": 24368,
+                  "phantoms": 12338,
+                  "nonPhantoms": 12030
+                },
+                {
+                  "model": "tms_Project",
+                  "total": 101,
+                  "phantoms": 1,
+                  "nonPhantoms": 100
+                },
+                {
+                  "model": "vcs_PullRequest",
+                  "total": 15904,
+                  "phantoms": 120,
+                  "nonPhantoms": 15784
+                },
+                {
+                  "model": "vcs_Commit",
+                  "total": 61778,
+                  "phantoms": 1196,
+                  "nonPhantoms": 60582
+                }
+              ]
+            }]
     }
 }
