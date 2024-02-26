@@ -148,6 +148,7 @@ async function getPreviousDataQualitySummary(
     return null;
   }
   const prev_DQS = result[0];
+  cfg.logger.info(prev_DQS);
   if (checkIfCreatedWithinLastXHours(prev_DQS.createdAt, 25)) {
     return prev_DQS;
   } else {
