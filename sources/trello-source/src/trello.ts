@@ -111,10 +111,23 @@ export class Trello {
 
   @Memoize()
   async getBoards(): Promise<ReadonlyArray<Board>> {
-    const res = await this.httpClient.get<Board>(`members/me/boards`);
+    const organizationsRes = await this.httpClient.get<any>(
+      `members/me/organizations`
+    );
+    const organizations = organizationsRes.data;
 
-    if (Array.isArray(res.data)) {
-      return res.data.filter(
+    const boardPromises = organizations.map(async (organization: any) => {
+      const boardsRes = await this.httpClient.get<Board>(
+        `organizations/${organization.id}/boards`
+      );
+      return boardsRes.data;
+    });
+
+    const boardResponses = await Promise.all(boardPromises);
+    const boards = boardResponses.flat();
+
+    if (Array.isArray(boards)) {
+      return boards.filter(
         (board) => _.isEmpty(this.boards) || this.boards.includes(board.id)
       );
     }
