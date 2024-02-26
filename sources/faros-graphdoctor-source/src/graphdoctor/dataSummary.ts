@@ -3,7 +3,6 @@
 import {FarosClient} from 'faros-js-client';
 import {Phantom} from 'faros-js-client/lib/types';
 import _ from 'lodash';
-import {intersection} from 'lodash';
 
 import {
   DataSummaryInterface,
