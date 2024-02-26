@@ -5,6 +5,7 @@ import {Phantom} from 'faros-js-client/lib/types';
 import _ from 'lodash';
 
 import {
+  DataSummaryInterface,
   DataSummaryKey,
   DataSummaryWrapper,
   FarosDataQualityRecordCount,
@@ -14,7 +15,8 @@ async function getDataQualityRecordCount(
   fc: FarosClient,
   phantomFC: FarosClient,
   cfg: any,
-  modelName: string
+  modelName: string,
+  prev_DSI: DataSummaryInterface
 ): Promise<FarosDataQualityRecordCount> {
   // e.g. tms_Task_aggregate
   const aggregate_name = `${modelName}_aggregate`;
@@ -38,13 +40,49 @@ async function getDataQualityRecordCount(
     }
     phantomCounter[bool_val] = count;
   }
+  const total_records: number = _.sum(Object.values(phantomCounter));
+  const percentageChange: number = prev_DSI
+    ? (total_records - prev_DSI.counts[modelName]) / prev_DSI.counts[modelName]
+    : null;
   const recordCount = {
     model: modelName,
-    total: _.sum(Object.values(phantomCounter)),
+    total: total_records,
     phantoms: phantomCounter.true,
     nonPhantoms: phantomCounter.false,
+    percentageChange: percentageChange,
   };
   return recordCount;
+}
+
+function checkIfCreatedWithinLastXHours(
+  createdAt: string,
+  hours: number
+): boolean {
+  if (!createdAt) {
+    return false;
+  }
+  const created = new Date(createdAt);
+  const now = new Date();
+  const elapsedMs = now.getTime() - created.getTime();
+  const elapsedHours = elapsedMs / 1000 / 60 / 60;
+  return elapsedHours <= hours;
+}
+
+async function getPreviousDataQualitySummary(
+  fc: FarosClient,
+  cfg: any
+): Promise<DataSummaryInterface | null> {
+  const query = `query DQS_Query { faros_DataQualitySummary({order_by: {createdAt: desc}}) { uid createdAt counts }`;
+  const result = await fc.gql(cfg.graph, query);
+  if (result?.faros_DataQualitySummary?.length == 0) {
+    return null;
+  }
+  const prev_DQS = result[0];
+  if (checkIfCreatedWithinLastXHours(prev_DQS.createdAt, 25)) {
+    return prev_DQS;
+  } else {
+    return null;
+  }
 }
 
 export async function getDataQualitySummary(
@@ -79,9 +117,22 @@ export async function getDataQualitySummary(
     phantoms: Phantom.Include,
     useGraphQLV2: true,
   });
+  const previousDataQualitySummary: DataSummaryInterface | null =
+    getPreviousDataQualitySummary(fc, cfg);
+  cfg.logger.info(
+    `Previous Data Quality Summary: ${JSON.stringify(
+      previousDataQualitySummary
+    )}`
+  );
   for (const modelName of modelsOfInterest) {
     dataQualityRecordCounts.push(
-      await getDataQualityRecordCount(fc, phantomFarosClient, cfg, modelName)
+      await getDataQualityRecordCount(
+        fc,
+        phantomFarosClient,
+        cfg,
+        modelName,
+        previousDataQualitySummary
+      )
     );
   }
 

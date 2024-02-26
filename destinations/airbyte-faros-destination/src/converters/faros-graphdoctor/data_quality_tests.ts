@@ -52,12 +52,12 @@ export class DataQualityTests extends Converter {
   }
 
   private getDataQualitySummary(
-    issue: DataQualitySummary
+    summary: DataQualitySummary
   ): DestinationRecord[] {
     return [
       {
         model: 'faros_DataQualitySummary',
-        record: issue,
+        record: summary,
       },
     ];
   }
