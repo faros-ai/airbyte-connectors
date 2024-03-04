@@ -33,7 +33,7 @@ export class Cards extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const trello = Trello.instance(this.config);
+    const trello = Trello.instance(this.config, this.logger);
 
     for (const board of await trello.getBoards()) {
       yield {board: board.id};
@@ -51,7 +51,7 @@ export class Cards extends AirbyteStreamBase {
         ? streamState?.[streamSlice.board]?.dateLastActivity
         : undefined;
 
-    const trello = Trello.instance(this.config);
+    const trello = Trello.instance(this.config, this.logger);
 
     yield* trello.getCards(streamSlice.board, dateLastActivity, this.logger);
   }
