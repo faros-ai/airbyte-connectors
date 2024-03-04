@@ -391,6 +391,7 @@ export class Customreports extends Converter {
           uid: employee_record.Employee_ID,
           fullName: employee_record.Full_Name,
           emails: employee_record.Email ? [employee_record.Email] : null,
+          primaryEmail: employee_record.Email ? employee_record.Email : '',
         },
       },
       {
