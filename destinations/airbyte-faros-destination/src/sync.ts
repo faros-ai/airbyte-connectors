@@ -69,7 +69,8 @@ class FarosSyncClient extends FarosClient {
     accountId: string,
     graphName: string,
     redactedConfig: AirbyteConfig,
-    type?: string
+    type?: string,
+    mode?: string
   ): Promise<Account | undefined> {
     this.logger?.info(`Creating local account ${accountId}`);
     return accountResult(
@@ -78,6 +79,7 @@ class FarosSyncClient extends FarosClient {
           accountId,
           params: {...redactedConfig, graphName, graphql_api: 'v2'},
           type: type ?? DEFAULT_TYPE,
+          mode,
           local: true,
         }),
         `Failed to create account ${accountId}`
@@ -88,8 +90,9 @@ class FarosSyncClient extends FarosClient {
   async updateLocalAccount(
     accountId: string,
     graphName: string,
-    redactedConfig,
-    type?: string
+    redactedConfig: AirbyteConfig,
+    type?: string,
+    mode?: string
   ): Promise<Account | undefined> {
     this.logger?.info(`Updating local account ${accountId}`);
     return accountResult(
@@ -97,6 +100,7 @@ class FarosSyncClient extends FarosClient {
         this.request('PUT', `/accounts/${accountId}`, {
           params: {...redactedConfig, graphName, graphql_api: 'v2'},
           type: type ?? DEFAULT_TYPE,
+          mode,
           local: true,
         }),
         `Failed to update account ${accountId}`

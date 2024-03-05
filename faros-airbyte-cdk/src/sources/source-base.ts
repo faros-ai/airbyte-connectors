@@ -76,6 +76,13 @@ export abstract class AirbyteSourceBase<
   abstract get type(): string;
 
   /**
+   * Source mode
+   */
+  mode(config: Config): string | undefined {
+    return undefined;
+  }
+
+  /**
    * Implements the Discover operation from the Airbyte Specification. See
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
@@ -130,7 +137,8 @@ export abstract class AirbyteSourceBase<
           : connectorState,
       },
       redactedConfig,
-      this.type
+      this.type,
+      this.mode(config)
     );
 
     // TODO: assert all streams exist in the connector

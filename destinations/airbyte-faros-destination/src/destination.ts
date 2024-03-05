@@ -542,7 +542,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 accountId,
                 this.farosGraph,
                 {...redactedConfig, ...msg.redactedConfig},
-                msg.sourceType
+                msg.sourceType,
+                msg.sourceMode
               );
             }
           }
