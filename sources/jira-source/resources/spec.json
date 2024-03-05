@@ -1,0 +1,104 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Jira Configuration Spec",
+    "type": "object",
+    "required": [
+      "url"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "url": {
+        "order": 1,
+        "title": "Jira URL",
+        "description": "URL of the Jira instance",
+        "type": "string"
+      },
+      "username": {
+        "order": 2,
+        "title": "Username",
+        "description": "Username for authentication (optional)",
+        "type": "string"
+      },
+      "password": {
+        "order": 3,
+        "title": "Password",
+        "description": "Password for authentication (optional)",
+        "type": "string"
+      },
+      "token": {
+        "order": 4,
+        "title": "Token",
+        "description": "Token for authentication (optional)",
+        "type": "string"
+      },
+      "syncAdditionalFields": {
+        "order": 5,
+        "title": "Sync Additional Fields",
+        "description": "Flag to indicate if additional fields should be synced",
+        "type": "boolean"
+      },
+      "additionalFields": {
+        "order": 6,
+        "title": "Additional Fields",
+        "description": "Additional fields to be synced",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "additionalFieldsArrayLimit": {
+        "order": 7,
+        "title": "Additional Fields Array Limit",
+        "description": "Limit for additional fields array",
+        "type": "integer"
+      },
+      "rejectUnauthorized": {
+        "order": 8,
+        "title": "Reject Unauthorized",
+        "description": "Flag to indicate if unauthorized requests should be rejected",
+        "type": "boolean"
+      },
+      "concurrencyLimit": {
+        "order": 9,
+        "title": "Concurrency Limit",
+        "description": "Limit for concurrency",
+        "type": "integer"
+      },
+      "maxRetries": {
+        "order": 10,
+        "title": "Max Retries",
+        "description": "Maximum number of retries",
+        "type": "integer"
+      },
+      "maxPageSize": {
+        "order": 11,
+        "title": "Max Page Size",
+        "description": "Maximum page size",
+        "type": "integer"
+      },
+      "timeout": {
+        "order": 12,
+        "title": "Timeout",
+        "description": "Request timeout in milliseconds",
+        "type": "integer"
+      },
+      "useUsersPrefixSearch": {
+        "order": 13,
+        "title": "Use Users Prefix Search",
+        "description": "Flag to indicate if user prefix search should be used (optional)",
+        "type": "boolean"
+      },
+      "projectKeys": {
+        "order": 14,
+        "title": "Project Keys",
+        "description": "Project keys to filter the search (optional)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
