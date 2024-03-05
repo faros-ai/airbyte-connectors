@@ -1,4 +1,4 @@
-import Analytics from 'analytics-node';
+import {Analytics} from '@segment/analytics-node';
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -30,7 +30,6 @@ import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
-import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
@@ -62,6 +61,7 @@ import FarosSyncClient, {
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const SEGMENT_KEY = 'YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn';
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -183,8 +183,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       // Segment host is used for testing purposes only
       const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
-      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+      this.analytics = new Analytics({
+        writeKey: SEGMENT_KEY,
         host,
+      }).on('error', (err) => {
+        this.logger.error(
+          `Failed to send write stats to Segment: ${err.code}`,
+          JSON.stringify(err.reason)
+        );
       });
     }
   }
@@ -609,26 +615,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       if (this.analytics) {
         this.logger.debug('Sending write stats to Segment');
-        const fn = (callback: ((err: Error) => void) | undefined): void => {
-          this.analytics
-            .track(
-              {
-                event: 'Write Stats',
-                userId: this.segmentUserId,
-                properties: stats,
-              },
-              callback
-            )
-            .flush(callback);
-        };
-        await util
-          .promisify(fn)()
-          .catch((err) =>
-            this.logger.error(
-              `Failed to send write stats to Segment: ${err.message}`,
-              err.stack
-            )
-          );
+        this.analytics.track({
+          event: 'Write Stats',
+          userId: this.segmentUserId,
+          properties: stats,
+        });
+        this.analytics.closeAndFlush();
       }
 
       // Airbyte updates connection state whenever the destination emits a state

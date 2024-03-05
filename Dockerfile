@@ -2,10 +2,6 @@ FROM node:18-alpine
 
 WORKDIR /home/node/airbyte
 
-RUN apk -U upgrade
-RUN apk add --no-cache --virtual .gyp python3 make g++ \
-    && npm install -g npm lerna @lerna/legacy-package-management tsc
-
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/jest\|mockttp/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
@@ -13,6 +9,9 @@ COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 
+RUN apk -U upgrade
+RUN apk add --no-cache --virtual .gyp python3 make g++ \
+    && npm install -g npm lerna @lerna/legacy-package-management tsc
 RUN lerna bootstrap --hoist
 
 ARG version
@@ -26,8 +25,9 @@ RUN apk del .gyp
 
 ARG path
 RUN test -n "$path" || (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)
-RUN ln -s "/home/node/airbyte/$path/bin/main" "/home/node/airbyte/main"
+ENV CONNECTOR_PATH $path
 
-USER node
+RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
+ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/main"
 ENTRYPOINT ["/home/node/airbyte/main"]

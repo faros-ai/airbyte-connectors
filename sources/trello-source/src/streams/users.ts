@@ -27,7 +27,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const trello = Trello.instance(this.config);
+    const trello = Trello.instance(this.config, this.logger);
 
     for (const board of await trello.getBoards()) {
       yield {board: board.id};
@@ -39,7 +39,7 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<User> {
-    const trello = Trello.instance(this.config);
+    const trello = Trello.instance(this.config, this.logger);
     yield* trello.getUsers(streamSlice.board);
   }
 }
