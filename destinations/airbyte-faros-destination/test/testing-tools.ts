@@ -73,7 +73,7 @@ export function getConf(
           api_url: url,
           api_key: 'test-api-key',
           graph: 'test-graph',
-          graphql_api: 'v1',
+          graphql_api: 'v2',
         }
       : {
           edition,
@@ -126,7 +126,19 @@ export async function initMockttp(mockttp: Mockttp): Promise<void> {
   // Faros GraphQL graph stats
   await mockttp
     .forGet('/graphs/test-graph/statistics')
-    .once()
+    .always()
+    .thenReply(200, JSON.stringify({}));
+
+  // Faros GraphQL graph stats
+  await mockttp
+    .forPost('/graphs/test-graph/graphql')
+    .always()
+    .thenReply(200, JSON.stringify({}));
+
+  // Faros GraphQL graph stats
+  await mockttp
+    .forOptions('/graphs/test-graph/graphql')
+    .always()
     .thenReply(200, JSON.stringify({}));
 
   // Hasura health check

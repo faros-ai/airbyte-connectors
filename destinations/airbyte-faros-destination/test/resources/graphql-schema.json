@@ -1,0 +1,6301 @@
+{
+  "primaryKeys": {
+    "ams_Activity": [
+      "source",
+      "uid"
+    ],
+    "ams_Project": [
+      "source",
+      "uid"
+    ],
+    "ams_User": [
+      "source",
+      "uid"
+    ],
+    "ams_UserIdentity": [
+      "amsUserId",
+      "identityId"
+    ],
+    "cal_Calendar": [
+      "source",
+      "uid"
+    ],
+    "cal_Event": [
+      "calendarId",
+      "uid"
+    ],
+    "cal_EventGuestAssociation": [
+      "eventId",
+      "guestId"
+    ],
+    "cal_User": [
+      "source",
+      "uid"
+    ],
+    "cal_UserIdentity": [
+      "calUserId",
+      "identityId"
+    ],
+    "cicd_Agent": [
+      "source",
+      "uid"
+    ],
+    "cicd_AgentTag": [
+      "agentId",
+      "tagId"
+    ],
+    "cicd_Artifact": [
+      "repositoryId",
+      "uid"
+    ],
+    "cicd_ArtifactCommitAssociation": [
+      "artifactId",
+      "commitId"
+    ],
+    "cicd_ArtifactDeployment": [
+      "artifactId",
+      "deploymentId"
+    ],
+    "cicd_Build": [
+      "pipelineId",
+      "uid"
+    ],
+    "cicd_BuildCommitAssociation": [
+      "buildId",
+      "commitId"
+    ],
+    "cicd_BuildStep": [
+      "buildId",
+      "uid"
+    ],
+    "cicd_BuildStepTag": [
+      "buildStepId",
+      "tagId"
+    ],
+    "cicd_BuildTag": [
+      "buildId",
+      "tagId"
+    ],
+    "cicd_Deployment": [
+      "source",
+      "uid"
+    ],
+    "cicd_DeploymentChangeset": [
+      "commitId",
+      "deploymentId"
+    ],
+    "cicd_DeploymentTag": [
+      "deploymentId",
+      "tagId"
+    ],
+    "cicd_EnvBranchAssociation": [
+      "environment",
+      "repositoryId"
+    ],
+    "cicd_Organization": [
+      "source",
+      "uid"
+    ],
+    "cicd_Pipeline": [
+      "organizationId",
+      "uid"
+    ],
+    "cicd_Release": [
+      "source",
+      "uid"
+    ],
+    "cicd_ReleaseTagAssociation": [
+      "releaseId",
+      "tagId"
+    ],
+    "cicd_Repository": [
+      "organizationId",
+      "uid"
+    ],
+    "compute_Application": [
+      "name",
+      "platform"
+    ],
+    "compute_ApplicationDependency": [
+      "dependentApplicationId",
+      "requiredApplicationId"
+    ],
+    "compute_ApplicationMetric": [
+      "applicationId",
+      "valueId"
+    ],
+    "compute_ApplicationPath": [
+      "applicationId",
+      "pathId"
+    ],
+    "compute_ApplicationSource": [
+      "applicationId",
+      "repositoryId"
+    ],
+    "compute_ApplicationTag": [
+      "applicationId",
+      "tagId"
+    ],
+    "compute_Instance": [
+      "source",
+      "uid"
+    ],
+    "compute_Volume": [
+      "source",
+      "uid"
+    ],
+    "compute_VolumeAttachment": [
+      "instanceId",
+      "volumeId"
+    ],
+    "cost_Definition": [
+      "source",
+      "uid"
+    ],
+    "cost_DefinitionEffortMapping": [
+      "definitionId",
+      "effortMappingId"
+    ],
+    "cost_DefinitionEpic": [
+      "definitionId",
+      "epicId"
+    ],
+    "cost_DefinitionInitiative": [
+      "definitionId",
+      "initiativeId"
+    ],
+    "cost_EffortMapping": [
+      "source",
+      "uid"
+    ],
+    "faros_CicdPipelineOptions": [
+      "pipelineId"
+    ],
+    "faros_ComputeApplicationOptions": [
+      "applicationId"
+    ],
+    "faros_DashboardUrlTag": [
+      "tagId",
+      "uid"
+    ],
+    "faros_DataQualityIssue": [
+      "uid"
+    ],
+    "faros_DataQualitySummary": [
+      "source",
+      "uid"
+    ],
+    "faros_MetricDefinition": [
+      "uid"
+    ],
+    "faros_MetricDefinitionTag": [
+      "definitionId",
+      "tagId"
+    ],
+    "faros_MetricThreshold": [
+      "thresholdGroupId",
+      "uid"
+    ],
+    "faros_MetricThresholdGroup": [
+      "definitionId",
+      "uid"
+    ],
+    "faros_MetricThresholdGroupTag": [
+      "tagId",
+      "thresholdGroupId"
+    ],
+    "faros_MetricValue": [
+      "definitionId",
+      "uid"
+    ],
+    "faros_MetricValueTag": [
+      "tagId",
+      "valueId"
+    ],
+    "faros_Path": [
+      "uid"
+    ],
+    "faros_Scorecard": [
+      "uid"
+    ],
+    "faros_ScorecardMetric": [
+      "metricId",
+      "scorecardId"
+    ],
+    "faros_Tag": [
+      "uid"
+    ],
+    "faros_TenantQuota": [
+      "uid"
+    ],
+    "faros_TmsTaskBoardOptions": [
+      "boardId"
+    ],
+    "faros_VcsRepositoryOptions": [
+      "repositoryId"
+    ],
+    "faros_VisibilityExclusion": [
+      "recordId",
+      "visibilityType"
+    ],
+    "geo_Address": [
+      "uid"
+    ],
+    "geo_Coordinates": [
+      "lat",
+      "lon"
+    ],
+    "geo_Location": [
+      "uid"
+    ],
+    "identity_Identity": [
+      "uid"
+    ],
+    "ims_ApplicationUptime": [
+      "source",
+      "uid"
+    ],
+    "ims_Incident": [
+      "source",
+      "uid"
+    ],
+    "ims_IncidentApplicationImpact": [
+      "applicationId",
+      "incidentId"
+    ],
+    "ims_IncidentAssignment": [
+      "assigneeId",
+      "incidentId"
+    ],
+    "ims_IncidentEvent": [
+      "incidentId",
+      "uid"
+    ],
+    "ims_IncidentTag": [
+      "incidentId",
+      "labelId"
+    ],
+    "ims_IncidentTasks": [
+      "incidentId",
+      "taskId"
+    ],
+    "ims_Label": [
+      "name"
+    ],
+    "ims_Team": [
+      "source",
+      "uid"
+    ],
+    "ims_TeamIncidentAssociation": [
+      "incidentId",
+      "teamId"
+    ],
+    "ims_TeamMembership": [
+      "memberId",
+      "teamId"
+    ],
+    "ims_User": [
+      "source",
+      "uid"
+    ],
+    "ims_UserIdentity": [
+      "identityId",
+      "imsUserId"
+    ],
+    "org_ApplicationOwnership": [
+      "applicationId",
+      "teamId"
+    ],
+    "org_BoardOwnership": [
+      "boardId",
+      "teamId"
+    ],
+    "org_Department": [
+      "uid"
+    ],
+    "org_Employee": [
+      "uid"
+    ],
+    "org_EmployeeTool": [
+      "employeeId",
+      "tool"
+    ],
+    "org_PipelineOwnership": [
+      "pipelineId",
+      "teamId"
+    ],
+    "org_ProjectOwnership": [
+      "projectId",
+      "teamId"
+    ],
+    "org_RepositoryOwnership": [
+      "repositoryId",
+      "teamId"
+    ],
+    "org_Team": [
+      "uid"
+    ],
+    "org_TeamMembership": [
+      "memberId",
+      "teamId"
+    ],
+    "org_TeamMetric": [
+      "teamId",
+      "valueId"
+    ],
+    "org_TeamTag": [
+      "tagId",
+      "teamId"
+    ],
+    "qa_CodeQuality": [
+      "uid"
+    ],
+    "qa_TestCase": [
+      "source",
+      "uid"
+    ],
+    "qa_TestCaseResult": [
+      "testExecutionId",
+      "uid"
+    ],
+    "qa_TestCaseStep": [
+      "testCaseId",
+      "uid"
+    ],
+    "qa_TestCaseStepResult": [
+      "testResultId",
+      "uid"
+    ],
+    "qa_TestExecution": [
+      "source",
+      "uid"
+    ],
+    "qa_TestExecutionCommitAssociation": [
+      "commitId",
+      "testExecutionId"
+    ],
+    "qa_TestExecutionTag": [
+      "tagId",
+      "testExecutionId"
+    ],
+    "qa_TestSuite": [
+      "source",
+      "uid"
+    ],
+    "qa_TestSuiteTestCaseAssociation": [
+      "testCaseId",
+      "testSuiteId"
+    ],
+    "survey_OrgTeam": [
+      "orgTeamId",
+      "surveyTeamId"
+    ],
+    "survey_Question": [
+      "source",
+      "uid"
+    ],
+    "survey_QuestionResponse": [
+      "surveyQuestionId",
+      "uid"
+    ],
+    "survey_QuestionTag": [
+      "questionId",
+      "tagId"
+    ],
+    "survey_Survey": [
+      "source",
+      "uid"
+    ],
+    "survey_SurveyQuestionAssociation": [
+      "questionId",
+      "surveyId"
+    ],
+    "survey_SurveyTag": [
+      "surveyId",
+      "tagId"
+    ],
+    "survey_Team": [
+      "source",
+      "uid"
+    ],
+    "survey_TeamMembership": [
+      "memberId",
+      "teamId"
+    ],
+    "survey_User": [
+      "source",
+      "uid"
+    ],
+    "survey_UserIdentity": [
+      "identityId",
+      "surveyUserId"
+    ],
+    "tms_Epic": [
+      "source",
+      "uid"
+    ],
+    "tms_Label": [
+      "name"
+    ],
+    "tms_Project": [
+      "source",
+      "uid"
+    ],
+    "tms_ProjectPath": [
+      "pathId",
+      "projectId"
+    ],
+    "tms_ProjectReleaseRelationship": [
+      "projectId",
+      "releaseId"
+    ],
+    "tms_ProjectTag": [
+      "projectId",
+      "tagId"
+    ],
+    "tms_Release": [
+      "source",
+      "uid"
+    ],
+    "tms_Sprint": [
+      "source",
+      "uid"
+    ],
+    "tms_SprintHistory": [
+      "sprintId",
+      "taskId"
+    ],
+    "tms_Task": [
+      "source",
+      "uid"
+    ],
+    "tms_TaskAssignment": [
+      "assigneeId",
+      "taskId"
+    ],
+    "tms_TaskBoard": [
+      "source",
+      "uid"
+    ],
+    "tms_TaskBoardPath": [
+      "boardId",
+      "pathId"
+    ],
+    "tms_TaskBoardProjectRelationship": [
+      "boardId",
+      "projectId"
+    ],
+    "tms_TaskBoardRelationship": [
+      "boardId",
+      "taskId"
+    ],
+    "tms_TaskBoardTag": [
+      "boardId",
+      "tagId"
+    ],
+    "tms_TaskDependency": [
+      "dependentTaskId",
+      "fulfillingTaskId"
+    ],
+    "tms_TaskProjectRelationship": [
+      "projectId",
+      "taskId"
+    ],
+    "tms_TaskPullRequestAssociation": [
+      "pullRequestId",
+      "taskId"
+    ],
+    "tms_TaskReleaseRelationship": [
+      "releaseId",
+      "taskId"
+    ],
+    "tms_TaskTag": [
+      "labelId",
+      "taskId"
+    ],
+    "tms_TaskTestCaseResultAssociation": [
+      "defectId",
+      "testCaseResultId"
+    ],
+    "tms_Team": [
+      "uid"
+    ],
+    "tms_TeamMembership": [
+      "memberId",
+      "teamId"
+    ],
+    "tms_User": [
+      "source",
+      "uid"
+    ],
+    "tms_UserIdentity": [
+      "identityId",
+      "tmsUserId"
+    ],
+    "vcs_Branch": [
+      "name",
+      "repositoryId"
+    ],
+    "vcs_BranchCommitAssociation": [
+      "branchId",
+      "commitId"
+    ],
+    "vcs_Commit": [
+      "repositoryId",
+      "sha"
+    ],
+    "vcs_File": [
+      "repositoryId",
+      "uid"
+    ],
+    "vcs_Label": [
+      "name"
+    ],
+    "vcs_Membership": [
+      "organizationId",
+      "userId"
+    ],
+    "vcs_Organization": [
+      "source",
+      "uid"
+    ],
+    "vcs_OrganizationTool": [
+      "organizationId",
+      "tool"
+    ],
+    "vcs_PullRequest": [
+      "number",
+      "repositoryId"
+    ],
+    "vcs_PullRequestComment": [
+      "number",
+      "pullRequestId"
+    ],
+    "vcs_PullRequestCommit": [
+      "commitId",
+      "pullRequestId"
+    ],
+    "vcs_PullRequestFile": [
+      "fileId",
+      "pullRequestId"
+    ],
+    "vcs_PullRequestLabel": [
+      "labelId",
+      "pullRequestId"
+    ],
+    "vcs_PullRequestReview": [
+      "number",
+      "pullRequestId"
+    ],
+    "vcs_PullRequestReviewRequest": [
+      "pullRequestId",
+      "requestedReviewerId"
+    ],
+    "vcs_Repository": [
+      "name",
+      "organizationId"
+    ],
+    "vcs_RepositoryContribution": [
+      "authorId",
+      "repositoryId"
+    ],
+    "vcs_Tag": [
+      "name",
+      "repositoryId"
+    ],
+    "vcs_Team": [
+      "uid"
+    ],
+    "vcs_TeamMembership": [
+      "memberId",
+      "teamId"
+    ],
+    "vcs_User": [
+      "source",
+      "uid"
+    ],
+    "vcs_UserIdentity": [
+      "identityId",
+      "vcsUserId"
+    ],
+    "vcs_UserTool": [
+      "organizationId",
+      "tool",
+      "userId"
+    ],
+    "vcs_UserToolUsage": [
+      "usedAt",
+      "userToolId"
+    ]
+  },
+  "scalars": {
+    "ams_Activity": {
+      "billingStatus": "jsonb",
+      "cost": "jsonb",
+      "description": "String",
+      "endedAt": "timestamptz",
+      "locationId": "String",
+      "name": "String",
+      "origin": "String",
+      "participantId": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "taskId": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "ams_Project": {
+      "allocatedBudget": "jsonb",
+      "creatorId": "String",
+      "description": "String",
+      "endedAt": "timestamptz",
+      "name": "String",
+      "origin": "String",
+      "ownerId": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "taskId": "String",
+      "timeTrackingType": "jsonb",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "ams_User": {
+      "displayName": "String",
+      "email": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "ams_UserIdentity": {
+      "amsUserId": "String",
+      "identityId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cal_Calendar": {
+      "description": "String",
+      "origin": "String",
+      "ownerId": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "title": "String",
+      "uid": "String",
+      "url": "String"
+    },
+    "cal_Event": {
+      "calendarId": "String",
+      "conferenceUrl": "String",
+      "description": "String",
+      "durationMs": "bigint",
+      "end": "timestamptz",
+      "locationId": "String",
+      "organizerId": "String",
+      "origin": "String",
+      "privacy": "jsonb",
+      "refreshedAt": "timestamptz",
+      "start": "timestamptz",
+      "status": "jsonb",
+      "timeZone": "String",
+      "title": "String",
+      "type": "jsonb",
+      "uid": "String",
+      "url": "String",
+      "visibility": "jsonb"
+    },
+    "cal_EventGuestAssociation": {
+      "eventId": "String",
+      "guestId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "status": "jsonb"
+    },
+    "cal_User": {
+      "displayName": "String",
+      "email": "String",
+      "inactive": "Boolean",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "cal_UserIdentity": {
+      "calUserId": "String",
+      "identityId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cicd_Agent": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "hostId": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "cicd_AgentTag": {
+      "agentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "cicd_Artifact": {
+      "buildId": "String",
+      "createdAt": "timestamptz",
+      "digest": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "tags": "jsonb",
+      "type": "String",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_ArtifactCommitAssociation": {
+      "artifactId": "String",
+      "commitId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cicd_ArtifactDeployment": {
+      "artifactId": "String",
+      "deploymentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cicd_Build": {
+      "agentId": "String",
+      "createdAt": "timestamptz",
+      "endedAt": "timestamptz",
+      "environmentVariables": "jsonb",
+      "name": "String",
+      "number": "Int",
+      "origin": "String",
+      "pipelineId": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_BuildCommitAssociation": {
+      "buildId": "String",
+      "commitId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cicd_BuildStep": {
+      "agentId": "String",
+      "buildId": "String",
+      "command": "String",
+      "createdAt": "timestamptz",
+      "endedAt": "timestamptz",
+      "environmentVariables": "jsonb",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "type": "jsonb",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_BuildStepTag": {
+      "buildStepId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "cicd_BuildTag": {
+      "buildId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "cicd_Deployment": {
+      "applicationId": "String",
+      "buildId": "String",
+      "endedAt": "timestamptz",
+      "env": "jsonb",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "requestedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_DeploymentChangeset": {
+      "commitId": "String",
+      "deploymentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cicd_DeploymentTag": {
+      "deploymentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "cicd_EnvBranchAssociation": {
+      "branchId": "String",
+      "environment": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String"
+    },
+    "cicd_Organization": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_Pipeline": {
+      "description": "String",
+      "included": "Boolean",
+      "name": "String",
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "url": "String"
+    },
+    "cicd_Release": {
+      "authorId": "String",
+      "createdAt": "timestamptz",
+      "description": "String",
+      "draft": "Boolean",
+      "htmlUrl": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "releasedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "cicd_ReleaseTagAssociation": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "releaseId": "String",
+      "tagId": "String"
+    },
+    "cicd_Repository": {
+      "description": "String",
+      "name": "String",
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "url": "String"
+    },
+    "compute_Application": {
+      "displayName": "String",
+      "included": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "platform": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "compute_ApplicationDependency": {
+      "dependentApplicationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "requiredApplicationId": "String"
+    },
+    "compute_ApplicationMetric": {
+      "applicationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "valueId": "String"
+    },
+    "compute_ApplicationPath": {
+      "applicationId": "String",
+      "origin": "String",
+      "pathId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "compute_ApplicationSource": {
+      "applicationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "repositoryLabelId": "String",
+      "repositoryPaths": "String"
+    },
+    "compute_ApplicationTag": {
+      "applicationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "compute_Instance": {
+      "launchedAt": "timestamptz",
+      "name": "String",
+      "origin": "String",
+      "os": "jsonb",
+      "refreshedAt": "timestamptz",
+      "region": "String",
+      "source": "String",
+      "state": "jsonb",
+      "tags": "jsonb",
+      "type": "String",
+      "uid": "String"
+    },
+    "compute_Volume": {
+      "createdAt": "timestamptz",
+      "encrypted": "Boolean",
+      "iops": "Int",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "region": "String",
+      "size": "Int",
+      "source": "String",
+      "state": "jsonb",
+      "type": "String",
+      "uid": "String"
+    },
+    "compute_VolumeAttachment": {
+      "attachedAt": "timestamptz",
+      "device": "String",
+      "instanceId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "state": "jsonb",
+      "volumeId": "String"
+    },
+    "cost_Definition": {
+      "devRatio": "Float",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "timeTrackingMethod": "jsonb",
+      "title": "String",
+      "uid": "String",
+      "workTrackingMethod": "jsonb"
+    },
+    "cost_DefinitionEffortMapping": {
+      "definitionId": "String",
+      "effortMappingId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "cost_DefinitionEpic": {
+      "definitionId": "String",
+      "epicId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "rndRatio": "Float"
+    },
+    "cost_DefinitionInitiative": {
+      "definitionId": "String",
+      "initiativeId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "rndRatio": "Float"
+    },
+    "cost_EffortMapping": {
+      "hours": "Float",
+      "lower": "Float",
+      "multiplier": "Float",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "type": "jsonb",
+      "uid": "String",
+      "upper": "Float"
+    },
+    "faros_CicdPipelineOptions": {
+      "inclusion": "jsonb",
+      "origin": "String",
+      "pipelineId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "faros_ComputeApplicationOptions": {
+      "applicationId": "String",
+      "inclusion": "jsonb",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "faros_DashboardUrlTag": {
+      "dashboardUrl": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String",
+      "uid": "String"
+    },
+    "faros_DataQualityIssue": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "elapsedMs": "bigint",
+      "expectation": "String",
+      "model": "String",
+      "origin": "String",
+      "recordIds": "String",
+      "refreshedAt": "timestamptz",
+      "summaryId": "String",
+      "title": "String",
+      "uid": "String"
+    },
+    "faros_DataQualitySummary": {
+      "counts": "jsonb",
+      "createdAt": "timestamptz",
+      "elapsedMs": "bigint",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "faros_MetricDefinition": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "url": "String",
+      "valueSource": "jsonb",
+      "valueSourceCategory": "String",
+      "valueType": "jsonb"
+    },
+    "faros_MetricDefinitionTag": {
+      "definitionId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "faros_MetricThreshold": {
+      "lower": "String",
+      "name": "String",
+      "origin": "String",
+      "rating": "jsonb",
+      "refreshedAt": "timestamptz",
+      "thresholdGroupId": "String",
+      "uid": "String",
+      "upper": "String"
+    },
+    "faros_MetricThresholdGroup": {
+      "definitionId": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String"
+    },
+    "faros_MetricThresholdGroupTag": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String",
+      "thresholdGroupId": "String"
+    },
+    "faros_MetricValue": {
+      "computedAt": "timestamptz",
+      "definitionId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "value": "String"
+    },
+    "faros_MetricValueTag": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String",
+      "valueId": "String"
+    },
+    "faros_Path": {
+      "origin": "String",
+      "parts": "String",
+      "path": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String"
+    },
+    "faros_Scorecard": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String"
+    },
+    "faros_ScorecardMetric": {
+      "metricId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "scorecardId": "String"
+    },
+    "faros_Tag": {
+      "key": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "value": "String"
+    },
+    "faros_TenantQuota": {
+      "mode": "String",
+      "origin": "String",
+      "quota": "Int",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "used": "Int",
+      "visibilityType": "String"
+    },
+    "faros_TmsTaskBoardOptions": {
+      "boardId": "String",
+      "inclusion": "jsonb",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "faros_VcsRepositoryOptions": {
+      "inclusion": "jsonb",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String"
+    },
+    "faros_VisibilityExclusion": {
+      "modifiedBy": "String",
+      "origin": "String",
+      "recordId": "String",
+      "recordType": "String",
+      "refreshedAt": "timestamptz",
+      "visibilityType": "String"
+    },
+    "geo_Address": {
+      "city": "String",
+      "country": "String",
+      "countryCode": "String",
+      "fullAddress": "String",
+      "houseNumber": "String",
+      "origin": "String",
+      "postalCode": "String",
+      "refreshedAt": "timestamptz",
+      "state": "String",
+      "stateCode": "String",
+      "street": "String",
+      "uid": "String",
+      "unit": "String"
+    },
+    "geo_Coordinates": {
+      "lat": "float8",
+      "lon": "float8",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "geo_Location": {
+      "addressId": "String",
+      "coordinatesId": "String",
+      "name": "String",
+      "origin": "String",
+      "raw": "String",
+      "refreshedAt": "timestamptz",
+      "room": "String",
+      "uid": "String"
+    },
+    "graph": {
+      "createdAt": "timestamptz",
+      "id": "String",
+      "isPrimary": "Boolean"
+    },
+    "identity_Identity": {
+      "createdAt": "timestamptz",
+      "emails": "String",
+      "firstName": "String",
+      "fullName": "String",
+      "lastName": "String",
+      "origin": "String",
+      "photoUrl": "String",
+      "primaryEmail": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String",
+      "updatedAt": "timestamptz"
+    },
+    "ims_ApplicationUptime": {
+      "applicationId": "String",
+      "intervalEndTime": "timestamptz",
+      "intervalStartTime": "timestamptz",
+      "majorOutageDuration": "Int",
+      "origin": "String",
+      "partialOutageDuration": "Int",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String",
+      "uptimePercentage": "Float"
+    },
+    "ims_Incident": {
+      "acknowledgedAt": "timestamptz",
+      "createdAt": "timestamptz",
+      "description": "String",
+      "origin": "String",
+      "priority": "jsonb",
+      "refreshedAt": "timestamptz",
+      "resolvedAt": "timestamptz",
+      "severity": "jsonb",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "title": "String",
+      "uid": "String",
+      "updatedAt": "timestamptz",
+      "url": "String"
+    },
+    "ims_IncidentApplicationImpact": {
+      "applicationId": "String",
+      "endedAt": "timestamptz",
+      "impact": "jsonb",
+      "incidentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz"
+    },
+    "ims_IncidentAssignment": {
+      "assigneeId": "String",
+      "incidentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "ims_IncidentEvent": {
+      "createdAt": "timestamptz",
+      "detail": "String",
+      "incidentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "ims_IncidentTag": {
+      "incidentId": "String",
+      "labelId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "ims_IncidentTasks": {
+      "incidentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "ims_Label": {
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "ims_Team": {
+      "color": "String",
+      "description": "String",
+      "leadId": "String",
+      "name": "String",
+      "origin": "String",
+      "parentTeamId": "String",
+      "photoUrl": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "tags": "String",
+      "teamChain": "String",
+      "uid": "String",
+      "url": "String"
+    },
+    "ims_TeamIncidentAssociation": {
+      "incidentId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "ims_TeamMembership": {
+      "memberId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "ims_User": {
+      "email": "String",
+      "inactive": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "ims_UserIdentity": {
+      "identityId": "String",
+      "imsUserId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "org_ApplicationOwnership": {
+      "applicationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "org_BoardOwnership": {
+      "boardId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "org_Department": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "uid": "String"
+    },
+    "org_Employee": {
+      "additionalFields": "jsonb",
+      "departmentId": "String",
+      "employmentType": "jsonb",
+      "identityId": "String",
+      "ignored": "Boolean",
+      "inactive": "Boolean",
+      "joinedAt": "timestamptz",
+      "level": "Int",
+      "locationId": "String",
+      "managerId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "reportingChain": "String",
+      "role": "String",
+      "terminatedAt": "timestamptz",
+      "title": "String",
+      "uid": "String"
+    },
+    "org_EmployeeTool": {
+      "activatedAt": "timestamptz",
+      "deactivatedAt": "timestamptz",
+      "employeeId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tool": "jsonb"
+    },
+    "org_PipelineOwnership": {
+      "origin": "String",
+      "pipelineId": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "org_ProjectOwnership": {
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "org_RepositoryOwnership": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "teamId": "String"
+    },
+    "org_Team": {
+      "additionalFields": "jsonb",
+      "color": "String",
+      "description": "String",
+      "leadId": "String",
+      "name": "String",
+      "origin": "String",
+      "parentTeamId": "String",
+      "photoUrl": "String",
+      "refreshedAt": "timestamptz",
+      "tags": "String",
+      "teamChain": "String",
+      "uid": "String"
+    },
+    "org_TeamMembership": {
+      "memberId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "org_TeamMetric": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String",
+      "valueId": "String"
+    },
+    "org_TeamTag": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String",
+      "teamId": "String"
+    },
+    "qa_CodeQuality": {
+      "applicationId": "String",
+      "branchCoverage": "jsonb",
+      "bugs": "jsonb",
+      "codeSmells": "jsonb",
+      "complexity": "jsonb",
+      "coverage": "jsonb",
+      "createdAt": "timestamptz",
+      "duplicatedBlocks": "jsonb",
+      "duplications": "jsonb",
+      "lineCoverage": "jsonb",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "securityHotspots": "jsonb",
+      "uid": "String",
+      "vulnerabilities": "jsonb"
+    },
+    "qa_TestCase": {
+      "after": "jsonb",
+      "before": "jsonb",
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "tags": "String",
+      "taskId": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "qa_TestCaseResult": {
+      "description": "String",
+      "endedAt": "timestamptz",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "testCaseId": "String",
+      "testExecutionId": "String",
+      "uid": "String"
+    },
+    "qa_TestCaseStep": {
+      "data": "String",
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "result": "String",
+      "testCaseId": "String",
+      "uid": "String"
+    },
+    "qa_TestCaseStepResult": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "status": "jsonb",
+      "testResultId": "String",
+      "testStepId": "String",
+      "uid": "String"
+    },
+    "qa_TestExecution": {
+      "buildId": "String",
+      "description": "String",
+      "deviceInfo": "jsonb",
+      "endedAt": "timestamptz",
+      "environments": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "status": "jsonb",
+      "suiteId": "String",
+      "tags": "String",
+      "taskId": "String",
+      "testCaseResultsStats": "jsonb",
+      "uid": "String"
+    },
+    "qa_TestExecutionCommitAssociation": {
+      "commitId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "testExecutionId": "String"
+    },
+    "qa_TestExecutionTag": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String",
+      "testExecutionId": "String"
+    },
+    "qa_TestSuite": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "tags": "String",
+      "taskId": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "qa_TestSuiteTestCaseAssociation": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "testCaseId": "String",
+      "testSuiteId": "String"
+    },
+    "survey_OrgTeam": {
+      "orgTeamId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "surveyTeamId": "String"
+    },
+    "survey_Question": {
+      "description": "String",
+      "origin": "String",
+      "question": "String",
+      "questionCategory": "jsonb",
+      "refreshedAt": "timestamptz",
+      "responseType": "jsonb",
+      "source": "String",
+      "uid": "String"
+    },
+    "survey_QuestionResponse": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "respondentId": "String",
+      "response": "String",
+      "submittedAt": "timestamptz",
+      "surveyQuestionId": "String",
+      "teamId": "String",
+      "uid": "String"
+    },
+    "survey_QuestionTag": {
+      "origin": "String",
+      "questionId": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "survey_Survey": {
+      "creatorId": "String",
+      "description": "String",
+      "endedAt": "timestamptz",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "stats": "jsonb",
+      "status": "jsonb",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "survey_SurveyQuestionAssociation": {
+      "order": "Int",
+      "origin": "String",
+      "questionId": "String",
+      "refreshedAt": "timestamptz",
+      "surveyId": "String"
+    },
+    "survey_SurveyTag": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "surveyId": "String",
+      "tagId": "String"
+    },
+    "survey_Team": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "survey_TeamMembership": {
+      "memberId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "survey_User": {
+      "email": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "survey_UserIdentity": {
+      "identityId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "surveyUserId": "String"
+    },
+    "tms_Epic": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "status": "jsonb",
+      "uid": "String",
+      "updatedAt": "timestamptz"
+    },
+    "tms_Label": {
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "tms_Project": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "sourceSystemId": "String",
+      "uid": "String",
+      "updatedAt": "timestamptz"
+    },
+    "tms_ProjectPath": {
+      "origin": "String",
+      "pathId": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "tms_ProjectReleaseRelationship": {
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "releaseId": "String"
+    },
+    "tms_ProjectTag": {
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "tms_Release": {
+      "description": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "releasedAt": "timestamptz",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "uid": "String"
+    },
+    "tms_Sprint": {
+      "closedAt": "timestamptz",
+      "completedOutsideSprintPoints": "Float",
+      "completedPoints": "Float",
+      "description": "String",
+      "endedAt": "timestamptz",
+      "name": "String",
+      "notCompletedPoints": "Float",
+      "openedAt": "timestamptz",
+      "origin": "String",
+      "plannedPoints": "Float",
+      "refreshedAt": "timestamptz",
+      "removedPoints": "Float",
+      "source": "String",
+      "startedAt": "timestamptz",
+      "state": "String",
+      "uid": "String"
+    },
+    "tms_SprintHistory": {
+      "addedAt": "timestamptz",
+      "addedDuringSprint": "Boolean",
+      "origin": "String",
+      "plannedPoints": "Float",
+      "points": "Float",
+      "refreshedAt": "timestamptz",
+      "removedAt": "timestamptz",
+      "sprintId": "String",
+      "status": "jsonb",
+      "taskId": "String",
+      "taskStatus": "jsonb"
+    },
+    "tms_Task": {
+      "additionalFields": "jsonb",
+      "createdAt": "timestamptz",
+      "creatorId": "String",
+      "description": "String",
+      "dueAt": "timestamptz",
+      "epicId": "String",
+      "name": "String",
+      "origin": "String",
+      "parentId": "String",
+      "points": "Float",
+      "priority": "String",
+      "refreshedAt": "timestamptz",
+      "resolutionStatus": "String",
+      "resolvedAt": "timestamptz",
+      "source": "String",
+      "sourceSystemId": "String",
+      "sprintId": "String",
+      "status": "jsonb",
+      "statusChangedAt": "timestamptz",
+      "statusChangelog": "jsonb",
+      "type": "jsonb",
+      "uid": "String",
+      "updatedAt": "timestamptz",
+      "url": "String"
+    },
+    "tms_TaskAssignment": {
+      "assignedAt": "timestamptz",
+      "assigneeId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "tms_TaskBoard": {
+      "included": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "tms_TaskBoardPath": {
+      "boardId": "String",
+      "origin": "String",
+      "pathId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "tms_TaskBoardProjectRelationship": {
+      "boardId": "String",
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "tms_TaskBoardRelationship": {
+      "boardId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "tms_TaskBoardTag": {
+      "boardId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tagId": "String"
+    },
+    "tms_TaskDependency": {
+      "blocking": "Boolean",
+      "dependencyType": "jsonb",
+      "dependentTaskId": "String",
+      "fulfillingTaskId": "String",
+      "fulfillingType": "jsonb",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "tms_TaskProjectRelationship": {
+      "origin": "String",
+      "projectId": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "tms_TaskPullRequestAssociation": {
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "tms_TaskReleaseRelationship": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "releaseId": "String",
+      "taskId": "String"
+    },
+    "tms_TaskTag": {
+      "labelId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "taskId": "String"
+    },
+    "tms_TaskTestCaseResultAssociation": {
+      "defectId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "testCaseResultId": "String"
+    },
+    "tms_Team": {
+      "color": "String",
+      "description": "String",
+      "leadId": "String",
+      "name": "String",
+      "origin": "String",
+      "parentTeamId": "String",
+      "photoUrl": "String",
+      "refreshedAt": "timestamptz",
+      "tags": "String",
+      "teamChain": "String",
+      "uid": "String"
+    },
+    "tms_TeamMembership": {
+      "memberId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "tms_User": {
+      "emailAddress": "String",
+      "inactive": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "uid": "String"
+    },
+    "tms_UserIdentity": {
+      "identityId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tmsUserId": "String"
+    },
+    "vcs_Branch": {
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String"
+    },
+    "vcs_BranchCommitAssociation": {
+      "branchId": "String",
+      "commitId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "vcs_Commit": {
+      "authorId": "String",
+      "createdAt": "timestamptz",
+      "diffStats": "jsonb",
+      "htmlUrl": "String",
+      "message": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "sha": "String"
+    },
+    "vcs_File": {
+      "origin": "String",
+      "path": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "uid": "String"
+    },
+    "vcs_Label": {
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "vcs_Membership": {
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "userId": "String"
+    },
+    "vcs_Organization": {
+      "createdAt": "timestamptz",
+      "htmlUrl": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "vcs_OrganizationTool": {
+      "inactive": "Boolean",
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "tool": "jsonb"
+    },
+    "vcs_PullRequest": {
+      "authorId": "String",
+      "commentCount": "Int",
+      "commitCount": "Int",
+      "createdAt": "timestamptz",
+      "description": "String",
+      "diffStats": "jsonb",
+      "htmlUrl": "String",
+      "mergeCommitId": "String",
+      "mergedAt": "timestamptz",
+      "number": "Int",
+      "origin": "String",
+      "readyForReviewAt": "timestamptz",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "state": "jsonb",
+      "title": "String",
+      "updatedAt": "timestamptz"
+    },
+    "vcs_PullRequestComment": {
+      "authorId": "String",
+      "comment": "String",
+      "createdAt": "timestamptz",
+      "number": "bigint",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz",
+      "updatedAt": "timestamptz"
+    },
+    "vcs_PullRequestCommit": {
+      "commitId": "String",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "vcs_PullRequestFile": {
+      "additions": "Int",
+      "deletions": "Int",
+      "fileId": "String",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "vcs_PullRequestLabel": {
+      "labelId": "String",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz"
+    },
+    "vcs_PullRequestReview": {
+      "htmlUrl": "String",
+      "number": "bigint",
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz",
+      "reviewerId": "String",
+      "state": "jsonb",
+      "submittedAt": "timestamptz"
+    },
+    "vcs_PullRequestReviewRequest": {
+      "origin": "String",
+      "pullRequestId": "String",
+      "refreshedAt": "timestamptz",
+      "requestedReviewerId": "String"
+    },
+    "vcs_Repository": {
+      "createdAt": "timestamptz",
+      "description": "String",
+      "fullName": "String",
+      "htmlUrl": "String",
+      "included": "Boolean",
+      "language": "String",
+      "mainBranch": "String",
+      "name": "String",
+      "organizationId": "String",
+      "origin": "String",
+      "private": "Boolean",
+      "refreshedAt": "timestamptz",
+      "size": "bigint",
+      "topics": "String",
+      "updatedAt": "timestamptz"
+    },
+    "vcs_RepositoryContribution": {
+      "authorId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String",
+      "totalCommits": "Int",
+      "weekly": "jsonb"
+    },
+    "vcs_Tag": {
+      "commitId": "String",
+      "message": "String",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "repositoryId": "String"
+    },
+    "vcs_Team": {
+      "color": "String",
+      "description": "String",
+      "leadId": "String",
+      "name": "String",
+      "origin": "String",
+      "parentTeamId": "String",
+      "photoUrl": "String",
+      "refreshedAt": "timestamptz",
+      "tags": "String",
+      "teamChain": "String",
+      "uid": "String"
+    },
+    "vcs_TeamMembership": {
+      "memberId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "teamId": "String"
+    },
+    "vcs_User": {
+      "email": "String",
+      "htmlUrl": "String",
+      "inactive": "Boolean",
+      "name": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "source": "String",
+      "type": "jsonb",
+      "uid": "String"
+    },
+    "vcs_UserIdentity": {
+      "identityId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "vcsUserId": "String"
+    },
+    "vcs_UserTool": {
+      "endedAt": "timestamptz",
+      "inactive": "Boolean",
+      "organizationId": "String",
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "startedAt": "timestamptz",
+      "tool": "jsonb",
+      "userId": "String"
+    },
+    "vcs_UserToolUsage": {
+      "origin": "String",
+      "refreshedAt": "timestamptz",
+      "usedAt": "timestamptz",
+      "userToolId": "String"
+    }
+  },
+  "references": {
+    "ams_Activity": {
+      "locationId": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "location": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "participantId": {
+        "field": "participant",
+        "model": "ams_User",
+        "foreignKey": "participantId"
+      },
+      "participant": {
+        "field": "participant",
+        "model": "ams_User",
+        "foreignKey": "participantId"
+      },
+      "projectId": {
+        "field": "project",
+        "model": "ams_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "ams_Project",
+        "foreignKey": "projectId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "ams_Project": {
+      "creatorId": {
+        "field": "creator",
+        "model": "ams_User",
+        "foreignKey": "creatorId"
+      },
+      "creator": {
+        "field": "creator",
+        "model": "ams_User",
+        "foreignKey": "creatorId"
+      },
+      "ownerId": {
+        "field": "owner",
+        "model": "ams_User",
+        "foreignKey": "ownerId"
+      },
+      "owner": {
+        "field": "owner",
+        "model": "ams_User",
+        "foreignKey": "ownerId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "ams_User": {},
+    "ams_UserIdentity": {
+      "amsUserId": {
+        "field": "amsUser",
+        "model": "ams_User",
+        "foreignKey": "amsUserId"
+      },
+      "amsUser": {
+        "field": "amsUser",
+        "model": "ams_User",
+        "foreignKey": "amsUserId"
+      },
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      }
+    },
+    "cal_Calendar": {
+      "ownerId": {
+        "field": "owner",
+        "model": "cal_User",
+        "foreignKey": "ownerId"
+      },
+      "owner": {
+        "field": "owner",
+        "model": "cal_User",
+        "foreignKey": "ownerId"
+      }
+    },
+    "cal_Event": {
+      "calendarId": {
+        "field": "calendar",
+        "model": "cal_Calendar",
+        "foreignKey": "calendarId"
+      },
+      "calendar": {
+        "field": "calendar",
+        "model": "cal_Calendar",
+        "foreignKey": "calendarId"
+      },
+      "locationId": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "location": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "organizerId": {
+        "field": "organizer",
+        "model": "cal_User",
+        "foreignKey": "organizerId"
+      },
+      "organizer": {
+        "field": "organizer",
+        "model": "cal_User",
+        "foreignKey": "organizerId"
+      }
+    },
+    "cal_EventGuestAssociation": {
+      "eventId": {
+        "field": "event",
+        "model": "cal_Event",
+        "foreignKey": "eventId"
+      },
+      "event": {
+        "field": "event",
+        "model": "cal_Event",
+        "foreignKey": "eventId"
+      },
+      "guestId": {
+        "field": "guest",
+        "model": "cal_User",
+        "foreignKey": "guestId"
+      },
+      "guest": {
+        "field": "guest",
+        "model": "cal_User",
+        "foreignKey": "guestId"
+      }
+    },
+    "cal_User": {},
+    "cal_UserIdentity": {
+      "calUserId": {
+        "field": "calUser",
+        "model": "cal_User",
+        "foreignKey": "calUserId"
+      },
+      "calUser": {
+        "field": "calUser",
+        "model": "cal_User",
+        "foreignKey": "calUserId"
+      },
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      }
+    },
+    "cicd_Agent": {
+      "hostId": {
+        "field": "host",
+        "model": "compute_Instance",
+        "foreignKey": "hostId"
+      },
+      "host": {
+        "field": "host",
+        "model": "compute_Instance",
+        "foreignKey": "hostId"
+      }
+    },
+    "cicd_AgentTag": {
+      "agentId": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "agent": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "cicd_Artifact": {
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "cicd_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "cicd_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "cicd_ArtifactCommitAssociation": {
+      "artifactId": {
+        "field": "artifact",
+        "model": "cicd_Artifact",
+        "foreignKey": "artifactId"
+      },
+      "artifact": {
+        "field": "artifact",
+        "model": "cicd_Artifact",
+        "foreignKey": "artifactId"
+      },
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      }
+    },
+    "cicd_ArtifactDeployment": {
+      "artifactId": {
+        "field": "artifact",
+        "model": "cicd_Artifact",
+        "foreignKey": "artifactId"
+      },
+      "artifact": {
+        "field": "artifact",
+        "model": "cicd_Artifact",
+        "foreignKey": "artifactId"
+      },
+      "deploymentId": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      },
+      "deployment": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      }
+    },
+    "cicd_Build": {
+      "agentId": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "agent": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "pipelineId": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      },
+      "pipeline": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      }
+    },
+    "cicd_BuildCommitAssociation": {
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      }
+    },
+    "cicd_BuildStep": {
+      "agentId": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "agent": {
+        "field": "agent",
+        "model": "cicd_Agent",
+        "foreignKey": "agentId"
+      },
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      }
+    },
+    "cicd_BuildStepTag": {
+      "buildStepId": {
+        "field": "buildStep",
+        "model": "cicd_BuildStep",
+        "foreignKey": "buildStepId"
+      },
+      "buildStep": {
+        "field": "buildStep",
+        "model": "cicd_BuildStep",
+        "foreignKey": "buildStepId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "cicd_BuildTag": {
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "cicd_Deployment": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      }
+    },
+    "cicd_DeploymentChangeset": {
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "deploymentId": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      },
+      "deployment": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      }
+    },
+    "cicd_DeploymentTag": {
+      "deploymentId": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      },
+      "deployment": {
+        "field": "deployment",
+        "model": "cicd_Deployment",
+        "foreignKey": "deploymentId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "cicd_EnvBranchAssociation": {
+      "branchId": {
+        "field": "branch",
+        "model": "vcs_Branch",
+        "foreignKey": "branchId"
+      },
+      "branch": {
+        "field": "branch",
+        "model": "vcs_Branch",
+        "foreignKey": "branchId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "cicd_Organization": {},
+    "cicd_Pipeline": {
+      "organizationId": {
+        "field": "organization",
+        "model": "cicd_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "cicd_Organization",
+        "foreignKey": "organizationId"
+      }
+    },
+    "cicd_Release": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      }
+    },
+    "cicd_ReleaseTagAssociation": {
+      "releaseId": {
+        "field": "release",
+        "model": "cicd_Release",
+        "foreignKey": "releaseId"
+      },
+      "release": {
+        "field": "release",
+        "model": "cicd_Release",
+        "foreignKey": "releaseId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "vcs_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "vcs_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "cicd_Repository": {
+      "organizationId": {
+        "field": "organization",
+        "model": "cicd_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "cicd_Organization",
+        "foreignKey": "organizationId"
+      }
+    },
+    "compute_Application": {},
+    "compute_ApplicationDependency": {
+      "dependentApplicationId": {
+        "field": "dependentApplication",
+        "model": "compute_Application",
+        "foreignKey": "dependentApplicationId"
+      },
+      "dependentApplication": {
+        "field": "dependentApplication",
+        "model": "compute_Application",
+        "foreignKey": "dependentApplicationId"
+      },
+      "requiredApplicationId": {
+        "field": "requiredApplication",
+        "model": "compute_Application",
+        "foreignKey": "requiredApplicationId"
+      },
+      "requiredApplication": {
+        "field": "requiredApplication",
+        "model": "compute_Application",
+        "foreignKey": "requiredApplicationId"
+      }
+    },
+    "compute_ApplicationMetric": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "valueId": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      },
+      "value": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      }
+    },
+    "compute_ApplicationPath": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "pathId": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      },
+      "path": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      }
+    },
+    "compute_ApplicationSource": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repositoryLabelId": {
+        "field": "repositoryLabel",
+        "model": "vcs_Label",
+        "foreignKey": "repositoryLabelId"
+      },
+      "repositoryLabel": {
+        "field": "repositoryLabel",
+        "model": "vcs_Label",
+        "foreignKey": "repositoryLabelId"
+      }
+    },
+    "compute_ApplicationTag": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "compute_Instance": {},
+    "compute_Volume": {},
+    "compute_VolumeAttachment": {
+      "instanceId": {
+        "field": "instance",
+        "model": "compute_Instance",
+        "foreignKey": "instanceId"
+      },
+      "instance": {
+        "field": "instance",
+        "model": "compute_Instance",
+        "foreignKey": "instanceId"
+      },
+      "volumeId": {
+        "field": "volume",
+        "model": "compute_Volume",
+        "foreignKey": "volumeId"
+      },
+      "volume": {
+        "field": "volume",
+        "model": "compute_Volume",
+        "foreignKey": "volumeId"
+      }
+    },
+    "cost_Definition": {},
+    "cost_DefinitionEffortMapping": {
+      "definitionId": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "effortMappingId": {
+        "field": "effortMapping",
+        "model": "cost_EffortMapping",
+        "foreignKey": "effortMappingId"
+      },
+      "effortMapping": {
+        "field": "effortMapping",
+        "model": "cost_EffortMapping",
+        "foreignKey": "effortMappingId"
+      }
+    },
+    "cost_DefinitionEpic": {
+      "definitionId": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "epicId": {
+        "field": "epic",
+        "model": "tms_Epic",
+        "foreignKey": "epicId"
+      },
+      "epic": {
+        "field": "epic",
+        "model": "tms_Epic",
+        "foreignKey": "epicId"
+      }
+    },
+    "cost_DefinitionInitiative": {
+      "definitionId": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "cost_Definition",
+        "foreignKey": "definitionId"
+      },
+      "initiativeId": {
+        "field": "initiative",
+        "model": "ams_Project",
+        "foreignKey": "initiativeId"
+      },
+      "initiative": {
+        "field": "initiative",
+        "model": "ams_Project",
+        "foreignKey": "initiativeId"
+      }
+    },
+    "cost_EffortMapping": {},
+    "faros_CicdPipelineOptions": {
+      "pipelineId": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      },
+      "pipeline": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      }
+    },
+    "faros_ComputeApplicationOptions": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      }
+    },
+    "faros_DashboardUrlTag": {
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "faros_DataQualityIssue": {
+      "summaryId": {
+        "field": "summary",
+        "model": "faros_DataQualitySummary",
+        "foreignKey": "summaryId"
+      },
+      "summary": {
+        "field": "summary",
+        "model": "faros_DataQualitySummary",
+        "foreignKey": "summaryId"
+      }
+    },
+    "faros_DataQualitySummary": {},
+    "faros_MetricDefinition": {},
+    "faros_MetricDefinitionTag": {
+      "definitionId": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "faros_MetricThreshold": {
+      "thresholdGroupId": {
+        "field": "thresholdGroup",
+        "model": "faros_MetricThresholdGroup",
+        "foreignKey": "thresholdGroupId"
+      },
+      "thresholdGroup": {
+        "field": "thresholdGroup",
+        "model": "faros_MetricThresholdGroup",
+        "foreignKey": "thresholdGroupId"
+      }
+    },
+    "faros_MetricThresholdGroup": {
+      "definitionId": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      }
+    },
+    "faros_MetricThresholdGroupTag": {
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "thresholdGroupId": {
+        "field": "thresholdGroup",
+        "model": "faros_MetricThresholdGroup",
+        "foreignKey": "thresholdGroupId"
+      },
+      "thresholdGroup": {
+        "field": "thresholdGroup",
+        "model": "faros_MetricThresholdGroup",
+        "foreignKey": "thresholdGroupId"
+      }
+    },
+    "faros_MetricValue": {
+      "definitionId": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      },
+      "definition": {
+        "field": "definition",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "definitionId"
+      }
+    },
+    "faros_MetricValueTag": {
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "valueId": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      },
+      "value": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      }
+    },
+    "faros_Path": {},
+    "faros_Scorecard": {},
+    "faros_ScorecardMetric": {
+      "metricId": {
+        "field": "metric",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "metricId"
+      },
+      "metric": {
+        "field": "metric",
+        "model": "faros_MetricDefinition",
+        "foreignKey": "metricId"
+      },
+      "scorecardId": {
+        "field": "scorecard",
+        "model": "faros_Scorecard",
+        "foreignKey": "scorecardId"
+      },
+      "scorecard": {
+        "field": "scorecard",
+        "model": "faros_Scorecard",
+        "foreignKey": "scorecardId"
+      }
+    },
+    "faros_Tag": {},
+    "faros_TenantQuota": {},
+    "faros_TmsTaskBoardOptions": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      }
+    },
+    "faros_VcsRepositoryOptions": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "faros_VisibilityExclusion": {},
+    "geo_Address": {},
+    "geo_Coordinates": {},
+    "geo_Location": {
+      "addressId": {
+        "field": "address",
+        "model": "geo_Address",
+        "foreignKey": "addressId"
+      },
+      "address": {
+        "field": "address",
+        "model": "geo_Address",
+        "foreignKey": "addressId"
+      },
+      "coordinatesId": {
+        "field": "coordinates",
+        "model": "geo_Coordinates",
+        "foreignKey": "coordinatesId"
+      },
+      "coordinates": {
+        "field": "coordinates",
+        "model": "geo_Coordinates",
+        "foreignKey": "coordinatesId"
+      }
+    },
+    "graph": {},
+    "identity_Identity": {},
+    "ims_ApplicationUptime": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      }
+    },
+    "ims_Incident": {},
+    "ims_IncidentApplicationImpact": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      }
+    },
+    "ims_IncidentAssignment": {
+      "assigneeId": {
+        "field": "assignee",
+        "model": "ims_User",
+        "foreignKey": "assigneeId"
+      },
+      "assignee": {
+        "field": "assignee",
+        "model": "ims_User",
+        "foreignKey": "assigneeId"
+      },
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      }
+    },
+    "ims_IncidentEvent": {
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      }
+    },
+    "ims_IncidentTag": {
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "labelId": {
+        "field": "label",
+        "model": "ims_Label",
+        "foreignKey": "labelId"
+      },
+      "label": {
+        "field": "label",
+        "model": "ims_Label",
+        "foreignKey": "labelId"
+      }
+    },
+    "ims_IncidentTasks": {
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "ims_Label": {},
+    "ims_Team": {
+      "leadId": {
+        "field": "lead",
+        "model": "ims_User",
+        "foreignKey": "leadId"
+      },
+      "lead": {
+        "field": "lead",
+        "model": "ims_User",
+        "foreignKey": "leadId"
+      },
+      "parentTeamId": {
+        "field": "parentTeam",
+        "model": "ims_Team",
+        "foreignKey": "parentTeamId"
+      },
+      "parentTeam": {
+        "field": "parentTeam",
+        "model": "ims_Team",
+        "foreignKey": "parentTeamId"
+      }
+    },
+    "ims_TeamIncidentAssociation": {
+      "incidentId": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "incident": {
+        "field": "incident",
+        "model": "ims_Incident",
+        "foreignKey": "incidentId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "ims_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "ims_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "ims_TeamMembership": {
+      "memberId": {
+        "field": "member",
+        "model": "ims_User",
+        "foreignKey": "memberId"
+      },
+      "member": {
+        "field": "member",
+        "model": "ims_User",
+        "foreignKey": "memberId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "ims_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "ims_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "ims_User": {},
+    "ims_UserIdentity": {
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "imsUserId": {
+        "field": "imsUser",
+        "model": "ims_User",
+        "foreignKey": "imsUserId"
+      },
+      "imsUser": {
+        "field": "imsUser",
+        "model": "ims_User",
+        "foreignKey": "imsUserId"
+      }
+    },
+    "org_ApplicationOwnership": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_BoardOwnership": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_Department": {},
+    "org_Employee": {
+      "departmentId": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "department": {
+        "field": "department",
+        "model": "org_Department",
+        "foreignKey": "departmentId"
+      },
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "locationId": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "location": {
+        "field": "location",
+        "model": "geo_Location",
+        "foreignKey": "locationId"
+      },
+      "managerId": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      },
+      "manager": {
+        "field": "manager",
+        "model": "org_Employee",
+        "foreignKey": "managerId"
+      }
+    },
+    "org_EmployeeTool": {
+      "employeeId": {
+        "field": "employee",
+        "model": "org_Employee",
+        "foreignKey": "employeeId"
+      },
+      "employee": {
+        "field": "employee",
+        "model": "org_Employee",
+        "foreignKey": "employeeId"
+      }
+    },
+    "org_PipelineOwnership": {
+      "pipelineId": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      },
+      "pipeline": {
+        "field": "pipeline",
+        "model": "cicd_Pipeline",
+        "foreignKey": "pipelineId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_ProjectOwnership": {
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_RepositoryOwnership": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_Team": {
+      "leadId": {
+        "field": "lead",
+        "model": "org_Employee",
+        "foreignKey": "leadId"
+      },
+      "lead": {
+        "field": "lead",
+        "model": "org_Employee",
+        "foreignKey": "leadId"
+      },
+      "parentTeamId": {
+        "field": "parentTeam",
+        "model": "org_Team",
+        "foreignKey": "parentTeamId"
+      },
+      "parentTeam": {
+        "field": "parentTeam",
+        "model": "org_Team",
+        "foreignKey": "parentTeamId"
+      }
+    },
+    "org_TeamMembership": {
+      "memberId": {
+        "field": "member",
+        "model": "org_Employee",
+        "foreignKey": "memberId"
+      },
+      "member": {
+        "field": "member",
+        "model": "org_Employee",
+        "foreignKey": "memberId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "org_TeamMetric": {
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "valueId": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      },
+      "value": {
+        "field": "value",
+        "model": "faros_MetricValue",
+        "foreignKey": "valueId"
+      }
+    },
+    "org_TeamTag": {
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "org_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "qa_CodeQuality": {
+      "applicationId": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "application": {
+        "field": "application",
+        "model": "compute_Application",
+        "foreignKey": "applicationId"
+      },
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "qa_TestCase": {
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "qa_TestCaseResult": {
+      "testCaseId": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      },
+      "testCase": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      },
+      "testExecutionId": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      },
+      "testExecution": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      }
+    },
+    "qa_TestCaseStep": {
+      "testCaseId": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      },
+      "testCase": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      }
+    },
+    "qa_TestCaseStepResult": {
+      "testResultId": {
+        "field": "testResult",
+        "model": "qa_TestCaseResult",
+        "foreignKey": "testResultId"
+      },
+      "testResult": {
+        "field": "testResult",
+        "model": "qa_TestCaseResult",
+        "foreignKey": "testResultId"
+      },
+      "testStepId": {
+        "field": "testStep",
+        "model": "qa_TestCaseStep",
+        "foreignKey": "testStepId"
+      },
+      "testStep": {
+        "field": "testStep",
+        "model": "qa_TestCaseStep",
+        "foreignKey": "testStepId"
+      }
+    },
+    "qa_TestExecution": {
+      "buildId": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "build": {
+        "field": "build",
+        "model": "cicd_Build",
+        "foreignKey": "buildId"
+      },
+      "suiteId": {
+        "field": "suite",
+        "model": "qa_TestSuite",
+        "foreignKey": "suiteId"
+      },
+      "suite": {
+        "field": "suite",
+        "model": "qa_TestSuite",
+        "foreignKey": "suiteId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "qa_TestExecutionCommitAssociation": {
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "testExecutionId": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      },
+      "testExecution": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      }
+    },
+    "qa_TestExecutionTag": {
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "testExecutionId": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      },
+      "testExecution": {
+        "field": "testExecution",
+        "model": "qa_TestExecution",
+        "foreignKey": "testExecutionId"
+      }
+    },
+    "qa_TestSuite": {
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "qa_TestSuiteTestCaseAssociation": {
+      "testCaseId": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      },
+      "testCase": {
+        "field": "testCase",
+        "model": "qa_TestCase",
+        "foreignKey": "testCaseId"
+      },
+      "testSuiteId": {
+        "field": "testSuite",
+        "model": "qa_TestSuite",
+        "foreignKey": "testSuiteId"
+      },
+      "testSuite": {
+        "field": "testSuite",
+        "model": "qa_TestSuite",
+        "foreignKey": "testSuiteId"
+      }
+    },
+    "survey_OrgTeam": {
+      "orgTeamId": {
+        "field": "orgTeam",
+        "model": "org_Team",
+        "foreignKey": "orgTeamId"
+      },
+      "orgTeam": {
+        "field": "orgTeam",
+        "model": "org_Team",
+        "foreignKey": "orgTeamId"
+      },
+      "surveyTeamId": {
+        "field": "surveyTeam",
+        "model": "survey_Team",
+        "foreignKey": "surveyTeamId"
+      },
+      "surveyTeam": {
+        "field": "surveyTeam",
+        "model": "survey_Team",
+        "foreignKey": "surveyTeamId"
+      }
+    },
+    "survey_Question": {},
+    "survey_QuestionResponse": {
+      "respondentId": {
+        "field": "respondent",
+        "model": "survey_User",
+        "foreignKey": "respondentId"
+      },
+      "respondent": {
+        "field": "respondent",
+        "model": "survey_User",
+        "foreignKey": "respondentId"
+      },
+      "surveyQuestionId": {
+        "field": "surveyQuestion",
+        "model": "survey_SurveyQuestionAssociation",
+        "foreignKey": "surveyQuestionId"
+      },
+      "surveyQuestion": {
+        "field": "surveyQuestion",
+        "model": "survey_SurveyQuestionAssociation",
+        "foreignKey": "surveyQuestionId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "survey_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "survey_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "survey_QuestionTag": {
+      "questionId": {
+        "field": "question",
+        "model": "survey_Question",
+        "foreignKey": "questionId"
+      },
+      "question": {
+        "field": "question",
+        "model": "survey_Question",
+        "foreignKey": "questionId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "survey_Survey": {
+      "creatorId": {
+        "field": "creator",
+        "model": "survey_User",
+        "foreignKey": "creatorId"
+      },
+      "creator": {
+        "field": "creator",
+        "model": "survey_User",
+        "foreignKey": "creatorId"
+      }
+    },
+    "survey_SurveyQuestionAssociation": {
+      "questionId": {
+        "field": "question",
+        "model": "survey_Question",
+        "foreignKey": "questionId"
+      },
+      "question": {
+        "field": "question",
+        "model": "survey_Question",
+        "foreignKey": "questionId"
+      },
+      "surveyId": {
+        "field": "survey",
+        "model": "survey_Survey",
+        "foreignKey": "surveyId"
+      },
+      "survey": {
+        "field": "survey",
+        "model": "survey_Survey",
+        "foreignKey": "surveyId"
+      }
+    },
+    "survey_SurveyTag": {
+      "surveyId": {
+        "field": "survey",
+        "model": "survey_Survey",
+        "foreignKey": "surveyId"
+      },
+      "survey": {
+        "field": "survey",
+        "model": "survey_Survey",
+        "foreignKey": "surveyId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "survey_Team": {},
+    "survey_TeamMembership": {
+      "memberId": {
+        "field": "member",
+        "model": "survey_User",
+        "foreignKey": "memberId"
+      },
+      "member": {
+        "field": "member",
+        "model": "survey_User",
+        "foreignKey": "memberId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "survey_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "survey_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "survey_User": {},
+    "survey_UserIdentity": {
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "surveyUserId": {
+        "field": "surveyUser",
+        "model": "survey_User",
+        "foreignKey": "surveyUserId"
+      },
+      "surveyUser": {
+        "field": "surveyUser",
+        "model": "survey_User",
+        "foreignKey": "surveyUserId"
+      }
+    },
+    "tms_Epic": {
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      }
+    },
+    "tms_Label": {},
+    "tms_Project": {},
+    "tms_ProjectPath": {
+      "pathId": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      },
+      "path": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      },
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      }
+    },
+    "tms_ProjectReleaseRelationship": {
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "releaseId": {
+        "field": "release",
+        "model": "tms_Release",
+        "foreignKey": "releaseId"
+      },
+      "release": {
+        "field": "release",
+        "model": "tms_Release",
+        "foreignKey": "releaseId"
+      }
+    },
+    "tms_ProjectTag": {
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "tms_Release": {},
+    "tms_Sprint": {},
+    "tms_SprintHistory": {
+      "sprintId": {
+        "field": "sprint",
+        "model": "tms_Sprint",
+        "foreignKey": "sprintId"
+      },
+      "sprint": {
+        "field": "sprint",
+        "model": "tms_Sprint",
+        "foreignKey": "sprintId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_Task": {
+      "creatorId": {
+        "field": "creator",
+        "model": "tms_User",
+        "foreignKey": "creatorId"
+      },
+      "creator": {
+        "field": "creator",
+        "model": "tms_User",
+        "foreignKey": "creatorId"
+      },
+      "epicId": {
+        "field": "epic",
+        "model": "tms_Epic",
+        "foreignKey": "epicId"
+      },
+      "epic": {
+        "field": "epic",
+        "model": "tms_Epic",
+        "foreignKey": "epicId"
+      },
+      "parentId": {
+        "field": "parent",
+        "model": "tms_Task",
+        "foreignKey": "parentId"
+      },
+      "parent": {
+        "field": "parent",
+        "model": "tms_Task",
+        "foreignKey": "parentId"
+      },
+      "sprintId": {
+        "field": "sprint",
+        "model": "tms_Sprint",
+        "foreignKey": "sprintId"
+      },
+      "sprint": {
+        "field": "sprint",
+        "model": "tms_Sprint",
+        "foreignKey": "sprintId"
+      }
+    },
+    "tms_TaskAssignment": {
+      "assigneeId": {
+        "field": "assignee",
+        "model": "tms_User",
+        "foreignKey": "assigneeId"
+      },
+      "assignee": {
+        "field": "assignee",
+        "model": "tms_User",
+        "foreignKey": "assigneeId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskBoard": {},
+    "tms_TaskBoardPath": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "pathId": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      },
+      "path": {
+        "field": "path",
+        "model": "faros_Path",
+        "foreignKey": "pathId"
+      }
+    },
+    "tms_TaskBoardProjectRelationship": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      }
+    },
+    "tms_TaskBoardRelationship": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskBoardTag": {
+      "boardId": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "board": {
+        "field": "board",
+        "model": "tms_TaskBoard",
+        "foreignKey": "boardId"
+      },
+      "tagId": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      },
+      "tag": {
+        "field": "tag",
+        "model": "faros_Tag",
+        "foreignKey": "tagId"
+      }
+    },
+    "tms_TaskDependency": {
+      "dependentTaskId": {
+        "field": "dependentTask",
+        "model": "tms_Task",
+        "foreignKey": "dependentTaskId"
+      },
+      "dependentTask": {
+        "field": "dependentTask",
+        "model": "tms_Task",
+        "foreignKey": "dependentTaskId"
+      },
+      "fulfillingTaskId": {
+        "field": "fulfillingTask",
+        "model": "tms_Task",
+        "foreignKey": "fulfillingTaskId"
+      },
+      "fulfillingTask": {
+        "field": "fulfillingTask",
+        "model": "tms_Task",
+        "foreignKey": "fulfillingTaskId"
+      }
+    },
+    "tms_TaskProjectRelationship": {
+      "projectId": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "project": {
+        "field": "project",
+        "model": "tms_Project",
+        "foreignKey": "projectId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskPullRequestAssociation": {
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskReleaseRelationship": {
+      "releaseId": {
+        "field": "release",
+        "model": "tms_Release",
+        "foreignKey": "releaseId"
+      },
+      "release": {
+        "field": "release",
+        "model": "tms_Release",
+        "foreignKey": "releaseId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskTag": {
+      "labelId": {
+        "field": "label",
+        "model": "tms_Label",
+        "foreignKey": "labelId"
+      },
+      "label": {
+        "field": "label",
+        "model": "tms_Label",
+        "foreignKey": "labelId"
+      },
+      "taskId": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      },
+      "task": {
+        "field": "task",
+        "model": "tms_Task",
+        "foreignKey": "taskId"
+      }
+    },
+    "tms_TaskTestCaseResultAssociation": {
+      "defectId": {
+        "field": "defect",
+        "model": "tms_Task",
+        "foreignKey": "defectId"
+      },
+      "defect": {
+        "field": "defect",
+        "model": "tms_Task",
+        "foreignKey": "defectId"
+      },
+      "testCaseResultId": {
+        "field": "testCaseResult",
+        "model": "qa_TestCaseResult",
+        "foreignKey": "testCaseResultId"
+      },
+      "testCaseResult": {
+        "field": "testCaseResult",
+        "model": "qa_TestCaseResult",
+        "foreignKey": "testCaseResultId"
+      }
+    },
+    "tms_Team": {
+      "leadId": {
+        "field": "lead",
+        "model": "tms_User",
+        "foreignKey": "leadId"
+      },
+      "lead": {
+        "field": "lead",
+        "model": "tms_User",
+        "foreignKey": "leadId"
+      },
+      "parentTeamId": {
+        "field": "parentTeam",
+        "model": "tms_Team",
+        "foreignKey": "parentTeamId"
+      },
+      "parentTeam": {
+        "field": "parentTeam",
+        "model": "tms_Team",
+        "foreignKey": "parentTeamId"
+      }
+    },
+    "tms_TeamMembership": {
+      "memberId": {
+        "field": "member",
+        "model": "tms_User",
+        "foreignKey": "memberId"
+      },
+      "member": {
+        "field": "member",
+        "model": "tms_User",
+        "foreignKey": "memberId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "tms_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "tms_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "tms_User": {},
+    "tms_UserIdentity": {
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "tmsUserId": {
+        "field": "tmsUser",
+        "model": "tms_User",
+        "foreignKey": "tmsUserId"
+      },
+      "tmsUser": {
+        "field": "tmsUser",
+        "model": "tms_User",
+        "foreignKey": "tmsUserId"
+      }
+    },
+    "vcs_Branch": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_BranchCommitAssociation": {
+      "branchId": {
+        "field": "branch",
+        "model": "vcs_Branch",
+        "foreignKey": "branchId"
+      },
+      "branch": {
+        "field": "branch",
+        "model": "vcs_Branch",
+        "foreignKey": "branchId"
+      },
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      }
+    },
+    "vcs_Commit": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_File": {
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_Label": {},
+    "vcs_Membership": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "userId": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      },
+      "user": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      }
+    },
+    "vcs_Organization": {},
+    "vcs_OrganizationTool": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      }
+    },
+    "vcs_PullRequest": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "mergeCommitId": {
+        "field": "mergeCommit",
+        "model": "vcs_Commit",
+        "foreignKey": "mergeCommitId"
+      },
+      "mergeCommit": {
+        "field": "mergeCommit",
+        "model": "vcs_Commit",
+        "foreignKey": "mergeCommitId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_PullRequestComment": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      }
+    },
+    "vcs_PullRequestCommit": {
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      }
+    },
+    "vcs_PullRequestFile": {
+      "fileId": {
+        "field": "file",
+        "model": "vcs_File",
+        "foreignKey": "fileId"
+      },
+      "file": {
+        "field": "file",
+        "model": "vcs_File",
+        "foreignKey": "fileId"
+      },
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      }
+    },
+    "vcs_PullRequestLabel": {
+      "labelId": {
+        "field": "label",
+        "model": "vcs_Label",
+        "foreignKey": "labelId"
+      },
+      "label": {
+        "field": "label",
+        "model": "vcs_Label",
+        "foreignKey": "labelId"
+      },
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      }
+    },
+    "vcs_PullRequestReview": {
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "reviewerId": {
+        "field": "reviewer",
+        "model": "vcs_User",
+        "foreignKey": "reviewerId"
+      },
+      "reviewer": {
+        "field": "reviewer",
+        "model": "vcs_User",
+        "foreignKey": "reviewerId"
+      }
+    },
+    "vcs_PullRequestReviewRequest": {
+      "pullRequestId": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "pullRequest": {
+        "field": "pullRequest",
+        "model": "vcs_PullRequest",
+        "foreignKey": "pullRequestId"
+      },
+      "requestedReviewerId": {
+        "field": "requestedReviewer",
+        "model": "vcs_User",
+        "foreignKey": "requestedReviewerId"
+      },
+      "requestedReviewer": {
+        "field": "requestedReviewer",
+        "model": "vcs_User",
+        "foreignKey": "requestedReviewerId"
+      }
+    },
+    "vcs_Repository": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      }
+    },
+    "vcs_RepositoryContribution": {
+      "authorId": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "author": {
+        "field": "author",
+        "model": "vcs_User",
+        "foreignKey": "authorId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_Tag": {
+      "commitId": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "commit": {
+        "field": "commit",
+        "model": "vcs_Commit",
+        "foreignKey": "commitId"
+      },
+      "repositoryId": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      },
+      "repository": {
+        "field": "repository",
+        "model": "vcs_Repository",
+        "foreignKey": "repositoryId"
+      }
+    },
+    "vcs_Team": {
+      "leadId": {
+        "field": "lead",
+        "model": "vcs_User",
+        "foreignKey": "leadId"
+      },
+      "lead": {
+        "field": "lead",
+        "model": "vcs_User",
+        "foreignKey": "leadId"
+      },
+      "parentTeamId": {
+        "field": "parentTeam",
+        "model": "vcs_Team",
+        "foreignKey": "parentTeamId"
+      },
+      "parentTeam": {
+        "field": "parentTeam",
+        "model": "vcs_Team",
+        "foreignKey": "parentTeamId"
+      }
+    },
+    "vcs_TeamMembership": {
+      "memberId": {
+        "field": "member",
+        "model": "vcs_User",
+        "foreignKey": "memberId"
+      },
+      "member": {
+        "field": "member",
+        "model": "vcs_User",
+        "foreignKey": "memberId"
+      },
+      "teamId": {
+        "field": "team",
+        "model": "vcs_Team",
+        "foreignKey": "teamId"
+      },
+      "team": {
+        "field": "team",
+        "model": "vcs_Team",
+        "foreignKey": "teamId"
+      }
+    },
+    "vcs_User": {},
+    "vcs_UserIdentity": {
+      "identityId": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "identity": {
+        "field": "identity",
+        "model": "identity_Identity",
+        "foreignKey": "identityId"
+      },
+      "vcsUserId": {
+        "field": "vcsUser",
+        "model": "vcs_User",
+        "foreignKey": "vcsUserId"
+      },
+      "vcsUser": {
+        "field": "vcsUser",
+        "model": "vcs_User",
+        "foreignKey": "vcsUserId"
+      }
+    },
+    "vcs_UserTool": {
+      "organizationId": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "organization": {
+        "field": "organization",
+        "model": "vcs_Organization",
+        "foreignKey": "organizationId"
+      },
+      "userId": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      },
+      "user": {
+        "field": "user",
+        "model": "vcs_User",
+        "foreignKey": "userId"
+      }
+    },
+    "vcs_UserToolUsage": {
+      "userToolId": {
+        "field": "userTool",
+        "model": "vcs_UserTool",
+        "foreignKey": "userToolId"
+      },
+      "userTool": {
+        "field": "userTool",
+        "model": "vcs_UserTool",
+        "foreignKey": "userToolId"
+      }
+    }
+  },
+  "backReferences": {
+    "ams_Activity": [],
+    "ams_Project": [
+      {
+        "field": "activities",
+        "model": "ams_Activity"
+      },
+      {
+        "field": "costDefinitions",
+        "model": "cost_DefinitionInitiative"
+      }
+    ],
+    "ams_User": [
+      {
+        "field": "activities",
+        "model": "ams_Activity"
+      },
+      {
+        "field": "activityProjectOwnerships",
+        "model": "ams_Project"
+      },
+      {
+        "field": "projects",
+        "model": "ams_Project"
+      },
+      {
+        "field": "identity",
+        "model": "ams_UserIdentity"
+      }
+    ],
+    "ams_UserIdentity": [],
+    "cal_Calendar": [
+      {
+        "field": "events",
+        "model": "cal_Event"
+      }
+    ],
+    "cal_Event": [
+      {
+        "field": "guests",
+        "model": "cal_EventGuestAssociation"
+      }
+    ],
+    "cal_EventGuestAssociation": [],
+    "cal_User": [
+      {
+        "field": "calendars",
+        "model": "cal_Calendar"
+      },
+      {
+        "field": "eventsInvited",
+        "model": "cal_EventGuestAssociation"
+      },
+      {
+        "field": "eventsOrganized",
+        "model": "cal_Event"
+      },
+      {
+        "field": "identity",
+        "model": "cal_UserIdentity"
+      }
+    ],
+    "cal_UserIdentity": [],
+    "cicd_Agent": [
+      {
+        "field": "buildSteps",
+        "model": "cicd_BuildStep"
+      },
+      {
+        "field": "builds",
+        "model": "cicd_Build"
+      },
+      {
+        "field": "tags",
+        "model": "cicd_AgentTag"
+      }
+    ],
+    "cicd_AgentTag": [],
+    "cicd_Artifact": [
+      {
+        "field": "commitAssociations",
+        "model": "cicd_ArtifactCommitAssociation"
+      },
+      {
+        "field": "deployments",
+        "model": "cicd_ArtifactDeployment"
+      }
+    ],
+    "cicd_ArtifactCommitAssociation": [],
+    "cicd_ArtifactDeployment": [],
+    "cicd_Build": [
+      {
+        "field": "artifacts",
+        "model": "cicd_Artifact"
+      },
+      {
+        "field": "buildSteps",
+        "model": "cicd_BuildStep"
+      },
+      {
+        "field": "commitAssociations",
+        "model": "cicd_BuildCommitAssociation"
+      },
+      {
+        "field": "deployments",
+        "model": "cicd_Deployment"
+      },
+      {
+        "field": "tags",
+        "model": "cicd_BuildTag"
+      },
+      {
+        "field": "testExecutions",
+        "model": "qa_TestExecution"
+      }
+    ],
+    "cicd_BuildCommitAssociation": [],
+    "cicd_BuildStep": [
+      {
+        "field": "tags",
+        "model": "cicd_BuildStepTag"
+      }
+    ],
+    "cicd_BuildStepTag": [],
+    "cicd_BuildTag": [],
+    "cicd_Deployment": [
+      {
+        "field": "artifacts",
+        "model": "cicd_ArtifactDeployment"
+      },
+      {
+        "field": "changeset",
+        "model": "cicd_DeploymentChangeset"
+      },
+      {
+        "field": "tags",
+        "model": "cicd_DeploymentTag"
+      }
+    ],
+    "cicd_DeploymentChangeset": [],
+    "cicd_DeploymentTag": [],
+    "cicd_EnvBranchAssociation": [],
+    "cicd_Organization": [
+      {
+        "field": "pipelines",
+        "model": "cicd_Pipeline"
+      },
+      {
+        "field": "repositories",
+        "model": "cicd_Repository"
+      }
+    ],
+    "cicd_Pipeline": [
+      {
+        "field": "builds",
+        "model": "cicd_Build"
+      },
+      {
+        "field": "farosOptions",
+        "model": "faros_CicdPipelineOptions"
+      },
+      {
+        "field": "ownership",
+        "model": "org_PipelineOwnership"
+      }
+    ],
+    "cicd_Release": [
+      {
+        "field": "vcsTags",
+        "model": "cicd_ReleaseTagAssociation"
+      }
+    ],
+    "cicd_ReleaseTagAssociation": [],
+    "cicd_Repository": [
+      {
+        "field": "artifacts",
+        "model": "cicd_Artifact"
+      }
+    ],
+    "compute_Application": [
+      {
+        "field": "codeQuality",
+        "model": "qa_CodeQuality"
+      },
+      {
+        "field": "dependents",
+        "model": "compute_ApplicationDependency"
+      },
+      {
+        "field": "dependsOn",
+        "model": "compute_ApplicationDependency"
+      },
+      {
+        "field": "deployments",
+        "model": "cicd_Deployment"
+      },
+      {
+        "field": "farosOptions",
+        "model": "faros_ComputeApplicationOptions"
+      },
+      {
+        "field": "incidents",
+        "model": "ims_IncidentApplicationImpact"
+      },
+      {
+        "field": "metrics",
+        "model": "compute_ApplicationMetric"
+      },
+      {
+        "field": "paths",
+        "model": "compute_ApplicationPath"
+      },
+      {
+        "field": "sources",
+        "model": "compute_ApplicationSource"
+      },
+      {
+        "field": "tags",
+        "model": "compute_ApplicationTag"
+      },
+      {
+        "field": "uptimes",
+        "model": "ims_ApplicationUptime"
+      },
+      {
+        "field": "ownership",
+        "model": "org_ApplicationOwnership"
+      }
+    ],
+    "compute_ApplicationDependency": [],
+    "compute_ApplicationMetric": [],
+    "compute_ApplicationPath": [],
+    "compute_ApplicationSource": [],
+    "compute_ApplicationTag": [],
+    "compute_Instance": [
+      {
+        "field": "agents",
+        "model": "cicd_Agent"
+      },
+      {
+        "field": "attachments",
+        "model": "compute_VolumeAttachment"
+      }
+    ],
+    "compute_Volume": [
+      {
+        "field": "attachments",
+        "model": "compute_VolumeAttachment"
+      }
+    ],
+    "compute_VolumeAttachment": [],
+    "cost_Definition": [
+      {
+        "field": "effortMappings",
+        "model": "cost_DefinitionEffortMapping"
+      },
+      {
+        "field": "epics",
+        "model": "cost_DefinitionEpic"
+      },
+      {
+        "field": "initiatives",
+        "model": "cost_DefinitionInitiative"
+      }
+    ],
+    "cost_DefinitionEffortMapping": [],
+    "cost_DefinitionEpic": [],
+    "cost_DefinitionInitiative": [],
+    "cost_EffortMapping": [
+      {
+        "field": "costDefinitions",
+        "model": "cost_DefinitionEffortMapping"
+      }
+    ],
+    "faros_CicdPipelineOptions": [],
+    "faros_ComputeApplicationOptions": [],
+    "faros_DashboardUrlTag": [],
+    "faros_DataQualityIssue": [],
+    "faros_DataQualitySummary": [
+      {
+        "field": "issues",
+        "model": "faros_DataQualityIssue"
+      }
+    ],
+    "faros_MetricDefinition": [
+      {
+        "field": "scorecards",
+        "model": "faros_ScorecardMetric"
+      },
+      {
+        "field": "tags",
+        "model": "faros_MetricDefinitionTag"
+      },
+      {
+        "field": "thresholdGroups",
+        "model": "faros_MetricThresholdGroup"
+      },
+      {
+        "field": "values",
+        "model": "faros_MetricValue"
+      }
+    ],
+    "faros_MetricDefinitionTag": [],
+    "faros_MetricThreshold": [],
+    "faros_MetricThresholdGroup": [
+      {
+        "field": "tags",
+        "model": "faros_MetricThresholdGroupTag"
+      },
+      {
+        "field": "thresholds",
+        "model": "faros_MetricThreshold"
+      }
+    ],
+    "faros_MetricThresholdGroupTag": [],
+    "faros_MetricValue": [
+      {
+        "field": "tags",
+        "model": "faros_MetricValueTag"
+      },
+      {
+        "field": "application",
+        "model": "compute_ApplicationMetric"
+      },
+      {
+        "field": "team",
+        "model": "org_TeamMetric"
+      }
+    ],
+    "faros_MetricValueTag": [],
+    "faros_Path": [
+      {
+        "field": "applications",
+        "model": "compute_ApplicationPath"
+      },
+      {
+        "field": "boards",
+        "model": "tms_TaskBoardPath"
+      },
+      {
+        "field": "projects",
+        "model": "tms_ProjectPath"
+      }
+    ],
+    "faros_Scorecard": [
+      {
+        "field": "metrics",
+        "model": "faros_ScorecardMetric"
+      }
+    ],
+    "faros_ScorecardMetric": [],
+    "faros_Tag": [
+      {
+        "field": "agents",
+        "model": "cicd_AgentTag"
+      },
+      {
+        "field": "applications",
+        "model": "compute_ApplicationTag"
+      },
+      {
+        "field": "boards",
+        "model": "tms_TaskBoardTag"
+      },
+      {
+        "field": "buildSteps",
+        "model": "cicd_BuildStepTag"
+      },
+      {
+        "field": "builds",
+        "model": "cicd_BuildTag"
+      },
+      {
+        "field": "dashboardUrls",
+        "model": "faros_DashboardUrlTag"
+      },
+      {
+        "field": "deployments",
+        "model": "cicd_DeploymentTag"
+      },
+      {
+        "field": "metricDefinitions",
+        "model": "faros_MetricDefinitionTag"
+      },
+      {
+        "field": "metricValues",
+        "model": "faros_MetricValueTag"
+      },
+      {
+        "field": "projects",
+        "model": "tms_ProjectTag"
+      },
+      {
+        "field": "surveyQuestions",
+        "model": "survey_QuestionTag"
+      },
+      {
+        "field": "surveys",
+        "model": "survey_SurveyTag"
+      },
+      {
+        "field": "teams",
+        "model": "org_TeamTag"
+      },
+      {
+        "field": "testExecutions",
+        "model": "qa_TestExecutionTag"
+      },
+      {
+        "field": "thresholdGroups",
+        "model": "faros_MetricThresholdGroupTag"
+      }
+    ],
+    "faros_TenantQuota": [],
+    "faros_TmsTaskBoardOptions": [],
+    "faros_VcsRepositoryOptions": [],
+    "faros_VisibilityExclusion": [],
+    "geo_Address": [
+      {
+        "field": "location",
+        "model": "geo_Location"
+      }
+    ],
+    "geo_Coordinates": [
+      {
+        "field": "location",
+        "model": "geo_Location"
+      }
+    ],
+    "geo_Location": [
+      {
+        "field": "amsActivities",
+        "model": "ams_Activity"
+      },
+      {
+        "field": "calEvents",
+        "model": "cal_Event"
+      },
+      {
+        "field": "orgEmployees",
+        "model": "org_Employee"
+      }
+    ],
+    "graph": [],
+    "identity_Identity": [
+      {
+        "field": "amsUsers",
+        "model": "ams_UserIdentity"
+      },
+      {
+        "field": "calUsers",
+        "model": "cal_UserIdentity"
+      },
+      {
+        "field": "imsUsers",
+        "model": "ims_UserIdentity"
+      },
+      {
+        "field": "surveyUsers",
+        "model": "survey_UserIdentity"
+      },
+      {
+        "field": "tmsUsers",
+        "model": "tms_UserIdentity"
+      },
+      {
+        "field": "vcsUsers",
+        "model": "vcs_UserIdentity"
+      },
+      {
+        "field": "employee",
+        "model": "org_Employee"
+      }
+    ],
+    "ims_ApplicationUptime": [],
+    "ims_Incident": [
+      {
+        "field": "assignees",
+        "model": "ims_IncidentAssignment"
+      },
+      {
+        "field": "events",
+        "model": "ims_IncidentEvent"
+      },
+      {
+        "field": "impactedApplications",
+        "model": "ims_IncidentApplicationImpact"
+      },
+      {
+        "field": "tags",
+        "model": "ims_IncidentTag"
+      },
+      {
+        "field": "tasks",
+        "model": "ims_IncidentTasks"
+      },
+      {
+        "field": "teams",
+        "model": "ims_TeamIncidentAssociation"
+      }
+    ],
+    "ims_IncidentApplicationImpact": [],
+    "ims_IncidentAssignment": [],
+    "ims_IncidentEvent": [],
+    "ims_IncidentTag": [],
+    "ims_IncidentTasks": [],
+    "ims_Label": [
+      {
+        "field": "tags",
+        "model": "ims_IncidentTag"
+      }
+    ],
+    "ims_Team": [
+      {
+        "field": "childTeams",
+        "model": "ims_Team"
+      },
+      {
+        "field": "incidents",
+        "model": "ims_TeamIncidentAssociation"
+      },
+      {
+        "field": "members",
+        "model": "ims_TeamMembership"
+      }
+    ],
+    "ims_TeamIncidentAssociation": [],
+    "ims_TeamMembership": [],
+    "ims_User": [
+      {
+        "field": "respondedIncidents",
+        "model": "ims_IncidentAssignment"
+      },
+      {
+        "field": "teams",
+        "model": "ims_TeamMembership"
+      },
+      {
+        "field": "teamsLed",
+        "model": "ims_Team"
+      },
+      {
+        "field": "identity",
+        "model": "ims_UserIdentity"
+      }
+    ],
+    "ims_UserIdentity": [],
+    "org_ApplicationOwnership": [],
+    "org_BoardOwnership": [],
+    "org_Department": [
+      {
+        "field": "employees",
+        "model": "org_Employee"
+      }
+    ],
+    "org_Employee": [
+      {
+        "field": "reports",
+        "model": "org_Employee"
+      },
+      {
+        "field": "teams",
+        "model": "org_TeamMembership"
+      },
+      {
+        "field": "teamsLed",
+        "model": "org_Team"
+      },
+      {
+        "field": "tools",
+        "model": "org_EmployeeTool"
+      },
+      {
+        "field": "visibilityExclusions",
+        "model": "faros_VisibilityExclusion"
+      }
+    ],
+    "org_EmployeeTool": [],
+    "org_PipelineOwnership": [],
+    "org_ProjectOwnership": [],
+    "org_RepositoryOwnership": [],
+    "org_Team": [
+      {
+        "field": "applicationOwnerships",
+        "model": "org_ApplicationOwnership"
+      },
+      {
+        "field": "boardOwnerships",
+        "model": "org_BoardOwnership"
+      },
+      {
+        "field": "childTeams",
+        "model": "org_Team"
+      },
+      {
+        "field": "farosTags",
+        "model": "org_TeamTag"
+      },
+      {
+        "field": "members",
+        "model": "org_TeamMembership"
+      },
+      {
+        "field": "metrics",
+        "model": "org_TeamMetric"
+      },
+      {
+        "field": "pipelineOwnerships",
+        "model": "org_PipelineOwnership"
+      },
+      {
+        "field": "projectOwnerships",
+        "model": "org_ProjectOwnership"
+      },
+      {
+        "field": "repositoryOwnerships",
+        "model": "org_RepositoryOwnership"
+      },
+      {
+        "field": "surveyTeams",
+        "model": "survey_OrgTeam"
+      }
+    ],
+    "org_TeamMembership": [],
+    "org_TeamMetric": [],
+    "org_TeamTag": [],
+    "qa_CodeQuality": [],
+    "qa_TestCase": [
+      {
+        "field": "testCaseResults",
+        "model": "qa_TestCaseResult"
+      },
+      {
+        "field": "testSteps",
+        "model": "qa_TestCaseStep"
+      },
+      {
+        "field": "testSuites",
+        "model": "qa_TestSuiteTestCaseAssociation"
+      }
+    ],
+    "qa_TestCaseResult": [
+      {
+        "field": "defects",
+        "model": "tms_TaskTestCaseResultAssociation"
+      },
+      {
+        "field": "testStepResults",
+        "model": "qa_TestCaseStepResult"
+      }
+    ],
+    "qa_TestCaseStep": [
+      {
+        "field": "testStepResults",
+        "model": "qa_TestCaseStepResult"
+      }
+    ],
+    "qa_TestCaseStepResult": [],
+    "qa_TestExecution": [
+      {
+        "field": "commits",
+        "model": "qa_TestExecutionCommitAssociation"
+      },
+      {
+        "field": "farosTags",
+        "model": "qa_TestExecutionTag"
+      },
+      {
+        "field": "testCaseResults",
+        "model": "qa_TestCaseResult"
+      }
+    ],
+    "qa_TestExecutionCommitAssociation": [],
+    "qa_TestExecutionTag": [],
+    "qa_TestSuite": [
+      {
+        "field": "testCases",
+        "model": "qa_TestSuiteTestCaseAssociation"
+      },
+      {
+        "field": "testExecutions",
+        "model": "qa_TestExecution"
+      }
+    ],
+    "qa_TestSuiteTestCaseAssociation": [],
+    "survey_OrgTeam": [],
+    "survey_Question": [
+      {
+        "field": "surveys",
+        "model": "survey_SurveyQuestionAssociation"
+      },
+      {
+        "field": "tags",
+        "model": "survey_QuestionTag"
+      }
+    ],
+    "survey_QuestionResponse": [],
+    "survey_QuestionTag": [],
+    "survey_Survey": [
+      {
+        "field": "questions",
+        "model": "survey_SurveyQuestionAssociation"
+      },
+      {
+        "field": "tags",
+        "model": "survey_SurveyTag"
+      }
+    ],
+    "survey_SurveyQuestionAssociation": [
+      {
+        "field": "responses",
+        "model": "survey_QuestionResponse"
+      }
+    ],
+    "survey_SurveyTag": [],
+    "survey_Team": [
+      {
+        "field": "members",
+        "model": "survey_TeamMembership"
+      },
+      {
+        "field": "responses",
+        "model": "survey_QuestionResponse"
+      },
+      {
+        "field": "identity",
+        "model": "survey_OrgTeam"
+      }
+    ],
+    "survey_TeamMembership": [],
+    "survey_User": [
+      {
+        "field": "createdSurveys",
+        "model": "survey_Survey"
+      },
+      {
+        "field": "responses",
+        "model": "survey_QuestionResponse"
+      },
+      {
+        "field": "teams",
+        "model": "survey_TeamMembership"
+      },
+      {
+        "field": "identity",
+        "model": "survey_UserIdentity"
+      }
+    ],
+    "survey_UserIdentity": [],
+    "tms_Epic": [
+      {
+        "field": "costDefinitions",
+        "model": "cost_DefinitionEpic"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_Task"
+      }
+    ],
+    "tms_Label": [
+      {
+        "field": "tags",
+        "model": "tms_TaskTag"
+      }
+    ],
+    "tms_Project": [
+      {
+        "field": "boards",
+        "model": "tms_TaskBoardProjectRelationship"
+      },
+      {
+        "field": "epics",
+        "model": "tms_Epic"
+      },
+      {
+        "field": "paths",
+        "model": "tms_ProjectPath"
+      },
+      {
+        "field": "releases",
+        "model": "tms_ProjectReleaseRelationship"
+      },
+      {
+        "field": "tags",
+        "model": "tms_ProjectTag"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_TaskProjectRelationship"
+      },
+      {
+        "field": "ownership",
+        "model": "org_ProjectOwnership"
+      }
+    ],
+    "tms_ProjectPath": [],
+    "tms_ProjectReleaseRelationship": [],
+    "tms_ProjectTag": [],
+    "tms_Release": [
+      {
+        "field": "projects",
+        "model": "tms_ProjectReleaseRelationship"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_TaskReleaseRelationship"
+      }
+    ],
+    "tms_Sprint": [
+      {
+        "field": "taskHistory",
+        "model": "tms_SprintHistory"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_Task"
+      }
+    ],
+    "tms_SprintHistory": [],
+    "tms_Task": [
+      {
+        "field": "activities",
+        "model": "ams_Activity"
+      },
+      {
+        "field": "activityProjects",
+        "model": "ams_Project"
+      },
+      {
+        "field": "assignees",
+        "model": "tms_TaskAssignment"
+      },
+      {
+        "field": "boards",
+        "model": "tms_TaskBoardRelationship"
+      },
+      {
+        "field": "children",
+        "model": "tms_Task"
+      },
+      {
+        "field": "dependencies",
+        "model": "tms_TaskDependency"
+      },
+      {
+        "field": "incidents",
+        "model": "ims_IncidentTasks"
+      },
+      {
+        "field": "incomingDependencies",
+        "model": "tms_TaskDependency"
+      },
+      {
+        "field": "projects",
+        "model": "tms_TaskProjectRelationship"
+      },
+      {
+        "field": "pullRequests",
+        "model": "tms_TaskPullRequestAssociation"
+      },
+      {
+        "field": "releases",
+        "model": "tms_TaskReleaseRelationship"
+      },
+      {
+        "field": "sprintHistory",
+        "model": "tms_SprintHistory"
+      },
+      {
+        "field": "tags",
+        "model": "tms_TaskTag"
+      },
+      {
+        "field": "testCaseResults",
+        "model": "tms_TaskTestCaseResultAssociation"
+      },
+      {
+        "field": "testCase",
+        "model": "qa_TestCase"
+      },
+      {
+        "field": "testExecution",
+        "model": "qa_TestExecution"
+      },
+      {
+        "field": "testSuite",
+        "model": "qa_TestSuite"
+      }
+    ],
+    "tms_TaskAssignment": [],
+    "tms_TaskBoard": [
+      {
+        "field": "farosOptions",
+        "model": "faros_TmsTaskBoardOptions"
+      },
+      {
+        "field": "paths",
+        "model": "tms_TaskBoardPath"
+      },
+      {
+        "field": "projects",
+        "model": "tms_TaskBoardProjectRelationship"
+      },
+      {
+        "field": "tags",
+        "model": "tms_TaskBoardTag"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_TaskBoardRelationship"
+      },
+      {
+        "field": "ownership",
+        "model": "org_BoardOwnership"
+      }
+    ],
+    "tms_TaskBoardPath": [],
+    "tms_TaskBoardProjectRelationship": [],
+    "tms_TaskBoardRelationship": [],
+    "tms_TaskBoardTag": [],
+    "tms_TaskDependency": [],
+    "tms_TaskProjectRelationship": [],
+    "tms_TaskPullRequestAssociation": [],
+    "tms_TaskReleaseRelationship": [],
+    "tms_TaskTag": [],
+    "tms_TaskTestCaseResultAssociation": [],
+    "tms_Team": [
+      {
+        "field": "childTeams",
+        "model": "tms_Team"
+      },
+      {
+        "field": "members",
+        "model": "tms_TeamMembership"
+      }
+    ],
+    "tms_TeamMembership": [],
+    "tms_User": [
+      {
+        "field": "assignedTasks",
+        "model": "tms_TaskAssignment"
+      },
+      {
+        "field": "createdTasks",
+        "model": "tms_Task"
+      },
+      {
+        "field": "teams",
+        "model": "tms_TeamMembership"
+      },
+      {
+        "field": "teamsLed",
+        "model": "tms_Team"
+      },
+      {
+        "field": "identity",
+        "model": "tms_UserIdentity"
+      }
+    ],
+    "tms_UserIdentity": [],
+    "vcs_Branch": [
+      {
+        "field": "commits",
+        "model": "vcs_BranchCommitAssociation"
+      },
+      {
+        "field": "environmentAssociations",
+        "model": "cicd_EnvBranchAssociation"
+      }
+    ],
+    "vcs_BranchCommitAssociation": [],
+    "vcs_Commit": [
+      {
+        "field": "artifactAssociations",
+        "model": "cicd_ArtifactCommitAssociation"
+      },
+      {
+        "field": "branches",
+        "model": "vcs_BranchCommitAssociation"
+      },
+      {
+        "field": "buildAssociations",
+        "model": "cicd_BuildCommitAssociation"
+      },
+      {
+        "field": "deployments",
+        "model": "cicd_DeploymentChangeset"
+      },
+      {
+        "field": "mergedPullRequest",
+        "model": "vcs_PullRequest"
+      },
+      {
+        "field": "pullRequests",
+        "model": "vcs_PullRequestCommit"
+      },
+      {
+        "field": "tags",
+        "model": "vcs_Tag"
+      },
+      {
+        "field": "testExecutions",
+        "model": "qa_TestExecutionCommitAssociation"
+      }
+    ],
+    "vcs_File": [
+      {
+        "field": "pullRequests",
+        "model": "vcs_PullRequestFile"
+      }
+    ],
+    "vcs_Label": [
+      {
+        "field": "applicationSources",
+        "model": "compute_ApplicationSource"
+      },
+      {
+        "field": "pullRequests",
+        "model": "vcs_PullRequestLabel"
+      }
+    ],
+    "vcs_Membership": [],
+    "vcs_Organization": [
+      {
+        "field": "memberships",
+        "model": "vcs_Membership"
+      },
+      {
+        "field": "repositories",
+        "model": "vcs_Repository"
+      },
+      {
+        "field": "tools",
+        "model": "vcs_OrganizationTool"
+      },
+      {
+        "field": "userTools",
+        "model": "vcs_UserTool"
+      }
+    ],
+    "vcs_OrganizationTool": [],
+    "vcs_PullRequest": [
+      {
+        "field": "codeQuality",
+        "model": "qa_CodeQuality"
+      },
+      {
+        "field": "comments",
+        "model": "vcs_PullRequestComment"
+      },
+      {
+        "field": "commits",
+        "model": "vcs_PullRequestCommit"
+      },
+      {
+        "field": "files",
+        "model": "vcs_PullRequestFile"
+      },
+      {
+        "field": "labels",
+        "model": "vcs_PullRequestLabel"
+      },
+      {
+        "field": "requestedReviewers",
+        "model": "vcs_PullRequestReviewRequest"
+      },
+      {
+        "field": "reviews",
+        "model": "vcs_PullRequestReview"
+      },
+      {
+        "field": "tasks",
+        "model": "tms_TaskPullRequestAssociation"
+      }
+    ],
+    "vcs_PullRequestComment": [],
+    "vcs_PullRequestCommit": [],
+    "vcs_PullRequestFile": [],
+    "vcs_PullRequestLabel": [],
+    "vcs_PullRequestReview": [],
+    "vcs_PullRequestReviewRequest": [],
+    "vcs_Repository": [
+      {
+        "field": "applicationSources",
+        "model": "compute_ApplicationSource"
+      },
+      {
+        "field": "branches",
+        "model": "vcs_Branch"
+      },
+      {
+        "field": "codeQuality",
+        "model": "qa_CodeQuality"
+      },
+      {
+        "field": "commits",
+        "model": "vcs_Commit"
+      },
+      {
+        "field": "contributions",
+        "model": "vcs_RepositoryContribution"
+      },
+      {
+        "field": "environmentAssociations",
+        "model": "cicd_EnvBranchAssociation"
+      },
+      {
+        "field": "farosOptions",
+        "model": "faros_VcsRepositoryOptions"
+      },
+      {
+        "field": "files",
+        "model": "vcs_File"
+      },
+      {
+        "field": "pullRequests",
+        "model": "vcs_PullRequest"
+      },
+      {
+        "field": "tags",
+        "model": "vcs_Tag"
+      },
+      {
+        "field": "ownership",
+        "model": "org_RepositoryOwnership"
+      }
+    ],
+    "vcs_RepositoryContribution": [],
+    "vcs_Tag": [
+      {
+        "field": "releases",
+        "model": "cicd_ReleaseTagAssociation"
+      }
+    ],
+    "vcs_Team": [
+      {
+        "field": "childTeams",
+        "model": "vcs_Team"
+      },
+      {
+        "field": "members",
+        "model": "vcs_TeamMembership"
+      }
+    ],
+    "vcs_TeamMembership": [],
+    "vcs_User": [
+      {
+        "field": "authoredCommits",
+        "model": "vcs_Commit"
+      },
+      {
+        "field": "authoredPullRequests",
+        "model": "vcs_PullRequest"
+      },
+      {
+        "field": "authoredReleases",
+        "model": "cicd_Release"
+      },
+      {
+        "field": "contributions",
+        "model": "vcs_RepositoryContribution"
+      },
+      {
+        "field": "memberships",
+        "model": "vcs_Membership"
+      },
+      {
+        "field": "pullRequestComments",
+        "model": "vcs_PullRequestComment"
+      },
+      {
+        "field": "pullRequestReviews",
+        "model": "vcs_PullRequestReview"
+      },
+      {
+        "field": "requestedPullRequestReviews",
+        "model": "vcs_PullRequestReviewRequest"
+      },
+      {
+        "field": "teams",
+        "model": "vcs_TeamMembership"
+      },
+      {
+        "field": "teamsLed",
+        "model": "vcs_Team"
+      },
+      {
+        "field": "tools",
+        "model": "vcs_UserTool"
+      },
+      {
+        "field": "identity",
+        "model": "vcs_UserIdentity"
+      }
+    ],
+    "vcs_UserIdentity": [],
+    "vcs_UserTool": [
+      {
+        "field": "usages",
+        "model": "vcs_UserToolUsage"
+      }
+    ],
+    "vcs_UserToolUsage": []
+  },
+  "sortedModelDependencies": [
+    "ams_Activity",
+    "ams_UserIdentity",
+    "cal_EventGuestAssociation",
+    "cal_Event",
+    "cal_Calendar",
+    "cal_UserIdentity",
+    "cal_User",
+    "cicd_AgentTag",
+    "cicd_ArtifactCommitAssociation",
+    "cicd_ArtifactDeployment",
+    "cicd_Artifact",
+    "cicd_Repository",
+    "cicd_BuildCommitAssociation",
+    "cicd_BuildStepTag",
+    "cicd_BuildStep",
+    "cicd_BuildTag",
+    "cicd_DeploymentChangeset",
+    "cicd_DeploymentTag",
+    "cicd_Deployment",
+    "cicd_EnvBranchAssociation",
+    "cicd_ReleaseTagAssociation",
+    "cicd_Release",
+    "vcs_Tag",
+    "compute_ApplicationDependency",
+    "compute_ApplicationMetric",
+    "compute_ApplicationPath",
+    "compute_ApplicationSource",
+    "compute_ApplicationTag",
+    "compute_VolumeAttachment",
+    "compute_Volume",
+    "cost_DefinitionEffortMapping",
+    "cost_EffortMapping",
+    "cost_DefinitionEpic",
+    "cost_DefinitionInitiative",
+    "cost_Definition",
+    "ams_Project",
+    "ams_User",
+    "faros_CicdPipelineOptions",
+    "faros_ComputeApplicationOptions",
+    "faros_DashboardUrlTag",
+    "faros_DataQualityIssue",
+    "faros_DataQualitySummary",
+    "faros_MetricDefinitionTag",
+    "faros_MetricThreshold",
+    "faros_MetricThresholdGroupTag",
+    "faros_MetricThresholdGroup",
+    "faros_MetricValueTag",
+    "faros_ScorecardMetric",
+    "faros_Scorecard",
+    "faros_TmsTaskBoardOptions",
+    "faros_VcsRepositoryOptions",
+    "ims_ApplicationUptime",
+    "ims_IncidentApplicationImpact",
+    "ims_IncidentAssignment",
+    "ims_IncidentEvent",
+    "ims_IncidentTag",
+    "ims_Label",
+    "ims_IncidentTasks",
+    "ims_TeamIncidentAssociation",
+    "ims_Incident",
+    "ims_TeamMembership",
+    "ims_Team",
+    "ims_UserIdentity",
+    "ims_User",
+    "org_ApplicationOwnership",
+    "org_BoardOwnership",
+    "org_EmployeeTool",
+    "org_PipelineOwnership",
+    "org_ProjectOwnership",
+    "org_RepositoryOwnership",
+    "org_TeamMembership",
+    "org_TeamMetric",
+    "faros_MetricValue",
+    "faros_MetricDefinition",
+    "org_TeamTag",
+    "qa_CodeQuality",
+    "compute_Application",
+    "qa_TestCaseStepResult",
+    "qa_TestCaseStep",
+    "qa_TestExecutionCommitAssociation",
+    "qa_TestExecutionTag",
+    "qa_TestSuiteTestCaseAssociation",
+    "survey_OrgTeam",
+    "org_Team",
+    "org_Employee",
+    "org_Department",
+    "geo_Location",
+    "geo_Address",
+    "geo_Coordinates",
+    "survey_QuestionResponse",
+    "survey_SurveyQuestionAssociation",
+    "survey_QuestionTag",
+    "survey_Question",
+    "survey_SurveyTag",
+    "survey_Survey",
+    "survey_TeamMembership",
+    "survey_Team",
+    "survey_UserIdentity",
+    "survey_User",
+    "tms_ProjectPath",
+    "tms_ProjectReleaseRelationship",
+    "tms_ProjectTag",
+    "tms_SprintHistory",
+    "tms_TaskAssignment",
+    "tms_TaskBoardPath",
+    "faros_Path",
+    "tms_TaskBoardProjectRelationship",
+    "tms_TaskBoardRelationship",
+    "tms_TaskBoardTag",
+    "tms_TaskBoard",
+    "faros_Tag",
+    "tms_TaskDependency",
+    "tms_TaskProjectRelationship",
+    "tms_TaskPullRequestAssociation",
+    "tms_TaskReleaseRelationship",
+    "tms_Release",
+    "tms_TaskTag",
+    "tms_Label",
+    "tms_TaskTestCaseResultAssociation",
+    "qa_TestCaseResult",
+    "qa_TestCase",
+    "qa_TestExecution",
+    "cicd_Build",
+    "cicd_Agent",
+    "compute_Instance",
+    "cicd_Pipeline",
+    "cicd_Organization",
+    "qa_TestSuite",
+    "tms_Task",
+    "tms_Epic",
+    "tms_Project",
+    "tms_Sprint",
+    "tms_TeamMembership",
+    "tms_Team",
+    "tms_UserIdentity",
+    "tms_User",
+    "vcs_BranchCommitAssociation",
+    "vcs_Branch",
+    "vcs_Membership",
+    "vcs_OrganizationTool",
+    "vcs_PullRequestComment",
+    "vcs_PullRequestCommit",
+    "vcs_PullRequestFile",
+    "vcs_File",
+    "vcs_PullRequestLabel",
+    "vcs_Label",
+    "vcs_PullRequestReview",
+    "vcs_PullRequestReviewRequest",
+    "vcs_PullRequest",
+    "vcs_Commit",
+    "vcs_RepositoryContribution",
+    "vcs_Repository",
+    "vcs_TeamMembership",
+    "vcs_Team",
+    "vcs_UserIdentity",
+    "identity_Identity",
+    "vcs_UserToolUsage",
+    "vcs_UserTool",
+    "vcs_Organization",
+    "vcs_User"
+  ],
+  "tableNames": [
+    "ams_Activity",
+    "ams_Project",
+    "ams_User",
+    "ams_UserIdentity",
+    "cal_Calendar",
+    "cal_Event",
+    "cal_EventGuestAssociation",
+    "cal_User",
+    "cal_UserIdentity",
+    "cicd_Agent",
+    "cicd_AgentTag",
+    "cicd_Artifact",
+    "cicd_ArtifactCommitAssociation",
+    "cicd_ArtifactDeployment",
+    "cicd_Build",
+    "cicd_BuildCommitAssociation",
+    "cicd_BuildStep",
+    "cicd_BuildStepTag",
+    "cicd_BuildTag",
+    "cicd_Deployment",
+    "cicd_DeploymentChangeset",
+    "cicd_DeploymentTag",
+    "cicd_EnvBranchAssociation",
+    "cicd_Organization",
+    "cicd_Pipeline",
+    "cicd_Release",
+    "cicd_ReleaseTagAssociation",
+    "cicd_Repository",
+    "compute_Application",
+    "compute_ApplicationDependency",
+    "compute_ApplicationMetric",
+    "compute_ApplicationPath",
+    "compute_ApplicationSource",
+    "compute_ApplicationTag",
+    "compute_Instance",
+    "compute_Volume",
+    "compute_VolumeAttachment",
+    "cost_Definition",
+    "cost_DefinitionEffortMapping",
+    "cost_DefinitionEpic",
+    "cost_DefinitionInitiative",
+    "cost_EffortMapping",
+    "faros_CicdPipelineOptions",
+    "faros_ComputeApplicationOptions",
+    "faros_DashboardUrlTag",
+    "faros_DataQualityIssue",
+    "faros_DataQualitySummary",
+    "faros_MetricDefinition",
+    "faros_MetricDefinitionTag",
+    "faros_MetricThreshold",
+    "faros_MetricThresholdGroup",
+    "faros_MetricThresholdGroupTag",
+    "faros_MetricValue",
+    "faros_MetricValueTag",
+    "faros_Path",
+    "faros_Scorecard",
+    "faros_ScorecardMetric",
+    "faros_Tag",
+    "faros_TenantQuota",
+    "faros_TmsTaskBoardOptions",
+    "faros_VcsRepositoryOptions",
+    "faros_VisibilityExclusion",
+    "geo_Address",
+    "geo_Coordinates",
+    "geo_Location",
+    "graph",
+    "identity_Identity",
+    "ims_ApplicationUptime",
+    "ims_Incident",
+    "ims_IncidentApplicationImpact",
+    "ims_IncidentAssignment",
+    "ims_IncidentEvent",
+    "ims_IncidentTag",
+    "ims_IncidentTasks",
+    "ims_Label",
+    "ims_Team",
+    "ims_TeamIncidentAssociation",
+    "ims_TeamMembership",
+    "ims_User",
+    "ims_UserIdentity",
+    "org_ApplicationOwnership",
+    "org_BoardOwnership",
+    "org_Department",
+    "org_Employee",
+    "org_EmployeeTool",
+    "org_PipelineOwnership",
+    "org_ProjectOwnership",
+    "org_RepositoryOwnership",
+    "org_Team",
+    "org_TeamMembership",
+    "org_TeamMetric",
+    "org_TeamTag",
+    "qa_CodeQuality",
+    "qa_TestCase",
+    "qa_TestCaseResult",
+    "qa_TestCaseStep",
+    "qa_TestCaseStepResult",
+    "qa_TestExecution",
+    "qa_TestExecutionCommitAssociation",
+    "qa_TestExecutionTag",
+    "qa_TestSuite",
+    "qa_TestSuiteTestCaseAssociation",
+    "survey_OrgTeam",
+    "survey_Question",
+    "survey_QuestionResponse",
+    "survey_QuestionTag",
+    "survey_Survey",
+    "survey_SurveyQuestionAssociation",
+    "survey_SurveyTag",
+    "survey_Team",
+    "survey_TeamMembership",
+    "survey_User",
+    "survey_UserIdentity",
+    "tms_Epic",
+    "tms_Label",
+    "tms_Project",
+    "tms_ProjectPath",
+    "tms_ProjectReleaseRelationship",
+    "tms_ProjectTag",
+    "tms_Release",
+    "tms_Sprint",
+    "tms_SprintHistory",
+    "tms_Task",
+    "tms_TaskAssignment",
+    "tms_TaskBoard",
+    "tms_TaskBoardPath",
+    "tms_TaskBoardProjectRelationship",
+    "tms_TaskBoardRelationship",
+    "tms_TaskBoardTag",
+    "tms_TaskDependency",
+    "tms_TaskProjectRelationship",
+    "tms_TaskPullRequestAssociation",
+    "tms_TaskReleaseRelationship",
+    "tms_TaskTag",
+    "tms_TaskTestCaseResultAssociation",
+    "tms_Team",
+    "tms_TeamMembership",
+    "tms_User",
+    "tms_UserIdentity",
+    "vcs_Branch",
+    "vcs_BranchCommitAssociation",
+    "vcs_Commit",
+    "vcs_File",
+    "vcs_Label",
+    "vcs_Membership",
+    "vcs_Organization",
+    "vcs_OrganizationTool",
+    "vcs_PullRequest",
+    "vcs_PullRequestComment",
+    "vcs_PullRequestCommit",
+    "vcs_PullRequestFile",
+    "vcs_PullRequestLabel",
+    "vcs_PullRequestReview",
+    "vcs_PullRequestReviewRequest",
+    "vcs_Repository",
+    "vcs_RepositoryContribution",
+    "vcs_Tag",
+    "vcs_Team",
+    "vcs_TeamMembership",
+    "vcs_User",
+    "vcs_UserIdentity",
+    "vcs_UserTool",
+    "vcs_UserToolUsage"
+  ]
+}

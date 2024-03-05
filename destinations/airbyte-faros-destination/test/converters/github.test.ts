@@ -26,8 +26,7 @@ describe('github', () => {
   const catalogPath = 'test/resources/github/catalog.json';
   const catalogRawPath = 'test/resources/github/catalog-raw.json';
   let configPath: string;
-  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
-  const revisionId = 'test-revision-id';
+  const graphqlSchema = JSON.parse(readTestResourceFile('graphql-schema.json'));
   const streamNamePrefix = 'mytestsource__github__';
 
   beforeEach(async () => {
@@ -53,35 +52,9 @@ describe('github', () => {
 
   test('process and write records', async () => {
     await mockttp
-      .forPost('/graphs/test-graph/models')
-      .withQuery({schema: 'canonical'})
+      .forGet('/graphs/test-graph/graphql/schema')
       .once()
-      .thenReply(200, JSON.stringify({}));
-
-    await mockttp
-      .forPost('/graphs/test-graph/revisions')
-      .once()
-      .thenReply(
-        200,
-        JSON.stringify({
-          entrySchema: graphSchema,
-          revision: {uid: revisionId, lock: {state: {}}},
-        })
-      );
-
-    let entriesSize = 0;
-    await mockttp
-      .forPost(`/graphs/test-graph/revisions/${revisionId}/entries`)
-      .thenCallback(async (r) => {
-        entriesSize = r.body.buffer.length;
-        return {statusCode: 204};
-      });
-
-    await mockttp
-      .forPatch(`/graphs/test-graph/revisions/${revisionId}`)
-      .withJsonBodyIncluding({status: 'active'})
-      .once()
-      .thenReply(204);
+      .thenReply(200, JSON.stringify(graphqlSchema));
 
     const cli = await CLI.runWith([
       'write',
@@ -103,7 +76,6 @@ describe('github', () => {
     expect(stdout).toMatch('Skipped 0 records');
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
-    expect(entriesSize).toBeGreaterThan(0);
   });
 
   test('process records but skip writes when dry run is enabled', async () => {
