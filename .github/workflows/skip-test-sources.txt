@@ -7,6 +7,7 @@ azureactivedirectory-source
 azurepipeline-source
 bamboohr-source
 bitbucket-server-source
+buildkite-source
 datadog-source
 docker-source
 faros-graphdoctor-source
@@ -25,5 +26,6 @@ servicenow-source
 sheets-source
 squadcast-source
 testrails-source
+trello-source
 victorops-source
 workday-source

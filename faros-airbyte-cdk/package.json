@@ -24,7 +24,7 @@
   ],
   "main": "./lib",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "build": "tsc -p src",
@@ -57,9 +57,12 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "transform": {
-      "\\.[jt]sx?$": [ "ts-jest", {
-        "tsconfig": "test/tsconfig.json"
-      }]
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     },
     "snapshotFormat": {
       "printBasicPrototype": true,

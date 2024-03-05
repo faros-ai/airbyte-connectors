@@ -7,6 +7,8 @@ import util from 'util';
 
 import {Edition, InvalidRecordStrategy} from '../src';
 
+const TEST_SOURCE_ID = 'mytestsource';
+
 // Remove all controlled temporary objects on process exit
 tmp.setGracefulCleanup();
 
@@ -94,6 +96,7 @@ export function getConf(
     source_specific_configs,
     replace_origin_map: JSON.stringify(replace_origin_map),
     exclude_fields_map: JSON.stringify(exclude_fields_map),
+    faros_source_id: TEST_SOURCE_ID,
   };
   return conf;
 }
@@ -128,6 +131,25 @@ export async function initMockttp(mockttp: Mockttp): Promise<void> {
 
   // Hasura health check
   await mockttp.forGet('/healthz').once().thenReply(200, JSON.stringify({}));
+
+  // Faros Account Sync
+  const mockSyncResult = {
+    sync: {
+      syncId: '1',
+      logId: '1',
+      startedAt: new Date().toISOString(),
+      status: 'running',
+    },
+  };
+  await mockttp
+    .forPut(`/accounts/${TEST_SOURCE_ID}/syncs`)
+    .once()
+    .thenReply(200, JSON.stringify(mockSyncResult));
+
+  await mockttp
+    .forPatch(`/accounts/${TEST_SOURCE_ID}/syncs/1`)
+    .once()
+    .thenReply(200, JSON.stringify(mockSyncResult));
 }
 
 export function testLogger(name = 'test'): pino.Logger {

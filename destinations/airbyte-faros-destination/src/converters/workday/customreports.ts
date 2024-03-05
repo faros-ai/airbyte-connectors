@@ -7,7 +7,12 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {EmployeeRecord, ManagerTimeRecord, recordKeyTyping} from './models';
+import {
+  EmployeeRecord,
+  ManagerTimeRecord,
+  org_EmploymentType,
+  recordKeyTyping,
+} from './models';
 
 export class Customreports extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -120,7 +125,6 @@ export class Customreports extends Converter {
       !rec.Employee_ID ||
       !rec.Full_Name ||
       !rec.Manager_ID ||
-      !rec.Manager_Name ||
       !rec.Start_Date ||
       !rec.Team_ID ||
       !rec.Team_Name
@@ -237,17 +241,27 @@ export class Customreports extends Converter {
     return [org_ids_to_keep, org_ids_to_ignore];
   }
 
-  private shouldKeepTeam(ownershipChain: ReadonlyArray<string>): boolean {
+  private shouldKeepTeam(
+    ownershipChain: ReadonlyArray<string>,
+    cycle_exists: boolean,
+    ctx: StreamContext
+  ): boolean {
     // To determine whether a team is kept, we simply go up the ownership chain.
     // if we first hit an ignored team, we return false (not kept).
     // Otherwise if we first hit a kept team, we return true (keep the team)
     // If we hit neither kept nor ignored, we return false (not kept).
+    // Addition: if we keep cycle teams and there is a cycle then we return true.
     for (const org of ownershipChain) {
       if (this.org_ids_to_keep.includes(org)) {
         return true;
       }
       if (this.org_ids_to_ignore.includes(org)) {
         return false;
+      }
+    }
+    if (!ctx.config.source_specific_configs?.workday?.ignore_cycle_teams) {
+      if (cycle_exists) {
+        return true;
       }
     }
     return false;
@@ -276,7 +290,7 @@ export class Customreports extends Converter {
       teamIDToParentID[fix_team] = this.FAROS_TEAM_ROOT;
       this.cycleChains.push(ownershipChain);
     }
-    return this.shouldKeepTeam(ownershipChain);
+    return this.shouldKeepTeam(ownershipChain, ownershipInfo.cycle, ctx);
   }
 
   private getAcceptableTeams(
@@ -325,6 +339,26 @@ export class Customreports extends Converter {
     }
   }
 
+  getEmploymentType(employeeType: string): org_EmploymentType | null {
+    if (!employeeType) {
+      return null;
+    }
+    const fixedEmployeeType = employeeType.replace(/[\s-]/g, '').toLowerCase();
+    let category = 'Custom';
+    if (fixedEmployeeType === 'fulltime') {
+      category = 'FullTime';
+    } else if (fixedEmployeeType === 'parttime') {
+      category = 'PartTime';
+    } else if (fixedEmployeeType === 'contractor') {
+      category = 'Contractor';
+    } else if (fixedEmployeeType === 'intern') {
+      category = 'Intern';
+    } else if (fixedEmployeeType === 'freelance') {
+      category = 'Freelance';
+    }
+    return {category, detail: employeeType};
+  }
+
   private createEmployeeRecordList(
     employeeID: string,
     acceptable_teams: Set<string>
@@ -347,6 +381,8 @@ export class Customreports extends Converter {
           location: employee_record.Location
             ? {uid: employee_record.Location}
             : null,
+          title: employee_record.Job_Title,
+          employmentType: this.getEmploymentType(employee_record.Employee_Type),
         },
       },
       {
@@ -355,6 +391,7 @@ export class Customreports extends Converter {
           uid: employee_record.Employee_ID,
           fullName: employee_record.Full_Name,
           emails: employee_record.Email ? [employee_record.Email] : null,
+          primaryEmail: employee_record.Email ? employee_record.Email : '',
         },
       },
       {

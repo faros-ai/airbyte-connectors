@@ -7,6 +7,7 @@ import {
   TicketFieldsStream,
   TicketMetricsStream,
 } from '../../src/converters/zendesk/common';
+import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_ratings';
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
@@ -46,6 +47,7 @@ describe('zendesk', () => {
     logger.debug(stdout);
 
     const processedByStream = {
+      satisfaction_ratings: 2,
       tags: 8,
       ticket_fields: 9,
       ticket_metrics: 14,
@@ -60,10 +62,18 @@ describe('zendesk', () => {
       .value();
 
     const writtenByModel = {
+      faros_MetricDefinition: 1,
+      faros_MetricValue: 2,
+      faros_TmsTaskBoardOptions: 1,
       tms_Label: 8,
+      tms_Project: 1,
       tms_Task: 14,
       tms_TaskAssignment: 14,
+      tms_TaskBoard: 1,
+      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskBoardRelationship: 14,
       tms_TaskDependency: 1,
+      tms_TaskProjectRelationship: 14,
       tms_TaskTag: 29,
       tms_User: 15,
     };
@@ -80,7 +90,87 @@ describe('zendesk', () => {
 
 describe('tickets', () => {
   const converter = new Tickets();
-  const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}}, {});
+  const ctx = new StreamContext(
+    new AirbyteLogger(),
+    {
+      edition_configs: {},
+      source_specific_configs: {
+        zendesk: {
+          ticket_additional_fields: [
+            'Affected Systems',
+            'Needs More Triage',
+            'Agent internal comments',
+            'Reply customer on',
+          ],
+        },
+      },
+    },
+    {}
+  );
+
+  ctx.set(
+    TicketFieldsStream.asString,
+    '1',
+    AirbyteRecord.make('ticket_fields', {
+      id: 1,
+      type: 'multiselect',
+      title: 'Affected Systems',
+    })
+  );
+  ctx.set(
+    TicketFieldsStream.asString,
+    '2',
+    AirbyteRecord.make('ticket_fields', {
+      id: 2,
+      type: 'checkbox',
+      title: 'Needs More Triage',
+    })
+  );
+  ctx.set(
+    TicketFieldsStream.asString,
+    '3',
+    AirbyteRecord.make('ticket_fields', {
+      id: 3,
+      type: 'text',
+      title: 'Agent internal comments',
+    })
+  );
+  ctx.set(
+    TicketFieldsStream.asString,
+    '4',
+    AirbyteRecord.make('ticket_fields', {
+      id: 4,
+      type: 'date',
+      title: 'Reply customer on',
+    })
+  );
+  ctx.set(
+    TicketFieldsStream.asString,
+    '30',
+    AirbyteRecord.make('ticket_fields', {
+      id: 30,
+      type: 'integer',
+      title: 'Version impacted',
+    })
+  );
+  ctx.set(
+    TicketFieldsStream.asString,
+    '6',
+    AirbyteRecord.make('ticket_fields', {
+      title: 'Ticket status',
+      id: 6,
+      type: 'custom_status',
+      custom_statuses: [
+        {
+          id: 23328843804692,
+          status_category: 'pending',
+          agent_label: 'Waiting for fix',
+          end_user_label: 'Waiting for fix',
+          description: 'There is nothing to do for this ticket',
+        },
+      ],
+    })
+  );
   const ticket = {
     url: 'https://example.zendesk.com/api/v2/tickets/1.json',
     id: 1,
@@ -111,9 +201,9 @@ describe('tickets', () => {
     problem_id: null,
     has_incidents: false,
     is_public: true,
-    due_at: null,
+    due_at: '2024-02-01T00:00:00Z',
     tags: [],
-    custom_fields: [{id: 23111693329300, value: null}],
+    custom_fields: [],
     satisfaction_rating: null,
     sharing_agreement_ids: [],
     custom_status_id: 23111598975892,
@@ -201,28 +291,24 @@ describe('tickets', () => {
       status: 'pending',
       custom_status_id: 23328843804692,
     });
-    const fieldCtx = new StreamContext(
-      new AirbyteLogger(),
-      {edition_configs: {}},
-      {}
-    );
-    fieldCtx.set(
-      TicketFieldsStream.asString,
-      'ticketFieldId',
-      AirbyteRecord.make('ticket_fields', {
-        type: 'custom_status',
-        custom_statuses: [
-          {
-            id: 23328843804692,
-            status_category: 'pending',
-            agent_label: 'Waiting for fix',
-            end_user_label: 'Waiting for fix',
-            description: 'There is nothing to do for this ticket',
-          },
-        ],
-      })
-    );
-    const res = await converter.convert(record, fieldCtx);
+    const res = await converter.convert(record, ctx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('additional fields', async () => {
+    const record = AirbyteRecord.make('ticket', {
+      ...ticket,
+      custom_fields: [
+        {id: 1, value: ['api', 'ui']},
+        {id: 2, value: true},
+        {id: 3, value: 'No extra work needed'},
+        {id: 4, value: null},
+        {id: 30, value: 3},
+      ],
+    });
+    const res = await converter.convert(record, ctx);
+    const taskRec = res.find((r) => r.model === 'tms_Task');
+    expect(taskRec.record.additionalFields).toHaveLength(4);
     expect(res).toMatchSnapshot();
   });
 });
@@ -262,6 +348,26 @@ describe('users', () => {
       suspended: true,
     });
     const res = await converter.convert(record);
+    expect(res).toMatchSnapshot();
+  });
+});
+
+describe('satisfaction ratings', () => {
+  const converter = new SatisfactionRatings();
+  const rating = {
+    id: 1,
+    ticket_id: 15,
+    score: 'offered',
+    created_at: '2024-02-07T21:51:23Z',
+    updated_at: '2024-02-07T21:51:23Z',
+    comment: null,
+  };
+
+  test('rating', async () => {
+    const record = AirbyteRecord.make('satisfaction_rating', rating);
+
+    const res = await converter.convert(record);
+    expect(res).toHaveLength(2);
     expect(res).toMatchSnapshot();
   });
 });

@@ -81,11 +81,17 @@
         "surveys": {
           "$ref": "surveys.json"
         },
+        "trello": {
+          "$ref": "trello.json"
+        },
         "victorops": {
           "$ref": "victorops.json"
         },
         "workday": {
           "$ref": "workday.json"
+        },
+        "zendesk": {
+          "$ref": "zendesk.json"
         }
       }
     }

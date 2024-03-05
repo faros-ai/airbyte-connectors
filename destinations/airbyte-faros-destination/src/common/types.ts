@@ -27,6 +27,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly source_specific_configs?: Dictionary<any>;
   readonly keep_alive?: boolean;
   readonly skip_source_success_check?: boolean;
+  readonly faros_source_id?: string;
 }
 
 export enum Operation {

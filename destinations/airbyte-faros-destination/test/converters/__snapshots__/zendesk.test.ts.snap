@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`satisfaction ratings rating 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "name": "Zendesk Satisfaction Ratings",
+      "uid": "zendesk-satisfaction-ratings",
+      "valueSourceType": "MetricValueEntries",
+      "valueType": "String",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2024-02-07T21:51:23.000Z,
+      "definition": Object {
+        "uid": "zendesk-satisfaction-ratings",
+      },
+      "uid": "zendesk-satisfaction-rating-1",
+      "value": "offered",
+    },
+  },
+]
+`;
+
 exports[`tags tag 1`] = `
 Array [
   Object {
@@ -11,18 +36,36 @@ Array [
 ]
 `;
 
-exports[`tickets ticket 1`] = `
+exports[`tickets additional fields 1`] = `
 Array [
   Object {
     "model": "tms_Task",
     "record": Object {
-      "additionalFields": Array [],
+      "additionalFields": Array [
+        Object {
+          "name": "Affected Systems",
+          "value": "api,ui",
+        },
+        Object {
+          "name": "Needs More Triage",
+          "value": "true",
+        },
+        Object {
+          "name": "Agent internal comments",
+          "value": "No extra work needed",
+        },
+        Object {
+          "name": "Reply customer on",
+          "value": null,
+        },
+      ],
       "createdAt": 2024-01-24T14:15:15.000Z,
       "creator": Object {
         "source": "Zendesk",
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "source": "Zendesk",
@@ -40,6 +83,132 @@ Array [
       "url": "https://example.zendesk.com/api/v2/tickets/1.json",
     },
   },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+]
+`;
+
+exports[`tickets ticket 1`] = `
+Array [
+  Object {
+    "model": "tms_Task",
+    "record": Object {
+      "additionalFields": Array [],
+      "createdAt": 2024-01-24T14:15:15.000Z,
+      "creator": Object {
+        "source": "Zendesk",
+        "uid": "23111595978772",
+      },
+      "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
+      "name": "Sample ticket: Meet the ticket",
+      "priority": "normal",
+      "source": "Zendesk",
+      "status": Object {
+        "category": "InProgress",
+        "detail": "open",
+      },
+      "statusChangedAt": undefined,
+      "type": Object {
+        "category": "SupportCase",
+        "detail": "incident",
+      },
+      "uid": "1",
+      "updatedAt": 2024-01-24T14:15:15.000Z,
+      "url": "https://example.zendesk.com/api/v2/tickets/1.json",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_Project",
+    "record": Object {
+      "name": "Zendesk Tickets",
+      "source": "Zendesk",
+      "uid": "zendesk_tickets",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoard",
+    "record": Object {
+      "name": "Zendesk Tickets",
+      "source": "Zendesk",
+      "uid": "zendesk_tickets",
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardProjectRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+    },
+  },
+  Object {
+    "model": "faros_TmsTaskBoardOptions",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "inclusion": Object {
+        "category": "Included",
+      },
+    },
+  },
 ]
 `;
 
@@ -55,6 +224,7 @@ Array [
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "source": "Zendesk",
@@ -91,6 +261,32 @@ Array [
       },
     },
   },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
 ]
 `;
 
@@ -106,6 +302,7 @@ Array [
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "resolutionStatus": "solved",
@@ -125,6 +322,32 @@ Array [
       "url": "https://example.zendesk.com/api/v2/tickets/1.json",
     },
   },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
 ]
 `;
 
@@ -140,6 +363,7 @@ Array [
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "source": "Zendesk",
@@ -171,6 +395,32 @@ Array [
       },
     },
   },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
 ]
 `;
 
@@ -186,6 +436,7 @@ Array [
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "source": "Zendesk",
@@ -203,6 +454,32 @@ Array [
       "url": "https://example.zendesk.com/api/v2/tickets/1.json",
     },
   },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
 ]
 `;
 
@@ -218,6 +495,7 @@ Array [
         "uid": "23111595978772",
       },
       "description": "Hi there, I’m sending an email because I’m having a problem setting up your new product",
+      "dueAt": 2024-02-01T00:00:00.000Z,
       "name": "Sample ticket: Meet the ticket",
       "priority": "normal",
       "source": "Zendesk",
@@ -252,6 +530,32 @@ Array [
     "record": Object {
       "label": Object {
         "name": "tag2",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
+      },
+      "task": Object {
+        "source": "Zendesk",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Zendesk",
+        "uid": "zendesk_tickets",
       },
       "task": Object {
         "source": "Zendesk",
