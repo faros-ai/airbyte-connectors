@@ -16,7 +16,7 @@ ARG version
 
 ARG path
 RUN test -n "$path" || (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)
-RUN scope=$(echo "$path" | awk -F'/' '{print $NF}') && npm run build -- --scope $scope
+RUN scope=$(echo "$path" | awk -F'/' '{print $NF}') && npm run build -- --scope "$scope"
 RUN ln -sf "/home/node/airbyte/$path/bin/main" "/home/node/airbyte/main"
 
 USER node
