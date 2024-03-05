@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** CloudWatch Metrics source implementation. */
 export class CloudWatchMetricsSource extends AirbyteSourceBase<Config> {
+  get type(): string {
+    return 'cloudwatch-metrics';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

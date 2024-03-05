@@ -19,6 +19,10 @@ export function mainCommand(): Command {
 }
 
 export class SheetsSource extends AirbyteSourceBase<SheetsConfig> {
+  get type(): string {
+    return 'sheets';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

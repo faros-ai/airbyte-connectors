@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** Trello source implementation. */
 export class TrelloSource extends AirbyteSourceBase<TrelloConfig> {
+  get type(): string {
+    return 'trello';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** SquadCast source implementation. */
 export class SquadcastSource extends AirbyteSourceBase<SquadcastConfig> {
+  get type(): string {
+    return 'squadcast';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

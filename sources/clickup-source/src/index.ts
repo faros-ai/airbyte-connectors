@@ -35,7 +35,7 @@ export function mainCommand(): Command {
 }
 
 export class ClickUpSource extends AirbyteSourceBase<ClickUpConfig> {
-  override get type(): string {
+  get type(): string {
     return 'clickup';
   }
 

@@ -18,6 +18,10 @@ export function mainCommand(): Command {
 }
 /** Shortcut source implementation. */
 export class ShortcutSource extends AirbyteSourceBase<ShortcutConfig> {
+  get type(): string {
+    return 'shortcut';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

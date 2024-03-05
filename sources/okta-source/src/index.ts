@@ -19,6 +19,10 @@ export function mainCommand(): Command {
 
 /** Okta source implementation. */
 export class OktaSource extends AirbyteSourceBase<OktaConfig> {
+  get type(): string {
+    return 'okta';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

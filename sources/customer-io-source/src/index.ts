@@ -21,6 +21,10 @@ export function mainCommand(): Command {
 
 /** Customer.io source implementation. */
 export class CustomerIOSource extends AirbyteSourceBase<CustomerIOConfig> {
+  get type(): string {
+    return 'customerio';
+  }
+
   constructor(logger: AirbyteLogger, private readonly axios?: AxiosInstance) {
     super(logger);
   }

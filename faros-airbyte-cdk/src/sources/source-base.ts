@@ -73,9 +73,7 @@ export abstract class AirbyteSourceBase<
   /**
    * Source type
    */
-  get type(): string | undefined {
-    return undefined;
-  }
+  abstract get type(): string;
 
   /**
    * Implements the Discover operation from the Airbyte Specification. See

@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** SemaphoreCI source implementation. */
 export class SemaphoreCISource extends AirbyteSourceBase<SemaphoreCIConfig> {
+  get type(): string {
+    return 'semaphoreci';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

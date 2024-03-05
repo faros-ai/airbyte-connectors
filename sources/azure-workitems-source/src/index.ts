@@ -21,6 +21,10 @@ export function mainCommand(): Command {
 
 /** Example source implementation. */
 export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig> {
+  get type(): string {
+    return 'azure-workitems';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

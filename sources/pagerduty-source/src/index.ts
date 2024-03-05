@@ -27,6 +27,10 @@ export function mainCommand(): Command {
 
 /** Pagerduty source implementation. */
 export class PagerdutySource extends AirbyteSourceBase<PagerdutyConfig> {
+  get type(): string {
+    return 'pagerduty';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

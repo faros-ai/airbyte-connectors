@@ -19,6 +19,10 @@ export function mainCommand(): Command {
 
 /** BambooHR source implementation. */
 export class BambooHRSource extends AirbyteSourceBase<BambooHRConfig> {
+  get type(): string {
+    return 'bamboohr';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

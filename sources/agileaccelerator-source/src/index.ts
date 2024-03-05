@@ -23,6 +23,10 @@ export function mainCommand(): Command {
 
 /** AgileAccelerator source implementation. */
 export class AgileacceleratorSource extends AirbyteSourceBase<AgileacceleratorConfig> {
+  get type(): string {
+    return 'agileaccelerator';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

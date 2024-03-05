@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** OpsGenie source implementation. */
 export class OpsGenieSource extends AirbyteSourceBase<OpsGenieConfig> {
+  get type(): string {
+    return 'opsgenie';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

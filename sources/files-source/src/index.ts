@@ -19,6 +19,10 @@ export function mainCommand(): Command {
 }
 
 export class FilesSource extends AirbyteSourceBase<FilesConfig> {
+  get type(): string {
+    return 'files';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

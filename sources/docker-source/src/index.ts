@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** Docker source implementation. */
 export class DockerSource extends AirbyteSourceBase<DockerConfig> {
+  get type(): string {
+    return 'docker';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

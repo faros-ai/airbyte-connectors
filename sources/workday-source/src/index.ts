@@ -41,6 +41,10 @@ export function mainCommand(): Command {
 
 /** Workday source implementation. */
 export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
+  get type(): string {
+    return 'workday';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

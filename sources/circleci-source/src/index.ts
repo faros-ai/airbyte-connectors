@@ -23,6 +23,10 @@ export function mainCommand(): Command {
 
 /** CircleCI source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
+  get type(): string {
+    return 'circleci';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

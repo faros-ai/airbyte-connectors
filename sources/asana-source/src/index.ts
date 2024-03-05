@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** Asana source implementation. */
 export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
+  get type(): string {
+    return 'asana';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

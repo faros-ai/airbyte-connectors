@@ -28,6 +28,10 @@ export function mainCommand(): Command {
 
 /** Phabricator source implementation. */
 export class PhabricatorSource extends AirbyteSourceBase<PhabricatorConfig> {
+  get type(): string {
+    return 'phabricator';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

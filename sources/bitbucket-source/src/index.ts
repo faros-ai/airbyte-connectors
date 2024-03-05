@@ -32,6 +32,10 @@ export function mainCommand(): Command {
 }
 
 export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
+  get type(): string {
+    return 'bitbucket';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */

@@ -46,6 +46,10 @@ export function mainCommand(): Command {
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
 export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
+  get type(): string {
+    return 'faros-graphql';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

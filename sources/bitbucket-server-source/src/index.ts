@@ -27,6 +27,10 @@ export function mainCommand(): Command {
 }
 
 export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConfig> {
+  get type(): string {
+    return 'bitbucket-server';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

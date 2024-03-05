@@ -21,6 +21,10 @@ export function mainCommand(): Command {
 
 /** AzureRepo source implementation. */
 export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
+  get type(): string {
+    return 'azure-repos';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

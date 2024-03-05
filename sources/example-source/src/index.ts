@@ -24,6 +24,10 @@ export function mainCommand(): Command {
 
 /** Example source implementation. */
 export class ExampleSource extends AirbyteSourceBase<SourceConfig> {
+  get type(): string {
+    return 'example';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

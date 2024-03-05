@@ -20,6 +20,10 @@ export function mainCommand(): Command {
 
 /** TestRails source implementation. */
 export class TestRailsSource extends AirbyteSourceBase<TestRailsConfig> {
+  get type(): string {
+    return 'testrails';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
