@@ -3,10 +3,11 @@ import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {Incidents} from '../../src/converters/servicenow/incidents';
+import {SEGMENT_KEY} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {servicenowAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('servicenow', () => {
   const logger = testLogger();
@@ -72,7 +73,14 @@ describe('servicenow', () => {
       ims_User: 2,
     };
 
-    const { processedTotal, writtenTotal } = await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    const {processedTotal, writtenTotal} =
+      await assertProcessedAndWrittenModels(
+        processedByStream,
+        writtenByModel,
+        stdout,
+        processed,
+        cli
+      );
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -83,6 +91,7 @@ describe('servicenow', () => {
           _metadata: expect.anything(),
           context: expect.anything(),
           event: 'Write Stats',
+          integrations: {},
           messageId: expect.anything(),
           properties: {
             messagesRead: 4,
@@ -100,7 +109,7 @@ describe('servicenow', () => {
         },
       ],
       sentAt: expect.anything(),
-      timestamp: expect.anything(),
+      writeKey: SEGMENT_KEY,
     });
   });
 });

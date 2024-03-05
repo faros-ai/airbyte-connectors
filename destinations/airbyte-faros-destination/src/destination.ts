@@ -52,6 +52,7 @@ import FarosSyncClient, {AccountSync, UpdateAccountSyncProps} from './sync';
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const SEGMENT_KEY = 'YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn';
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -174,7 +175,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
       this.analytics = new Analytics({
-        writeKey: 'YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn',
+        writeKey: SEGMENT_KEY,
         host,
       }).on('error', (err) => {
         this.logger.error(
