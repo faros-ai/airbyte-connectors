@@ -13,8 +13,12 @@ import {
   AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
+  AirbyteSourceConfigMessage,
+  AirbyteSourceStatusMessage,
   AirbyteState,
   AirbyteStateMessage,
+  isSourceStatusMessage,
+  isStateMessage,
   SyncMode,
 } from '../protocol';
 import {AirbyteSource} from './source';
@@ -67,6 +71,13 @@ export abstract class AirbyteSourceBase<
   }
 
   /**
+   * Source type
+   */
+  get type(): string | undefined {
+    return undefined;
+  }
+
+  /**
    * Implements the Discover operation from the Airbyte Specification. See
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
@@ -108,11 +119,22 @@ export abstract class AirbyteSourceBase<
    */
   async *read(
     config: Config,
+    redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info(`Syncing ${this.name}`);
     const connectorState = State.decompress(cloneDeep(state ?? {}));
+    yield new AirbyteSourceConfigMessage(
+      {
+        data: config.compress_state
+          ? State.compress(connectorState)
+          : connectorState,
+      },
+      redactedConfig,
+      this.type
+    );
+
     // TODO: assert all streams exist in the connector
     // get the streams once in case the connector needs to make any queries to
     // generate them
@@ -137,13 +159,18 @@ export abstract class AirbyteSourceBase<
         );
 
         for await (const message of generator) {
-          if (isStateMessage(message) && config.compress_state) {
-            yield new AirbyteStateMessage(
-              {
-                data: State.compress(message.state.data),
-              },
-              message.sourceStatus
-            );
+          if (isStateMessage(message)) {
+            const msgState = config.compress_state
+              ? State.compress(message.state.data)
+              : message.state.data;
+            if (isSourceStatusMessage(message)) {
+              yield new AirbyteSourceStatusMessage(
+                {data: msgState},
+                message.sourceStatus
+              );
+            } else {
+              yield new AirbyteStateMessage({data: msgState});
+            }
           } else {
             yield message;
           }
@@ -155,7 +182,7 @@ export abstract class AirbyteSourceBase<
           }`,
           e.stack
         );
-        yield new AirbyteStateMessage(
+        yield new AirbyteSourceStatusMessage(
           {
             data: config.compress_state
               ? State.compress(connectorState)
@@ -197,7 +224,7 @@ export abstract class AirbyteSourceBase<
       );
     }
 
-    yield new AirbyteStateMessage(
+    yield new AirbyteSourceStatusMessage(
       {
         data: config.compress_state
           ? State.compress(connectorState)
@@ -435,7 +462,7 @@ export abstract class AirbyteSourceBase<
     error: Error
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
-    return new AirbyteStateMessage(
+    return new AirbyteSourceStatusMessage(
       {data: connectorState},
       {
         status: 'ERRORED',
@@ -448,8 +475,4 @@ export abstract class AirbyteSourceBase<
       }
     );
   }
-}
-
-function isStateMessage(msg: AirbyteMessage): msg is AirbyteStateMessage {
-  return msg.type === AirbyteMessageType.STATE;
 }

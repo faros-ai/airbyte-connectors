@@ -1,7 +1,18 @@
 import {AxiosRequestConfig} from 'axios';
-import {AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
+import {AirbyteConfig, AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
 import {FarosClient, FarosClientConfig} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+export interface Account {
+  accountId: string;
+  params: Dictionary<any>;
+  type: string;
+  local: boolean;
+}
+
+interface AccountResponse {
+  account: Account;
+}
 
 export interface AccountSync {
   syncId: string;
@@ -22,6 +33,8 @@ export type UpdateAccountSyncProps = Omit<
 interface AccountSyncResponse {
   sync: AccountSync;
 }
+
+const DEFAULT_TYPE = 'custom';
 
 class FarosSyncClient extends FarosClient {
   constructor(
@@ -52,6 +65,63 @@ class FarosSyncClient extends FarosClient {
     return sync;
   }
 
+  async createLocalAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig,
+    type?: string
+  ): Promise<Account | undefined> {
+    this.logger?.info(`Creating local account ${accountId}`);
+    return accountResult(
+      await this.attemptRequest<AccountResponse>(
+        this.request('POST', '/accounts', {
+          accountId,
+          params: {...redactedConfig, graphName, graphql_api: 'v2'},
+          type: type ?? DEFAULT_TYPE,
+          local: true,
+        }),
+        `Failed to create account ${accountId}`
+      )
+    );
+  }
+
+  async updateLocalAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig,
+    type?: string
+  ): Promise<Account | undefined> {
+    this.logger?.info(`Updating local account ${accountId}`);
+    return accountResult(
+      await this.attemptRequest<AccountResponse>(
+        this.request('PUT', `/accounts/${accountId}`, {
+          params: {...redactedConfig, graphName, graphql_api: 'v2'},
+          type: type ?? DEFAULT_TYPE,
+          local: true,
+        }),
+        `Failed to update account ${accountId}`
+      )
+    );
+  }
+
+  async getAccount(accountId: string): Promise<Account | undefined> {
+    return accountResult(
+      await this.attemptRequest(this.request('GET', `/accounts/${accountId}`))
+    );
+  }
+
+  async getOrCreateAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig
+  ) {
+    const account = await this.getAccount(accountId);
+    if (account) {
+      return account;
+    }
+    return this.createLocalAccount(accountId, graphName, redactedConfig);
+  }
+
   async updateAccountSync(
     accountId: string,
     syncId: string,
@@ -71,13 +141,22 @@ class FarosSyncClient extends FarosClient {
     );
   }
 
-  private attemptRequest<T>(f: Promise<T>, failureMessage: string): Promise<T> {
+  private attemptRequest<T>(
+    f: Promise<T>,
+    failureMessage?: string
+  ): Promise<T | undefined> {
     return f.catch((error) => {
-      this.airbyteLogger?.warn(failureMessage);
-      this.airbyteLogger?.traceError(error);
+      if (failureMessage) {
+        this.airbyteLogger?.warn(failureMessage);
+        this.airbyteLogger?.traceError(error);
+      }
       return undefined;
     });
   }
+}
+
+function accountResult(response?: AccountResponse): Account | undefined {
+  return response?.account;
 }
 
 function syncResult(response?: AccountSyncResponse): AccountSync | undefined {

@@ -88,7 +88,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();
-          this.logger.info(`Config: ${redactConfig(config, spec)}`);
+          const redactedConfig = redactConfig(config, spec);
+          this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
           let state: AirbyteState | undefined = undefined;
@@ -99,7 +100,12 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           try {
             const res = await this.source.onBeforeRead(config, catalog, state);
-            const iter = this.source.read(res.config, res.catalog, res.state);
+            const iter = this.source.read(
+              res.config,
+              redactedConfig,
+              res.catalog,
+              res.state
+            );
             for await (const message of iter) {
               this.logger.write(message);
             }

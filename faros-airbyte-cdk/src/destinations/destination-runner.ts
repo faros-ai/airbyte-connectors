@@ -76,7 +76,8 @@ export class AirbyteDestinationRunner<
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const {catalog, spec, config} = await this.loadConfig(opts);
-          this.logger.info(`Config: ${redactConfig(config, spec)}`);
+          const redactedConfig = redactConfig(config, spec);
+          this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
           try {
@@ -84,6 +85,7 @@ export class AirbyteDestinationRunner<
 
             const iter = this.destination.write(
               config,
+              redactedConfig,
               catalog,
               process.stdin,
               opts.dryRun

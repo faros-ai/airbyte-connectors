@@ -297,8 +297,49 @@ export type AirbyteSourceStatus =
 
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(readonly state: {data: AirbyteState}) {}
+}
+
+// We need to extend AirbyteStateMessage so that Airbyte Server will pass the message to the destination
+// Airbyte Server only passes records and state messages to the destination
+export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
   constructor(
-    readonly state: {data: AirbyteState},
-    readonly sourceStatus?: AirbyteSourceStatus
-  ) {}
+    state: {data: AirbyteState},
+    readonly sourceStatus: AirbyteSourceStatus
+  ) {
+    super(state);
+  }
+}
+
+export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
+  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(
+    state: {data: AirbyteState},
+    readonly redactedConfig: AirbyteConfig,
+    readonly sourceType?: string
+  ) {
+    super(state);
+  }
+}
+
+export function isStateMessage(
+  msg: AirbyteMessage
+): msg is AirbyteStateMessage {
+  return msg.type === AirbyteMessageType.STATE;
+}
+
+export function isSourceStatusMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceStatusMessage {
+  return (
+    isStateMessage(msg) && !!(msg as AirbyteSourceStatusMessage).sourceStatus
+  );
+}
+
+export function isSourceConfigMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceConfigMessage {
+  return (
+    isStateMessage(msg) && !!(msg as AirbyteSourceConfigMessage).redactedConfig
+  );
 }
