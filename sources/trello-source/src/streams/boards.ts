@@ -21,7 +21,7 @@ export class Boards extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Board> {
-    const trello = Trello.instance(this.config);
+    const trello = Trello.instance(this.config, this.logger);
 
     for (const board of await trello.getBoards()) {
       yield board;

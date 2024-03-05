@@ -1,5 +1,6 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -13,6 +14,7 @@ export const MAX_DATE = new Date(7258118400000).toISOString();
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_RETRIES = 3;
 
 export interface TrelloConfig {
   credentials: {
@@ -25,6 +27,7 @@ export interface TrelloConfig {
   api_timeout?: number;
   start_date?: string;
   end_date?: string;
+  max_retries?: number;
 }
 
 export class Trello {
@@ -38,7 +41,7 @@ export class Trello {
     private readonly pageSize: number
   ) {}
 
-  static instance(config: TrelloConfig): Trello {
+  static instance(config: TrelloConfig, logger?: AirbyteLogger): Trello {
     if (Trello.trello) return Trello.trello;
 
     if (!config.credentials?.key) {
@@ -63,15 +66,20 @@ export class Trello {
       endDate = new Date().toISOString();
     }
 
-    const httpClient = axios.create({
-      baseURL: `https://api.trello.com/1`,
-      timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
-      maxContentLength: Infinity, //default is 2000 bytes
-      // https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth
-      headers: {
-        Authorization: `OAuth oauth_consumer_key="${config.credentials.key}", oauth_token="${config.credentials.token}"`,
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://api.trello.com/1`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity, //default is 2000 bytes
+        // https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth
+        headers: {
+          Authorization: `OAuth oauth_consumer_key="${config.credentials.key}", oauth_token="${config.credentials.token}"`,
+        },
       },
-    });
+      logger.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      10000
+    );
 
     Trello.trello = new Trello(
       httpClient,
