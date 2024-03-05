@@ -1,0 +1,25 @@
+{
+  "aws_region": "us-east-1",
+  "credentials": {
+    "aws_access_key_id": "XXX",
+    "aws_secret_access_key": "YYY",
+    "aws_session_token": "ZZZ"
+  },
+  "queries": [
+    {
+      "name": "TotalCharacterCount",
+      "query": "{\"Id\": \"q2\",\"Expression\": \"SELECT SUM(TotalCharacterCount) FROM SCHEMA(\\\"AWS/CodeWhisperer\\\", ProgrammingLanguage)\",\"AccountId\": \"557438714034\",\"ReturnData\": true,\"Period\": 5,\"Label\": \"CodeWhisperer\"}"
+    },
+    {
+      "name": "CodeWhispererCharacterCount",
+      "query": "{\"Id\": \"q2\",\"Expression\": \"SELECT SUM(CodeWhispererCharacterCount) FROM SCHEMA(\\\"AWS/CodeWhisperer\\\", ProgrammingLanguage)\",\"AccountId\": \"557438714034\",\"ReturnData\": true,\"Period\": 5,\"Label\": \"CodeWhisperer\"}"
+    }
+  ],
+  "edition_configs": {
+    "edition": "cloud",
+    "api_url": "https://dev.api.faros.ai",
+    "api_key": "AAA",
+    "graph": "ron"
+  },
+  "origin": "aws-cloudwatch-metrics__metrics"
+}

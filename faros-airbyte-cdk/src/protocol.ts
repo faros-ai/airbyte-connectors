@@ -52,6 +52,8 @@ export enum AirbyteTraceFailureType {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AirbyteConfig {
   compress_state?: boolean;
+  max_stream_failures?: number; // -1 means unlimited
+  max_slice_failures?: number; // -1 means unlimited
   [k: string]: any;
 }
 
@@ -260,13 +262,22 @@ export interface AirbyteState {
   [stream: string]: any;
 }
 
+export interface SyncMessage {
+  summary: string;
+  code: number;
+  action: string; // Describes what the user can do to resolve the error
+  entity?: string; // The project/repository/branch/etc. that the error is associated with
+  details?: any;
+  messages?: SyncMessage[];
+}
+
 export interface AirbyteSourceStatusBase {
   status: 'ERRORED' | 'RUNNING' | 'SUCCESS';
 }
 
 export interface AirbyteSourceErrorStatus extends AirbyteSourceStatusBase {
   status: 'ERRORED';
-  error: string;
+  error: string | SyncMessage;
 }
 
 export interface AirbyteSourceRunningStatus extends AirbyteSourceStatusBase {

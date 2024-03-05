@@ -12,7 +12,6 @@ import * as sut from '../src/index';
 
 describe('index', () => {
   const logger = new AirbyteLogger(
-    // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
@@ -25,7 +24,12 @@ describe('index', () => {
       aws_secret_access_key: 'YOUR_AWS_SECRET_ACCESS_KEY',
       aws_session_token: 'YOUR_AWS_SESSION_TOKEN',
     },
-    queries: [{name: 'ExampleQuery1', query: '{"metric":"CPUUtilization"}'}],
+    query_groups: [
+      {
+        name: 'ExampleQueryGroup',
+        queries: [{query: '{"metric":"CPUUtilization"}'}],
+      },
+    ],
     page_size: 100,
   };
 
@@ -84,6 +88,7 @@ describe('index', () => {
         100
       );
     });
+
     await expect(source.checkConnection(validConfig)).resolves.toStrictEqual([
       true,
       undefined,
@@ -122,12 +127,9 @@ describe('index', () => {
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
       undefined,
+      {queryGroup: validConfig.query_groups[0], queryHash: 'hash'},
       {
-        query: {name: 'ExampleQuery1', query: '{"metric":"CPUUtilization"}'},
-        queryHash: 'hash',
-      },
-      {
-        ExampleQuery1: {
+        ExampleQueryGroup: {
           hash: {
             timestamp: '2021-01-01T00:00:00.000Z',
           },
@@ -143,7 +145,7 @@ describe('index', () => {
     expect(fnSend).toHaveBeenCalledTimes(1);
     expect(items).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      ExampleQuery1: {
+      ExampleQueryGroup: {
         hash: {
           timestamp: latestTimestamp,
         },
@@ -180,7 +182,7 @@ describe('index', () => {
     const streams = source.streams(validConfig);
     const stream = streams[0];
     const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
-      query: {name: 'ExampleQuery1', query: '{"metric":"CPUUtilization"}'},
+      queryGroup: validConfig.query_groups[0],
       queryHash: 'hash',
     });
 

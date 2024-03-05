@@ -36,7 +36,7 @@ function updateCustomReportWithFields(
   }
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
   const fieldNames = [
-    'teamNameToManagerIDs',
+    'teamIDToManagerIDs',
     'employeeIDtoRecord',
     'cycleChains',
     'generalLogCollection',
@@ -52,7 +52,8 @@ function updateCustomReportWithFields(
 
 function getCustomReportandCtxGivenKey(
   mockttp: Mockttp,
-  k: string
+  k: string,
+  fail_on_cycles: boolean = false
 ): [Customreports, StreamContext] {
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
@@ -62,7 +63,7 @@ function getCustomReportandCtxGivenKey(
     InvalidRecordStrategy.SKIP,
     Edition.CLOUD,
     {},
-    {workday: {orgs_to_keep, orgs_to_ignore}}
+    {workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles}}
   );
 
   const ctx: StreamContext = new StreamContext(
@@ -144,7 +145,7 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream accept all', async () => {
-    const configPath = await getTempConfig(['Team A', 'Team B'], []);
+    const configPath = await getTempConfig(['A', 'B'], []);
     const processedByStream = {
       customreports: 3,
     };
@@ -164,7 +165,7 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream reject all', async () => {
-    const configPath = await getTempConfig([], ['Team A', 'Team B']);
+    const configPath = await getTempConfig([], ['A', 'B']);
     const processedByStream = {
       customreports: 3,
     };
@@ -291,13 +292,26 @@ describe('workday', () => {
     expect(res.length).toEqual(14);
   });
   test('check resulting org structure from "failing cycle 1" input', () => {
+    const fail_on_cycles = true;
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
-      'failing cycle 1'
+      'failing cycle 1',
+      fail_on_cycles
     );
 
     expect(() => {
       runCustomReportDestination(customReportDestination, ctx);
     }).toThrow();
+  });
+  test('check resulting org structure from "failing cycle 1" ignore fail input', () => {
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'failing cycle 1'
+    );
+
+    //We expect it to not throw errors
+    expect(() => {
+      runCustomReportDestination(customReportDestination, ctx);
+    }).not.toThrow();
   });
 });

@@ -4,8 +4,8 @@ import _ from 'lodash';
 import {getDataQualitySummary} from './dataSummary';
 import {duplicateNames} from './duplicateNames';
 import {DataSummaryKey, GraphDoctorTestFunction} from './models';
+import {checkIfWithinLastXDays, runAllZScoreTests} from './timeTests';
 import {getCurrentTimestamp, missingRelationsTest, simpleHash} from './utils';
-import {runAllZScoreTests} from './z_scores';
 
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   cfg: any,
@@ -121,6 +121,7 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     identityNulls,
     duplicateNames,
     runAllZScoreTests,
+    checkIfWithinLastXDays,
   ];
 
   for (const test_func of testFunctions) {

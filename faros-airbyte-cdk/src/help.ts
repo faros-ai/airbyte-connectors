@@ -6,6 +6,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {
+  ChoiceType,
   runBooleanPrompt,
   runNumberPrompt,
   runPassword,
@@ -31,14 +32,17 @@ export interface TableRow {
   enum?: ReadonlyArray<string>;
 }
 
+function convertPathToTitle(path: string[]): string {
+  return path.slice(-1)[0].split('_').map(upperFirst).join(' ');
+}
+
 function visitLeaf(
   o: Dictionary<any>,
   curPath: string[],
   section: number,
   required = false
 ): TableRow {
-  const title =
-    o.title || curPath.slice(-1)[0].split('_').map(upperFirst).join(' ');
+  const title = o.title || convertPathToTitle(curPath);
   const leaf = {
     title,
     path: curPath.join('.'),
@@ -79,7 +83,14 @@ export function traverseObject(
   ];
   let newIdx = section + 1;
   while (process.length > 0) {
-    const [curObject, curPath, idx, req] = process.shift();
+    const shifted = process.shift();
+    let [curObject] = shifted;
+    const [, curPath, idx, req] = shifted;
+    const isArrayOfObjects =
+      curObject['type'] === 'array' && curObject['items']['type'] === 'object';
+    if (isArrayOfObjects) {
+      curObject = curObject['items'];
+    }
     if (curObject['type'] !== 'object') {
       result.push(visitLeaf(curObject, curPath, idx, req));
       continue;
@@ -87,7 +98,6 @@ export function traverseObject(
 
     ok(curObject.properties || curObject.oneOf);
     ok(curObject.properties === undefined || curObject.oneOf === undefined);
-    ok(curObject.title);
 
     if (curObject.properties) {
       const children = Object.values(curObject.properties).filter(
@@ -95,7 +105,7 @@ export function traverseObject(
       ).length;
       if (!children) {
         result.push({
-          title: curObject.title,
+          title: curObject.title || convertPathToTitle(curPath),
           path: curPath.join('.'),
           section: idx,
           description: 'Skip this section',
@@ -106,7 +116,7 @@ export function traverseObject(
         continue;
       }
       result.push({
-        title: curObject.title,
+        title: curObject.title || convertPathToTitle(curPath),
         path: curPath.join('.'),
         section: idx,
         children: _.range(newIdx, newIdx + children),
@@ -115,7 +125,8 @@ export function traverseObject(
           children > 1 ? 's' : ''
         } ${_.range(newIdx, newIdx + children).join()} as needed`,
         required: req,
-        type: 'object',
+        type: isArrayOfObjects ? 'array' : 'object',
+        items_type: isArrayOfObjects ? 'object' : undefined,
         examples: [],
       });
       const requiredProperties: string[] = curObject.required || [];
@@ -151,7 +162,7 @@ export function traverseObject(
 
       ok(children > 0);
       result.push({
-        title: curObject.title,
+        title: curObject.title || convertPathToTitle(curPath),
         path: curPath.join('.'),
         section: idx,
         children: _.range(newIdx, newIdx + children),
@@ -219,21 +230,31 @@ export function helpTable(rows: ReadonlyArray<TableRow>): string {
   return table(data, config);
 }
 
-async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
+async function promptOneOf(
+  row: TableRow,
+  sections: Map<number, TableRow>,
+  autofill?: boolean
+) {
   const choices = [];
   if (!row.required) {
     choices.push({
       message: 'Skip this section',
       value: 'Skipped.',
+      type: ChoiceType.SKIP,
     });
   }
   for (const child of row.children) {
-    choices.push({message: sections.get(child).title, value: child});
+    choices.push({
+      message: sections.get(child).title,
+      value: child,
+      type: ChoiceType.ENUM,
+    });
   }
   const choice = await runSelect({
     name: 'oneOf',
     message: row.title,
     choices,
+    autofill,
   });
 
   if (choice === 'Skipped.') {
@@ -243,7 +264,7 @@ async function promptOneOf(row: TableRow, sections: Map<number, TableRow>) {
   return +choice;
 }
 
-async function promptValue(row: TableRow) {
+async function promptValue(row: TableRow, autofill?: boolean) {
   const type = row.items_type ?? row.type;
   ok(type);
 
@@ -253,18 +274,18 @@ async function promptValue(row: TableRow) {
 
   switch (type) {
     case 'boolean':
-      return await runBooleanPrompt({message});
+      return await runBooleanPrompt({message, autofill});
     case 'integer':
       message += ' (integer)';
-      return Math.floor(await runNumberPrompt({message}));
+      return Math.floor(await runNumberPrompt({message, autofill}));
     case 'number':
       message += ' (float)';
-      return await runNumberPrompt({message});
+      return await runNumberPrompt({message, autofill});
     case 'string':
       if (row.airbyte_secret) {
-        return await runPassword({name: 'secret', message});
+        return await runPassword({name: 'secret', message, autofill});
       }
-      return await runStringPrompt({message});
+      return await runStringPrompt({message, autofill});
   }
 
   throw new VError(`Unexpected type: ${type}`);
@@ -298,7 +319,12 @@ function formatArg(
   return `${row.path} ${formattedChoice}`;
 }
 
-async function promptLeaf(row: TableRow, tail = false) {
+async function promptLeaf(
+  row: TableRow,
+  tail = false,
+  autofill?: boolean,
+  useEnvVars?: boolean
+) {
   if (row.type === 'empty_object') {
     return undefined;
   }
@@ -311,6 +337,7 @@ async function promptLeaf(row: TableRow, tail = false) {
       // If `tail` is true, this means we're prompting for the second or later element of an array.
       message: tail ? 'Done' : 'Skip this section',
       value: 'Skipped.',
+      type: ChoiceType.SKIP,
     });
   }
 
@@ -320,17 +347,22 @@ async function promptLeaf(row: TableRow, tail = false) {
     choices.push({
       message: `Use default (${row.default})`,
       value: 'Used default.',
+      type: ChoiceType.DEFAULT,
     });
   }
   if (!enumChoices && row.examples?.length) {
     let idx = 0;
     for (const example of row.examples) {
       idx++;
-      choices.push({message: `example ${idx} (${example})`, value: example});
+      choices.push({
+        message: `example ${idx} (${example})`,
+        value: example,
+        type: ChoiceType.EXAMPLE,
+      });
     }
   }
 
-  if (row.airbyte_secret || row.multiline) {
+  if (useEnvVars && (row.airbyte_secret || row.multiline)) {
     const variableName = row.path
       .split('.')
       .filter((part) => part[0].match(/[a-z]/i))
@@ -339,6 +371,7 @@ async function promptLeaf(row: TableRow, tail = false) {
     choices.push({
       message: `Use environment variable ${variableName}`,
       value: `\${${variableName}}`,
+      type: ChoiceType.ENVIRONMENT_VARIABLE,
     });
   }
 
@@ -350,11 +383,13 @@ async function promptLeaf(row: TableRow, tail = false) {
           choices.push({
             message: `${row.default} (default)`,
             value: 'Used default.',
+            type: ChoiceType.DEFAULT,
           });
         } else {
           choices.push({
             message: `${choice}`,
             value: `${choice}`,
+            type: ChoiceType.ENUM,
           });
         }
       }
@@ -362,6 +397,7 @@ async function promptLeaf(row: TableRow, tail = false) {
       choices.push({
         message: 'Enter your own value',
         value: ' ',
+        type: ChoiceType.USER_INPUT,
       });
     }
     const message = row.description
@@ -371,6 +407,7 @@ async function promptLeaf(row: TableRow, tail = false) {
       name: 'leaf',
       message,
       choices,
+      autofill,
     });
   }
 
@@ -383,14 +420,14 @@ async function promptLeaf(row: TableRow, tail = false) {
       result = row.default;
       break;
     case ' ':
-      result = await promptValue(row);
+      result = await promptValue(row, autofill);
       break;
     default:
       result = choiceAsType(row, choice);
   }
 
   if (row.type === 'array') {
-    const nextResult = await promptLeaf(row, true);
+    const nextResult = await promptLeaf(row, true, autofill, useEnvVars);
     return nextResult === undefined ? [result] : [result].concat(nextResult);
   } else {
     return result;
@@ -398,22 +435,32 @@ async function promptLeaf(row: TableRow, tail = false) {
 }
 
 export async function buildJson(
-  rows: ReadonlyArray<TableRow>
+  rows: ReadonlyArray<TableRow>,
+  autofill?: boolean
 ): Promise<string> {
   const result = {};
 
-  await acceptUserInput(rows, (row, choice) => _.set(result, row.path, choice));
+  await acceptUserInput(
+    rows,
+    (row, choice) => _.set(result, row.path, choice),
+    autofill,
+    false
+  );
 
-  return JSON.stringify(result);
+  return JSON.stringify(result, null, 2);
 }
 
 export async function buildArgs(
-  rows: ReadonlyArray<TableRow>
+  rows: ReadonlyArray<TableRow>,
+  autofill?: boolean
 ): Promise<string> {
   const result = [];
 
-  await acceptUserInput(rows, (row, choice) =>
-    result.push(formatArg(row, choice))
+  await acceptUserInput(
+    rows,
+    (row, choice) => result.push(formatArg(row, choice)),
+    autofill,
+    true
   );
 
   return result.join(' \\\n');
@@ -421,14 +468,16 @@ export async function buildArgs(
 
 async function acceptUserInput(
   rows: ReadonlyArray<TableRow>,
-  action: (row: TableRow, choice: any) => void
+  action: (row: TableRow, choice: any) => void,
+  autofill?: boolean,
+  useEnvVars?: boolean
 ): Promise<void> {
   const sections: Map<number, TableRow> = new Map(
     rows.map((row) => [row.section, row])
   );
 
   // Stack of sections to process in DFS
-  const process = [0];
+  const process = [rows[0].section];
   const processed = [];
   while (process.length) {
     const section = process.pop();
@@ -436,9 +485,57 @@ async function acceptUserInput(
     const row = sections.get(section);
     if (row.children?.length) {
       if (row.oneOf) {
-        const choice = await promptOneOf(row, sections);
+        const choice = await promptOneOf(row, sections, autofill);
         if (choice) {
           process.push(choice);
+        }
+      } else if (row.type === 'array' && row.items_type === 'object') {
+        const results = [];
+        let tail = false,
+          done = false;
+        while (!done) {
+          const choices = [];
+          if (!row.required || tail) {
+            choices.push({
+              // If `tail` is true, this means we're prompting for the second or later element of an array.
+              message: tail ? 'Done' : 'Skip this section',
+              value: 'Skipped.',
+              type: ChoiceType.SKIP,
+            });
+          }
+          choices.push({
+            message: 'Enter your own value',
+            value: ' ',
+            type: ChoiceType.USER_INPUT,
+          });
+          const choice = await runSelect({
+            name: 'array',
+            message: row.title,
+            choices,
+            autofill,
+          });
+          switch (choice) {
+            case 'Skipped.':
+              done = true;
+              break;
+            case ' ': {
+              const result = {};
+              for (const child of row.children) {
+                await acceptUserInput(
+                  [sections.get(child)],
+                  (row, choice) =>
+                    _.set(result, row.path.split('.').slice(-1), choice),
+                  autofill,
+                  useEnvVars
+                );
+              }
+              results.push(result);
+              tail = true;
+            }
+          }
+        }
+        if (results.length) {
+          action(row, results);
         }
       } else {
         for (let idx = row.children.length - 1; idx >= 0; idx--) {
@@ -446,7 +543,7 @@ async function acceptUserInput(
         }
       }
     } else {
-      const choice = await promptLeaf(row);
+      const choice = await promptLeaf(row, false, autofill, useEnvVars);
       if (choice !== undefined) {
         action(row, choice);
       }

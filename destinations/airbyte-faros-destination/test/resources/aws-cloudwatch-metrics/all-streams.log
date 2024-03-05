@@ -1,0 +1,4 @@
+{"record":{"stream":"aws-cloudwatch-metrics__metrics","emitted_at":1702324582251,"data":{"queryName":"TotalCharacterCount","timestamp":"2023-12-11T19:38:00.000Z","value":22,"label":"CodeWhisperer"}},"type":"RECORD"}
+{"record":{"stream":"aws-cloudwatch-metrics__metrics","emitted_at":1702324582251,"data":{"queryName":"TotalCharacterCount","timestamp":"2023-12-11T19:23:00.000Z","value":1976,"label":"CodeWhisperer"}},"type":"RECORD"}
+{"record":{"stream":"aws-cloudwatch-metrics__metrics","emitted_at":1702324582366,"data":{"queryName":"CodeWhispererCharacterCount","timestamp":"2023-12-11T19:38:00.000Z","value":0,"label":"CodeWhisperer"}},"type":"RECORD"}
+{"record":{"stream":"aws-cloudwatch-metrics__metrics","emitted_at":1702324582366,"data":{"queryName":"CodeWhispererCharacterCount","timestamp":"2023-12-11T19:23:00.000Z","value":0,"label":"CodeWhisperer"}},"type":"RECORD"}

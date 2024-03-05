@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "aws-cloudwatch-metrics__metrics"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

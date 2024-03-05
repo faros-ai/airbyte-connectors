@@ -1,7 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {TestMetadata} from '../circleci/typings';
+import {TestMetadata} from '../circleci/types';
 import {CircleCIStreamBase, StreamSlice} from './common';
 
 type TestsState = Dictionary<{lastUpdatedAt?: string}>;
@@ -20,8 +20,8 @@ export class Tests extends CircleCIStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.cfg.filtered_project_names) {
-      yield {projectName};
+    for (const projectSlug of this.cfg.project_slugs) {
+      yield {projectSlug};
     }
   }
 
@@ -33,11 +33,15 @@ export class Tests extends CircleCIStreamBase {
   ): AsyncGenerator<TestMetadata, any, unknown> {
     const since =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[streamSlice.projectName]?.lastUpdatedAt
+        ? streamState?.[streamSlice.projectSlug]?.lastUpdatedAt
         : undefined;
 
+    // We store the logs of undefined job numbers to a variable and log it at the end of the stream
+    let undefinedJobNumberLogs: string =
+      'Undefined job numbers and related projects:\n';
+
     for await (const pipeline of this.circleCI.fetchPipelines(
-      streamSlice.projectName,
+      streamSlice.projectSlug,
       since
     )) {
       const seenJobs = new Set<number>();
@@ -45,9 +49,7 @@ export class Tests extends CircleCIStreamBase {
         for (const job of workflow.jobs ?? []) {
           const jobNum = job.job_number;
           if (jobNum === undefined) {
-            this.logger.debug(
-              `Job number for job [${job.id}] is undefined in project [${pipeline.project_slug}] - Skipping`
-            );
+            undefinedJobNumberLogs += `${job.id} - ${pipeline.project_slug}\n`;
             continue;
           }
           if (seenJobs.has(jobNum)) {
@@ -79,6 +81,7 @@ export class Tests extends CircleCIStreamBase {
         }
       }
     }
+    this.logger.debug(undefinedJobNumberLogs);
   }
 
   getUpdatedState(

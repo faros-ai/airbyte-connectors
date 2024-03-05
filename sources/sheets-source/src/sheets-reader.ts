@@ -139,9 +139,12 @@ export class SheetsReader {
     return SheetsReader.sheetsReader;
   }
 
-  async *readRows(
-    logger?: AirbyteLogger
-  ): AsyncGenerator<{ sheetName: string, row: any, sheetId: string, id: string }>{
+  async *readRows(logger?: AirbyteLogger): AsyncGenerator<{
+    sheetName: string;
+    row: any;
+    sheetId: string;
+    id: string;
+  }> {
     for (const sheetName of this.getSheetNames()) {
       logger?.info(`Reading sheet: ${sheetName}`);
 
@@ -151,9 +154,11 @@ export class SheetsReader {
 
       for (let i = 0; i < rows.length; i++) {
         // Generate a unique record ID for each row
-        const recordId = `${SheetsReader.sheetId}_${this.normalizeSheetName(sheetName)}_${i}`
+        const recordId = `${SheetsReader.sheetId}_${this.normalizeSheetName(
+          sheetName
+        )}_${i}`;
         const row = rows[i];
-        yield { sheetName, row, sheetId: SheetsReader.sheetId, id: recordId };
+        yield {sheetName, row, sheetId: SheetsReader.sheetId, id: recordId};
       }
     }
   }
@@ -196,7 +201,7 @@ export class SheetsReader {
     creds: GoogleCreds,
     logger?: AirbyteLogger
   ): Promise<XLSX.WorkBook> {
-    logger?.info('Opening Google Spreadsheet with ID ${sheetId}');
+    logger?.info(`Opening Google Spreadsheet with ID ${sheetId}`);
     const doc = new GoogleSpreadsheet(sheetId);
 
     if (typeof creds === 'string') {
@@ -208,7 +213,7 @@ export class SheetsReader {
       );
 
       logger?.info(
-        `Expecting that ${creds.client_email} has Viewer access to ${sheetId}`
+        `Expecting that ${creds.client_email} has Viewer access to Google Spreadsheet with ID ${sheetId}`
       );
 
       await doc.useServiceAccountAuth(creds);
@@ -313,12 +318,14 @@ export class SheetsReader {
     const res: GoogleSpreadsheetRow[] = [];
     let total = 0;
     let fetchedRows = 0;
+    const nonHeaderRowCount = sheet.rowCount - 1; // -1 because row count includes header row, but it's excluded from getRows
+    // Fetch rows in batches of pageSize until we reach the end of the sheet
     do {
       const rows = await sheet.getRows({limit: pageSize, offset: total});
       res.push(...rows);
       fetchedRows = rows.length;
       total += fetchedRows;
-    } while (fetchedRows > 0);
+    } while (fetchedRows > 0 && total < nonHeaderRowCount);
 
     logger?.info(`Fetched ${res.length} rows from '${name}' sheet`);
     return res;

@@ -38,12 +38,23 @@ export class GraphQLWriter {
       );
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
-      this.timestampedRecords.push({
+      const timestampedRecord: TimestampedRecord = {
         ...result.record,
         model: baseModel,
         operation,
         origin: this.originProvider.getOrigin(result.record),
-      } as TimestampedRecord);
+      };
+
+      // It's ok to submit non-timestamped record deletions while submitting
+      // upserts. Non-timestamped record updates are not safe here because the
+      // stream responsible for upserting the record-to-be-updated may not have
+      // been processed yet.
+      if (operation === Operation.DELETION && !result.record.at) {
+        await this.writeTimestampedRecord(timestampedRecord);
+        await this.graphQLClient.flush();
+      } else {
+        this.timestampedRecords.push(timestampedRecord);
+      }
       return true;
     } else {
       throw new VError(
@@ -56,15 +67,15 @@ export class GraphQLWriter {
     for (const record of sortBy(this.timestampedRecords, (r) => r.at)) {
       await this.recordProcessorHandler.handleRecordProcessingError(
         this.stats,
-        async () => {
-          await this.graphQLClient.writeTimestampedRecord(record);
-          this.stats.recordsWritten++;
-          this.stats.incrementWrittenByModel(
-            `${record.model}__${record.operation}`
-          );
-        }
+        async () => await this.writeTimestampedRecord(record)
       );
     }
     await this.graphQLClient.flush();
+  }
+
+  private async writeTimestampedRecord(record: TimestampedRecord) {
+    await this.graphQLClient.writeTimestampedRecord(record);
+    this.stats.recordsWritten++;
+    this.stats.incrementWrittenByModel(`${record.model}__${record.operation}`);
   }
 }

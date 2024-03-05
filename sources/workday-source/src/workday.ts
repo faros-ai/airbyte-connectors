@@ -96,7 +96,7 @@ export class Workday {
     token_type: string;
     access_token: string;
   }> {
-    const authUrl = baseURL.toString() + `/oauth2/${cfg.tenant}/token`;
+    const authUrl = new URL(`/oauth2/${cfg.tenant}/token`, baseURL).toString();
     logger.debug('Requesting an access token - %s', authUrl);
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -111,7 +111,8 @@ export class Workday {
   }
 
   private apiBaseUrl(version: string): string {
-    return `${this.baseUrl}/api/${version}/${this.tenant}`;
+    const apiBaseUrl = new URL(`/api/${version}/${this.tenant}`, this.baseUrl);
+    return apiBaseUrl.toString();
   }
 
   async checkConnection(): Promise<void> {
@@ -158,8 +159,12 @@ export class Workday {
   }
 
   async *customReports(customReportName: string): AsyncGenerator<any> {
-    const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    const finalPath = `${baseURL}/${customReportName}`;
+    const baseURL = new URL(
+      `/service/customreport2/${this.tenant}`,
+      this.baseUrl
+    );
+    const finalPathURL = new URL(`/${customReportName}`, baseURL);
+    const finalPath = finalPathURL.toString();
     this.logger.info(
       `Fetching Custom Report '${customReportName}' from - ${finalPath}`
     );

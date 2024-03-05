@@ -11,6 +11,7 @@ import {
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
+import {Faros} from './faros/faros';
 import {Pipelines, Projects, Tests} from './streams';
 
 /** The main entry point. */
@@ -20,7 +21,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-/** Customer.io source implementation. */
+/** CircleCI source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,31 +47,47 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let blocklist: string[] = config.project_blocklist
-      ? config.project_blocklist
-      : [];
+    const circleCI = CircleCI.instance(config, this.logger);
+    const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
+
+    let excludedRepoSlugs: Set<string>;
     if (config.pull_blocklist_from_graph) {
-      blocklist = await CircleCI.pullProjectsBlocklistFromGraph(
-        config,
+      const faros = new Faros(
+        {
+          url: config.faros_api_url,
+          apiKey: config.faros_api_key,
+        },
         this.logger
       );
-    }
-    let filtered_project_names: string[] = [];
-    if (config.slugs_as_repos) {
-      filtered_project_names = await CircleCI.getFilteredProjectsFromRepoNames(
-        config,
-        this.logger,
-        blocklist
+      const excludedRepos = await faros.getExcludedRepos(
+        config.faros_graph_name
       );
-    } else {
-      filtered_project_names = await CircleCI.getFilteredProjects(
-        config,
-        this.logger,
-        blocklist
+      excludedRepoSlugs = new Set(
+        excludedRepos.map((repo) => {
+          const source = repo.organization.source.toLowerCase();
+          const orgUid = repo.organization.uid.toLowerCase();
+          const repoName = repo.name.toLowerCase();
+          return `${source}/${orgUid}/${repoName}`;
+        })
       );
     }
 
-    config.filtered_project_names = filtered_project_names;
+    const allProjectSlugs: string[] = [];
+    if (config.project_slugs.includes('*')) {
+      const projects = await circleCI.getAllProjectSlugs();
+      allProjectSlugs.push(...projects);
+    } else {
+      allProjectSlugs.push(...config.project_slugs);
+    }
+
+    config.project_slugs = allProjectSlugs.filter(
+      (slug) =>
+        !projectSlugBlocklist.has(slug.toLowerCase()) &&
+        !excludedRepoSlugs?.has(slug.toLowerCase())
+    );
+
+    this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
+
     return {config, catalog, state};
   }
 

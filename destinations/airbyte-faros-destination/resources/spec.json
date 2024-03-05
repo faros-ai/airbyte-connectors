@@ -134,6 +134,12 @@
         "title": "Skip source success check",
         "description": "Skip checking if source ran successfully before resetting non-incremental models",
         "default": false
+      },
+      "faros_source_id": {
+        "order": 12,
+        "type": "string",
+        "title": "Faros Source Id",
+        "description": "The Id of the Faros Source that is being used to track sync statuses. If left blank, it will use the determined origin value as the source id."
       }
     }
   }

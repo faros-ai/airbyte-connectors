@@ -14,9 +14,14 @@ const mockZScoreResponse: Record<string, any> = readTestResourceAsJSON(
 const mockQueryTitleToResponse: Record<string, any> = readTestResourceAsJSON(
   'queryTitleToResponse.json'
 );
+const mockDataRecencyResponse: Record<string, any> = readTestResourceAsJSON(
+  'dataRecencyQueryResult.json'
+);
 const zScoreQueryResponseKey = 'zScoreQueryOptions';
+const dataRecencyQueryResponseKey = 'dataRecencyQuery';
 const queryTitleToResponseKey = 'queryTitleToResponse';
 mockQueryToResponse[zScoreQueryResponseKey] = mockZScoreResponse;
+mockQueryToResponse[dataRecencyQueryResponseKey] = mockDataRecencyResponse;
 mockQueryToResponse[queryTitleToResponseKey] = mockQueryTitleToResponse;
 // For printing out info to console during tests
 const mock_debug = true;
@@ -35,6 +40,8 @@ jest.mock('faros-js-client', () => {
         async gql(graph: string, query: string): Promise<any> {
           if (query.includes('ZScoreQuery')) {
             return mockQueryToResponse[zScoreQueryResponseKey];
+          } else if (query.includes('DataRecencyQuery')) {
+            return mockQueryToResponse[dataRecencyQueryResponseKey];
           } else if (query in mockQueryToResponse) {
             return mockQueryToResponse[query];
           } else {
@@ -57,7 +64,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
     return null;
   }
   const query_title = query.split(' ')[1];
-  console.log('query title: ' + query_title);
   const title_list: string[] = query_title.split('__');
   if (title_list.length !== 2) {
     throw new Error(
@@ -65,7 +71,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
     );
   }
   const [title_grouping, model_name] = title_list;
-  console.log(`title_grouping: ${title_grouping}, model_name: ${model_name}.`);
   const test_by_groups: Record<
     string,
     Record<string, any>
@@ -83,9 +88,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
   }
   const res = {};
   res[model_name] = grouping[model_name];
-  if (mock_debug) {
-    console.log(`Response: ${JSON.stringify(res)}`);
-  }
   return res;
 }
 
@@ -104,6 +106,7 @@ describe('index', () => {
     api_url: 'prod.com',
     api_key: 'best_key',
     graph: 'best_graph',
+    day_delay_threshold: 3,
     logger: logger,
   };
 
@@ -140,10 +143,6 @@ describe('index', () => {
     const results = [];
     for await (const record of dq_tests.readRecords()) {
       results.push(record);
-    }
-
-    if (mock_debug) {
-      console.log(JSON.stringify(results));
     }
     expect(results.slice(0, 0)).toStrictEqual([]);
   });

@@ -1,6 +1,6 @@
 export * from './destinations/destination';
 export * from './destinations/destination-runner';
-export {wrapApiError} from './errors';
+export {NonFatalError, wrapApiError} from './errors';
 export * from './help';
 export * from './logger';
 export * from './protocol';

@@ -13,7 +13,7 @@ import {
   Config,
   DataPoint,
   MIN_DATE,
-  NamedQuery,
+  QueryGroup,
 } from '../cloudwatch';
 
 const DEFAULT_STREAM_NAME = 'metrics';
@@ -22,7 +22,7 @@ type StreamState = {
   [queryName: string]: {[queryHash: string]: {timestamp: string}};
 };
 type StreamSlice = {
-  query: NamedQuery;
+  queryGroup: QueryGroup;
   queryHash: string;
 };
 
@@ -53,9 +53,11 @@ export class Metrics extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const query of this.config.queries) {
-      const queryHash = createHash('md5').update(query.query).digest('hex');
-      yield {query, queryHash};
+    for (const group of this.config.query_groups) {
+      const queryHash = createHash('md5')
+        .update(JSON.stringify(group.queries))
+        .digest('hex');
+      yield {queryGroup: group, queryHash};
     }
   }
 
@@ -68,33 +70,39 @@ export class Metrics extends AirbyteStreamBase {
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
 
     const timestamp = _.get(this.state, [
-      streamSlice?.query.name,
+      streamSlice?.queryGroup.name,
       streamSlice?.queryHash,
       'timestamp',
     ]);
     const cloudWatch = CloudWatch.instance(this.config);
 
-    if (!_.has(this.state, [streamSlice?.query.name, streamSlice?.queryHash])) {
-      _.set(this.state, [streamSlice?.query.name, streamSlice?.queryHash], {
-        timestamp: MIN_DATE,
-      });
+    if (
+      !_.has(this.state, [streamSlice?.queryGroup.name, streamSlice?.queryHash])
+    ) {
+      _.set(
+        this.state,
+        [streamSlice?.queryGroup.name, streamSlice?.queryHash],
+        {
+          timestamp: MIN_DATE,
+        }
+      );
     }
 
     for await (const record of cloudWatch.getMetricData(
-      streamSlice?.query.query,
+      streamSlice?.queryGroup.queries,
       timestamp,
       this.logger
     )) {
       const queryTimestamp =
-        this.state?.[streamSlice?.query.name][streamSlice?.queryHash]
+        this.state?.[streamSlice?.queryGroup.name][streamSlice?.queryHash]
           ?.timestamp;
       const latestRecordTimestamp = record?.timestamp ?? MIN_DATE;
       if (new Date(latestRecordTimestamp) > new Date(queryTimestamp)) {
-        this.state[streamSlice?.query.name][streamSlice?.queryHash] = {
+        this.state[streamSlice?.queryGroup.name][streamSlice?.queryHash] = {
           timestamp: latestRecordTimestamp,
         };
       }
-      yield {queryName: streamSlice?.query.name, ...record};
+      yield {queryName: streamSlice?.queryGroup.name, ...record};
     }
   }
 

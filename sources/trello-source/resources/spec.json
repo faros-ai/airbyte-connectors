@@ -1,0 +1,99 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Trello Spec",
+    "type": "object",
+    "additionalProperties": true,
+    "required": [
+      "credentials"
+    ],
+    "properties": {
+      "credentials": {
+        "order": 0,
+        "title": "Authentication mechanism",
+        "description": "Choose how to authenticate to Trello",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Authenticate with Basic OAuth",
+            "required": [
+              "key",
+              "token"
+            ],
+            "properties": {
+              "option_title": {
+                "type": "string",
+                "title": "Credentials title",
+                "description": "OAuth Credentials",
+                "const": "OAuth Credentials"
+              },
+              "key": {
+                "order": 0,
+                "type": "string",
+                "title": "API key",
+                "description": "Trello API key. See the docs for instructions on how to generate it: https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth",
+                "airbyte_secret": true
+              },
+              "token": {
+                "order": 1,
+                "type": "string",
+                "title": "API token",
+                "description": "Trello API token. See the docs for instructions on how to generate it: https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth",
+                "airbyte_secret": true
+              }
+            }
+          }
+        ]
+      },
+      "boards": {
+        "order": 1,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Board IDs",
+        "description": "The IDs of the boards to fetch. If not provided, all boards will be fetched.",
+        "examples": [
+          "60a809554d8e673bb195a5e7"
+        ]
+      },
+      "cutoff_days": {
+        "order": 2,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch data updated after cutoff.",
+        "default": 90
+      },
+      "page_size": {
+        "order": 3,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of records to request from the API per call.",
+        "default": 100
+      },
+      "api_timeout": {
+        "order": 4,
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to the Trello API. 0 means no timeout.",
+        "default": 0
+      },
+      "start_date": {
+        "airbyte_hidden": true,
+        "order": 5,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "airbyte_hidden": true,
+        "order": 6,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Project} from '../circleci/typings';
+import {Project} from '../circleci/types';
 import {CircleCIStreamBase, StreamSlice} from './common';
 
 export class Projects extends CircleCIStreamBase {
@@ -14,8 +14,8 @@ export class Projects extends CircleCIStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectName of this.cfg.filtered_project_names) {
-      yield {projectName};
+    for (const projectSlug of this.cfg.project_slugs) {
+      yield {projectSlug};
     }
   }
 
@@ -24,6 +24,6 @@ export class Projects extends CircleCIStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
-    yield await this.circleCI.fetchProject(streamSlice.projectName);
+    yield await this.circleCI.fetchProject(streamSlice.projectSlug);
   }
 }

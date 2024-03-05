@@ -10,6 +10,8 @@ export class Projects extends CircleCIConverter {
     'cicd_Pipeline',
   ];
 
+  private seenOrganizations: Set<string> = new Set<string>();
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -18,14 +20,22 @@ export class Projects extends CircleCIConverter {
     const projectUid = CircleCICommon.getProject(project.slug);
     const orgUid = CircleCICommon.getOrganization(project.slug);
     const res: DestinationRecord[] = [];
-    res.push({
-      model: 'cicd_Organization',
-      record: {
-        uid: orgUid,
-        name: project.organization_name,
-        source,
-      },
-    });
+    const organizationKey = this.getOrganizationKey(
+      orgUid,
+      project.organization_name
+    );
+    // avoiding writing the same organization multiple times to reduce runtime
+    if (!this.seenOrganizations.has(organizationKey)) {
+      res.push({
+        model: 'cicd_Organization',
+        record: {
+          uid: orgUid,
+          name: project.organization_name,
+          source,
+        },
+      });
+      this.seenOrganizations.add(organizationKey);
+    }
     res.push({
       model: 'cicd_Pipeline',
       record: {
@@ -35,5 +45,10 @@ export class Projects extends CircleCIConverter {
       },
     });
     return res;
+  }
+
+  private getOrganizationKey(orgUid: string, organizationName: string): string {
+    // gets a key that is unique for the organization to avoid duplicates
+    return `${orgUid}__${organizationName}`;
   }
 }

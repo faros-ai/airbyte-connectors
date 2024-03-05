@@ -7,7 +7,7 @@
     "required": [
       "aws_region",
       "credentials",
-      "queries"
+      "query_groups"
     ],
     "additionalProperties": false,
     "properties": {
@@ -50,30 +50,35 @@
           }
         }
       },
-      "queries": {
+      "query_groups": {
         "order": 2,
         "type": "array",
         "items": {
           "type": "object",
-          "required": ["name", "query"],
+          "required": ["name", "queries"],
           "properties": {
             "name": {
               "order": 0,
               "type": "string",
-              "title": "Query Name",
-              "description": "A unique name for the query."
+              "title": "Query Group Name",
+              "description": "A unique name for the query group."
             },
-            "query": {
+            "queries": {
               "order": 1,
-              "type": "string",
-              "title": "Query",
-              "description": "The CloudWatch query in JSON format.",
-              "multiline": true
+              "type": "array",
+              "items": {
+                "type": "string",
+                "title": "Query",
+                "description": "The CloudWatch query in JSON format.",
+                "multiline": true
+              },
+              "title": "Queries",
+              "description": "An array of queries to execute against CloudWatch."
             }
           }
         },
-        "title": "Queries",
-        "description": "An array of named queries to execute against CloudWatch."
+        "title": "Query Groups",
+        "description": "An array of query groups to execute against CloudWatch."
       },
       "page_size": {
         "order": 3,

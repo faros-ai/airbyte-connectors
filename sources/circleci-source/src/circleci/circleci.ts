@@ -5,35 +5,31 @@ import axios, {
   AxiosResponse,
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {FarosClient, FarosClientConfig} from 'faros-js-client';
 import https from 'https';
 import {maxBy} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Job, Pipeline, Project, TestMetadata, Workflow} from './typings';
+import {Job, Pipeline, Project, TestMetadata, Workflow} from './types';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_REQUEST_TIMEOUT = 60000;
+const DEFAULT_REQUEST_TIMEOUT = 120000;
 
 export interface CircleCIConfig {
   readonly token: string;
-  readonly project_names: ReadonlyArray<string>;
-  readonly project_blocklist?: string[];
-  // Applying project_blocklist to project_names results in filtered_project_names
-  filtered_project_names?: string[];
-  readonly reject_unauthorized: boolean;
-  readonly slugs_as_repos?: boolean;
-  readonly cutoff_days?: number;
   readonly url?: string;
-  readonly request_timeout?: number;
-  readonly max_retries?: number;
+  project_slugs: ReadonlyArray<string>;
+  readonly project_blocklist?: string[];
   readonly pull_blocklist_from_graph?: boolean;
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
   readonly faros_graph_name?: string;
+  readonly reject_unauthorized: boolean;
+  readonly cutoff_days?: number;
+  readonly request_timeout?: number;
+  readonly max_retries?: number;
 }
 
 export class CircleCI {
@@ -41,7 +37,8 @@ export class CircleCI {
 
   constructor(
     private readonly logger: AirbyteLogger,
-    readonly axios: AxiosInstance,
+    readonly v1: AxiosInstance,
+    readonly v2: AxiosInstance,
     readonly cutoffDays: number,
     private readonly maxRetries: number
   ) {}
@@ -52,35 +49,34 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.project_names || config.project_names.length == 0) {
-      throw new VError('No project names provided');
+    if (!config.project_slugs || config.project_slugs.length == 0) {
+      throw new VError('No project slugs provided');
     }
-    if (config.project_names.includes('*') && config.project_names.length > 1) {
+    if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
       throw new VError(
-        'If wildcard is included in project names, do not include other project names'
+        'If wildcard "*" is included in project slugs, do not include other project slugs'
       );
     }
-    if (
-      config.project_blocklist?.length > 0 &&
-      !config.project_names.includes('*')
-    ) {
-      throw new VError(
-        'If blocklist contains values, project_names should only include wildcard "*".'
-      );
+    if (config.pull_blocklist_from_graph) {
+      if (!config.faros_api_url) {
+        throw new VError(
+          'Faros API URL must be provided if pull_blocklist_from_graph is true'
+        );
+      }
+      if (!config.faros_api_key) {
+        throw new VError(
+          'Faros API key must be provided if pull_blocklist_from_graph is true'
+        );
+      }
     }
-    if (
-      typeof config.slugs_as_repos !== 'undefined' &&
-      typeof config.slugs_as_repos !== 'boolean'
-    ) {
-      throw new VError(
-        `Config variable "slugs_as_repos" should be set as boolean, instead it is set as "${typeof config.slugs_as_repos}"`
-      );
-    }
+
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+    const axios_v1_instance = this.getAxiosInstance(config, logger, 'v1.1');
     const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
     CircleCI.circleCI = new CircleCI(
       logger,
+      axios_v1_instance,
       axios_v2_instance,
       cutoffDays,
       config.max_retries ?? DEFAULT_MAX_RETRIES
@@ -88,9 +84,39 @@ export class CircleCI {
     return CircleCI.circleCI;
   }
 
+  static getAxiosInstance(
+    config: CircleCIConfig,
+    logger: AirbyteLogger,
+    api_version: string = 'v2',
+    params: Record<string, any> = {}
+  ): AxiosInstance {
+    // In this function we rely on the fact that the  API URL contains 'v{X}' in it,
+    // where X is the version number, e.g. "2" or "1.1". We replace the
+    // version number with the one we want to use, stored in the param 'api_version'
+    let url = config.url ?? DEFAULT_API_URL;
+    const versionRegex = /v\d+(\.\d+)?/g;
+    url = url.replace(versionRegex, api_version);
+    logger.info(`Using API URL (${api_version}): "${url}"`);
+    const rejectUnauthorized = config.reject_unauthorized ?? true;
+    const axiosInstance: AxiosInstance = axios.create({
+      baseURL: url,
+      headers: {
+        accept: 'application/json',
+        'Circle-Token': config.token,
+      },
+      httpsAgent: new https.Agent({rejectUnauthorized, keepAlive: true}),
+      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+      // CircleCI responses can be very large hence the infinity
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      params: params,
+    });
+    return axiosInstance;
+  }
+
   async checkConnection(): Promise<void> {
     try {
-      await this.axios.get(`/me`);
+      await this.v2.get(`/me`);
     } catch (error) {
       if (
         (error as AxiosError).response &&
@@ -107,261 +133,46 @@ export class CircleCI {
     }
   }
 
-  static async getOrgSlug(
-    circleCIV2Instance: AxiosInstance,
-    logger: AirbyteLogger
-  ): Promise<string> {
-    logger.info('Getting Org Slug');
-    let slug: string = '';
+  async getAllProjectSlugs(): Promise<string[]> {
+    // Using org slug, projects can be accessed with slug/repo_name (if not github or gitlab)
+    // or circleci/org_id/project_id (if github or gitlab)
+    const res: string[] = [];
     try {
-      const resp = await circleCIV2Instance.get('/me/collaborations');
-      if (resp.status != 200) {
-        throw new Error(
-          `Non-200 response from endpoint 'me/collaborations' for getting slug.`
-        );
+      this.logger.debug('Getting all project slugs from CircleCI');
+      const meRes = await this.get({path: '/me', api: this.v1});
+      const projectsData = meRes.data.projects;
+
+      if (!projectsData) {
+        throw new Error('Could not retrieve all project slugs from CircleCI');
       }
-      const resp_data = resp.data[0];
-      slug = resp_data['slug'];
+
+      for (const projectVCSUrl of Object.keys(projectsData)) {
+        // Isolate id fields from vcs urls of the following form:
+        // //circleci.com/organization_id/project_id
+        // https://github.com/organization/repository
+        const projectMatch = projectVCSUrl.match(
+          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([^./]+)$/
+        );
+        if (!projectMatch || projectMatch.length < 1) {
+          this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
+          continue;
+        }
+        const vcsProvider = projectMatch[1];
+        const orgId = projectMatch[2];
+        const projectId = projectMatch[3];
+
+        res.push(`${vcsProvider}/${orgId}/${projectId}`);
+      }
     } catch (error: any) {
       throw new Error(
-        `Failed to get org slug from '/me/collaborations' endpoint for this reason: ${error}`
-      );
-    }
-    if (slug === '') {
-      throw new Error(`Failed to get slug from '/me/collaborations' endpoint`);
-    }
-    logger.info(`Got Org Slug: ${slug}`);
-    return slug;
-  }
-
-  static async getFilteredProjectsFromRepoNames(
-    config: CircleCIConfig,
-    logger: AirbyteLogger,
-    blocklist: string[] = []
-  ): Promise<string[]> {
-    // Note the project names are not full slugs but only the repo names,
-    // e.g. repo-name rather than vcs-slug/org-name/repo-name
-    const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
-    const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [repoNamesToProjectIds, repoNames, _projectIds] =
-      await this.getAllRepoNamesAndProjectIds(config, logger);
-
-    if (!config.project_names.includes('*')) {
-      const repo_names = config.project_names;
-      const project_names = repo_names.map(
-        (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
-      );
-      return project_names;
-    }
-    // In this case there is a wildcard to get project names
-    // We already have all the repo names stored as repoNames
-    const res: string[] = [];
-    for (const project_name of repoNames) {
-      if (!blocklist.includes(project_name)) {
-        res.push(project_name);
-      }
-    }
-    const project_names = res.map(
-      (v) => `${org_slug}/${repoNamesToProjectIds.get(v)}`
-    );
-    return project_names;
-  }
-
-  static async pullProjectsBlocklistFromGraph(
-    config: CircleCIConfig,
-    logger: AirbyteLogger
-  ): Promise<string[]> {
-    // We check if the user has provided the necessary information to pull blocked
-    // projects from graph
-    if (
-      !config.faros_api_url ||
-      !config.faros_api_key ||
-      !config.faros_graph_name
-    ) {
-      throw new Error(
-        `Faros API URL, Faros API Key, and Faros Graph Name are required to pull blocklist of projects from Faros`
-      );
-    }
-    if (!config.slugs_as_repos) {
-      throw new Error(
-        `When pulling blocklist projects from Faros, slugs_as_repos must be set to true`
-      );
-    }
-    if (!config.project_names.includes('*')) {
-      throw new Error(
-        `When pulling blocklist of projects from Faros, project_names must include wildcard "*"`
-      );
-    }
-    logger.info('Pulling blocklist of projects from Faros');
-    const limit = 100;
-    const query: string = `query BlockedRepos($after: String) {
-      vcs_Repository(
-        limit: ${limit} 
-        order_by: {id: asc}
-        where: {farosOptions: {inclusionCategory: {_eq: "Excluded"}}, _and: {id: {_gt: $after}}}
-      ) {
-        name
-        id
-      }
-    }
-    `;
-    const fcConfig: FarosClientConfig = {
-      url: config.faros_api_url,
-      apiKey: config.faros_api_key,
-      useGraphQLV2: true,
-    };
-    const fc = new FarosClient(fcConfig);
-    const result = await fc.gql(config.faros_graph_name, query, {after: ''});
-    if (!result?.vcs_Repository) {
-      throw new Error(
-        `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
-      );
-    }
-    const all_ignored_repo_infos = [];
-    let crt_ignored_repo_infos = result.vcs_Repository;
-    all_ignored_repo_infos.push(...crt_ignored_repo_infos);
-    while (crt_ignored_repo_infos.length == limit) {
-      const last_repo_info =
-        crt_ignored_repo_infos[crt_ignored_repo_infos.length - 1];
-      const last_repo_id = last_repo_info.id;
-      const result = await fc.gql(config.faros_graph_name, query, {
-        after: last_repo_id,
-      });
-      if (!result?.vcs_Repository) {
-        throw new Error(
-          `Could not get result from calling Faros GraphQL on graph ${config.faros_graph_name} with query ${query}.`
-        );
-      }
-      crt_ignored_repo_infos = result.vcs_Repository;
-      all_ignored_repo_infos.push(...crt_ignored_repo_infos);
-    }
-    logger.debug(
-      `Ignored repo infos: ${JSON.stringify(all_ignored_repo_infos)}`
-    );
-    const updated_blocklist: string[] = [];
-    for (const ignored_repo_info of all_ignored_repo_infos) {
-      updated_blocklist.push(ignored_repo_info.name);
-    }
-    logger.debug(`Updated block list: ${JSON.stringify(updated_blocklist)}`);
-    logger.info(
-      `Finished pulling ${updated_blocklist.length} blocked projects from Faros' graph`
-    );
-    return updated_blocklist;
-  }
-
-  static async getFilteredProjects(
-    config: CircleCIConfig,
-    logger: AirbyteLogger,
-    blocklist: string[] = []
-  ): Promise<string[]> {
-    // Note the project names are not repo names but also include the slug,
-    // e.g.  `vcs-slug/org-name/repo-name` rather than `repo-name`
-    if (!config.project_names.includes('*')) {
-      return Array.from(config.project_names);
-    }
-    const project_names = await this.getWildCardProjectNames(config, logger);
-    const res: string[] = [];
-    for (const project_name of project_names) {
-      if (!blocklist.includes(project_name)) {
-        res.push(project_name);
-      }
-    }
-    return res;
-  }
-
-  static async getWildCardProjectNames(
-    config: CircleCIConfig,
-    logger: AirbyteLogger
-  ): Promise<string[]> {
-    // We return list of updated project names
-    // In this case we know project names has a wildcard
-    // Always returns list of complete project names (not just repo names)
-    if (!config.project_names.includes('*')) {
-      throw new Error(
-        `Expected project_names to just be the wildcard, instead got: ${JSON.stringify(
-          config.project_names
+        `Failed to get all projects from CircleCI. Error: ${wrapApiError(
+          error
         )}`
       );
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_repoNamesToProjectIds, _repoNames, projectIds] =
-      await this.getAllRepoNamesAndProjectIds(config, logger);
-    const axiosV2Instance = CircleCI.getAxiosInstance(config, logger);
-    const org_slug: string = await CircleCI.getOrgSlug(axiosV2Instance, logger);
-    const project_names = projectIds.map((v) => `${org_slug}/${v}`);
-    logger.info(
-      `Project names based on config: ${JSON.stringify(project_names)}`
-    );
-    return project_names;
-  }
 
-  static getAxiosInstance(
-    config: CircleCIConfig,
-    logger: AirbyteLogger,
-    api_version: string = 'v2'
-  ): AxiosInstance {
-    // In this function we rely on the fact that the  API URL contains 'v{X}' in it,
-    // where X is the version number, e.g. "2" or "1.1". We replace the
-    // version number with the one we want to use, stored in the param 'api_version'
-    let url = config.url ?? DEFAULT_API_URL;
-    const versionRegex = /v\d+(\.\d+)?/g;
-    url = url.replace(versionRegex, api_version);
-    logger.info(`Using API URL: "${url}"`);
-    const rejectUnauthorized = config.reject_unauthorized ?? true;
-    const axiosInstance: AxiosInstance = axios.create({
-      baseURL: url,
-      headers: {
-        accept: 'application/json',
-        'Circle-Token': config.token,
-      },
-      httpsAgent: new https.Agent({rejectUnauthorized}),
-      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-      // CircleCI responses can be very large hence the infinity
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    });
-    return axiosInstance;
-  }
-
-  static async getAllRepoNamesAndProjectIds(
-    config,
-    logger
-  ): Promise<[Map<string, string>, string[], string[]]> {
-    const v1AxiosInstance: AxiosInstance = this.getAxiosInstance(
-      config,
-      logger,
-      'v1.1'
-    );
-    // ORG SLUG:
-    // https://circleci.com/api/v2/me/collaborations
-    // Using org slug, projects can be accessed with slug/repo_name
-    const repo_names: string[] = [];
-    const project_ids: string[] = [];
-    try {
-      const response = await v1AxiosInstance.get('/projects');
-      const projects_data = response.data;
-      logger.info(`Projects data: ${JSON.stringify(projects_data)}`);
-      for (const item of projects_data) {
-        repo_names.push(item['reponame']);
-        project_ids.push(item['vcs_url'].split('/').pop());
-      }
-    } catch (error: any) {
-      throw new Error(
-        `Failed to get all project "repo names" or "project ids" from '/projects' endpoint`
-      );
-    }
-    if (repo_names.length == 0) {
-      throw new Error('No reponames found for this user');
-    }
-    const repoNamesToProjectIds: Map<string, string> = new Map<
-      string,
-      string
-    >();
-    for (let i = 0; i < repo_names.length; i++) {
-      repoNamesToProjectIds.set(repo_names[i], project_ids[i]);
-    }
-    return [repoNamesToProjectIds, repo_names, project_ids];
+    this.logger.info(`Retrieved project slugs: ${res}`);
+    return res;
   }
 
   private async iterate<V>(
@@ -412,31 +223,53 @@ export class CircleCI {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
-  private async get<T = any, D = any>(
-    path: string,
-    conf: AxiosRequestConfig<D> = {},
-    attempt = 1
-  ): Promise<AxiosResponse<T> | undefined> {
+  private async get<T = any, D = any>({
+    path,
+    api = this.v2,
+    config = {},
+    attempt = 1,
+    sleepMs = 1000,
+  }: {
+    path: string;
+    api?: AxiosInstance;
+    config?: AxiosRequestConfig<D>;
+    attempt?: number;
+    sleepMs?: number;
+  }): Promise<AxiosResponse<T> | undefined> {
     try {
-      const res = await this.axios.get<T, AxiosResponse<T>>(path, conf);
+      const res = await api.get<T, AxiosResponse<T>>(path, config);
       await this.maybeSleepOnResponse(path, res);
       return res;
     } catch (err: any) {
       if (err?.response?.status === 429 && attempt <= this.maxRetries) {
         this.logger.warn(
-          `Request to ${path} was rate limited. Retrying... ` +
+          `Request to "${path}" was rate limited. Retrying... ` +
             `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.maybeSleepOnResponse(path, err?.response);
-        return await this.get(path, conf, attempt + 1);
+        return await this.get({path, api, config, attempt: attempt + 1});
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.get({
+          path,
+          api,
+          config,
+          attempt: attempt + 1,
+          sleepMs: sleepMs * 2,
+        });
       }
-      throw wrapApiError(err, `Failed to get "${path}". `);
+      throw wrapApiError(err, `Failed to get "${path}"`);
     }
   }
 
   @Memoize()
-  async fetchProject(projectName: string): Promise<Project> {
-    return (await this.get(`/project/${projectName}`)).data;
+  async fetchProject(projectSlugOrId: string): Promise<Project> {
+    return (await this.get({path: `/project/${projectSlugOrId}`})).data;
   }
 
   async *fetchPipelines(
@@ -452,7 +285,7 @@ export class CircleCI {
 
     const url = `/project/${projectName}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
-      (params) => this.get(url, {params}),
+      (params) => this.get({path: url, config: {params}}),
       (item: any) => ({
         ...item,
         workflows: [],
@@ -483,7 +316,10 @@ export class CircleCI {
     const url = `/pipeline/${pipelineId}/workflow`;
     return this.iterate<Workflow>(
       (params) =>
-        this.get(url, {params, validateStatus: validateNotFoundStatus}),
+        this.get({
+          path: url,
+          config: {params, validateStatus: validateNotFoundStatus},
+        }),
       (item: any) => ({
         ...item,
         jobs: [],
@@ -496,9 +332,12 @@ export class CircleCI {
   async fetchJobs(workflowId: string): Promise<Job[]> {
     return this.iterate<Job>(
       (params) =>
-        this.get(`/workflow/${workflowId}/job`, {
-          params,
-          validateStatus: validateNotFoundStatus,
+        this.get({
+          path: `/workflow/${workflowId}/job`,
+          config: {
+            params,
+            validateStatus: validateNotFoundStatus,
+          },
         }),
       (item: any) => item
     );
@@ -510,9 +349,12 @@ export class CircleCI {
   ): Promise<TestMetadata[]> {
     return this.iterate<TestMetadata>(
       (params) =>
-        this.get(`/project/${projectSlug}/${jobNumber}/tests`, {
-          params,
-          validateStatus: validateNotFoundStatus,
+        this.get({
+          path: `/project/${projectSlug}/${jobNumber}/tests`,
+          config: {
+            params,
+            validateStatus: validateNotFoundStatus,
+          },
         }),
       (item: any) => item
     );

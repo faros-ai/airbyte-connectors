@@ -1,0 +1,11 @@
+{
+  "edition_configs": {
+  "edition": "cloud",
+  "api_url": "<API URL>",
+  "api_key": "<KEY>",
+  "graph": "<GRAPH_NAME>",
+  "graphql_api": "v2"
+  },
+  "origin": "<ORIGIN NAME>",
+  "dry_run": "true"
+}

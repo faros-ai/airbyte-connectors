@@ -1,0 +1,103 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Files Spec",
+    "type": "object",
+    "required": [
+      "files_source"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "files_source": {
+        "order": 1,
+        "title": "Files Source",
+        "description": "Only S3 supported",
+        "type": "object",
+        "oneOf": [
+          {
+            "order": 0,
+            "title": "S3",
+            "type": "object",
+            "required": [
+              "source_type",
+              "path",
+              "aws_region",
+              "aws_access_key_id",
+              "aws_secret_access_key"
+            ],
+            "properties": {
+              "source_type": {
+                "order": 0,
+                "type": "string",
+                "const": "S3"
+              },
+              "path": {
+                "order": 1,
+                "title": "Path",
+                "description": "Path to files in an S3 bucket",
+                "type": "string",
+                "examples": [
+                  "s3://my-bucket/path/to/files"
+                ]
+              },
+              "aws_region": {
+                "order": 2,
+                "title": "AWS Region",
+                "description": "AWS Region",
+                "type": "string",
+                "examples": [
+                  "us-east-1"
+                ]
+              },
+              "aws_access_key_id": {
+                "order": 3,
+                "title": "AWS Access Key Id",
+                "description": "AWS Access Key Id (required IAM permissions: s3:ListBucket, s3:GetObject)",
+                "type": "string",
+                "airbyte_secret": true
+              },
+              "aws_secret_access_key": {
+                "order": 4,
+                "title": "AWS Secret Access Key",
+                "description": "AWS Secret Access Key",
+                "type": "string",
+                "airbyte_secret": true
+              },
+              "aws_session_token": {
+                "order": 5,
+                "title": "AWS Session Token (Optional)",
+                "description": "AWS Session Token",
+                "type": "string",
+                "airbyte_secret": true
+              },
+              "file_processing_strategy": {
+                "order": 6,
+                "type": "string",
+                "title": "File Processing Strategy",
+                "description": "Strategy to use for deciding whether to process or ignore files.",
+                "default": "PROCESS_ALL_FILES",
+                "enum": [
+                  "PROCESS_ALL_FILES",
+                  "IMMUTABLE_LEXICOGRAPHICAL_ORDER"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "stream_name": {
+        "order": 2,
+        "title": "Stream Name",
+        "description": "Name of the data stream",
+        "type": "string",
+        "default": "files",
+        "examples": [
+          "sales",
+          "customers",
+          "orders"
+        ]
+      }
+    }
+  }
+}

@@ -125,3 +125,15 @@ export const workdayV3StreamsLog = readTestResourceFile(
 export const workdayV4StreamsLog = readTestResourceFile(
   'workday/stream_v4.log'
 );
+export const awsCloudwatchMetricsStreamsLog = readTestResourceFile(
+  'aws-cloudwatch-metrics/all-streams.log'
+);
+export const awsCloudwatchMetricsStreamsInput = readTestResourceFile(
+  'aws-cloudwatch-metrics/input.json'
+);
+export const zendeskAllStreamsLog = readTestResourceFile(
+  'zendesk/all-streams.log'
+);
+export const trelloAllStreamsLog = readTestResourceFile(
+  'trello/all-streams.log'
+);

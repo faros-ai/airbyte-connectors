@@ -177,3 +177,31 @@ Example `catalog.json`
 ### Additional Commands
 
 Run `./bin/main --help` for detailed information on available commands.
+
+### Visual Studio Code Debugging
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "destinations/airbyte-faros-destination/bin/main",
+            "console": "integratedTerminal",
+            "args": [
+                "write",
+                "--config", "config.json",
+                "--catalog", "catalog.json",
+                "<", "streams.log"
+              ]
+        }
+    ]
+}
+```
+
+Don't forget to rebuild after code changes

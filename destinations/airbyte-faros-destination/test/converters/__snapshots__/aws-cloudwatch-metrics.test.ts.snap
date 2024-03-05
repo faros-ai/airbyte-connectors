@@ -1,0 +1,218 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AWS Cloudwatch Metrics should correctly convert records 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:23:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "TotalCharacterCount-2023-12-11T19:23:00.000Z",
+      "value": "1976",
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "CodeWhispererCharacterCount",
+      "name": "CodeWhispererCharacterCount",
+      "uid": "CodeWhispererCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "CodeWhispererCharacterCount",
+      },
+      "uid": "CodeWhispererCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "0",
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:23:00.000Z,
+      "definition": Object {
+        "uid": "CodeWhispererCharacterCount",
+      },
+      "uid": "CodeWhispererCharacterCount-2023-12-11T19:23:00.000Z",
+      "value": "0",
+    },
+  },
+]
+`;
+
+exports[`AWS Cloudwatch Metrics should use tag configuration 1`] = `
+Array [
+  Object {
+    "model": "faros_Tag",
+    "record": Object {
+      "key": "tag-key",
+      "uid": "tag-key-tag-value",
+      "value": "tag-value",
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "tag-key-tag-value-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+  Object {
+    "model": "faros_MetricValueTag",
+    "record": Object {
+      "tag": Object {
+        "uid": "tag-key-tag-value",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "TotalCharacterCount",
+        },
+        "uid": "tag-key-tag-value-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      },
+    },
+  },
+]
+`;
+
+exports[`AWS Cloudwatch Metrics should use tag configuration 2`] = `
+Array [
+  Object {
+    "model": "faros_Tag",
+    "record": Object {
+      "key": "tag-key",
+      "uid": "tag-key-tag-value",
+      "value": "tag-value",
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinitionTag",
+    "record": Object {
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "tag": Object {
+        "uid": "tag-key-tag-value",
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "tag-key-tag-value-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+]
+`;
+
+exports[`AWS Cloudwatch Metrics should use tag configuration 3`] = `
+Array [
+  Object {
+    "model": "faros_Tag",
+    "record": Object {
+      "key": "tag-key",
+      "uid": "tag-key-tag-value",
+      "value": "tag-value",
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinition",
+    "record": Object {
+      "description": "TotalCharacterCount",
+      "name": "TotalCharacterCount",
+      "uid": "TotalCharacterCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricDefinitionTag",
+    "record": Object {
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "tag": Object {
+        "uid": "tag-key-tag-value",
+      },
+    },
+  },
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2023-12-11T19:38:00.000Z,
+      "definition": Object {
+        "uid": "TotalCharacterCount",
+      },
+      "uid": "tag-key-tag-value-TotalCharacterCount-2023-12-11T19:38:00.000Z",
+      "value": "22",
+    },
+  },
+]
+`;

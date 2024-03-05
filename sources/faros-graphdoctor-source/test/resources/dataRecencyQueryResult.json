@@ -1,0 +1,38 @@
+{
+  "cicd_Deployment": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }
+  ],
+  "cicd_Build": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }
+  ],
+  "cicd_Artifact": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }
+  ],
+  "vcs_Commit": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }  
+  ],
+  "vcs_PullRequest": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }
+  ],
+  "tms_Task": [
+    {
+      "refreshedAt": "2023-10-26T16:29:38.979875+00:00",
+      "id": "93dafcc574066907fd382f9abbee4f7baa2f28f1"
+    }
+  ]
+}

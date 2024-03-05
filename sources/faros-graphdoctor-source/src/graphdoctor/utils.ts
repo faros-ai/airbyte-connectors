@@ -81,13 +81,13 @@ export async function* missingRelationsTest(
     const modelName = related_obj['modelName'];
     let new_query: string = query;
     // We replace the main_object part of the string twice
+    // Each 'replace' only replaces the first instance of the string
     new_query = new_query.replace('%main_object%', main_obj);
     new_query = new_query.replace('%main_object%', main_obj);
     new_query = new_query.replace('%modelName%', modelName);
     new_query = new_query.replace('%where_test%', modelName);
-    cfg.logger.info('Will run query: ' + new_query);
+    cfg.logger.debug('Will run query: ' + new_query);
     const response = await fc.gql(cfg.graph, new_query);
-    cfg.logger.info('Response: ' + JSON.stringify(response));
     const result_list = response[main_obj];
     if (!result_list) {
       throw new Error(
@@ -124,6 +124,7 @@ export function get_missing_relation_data_issues_from_result_list(
     data_issues.push({
       faros_DataQualityIssue: {
         uid: `${crt_timestamp}|${main_obj}|${recordCount}`,
+        title: 'missing-relation',
         model: main_obj,
         description: desc_str,
         recordIds: [rec.id],

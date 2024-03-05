@@ -24,7 +24,7 @@
   ],
   "main": "./lib",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "build": "tsc -p src",
@@ -43,7 +43,7 @@
     "fast-redact": "^3.0.2",
     "json-schema-traverse": "^1.0.0",
     "lodash": "^4.17.21",
-    "pino": "^8.5.0",
+    "pino": "^8.17.0",
     "table": "^6.8.1",
     "verror": "^1.10.1"
   },
@@ -56,10 +56,13 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "test/tsconfig.json"
-      }
+    "transform": {
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     },
     "snapshotFormat": {
       "printBasicPrototype": true,
