@@ -1,11 +1,11 @@
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import jira from 'jira.js';
 import _ from 'lodash';
-import {AirbyteLogger} from "faros-airbyte-cdk";
 
 /** Mixin/Trait to add retry logic to jira.js clients
  * See: https://www.typescriptlang.org/docs/handbook/mixins.html
-*/
+ */
 type Retryable = new (...args: any[]) => {
   sendRequest<T>(
     requestConfig: jira.RequestConfig,
@@ -79,7 +79,9 @@ export function WithRetry<T extends Retryable>(
             break;
           }
           const delay = Retry.getDelay(attempt, err.response);
-          logger?.warn(`Retry attempt ${attempt} of ${this._maxAttempts}. Retrying in ${delay} milliseconds`);
+          logger?.warn(
+            `Retry attempt ${attempt} of ${this._maxAttempts}. Retrying in ${delay} milliseconds`
+          );
           await Utils.sleep(delay);
           attempt++;
         }

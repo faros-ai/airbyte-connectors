@@ -1,6 +1,15 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey, SyncMode} from "faros-airbyte-cdk";
-import {Dictionary} from "ts-essentials";
-import {Jira, JiraConfig} from "../jira";
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
+import moment from 'moment';
+import {Dictionary} from 'ts-essentials';
+
+import {Jira, JiraConfig, PullRequest} from '../jira';
+import {ProjectState, StreamSlice, StreamState} from './common';
 
 export class PullRequests extends AirbyteStreamBase {
   constructor(
@@ -17,18 +26,91 @@ export class PullRequests extends AirbyteStreamBase {
     return 'number';
   }
 
-  // TODO: Support Incremental Sync
-  async *readRecords(syncMode: SyncMode, cursorField?: string[], streamSlice?: Dictionary<any>, streamState?: Dictionary<any>): AsyncGenerator<Dictionary<any>> {
+  get cursorField(): string | string[] {
+    return ['issue', 'updated'];
+  }
+
+  async *streamSlices() {
+    if (!this.config.projectKeys) {
+      const jira = await Jira.instance(this.config, this.logger);
+      for await (const project of jira.getProjects()) {
+        yield {project: project.key};
+      }
+    }
+    for (const project of this.config.projectKeys) {
+      yield {project};
+    }
+  }
+
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: StreamSlice,
+    streamState?: StreamState
+  ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
-    for (const projectKey of this.config.projectKeys) {
-      for await (const issue of jira.getIssues(projectKey, true)) {
+    const projectKeys =
+      this.config.projectKeys ?? (await jira.getProjectsByKey()).keys();
+    for (const projectKey of projectKeys) {
+      const projectState = streamState?.[projectKey];
+      const updateRange =
+        syncMode === SyncMode.INCREMENTAL
+          ? this.getUpdateRange(projectState)
+          : undefined;
+      for await (const issue of jira.getIssues(projectKey, true, updateRange)) {
         if (issue.pullRequests) {
           for (const pullRequest of issue.pullRequests) {
-            yield {issueKey: issue.key, ...pullRequest};
+            yield {
+              issue: {
+                key: issue.key,
+                updated: issue.updated,
+                project: projectKey,
+              },
+              ...pullRequest,
+            };
           }
         }
       }
     }
   }
 
+  private getUpdateRange(projectState: ProjectState): [Date, Date] {
+    const initialCutoff = moment()
+      .utc()
+      .subtract(this.config.cutoffDays, 'days')
+      .toDate();
+    const newCutoff = moment().utc().toDate();
+    const fromCutoff = projectState?.issueCutoff
+      ? Utils.toDate(projectState.issueCutoff)
+      : initialCutoff;
+    return [fromCutoff, newCutoff];
+  }
+
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: PullRequest
+  ): StreamState {
+    const projectKey = latestRecord.issue.project;
+    const currentCutoff = Utils.toDate(
+      currentStreamState?.[projectKey]?.issueCutoff
+    );
+    const latestRecordCutoff = Utils.toDate(latestRecord.issue.updated);
+    const newCutoff = moment().utc().toDate();
+    if (latestRecordCutoff > currentCutoff) {
+      const cutoffLag = moment
+        .duration(this.config.cutoffLagDays, 'days')
+        .asMilliseconds();
+      const newState: ProjectState = {
+        issueCutoff: Math.max(
+          latestRecordCutoff.getTime(),
+          newCutoff.getTime() - cutoffLag
+        ),
+      };
+      return {
+        ...currentStreamState,
+        [projectKey]: newState,
+      };
+    }
+    return currentStreamState;
+  }
 }

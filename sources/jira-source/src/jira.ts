@@ -1,6 +1,8 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
+import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils, wrapApiError} from 'faros-js-client';
+import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
@@ -16,12 +18,10 @@ import {
 } from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
-import {VError} from 'verror';
 import {Memoize} from 'typescript-memoize';
+import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {AirbyteConfig, AirbyteLogger} from "faros-airbyte-cdk";
-import * as fs from "fs";
 
 // TODO - Remove our models and use models in jira.js package
 export interface Project {
@@ -178,9 +178,15 @@ export interface Repo {
   readonly name: string;
 }
 
+export interface PullRequestIssue {
+  readonly key: string;
+  readonly updated: Date;
+  readonly project: string;
+}
 export interface PullRequest {
   readonly repo: Repo;
   readonly number: number;
+  readonly issue?: PullRequestIssue;
 }
 
 export interface JiraConfig extends AirbyteConfig {
@@ -199,6 +205,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly useUsersPrefixSearch?: boolean;
   readonly projectKeys?: ReadonlyArray<string>;
   readonly cutoffDays?: number;
+  readonly cutoffLagDays?: number;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -263,7 +270,7 @@ export class Jira {
     private readonly maxPageSize: number,
     private readonly additionalFieldsArrayLimit: number,
     private readonly logger: AirbyteLogger,
-    private readonly useUsersPrefixSearch?: boolean,
+    private readonly useUsersPrefixSearch?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -339,7 +346,9 @@ export class Jira {
     const fieldMapping = Array.from(fieldNameById)
       .map((e) => `${e[0]} -> ${e[1]}`)
       .join(', ');
-    logger?.debug(`Total number of fields: ${totalNumFields}. Projected field mapping: ${fieldMapping}`);
+    logger?.debug(
+      `Total number of fields: ${totalNumFields}. Projected field mapping: ${fieldMapping}`
+    );
 
     return new Jira(
       cfg.url,
@@ -352,7 +361,7 @@ export class Jira {
       cfg.maxPageSize,
       cfg.additionalFieldsArrayLimit,
       logger,
-      cfg.useUsersPrefixSearch,
+      cfg.useUsersPrefixSearch
     );
   }
 
@@ -938,7 +947,9 @@ export class Jira {
           const githubPulls = await this.getPullRequestsGitHub(branchRes);
           pulls.push(...githubPulls);
         } else {
-          this.logger?.warn(`Unsupported GitForJiraCloud VCS source: ${lowerSource} for issueId: ${issueId}`);
+          this.logger?.warn(
+            `Unsupported GitForJiraCloud VCS source: ${lowerSource} for issueId: ${issueId}`
+          );
         }
       }
     }
@@ -1000,7 +1011,9 @@ export class Jira {
       }
     }
     if (skippedProjects.length) {
-      this.logger?.warn(`Skipped projects due to missing 'Browse Projects' permission: ${skippedProjects}`);
+      this.logger?.warn(
+        `Skipped projects due to missing 'Browse Projects' permission: ${skippedProjects}`
+      );
     }
     for (const project of browseableProjects) {
       yield project;
@@ -1087,19 +1100,24 @@ export class Jira {
         let report;
         try {
           if (
-            this.sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+            this.sprintHistoryFetchFailures <
+              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
             toLower(item.state) != 'future'
           ) {
             report = await this.api.getSprintReport(boardId, item.id);
             this.sprintHistoryFetchFailures = 0;
           }
         } catch (err: any) {
-          this.logger?.warn(`Failed to get sprint report for sprint ${item.id}: ${err.message}`);
+          this.logger?.warn(
+            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
+          );
           if (
             this.sprintHistoryFetchFailures++ >=
             MAX_SPRINT_HISTORY_FETCH_FAILURES
           ) {
-            this.logger?.warn(`Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`);
+            this.logger?.warn(
+              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+            );
           }
         }
 
@@ -1121,7 +1139,7 @@ export class Jira {
 
   private toSprint(report: any): SprintReport {
     if (!report) {
-      return
+      return;
     }
     const toFloat = (value: any): number | undefined => {
       if (isNil(value)) {
@@ -1170,7 +1188,7 @@ export class Jira {
       completedInAnotherSprintPoints: toFloat(
         report?.issuesCompletedInAnotherSprintEstimateSum?.value
       ),
-      plannedPoints
+      plannedPoints,
     };
   }
 
@@ -1187,7 +1205,9 @@ export class Jira {
           try {
             points = Utils.parseFloatFixedPoint(pointsString);
           } catch (err: any) {
-            this.logger?.warn(`Failed to get story points for issue ${item.key}: ${err.message}`);
+            this.logger?.warn(
+              `Failed to get story points for issue ${item.key}: ${err.message}`
+            );
           }
           return points;
         }
@@ -1389,9 +1409,13 @@ export class Jira {
             ) {
               try {
                 pullRequests = await this.getPullRequests(item.id);
-                this.logger?.debug(`Fetched ${pullRequests.length} pull requests for issue ${item.key}`);
+                this.logger?.debug(
+                  `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
+                );
               } catch (err: any) {
-                this.logger?.warn(`Failed to get pull requests for issue ${item.key}: ${err.message}`);
+                this.logger?.warn(
+                  `Failed to get pull requests for issue ${item.key}: ${err.message}`
+                );
               }
             }
           }
@@ -1418,7 +1442,9 @@ export class Jira {
                 additionalFields.push([fieldName, fieldValue]);
               }
             } catch (err: any) {
-              this.logger?.warn(`Failed to extract custom field ${name} on issue ${item.id}. Skipping.`);
+              this.logger?.warn(
+                `Failed to extract custom field ${name} on issue ${item.id}. Skipping.`
+              );
             }
           }
         }

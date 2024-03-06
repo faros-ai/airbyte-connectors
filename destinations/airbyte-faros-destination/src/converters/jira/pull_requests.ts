@@ -1,7 +1,8 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {toLower} from 'lodash';
+
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
-import {AirbyteRecord} from "faros-airbyte-cdk";
-import {toLower} from "lodash";
 
 // Required as dependency by Issues converter
 export class PullRequests extends JiraConverter {
@@ -19,7 +20,7 @@ export class PullRequests extends JiraConverter {
       {
         model: 'tms_TaskPullRequestAssociation',
         record: {
-          task: {uid: pullRequest.issueKey, source},
+          task: {uid: pullRequest.issue.key, source},
           pullRequest: {
             repository: {
               organization: {
@@ -31,7 +32,7 @@ export class PullRequests extends JiraConverter {
             number: pullRequest.number,
           },
         },
-      }
-    ]
+      },
+    ];
   }
 }

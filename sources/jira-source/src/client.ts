@@ -1,3 +1,4 @@
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {RequestConfig} from 'jira.js';
 import jira, {
   AgileClient,
@@ -12,7 +13,6 @@ import {
   Version2ClientWithRetry,
   WithRetry,
 } from './retry';
-import {AirbyteLogger} from "faros-airbyte-cdk";
 
 const GRAPHQL_PATH = '/gateway/api/directory/graphql';
 
