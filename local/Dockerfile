@@ -10,7 +10,7 @@ COPY ./sources ./sources
 COPY ./destinations ./destinations
 
 RUN npm run build -- --scope faros-airbyte-cdk
-#RUN npm run build -- --scope faros-airbyte-common
+RUN npm run build -- --scope faros-airbyte-common
 
 ARG version
 
