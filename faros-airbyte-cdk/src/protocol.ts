@@ -143,7 +143,7 @@ export class AirbyteLog implements AirbyteMessage {
     readonly log: {
       level: AirbyteLogLevel;
       message: string;
-      stack_trace: string;
+      stack_trace?: string;
     }
   ) {}
   static make(
@@ -332,6 +332,7 @@ export interface AirbyteSourceLog {
   message: {
     level: number;
     msg: string;
+    stackTrace?: string;
   };
 }
 

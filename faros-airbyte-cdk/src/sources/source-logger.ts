@@ -44,6 +44,7 @@ export class AirbyteSourceLogger extends AirbyteLogger {
         message: {
           level: AirbyteLogLevelOrder(msg.log.level),
           msg: msg.log.message,
+          stackTrace: msg.log.stack_trace,
         },
       };
 
