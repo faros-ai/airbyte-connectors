@@ -2,7 +2,6 @@ import {Command} from 'commander';
 import {
   AirbyteConfig,
   AirbyteDestinationRunner,
-  AirbyteLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 

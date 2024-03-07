@@ -1,7 +1,7 @@
 import {PartialCall} from '@pagerduty/pdjs/build/src/api';
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
+  AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';

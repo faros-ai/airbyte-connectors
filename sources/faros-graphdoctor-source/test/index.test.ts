@@ -1,4 +1,8 @@
-import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogLevel,
+  AirbyteSourceLogger,
+  AirbyteSpec,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';

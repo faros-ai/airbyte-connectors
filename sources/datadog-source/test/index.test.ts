@@ -1,7 +1,7 @@
 import {v1, v2} from '@datadog/datadog-api-client';
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
+  AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
