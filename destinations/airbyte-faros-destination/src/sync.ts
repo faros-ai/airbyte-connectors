@@ -165,7 +165,7 @@ class FarosSyncClient extends FarosClient {
   }
 
   async uploadLogs(url: string, content: string, hash: string): Promise<void> {
-    console.log('Uploading logs');
+    this.logger.info('Uploading sync logs');
     const api = makeAxiosInstanceWithRetry(
       this.axiosConfig ?? DEFAULT_AXIOS_CONFIG,
       this.logger
@@ -177,6 +177,7 @@ class FarosSyncClient extends FarosClient {
         'content-type': 'text/plain',
       },
     });
+    this.logger.info('Finished uploading sync logs');
   }
 
   private attemptRequest<T>(

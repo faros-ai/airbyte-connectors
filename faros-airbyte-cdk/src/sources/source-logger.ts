@@ -1,4 +1,4 @@
-import {AirbyteLogger} from '../logger';
+import {AirbyteLogger, shouldWriteLog} from '../logger';
 import {
   AirbyteLogLevel,
   AirbyteLogLevelOrder,
@@ -35,21 +35,10 @@ export class AirbyteSourceLogger extends AirbyteLogger {
     this._compressState = compressState;
   }
 
-  override flush(): void {
-    if (!this.batch.length) {
-      return;
-    }
-    super.write(
-      new AirbyteSourceLogsMessage({data: {state: this.state}}, this.batch)
-    );
-    this.batch.length = 0; // clears the array
-    this.totalSize = 0;
-  }
-
   override write(msg: AirbyteMessage): void {
     super.write(msg);
 
-    if (isAirbyteLog(msg)) {
+    if (isAirbyteLog(msg) && shouldWriteLog(msg, this.level)) {
       const sourceLog: AirbyteSourceLog = {
         timestamp: Date.now(),
         message: {
@@ -64,5 +53,16 @@ export class AirbyteSourceLogger extends AirbyteLogger {
         this.flush();
       }
     }
+  }
+
+  override flush(): void {
+    if (!this.batch.length) {
+      return;
+    }
+    super.write(
+      new AirbyteSourceLogsMessage({data: {state: this.state}}, this.batch)
+    );
+    this.batch.length = 0; // clears the array
+    this.totalSize = 0;
   }
 }

@@ -7,7 +7,6 @@ import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
-import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';

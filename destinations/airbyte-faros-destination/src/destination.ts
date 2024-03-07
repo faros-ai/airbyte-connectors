@@ -6,7 +6,6 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteDestination,
-  AirbyteLogger,
   AirbyteMessageType,
   AirbyteRecord,
   AirbyteSourceConfigMessage,
@@ -24,11 +23,9 @@ import {
 } from 'faros-airbyte-cdk';
 import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
-import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
-import os from 'os';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -55,7 +52,7 @@ import {
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
-import {LogWriter} from './log-writer';
+import {FarosDestinationLogger, LogFiles} from './destination-logger';
 import FarosSyncClient, {
   Account,
   AccountSync,
@@ -79,7 +76,7 @@ export interface HttpAgents {
 /** Faros destination implementation. */
 export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   constructor(
-    private readonly logger: AirbyteLogger,
+    private readonly logger: FarosDestinationLogger,
     private specOverride: AirbyteSpec = undefined,
     private edition: Edition = undefined,
     private farosClientConfig: FarosClientConfig = undefined,
@@ -436,24 +433,28 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     let account: Account;
     let sync: AccountSync;
-    let logWriter: LogWriter;
-    // WORKER_JOB_ID is populated by Airbyte
-    const workerJobId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
-    if (!dryRunEnabled && this.edition === Edition.CLOUD && workerJobId) {
+    let logFiles: LogFiles;
+    if (!dryRunEnabled && this.edition === Edition.CLOUD) {
       account = await this.getFarosClient().getOrCreateAccount(
         accountId,
         this.farosGraph,
         redactedConfig
       );
+
+      // WORKER_JOB_ID is populated by Airbyte
+      let logId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
       if (account) {
+        this.logger.shouldSaveLogs = !!account.local;
+        if (account.local) {
+          logId = undefined; // let Faros generate a unique log id
+          logFiles = new LogFiles();
+          this.logger.logFiles = logFiles;
+        }
         sync = await this.getFarosClient().createAccountSync(
           accountId,
           startedAt,
-          workerJobId
+          logId
         );
-      }
-      if (account.local) {
-        logWriter = new LogWriter();
       }
     }
 
@@ -535,7 +536,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           converterDependencies,
           stats,
           writer,
-          logWriter,
+          logFiles,
           async () =>
             await graphQLClient.resetData(
               origin,
@@ -549,17 +550,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 sync.syncId,
                 props
               );
-              if (account?.local) {
-                const logs = await logWriter?.sortedLogs();
-                const client = this.getFarosClient();
-                const url = await client.getAccountSyncLogFileUrl(
-                  accountId,
-                  sync.syncId,
-                  logs.hash
-                );
-                console.log(url);
-                await client.uploadLogs(url, logs.content, logs.hash);
-              }
             }
           },
           async (msg: AirbyteSourceConfigMessage) => {
@@ -653,6 +643,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
+      const logs = await logFiles?.sortedLogs(this.logger);
+      if (account?.local && sync?.syncId && logs) {
+        const client = this.getFarosClient();
+        const url = await client.getAccountSyncLogFileUrl(
+          accountId,
+          sync.syncId,
+          logs.hash
+        );
+        await client.uploadLogs(url, logs.content, logs.hash);
+      }
     }
   }
 
@@ -664,7 +664,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     converterDependencies: Set<string>,
     stats: WriteStats,
     writer?: Writable | GraphQLWriter,
-    logWriter?: LogWriter,
+    logFiles?: LogFiles,
     resetData?: () => Promise<void>,
     completeSync?: (props: UpdateAccountSyncProps) => Promise<void>,
     updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>
@@ -705,13 +705,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             } else if (isSourceConfigMessage(msg)) {
               await updateLocalAccount?.(msg);
             } else if (isSourceLogsMessage(msg)) {
-              this.logger.info(`Source logs: ${JSON.stringify(msg.logs)}`);
-              this.logger.info(
-                `State from source logs: ${JSON.stringify(msg.state.data)}`
-              );
-              for (const log of msg.logs) {
-                logWriter?.writeSourceLog(log);
-              }
+              this.logger.debug(`Received ${msg.logs.length} source logs`);
+              logFiles?.writeSourceLogs(...msg.logs);
             } else {
               stateMessage = msg;
             }
