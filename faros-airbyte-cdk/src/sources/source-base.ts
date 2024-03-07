@@ -1,4 +1,4 @@
-import {cloneDeep, keyBy} from 'lodash';
+import {keyBy} from 'lodash';
 import VError from 'verror';
 
 import {NonFatalError} from '../errors';
@@ -126,16 +126,11 @@ export abstract class AirbyteSourceBase<
     config: Config,
     redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    state?: AirbyteState
+    state: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info(`Syncing ${this.name}`);
-    const connectorState = State.decompress(cloneDeep(state ?? {}));
     yield new AirbyteSourceConfigMessage(
-      {
-        data: config.compress_state
-          ? State.compress(connectorState)
-          : connectorState,
-      },
+      {data: config.compress_state ? State.compress(state) : state},
       redactedConfig,
       this.type,
       this.mode(config)
@@ -160,7 +155,7 @@ export abstract class AirbyteSourceBase<
         const generator = this.readStream(
           streamInstance,
           configuredStream,
-          connectorState,
+          state,
           config.max_slice_failures
         );
 
@@ -189,11 +184,7 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield new AirbyteSourceStatusMessage(
-          {
-            data: config.compress_state
-              ? State.compress(connectorState)
-              : connectorState,
-          },
+          {data: config.compress_state ? State.compress(state) : state},
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
@@ -231,11 +222,7 @@ export abstract class AirbyteSourceBase<
     }
 
     yield new AirbyteSourceStatusMessage(
-      {
-        data: config.compress_state
-          ? State.compress(connectorState)
-          : connectorState,
-      },
+      {data: config.compress_state ? State.compress(state) : state},
       {status: 'SUCCESS'}
     );
     this.logger.info(`Finished syncing ${this.name}`);

@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,7 +12,7 @@ import {Okta, OktaConfig} from './okta';
 import {Groups, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new OktaSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

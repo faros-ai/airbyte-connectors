@@ -15,7 +15,7 @@ import {
 } from './protocol';
 
 export class AirbyteLogger {
-  private level = AirbyteLogLevel.INFO;
+  level = AirbyteLogLevel.INFO;
 
   constructor(level?: AirbyteLogLevel) {
     if (level) {
@@ -55,6 +55,8 @@ export class AirbyteLogger {
   write(msg: AirbyteMessage): void {
     AirbyteLogger.writeMessage(msg, this.level);
   }
+
+  flush(): void {}
 
   /**
    * Creates a Pino Logger writing messages in Airbyte format

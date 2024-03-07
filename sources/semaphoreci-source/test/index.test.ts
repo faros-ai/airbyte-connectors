@@ -36,7 +36,7 @@ function generateLinkHeaders(first = 1, next = 0, last = 1): any {
 }
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG

@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,7 +12,7 @@ import {Backlog, BacklogConfig} from './backlog';
 import {Issues, Projects, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new BacklogSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

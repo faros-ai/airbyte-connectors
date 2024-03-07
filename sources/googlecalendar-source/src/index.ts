@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -17,7 +17,7 @@ import {Calendars, Events} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new GooglecalendarSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

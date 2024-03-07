@@ -2,6 +2,7 @@
 
 import {Command} from 'commander';
 import fs from 'fs';
+import {cloneDeep} from 'lodash';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
@@ -11,10 +12,12 @@ import {AirbyteConfig, AirbyteState} from '../protocol';
 import {Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
+import {AirbyteSourceLogger} from './source-logger';
+import {State} from './state';
 
 export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   constructor(
-    protected readonly logger: AirbyteLogger,
+    protected readonly logger: AirbyteSourceLogger,
     protected readonly source: AirbyteSource<Config>
   ) {
     super(logger);
@@ -89,6 +92,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();
           const redactedConfig = redactConfig(config, spec);
+          this.logger.compressState = config.compress_state ?? false;
           this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
@@ -99,12 +103,15 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           try {
+            this.logger.state = state ?? {};
             const res = await this.source.onBeforeRead(config, catalog, state);
+            const clonedState = State.decompress(cloneDeep(res.state ?? {}));
+            this.logger.state = clonedState;
             const iter = this.source.read(
               res.config,
               redactedConfig,
               res.catalog,
-              res.state
+              clonedState
             );
             for await (const message of iter) {
               this.logger.write(message);
@@ -117,6 +124,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               w.stack
             );
             throw e;
+          } finally {
+            this.logger.flush();
           }
         }
       );

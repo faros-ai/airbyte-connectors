@@ -1,8 +1,8 @@
 import {Command} from 'commander';
 import {
   AirbyteConfiguredCatalog,
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteState,
@@ -16,7 +16,7 @@ import {Pipelines, Projects, Tests} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new CircleCISource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

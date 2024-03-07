@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -13,7 +13,7 @@ import {Trello, TrelloConfig} from './trello';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new TrelloSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

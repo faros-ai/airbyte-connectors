@@ -1,6 +1,11 @@
 import {AxiosRequestConfig} from 'axios';
 import {AirbyteConfig, AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
-import {FarosClient, FarosClientConfig} from 'faros-js-client';
+import {
+  FarosClient,
+  FarosClientConfig,
+  makeAxiosInstanceWithRetry,
+} from 'faros-js-client';
+import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
 
 export interface Account {
@@ -40,7 +45,7 @@ class FarosSyncClient extends FarosClient {
   constructor(
     cfg: FarosClientConfig,
     private readonly airbyteLogger?: AirbyteLogger,
-    axiosConfig?: AxiosRequestConfig
+    private readonly axiosConfig?: AxiosRequestConfig
   ) {
     super(cfg, airbyteLogger?.asPino('info'), axiosConfig);
   }
@@ -143,6 +148,35 @@ class FarosSyncClient extends FarosClient {
         `Failed to update sync ${syncId} for account ${accountId}`
       )
     );
+  }
+
+  async getAccountSyncLogFileUrl(
+    accountId: string,
+    syncId: string,
+    hash: string
+  ): Promise<string | undefined> {
+    const result: {uploadUrl: string} = await this.attemptRequest(
+      this.request('POST', `/accounts/${accountId}/syncs/${syncId}/logs`, {
+        hash,
+      }),
+      `Failed to generate log file url for sync ${syncId} for account ${accountId}`
+    );
+    return result?.uploadUrl;
+  }
+
+  async uploadLogs(url: string, content: string, hash: string): Promise<void> {
+    console.log('Uploading logs');
+    const api = makeAxiosInstanceWithRetry(
+      this.axiosConfig ?? DEFAULT_AXIOS_CONFIG,
+      this.logger
+    );
+    await api.put(url, content, {
+      headers: {
+        'content-length': content.length,
+        'content-md5': hash,
+        'content-type': 'text/plain',
+      },
+    });
   }
 
   private attemptRequest<T>(

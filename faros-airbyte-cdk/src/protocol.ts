@@ -155,6 +155,10 @@ export class AirbyteLog implements AirbyteMessage {
   }
 }
 
+export function isAirbyteLog(msg: AirbyteMessage): msg is AirbyteLog {
+  return msg.type === AirbyteMessageType.LOG;
+}
+
 export const AirbyteRawStreamPrefix = '_airbyte_raw_';
 export const AirbyteRawABId = '_airbyte_ab_id';
 export const AirbyteRawEmittedAt = '_airbyte_emitted_at';
@@ -323,6 +327,21 @@ export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
   }
 }
 
+export interface AirbyteSourceLog {
+  timestamp: number;
+  message: {
+    level: number;
+    msg: string;
+  };
+}
+
+export class AirbyteSourceLogsMessage extends AirbyteStateMessage {
+  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(state: {data: AirbyteState}, readonly logs: AirbyteSourceLog[]) {
+    super(state);
+  }
+}
+
 export function isStateMessage(
   msg: AirbyteMessage
 ): msg is AirbyteStateMessage {
@@ -343,4 +362,10 @@ export function isSourceConfigMessage(
   return (
     isStateMessage(msg) && !!(msg as AirbyteSourceConfigMessage).redactedConfig
   );
+}
+
+export function isSourceLogsMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceLogsMessage {
+  return isStateMessage(msg) && !!(msg as AirbyteSourceLogsMessage).logs;
 }

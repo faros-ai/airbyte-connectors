@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,7 +12,7 @@ import {Octopus, OctopusConfig} from './octopus';
 import {Deployments, Releases} from './streams';
 
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new OctopusSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }

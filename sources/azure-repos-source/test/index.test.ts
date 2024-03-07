@@ -7,7 +7,11 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {AzureRepos, DEFAULT_CUTOFF_DAYS, DEFAULT_PAGE_SIZE} from '../src/azure-repos';
+import {
+  AzureRepos,
+  DEFAULT_CUTOFF_DAYS,
+  DEFAULT_PAGE_SIZE,
+} from '../src/azure-repos';
 import * as sut from '../src/index';
 
 const azureRepo = AzureRepos.make;
@@ -16,7 +20,7 @@ const ALL_BRANCHES_RE = new RegExp('.*');
 jest.mock('axios');
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
