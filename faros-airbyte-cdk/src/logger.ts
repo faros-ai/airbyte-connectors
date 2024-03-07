@@ -56,10 +56,6 @@ export class AirbyteLogger {
     writeMessage(msg, this.level);
   }
 
-  flush(): void {
-    // Override as necessary
-  }
-
   /**
    * Creates a Pino Logger writing messages in Airbyte format
    *

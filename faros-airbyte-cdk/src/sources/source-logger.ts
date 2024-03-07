@@ -55,7 +55,7 @@ export class AirbyteSourceLogger extends AirbyteLogger {
     }
   }
 
-  override flush(): void {
+  flush(): void {
     if (!this.batch.length) {
       return;
     }

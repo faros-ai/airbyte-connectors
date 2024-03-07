@@ -122,6 +122,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               `Encountered an error while reading from source: ${w} - ${s}`,
               w.stack
             );
+            this.logger.flush();
             throw e;
           } finally {
             this.logger.flush();
