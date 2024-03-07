@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {AirbyteLogLevel, AirbyteSourceLogger} from 'faros-airbyte-cdk';
 
 import * as sut from '../src/octopusClient';
 
