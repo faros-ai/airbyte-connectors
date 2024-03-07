@@ -643,15 +643,17 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
-      const logs = await logFiles?.sortedLogs(this.logger);
-      if (account?.local && sync?.syncId && logs) {
-        const client = this.getFarosClient();
-        const url = await client.getAccountSyncLogFileUrl(
-          accountId,
-          sync.syncId,
-          logs.hash
-        );
-        await client.uploadLogs(url, logs.content, logs.hash);
+      if (logFiles) {
+        const logs = await logFiles.sortedLogs(this.logger);
+        if (account?.local && sync?.syncId && logs) {
+          const client = this.getFarosClient();
+          const url = await client.getAccountSyncLogFileUrl(
+            accountId,
+            sync.syncId,
+            logs.hash
+          );
+          await client.uploadLogs(url, logs.content, logs.hash);
+        }
       }
     }
   }
