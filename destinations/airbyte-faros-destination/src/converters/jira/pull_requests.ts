@@ -20,7 +20,10 @@ export class PullRequests extends JiraConverter {
       {
         model: 'tms_TaskPullRequestAssociation',
         record: {
-          task: {uid: pullRequest.issue.key, source},
+          task: {
+            uid: pullRequest.issue.key,
+            source,
+          },
           pullRequest: {
             repository: {
               organization: {

@@ -2,7 +2,6 @@ import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils, wrapApiError} from 'faros-js-client';
-import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
@@ -30,50 +29,6 @@ export interface Project {
   readonly name?: string;
   readonly description?: string;
   readonly archived?: boolean;
-}
-
-export interface Board {
-  readonly id: string;
-  readonly projectId: string;
-  readonly name: string;
-  readonly type: string;
-}
-
-export interface SprintReport {
-  issues: ReadonlyArray<SprintIssue>;
-  completedPoints?: number;
-  completedInAnotherSprintPoints?: number;
-  notCompletedPoints?: number;
-  puntedPoints?: number;
-  plannedPoints?: number;
-}
-
-export interface Sprint {
-  readonly id: string;
-  readonly boardId: string;
-  readonly name: string;
-  readonly state: string;
-  readonly goal: string;
-  readonly activatedDate?: Date;
-  readonly startDate?: Date;
-  readonly endDate?: Date;
-  readonly completeDate?: Date;
-  readonly report?: SprintReport;
-}
-
-export interface SprintIssue {
-  readonly key: string;
-  readonly points: number;
-  readonly status?: Status;
-  readonly addedDuringSprint?: boolean;
-}
-
-export interface Epic {
-  readonly id: string;
-  readonly key: string;
-  readonly name: string;
-  readonly status: Status;
-  readonly description?: string;
 }
 
 export interface Issue {
@@ -107,18 +62,6 @@ export interface Issue {
   readonly resolutionDate: Date;
 }
 
-export interface Release {
-  readonly id: string;
-  readonly name: string;
-  readonly description?: string;
-  readonly archived?: boolean;
-  readonly released?: boolean;
-  readonly overdue?: boolean;
-  readonly startDate?: Date;
-  readonly releaseDate?: Date;
-  readonly projectId: string;
-}
-
 interface Parent {
   key: string;
   type?: string;
@@ -149,19 +92,6 @@ interface SprintHistory {
 export interface SprintInfo {
   readonly currentSprintId: string;
   readonly history: ReadonlyArray<SprintHistory>;
-}
-
-export interface User {
-  readonly displayName: string;
-  readonly emailAddress: string;
-  readonly accountId?: string;
-  readonly key?: string;
-  readonly active: boolean;
-}
-
-export interface Team {
-  readonly id: string;
-  readonly displayName: string;
 }
 
 export enum RepoSource {
@@ -235,29 +165,20 @@ const prRegex = new RegExp(
     'stateCount=(?<count>[0-9]+)})'
 );
 
-const TEAM_LIMIT = 100;
-
-const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
-
-const TEAMS_FOR_USER_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'gql', 'getTeamsForUser.gql'),
-  'utf8'
-);
-
 const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
-const prefixChars = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
 
-const DEFAULT_CONCURRENCY_LIMIT = 5;
-const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_TIMEOUT = 120000; // 120 seconds
+export const DEFAULT_CONCURRENCY_LIMIT = 5;
+export const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_CUTOFF_LAG_DAYS = 0;
+export const DEFAULT_TIMEOUT = 120000; // 120 seconds
 
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
   // Counts the number of failes calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
 
-  private constructor(
+  constructor(
     // Pass base url to enable creating issue url that can navigated in browser
     // https://community.atlassian.com/t5/Jira-questions/How-can-I-get-an-issue-url-that-can-be-navigated-to-in-the/qaq-p/1500948
     private readonly baseURL: string,
@@ -672,113 +593,6 @@ export class Jira {
     return Object.values(uniqueSprints);
   }
 
-  async *getUsers(): AsyncIterableIterator<User> {
-    if (this.isCloud) {
-      const users = this.iterate((startAt) => {
-        return this.api.v2.users.getAllUsersDefault({
-          startAt,
-          maxResults: this.maxPageSize,
-        });
-      }, this.toUser);
-      for await (const user of users) {
-        yield user;
-      }
-      return;
-    }
-    if (!this.useUsersPrefixSearch) {
-      const users = this.findUsers('.');
-      for await (const user of users) {
-        yield user;
-      }
-      return;
-    }
-
-    // Keep track of seen users in order to avoid returning duplicates
-    const seenUsers = new Set<string>();
-
-    // Try searching users by a single character prefix first
-    for (const prefix of prefixChars) {
-      let userCount = 0;
-      const res = this.findUsers(prefix);
-      for await (const u of res) {
-        userCount++;
-        const uid = this.userId(u);
-        if (!seenUsers.has(uid)) {
-          seenUsers.add(uid);
-          yield u;
-        }
-      }
-      // Since we got exactly 1000 results back we are probably hitting
-      // the limit of Jira search API. Let's try searching by two character prefix
-      // https://jira.atlassian.com/browse/JRASERVER-65089
-      if (userCount === 1000) {
-        for (const prefix2 of prefixChars) {
-          const res = this.findUsers(prefix + prefix2);
-          for await (const u of res) {
-            const uid = this.userId(u);
-            if (!seenUsers.has(uid)) {
-              seenUsers.add(uid);
-              yield u;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private findUsers(username: string): AsyncIterableIterator<User> {
-    this.logger?.debug("Searching for users with username '%s'", username);
-    return this.iterate((startAt) => {
-      // use custom method searchUsers for Jira Server
-      return this.api.searchUsers(username, startAt, this.maxPageSize);
-    }, this.toUser);
-  }
-
-  private toUser(item: any): User | undefined {
-    // For Jira Server user accountType is not defined.
-    // For Jira Cloud user accountType has the following values:
-    // - 'atlassian' - a regular Atlassian user account
-    // - 'app' - a system account used for Connect applications and OAuth 2.0 to represent external systems
-    // - 'customer' -  a Jira Service Desk account representing an external service desk
-    if (!item.accountType || item.accountType === 'atlassian') {
-      return {
-        key: item.key,
-        accountId: item.accountId,
-        displayName: item.displayName,
-        emailAddress: item.emailAddress,
-        active: item.active,
-      };
-    }
-    return undefined;
-  }
-
-  private userId(u: User): string {
-    let id = '';
-    for (const k of Object.keys(u).sort()) {
-      id += `[${k}:${u[k]}]`;
-    }
-    return id;
-  }
-
-  // Use Jira graphQL endpoint to retrieve teams for user
-  async getTeamsForUser(accountId: string): Promise<ReadonlyArray<Team>> {
-    try {
-      const response = await this.api.graphql(TEAMS_FOR_USER_QUERY, {
-        accountId,
-        limit: TEAM_LIMIT,
-        orgId: '',
-      });
-
-      if (isNil(response.data.TeamsOfUser)) {
-        return [];
-      }
-
-      return response.data.TeamsOfUser.result;
-    } catch (err: any) {
-      throw new VError(err, 'Failed to sync teams for user %s', accountId);
-    }
-  }
-
   private async getPullRequestSources(
     issueId: string
   ): Promise<ReadonlyArray<string>> {
@@ -827,6 +641,7 @@ export class Jira {
 
   private static hasPullRequests(devField: any): boolean {
     if (devField && devField !== '{}') {
+      // example of dev field that matches PR details to use as devField parameter for testing -> "PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}"
       const m = prRegex.exec(devField);
       if (m?.groups) {
         const groups = m.groups;
@@ -1020,20 +835,6 @@ export class Jira {
     }
   }
 
-  async getProject(id: string): Promise<Project> {
-    const project = await this.api.v2.projects.getProject({
-      projectIdOrKey: id,
-      expand: 'description',
-    });
-
-    const hasPermission = await this.hasBrowseProjectPerms(project.key);
-    if (!hasPermission) {
-      throw new VError('Insufficient permissions for project: %s', project.key);
-    }
-
-    return project;
-  }
-
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: BROWSE_PROJECTS_PERM,
@@ -1049,147 +850,6 @@ export class Jira {
       projectsByKey.set(project.key, project);
     }
     return projectsByKey;
-  }
-
-  getBoards(projectId: string): AsyncIterableIterator<Board> {
-    return this.iterate(
-      (startAt) =>
-        this.api.agile.board.getAllBoards({
-          projectKeyOrId: projectId,
-          startAt,
-          maxResults: this.maxPageSize,
-        }),
-      (item: any) => ({
-        id: item.id.toString(),
-        key: item.key,
-        projectId: projectId,
-        name: item.name,
-        type: item.type,
-      })
-    );
-  }
-
-  async getBoardJQL(boardId: string): Promise<string> {
-    const board = await this.api.agile.board.getConfiguration({
-      boardId: Utils.parseInteger(boardId),
-    });
-    const filterJQL = await this.api.v2.filters.getFilter({
-      id: Utils.parseInteger(board.filter.id),
-      expand: 'jql',
-    });
-    return filterJQL.jql;
-  }
-
-  getSprints(
-    boardId: string,
-    range?: [Date, Date]
-  ): AsyncIterableIterator<Sprint> {
-    return this.iterate(
-      (startAt) =>
-        this.api.agile.board.getAllSprints({
-          boardId: Utils.parseInteger(boardId),
-          startAt,
-          maxResults: this.maxPageSize,
-        }),
-      async (item: any) => {
-        const completeDate = Utils.toDate(item.completeDate);
-        // Ignore sprints completed before the input date range cutoff date
-        if (range && completeDate && completeDate < range[0]) {
-          return;
-        }
-        let report;
-        try {
-          if (
-            this.sprintHistoryFetchFailures <
-              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
-            toLower(item.state) != 'future'
-          ) {
-            report = await this.api.getSprintReport(boardId, item.id);
-            this.sprintHistoryFetchFailures = 0;
-          }
-        } catch (err: any) {
-          this.logger?.warn(
-            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
-          );
-          if (
-            this.sprintHistoryFetchFailures++ >=
-            MAX_SPRINT_HISTORY_FETCH_FAILURES
-          ) {
-            this.logger?.warn(
-              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
-            );
-          }
-        }
-
-        return {
-          id: item.id.toString(),
-          boardId: boardId,
-          name: item.name,
-          state: item.state,
-          goal: item.goal,
-          activatedDate: Utils.toDate(report?.sprint?.activatedDate),
-          startDate: Utils.toDate(item.startDate),
-          endDate: Utils.toDate(item.endDate),
-          completeDate,
-          report: this.toSprint(report?.contents),
-        };
-      }
-    );
-  }
-
-  private toSprint(report: any): SprintReport {
-    if (!report) {
-      return;
-    }
-    const toFloat = (value: any): number | undefined => {
-      if (isNil(value)) {
-        return undefined;
-      }
-      return Utils.parseFloatFixedPoint(value);
-    };
-    const toSprintIssues = (issues, status): SprintIssue[] =>
-      issues?.map((i) => {
-        const addedDuringSprint = report?.issueKeysAddedDuringSprint?.[i.key];
-        return {
-          key: i.key,
-          status: {category: status},
-          points: toFloat(i.currentEstimateStatistic?.statFieldValue?.value),
-          addedDuringSprint,
-        };
-      }) || [];
-
-    const issues: SprintIssue[] = [];
-    issues.push(...toSprintIssues(report?.completedIssues, 'Completed'));
-    issues.push(
-      ...toSprintIssues(
-        report?.issuesCompletedInAnotherSprint,
-        'CompletedOutsideSprint'
-      )
-    );
-    issues.push(
-      ...toSprintIssues(
-        report?.issuesNotCompletedInCurrentSprint,
-        'NotCompleted'
-      )
-    );
-    issues.push(...toSprintIssues(report?.puntedIssues, 'Removed'));
-    const plannedPoints = sum([
-      toFloat(report?.completedIssuesInitialEstimateSum?.value),
-      toFloat(report?.issuesNotCompletedInitialEstimateSum?.value),
-      toFloat(report?.puntedIssuesInitialEstimateSum?.value),
-      toFloat(report?.issuesCompletedInAnotherSprintInitialEstimateSum?.value),
-    ]);
-
-    return {
-      issues,
-      completedPoints: toFloat(report?.completedIssuesEstimateSum?.value),
-      notCompletedPoints: toFloat(report?.issuesNotCompletedEstimateSum?.value),
-      puntedPoints: toFloat(report?.puntedIssuesEstimateSum?.value),
-      completedInAnotherSprintPoints: toFloat(
-        report?.issuesCompletedInAnotherSprintEstimateSum?.value
-      ),
-      plannedPoints,
-    };
   }
 
   private getPoints(item: {
@@ -1254,92 +914,6 @@ export class Jira {
       }
     }
     return sprints;
-  }
-
-  getIssuesInSprint(sprintId: string): AsyncIterableIterator<SprintIssue> {
-    const fields = ['key', 'status'];
-    POINTS_FIELD_NAMES.flatMap((f) => this.fieldIdsByName.get(f) ?? []).forEach(
-      (id) => fields.push(id)
-    );
-    return this.iterate(
-      (startAt) =>
-        this.api.agile.sprint.getIssuesForSprint({
-          sprintId: Utils.parseInteger(sprintId),
-          startAt,
-          fields,
-          maxResults: this.maxPageSize,
-        }),
-      (item: any) => ({
-        key: item.key,
-        points: this.getPoints(item),
-        status: {
-          category: item.fields.status?.statusCategory?.name,
-          detail: item.fields.status?.name,
-        },
-      }),
-      'issues'
-    );
-  }
-
-  getEpics(
-    projectId: string,
-    updateRange?: [Date, Date]
-  ): AsyncIterableIterator<Epic> {
-    let jql = `project = "${projectId}" AND issuetype = "Epic"`;
-    if (updateRange) {
-      jql = `(${jql}) AND ${Jira.updatedBetweenJql(updateRange)}`;
-    }
-    return this.iterate(
-      (startAt) =>
-        this.api.v2.issueSearch.searchForIssuesUsingJql({
-          jql,
-          fields: ['summary', 'description', 'status'],
-          startAt,
-          maxResults: this.maxPageSize,
-        }),
-      (item: any) => ({
-        id: item.id,
-        key: item.key,
-        name: item.fields.summary,
-        description: item.fields.description,
-        status: {
-          category: item.fields.status?.statusCategory?.name,
-          detail: item.fields.status?.name,
-        },
-      }),
-      'issues'
-    );
-  }
-
-  getIssueKeys(
-    jql: string,
-    updateRange?: [Date, Date]
-  ): AsyncIterableIterator<string> {
-    if (updateRange) {
-      jql = `(${jql}) AND ${Jira.updatedBetweenJql(updateRange)}`;
-    }
-    return this.iterate(
-      (startAt) =>
-        this.api.v2.issueSearch.searchForIssuesUsingJql({
-          jql,
-          startAt,
-          fields: ['key'],
-          maxResults: this.maxPageSize,
-        }),
-      (value: any) => value.key,
-      'issues'
-    );
-  }
-
-  getLabels(): AsyncIterableIterator<string> {
-    return this.iterate(
-      (startAt) =>
-        this.api.v2.labels.getAllLabels({
-          startAt,
-          maxResults: this.maxPageSize,
-        }),
-      (value: any) => value.toString()
-    );
   }
 
   @Memoize()
@@ -1534,28 +1108,6 @@ export class Jira {
     );
   }
 
-  getReleases(projectId: string): AsyncIterableIterator<Release> {
-    return this.iterate(
-      (startAt) =>
-        this.api.v2.projectVersions.getProjectVersionsPaginated({
-          projectIdOrKey: projectId,
-          startAt,
-          maxResults: this.maxPageSize,
-        }),
-      (item: any) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        archived: item.archived,
-        released: item.released,
-        startDate: Utils.toDate(item.startDate),
-        releaseDate: Utils.toDate(item.releaseDate),
-        projectId: item.projectId,
-      }),
-      'values'
-    );
-  }
-
   /**
    * Attempts to retrieve a field's value from several typical locations within
    * the field's JSON blob. If the blob is an array, then each item's value will
@@ -1623,10 +1175,6 @@ export class Jira {
       val = jsonValue.displayName;
     }
     return val;
-  }
-
-  retrieveStats(): any {
-    return this.api.getStats();
   }
 }
 

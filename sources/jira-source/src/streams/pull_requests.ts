@@ -8,7 +8,13 @@ import {Utils} from 'faros-js-client';
 import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 
-import {Jira, JiraConfig, PullRequest} from '../jira';
+import {
+  DEFAULT_CUTOFF_DAYS,
+  DEFAULT_CUTOFF_LAG_DAYS,
+  Jira,
+  JiraConfig,
+  PullRequest,
+} from '../jira';
 import {ProjectState, StreamSlice, StreamState} from './common';
 
 export class PullRequests extends AirbyteStreamBase {
@@ -52,10 +58,9 @@ export class PullRequests extends AirbyteStreamBase {
     const projectKeys =
       this.config.projectKeys ?? (await jira.getProjectsByKey()).keys();
     for (const projectKey of projectKeys) {
-      const projectState = streamState?.[projectKey];
       const updateRange =
         syncMode === SyncMode.INCREMENTAL
-          ? this.getUpdateRange(projectState)
+          ? this.getUpdateRange(streamState?.[projectKey])
           : undefined;
       for await (const issue of jira.getIssues(projectKey, true, updateRange)) {
         if (issue.pullRequests) {
@@ -75,14 +80,14 @@ export class PullRequests extends AirbyteStreamBase {
   }
 
   private getUpdateRange(projectState: ProjectState): [Date, Date] {
-    const initialCutoff = moment()
-      .utc()
-      .subtract(this.config.cutoffDays, 'days')
-      .toDate();
     const newCutoff = moment().utc().toDate();
+    // If no state with cutoff, use the default one applying cutoffDays
     const fromCutoff = projectState?.issueCutoff
       ? Utils.toDate(projectState.issueCutoff)
-      : initialCutoff;
+      : moment()
+          .utc()
+          .subtract(this.config.cutoffDays || DEFAULT_CUTOFF_DAYS, 'days')
+          .toDate();
     return [fromCutoff, newCutoff];
   }
 
@@ -98,7 +103,7 @@ export class PullRequests extends AirbyteStreamBase {
     const newCutoff = moment().utc().toDate();
     if (latestRecordCutoff > currentCutoff) {
       const cutoffLag = moment
-        .duration(this.config.cutoffLagDays, 'days')
+        .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
         .asMilliseconds();
       const newState: ProjectState = {
         issueCutoff: Math.max(
