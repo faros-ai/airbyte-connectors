@@ -25,7 +25,7 @@ export class PullRequests extends AirbyteStreamBase {
     super(logger);
   }
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/taskPullrequests.json');
+    return require('../../resources/schemas/pullRequests.json');
   }
 
   get primaryKey(): StreamKey | undefined {

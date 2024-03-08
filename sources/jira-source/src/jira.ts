@@ -5,7 +5,7 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
-import {concat} from 'lodash';
+import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -52,6 +52,18 @@ export interface PullRequest {
   readonly issue?: PullRequestIssue;
 }
 
+export interface SprintReport {
+  readonly id: number;
+  readonly boardId?: string;
+  readonly projectKey?: string;
+  readonly completedAt?: Date;
+  readonly completedPoints?: number;
+  readonly completedInAnotherSprintPoints?: number;
+  readonly notCompletedPoints?: number;
+  readonly puntedPoints?: number;
+  readonly plannedPoints?: number;
+}
+
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
   readonly username?: string;
@@ -69,6 +81,14 @@ export interface JiraConfig extends AirbyteConfig {
   readonly projectKeys?: ReadonlyArray<string>;
   readonly cutoffDays?: number;
   readonly cutoffLagDays?: number;
+  readonly boardIds?: ReadonlyArray<string>;
+}
+
+export interface Board {
+  readonly id: string;
+  readonly projectId: string;
+  readonly name: string;
+  readonly type: string;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -100,6 +120,8 @@ const prRegex = new RegExp(
 
 const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
+
+const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
 export const DEFAULT_CONCURRENCY_LIMIT = 5;
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -502,6 +524,20 @@ export class Jira {
     }
   }
 
+  async getProject(id: string): Promise<Project> {
+    const project = await this.api.v2.projects.getProject({
+      projectIdOrKey: id,
+      expand: 'description',
+    });
+
+    const hasPermission = await this.hasBrowseProjectPerms(project.key);
+    if (!hasPermission) {
+      throw new VError('Insufficient permissions for project: %s', project.key);
+    }
+
+    return project;
+  }
+
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: BROWSE_PROJECTS_PERM,
@@ -595,5 +631,98 @@ export class Jira {
       },
       'issues'
     );
+  }
+
+  getBoards(projectId: string): AsyncIterableIterator<Board> {
+    return this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllBoards({
+          projectKeyOrId: projectId,
+          startAt,
+          maxResults: this.maxPageSize,
+        }),
+      (item: any) => ({
+        id: item.id.toString(),
+        key: item.key,
+        projectId: projectId,
+        name: item.name,
+        type: item.type,
+      })
+    );
+  }
+
+  getSprintReports(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<SprintReport> {
+    return this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllSprints({
+          boardId: Utils.parseInteger(boardId),
+          startAt,
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => {
+        const completeDate = Utils.toDate(item.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          return;
+        }
+        let report;
+        try {
+          if (
+            this.sprintHistoryFetchFailures <
+              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+            toLower(item.state) != 'future'
+          ) {
+            report = await this.api.getSprintReport(boardId, item.id);
+            this.sprintHistoryFetchFailures = 0;
+          }
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
+          );
+          if (
+            this.sprintHistoryFetchFailures++ >=
+            MAX_SPRINT_HISTORY_FETCH_FAILURES
+          ) {
+            this.logger?.warn(
+              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+            );
+          }
+        }
+        return this.toSprintReportFields(report?.contents, item);
+      }
+    );
+  }
+
+  private toSprintReportFields(report: any, sprint: any): SprintReport {
+    if (!report) {
+      return;
+    }
+    const toFloat = (value: any): number | undefined => {
+      if (isNil(value)) {
+        return undefined;
+      }
+      return Utils.parseFloatFixedPoint(value);
+    };
+    const plannedPoints = sum([
+      toFloat(report?.completedIssuesInitialEstimateSum?.value),
+      toFloat(report?.issuesNotCompletedInitialEstimateSum?.value),
+      toFloat(report?.puntedIssuesInitialEstimateSum?.value),
+      toFloat(report?.issuesCompletedInAnotherSprintInitialEstimateSum?.value),
+    ]);
+
+    return {
+      id: sprint.id,
+      completedAt: Utils.toDate(sprint.completeDate),
+      completedPoints: toFloat(report?.completedIssuesEstimateSum?.value),
+      notCompletedPoints: toFloat(report?.issuesNotCompletedEstimateSum?.value),
+      puntedPoints: toFloat(report?.puntedIssuesEstimateSum?.value),
+      completedInAnotherSprintPoints: toFloat(
+        report?.issuesCompletedInAnotherSprintEstimateSum?.value
+      ),
+      plannedPoints,
+    };
   }
 }
