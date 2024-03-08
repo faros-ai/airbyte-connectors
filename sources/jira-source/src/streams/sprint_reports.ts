@@ -46,7 +46,7 @@ export class SprintReports extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *streamSlices() {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     if (!this.config.projectKeys) {
       const jira = await Jira.instance(this.config, this.logger);
       for await (const project of jira.getProjects()) {
@@ -78,19 +78,21 @@ export class SprintReports extends AirbyteStreamBase {
           this.logger.info(`Skipped board ${board.name} (id: ${board.id})`);
           continue;
         }
-        const updateRange =
-          syncMode === SyncMode.INCREMENTAL
-            ? this.getUpdateRange(streamState, board.id)
-            : undefined;
-        for await (const report of jira.getSprintReports(
-          board.id,
-          updateRange
-        )) {
-          yield {
-            ...report,
-            projectKey: projectKey,
-            boardId: board.id,
-          };
+        if (board.type === 'scrum') {
+          const updateRange =
+            syncMode === SyncMode.INCREMENTAL
+              ? this.getUpdateRange(streamState, board.id)
+              : undefined;
+          for await (const report of jira.getSprintReports(
+            board.id,
+            updateRange
+          )) {
+            yield {
+              ...report,
+              projectKey: projectKey,
+              boardId: board.id,
+            };
+          }
         }
       }
     }
@@ -120,7 +122,10 @@ export class SprintReports extends AirbyteStreamBase {
     return range;
   }
 
-  getUpdatedState(currentStreamState: StreamState, latestRecord: SprintReport) {
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: SprintReport
+  ): StreamState {
     const project = latestRecord.projectKey;
     const board = latestRecord.boardId;
     const currentBoards = currentStreamState[project]?.boards ?? [];
