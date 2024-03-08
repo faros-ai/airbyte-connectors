@@ -8,7 +8,7 @@ import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
-import {Runner} from '../runner';
+import {ConnectorVersion, Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
@@ -77,6 +77,7 @@ export class AirbyteDestinationRunner<
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const {catalog, spec, config} = await this.loadConfig(opts);
           const redactedConfig = redactConfig(config, spec);
+          this.logger.info(`Destination version: ${ConnectorVersion}`);
           this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 

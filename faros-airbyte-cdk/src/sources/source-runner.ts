@@ -8,7 +8,7 @@ import path from 'path';
 import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteConfig, AirbyteState} from '../protocol';
-import {Runner} from '../runner';
+import {ConnectorVersion, Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
 import {AirbyteSourceLogger} from './source-logger';
@@ -92,6 +92,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           const spec = await this.source.spec();
           const redactedConfig = redactConfig(config, spec);
           this.logger.compressState = config.compress_state ?? false;
+          this.logger.info(`Source version: ${ConnectorVersion}`);
           this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
