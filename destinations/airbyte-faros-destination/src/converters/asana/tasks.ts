@@ -156,6 +156,7 @@ export class Tasks extends AsanaConverter {
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
         statusChangelog: statusChangelog ?? null,
+        resolvedAt: Utils.toDate(task.completed_at),
       },
     });
 
