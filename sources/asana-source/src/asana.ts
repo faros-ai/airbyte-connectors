@@ -166,6 +166,7 @@ export class Asana {
       'permalink_url',
       'resource_type',
       'workspace',
+      'completed_at',
     ];
 
     const params = {
