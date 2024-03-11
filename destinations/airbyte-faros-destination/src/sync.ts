@@ -39,15 +39,15 @@ interface AccountSyncResponse {
   sync: AccountSync;
 }
 
-const DEFAULT_TYPE = 'custom';
+const DEFAULT_ACCOUNT_TYPE = 'custom';
 
 class FarosSyncClient extends FarosClient {
   constructor(
     cfg: FarosClientConfig,
     private readonly airbyteLogger?: AirbyteLogger,
-    private readonly axiosConfig?: AxiosRequestConfig
+    private readonly _axiosConfig?: AxiosRequestConfig
   ) {
-    super(cfg, airbyteLogger?.asPino('info'), axiosConfig);
+    super(cfg, airbyteLogger?.asPino('info'), _axiosConfig);
   }
 
   async createAccountSync(
@@ -77,13 +77,13 @@ class FarosSyncClient extends FarosClient {
     type?: string,
     mode?: string
   ): Promise<Account | undefined> {
-    this.logger?.info(`Creating local account ${accountId}`);
+    this.logger?.debug(`Creating local account ${accountId}`);
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('POST', '/accounts', {
           accountId,
-          params: {...redactedConfig, graphName, graphql_api: 'v2'},
-          type: type ?? DEFAULT_TYPE,
+          params: {...redactedConfig, graphName},
+          type: type ?? DEFAULT_ACCOUNT_TYPE,
           mode,
           local: true,
         }),
@@ -99,12 +99,12 @@ class FarosSyncClient extends FarosClient {
     type?: string,
     mode?: string
   ): Promise<Account | undefined> {
-    this.logger?.info(`Updating local account ${accountId}`);
+    this.logger?.debug(`Updating local account ${accountId}`);
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('PUT', `/accounts/${accountId}`, {
           params: {...redactedConfig, graphName, graphql_api: 'v2'},
-          type: type ?? DEFAULT_TYPE,
+          type: type ?? DEFAULT_ACCOUNT_TYPE,
           mode,
           local: true,
         }),
@@ -165,19 +165,22 @@ class FarosSyncClient extends FarosClient {
   }
 
   async uploadLogs(url: string, content: string, hash: string): Promise<void> {
-    this.logger.info('Uploading sync logs');
+    this.logger.debug('Uploading sync logs');
     const api = makeAxiosInstanceWithRetry(
-      this.axiosConfig ?? DEFAULT_AXIOS_CONFIG,
+      this._axiosConfig ?? DEFAULT_AXIOS_CONFIG,
       this.logger
     );
-    await api.put(url, content, {
-      headers: {
-        'content-length': content.length,
-        'content-md5': hash,
-        'content-type': 'text/plain',
-      },
-    });
-    this.logger.info('Finished uploading sync logs');
+    await this.attemptRequest(
+      api.put(url, content, {
+        headers: {
+          'content-length': content.length,
+          'content-md5': hash,
+          'content-type': 'text/plain',
+        },
+      }),
+      'Failed to upload sync logs'
+    );
+    this.logger.debug('Finished uploading sync logs');
   }
 
   private attemptRequest<T>(

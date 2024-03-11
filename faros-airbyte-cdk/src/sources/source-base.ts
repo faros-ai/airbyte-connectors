@@ -130,7 +130,7 @@ export abstract class AirbyteSourceBase<
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info(`Syncing ${this.name}`);
     yield new AirbyteSourceConfigMessage(
-      {data: config.compress_state ? State.compress(state) : state},
+      {data: maybeCompressState(config, state)},
       redactedConfig,
       this.type,
       this.mode(config)
@@ -161,9 +161,7 @@ export abstract class AirbyteSourceBase<
 
         for await (const message of generator) {
           if (isStateMessage(message)) {
-            const msgState = config.compress_state
-              ? State.compress(message.state.data)
-              : message.state.data;
+            const msgState = maybeCompressState(config, message.state.data);
             if (isSourceStatusMessage(message)) {
               yield new AirbyteSourceStatusMessage(
                 {data: msgState},
@@ -184,7 +182,7 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield new AirbyteSourceStatusMessage(
-          {data: config.compress_state ? State.compress(state) : state},
+          {data: maybeCompressState(config, state)},
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
@@ -222,7 +220,7 @@ export abstract class AirbyteSourceBase<
     }
 
     yield new AirbyteSourceStatusMessage(
-      {data: config.compress_state ? State.compress(state) : state},
+      {data: maybeCompressState(config, state)},
       {status: 'SUCCESS'}
     );
     this.logger.info(`Finished syncing ${this.name}`);
@@ -468,4 +466,11 @@ export abstract class AirbyteSourceBase<
       }
     );
   }
+}
+
+function maybeCompressState(
+  config: AirbyteConfig,
+  state: AirbyteState
+): AirbyteState {
+  return config.compress_state === false ? state : State.compress(state);
 }

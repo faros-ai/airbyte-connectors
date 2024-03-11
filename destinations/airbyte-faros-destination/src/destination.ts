@@ -447,7 +447,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         this.logger.shouldSaveLogs = !!account.local;
         if (account.local) {
           logId = undefined; // let Faros generate a unique log id
-          logFiles = new LogFiles();
+          logFiles = new LogFiles(this.logger);
           this.logger.logFiles = logFiles;
         }
         sync = await this.getFarosClient().createAccountSync(

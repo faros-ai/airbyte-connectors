@@ -91,7 +91,6 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();
           const redactedConfig = redactConfig(config, spec);
-          this.logger.compressState = config.compress_state ?? false;
           this.logger.info(`Source version: ${ConnectorVersion}`);
           this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
