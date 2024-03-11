@@ -505,19 +505,9 @@ export class Jira {
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
-        this.logger.info(
-          `This is the item that comes in the getIssues: ${JSON.stringify(
-            item
-          )}`
-        );
         let pullRequests: ReadonlyArray<PullRequest> = [];
         if (syncPullRequests) {
           const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
-          this.logger.info(
-            `This is the devFieldIds that come in the getIssues: ${JSON.stringify(
-              devFieldIds
-            )}`
-          );
           for (const devFieldId of devFieldIds) {
             if (
               pullRequests.length === 0 &&
@@ -527,11 +517,6 @@ export class Jira {
                 pullRequests = await this.getPullRequests(item.id);
                 this.logger?.debug(
                   `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
-                );
-                this.logger.info(
-                  `This are the fields that come in Pull requests: ${JSON.stringify(
-                    pullRequests
-                  )}`
                 );
               } catch (err: any) {
                 this.logger?.warn(
