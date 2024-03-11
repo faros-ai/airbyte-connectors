@@ -29,7 +29,7 @@ export class TaskPullRequests extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey | undefined {
-    return 'number';
+    return undefined;
   }
 
   get cursorField(): string | string[] {
