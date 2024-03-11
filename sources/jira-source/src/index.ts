@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
-import {TaskPullRequests} from './streams/task_pull_requests';
+import {IssuePullRequests} from './streams/issue_pull_requests';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -33,6 +33,6 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     return [true, undefined];
   }
   streams(config: JiraConfig): AirbyteStreamBase[] {
-    return [new TaskPullRequests(config, this.logger)];
+    return [new IssuePullRequests(config, this.logger)];
   }
 }

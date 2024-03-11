@@ -11,13 +11,14 @@ import {Dictionary} from 'ts-essentials';
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
+  DEV_FIELD_NAME,
   Jira,
   JiraConfig,
 } from '../jira';
 import {PullRequest} from '../models';
 import {ProjectState, StreamSlice, StreamState} from './common';
 
-export class TaskPullRequests extends AirbyteStreamBase {
+export class IssuePullRequests extends AirbyteStreamBase {
   constructor(
     private readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger
@@ -25,7 +26,7 @@ export class TaskPullRequests extends AirbyteStreamBase {
     super(logger);
   }
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/taskPullrequests.json');
+    return require('../../resources/schemas/issuePullRequests.json');
   }
 
   get primaryKey(): StreamKey | undefined {
@@ -62,18 +63,23 @@ export class TaskPullRequests extends AirbyteStreamBase {
         syncMode === SyncMode.INCREMENTAL
           ? this.getUpdateRange(streamState?.[projectKey])
           : undefined;
-      for await (const issue of jira.getIssues(projectKey, true, updateRange)) {
-        if (issue.pullRequests) {
-          for (const pullRequest of issue.pullRequests) {
-            yield {
-              issue: {
-                key: issue.key,
-                updated: issue.updated,
-                project: projectKey,
-              },
-              ...pullRequest,
-            };
-          }
+      for await (const issue of jira.getIssues(
+        projectKey,
+        true,
+        updateRange,
+        true,
+        true,
+        [DEV_FIELD_NAME]
+      )) {
+        for (const pullRequest of issue.pullRequests || []) {
+          yield {
+            issue: {
+              key: issue.key,
+              updated: issue.updated,
+              project: projectKey,
+            },
+            ...pullRequest,
+          };
         }
       }
     }

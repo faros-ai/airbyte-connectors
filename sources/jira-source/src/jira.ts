@@ -36,7 +36,7 @@ export interface JiraConfig extends AirbyteConfig {
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
 // https://community.atlassian.com/t5/Jira-Software-questions/Story-point-and-story-point-estimate-duplicate-fields/qaq-p/904742
-const DEV_FIELD_NAME = 'Development';
+export const DEV_FIELD_NAME = 'Development';
 const POINTS_FIELD_NAMES: ReadonlyArray<string> = [
   'Story Points',
   'Story point estimate',
@@ -481,50 +481,43 @@ export class Jira {
   getIssues(
     projectId: string,
     syncPullRequests: boolean,
-    updateRange?: [Date, Date]
+    updateRange?: [Date, Date],
+    fetchKeysOnly = false,
+    includeAdditionalFields = true,
+    additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
     let jql = `project = "${projectId}"`;
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
-    const fieldIds = [
-      'assignee',
-      'created',
-      'creator',
-      'description',
-      'issuelinks',
-      'issuetype',
-      'labels',
-      'parent',
-      'priority',
-      'project',
-      'resolution',
-      'resolutiondate',
-      'status',
-      'subtasks',
-      'summary',
-      'updated',
-    ];
-    const additionalFieldIds: string[] = [];
-    for (const fieldId of this.fieldNameById.keys()) {
-      // Skip fields that are already included in the fields above
-      if (!fieldIds.includes(fieldId)) {
-        additionalFieldIds.push(fieldId);
-      }
-    }
+    const fields = this.getIssueFields(
+      fetchKeysOnly,
+      includeAdditionalFields,
+      additionalFields
+    );
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
-          expand: 'changelog',
+          fields,
+          expand: fetchKeysOnly ? undefined : 'changelog',
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
+        this.logger.info(
+          `This is the item that comes in the getIssues: ${JSON.stringify(
+            item
+          )}`
+        );
         let pullRequests: ReadonlyArray<PullRequest> = [];
         if (syncPullRequests) {
           const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
+          this.logger.info(
+            `This is the devFieldIds that come in the getIssues: ${JSON.stringify(
+              devFieldIds
+            )}`
+          );
           for (const devFieldId of devFieldIds) {
             if (
               pullRequests.length === 0 &&
@@ -558,5 +551,48 @@ export class Jira {
       },
       'issues'
     );
+  }
+
+  private getIssueFields(
+    fetchKeysOnly: boolean,
+    includeAdditionalFields: boolean,
+    additionalFields?: string[]
+  ): string[] {
+    const fieldIds = fetchKeysOnly
+      ? ['id', 'key', 'created', 'updated']
+      : [
+          'assignee',
+          'created',
+          'creator',
+          'description',
+          'issuelinks',
+          'issuetype',
+          'labels',
+          'parent',
+          'priority',
+          'project',
+          'resolution',
+          'resolutiondate',
+          'status',
+          'subtasks',
+          'summary',
+          'updated',
+        ];
+    if (includeAdditionalFields) {
+      const additionalFieldIds: string[] = [];
+      for (const fieldId of this.fieldNameById.keys()) {
+        // Skip fields that are already included in the fields above,
+        // or that are not in the additional fields list if provided
+        if (
+          !fieldIds.includes(fieldId) &&
+          (!additionalFields ||
+            additionalFields.includes(this.fieldNameById.get(fieldId)))
+        ) {
+          additionalFieldIds.push(fieldId);
+        }
+      }
+      return [...fieldIds, ...additionalFieldIds];
+    }
+    return fieldIds;
   }
 }
