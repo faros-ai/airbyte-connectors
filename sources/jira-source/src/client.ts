@@ -1,11 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {RequestConfig} from 'jira.js';
-import jira, {
-  AgileClient,
-  BaseClient,
-  Version2Client,
-  Version2Models,
-} from 'jira.js';
+import jira, {AgileClient, Version2Client, Version2Models} from 'jira.js';
 
 import {
   AgileClientWithRetry,
@@ -18,7 +13,6 @@ const GRAPHQL_PATH = '/gateway/api/directory/graphql';
 
 /** Client that extends the jira.js clients with retries and internal APIs */
 export class JiraClient {
-  private readonly internalApi: BaseClientWithRetry;
   readonly v2: Version2ClientWithRetry;
   readonly agile: AgileClientWithRetry;
 
@@ -41,27 +35,18 @@ export class JiraClient {
       maxAttempts,
       cfg.logger
     );
-    const BaseClientWithRetries = WithRetry(
-      BaseClient,
-      maxAttempts,
-      cfg.logger
-    );
 
     this.v2 = new Version2ClientWithRetries(cfg);
     this.agile = new AgileClientWithRetries(cfg);
-    this.internalApi = new BaseClientWithRetries(cfg);
   }
 
-  // add this header {
-  //   "X-ExperimentalApi": "IssueDevelopmentInformation"
-  // }
   async graphql(query: string, variables?: any): Promise<any> {
     const config: RequestConfig = {
       url: GRAPHQL_PATH,
       method: 'POST',
       data: {query, variables},
     };
-    return await this.internalApi.sendRequest<any>(config, undefined);
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   async getDevStatusSummary(issueId: string): Promise<any> {
@@ -70,7 +55,7 @@ export class JiraClient {
       method: 'GET',
       params: {issueId},
     };
-    return await this.internalApi.sendRequest<any>(config, undefined);
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   async getDevStatusDetail(
@@ -83,7 +68,7 @@ export class JiraClient {
       method: 'GET',
       params: {issueId, applicationType, dataType},
     };
-    return await this.internalApi.sendRequest<any>(config, undefined);
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   /** This method is for Jira Server only to enable getting inactive users */
@@ -105,19 +90,16 @@ export class JiraClient {
       },
     };
 
-    return await this.internalApi.sendRequest<any>(config, undefined);
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   getStats(): {[key: string]: number} {
     const v2Stats = this.v2.getStats();
     const agileStats = this.agile.getStats();
-    const internalApiStats = this.internalApi.getStats();
-    const totalCalls =
-      v2Stats.totalCalls + agileStats.totalCalls + internalApiStats.totalCalls;
+    const totalCalls = v2Stats.totalCalls + agileStats.totalCalls;
     return {
       ...v2Stats,
       ...agileStats,
-      ...internalApiStats,
       totalCalls,
     };
   }
@@ -128,7 +110,7 @@ export class JiraClient {
       method: 'GET',
       params: {rapidViewId: boardId, sprintId},
     };
-    return await this.internalApi.sendRequest<any>(config, undefined);
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   /** This method is for Jira Server. GetAllProjects is deprecated in Cloud */
@@ -138,8 +120,9 @@ export class JiraClient {
       method: 'GET',
       params: {expand: 'description'},
     };
-    return await this.internalApi.sendRequest<
-      ReadonlyArray<Version2Models.Project>
-    >(config, undefined);
+    return await this.v2.sendRequest<ReadonlyArray<Version2Models.Project>>(
+      config,
+      undefined
+    );
   }
 }

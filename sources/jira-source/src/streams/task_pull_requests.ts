@@ -13,11 +13,11 @@ import {
   DEFAULT_CUTOFF_LAG_DAYS,
   Jira,
   JiraConfig,
-  PullRequest,
 } from '../jira';
+import {PullRequest} from '../models';
 import {ProjectState, StreamSlice, StreamState} from './common';
 
-export class PullRequests extends AirbyteStreamBase {
+export class TaskPullRequests extends AirbyteStreamBase {
   constructor(
     private readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger
@@ -36,7 +36,7 @@ export class PullRequests extends AirbyteStreamBase {
     return ['issue', 'updated'];
   }
 
-  async *streamSlices() {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     if (!this.config.projectKeys) {
       const jira = await Jira.instance(this.config, this.logger);
       for await (const project of jira.getProjects()) {

@@ -5,52 +5,14 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
+import {Project} from 'jira.js/out/version2/models';
 import {concat} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-
-export interface Project {
-  readonly id?: string;
-  readonly key?: string;
-  readonly name?: string;
-  readonly description?: string;
-  readonly archived?: boolean;
-}
-
-export interface Issue {
-  readonly id: string;
-  readonly key: string;
-  readonly created?: Date;
-  readonly updated?: Date;
-  readonly pullRequests: ReadonlyArray<PullRequest>;
-}
-export enum RepoSource {
-  BITBUCKET = 'Bitbucket',
-  GITHUB = 'GitHub',
-  GIT_FOR_JIRA_CLOUD = 'GitForJiraCloud',
-  GITLAB = 'GitLab',
-  VCS = 'VCS',
-}
-
-export interface Repo {
-  readonly source: RepoSource;
-  readonly org: string;
-  readonly name: string;
-}
-
-export interface PullRequestIssue {
-  readonly key: string;
-  readonly updated: Date;
-  readonly project: string;
-}
-export interface PullRequest {
-  readonly repo: Repo;
-  readonly number: number;
-  readonly issue?: PullRequestIssue;
-}
+import {Issue, PullRequest, Repo, RepoSource} from './models';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
@@ -121,9 +83,7 @@ export class Jira {
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
     private readonly maxPageSize: number,
-    private readonly additionalFieldsArrayLimit: number,
-    private readonly logger: AirbyteLogger,
-    private readonly useUsersPrefixSearch?: boolean
+    private readonly logger: AirbyteLogger
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -201,9 +161,7 @@ export class Jira {
       isCloud,
       cfg.concurrencyLimit,
       cfg.maxPageSize,
-      cfg.additionalFieldsArrayLimit,
-      logger,
-      cfg.useUsersPrefixSearch
+      logger
     );
   }
 
@@ -576,6 +534,11 @@ export class Jira {
                 pullRequests = await this.getPullRequests(item.id);
                 this.logger?.debug(
                   `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
+                );
+                this.logger.info(
+                  `This are the fields that come in Pull requests: ${JSON.stringify(
+                    pullRequests
+                  )}`
                 );
               } catch (err: any) {
                 this.logger?.warn(
