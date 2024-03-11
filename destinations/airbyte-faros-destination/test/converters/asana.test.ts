@@ -79,6 +79,7 @@ describe('asana', () => {
     const TASK = {
       gid: '1205346703408262',
       created_at: '2023-08-24T15:52:00.014Z',
+      completed_at: '2023-08-25T15:52:00.014Z',
       custom_fields: [],
       dependencies: [],
       dependents: [],
