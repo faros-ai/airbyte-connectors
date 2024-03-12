@@ -8,7 +8,6 @@ import {
   AirbyteState,
   isAirbyteLog,
 } from '../protocol';
-import {State} from './state';
 
 const MAX_BATCH_SIZE_KB = 100 * 1024;
 
