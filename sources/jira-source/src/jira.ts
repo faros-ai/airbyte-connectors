@@ -5,52 +5,14 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
-import {concat, isNil, sum, toLower} from 'lodash';
+import {Project} from 'jira.js/out/version2/models';
+import {concat} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-
-export interface Project {
-  readonly id?: string;
-  readonly key?: string;
-  readonly name?: string;
-  readonly description?: string;
-  readonly archived?: boolean;
-}
-
-export interface Issue {
-  readonly id: string;
-  readonly key: string;
-  readonly created?: Date;
-  readonly updated?: Date;
-  readonly pullRequests: ReadonlyArray<PullRequest>;
-}
-export enum RepoSource {
-  BITBUCKET = 'Bitbucket',
-  GITHUB = 'GitHub',
-  GIT_FOR_JIRA_CLOUD = 'GitForJiraCloud',
-  GITLAB = 'GitLab',
-  VCS = 'VCS',
-}
-
-export interface Repo {
-  readonly source: RepoSource;
-  readonly org: string;
-  readonly name: string;
-}
-
-export interface PullRequestIssue {
-  readonly key: string;
-  readonly updated: Date;
-  readonly project: string;
-}
-export interface PullRequest {
-  readonly repo: Repo;
-  readonly number: number;
-  readonly issue?: PullRequestIssue;
-}
+import {Issue, PullRequest, Repo, RepoSource} from './models';
 
 export interface SprintReport {
   readonly id: number;
@@ -94,7 +56,7 @@ export interface Board {
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
 // https://community.atlassian.com/t5/Jira-Software-questions/Story-point-and-story-point-estimate-duplicate-fields/qaq-p/904742
-const DEV_FIELD_NAME = 'Development';
+export const DEV_FIELD_NAME = 'Development';
 const POINTS_FIELD_NAMES: ReadonlyArray<string> = [
   'Story Points',
   'Story point estimate',
@@ -143,9 +105,7 @@ export class Jira {
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
     private readonly maxPageSize: number,
-    private readonly additionalFieldsArrayLimit: number,
-    private readonly logger: AirbyteLogger,
-    private readonly useUsersPrefixSearch?: boolean
+    private readonly logger: AirbyteLogger
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -223,9 +183,7 @@ export class Jira {
       isCloud,
       cfg.concurrencyLimit,
       cfg.maxPageSize,
-      cfg.additionalFieldsArrayLimit,
-      logger,
-      cfg.useUsersPrefixSearch
+      logger
     );
   }
 
@@ -559,44 +517,27 @@ export class Jira {
   getIssues(
     projectId: string,
     syncPullRequests: boolean,
-    updateRange?: [Date, Date]
+    updateRange?: [Date, Date],
+    fetchKeysOnly = false,
+    includeAdditionalFields = true,
+    additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
     let jql = `project = "${projectId}"`;
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
-    const fieldIds = [
-      'assignee',
-      'created',
-      'creator',
-      'description',
-      'issuelinks',
-      'issuetype',
-      'labels',
-      'parent',
-      'priority',
-      'project',
-      'resolution',
-      'resolutiondate',
-      'status',
-      'subtasks',
-      'summary',
-      'updated',
-    ];
-    const additionalFieldIds: string[] = [];
-    for (const fieldId of this.fieldNameById.keys()) {
-      // Skip fields that are already included in the fields above
-      if (!fieldIds.includes(fieldId)) {
-        additionalFieldIds.push(fieldId);
-      }
-    }
+    const fields = this.getIssueFields(
+      fetchKeysOnly,
+      includeAdditionalFields,
+      additionalFields
+    );
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
-          expand: 'changelog',
+          fields,
+          expand: fetchKeysOnly ? undefined : 'changelog',
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
@@ -631,6 +572,49 @@ export class Jira {
       },
       'issues'
     );
+  }
+
+  private getIssueFields(
+    fetchKeysOnly: boolean,
+    includeAdditionalFields: boolean,
+    additionalFields?: string[]
+  ): string[] {
+    const fieldIds = fetchKeysOnly
+      ? ['id', 'key', 'created', 'updated']
+      : [
+          'assignee',
+          'created',
+          'creator',
+          'description',
+          'issuelinks',
+          'issuetype',
+          'labels',
+          'parent',
+          'priority',
+          'project',
+          'resolution',
+          'resolutiondate',
+          'status',
+          'subtasks',
+          'summary',
+          'updated',
+        ];
+    if (includeAdditionalFields) {
+      const additionalFieldIds: string[] = [];
+      for (const fieldId of this.fieldNameById.keys()) {
+        // Skip fields that are already included in the fields above,
+        // or that are not in the additional fields list if provided
+        if (
+          !fieldIds.includes(fieldId) &&
+          (!additionalFields ||
+            additionalFields.includes(this.fieldNameById.get(fieldId)))
+        ) {
+          additionalFieldIds.push(fieldId);
+        }
+      }
+      return [...fieldIds, ...additionalFieldIds];
+    }
+    return fieldIds;
   }
 
   getBoards(projectId: string): AsyncIterableIterator<Board> {

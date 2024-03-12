@@ -55,6 +55,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",
@@ -97,6 +98,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",
@@ -126,6 +128,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T20:59:25.481Z,
       "source": "Asana",
       "status": Object {
         "category": "Done",
@@ -190,6 +193,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",
@@ -222,6 +226,7 @@ Array [
         "source": "Asana",
         "uid": "1205346703408261",
       },
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",
@@ -265,6 +270,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",
@@ -318,6 +324,7 @@ Array [
       "description": "Task 1 notes",
       "name": "Task 1",
       "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
       "source": "Asana",
       "status": Object {
         "category": "Todo",

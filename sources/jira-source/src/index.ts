@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
-import {PullRequests} from './streams/pull_requests';
+import {IssuePullRequests} from './streams/issue_pull_requests';
 import {SprintReports} from './streams/sprint_reports';
 
 /** The main entry point. */
@@ -35,7 +35,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   streams(config: JiraConfig): AirbyteStreamBase[] {
     return [
-      new PullRequests(config, this.logger),
+      new IssuePullRequests(config, this.logger),
       new SprintReports(config, this.logger),
     ];
   }

@@ -11,13 +11,14 @@ import {Dictionary} from 'ts-essentials';
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
+  DEV_FIELD_NAME,
   Jira,
   JiraConfig,
-  PullRequest,
 } from '../jira';
+import {PullRequest} from '../models';
 import {ProjectState, StreamSlice, StreamState} from './common';
 
-export class PullRequests extends AirbyteStreamBase {
+export class IssuePullRequests extends AirbyteStreamBase {
   constructor(
     private readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger
@@ -25,18 +26,18 @@ export class PullRequests extends AirbyteStreamBase {
     super(logger);
   }
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/pullRequests.json');
+    return require('../../resources/schemas/issuePullRequests.json');
   }
 
   get primaryKey(): StreamKey | undefined {
-    return 'number';
+    return undefined;
   }
 
   get cursorField(): string | string[] {
     return ['issue', 'updated'];
   }
 
-  async *streamSlices() {
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
     if (!this.config.projectKeys) {
       const jira = await Jira.instance(this.config, this.logger);
       for await (const project of jira.getProjects()) {
@@ -62,18 +63,23 @@ export class PullRequests extends AirbyteStreamBase {
         syncMode === SyncMode.INCREMENTAL
           ? this.getUpdateRange(streamState?.[projectKey])
           : undefined;
-      for await (const issue of jira.getIssues(projectKey, true, updateRange)) {
-        if (issue.pullRequests) {
-          for (const pullRequest of issue.pullRequests) {
-            yield {
-              issue: {
-                key: issue.key,
-                updated: issue.updated,
-                project: projectKey,
-              },
-              ...pullRequest,
-            };
-          }
+      for await (const issue of jira.getIssues(
+        projectKey,
+        true,
+        updateRange,
+        true,
+        true,
+        [DEV_FIELD_NAME]
+      )) {
+        for (const pullRequest of issue.pullRequests || []) {
+          yield {
+            issue: {
+              key: issue.key,
+              updated: issue.updated,
+              project: projectKey,
+            },
+            ...pullRequest,
+          };
         }
       }
     }

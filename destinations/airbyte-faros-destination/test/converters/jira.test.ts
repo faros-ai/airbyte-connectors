@@ -78,7 +78,7 @@ describe('jira', () => {
       issue_fields: 74,
       projects: 1,
       project_versions: 3,
-      pull_requests: 1,
+      issue_pull_requests: 1,
       workflow_statuses: 8,
     };
     const processed = _(processedByStream)

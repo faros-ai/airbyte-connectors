@@ -250,5 +250,5 @@
 {"type": "LOG", "log": {"level": "INFO", "message": "Read 8 records from workflow_statuses stream"}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Syncing stream: workflow_status_categories "}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Read 4 records from workflow_status_categories stream"}}
-{"type": "RECORD", "record": {"stream": "mytestsource__jira__pull_requests", "emitted_at": 1709750000862, "data": {"issue": {"key": "FAI-1750", "updated": "2024-03-05T17:56:24.884Z", "project": "FAI" }, "repo": {"source": "GitHub", "org": "faros-ai", "name": "feeds" },"number": 1059}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__issue_pull_requests", "emitted_at": 1709750000862, "data": {"issue": {"key": "FAI-1750", "updated": "2024-03-05T17:56:24.884Z", "project": "FAI" }, "repo": {"source": "GitHub", "org": "faros-ai", "name": "feeds" },"number": 1059}}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}

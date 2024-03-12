@@ -230,7 +230,7 @@
     },
     {
       "stream": {
-        "name": "mytestsource__jira__pull_requests"
+        "name": "mytestsource__jira__issue_pull_requests"
       },
       "destination_sync_mode": "append"
     },

@@ -4,8 +4,7 @@ import {toLower} from 'lodash';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
-// Required as dependency by Issues converter
-export class PullRequests extends JiraConverter {
+export class IssuePullRequests extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_TaskPullRequestAssociation',
   ];

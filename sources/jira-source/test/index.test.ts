@@ -93,7 +93,6 @@ describe('index', () => {
         true,
         5,
         100,
-        100,
         logger
       );
     });
