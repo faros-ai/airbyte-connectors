@@ -5,26 +5,15 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
+import {Board} from 'jira.js/out/agile/models/board';
 import {Project} from 'jira.js/out/version2/models';
-import {concat} from 'lodash';
+import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource} from './models';
-
-export interface SprintReport {
-  readonly id: number;
-  readonly boardId?: string;
-  readonly projectKey?: string;
-  readonly completedAt?: Date;
-  readonly completedPoints?: number;
-  readonly completedInAnotherSprintPoints?: number;
-  readonly notCompletedPoints?: number;
-  readonly puntedPoints?: number;
-  readonly plannedPoints?: number;
-}
+import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
@@ -44,13 +33,6 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoffDays?: number;
   readonly cutoffLagDays?: number;
   readonly boardIds?: ReadonlyArray<string>;
-}
-
-export interface Board {
-  readonly id: string;
-  readonly projectId: string;
-  readonly name: string;
-  readonly type: string;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -626,9 +608,8 @@ export class Jira {
           maxResults: this.maxPageSize,
         }),
       (item: any) => ({
-        id: item.id.toString(),
+        id: item.id,
         key: item.key,
-        projectId: projectId,
         name: item.name,
         type: item.type,
       })

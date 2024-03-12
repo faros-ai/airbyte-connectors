@@ -31,3 +31,15 @@ export interface PullRequest {
   readonly number: number;
   readonly issue?: PullRequestIssue;
 }
+
+export interface SprintReport {
+  readonly id: number;
+  readonly boardId?: string;
+  readonly projectKey?: string;
+  readonly completedAt?: Date;
+  readonly completedPoints?: number;
+  readonly completedInAnotherSprintPoints?: number;
+  readonly notCompletedPoints?: number;
+  readonly puntedPoints?: number;
+  readonly plannedPoints?: number;
+}
