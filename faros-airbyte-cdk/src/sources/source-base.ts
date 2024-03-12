@@ -468,7 +468,7 @@ export abstract class AirbyteSourceBase<
   }
 }
 
-function maybeCompressState(
+export function maybeCompressState(
   config: AirbyteConfig,
   state: AirbyteState
 ): AirbyteState {

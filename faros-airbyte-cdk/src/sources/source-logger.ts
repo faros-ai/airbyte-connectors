@@ -16,23 +16,14 @@ export class AirbyteSourceLogger extends AirbyteLogger {
   readonly batch: AirbyteSourceLog[] = [];
   private totalSize = 0;
 
-  private _state: AirbyteState = {};
-  private _compressState = false;
+  private _getState: () => AirbyteState;
 
   constructor(level?: AirbyteLogLevel) {
     super(level);
   }
 
-  get state(): AirbyteState {
-    return this._compressState ? State.compress(this._state) : this._state;
-  }
-
-  set state(state: AirbyteState) {
-    this._state = state;
-  }
-
-  set compressState(compressState: boolean) {
-    this._compressState = compressState;
+  set getState(getState: () => AirbyteState) {
+    this._getState = getState;
   }
 
   override write(msg: AirbyteMessage): void {
@@ -50,18 +41,21 @@ export class AirbyteSourceLogger extends AirbyteLogger {
 
       this.batch.push(sourceLog);
       this.totalSize += JSON.stringify(sourceLog).length;
-      if (this.totalSize > MAX_BATCH_SIZE_KB) {
+      if (this.totalSize > MAX_BATCH_SIZE_KB && this._getState) {
         this.flush();
       }
     }
   }
 
   flush(): void {
-    if (!this.batch.length) {
+    if (!this.batch.length || !this._getState) {
       return;
     }
     super.write(
-      new AirbyteSourceLogsMessage({data: {state: this.state}}, this.batch)
+      new AirbyteSourceLogsMessage(
+        {data: {state: this._getState()}},
+        this.batch
+      )
     );
     this.batch.length = 0; // clears the array
     this.totalSize = 0;
