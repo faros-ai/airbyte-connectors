@@ -5,6 +5,7 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
+import {Board} from 'jira.js/out/agile/models/board';
 import {Project} from 'jira.js/out/version2/models';
 import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
@@ -12,7 +13,7 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource} from './models';
+import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;

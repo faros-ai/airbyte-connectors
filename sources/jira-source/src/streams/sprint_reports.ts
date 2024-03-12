@@ -5,6 +5,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {Project} from 'jira.js/out/version2/models';
 import moment from 'moment/moment';
 import {Dictionary} from 'ts-essentials';
 
@@ -13,9 +14,8 @@ import {
   DEFAULT_CUTOFF_LAG_DAYS,
   Jira,
   JiraConfig,
-  Project,
-  SprintReport,
 } from '../jira';
+import {SprintReport} from '../models';
 import {StreamSlice} from './common';
 
 type StreamState = {
@@ -74,23 +74,24 @@ export class SprintReports extends AirbyteStreamBase {
       const project =
         projectsByKey?.get(projectKey) ?? (await jira.getProject(projectKey));
       for await (const board of jira.getBoards(project.id)) {
-        if (this.config.boardIds && !this.config.boardIds.includes(board.id)) {
-          this.logger.info(`Skipped board ${board.name} (id: ${board.id})`);
+        const boardId = board.id.toString();
+        if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
+          this.logger.info(`Skipped board ${board.name} (id: ${boardId})`);
           continue;
         }
         if (board.type === 'scrum') {
           const updateRange =
             syncMode === SyncMode.INCREMENTAL
-              ? this.getUpdateRange(streamState, board.id)
+              ? this.getUpdateRange(streamState, boardId)
               : undefined;
           for await (const report of jira.getSprintReports(
-            board.id,
+            boardId,
             updateRange
           )) {
             yield {
               ...report,
               projectKey: projectKey,
-              boardId: board.id,
+              boardId,
             };
           }
         }
