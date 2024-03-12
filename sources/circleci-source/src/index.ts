@@ -1,8 +1,8 @@
 import {Command} from 'commander';
 import {
   AirbyteConfiguredCatalog,
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteState,
@@ -16,13 +16,17 @@ import {Pipelines, Projects, Tests} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new CircleCISource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** CircleCI source implementation. */
 export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
+  get type(): string {
+    return 'circleci';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

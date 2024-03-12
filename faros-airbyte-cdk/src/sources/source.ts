@@ -47,7 +47,8 @@ export abstract class AirbyteSource<
    */
   abstract read(
     config: Config,
+    redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    state?: AirbyteState
+    state: AirbyteState
   ): AsyncGenerator<AirbyteMessage>;
 }

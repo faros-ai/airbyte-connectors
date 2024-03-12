@@ -2,19 +2,22 @@
 
 import {Command} from 'commander';
 import fs from 'fs';
+import {cloneDeep} from 'lodash';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
-import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteState} from '../protocol';
-import {Runner} from '../runner';
+import {ConnectorVersion, Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig} from '../utils';
 import {AirbyteSource} from './source';
+import {maybeCompressState} from './source-base';
+import {AirbyteSourceLogger} from './source-logger';
+import {State} from './state';
 
 export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   constructor(
-    protected readonly logger: AirbyteLogger,
+    protected readonly logger: AirbyteSourceLogger,
     protected readonly source: AirbyteSource<Config>
   ) {
     super(logger);
@@ -88,7 +91,9 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();
-          this.logger.info(`Config: ${redactConfig(config, spec)}`);
+          const redactedConfig = redactConfig(config, spec);
+          this.logger.info(`Source version: ${ConnectorVersion}`);
+          this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
           let state: AirbyteState | undefined = undefined;
@@ -98,8 +103,17 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           try {
+            this.logger.getState = () => maybeCompressState(config, state);
             const res = await this.source.onBeforeRead(config, catalog, state);
-            const iter = this.source.read(res.config, res.catalog, res.state);
+            const clonedState = State.decompress(cloneDeep(res.state ?? {}));
+            this.logger.getState = () =>
+              maybeCompressState(config, clonedState);
+            const iter = this.source.read(
+              res.config,
+              redactedConfig,
+              res.catalog,
+              clonedState
+            );
             for await (const message of iter) {
               this.logger.write(message);
             }
@@ -110,7 +124,10 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               `Encountered an error while reading from source: ${w} - ${s}`,
               w.stack
             );
+            this.logger.flush();
             throw e;
+          } finally {
+            this.logger.flush();
           }
         }
       );

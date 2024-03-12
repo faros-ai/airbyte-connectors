@@ -33,6 +33,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "@esm2cjs/p-queue": "^7.3.0",
     "@segment/analytics-node": "^2.0.0",
     "axios": "^1.6.5",
     "date-format": "^4.0.6",

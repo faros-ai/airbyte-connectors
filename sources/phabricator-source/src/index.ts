@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -21,13 +21,17 @@ import {
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new PhabricatorSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Phabricator source implementation. */
 export class PhabricatorSource extends AirbyteSourceBase<PhabricatorConfig> {
+  get type(): string {
+    return 'phabricator';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

@@ -15,7 +15,7 @@ import {
 } from './protocol';
 
 export class AirbyteLogger {
-  private level = AirbyteLogLevel.INFO;
+  level = AirbyteLogLevel.INFO;
 
   constructor(level?: AirbyteLogLevel) {
     if (level) {
@@ -53,7 +53,7 @@ export class AirbyteLogger {
   }
 
   write(msg: AirbyteMessage): void {
-    AirbyteLogger.writeMessage(msg, this.level);
+    writeMessage(msg, this.level);
   }
 
   /**
@@ -71,7 +71,7 @@ export class AirbyteLogger {
         const lvl: AirbyteLogLevel = msg.level
           ? AirbyteLogLevel[pino.levels.labels[msg.level].toUpperCase()]
           : defaultLevel;
-        AirbyteLogger.writeMessage(AirbyteLog.make(lvl, msg.msg), defaultLevel);
+        writeMessage(AirbyteLog.make(lvl, msg.msg), defaultLevel);
         next();
       },
     });
@@ -79,27 +79,31 @@ export class AirbyteLogger {
     const logger: Logger<string> = pino({level}, destination);
     return logger;
   }
-
-  private static writeMessage(
-    msg: AirbyteMessage,
-    level: AirbyteLogLevel
-  ): void {
-    if (msg.type === AirbyteMessageType.LOG) {
-      const levelOrder = AirbyteLogLevelOrder(level);
-      const msgLevelOrder = AirbyteLogLevelOrder((msg as AirbyteLog).log.level);
-      if (levelOrder > msgLevelOrder) return;
-    }
-
-    console.log(
-      JSON.stringify(
-        msg.type === AirbyteMessageType.RECORD
-          ? prepareAirbyteRecord(msg as AirbyteRecord)
-          : msg
-      )
-    );
-  }
 }
 
+export function shouldWriteLog(
+  msg: AirbyteLog,
+  level: AirbyteLogLevel
+): boolean {
+  return AirbyteLogLevelOrder(msg.log.level) >= AirbyteLogLevelOrder(level);
+}
+
+function writeMessage(msg: AirbyteMessage, level: AirbyteLogLevel): void {
+  if (
+    msg.type === AirbyteMessageType.LOG &&
+    !shouldWriteLog(msg as AirbyteLog, level)
+  ) {
+    return;
+  }
+
+  console.log(
+    JSON.stringify(
+      msg.type === AirbyteMessageType.RECORD
+        ? prepareAirbyteRecord(msg as AirbyteRecord)
+        : msg
+    )
+  );
+}
 function prepareAirbyteRecord(record: AirbyteRecord): AirbyteRecord {
   return new AirbyteRecord({
     stream: record.record.stream,

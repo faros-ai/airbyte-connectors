@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -13,13 +13,17 @@ import {Metrics} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new CloudWatchMetricsSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** CloudWatch Metrics source implementation. */
 export class CloudWatchMetricsSource extends AirbyteSourceBase<Config> {
+  get type(): string {
+    return 'cloudwatch-metrics';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

@@ -132,6 +132,12 @@ export async function initMockttp(mockttp: Mockttp): Promise<void> {
   // Hasura health check
   await mockttp.forGet('/healthz').once().thenReply(200, JSON.stringify({}));
 
+  // Get Faros Account
+  await mockttp
+    .forGet(`/accounts/${TEST_SOURCE_ID}`)
+    .once()
+    .thenReply(200, JSON.stringify({account: {accountId: TEST_SOURCE_ID}}));
+
   // Faros Account Sync
   const mockSyncResult = {
     sync: {
