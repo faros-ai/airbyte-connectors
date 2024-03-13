@@ -25,10 +25,9 @@ import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, keyBy, mapValues, pickBy, sortBy, uniq} from 'lodash';
+import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
-import {SyncRedactor} from 'redact-pii';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
 import {v4 as uuidv4, validate} from 'uuid';
@@ -54,6 +53,7 @@ import {
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 import {FarosDestinationLogger, LogFiles} from './destination-logger';
+import {FarosDestinationRedactor} from './destination-redactor';
 import FarosSyncClient, {
   Account,
   AccountSync,
@@ -89,7 +89,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
     private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
     private redactFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
-    private redactor: SyncRedactor = undefined,
+    private redactor: FarosDestinationRedactor = undefined,
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -353,18 +353,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       this.redactFieldsByModel = {};
     }
 
-    this.redactor = new SyncRedactor({
-      ...(config.redact_custom_regex && {
-        customRedactors: {
-          before: [
-            {
-              regexpPattern: new RegExp(config.redact_custom_regex, 'gi'),
-              replaceWith: 'REDACTED',
-            },
-          ],
-        },
-      }),
-    });
+    this.redactor = new FarosDestinationRedactor(
+      config.redact_custom_replace,
+      config.redact_custom_regex
+    );
 
     const jira_configs = config.source_specific_configs?.jira ?? {};
     if (
@@ -1028,12 +1020,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
       // Redact record fields if necessary
-      const redactions = this.redactFieldsByModel[result.model];
-      if (redactions?.length > 0) {
-        result.record = mapValues(result.record, (v, k) =>
-          redactions.includes(k) && typeof v === 'string'
-            ? this.redactor.redact(v)
-            : v
+      const fieldsToRedact = this.redactFieldsByModel[result.model];
+      if (fieldsToRedact?.length > 0) {
+        result.record = this.redactor.redactRecord(
+          result.record,
+          fieldsToRedact
         );
       }
 

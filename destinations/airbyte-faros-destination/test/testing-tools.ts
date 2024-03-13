@@ -42,9 +42,7 @@ export async function tempConfig(
   edition_configs?: Dictionary<any>,
   source_specific_configs?: Dictionary<any>,
   replace_origin_map?: Dictionary<any>,
-  exclude_fields_map?: Dictionary<any>,
-  redact_fields_map?: Dictionary<any>,
-  redact_custom_regex?: string
+  exclude_fields_map?: Dictionary<any>
 ): Promise<string> {
   const conf = getConf(
     url,
@@ -53,9 +51,7 @@ export async function tempConfig(
     edition_configs,
     source_specific_configs,
     replace_origin_map,
-    exclude_fields_map,
-    redact_fields_map,
-    redact_custom_regex
+    exclude_fields_map
   );
 
   return tempFile(JSON.stringify(conf), '.json');
@@ -68,9 +64,7 @@ export function getConf(
   edition_configs?: Dictionary<any>,
   source_specific_configs?: Dictionary<any>,
   replace_origin_map?: Dictionary<any>,
-  exclude_fields_map?: Dictionary<any>,
-  redact_fields_map?: Dictionary<any>,
-  redact_custom_regex?: string
+  exclude_fields_map?: Dictionary<any>
 ): any {
   const edition_configs_defaults =
     edition === Edition.CLOUD
@@ -102,8 +96,6 @@ export function getConf(
     source_specific_configs,
     replace_origin_map: JSON.stringify(replace_origin_map),
     exclude_fields_map: JSON.stringify(exclude_fields_map),
-    redact_fields_map: JSON.stringify(redact_fields_map),
-    redact_custom_regex: redact_custom_regex,
     faros_source_id: TEST_SOURCE_ID,
   };
   return conf;
