@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "repo": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["Bitbucket", "GitHub", "GitForJiraCloud", "GitLab", "VCS"]
+        },
+        "org": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": ["source", "org", "name"]
+    },
+    "number": {
+      "type": "integer"
+    }
+  },
+  "required": ["repo", "number"]
+}

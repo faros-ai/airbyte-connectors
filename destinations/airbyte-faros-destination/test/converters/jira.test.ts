@@ -1,8 +1,6 @@
 import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
-  AirbyteLog,
-  AirbyteLogLevel,
 } from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
@@ -12,7 +10,7 @@ import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {jiraAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('jira', () => {
   const logger = testLogger();
@@ -80,7 +78,7 @@ describe('jira', () => {
       issue_fields: 74,
       projects: 1,
       project_versions: 3,
-      pull_requests: 1,
+      issue_pull_requests: 1,
       workflow_statuses: 8,
     };
     const processed = _(processedByStream)
@@ -103,13 +101,19 @@ describe('jira', () => {
       tms_TaskBoardRelationship: 5,
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 5,
-      tms_TaskPullRequestAssociation: 2,
+      tms_TaskPullRequestAssociation: 1,
       tms_TaskReleaseRelationship__Deletion: 1,
       tms_TaskReleaseRelationship__Upsert: 3,
       tms_TaskTag: 2,
       tms_User: 29,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });
