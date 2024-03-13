@@ -1030,12 +1030,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       // Redact record fields if necessary
       const redactions = this.redactFieldsByModel[result.model];
       if (redactions?.length > 0) {
-        result.record = mapValues(result.record, (v, k) => {
-          if (redactions.includes(k) && typeof v === 'string') {
-            return this.redactor.redact(v);
-          }
-          return v;
-        });
+        result.record = mapValues(result.record, (v, k) =>
+          redactions.includes(k) && typeof v === 'string'
+            ? this.redactor.redact(v)
+            : v
+        );
       }
 
       // Write the record & increment the stats
