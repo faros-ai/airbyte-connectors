@@ -143,7 +143,7 @@ export class AirbyteLog implements AirbyteMessage {
     readonly log: {
       level: AirbyteLogLevel;
       message: string;
-      stack_trace: string;
+      stack_trace?: string;
     }
   ) {}
   static make(
@@ -153,6 +153,10 @@ export class AirbyteLog implements AirbyteMessage {
   ): AirbyteLog {
     return new AirbyteLog({level, message, stack_trace});
   }
+}
+
+export function isAirbyteLog(msg: AirbyteMessage): msg is AirbyteLog {
+  return msg.type === AirbyteMessageType.LOG;
 }
 
 export const AirbyteRawStreamPrefix = '_airbyte_raw_';
@@ -297,8 +301,72 @@ export type AirbyteSourceStatus =
 
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(readonly state: {data: AirbyteState}) {}
+}
+
+// We need to extend AirbyteStateMessage so that Airbyte Server will pass the message to the destination
+// Airbyte Server only passes records and state messages to the destination
+export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
   constructor(
-    readonly state: {data: AirbyteState},
-    readonly sourceStatus?: AirbyteSourceStatus
-  ) {}
+    state: {data: AirbyteState},
+    readonly sourceStatus: AirbyteSourceStatus
+  ) {
+    super(state);
+  }
+}
+
+export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
+  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(
+    state: {data: AirbyteState},
+    readonly redactedConfig: AirbyteConfig,
+    readonly sourceType?: string,
+    readonly sourceMode?: string
+  ) {
+    super(state);
+  }
+}
+
+export interface AirbyteSourceLog {
+  timestamp: number;
+  message: {
+    level: number;
+    msg: string;
+    stackTrace?: string;
+  };
+}
+
+export class AirbyteSourceLogsMessage extends AirbyteStateMessage {
+  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
+  constructor(state: {data: AirbyteState}, readonly logs: AirbyteSourceLog[]) {
+    super(state);
+  }
+}
+
+export function isStateMessage(
+  msg: AirbyteMessage
+): msg is AirbyteStateMessage {
+  return msg.type === AirbyteMessageType.STATE;
+}
+
+export function isSourceStatusMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceStatusMessage {
+  return (
+    isStateMessage(msg) && !!(msg as AirbyteSourceStatusMessage).sourceStatus
+  );
+}
+
+export function isSourceConfigMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceConfigMessage {
+  return (
+    isStateMessage(msg) && !!(msg as AirbyteSourceConfigMessage).redactedConfig
+  );
+}
+
+export function isSourceLogsMessage(
+  msg: AirbyteMessage
+): msg is AirbyteSourceLogsMessage {
+  return isStateMessage(msg) && !!(msg as AirbyteSourceLogsMessage).logs;
 }

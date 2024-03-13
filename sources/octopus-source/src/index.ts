@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,12 +12,16 @@ import {Octopus, OctopusConfig} from './octopus';
 import {Deployments, Releases} from './streams';
 
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new OctopusSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 export class OctopusSource extends AirbyteSourceBase<OctopusConfig> {
+  get type(): string {
+    return 'octopus';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

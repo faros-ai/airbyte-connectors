@@ -17,6 +17,81 @@ describe('FarosSyncClient', () => {
 
   const accountId = 'test-account';
   const missingAccountId = 'missing-account';
+  const graph = 'default';
+
+  describe('createLocalAccount', () => {
+    it('should create an account', async () => {
+      await mockttp
+        .forPost('/accounts')
+        .once()
+        .thenReply(200, JSON.stringify({account: {accountId}}));
+
+      const account = await farosSyncClient.createLocalAccount(
+        accountId,
+        graph,
+        {}
+      );
+      expect(account.accountId).toBe(accountId);
+    });
+  });
+
+  describe('updateLocalAccount', () => {
+    it('should update an account', async () => {
+      await mockttp
+        .forPut(`/accounts/${accountId}`)
+        .once()
+        .thenReply(200, JSON.stringify({account: {accountId}}));
+
+      const account = await farosSyncClient.updateLocalAccount(
+        accountId,
+        graph,
+        {}
+      );
+      expect(account.accountId).toBe(accountId);
+    });
+
+    it('should not fail if account is not found', async () => {
+      await mockttp
+        .forPut(`/accounts/${missingAccountId}`)
+        .once()
+        .thenReply(
+          404,
+          JSON.stringify({error: `Account ${missingAccountId} does not exist`})
+        );
+
+      const account = await farosSyncClient.updateLocalAccount(
+        missingAccountId,
+        graph,
+        {}
+      );
+      expect(account).toBeUndefined();
+    });
+  });
+
+  describe('getAccount', () => {
+    it('should get an account', async () => {
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .once()
+        .thenReply(200, JSON.stringify({account: {accountId}}));
+
+      const account = await farosSyncClient.getAccount(accountId);
+      expect(account.accountId).toBe(accountId);
+    });
+
+    it('should not fail if account is not found', async () => {
+      await mockttp
+        .forGet(`/accounts/${missingAccountId}`)
+        .once()
+        .thenReply(
+          404,
+          JSON.stringify({error: `Account ${missingAccountId} does not exist`})
+        );
+
+      const account = await farosSyncClient.getAccount(missingAccountId);
+      expect(account).toBeUndefined();
+    });
+  });
 
   describe('createAccountSync', () => {
     it('should create an account sync', async () => {

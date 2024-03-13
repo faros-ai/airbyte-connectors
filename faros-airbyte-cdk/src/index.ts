@@ -6,6 +6,7 @@ export * from './logger';
 export * from './protocol';
 export * from './sources/source-base';
 export * from './sources/source';
+export * from './sources/source-logger';
 export * from './sources/source-runner';
 export * from './sources/streams/stream-base';
 export * from './spec-loader';

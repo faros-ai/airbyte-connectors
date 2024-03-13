@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {AirbyteLogLevel, AirbyteSourceLogger} from 'faros-airbyte-cdk';
 
 import * as sut from '../src/octopusClient';
 
@@ -7,7 +7,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
