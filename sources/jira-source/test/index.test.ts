@@ -82,6 +82,7 @@ describe('index', () => {
   const testStream = async (
     streamIndex: any,
     expectedData: any,
+    streamConfig: JiraConfig,
     mockedImplementation?: any
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
@@ -97,7 +98,7 @@ describe('index', () => {
       );
     });
     const source = new sut.JiraSource(logger);
-    const streams = source.streams(config);
+    const streams = source.streams(streamConfig);
     const stream = streams[streamIndex];
     const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {});
 
@@ -140,7 +141,7 @@ describe('index', () => {
         },
       ],
     };
-    await testStream(0, expectedPullRequests, {
+    await testStream(0, expectedPullRequests, config, {
       v2: {
         issueSearch: {
           searchForIssuesUsingJql: paginate(
@@ -209,6 +210,137 @@ describe('index', () => {
         ],
       }),
     });
+  });
+
+  test('streams - sprint_reports - with projectKeys cfg', async () => {
+    const completedAt = new Date('2024-01-01');
+    const expectedSprintReports = {
+      data: [
+        {
+          id: 1,
+          boardId: '1',
+          projectKey: 'TEST',
+          completedAt,
+          completedPoints: 10,
+          completedInAnotherSprintPoints: 5,
+          notCompletedPoints: 15,
+          puntedPoints: 20,
+          plannedPoints: 25,
+        },
+      ],
+    };
+    await testStream(1, expectedSprintReports, config, {
+      v2: {
+        permissions: {
+          getMyPermissions: jest.fn().mockResolvedValue({
+            permissions: {
+              BROWSE_PROJECTS: {
+                havePermission: true,
+              },
+            },
+          }),
+        },
+        projects: {
+          getProject: jest.fn().mockResolvedValue({
+            id: '1',
+            key: 'TEST',
+          }),
+        },
+      },
+      agile: {
+        board: {
+          getAllBoards: paginate([{id: '1', type: 'scrum'}]),
+          getAllSprints: paginate([
+            {
+              id: 1,
+              state: 'closed',
+              completeDate: '2024-01-01',
+            },
+          ]),
+        },
+      },
+      getSprintReport: jest.fn().mockResolvedValue({
+        contents: {
+          completedIssuesInitialEstimateSum: {value: 10},
+          completedIssuesEstimateSum: {value: 10},
+          issuesNotCompletedInitialEstimateSum: {value: 15},
+          issuesNotCompletedEstimateSum: {value: 15},
+          puntedIssuesEstimateSum: {value: 20},
+          issuesCompletedInAnotherSprintEstimateSum: {value: 5},
+          plannedPoints: 25,
+        },
+      }),
+    });
+  });
+  test('streams - sprint_reports - without projectKeys cfg', async () => {
+    const completedAt = new Date('2024-01-01');
+    const expectedSprintReports = {
+      data: [
+        {
+          id: 1,
+          boardId: '1',
+          projectKey: 'TEST',
+          completedAt,
+          completedPoints: 10,
+          completedInAnotherSprintPoints: 5,
+          notCompletedPoints: 15,
+          puntedPoints: 20,
+          plannedPoints: 25,
+        },
+      ],
+    };
+    await testStream(
+      1,
+      expectedSprintReports,
+      {
+        ...config,
+        projectKeys: undefined,
+      },
+      {
+        v2: {
+          permissions: {
+            getMyPermissions: jest.fn().mockResolvedValue({
+              permissions: {
+                BROWSE_PROJECTS: {
+                  havePermission: true,
+                },
+              },
+            }),
+          },
+          projects: {
+            searchProjects: paginate([
+              {
+                id: '1',
+                key: 'TEST',
+              },
+            ]),
+          },
+        },
+        agile: {
+          board: {
+            getAllBoards: paginate([{id: '1', type: 'scrum'}]),
+            getAllSprints: paginate([
+              {
+                id: 1,
+                state: 'closed',
+                completeDate: '2024-01-01',
+              },
+            ]),
+          },
+        },
+        getSprintReport: jest.fn().mockResolvedValue({
+          contents: {
+            completedIssuesInitialEstimateSum: {value: 10},
+            completedIssuesEstimateSum: {value: 10},
+            issuesNotCompletedInitialEstimateSum: {value: 15},
+            issuesNotCompletedEstimateSum: {value: 15},
+            puntedIssuesEstimateSum: {value: 20},
+            issuesCompletedInAnotherSprintEstimateSum: {value: 5},
+            plannedPoints: 25,
+          },
+        }),
+      }
+    );
   });
 });
 
