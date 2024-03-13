@@ -401,6 +401,7 @@ export class Jira {
     return pulls;
   }
 
+  @Memoize()
   async *getProjects(): AsyncIterableIterator<Project> {
     if (this.isCloud) {
       const projects = this.iterate(
@@ -478,6 +479,7 @@ export class Jira {
     return project;
   }
 
+  @Memoize()
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: BROWSE_PROJECTS_PERM,
