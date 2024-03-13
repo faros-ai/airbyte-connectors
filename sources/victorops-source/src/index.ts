@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -13,13 +13,17 @@ import {Victorops, VictoropsConfig} from './victorops';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new VictoropsSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Victorops source implementation. */
 export class VictoropsSource extends AirbyteSourceBase<VictoropsConfig> {
+  get type(): string {
+    return 'victorops';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

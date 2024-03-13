@@ -1,4 +1,4 @@
-import {cloneDeep, keyBy} from 'lodash';
+import {keyBy} from 'lodash';
 import VError from 'verror';
 
 import {NonFatalError} from '../errors';
@@ -13,8 +13,12 @@ import {
   AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
+  AirbyteSourceConfigMessage,
+  AirbyteSourceStatusMessage,
   AirbyteState,
   AirbyteStateMessage,
+  isSourceStatusMessage,
+  isStateMessage,
   SyncMode,
 } from '../protocol';
 import {AirbyteSource} from './source';
@@ -67,6 +71,18 @@ export abstract class AirbyteSourceBase<
   }
 
   /**
+   * Source type
+   */
+  abstract get type(): string;
+
+  /**
+   * Source mode
+   */
+  mode(config: Config): string | undefined {
+    return undefined;
+  }
+
+  /**
    * Implements the Discover operation from the Airbyte Specification. See
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
@@ -108,11 +124,18 @@ export abstract class AirbyteSourceBase<
    */
   async *read(
     config: Config,
+    redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
-    state?: AirbyteState
+    state: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
     this.logger.info(`Syncing ${this.name}`);
-    const connectorState = State.decompress(cloneDeep(state ?? {}));
+    yield new AirbyteSourceConfigMessage(
+      {data: maybeCompressState(config, state)},
+      redactedConfig,
+      this.type,
+      this.mode(config)
+    );
+
     // TODO: assert all streams exist in the connector
     // get the streams once in case the connector needs to make any queries to
     // generate them
@@ -132,18 +155,21 @@ export abstract class AirbyteSourceBase<
         const generator = this.readStream(
           streamInstance,
           configuredStream,
-          connectorState,
+          state,
           config.max_slice_failures
         );
 
         for await (const message of generator) {
-          if (isStateMessage(message) && config.compress_state) {
-            yield new AirbyteStateMessage(
-              {
-                data: State.compress(message.state.data),
-              },
-              message.sourceStatus
-            );
+          if (isStateMessage(message)) {
+            const msgState = maybeCompressState(config, message.state.data);
+            if (isSourceStatusMessage(message)) {
+              yield new AirbyteSourceStatusMessage(
+                {data: msgState},
+                message.sourceStatus
+              );
+            } else {
+              yield new AirbyteStateMessage({data: msgState});
+            }
           } else {
             yield message;
           }
@@ -155,12 +181,8 @@ export abstract class AirbyteSourceBase<
           }`,
           e.stack
         );
-        yield new AirbyteStateMessage(
-          {
-            data: config.compress_state
-              ? State.compress(connectorState)
-              : connectorState,
-          },
+        yield new AirbyteSourceStatusMessage(
+          {data: maybeCompressState(config, state)},
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
@@ -197,12 +219,8 @@ export abstract class AirbyteSourceBase<
       );
     }
 
-    yield new AirbyteStateMessage(
-      {
-        data: config.compress_state
-          ? State.compress(connectorState)
-          : connectorState,
-      },
+    yield new AirbyteSourceStatusMessage(
+      {data: maybeCompressState(config, state)},
       {status: 'SUCCESS'}
     );
     this.logger.info(`Finished syncing ${this.name}`);
@@ -435,7 +453,7 @@ export abstract class AirbyteSourceBase<
     error: Error
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
-    return new AirbyteStateMessage(
+    return new AirbyteSourceStatusMessage(
       {data: connectorState},
       {
         status: 'ERRORED',
@@ -450,6 +468,9 @@ export abstract class AirbyteSourceBase<
   }
 }
 
-function isStateMessage(msg: AirbyteMessage): msg is AirbyteStateMessage {
-  return msg.type === AirbyteMessageType.STATE;
+export function maybeCompressState(
+  config: AirbyteConfig,
+  state: AirbyteState
+): AirbyteState {
+  return config.compress_state === false ? state : State.compress(state);
 }

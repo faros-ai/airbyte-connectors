@@ -1,4 +1,8 @@
-import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogLevel,
+  AirbyteSourceLogger,
+  AirbyteSpec,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';
@@ -96,7 +100,7 @@ function readResourceFile(fileName: string): any {
 }
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG

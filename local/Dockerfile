@@ -13,6 +13,7 @@ RUN npm run build -- --scope faros-airbyte-cdk
 RUN npm run build -- --scope faros-airbyte-common
 
 ARG version
+ENV CONNECTOR_VERSION $version
 
 ARG path
 RUN test -n "$path" || (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)

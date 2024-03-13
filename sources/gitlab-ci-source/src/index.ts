@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -13,13 +13,17 @@ import {Groups, Jobs, Pipelines, Projects} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new GitlabCiSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Example source implementation. */
 export class GitlabCiSource extends AirbyteSourceBase<GitlabConfig> {
+  get type(): string {
+    return 'gitlabci';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

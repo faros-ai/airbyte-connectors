@@ -17,6 +17,7 @@ export abstract class AirbyteDestination<
    */
   abstract write(
     config: Config,
+    redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
     stdin: NodeJS.ReadStream,
     dryRun: boolean

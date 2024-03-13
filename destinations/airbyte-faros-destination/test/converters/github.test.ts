@@ -1,9 +1,4 @@
-import {
-  AirbyteLog,
-  AirbyteLogLevel,
-  AirbyteRecord,
-  AirbyteStateMessage,
-} from 'faros-airbyte-cdk';
+import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -221,14 +216,14 @@ describe('github', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        new AirbyteStateMessage(
+        new AirbyteSourceStatusMessage(
           {data: {}},
           {status: 'ERRORED', error: 'Source error message'}
         )
       ) +
         os.EOL +
         JSON.stringify(
-          new AirbyteStateMessage(
+          new AirbyteSourceStatusMessage(
             {data: {}},
             {
               status: 'ERRORED',

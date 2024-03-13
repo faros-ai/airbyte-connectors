@@ -4,12 +4,9 @@ import jira, {AgileClient, Version2Client, Version2Models} from 'jira.js';
 
 import {
   AgileClientWithRetry,
-  BaseClientWithRetry,
   Version2ClientWithRetry,
   WithRetry,
 } from './retry';
-
-const GRAPHQL_PATH = '/gateway/api/directory/graphql';
 
 /** Client that extends the jira.js clients with retries and internal APIs */
 export class JiraClient {
@@ -40,15 +37,6 @@ export class JiraClient {
     this.agile = new AgileClientWithRetries(cfg);
   }
 
-  async graphql(query: string, variables?: any): Promise<any> {
-    const config: RequestConfig = {
-      url: GRAPHQL_PATH,
-      method: 'POST',
-      data: {query, variables},
-    };
-    return await this.v2.sendRequest<any>(config, undefined);
-  }
-
   async getDevStatusSummary(issueId: string): Promise<any> {
     const config: RequestConfig = {
       url: '/rest/dev-status/1.0/issue/summary',
@@ -69,39 +57,6 @@ export class JiraClient {
       params: {issueId, applicationType, dataType},
     };
     return await this.v2.sendRequest<any>(config, undefined);
-  }
-
-  /** This method is for Jira Server only to enable getting inactive users */
-  // https://docs.atlassian.com/software/jira/docs/api/REST/8.20.14/#api/2/user-findUsers
-  async searchUsers(
-    username?: string,
-    startAt?: number,
-    maxResults?: number,
-    includeInactive = true
-  ): Promise<any> {
-    const config: RequestConfig = {
-      url: '/rest/api/2/user/search',
-      method: 'GET',
-      params: {
-        username,
-        includeInactive,
-        startAt,
-        maxResults,
-      },
-    };
-
-    return await this.v2.sendRequest<any>(config, undefined);
-  }
-
-  getStats(): {[key: string]: number} {
-    const v2Stats = this.v2.getStats();
-    const agileStats = this.agile.getStats();
-    const totalCalls = v2Stats.totalCalls + agileStats.totalCalls;
-    return {
-      ...v2Stats,
-      ...agileStats,
-      totalCalls,
-    };
   }
 
   async getSprintReport(boardId: string, sprintId: number): Promise<any> {

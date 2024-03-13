@@ -1,7 +1,23 @@
 import {AxiosRequestConfig} from 'axios';
-import {AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
-import {FarosClient, FarosClientConfig} from 'faros-js-client';
+import {AirbyteConfig, AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
+import {
+  FarosClient,
+  FarosClientConfig,
+  makeAxiosInstanceWithRetry,
+} from 'faros-js-client';
+import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
+
+export interface Account {
+  accountId: string;
+  params: Dictionary<any>;
+  type: string;
+  local: boolean;
+}
+
+interface AccountResponse {
+  account: Account;
+}
 
 export interface AccountSync {
   syncId: string;
@@ -23,13 +39,15 @@ interface AccountSyncResponse {
   sync: AccountSync;
 }
 
+const DEFAULT_ACCOUNT_TYPE = 'custom';
+
 class FarosSyncClient extends FarosClient {
   constructor(
     cfg: FarosClientConfig,
     private readonly airbyteLogger?: AirbyteLogger,
-    axiosConfig?: AxiosRequestConfig
+    private readonly _axiosConfig?: AxiosRequestConfig
   ) {
-    super(cfg, airbyteLogger?.asPino('info'), axiosConfig);
+    super(cfg, airbyteLogger?.asPino('info'), _axiosConfig);
   }
 
   async createAccountSync(
@@ -52,6 +70,67 @@ class FarosSyncClient extends FarosClient {
     return sync;
   }
 
+  async createLocalAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig,
+    type?: string,
+    mode?: string
+  ): Promise<Account | undefined> {
+    this.logger?.debug(`Creating local account ${accountId}`);
+    return accountResult(
+      await this.attemptRequest<AccountResponse>(
+        this.request('POST', '/accounts', {
+          accountId,
+          params: {...redactedConfig, graphName},
+          type: type ?? DEFAULT_ACCOUNT_TYPE,
+          mode,
+          local: true,
+        }),
+        `Failed to create account ${accountId}`
+      )
+    );
+  }
+
+  async updateLocalAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig,
+    type?: string,
+    mode?: string
+  ): Promise<Account | undefined> {
+    this.logger?.debug(`Updating local account ${accountId}`);
+    return accountResult(
+      await this.attemptRequest<AccountResponse>(
+        this.request('PUT', `/accounts/${accountId}`, {
+          params: {...redactedConfig, graphName, graphql_api: 'v2'},
+          type: type ?? DEFAULT_ACCOUNT_TYPE,
+          mode,
+          local: true,
+        }),
+        `Failed to update account ${accountId}`
+      )
+    );
+  }
+
+  async getAccount(accountId: string): Promise<Account | undefined> {
+    return accountResult(
+      await this.attemptRequest(this.request('GET', `/accounts/${accountId}`))
+    );
+  }
+
+  async getOrCreateAccount(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig
+  ) {
+    const account = await this.getAccount(accountId);
+    if (account) {
+      return account;
+    }
+    return this.createLocalAccount(accountId, graphName, redactedConfig);
+  }
+
   async updateAccountSync(
     accountId: string,
     syncId: string,
@@ -71,13 +150,55 @@ class FarosSyncClient extends FarosClient {
     );
   }
 
-  private attemptRequest<T>(f: Promise<T>, failureMessage: string): Promise<T> {
+  async getAccountSyncLogFileUrl(
+    accountId: string,
+    syncId: string,
+    hash: string
+  ): Promise<string | undefined> {
+    const result: {uploadUrl: string} = await this.attemptRequest(
+      this.request('POST', `/accounts/${accountId}/syncs/${syncId}/logs`, {
+        hash,
+      }),
+      `Failed to generate log file url for sync ${syncId} for account ${accountId}`
+    );
+    return result?.uploadUrl;
+  }
+
+  async uploadLogs(url: string, content: string, hash: string): Promise<void> {
+    this.logger.debug('Uploading sync logs');
+    const api = makeAxiosInstanceWithRetry(
+      this._axiosConfig ?? DEFAULT_AXIOS_CONFIG,
+      this.logger
+    );
+    await this.attemptRequest(
+      api.put(url, content, {
+        headers: {
+          'content-length': content.length,
+          'content-md5': hash,
+          'content-type': 'text/plain',
+        },
+      }),
+      'Failed to upload sync logs'
+    );
+    this.logger.debug('Finished uploading sync logs');
+  }
+
+  private attemptRequest<T>(
+    f: Promise<T>,
+    failureMessage?: string
+  ): Promise<T | undefined> {
     return f.catch((error) => {
-      this.airbyteLogger?.warn(failureMessage);
-      this.airbyteLogger?.traceError(error);
+      if (failureMessage) {
+        this.airbyteLogger?.warn(failureMessage);
+        this.airbyteLogger?.traceError(error);
+      }
       return undefined;
     });
   }
+}
+
+function accountResult(response?: AccountResponse): Account | undefined {
+  return response?.account;
 }
 
 function syncResult(response?: AccountSyncResponse): AccountSync | undefined {

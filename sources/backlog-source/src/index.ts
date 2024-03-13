@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,12 +12,16 @@ import {Backlog, BacklogConfig} from './backlog';
 import {Issues, Projects, Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new BacklogSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 /** Backlog source implementation. */
 export class BacklogSource extends AirbyteSourceBase<BacklogConfig> {
+  get type(): string {
+    return 'backlog';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

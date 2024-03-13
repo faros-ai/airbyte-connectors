@@ -1,8 +1,8 @@
 import {Command} from 'commander';
 import {
   AirbyteConfig,
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -17,13 +17,17 @@ interface SourceConfig extends AirbyteConfig {
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new ExampleSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Example source implementation. */
 export class ExampleSource extends AirbyteSourceBase<SourceConfig> {
+  get type(): string {
+    return 'example';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
