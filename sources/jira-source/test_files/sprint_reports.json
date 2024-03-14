@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "boardId": "1",
+      "projectKey": "TEST",
+      "completedAt": "2024-03-14T12:00:00Z",
+      "completedPoints": 10,
+      "completedInAnotherSprintPoints": 5,
+      "notCompletedPoints": 15,
+      "puntedPoints": 20,
+      "plannedPoints": 25
+    }
+  ]
+}

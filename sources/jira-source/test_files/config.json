@@ -1,0 +1,14 @@
+{
+  "url": "https://jira.com",
+  "username": "user",
+  "password": "pass",
+  "projectKeys": ["TEST"],
+  "additionalFields": [],
+  "additionalFieldsArrayLimit": 100,
+  "concurrencyLimit": 5,
+  "maxPageSize": 100,
+  "maxRetries": 5,
+  "rejectUnauthorized": true,
+  "syncAdditionalFields": true,
+  "timeout": 120000
+}
