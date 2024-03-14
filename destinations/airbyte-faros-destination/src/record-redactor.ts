@@ -3,7 +3,7 @@ import {SyncRedactor} from 'redact-pii';
 
 import {DestinationRecord} from './converters/converter';
 
-export class RegexRedactor {
+export class RecordRedactor {
   private readonly redactor: SyncRedactor;
 
   constructor(

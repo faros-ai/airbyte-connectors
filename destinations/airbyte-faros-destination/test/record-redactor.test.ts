@@ -1,10 +1,10 @@
-import {RegexRedactor} from '../src/regex-redactor';
+import {RecordRedactor} from '../src/record-redactor';
 
-describe('RegexRedactor', () => {
-  let redactor: RegexRedactor;
+describe('RecordRedactor', () => {
+  let redactor: RecordRedactor;
 
   beforeEach(async () => {
-    redactor = new RegexRedactor();
+    redactor = new RecordRedactor();
   });
 
   describe('redact', () => {
@@ -34,7 +34,7 @@ describe('RegexRedactor', () => {
     });
 
     it('should replace matching custom pattern', async () => {
-      redactor = new RegexRedactor(undefined, 'secretword');
+      redactor = new RecordRedactor(undefined, 'secretword');
       const redacted = redactor.redactRecord(
         {name: 'The secret word is secretword. End'},
         ['name']
@@ -45,7 +45,7 @@ describe('RegexRedactor', () => {
     });
 
     it('should replace with custom value', async () => {
-      redactor = new RegexRedactor('REDACTED');
+      redactor = new RecordRedactor('REDACTED');
       const redacted = redactor.redactRecord(
         {name: 'Test for test@test.com. End'},
         ['name']
