@@ -79,21 +79,20 @@ export class SprintReports extends AirbyteStreamBase {
           this.logger.info(`Skipped board ${board.name} (id: ${boardId})`);
           continue;
         }
-        if (board.type === 'scrum') {
-          const updateRange =
-            syncMode === SyncMode.INCREMENTAL
-              ? this.getUpdateRange(streamState, boardId)
-              : undefined;
-          for await (const report of jira.getSprintReports(
+        if (board.type !== 'scrum') continue;
+        const updateRange =
+          syncMode === SyncMode.INCREMENTAL
+            ? this.getUpdateRange(streamState, boardId)
+            : undefined;
+        for await (const report of jira.getSprintReports(
+          boardId,
+          updateRange
+        )) {
+          yield {
+            ...report,
+            projectKey: projectKey,
             boardId,
-            updateRange
-          )) {
-            yield {
-              ...report,
-              projectKey: projectKey,
-              boardId,
-            };
-          }
+          };
         }
       }
     }
