@@ -1,10 +1,10 @@
-import {FarosDestinationRedactor} from '../src/destination-redactor';
+import {RegexRedactor} from '../src/regex-redactor';
 
-describe('FarosDestinationRedactor', () => {
-  let redactor: FarosDestinationRedactor;
+describe('RegexRedactor', () => {
+  let redactor: RegexRedactor;
 
   beforeEach(async () => {
-    redactor = new FarosDestinationRedactor();
+    redactor = new RegexRedactor();
   });
 
   describe('redact', () => {
@@ -34,7 +34,7 @@ describe('FarosDestinationRedactor', () => {
     });
 
     it('should replace matching custom pattern', async () => {
-      redactor = new FarosDestinationRedactor(undefined, 'secretword');
+      redactor = new RegexRedactor(undefined, 'secretword');
       const redacted = redactor.redactRecord(
         {name: 'The secret word is secretword. End'},
         ['name']
@@ -45,7 +45,7 @@ describe('FarosDestinationRedactor', () => {
     });
 
     it('should replace with custom value', async () => {
-      redactor = new FarosDestinationRedactor('REDACTED');
+      redactor = new RegexRedactor('REDACTED');
       const redacted = redactor.redactRecord(
         {name: 'Test for test@test.com. End'},
         ['name']

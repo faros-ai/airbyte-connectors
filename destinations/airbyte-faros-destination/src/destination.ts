@@ -53,7 +53,7 @@ import {
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 import {FarosDestinationLogger, LogFiles} from './destination-logger';
-import {FarosDestinationRedactor} from './destination-redactor';
+import {RegexRedactor} from './regex-redactor';
 import FarosSyncClient, {
   Account,
   AccountSync,
@@ -89,7 +89,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
     private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
     private redactFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
-    private redactor: FarosDestinationRedactor = undefined,
+    private redactor: RegexRedactor = undefined,
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -353,7 +353,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       this.redactFieldsByModel = {};
     }
 
-    this.redactor = new FarosDestinationRedactor(
+    this.redactor = new RegexRedactor(
       config.redact_custom_replace,
       config.redact_custom_regex
     );
