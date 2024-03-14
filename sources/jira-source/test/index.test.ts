@@ -8,8 +8,18 @@ import fs from 'fs-extra';
 import VError from 'verror';
 
 import {JiraConfig} from '../lib/jira';
+import {SprintReport} from '../lib/models';
 import * as sut from '../src/index';
-import {DEFAULT_CONCURRENCY_LIMIT, DEFAULT_TIMEOUT, Jira} from '../src/jira';
+import {Jira} from '../src/jira';
+
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
+function readTestResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+}
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -38,27 +48,11 @@ describe('index', () => {
     ]);
   });
 
-  const config: JiraConfig = {
-    url: 'https://jira.com',
-    username: 'user',
-    password: 'pass',
-    projectKeys: ['TEST'],
-    additionalFields: [],
-    additionalFieldsArrayLimit: 100,
-    concurrencyLimit: DEFAULT_CONCURRENCY_LIMIT,
-    maxPageSize: 100,
-    maxRetries: 5,
-    rejectUnauthorized: true,
-    syncAdditionalFields: true,
-    timeout: DEFAULT_TIMEOUT,
-  };
-
   test('check connection', async () => {
     const source = new sut.JiraSource(logger);
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
-      true,
-      undefined,
-    ]);
+    await expect(
+      source.checkConnection(readTestResourceFile('config.json'))
+    ).resolves.toStrictEqual([true, undefined]);
   });
 
   function paginate<V>(
@@ -110,240 +104,108 @@ describe('index', () => {
   };
 
   test('streams - pull_requests', async () => {
-    const issueUpdated = new Date();
-    const expectedPullRequests = {
-      data: [
-        {
-          repo: {
-            source: 'GitHub',
-            org: 'test-org',
-            name: 'test-repo',
-          },
-          number: 123,
-          issue: {
-            key: 'TEST-1',
-            updated: issueUpdated,
-            project: 'TEST',
-          },
-        },
-        {
-          repo: {
-            source: 'GitHub',
-            org: 'test-org',
-            name: 'test-repo',
-          },
-          number: 123,
-          issue: {
-            key: 'TEST-2',
-            updated: issueUpdated,
-            project: 'TEST',
-          },
-        },
-      ],
-    };
-    await testStream(0, expectedPullRequests, config, {
-      v2: {
-        issueSearch: {
-          searchForIssuesUsingJql: paginate(
-            [
-              {
-                id: '1',
-                key: 'TEST-1',
-                fields: {
-                  summary: 'summary1',
-                  description: 'description1',
-                  status: {
-                    name: 'status',
-                    statusCategory: {
-                      name: 'statusCategory',
-                    },
-                  },
-                  updated: issueUpdated,
-                  field_001:
-                    'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
-                },
-              },
-              {
-                id: '2',
-                key: 'TEST-2',
-                fields: {
-                  summary: 'summary2',
-                  description: 'description2',
-                  status: {
-                    name: 'status',
-                    statusCategory: {
-                      name: 'statusCategory',
-                    },
-                  },
-                  updated: issueUpdated,
-                  field_001:
-                    'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
-                },
-              },
-            ],
-            'issues'
-          ),
-        },
+    const expectedPullRequests = readTestResourceFile('pull_requests.json');
+    expectedPullRequests.data = expectedPullRequests.data.map((pr: any) => ({
+      ...pr,
+      issue: {
+        ...pr.issue,
+        updated: new Date(pr.issue.updated),
       },
-      getDevStatusSummary: jest.fn().mockResolvedValue({
-        summary: {
-          repository: {
-            byInstanceType: {
-              Github: {count: 1},
-            },
+    }));
+    await testStream(
+      0,
+      expectedPullRequests,
+      readTestResourceFile('config.json'),
+      {
+        v2: {
+          issueSearch: {
+            searchForIssuesUsingJql: paginate(
+              readTestResourceFile('issues_with_pull_requests.json'),
+              'issues'
+            ),
           },
         },
-      }),
-      getDevStatusDetail: jest.fn().mockResolvedValue({
-        detail: [
-          {
-            branches: [],
-            pullRequests: [
-              {
-                source: {
-                  url: 'https://github.com/test-org/test-repo',
-                },
-                id: '123',
-              },
-            ],
-          },
-        ],
-      }),
-    });
+        getDevStatusSummary: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('dev_status_summary.json')),
+        getDevStatusDetail: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
+      }
+    );
   });
 
+  function getExpectedSprintReports(): {data: SprintReport[]} {
+    const expectedSprintReports = readTestResourceFile('sprint_reports.json');
+    expectedSprintReports.data = expectedSprintReports.data.map((sr: any) => ({
+      ...sr,
+      completedAt: new Date(sr.completedAt),
+    }));
+    return expectedSprintReports;
+  }
+
   test('streams - sprint_reports - with projectKeys cfg', async () => {
-    const completedAt = new Date('2024-01-01');
-    const expectedSprintReports = {
-      data: [
-        {
-          id: 1,
-          boardId: '1',
-          projectKey: 'TEST',
-          completedAt,
-          completedPoints: 10,
-          completedInAnotherSprintPoints: 5,
-          notCompletedPoints: 15,
-          puntedPoints: 20,
-          plannedPoints: 25,
+    const expectedSprintReports = getExpectedSprintReports();
+    await testStream(
+      1,
+      expectedSprintReports,
+      readTestResourceFile('config.json'),
+      {
+        v2: {
+          permissions: {
+            getMyPermissions: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('my_permissions.json')),
+          },
+          projects: {
+            getProject: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('project.json')),
+          },
         },
-      ],
-    };
-    await testStream(1, expectedSprintReports, config, {
-      v2: {
-        permissions: {
-          getMyPermissions: jest.fn().mockResolvedValue({
-            permissions: {
-              BROWSE_PROJECTS: {
-                havePermission: true,
-              },
-            },
-          }),
+        agile: {
+          board: {
+            getAllBoards: paginate(readTestResourceFile('boards.json')),
+            getAllSprints: paginate(readTestResourceFile('sprints.json')),
+          },
         },
-        projects: {
-          getProject: jest.fn().mockResolvedValue({
-            id: '1',
-            key: 'TEST',
-          }),
-        },
-      },
-      agile: {
-        board: {
-          getAllBoards: paginate([{id: '1', type: 'scrum'}]),
-          getAllSprints: paginate([
-            {
-              id: 1,
-              state: 'closed',
-              completeDate: '2024-01-01',
-            },
-          ]),
-        },
-      },
-      getSprintReport: jest.fn().mockResolvedValue({
-        contents: {
-          completedIssuesInitialEstimateSum: {value: 10},
-          completedIssuesEstimateSum: {value: 10},
-          issuesNotCompletedInitialEstimateSum: {value: 15},
-          issuesNotCompletedEstimateSum: {value: 15},
-          puntedIssuesEstimateSum: {value: 20},
-          issuesCompletedInAnotherSprintEstimateSum: {value: 5},
-          plannedPoints: 25,
-        },
-      }),
-    });
+        getSprintReport: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('sprint_report.json')),
+      }
+    );
   });
+
   test('streams - sprint_reports - without projectKeys cfg', async () => {
-    const completedAt = new Date('2024-01-01');
-    const expectedSprintReports = {
-      data: [
-        {
-          id: 1,
-          boardId: '1',
-          projectKey: 'TEST',
-          completedAt,
-          completedPoints: 10,
-          completedInAnotherSprintPoints: 5,
-          notCompletedPoints: 15,
-          puntedPoints: 20,
-          plannedPoints: 25,
-        },
-      ],
-    };
+    const expectedSprintReports = getExpectedSprintReports();
     await testStream(
       1,
       expectedSprintReports,
       {
-        ...config,
+        ...readTestResourceFile('config.json'),
         projectKeys: undefined,
       },
       {
         v2: {
           permissions: {
-            getMyPermissions: jest.fn().mockResolvedValue({
-              permissions: {
-                BROWSE_PROJECTS: {
-                  havePermission: true,
-                },
-              },
-            }),
+            getMyPermissions: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('my_permissions.json')),
           },
           projects: {
-            searchProjects: paginate([
-              {
-                id: '1',
-                key: 'TEST',
-              },
-            ]),
+            searchProjects: paginate([readTestResourceFile('project.json')]),
           },
         },
         agile: {
           board: {
-            getAllBoards: paginate([{id: '1', type: 'scrum'}]),
-            getAllSprints: paginate([
-              {
-                id: 1,
-                state: 'closed',
-                completeDate: '2024-01-01',
-              },
-            ]),
+            getAllBoards: paginate(readTestResourceFile('boards.json')),
+            getAllSprints: paginate(readTestResourceFile('sprints.json')),
           },
         },
-        getSprintReport: jest.fn().mockResolvedValue({
-          contents: {
-            completedIssuesInitialEstimateSum: {value: 10},
-            completedIssuesEstimateSum: {value: 10},
-            issuesNotCompletedInitialEstimateSum: {value: 15},
-            issuesNotCompletedEstimateSum: {value: 15},
-            puntedIssuesEstimateSum: {value: 20},
-            issuesCompletedInAnotherSprintEstimateSum: {value: 5},
-            plannedPoints: 25,
-          },
-        }),
+        getSprintReport: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('sprint_report.json')),
       }
     );
   });
 });
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}

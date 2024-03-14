@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "repo": {
+        "source": "GitHub",
+        "org": "test-org",
+        "name": "test-repo"
+      },
+      "number": 123,
+      "issue": {
+        "key": "TEST-1",
+        "updated": "2024-03-14T12:00:00Z",
+        "project": "TEST"
+      }
+    },
+    {
+      "repo": {
+        "source": "GitHub",
+        "org": "test-org",
+        "name": "test-repo"
+      },
+      "number": 123,
+      "issue": {
+        "key": "TEST-2",
+        "updated": "2024-03-14T12:00:00Z",
+        "project": "TEST"
+      }
+    }
+  ]
+}
