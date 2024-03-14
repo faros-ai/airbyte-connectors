@@ -16,15 +16,14 @@ import {
   JiraConfig,
 } from '../jira';
 import {PullRequest} from '../models';
-import {ProjectState, StreamSlice, StreamState} from './common';
+import {
+  ProjectState,
+  StreamSlice,
+  StreamState,
+  StreamWithProjectSlices,
+} from './common';
 
-export class IssuePullRequests extends AirbyteStreamBase {
-  constructor(
-    private readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
+export class IssuePullRequests extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/issuePullRequests.json');
   }
@@ -35,18 +34,6 @@ export class IssuePullRequests extends AirbyteStreamBase {
 
   get cursorField(): string | string[] {
     return ['issue', 'updated'];
-  }
-
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    if (!this.config.projectKeys) {
-      const jira = await Jira.instance(this.config, this.logger);
-      for await (const project of jira.getProjects()) {
-        yield {project: project.key};
-      }
-    }
-    for (const project of this.config.projectKeys) {
-      yield {project};
-    }
   }
 
   async *readRecords(
