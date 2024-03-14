@@ -73,7 +73,7 @@
         "order": 5,
         "type": "string",
         "title": "Redact Fields",
-        "description": "JSON map to redact specific records field values, same structure as 'Exclude Fields' but with redaction instead of removal",
+        "description": "JSON map to redact specific records field values",
         "multiline": true,
         "default": "{}"
       },
