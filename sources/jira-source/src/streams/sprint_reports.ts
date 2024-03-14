@@ -16,7 +16,7 @@ import {
   JiraConfig,
 } from '../jira';
 import {SprintReport} from '../models';
-import {StreamSlice} from './common';
+import {StreamSlice, StreamWithProjectSlices} from './common';
 
 type StreamState = {
   readonly [project: string]: ProjectState;
@@ -27,13 +27,7 @@ export interface ProjectState {
   readonly boards?: string[];
 }
 
-export class SprintReports extends AirbyteStreamBase {
-  constructor(
-    private readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
+export class SprintReports extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/sprintReports.json');
   }
@@ -44,18 +38,6 @@ export class SprintReports extends AirbyteStreamBase {
 
   get cursorField(): string | string[] {
     return ['id'];
-  }
-
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    if (!this.config.projectKeys) {
-      const jira = await Jira.instance(this.config, this.logger);
-      for await (const project of jira.getProjects()) {
-        yield {project: project.key};
-      }
-    }
-    for (const project of this.config.projectKeys) {
-      yield {project};
-    }
   }
 
   async *readRecords(
