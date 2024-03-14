@@ -75,22 +75,17 @@
         "title": "Redact Fields",
         "description": "JSON map to redact specific records field values, same structure as 'Exclude Fields' but with redaction instead of removal",
         "multiline": true,
-        "default": "{}",
-        "examples": [
-          "{ \"tms_Task\": [ \"description\" ], \"vcs_PullRequest\": [ \"description\", \"htmlUrl\" ] }"
-        ]
+        "default": "{}"
       },
       "redact_custom_replace": {
         "order": 6,
         "type": "string",
-        "title": "Redact Custom Replace",
-        "description": "Word used to replace redacted fields specified by 'Redact Fields'"
+        "title": "Redact Custom Replace"
       },
       "redact_custom_regex": {
         "order": 7,
         "type": "string",
-        "title": "Redact Custom Regex",
-        "description": "Extend redaction rules with custom regex on the fields specified by 'Redact Fields'"
+        "title": "Redact Custom Regex"
       },
       "dry_run": {
         "order": 8,
