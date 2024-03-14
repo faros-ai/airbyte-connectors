@@ -8,22 +8,18 @@
     "edition": {
       "type": "string",
       "title": "Cloud Edition",
-      "description": "Cloud Edition",
       "const": "cloud"
     },
     "api_url": {
       "type": "string",
       "title": "API URL",
       "description": "The Faros API URL.",
-      "default": "https://prod.api.faros.ai",
-      "examples": [
-        "https://prod.api.faros.ai"
-      ]
+      "default": "https://prod.api.faros.ai"
     },
     "api_key": {
       "title": "API Key",
       "type": "string",
-      "description": "The Faros API key to use to access the API.",
+      "description": "The Faros API key to access the API.",
       "airbyte_secret": true
     },
     "graph": {
@@ -59,15 +55,6 @@
       "title": "Check Faros API Connection",
       "description": "Check Faros API connection on init.",
       "default": true
-    },
-    "expiration": {
-      "type": "string",
-      "title": "Revision expiration",
-      "description": "The Faros graph revision expiration time. Only used in GraphQL API v1.",
-      "default": "5 seconds",
-      "examples": [
-        "5 seconds"
-      ]
     }
   }
 }

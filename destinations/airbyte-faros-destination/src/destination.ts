@@ -53,6 +53,7 @@ import {
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
 import {FarosDestinationLogger, LogFiles} from './destination-logger';
+import {RecordRedactor} from './record-redactor';
 import FarosSyncClient, {
   Account,
   AccountSync,
@@ -87,6 +88,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
     private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
+    private redactFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
+    private redactor: RecordRedactor = undefined,
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -332,9 +335,28 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       );
     }
 
-    this.excludeFieldsByModel = config.exclude_fields_map
-      ? JSON.parse(config.exclude_fields_map)
-      : {};
+    if (config.exclude_fields_map) {
+      this.excludeFieldsByModel =
+        typeof config.exclude_fields_map === 'object'
+          ? config.exclude_fields_map
+          : JSON.parse(config.exclude_fields_map);
+    } else {
+      this.excludeFieldsByModel = {};
+    }
+
+    if (config.redact_fields_map) {
+      this.redactFieldsByModel =
+        typeof config.redact_fields_map === 'object'
+          ? config.redact_fields_map
+          : JSON.parse(config.redact_fields_map);
+    } else {
+      this.redactFieldsByModel = {};
+    }
+
+    this.redactor = new RecordRedactor(
+      config.redact_custom_replace,
+      config.redact_custom_regex
+    );
 
     const jira_configs = config.source_specific_configs?.jira ?? {};
     if (
@@ -995,6 +1017,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         result.record = pickBy(
           result.record,
           (_v, k) => !exclusions.includes(k)
+        );
+      }
+      // Redact record fields if necessary
+      const fieldsToRedact = this.redactFieldsByModel[result.model];
+      if (fieldsToRedact?.length > 0) {
+        result.record = this.redactor.redactRecord(
+          result.record,
+          fieldsToRedact
         );
       }
 
