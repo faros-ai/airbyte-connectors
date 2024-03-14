@@ -160,7 +160,7 @@ describe('index', () => {
           projects: {
             getProject: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('project.json')),
+              .mockResolvedValue(readTestResourceFile('get_project.json')),
           },
         },
         agile: {
@@ -193,7 +193,9 @@ describe('index', () => {
               .mockResolvedValue(readTestResourceFile('my_permissions.json')),
           },
           projects: {
-            searchProjects: paginate([readTestResourceFile('project.json')]),
+            searchProjects: paginate([
+              readTestResourceFile('get_project.json'),
+            ]),
           },
         },
         agile: {
