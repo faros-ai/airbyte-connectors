@@ -31,5 +31,5 @@
       "type": "number"
     }
   },
-  "required": ["repo", "number"]
+  "required": ["id", "boardId", "projectKey", "completedAt", "completedPoints", "completedInAnotherSprintPoints", "notCompletedPoints", "puntedPoints", "plannedPoints"]
 }
