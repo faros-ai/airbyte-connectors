@@ -601,22 +601,22 @@ export class Jira {
     return fieldIds;
   }
 
-  getBoards(projectId: string): AsyncIterableIterator<Board> {
+  // return whole Board native object
+  getBoards(projectId?: string): AsyncIterableIterator<Board> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
-          projectKeyOrId: projectId,
           startAt,
           maxResults: this.maxPageSize,
+          ...(projectId && {projectKeyOrId: projectId}),
         }),
-      (item: any) => ({
-        id: item.id.toString(),
-        key: item.key,
-        projectId: projectId,
-        name: item.name,
-        type: item.type,
-      })
+      (item: any) => item
     );
+  }
+
+  getBoard(id: string): Promise<Board> {
+    const boardId = Utils.parseInteger(id);
+    return this.api.agile.board.getBoard({boardId});
   }
 
   getSprintReports(

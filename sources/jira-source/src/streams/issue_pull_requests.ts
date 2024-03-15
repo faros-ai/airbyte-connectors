@@ -1,25 +1,14 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  DEFAULT_CUTOFF_DAYS,
-  DEFAULT_CUTOFF_LAG_DAYS,
-  DEV_FIELD_NAME,
-  Jira,
-  JiraConfig,
-} from '../jira';
+import {DEFAULT_CUTOFF_LAG_DAYS, DEV_FIELD_NAME, Jira} from '../jira';
 import {PullRequest} from '../models';
 import {
   ProjectState,
-  StreamSlice,
-  StreamState,
+  ProjectStreamSlice,
+  ProjectStreamState,
   StreamWithProjectSlices,
 } from './common';
 
@@ -39,8 +28,8 @@ export class IssuePullRequests extends StreamWithProjectSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: StreamState
+    streamSlice?: ProjectStreamSlice,
+    streamState?: ProjectStreamState
   ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKeys =
@@ -48,7 +37,7 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     for (const projectKey of projectKeys) {
       const updateRange =
         syncMode === SyncMode.INCREMENTAL
-          ? this.getUpdateRange(streamState?.[projectKey])
+          ? this.getUpdateRange(streamState?.[projectKey]?.issueCutoff)
           : undefined;
       for await (const issue of jira.getIssues(
         projectKey,
@@ -72,22 +61,10 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     }
   }
 
-  private getUpdateRange(projectState: ProjectState): [Date, Date] {
-    const newCutoff = moment().utc().toDate();
-    // If no state with cutoff, use the default one applying cutoffDays
-    const fromCutoff = projectState?.issueCutoff
-      ? Utils.toDate(projectState.issueCutoff)
-      : moment()
-          .utc()
-          .subtract(this.config.cutoffDays || DEFAULT_CUTOFF_DAYS, 'days')
-          .toDate();
-    return [fromCutoff, newCutoff];
-  }
-
   getUpdatedState(
-    currentStreamState: StreamState,
+    currentStreamState: ProjectStreamState,
     latestRecord: PullRequest
-  ): StreamState {
+  ): ProjectStreamState {
     const projectKey = latestRecord.issue.project;
     const currentCutoff = Utils.toDate(
       currentStreamState?.[projectKey]?.issueCutoff

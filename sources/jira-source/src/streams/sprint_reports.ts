@@ -1,33 +1,18 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import {Project} from 'jira.js/out/version2/models';
 import moment from 'moment/moment';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  DEFAULT_CUTOFF_DAYS,
-  DEFAULT_CUTOFF_LAG_DAYS,
-  Jira,
-  JiraConfig,
-} from '../jira';
+import {DEFAULT_CUTOFF_DAYS, DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';
 import {SprintReport} from '../models';
-import {StreamSlice, StreamWithProjectSlices} from './common';
+import {
+  BoardState,
+  BoardStreamSlice,
+  BoardStreamState,
+  StreamWithBoardSlices,
+} from './common';
 
-type StreamState = {
-  readonly [project: string]: ProjectState;
-};
-
-export interface ProjectState {
-  readonly issueCutoff?: number;
-  readonly boards?: string[];
-}
-
-export class SprintReports extends StreamWithProjectSlices {
+export class SprintReports extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/sprintReports.json');
   }
@@ -37,96 +22,56 @@ export class SprintReports extends StreamWithProjectSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['id'];
+    return ['completedAt'];
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: StreamState
+    streamSlice?: BoardStreamSlice,
+    streamState?: BoardStreamState
   ): AsyncGenerator<SprintReport> {
     const jira = await Jira.instance(this.config, this.logger);
-    let projectsByKey: Map<string, Project>;
-    if (!this.config.projectKeys) {
-      projectsByKey = await jira.getProjectsByKey();
+    const boardId = streamSlice.board;
+    const board = await jira.getBoard(boardId);
+    if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
+      this.logger.info(`Skipped board ${board.name} (id: ${boardId})`);
+      return;
     }
-    const projectKeys = this.config.projectKeys ?? projectsByKey.keys();
-    for (const projectKey of projectKeys) {
-      const project =
-        projectsByKey?.get(projectKey) ?? (await jira.getProject(projectKey));
-      for await (const board of jira.getBoards(project.id)) {
-        const boardId = board.id.toString();
-        if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
-          this.logger.info(`Skipped board ${board.name} (id: ${boardId})`);
-          continue;
-        }
-        if (board.type !== 'scrum') continue;
-        const updateRange =
-          syncMode === SyncMode.INCREMENTAL
-            ? this.getUpdateRange(streamState, boardId)
-            : undefined;
-        for await (const report of jira.getSprintReports(
-          boardId,
-          updateRange
-        )) {
-          yield {
-            ...report,
-            projectKey: projectKey,
-            boardId,
-          };
-        }
-      }
+    if (board.type !== 'scrum') return;
+    const updateRange =
+      syncMode === SyncMode.INCREMENTAL
+        ? this.getUpdateRange(streamState[boardId]?.cutoff)
+        : undefined;
+    for await (const report of jira.getSprintReports(boardId, updateRange)) {
+      yield {
+        ...report,
+        projectKey: board.location.projectKey,
+        boardId,
+      };
     }
-  }
-
-  private getUpdateRange(
-    projectState: ProjectState | undefined,
-    boardId: string
-  ): [Date, Date] {
-    const newCutoff = moment().utc().toDate();
-    // If no state with cutoff, use the default one applying cutoffDays
-    const initialCutoff = moment()
-      .utc()
-      .subtract(this.config.cutoffDays || DEFAULT_CUTOFF_DAYS, 'days')
-      .toDate();
-    const fromCutoff = projectState?.issueCutoff
-      ? Utils.toDate(projectState.issueCutoff)
-      : initialCutoff;
-    let range: [Date, Date] = [fromCutoff, newCutoff];
-    // If the board is not in the state, use the default cutoff
-    if (
-      !projectState?.boards?.includes(boardId) &&
-      initialCutoff < fromCutoff
-    ) {
-      range = [initialCutoff, newCutoff];
-    }
-    return range;
   }
 
   getUpdatedState(
-    currentStreamState: StreamState,
+    currentStreamState: BoardStreamState,
     latestRecord: SprintReport
-  ): StreamState {
-    const project = latestRecord.projectKey;
+  ): BoardStreamState {
     const board = latestRecord.boardId;
-    const currentBoards = currentStreamState[project]?.boards ?? [];
     const latestRecordCutoff = Utils.toDate(latestRecord.completedAt);
     const newCutoff = moment().utc().toDate();
     if (latestRecordCutoff > newCutoff) {
       const cutoffLag = moment
         .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
         .asMilliseconds();
-      const newState: ProjectState = {
-        issueCutoff: Math.max(
+      const newState: BoardState = {
+        cutoff: Math.max(
           latestRecordCutoff.getTime(),
           newCutoff.getTime() - cutoffLag
         ),
-        boards: [...currentBoards, board],
       };
       return {
         ...currentStreamState,
-        [project]: newState,
+        [board]: newState,
       };
     }
     return currentStreamState;
