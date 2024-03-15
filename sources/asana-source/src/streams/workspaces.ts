@@ -27,7 +27,7 @@ export class Workspaces extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Workspace> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
       yield workspace;
