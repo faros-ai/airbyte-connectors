@@ -68,6 +68,7 @@ export class IssuePullRequests extends AirbyteStreamBase {
         true,
         updateRange,
         true,
+        undefined,
         true,
         [DEV_FIELD_NAME]
       )) {

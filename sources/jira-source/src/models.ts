@@ -1,9 +1,10 @@
 export interface Issue {
-  readonly id: string;
+  readonly id?: string;
   readonly key: string;
   readonly created?: Date;
   readonly updated?: Date;
-  readonly pullRequests: ReadonlyArray<PullRequest>;
+  readonly pullRequests?: ReadonlyArray<PullRequest>;
+  readonly boardId?: string;
 }
 
 export enum RepoSource {

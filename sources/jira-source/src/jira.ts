@@ -5,6 +5,7 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
+import {Board} from 'jira.js/out/agile/models/board';
 import {Project} from 'jira.js/out/version2/models';
 import {concat} from 'lodash';
 import pLimit from 'p-limit';
@@ -31,6 +32,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly projectKeys?: ReadonlyArray<string>;
   readonly cutoffDays?: number;
   readonly cutoffLagDays?: number;
+  readonly useBoardOwnership?: boolean;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -460,6 +462,20 @@ export class Jira {
     }
   }
 
+  async getProject(id: string): Promise<Project> {
+    const project = await this.api.v2.projects.getProject({
+      projectIdOrKey: id,
+      expand: 'description',
+    });
+
+    const hasPermission = await this.hasBrowseProjectPerms(project.key);
+    if (!hasPermission) {
+      throw new VError('Insufficient permissions for project: %s', project.key);
+    }
+
+    return project;
+  }
+
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: BROWSE_PROJECTS_PERM,
@@ -483,10 +499,14 @@ export class Jira {
     syncPullRequests: boolean,
     updateRange?: [Date, Date],
     fetchKeysOnly = false,
+    filterJql?: string,
     includeAdditionalFields = true,
     additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
     let jql = `project = "${projectId}"`;
+    if (filterJql) {
+      jql += ` AND ${filterJql}`;
+    }
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
@@ -579,5 +599,34 @@ export class Jira {
       return [...fieldIds, ...additionalFieldIds];
     }
     return fieldIds;
+  }
+
+  getBoards(projectId: string): AsyncIterableIterator<Board> {
+    return this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllBoards({
+          projectKeyOrId: projectId,
+          startAt,
+          maxResults: this.maxPageSize,
+        }),
+      (item: any) => ({
+        id: item.id,
+        key: item.key,
+        projectId: projectId,
+        name: item.name,
+        type: item.type,
+      })
+    );
+  }
+
+  async getBoardJQL(boardId: string): Promise<string> {
+    const board = await this.api.agile.board.getConfiguration({
+      boardId: Utils.parseInteger(boardId),
+    });
+    const filterJQL = await this.api.v2.filters.getFilter({
+      id: Utils.parseInteger(board.filter.id),
+      expand: 'jql',
+    });
+    return filterJQL.jql;
   }
 }
