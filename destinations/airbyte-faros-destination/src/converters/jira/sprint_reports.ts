@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {toString} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
@@ -16,7 +17,7 @@ export class SprintReports extends JiraConverter {
       {
         model: 'tms_Sprint',
         record: {
-          uid: String(sprintReport.id),
+          uid: toString(sprintReport.id),
           completedPoints: sprintReport.completedPoints,
           completedOutsideSprintPoints:
             sprintReport.completedInAnotherSprintPoints,
