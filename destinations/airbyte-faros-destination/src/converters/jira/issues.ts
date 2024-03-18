@@ -23,6 +23,7 @@ import {
   Assignee,
   JiraCommon,
   JiraConverter,
+  PullRequest,
   Repo,
   RepoSource,
   Status,
@@ -51,11 +52,16 @@ export class Issues extends JiraConverter {
     'tms_TaskAssignment',
     'tms_TaskDependency',
     'tms_TaskTag',
+    'tms_TaskPullRequestAssociation',
   ];
 
   private static readonly issueFieldsStream = new StreamName(
     'jira',
     'issue_fields'
+  );
+  private static readonly pullRequestsStream = new StreamName(
+    'jira',
+    'pull_requests'
   );
   private static readonly workflowStatusesStream = new StreamName(
     'jira',
@@ -93,7 +99,11 @@ export class Issues extends JiraConverter {
   private turndown = new TurndownService();
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [Issues.issueFieldsStream, Issues.workflowStatusesStream];
+    return [
+      Issues.issueFieldsStream,
+      Issues.pullRequestsStream,
+      Issues.workflowStatusesStream,
+    ];
   }
 
   private static getFieldIdsByName(ctx: StreamContext): Dictionary<string[]> {
@@ -381,6 +391,37 @@ export class Issues extends JiraConverter {
     return val;
   }
 
+  private getPullRequests(
+    ctx: StreamContext,
+    issueId: string
+  ): ReadonlyArray<PullRequest> {
+    const pulls: PullRequest[] = [];
+    const record = ctx.get(Issues.pullRequestsStream.asString, issueId);
+    if (!record) return pulls;
+    const detail = record.record.data;
+    try {
+      const branchToRepoUrl = new Map<string, string>();
+      for (const branch of detail.branches ?? []) {
+        branchToRepoUrl.set(branch.url, branch.repository.url);
+      }
+      for (const pull of detail.pullRequests ?? []) {
+        const repoUrl = branchToRepoUrl.get(pull.source?.url);
+        if (!repoUrl) {
+          continue;
+        }
+        pulls.push({
+          repo: Issues.extractRepo(repoUrl),
+          number: Utils.parseInteger(pull.id.replace('#', '')),
+        });
+      }
+    } catch (err: any) {
+      ctx.logger.warn(
+        `Failed to get pull requests for issue ${issueId}: ${err.message}`
+      );
+    }
+    return pulls;
+  }
+
   private stringifyNonString(value: any): string {
     return isString(value) ? value : JSON.stringify(value);
   }
@@ -423,6 +464,28 @@ export class Issues extends JiraConverter {
       results.push({
         model: 'tms_TaskTag',
         record: {label: {name: label}, task: {uid: issue.key, source}},
+      });
+    }
+
+    const pulls = this.getPullRequests(ctx, issue.id);
+    for (const pull of pulls) {
+      results.push({
+        model: 'tms_TaskPullRequestAssociation',
+        record: {
+          task: {uid: issue.key, source},
+          pullRequest: {
+            repository: {
+              organization: {
+                source: pull.repo.source,
+                uid: toLower(pull.repo.org),
+              },
+              name: toLower(pull.repo.name),
+              uid: toLower(pull.repo.name),
+            },
+            number: pull.number,
+            uid: pull.number.toString(),
+          },
+        },
       });
     }
 
