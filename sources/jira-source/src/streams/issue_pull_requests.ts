@@ -6,9 +6,8 @@ import {Dictionary} from 'ts-essentials';
 import {DEFAULT_CUTOFF_LAG_DAYS, DEV_FIELD_NAME, Jira} from '../jira';
 import {PullRequest} from '../models';
 import {
-  ProjectState,
   ProjectStreamSlice,
-  ProjectStreamState,
+  StreamState,
   StreamWithProjectSlices,
 } from './common';
 
@@ -29,7 +28,7 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: ProjectStreamState
+    streamState?: StreamState
   ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKeys =
@@ -37,7 +36,7 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     for (const projectKey of projectKeys) {
       const updateRange =
         syncMode === SyncMode.INCREMENTAL
-          ? this.getUpdateRange(streamState?.[projectKey]?.issueCutoff)
+          ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
           : undefined;
       for await (const issue of jira.getIssues(
         projectKey,
@@ -62,12 +61,12 @@ export class IssuePullRequests extends StreamWithProjectSlices {
   }
 
   getUpdatedState(
-    currentStreamState: ProjectStreamState,
+    currentStreamState: StreamState,
     latestRecord: PullRequest
-  ): ProjectStreamState {
+  ): StreamState {
     const projectKey = latestRecord.issue.project;
     const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectKey]?.issueCutoff
+      currentStreamState?.[projectKey]?.cutoff
     );
     const latestRecordCutoff = Utils.toDate(latestRecord.issue.updated);
     const newCutoff = moment().utc().toDate();
@@ -75,8 +74,8 @@ export class IssuePullRequests extends StreamWithProjectSlices {
       const cutoffLag = moment
         .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
         .asMilliseconds();
-      const newState: ProjectState = {
-        issueCutoff: Math.max(
+      const newState = {
+        cutoff: Math.max(
           latestRecordCutoff.getTime(),
           newCutoff.getTime() - cutoffLag
         ),

@@ -12,21 +12,9 @@ export type BoardStreamSlice = {
   board: string;
 };
 
-export type ProjectStreamState = {
-  readonly [project: string]: ProjectState;
+export type StreamState = {
+  readonly [projectOrBoard: string]: {cutoff: number};
 };
-
-export interface ProjectState {
-  readonly issueCutoff?: number;
-}
-
-export type BoardStreamState = {
-  readonly [board: string]: BoardState;
-};
-
-export interface BoardState {
-  readonly cutoff?: number;
-}
 
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(

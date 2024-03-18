@@ -3,14 +3,9 @@ import {Utils} from 'faros-js-client';
 import moment from 'moment/moment';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_CUTOFF_DAYS, DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';
+import {DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';
 import {SprintReport} from '../models';
-import {
-  BoardState,
-  BoardStreamSlice,
-  BoardStreamState,
-  StreamWithBoardSlices,
-} from './common';
+import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class SprintReports extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -29,7 +24,7 @@ export class SprintReports extends StreamWithBoardSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
-    streamState?: BoardStreamState
+    streamState?: StreamState
   ): AsyncGenerator<SprintReport> {
     const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
@@ -53,9 +48,9 @@ export class SprintReports extends StreamWithBoardSlices {
   }
 
   getUpdatedState(
-    currentStreamState: BoardStreamState,
+    currentStreamState: StreamState,
     latestRecord: SprintReport
-  ): BoardStreamState {
+  ): StreamState {
     const board = latestRecord.boardId;
     const latestRecordCutoff = Utils.toDate(latestRecord.completedAt);
     const newCutoff = moment().utc().toDate();
@@ -63,7 +58,7 @@ export class SprintReports extends StreamWithBoardSlices {
       const cutoffLag = moment
         .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
         .asMilliseconds();
-      const newState: BoardState = {
+      const newState = {
         cutoff: Math.max(
           latestRecordCutoff.getTime(),
           newCutoff.getTime() - cutoffLag
