@@ -131,6 +131,7 @@ export const ALL_MODEL_NAMES = [
   'vcs_Team',
   'vcs_TeamMembership',
   'vcs_User',
+  'vcs_UserEmail',
   'vcs_UserTool',
   'vcs_UserToolUsage',
   'vcs_UserIdentity',

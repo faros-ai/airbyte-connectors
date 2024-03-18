@@ -1,5 +1,6 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -21,6 +22,7 @@ export const MAX_DATE = new Date(7258118400000).toISOString();
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_RETRIES = 3;
 
 export interface AsanaConfig {
   credentials: {
@@ -29,6 +31,7 @@ export interface AsanaConfig {
   workspaces?: ReadonlyArray<string>;
   page_size?: number;
   api_timeout?: number;
+  max_retries?: number;
   start_date?: string;
   end_date?: string;
   cutoff_days?: number;
@@ -45,7 +48,7 @@ export class Asana {
     private readonly pageSize: number
   ) {}
 
-  static instance(config: AsanaConfig): Asana {
+  static instance(config: AsanaConfig, logger?: AirbyteLogger): Asana {
     if (Asana.asana) return Asana.asana;
 
     if (!config.credentials?.personal_access_token) {
@@ -66,14 +69,19 @@ export class Asana {
       endDate = new Date().toISOString();
     }
 
-    const httpClient = axios.create({
-      baseURL: `https://app.asana.com/api/1.0`,
-      timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
-      maxContentLength: Infinity, //default is 2000 bytes
-      headers: {
-        Authorization: `Bearer ${config.credentials.personal_access_token}`,
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://app.asana.com/api/1.0`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity, //default is 2000 bytes
+        headers: {
+          Authorization: `Bearer ${config.credentials.personal_access_token}`,
+        },
       },
-    });
+      logger.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      10000
+    );
 
     Asana.asana = new Asana(
       httpClient,
