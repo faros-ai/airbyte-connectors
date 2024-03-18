@@ -73,9 +73,23 @@ export abstract class AirbyteStreamBase {
         'Cursor field cannot be null, undefined, or empty string'
       );
     }
-    return typeof this.cursorField === 'string'
-      ? [this.cursorField]
-      : this.cursorField;
+
+    const cursorField =
+      typeof this.cursorField === 'string'
+        ? [this.cursorField]
+        : this.cursorField;
+
+    // Airbyte UI on version >= 0.51.x does not support nested cursor fields,
+    // resulting in an error on Connection setup. We work around this issue by
+    // only sending the first value in the cursorField array during the
+    // "discover" step. This workaround should not affect the functionality of
+    // the connectors, as the streams define their own cursor logic and do not
+    // rely on the value of wrappedCursorField().
+    // https://github.com/airbytehq/airbyte/issues/36253
+    if (process.env.WORKER_JOB_ID) {
+      return cursorField.length ? [cursorField[0]] : [];
+    }
+    return cursorField;
   }
 
   /**
