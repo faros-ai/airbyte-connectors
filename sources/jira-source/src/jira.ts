@@ -5,8 +5,7 @@ import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira from 'jira.js';
-import {Board} from 'jira.js/src/agile/models/board';
-import {Project} from 'jira.js/src/version2/models';
+import {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
@@ -402,7 +401,7 @@ export class Jira {
   }
 
   @Memoize()
-  async *getProjects(): AsyncIterableIterator<Project> {
+  async *getProjects(): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
       const projects = this.iterate(
         (startAt) =>
@@ -433,7 +432,7 @@ export class Jira {
     // user should have `BROWSE_PROJECTS` permissions on the project, so check
     // that permission is granted for the user using mypermissions endpoint.
     const skippedProjects: string[] = [];
-    const browseableProjects: Project[] = [];
+    const browseableProjects: Version2Models.Project[] = [];
     for await (const project of await this.api.getAllProjects()) {
       try {
         const hasPermission = await this.hasBrowseProjectPerms(project.key);
@@ -465,7 +464,7 @@ export class Jira {
     }
   }
 
-  async getProject(id: string): Promise<Project> {
+  async getProject(id: string): Promise<Version2Models.Project> {
     const project = await this.api.v2.projects.getProject({
       projectIdOrKey: id,
       expand: 'description',
@@ -489,8 +488,8 @@ export class Jira {
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
 
-  async getProjectsByKey(): Promise<Map<string, Project>> {
-    const projectsByKey = new Map<string, Project>();
+  async getProjectsByKey(): Promise<Map<string, Version2Models.Project>> {
+    const projectsByKey = new Map<string, Version2Models.Project>();
     for await (const project of this.getProjects()) {
       projectsByKey.set(project.key, project);
     }
@@ -601,8 +600,7 @@ export class Jira {
     return fieldIds;
   }
 
-  // return whole Board native object
-  getBoards(projectId?: string): AsyncIterableIterator<Board> {
+  getBoards(projectId?: string): AsyncIterableIterator<AgileModels.Board> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
@@ -610,11 +608,11 @@ export class Jira {
           maxResults: this.maxPageSize,
           ...(projectId && {projectKeyOrId: projectId}),
         }),
-      (item: any) => item
+      (item: AgileModels.Board) => item
     );
   }
 
-  getBoard(id: string): Promise<Board> {
+  getBoard(id: string): Promise<AgileModels.Board> {
     const boardId = Utils.parseInteger(id);
     return this.api.agile.board.getBoard({boardId});
   }
@@ -668,28 +666,32 @@ export class Jira {
     if (!report) {
       return;
     }
-    const toFloat = (value: any): number | undefined => {
-      if (isNil(value)) {
-        return undefined;
-      }
-      return Utils.parseFloatFixedPoint(value);
-    };
+    const toFloat = (value: any): number | undefined =>
+      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
+
+    const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
+    const notCompletedPoints = toFloat(
+      report?.issuesNotCompletedEstimateSum?.value
+    );
+    const puntedPoints = toFloat(report?.puntedIssuesEstimateSum?.value);
+    const completedInAnotherSprintPoints = toFloat(
+      report?.issuesCompletedInAnotherSprintEstimateSum?.value
+    );
+
     const plannedPoints = sum([
-      toFloat(report?.completedIssuesInitialEstimateSum?.value),
-      toFloat(report?.issuesNotCompletedInitialEstimateSum?.value),
-      toFloat(report?.puntedIssuesInitialEstimateSum?.value),
-      toFloat(report?.issuesCompletedInAnotherSprintInitialEstimateSum?.value),
+      completedPoints,
+      notCompletedPoints,
+      puntedPoints,
+      completedInAnotherSprintPoints,
     ]);
 
     return {
       id: sprint.id,
       completedAt: Utils.toDate(sprint.completeDate),
-      completedPoints: toFloat(report?.completedIssuesEstimateSum?.value),
-      notCompletedPoints: toFloat(report?.issuesNotCompletedEstimateSum?.value),
-      puntedPoints: toFloat(report?.puntedIssuesEstimateSum?.value),
-      completedInAnotherSprintPoints: toFloat(
-        report?.issuesCompletedInAnotherSprintEstimateSum?.value
-      ),
+      completedPoints,
+      notCompletedPoints,
+      puntedPoints,
+      completedInAnotherSprintPoints,
       plannedPoints,
     };
   }
