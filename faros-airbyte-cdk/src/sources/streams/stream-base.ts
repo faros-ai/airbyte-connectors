@@ -84,7 +84,8 @@ export abstract class AirbyteStreamBase {
     // only sending the first value in the cursorField array during the
     // "discover" step. This workaround should not affect the functionality of
     // the connectors, as the streams define their own cursor logic and do not
-    // rely on the value of wrappedCursorField().
+    // rely on the value of wrappedCursorField (our sources do not allow the
+    // user to change the default cursor field).
     // https://github.com/airbytehq/airbyte/issues/36253
     if (process.env.WORKER_JOB_ID) {
       return cursorField.length ? [cursorField[0]] : [];
