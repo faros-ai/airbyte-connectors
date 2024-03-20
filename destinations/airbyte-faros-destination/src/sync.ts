@@ -26,7 +26,7 @@ export interface AccountSync {
   endedAt?: Date;
   status: 'error' | 'running' | 'success' | 'unknown';
   warnings?: SyncMessage[];
-  errors?: SyncMessage[];
+  errors?: SyncMessage[]; // can be non-empty and status = 'success', a.k.a. "partial success"
   metrics?: Dictionary<any>;
 }
 
