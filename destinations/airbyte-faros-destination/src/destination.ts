@@ -9,6 +9,7 @@ import {
   AirbyteMessageType,
   AirbyteRecord,
   AirbyteSourceConfigMessage,
+  AirbyteSourceStatus,
   AirbyteSpec,
   AirbyteStateMessage,
   DestinationSyncMode,
@@ -705,7 +706,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       terminal: stdin.isTTY,
     });
     try {
-      const sourceErrors: SyncMessage[] = [];
+      const sourceErrors: {fatal: SyncMessage[]; nonFatal: SyncMessage[]} = {
+        fatal: [],
+        nonFatal: [],
+      };
+      const sourceWarnings: SyncMessage[] = [];
       let sourceSucceeded = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
@@ -717,14 +722,19 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stats.messagesRead++;
           if (isStateMessage(msg)) {
             if (isSourceStatusMessage(msg)) {
-              if (msg.sourceStatus?.status === 'SUCCESS') {
+              const status = msg.sourceStatus?.status;
+              if (status === 'SUCCESS') {
                 sourceSucceeded = true;
-              } else if (msg.sourceStatus?.status === 'ERRORED') {
-                const syncMessage = getSyncMessage(msg.sourceStatus.error);
-                this.logger.error(
-                  `Airbyte Source has encountered an error: ${syncMessage.summary}`
-                );
-                sourceErrors.push(syncMessage);
+              }
+              const syncMessage = getSyncMessage(msg.sourceStatus);
+              if (syncMessage) {
+                if (status === 'ERRORED') {
+                  sourceErrors.fatal.push(syncMessage);
+                } else if (syncMessage.type === 'ERROR') {
+                  sourceErrors.nonFatal.push(syncMessage);
+                } else {
+                  sourceWarnings.push(syncMessage);
+                }
               }
             } else if (isSourceConfigMessage(msg)) {
               await updateLocalAccount?.(msg);
@@ -843,8 +853,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           .map((s) => s.destination_sync_mode)
           .every((m) => m === DestinationSyncMode.OVERWRITE);
 
-      if (sourceErrors.length) {
-        const errorSummary = sourceErrors.map((e) => e.summary).join('; ');
+      const allSourceErrors = sourceErrors.fatal.concat(sourceErrors.nonFatal);
+      if (allSourceErrors.length) {
+        const errorSummary = allSourceErrors.map((e) => e.summary).join('; ');
         this.logger.error(
           'Skipping reset of non-incremental models due to' +
             ` Airbyte Source errors: ${errorSummary}`
@@ -866,9 +877,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       await completeSync?.({
         endedAt: new Date(),
-        status: sourceErrors.length ? 'error' : 'success',
+        status: sourceErrors.fatal.length ? 'error' : 'success',
         metrics: stats.asObject(),
-        errors: sourceErrors,
+        errors: allSourceErrors,
+        warnings: sourceWarnings,
       });
     } finally {
       input.close();
@@ -1079,6 +1091,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 }
 
-function getSyncMessage(m: string | SyncMessage): SyncMessage {
-  return typeof m === 'string' ? {summary: m, code: 0, action: ''} : m;
+function getSyncMessage(
+  sourceStatus: AirbyteSourceStatus
+): SyncMessage | undefined {
+  // backwards compatibility with older Airbyte Source versions
+  if ((sourceStatus as any).error) {
+    return (sourceStatus as any).error as SyncMessage;
+  }
+
+  return sourceStatus.message;
 }

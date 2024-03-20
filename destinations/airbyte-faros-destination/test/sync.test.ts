@@ -191,7 +191,17 @@ describe('FarosSyncClient', () => {
       const accountSync = await farosSyncClient.updateAccountSync(
         accountId,
         syncId,
-        {status, endedAt, metrics, warnings, errors}
+        {
+          status,
+          endedAt,
+          metrics,
+          warnings: warnings.map((w) => {
+            return {type: 'WARNING', ...w};
+          }),
+          errors: errors.map((e) => {
+            return {type: 'ERROR', ...e};
+          }),
+        }
       );
 
       // Assertions

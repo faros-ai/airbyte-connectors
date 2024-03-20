@@ -218,7 +218,15 @@ describe('github', () => {
       JSON.stringify(
         new AirbyteSourceStatusMessage(
           {data: {}},
-          {status: 'ERRORED', error: 'Source error message'}
+          {
+            status: 'RUNNING',
+            message: {
+              summary: 'Source error message',
+              code: 0,
+              action: 'test',
+              type: 'ERROR',
+            },
+          }
         )
       ) +
         os.EOL +
@@ -227,10 +235,11 @@ describe('github', () => {
             {data: {}},
             {
               status: 'ERRORED',
-              error: {
+              message: {
                 summary: 'Error from sync message',
                 code: 1,
                 action: 'test',
+                type: 'ERROR',
               },
             }
           )
@@ -244,7 +253,7 @@ describe('github', () => {
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch(
       'Skipping reset of non-incremental models due to' +
-        ' Airbyte Source errors: Source error message; Error from sync message'
+        ' Airbyte Source errors: Error from sync message; Source error message'
     );
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
