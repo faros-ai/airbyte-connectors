@@ -189,8 +189,9 @@ class FarosSyncClient extends FarosClient {
   ): Promise<T | undefined> {
     return f.catch((error) => {
       if (failureMessage) {
-        this.airbyteLogger?.warn(failureMessage);
-        this.airbyteLogger?.traceError(error);
+        this.airbyteLogger?.warn(
+          failureMessage + `. Error: ${error?.message ?? JSON.stringify(error)}`
+        );
       }
       return undefined;
     });
