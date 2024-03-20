@@ -186,10 +186,11 @@ export abstract class AirbyteSourceBase<
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
-            error: {
+            message: {
               summary: e.message ?? JSON.stringify(e),
               code: 0, // placeholder
               action: 'Contact Faros support', // placeholder
+              type: 'ERROR',
             },
           }
         );
@@ -456,12 +457,13 @@ export abstract class AirbyteSourceBase<
     return new AirbyteSourceStatusMessage(
       {data: connectorState},
       {
-        status: 'ERRORED',
+        status: error instanceof NonFatalError ? 'RUNNING' : 'ERRORED',
         // TODO: complete error object with info from Source
-        error: {
+        message: {
           summary: error.message ?? JSON.stringify(error),
           code: 0, // placeholder
           action: 'Contact Faros support', // placeholder
+          type: 'ERROR',
         },
       }
     );

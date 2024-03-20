@@ -141,8 +141,8 @@ class FarosSyncClient extends FarosClient {
         this.request('PATCH', `/accounts/${accountId}/syncs/${syncId}`, {
           ...props,
           endedAt: props.endedAt?.toISOString(),
-          warnings: props.warnings ?? [],
-          errors: props.errors ?? [],
+          warnings: props.warnings?.map(cleanSyncMessage) ?? [],
+          errors: props.errors?.map(cleanSyncMessage) ?? [],
           metrics: props.metrics ?? {},
         }),
         `Failed to update sync ${syncId} for account ${accountId}`
@@ -212,6 +212,13 @@ function syncResult(response?: AccountSyncResponse): AccountSync | undefined {
       ? new Date(response.sync.endedAt)
       : undefined,
   };
+}
+
+type CleanedSyncMessage = Omit<SyncMessage, 'type'>;
+
+function cleanSyncMessage(m: SyncMessage): CleanedSyncMessage {
+  const {type, ...rest} = m;
+  return rest;
 }
 
 export default FarosSyncClient;
