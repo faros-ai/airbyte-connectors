@@ -65,26 +65,11 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     latestRecord: PullRequest
   ): StreamState {
     const projectKey = latestRecord.issue.project;
-    const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectKey]?.cutoff
-    );
     const latestRecordCutoff = Utils.toDate(latestRecord.issue.updated);
-    const newCutoff = moment().utc().toDate();
-    if (latestRecordCutoff > currentCutoff) {
-      const cutoffLag = moment
-        .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
-        .asMilliseconds();
-      const newState = {
-        cutoff: Math.max(
-          latestRecordCutoff.getTime(),
-          newCutoff.getTime() - cutoffLag
-        ),
-      };
-      return {
-        ...currentStreamState,
-        [projectKey]: newState,
-      };
-    }
-    return currentStreamState;
+    return this.getUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      projectKey
+    );
   }
 }

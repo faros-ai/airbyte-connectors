@@ -53,22 +53,10 @@ export class SprintReports extends StreamWithBoardSlices {
   ): StreamState {
     const board = latestRecord.boardId;
     const latestRecordCutoff = Utils.toDate(latestRecord.completedAt);
-    const newCutoff = moment().utc().toDate();
-    if (latestRecordCutoff > newCutoff) {
-      const cutoffLag = moment
-        .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
-        .asMilliseconds();
-      const newState = {
-        cutoff: Math.max(
-          latestRecordCutoff.getTime(),
-          newCutoff.getTime() - cutoffLag
-        ),
-      };
-      return {
-        ...currentStreamState,
-        [board]: newState,
-      };
-    }
-    return currentStreamState;
+    return this.getUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      board
+    );
   }
 }

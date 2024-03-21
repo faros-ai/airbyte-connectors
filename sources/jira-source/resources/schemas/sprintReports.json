@@ -12,7 +12,7 @@
       "type": "string"
     },
     "completedAt": {
-      "type": ["null","string"],
+      "type": "string",
       "format": "date-time"
     },
     "completedPoints": {
