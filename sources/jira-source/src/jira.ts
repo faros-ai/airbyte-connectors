@@ -4,15 +4,14 @@ import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
-import jira from 'jira.js';
-import {Project} from 'jira.js/out/version2/models';
-import {concat} from 'lodash';
+import jira, {AgileModels, Version2Models} from 'jira.js';
+import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource} from './models';
+import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
@@ -31,6 +30,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly projectKeys?: ReadonlyArray<string>;
   readonly cutoffDays?: number;
   readonly cutoffLagDays?: number;
+  readonly boardIds?: ReadonlyArray<string>;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -62,6 +62,8 @@ const prRegex = new RegExp(
 
 const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
+
+const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
 export const DEFAULT_CONCURRENCY_LIMIT = 5;
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -397,7 +399,8 @@ export class Jira {
     return pulls;
   }
 
-  async *getProjects(): AsyncIterableIterator<Project> {
+  @Memoize()
+  async *getProjects(): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
       const projects = this.iterate(
         (startAt) =>
@@ -428,7 +431,7 @@ export class Jira {
     // user should have `BROWSE_PROJECTS` permissions on the project, so check
     // that permission is granted for the user using mypermissions endpoint.
     const skippedProjects: string[] = [];
-    const browseableProjects: Project[] = [];
+    const browseableProjects: Version2Models.Project[] = [];
     for await (const project of await this.api.getAllProjects()) {
       try {
         const hasPermission = await this.hasBrowseProjectPerms(project.key);
@@ -460,6 +463,21 @@ export class Jira {
     }
   }
 
+  async getProject(id: string): Promise<Version2Models.Project> {
+    const project = await this.api.v2.projects.getProject({
+      projectIdOrKey: id,
+      expand: 'description',
+    });
+
+    const hasPermission = await this.hasBrowseProjectPerms(project.key);
+    if (!hasPermission) {
+      throw new VError('Insufficient permissions for project: %s', project.key);
+    }
+
+    return project;
+  }
+
+  @Memoize()
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: BROWSE_PROJECTS_PERM,
@@ -469,8 +487,8 @@ export class Jira {
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
 
-  async getProjectsByKey(): Promise<Map<string, Project>> {
-    const projectsByKey = new Map<string, Project>();
+  async getProjectsByKey(): Promise<Map<string, Version2Models.Project>> {
+    const projectsByKey = new Map<string, Version2Models.Project>();
     for await (const project of this.getProjects()) {
       projectsByKey.set(project.key, project);
     }
@@ -579,5 +597,101 @@ export class Jira {
       return [...fieldIds, ...additionalFieldIds];
     }
     return fieldIds;
+  }
+
+  getBoards(projectId?: string): AsyncIterableIterator<AgileModels.Board> {
+    return this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllBoards({
+          startAt,
+          maxResults: this.maxPageSize,
+          ...(projectId && {projectKeyOrId: projectId}),
+        }),
+      (item: AgileModels.Board) => item
+    );
+  }
+
+  getBoard(id: string): Promise<AgileModels.Board> {
+    const boardId = Utils.parseInteger(id);
+    return this.api.agile.board.getBoard({boardId});
+  }
+
+  getSprintReports(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<SprintReport> {
+    return this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllSprints({
+          boardId: Utils.parseInteger(boardId),
+          startAt,
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => {
+        const completeDate = Utils.toDate(item.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          return;
+        }
+        let report;
+        try {
+          if (
+            this.sprintHistoryFetchFailures <
+              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+            toLower(item.state) != 'future'
+          ) {
+            report = await this.api.getSprintReport(boardId, item.id);
+            this.sprintHistoryFetchFailures = 0;
+          }
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
+          );
+          if (
+            this.sprintHistoryFetchFailures++ >=
+            MAX_SPRINT_HISTORY_FETCH_FAILURES
+          ) {
+            this.logger?.warn(
+              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+            );
+          }
+        }
+        return this.toSprintReportFields(report?.contents, item);
+      }
+    );
+  }
+
+  private toSprintReportFields(report: any, sprint: any): SprintReport {
+    if (!report) {
+      return;
+    }
+    const toFloat = (value: any): number | undefined =>
+      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
+
+    const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
+    const notCompletedPoints = toFloat(
+      report?.issuesNotCompletedEstimateSum?.value
+    );
+    const puntedPoints = toFloat(report?.puntedIssuesEstimateSum?.value);
+    const completedInAnotherSprintPoints = toFloat(
+      report?.issuesCompletedInAnotherSprintEstimateSum?.value
+    );
+
+    const plannedPoints = sum([
+      completedPoints,
+      notCompletedPoints,
+      puntedPoints,
+      completedInAnotherSprintPoints,
+    ]);
+
+    return {
+      id: sprint.id,
+      completedAt: Utils.toDate(sprint.completeDate),
+      completedPoints,
+      notCompletedPoints,
+      puntedPoints,
+      completedInAnotherSprintPoints,
+      plannedPoints,
+    };
   }
 }
