@@ -1,9 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import moment from 'moment/moment';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';
+import {Jira} from '../jira';
 import {SprintReport} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
@@ -26,13 +25,13 @@ export class SprintReports extends StreamWithBoardSlices {
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<SprintReport> {
-    const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
-    const board = await jira.getBoard(boardId);
     if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
-      this.logger.info(`Skipped board ${board.name} (id: ${boardId})`);
+      this.logger.info(`Skipped board with id ${boardId}`);
       return;
     }
+    const jira = await Jira.instance(this.config, this.logger);
+    const board = await jira.getBoard(boardId);
     if (board.type !== 'scrum') return;
     const updateRange =
       syncMode === SyncMode.INCREMENTAL

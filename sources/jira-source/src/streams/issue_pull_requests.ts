@@ -1,9 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_CUTOFF_LAG_DAYS, DEV_FIELD_NAME, Jira} from '../jira';
+import {DEV_FIELD_NAME, Jira} from '../jira';
 import {PullRequest} from '../models';
 import {
   ProjectStreamSlice,
