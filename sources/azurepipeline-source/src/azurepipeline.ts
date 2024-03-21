@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import * as rax from 'retry-axios';
 import {VError} from 'verror';
 
 import {
@@ -17,6 +18,8 @@ const DEFAULT_API_VERSION = '6.0';
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_API_RETRIES = 3;
+const DEFAULT_API_RETRY_DELAY_MS = 1000;
 const CONTINUATION_TOKEN_HEADER = 'x-ms-continuationtoken';
 
 export interface AzurePipelineConfig {
@@ -27,6 +30,8 @@ export interface AzurePipelineConfig {
   readonly page_size?: number;
   readonly api_version?: string;
   readonly api_timeout?: number;
+  readonly api_retries?: number;
+  readonly api_retry_delay?: number;
 }
 
 export class AzurePipeline {
@@ -64,6 +69,12 @@ export class AzurePipeline {
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
 
+    const raxConfig: rax.RetryConfig = {
+      retry: config.api_retries ?? DEFAULT_API_RETRIES,
+      noResponseRetries: config.api_retries ?? DEFAULT_API_RETRIES,
+      retryDelay: config.api_retry_delay ?? DEFAULT_API_RETRY_DELAY_MS,
+    };
+
     const httpClient = axios.create({
       baseURL: `https://dev.azure.com/${config.organization}`,
       timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
@@ -76,6 +87,9 @@ export class AzurePipeline {
       },
     });
 
+    httpClient.defaults.raxConfig = raxConfig;
+    rax.attach(httpClient);
+
     const httpVSRMClient = axios.create({
       baseURL: `https://vsrm.dev.azure.com/${config.organization}`,
       timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
@@ -87,6 +101,9 @@ export class AzurePipeline {
         Authorization: `Basic ${accessToken}`,
       },
     });
+
+    httpVSRMClient.defaults.raxConfig = raxConfig;
+    rax.attach(httpVSRMClient);
 
     AzurePipeline.azurePipeline = new AzurePipeline(
       httpClient,

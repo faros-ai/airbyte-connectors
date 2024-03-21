@@ -60,6 +60,20 @@
         "title": "API Timeout",
         "description": "Timeout (in milliseconds) to use when making requests to Azure API. 0 means no timeout.",
         "default": 0
+      },
+      "api_retries": {
+        "order": 7,
+        "type": "integer",
+        "title": "API Error Retries",
+        "description": "Number of times failed API calls will be retried.",
+        "default": 3
+      },
+      "api_retry_delay": {
+        "order": 7,
+        "type": "integer",
+        "title": "API Retry Delay",
+        "description": "Delay (in milliseconds) to use when retryng API calls.",
+        "default": 1000
       }
     }
   }
