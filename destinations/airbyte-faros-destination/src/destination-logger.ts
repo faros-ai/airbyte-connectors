@@ -148,6 +148,10 @@ export class FarosDestinationLogger extends AirbyteLogger {
     }
   }
 
+  get shouldSaveLogs(): boolean {
+    return this._shouldSaveLogs;
+  }
+
   set shouldSaveLogs(shouldSaveLogs: boolean) {
     this._shouldSaveLogs = shouldSaveLogs;
     if (!shouldSaveLogs) {
