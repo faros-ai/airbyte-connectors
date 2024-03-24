@@ -3,7 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {VantaConfig} from '.';
-import {queryTypeToQuery} from './types';
+import {QueryHolder, queryTypeToQueryHolder} from './types';
 
 const DEFAULT_PAGE_LIMIT = 100;
 
@@ -62,38 +62,55 @@ export class Vanta {
   }
 
   async *vulns(queryType: string): AsyncGenerator<any> {
-    const query = queryTypeToQuery[queryType];
-    if (!query) {
+    const queryHolder: QueryHolder = queryTypeToQueryHolder[queryType];
+    if (!queryHolder) {
       throw new VError('Unknown query type: %s', queryType);
     }
-    const res = await this.api.get(finalPath, {params: {format: 'json'}});
-    for (const item of res.data?.Report_Entry ?? []) {
+    const res = await this.paginate(queryHolder);
+    for (const item of res) {
       yield item;
     }
   }
 
-  private async *paginate<T>(
-    limit: number,
-    maxPages: number,
-    nextPage: (limit: number, offset: number) => Promise<AxiosResponse<Page<T>>>
-  ): AsyncGenerator<T> {
-    let offset = 0;
-    let total = 0;
-    let pages = 0;
-    do {
-      try {
-        const res = await nextPage(limit, offset);
-        for (const item of res.data.data) {
-          yield item;
-        }
-        pages += 1;
-        offset += limit;
-        total = res.data.total ?? 0;
-      } catch (e: any) {
-        const w = wrapApiError(e);
-        this.logger.error(w.message, w.stack);
-        return;
-      }
-    } while (offset < total && pages < maxPages);
+  private async paginate<T>(queryHolder: QueryHolder): Promise<any[]> {
+    const store: any[] = [];
+    let cursor = null;
+    // Eventual queries will have cursor as a string
+    const variables = {last: this.limit, before: cursor};
+    let body = {
+      query: queryHolder.query,
+      variables,
+    };
+    let continueLoop = true;
+    while (continueLoop) {
+      // Assuming vanta_client is an instance of Axios or similar
+      this.api
+        .post(this.apiUrl, body)
+        .then((response) => {
+          const newEdges =
+            response?.data?.organization?.[queryHolder.objectName]?.edges;
+          store.push(...newEdges); // Assuming 'store' is an array that has been defined earlier
+          this.logger.debug(`Number of new edges: ${newEdges.length}`);
+          if (newEdges.length < this.limit) {
+            continueLoop = false;
+          }
+          cursor = newEdges[0].cursor;
+          if (!cursor) {
+            throw new Error(
+              'Cursor is missing from query result: ' +
+                JSON.stringify(newEdges[0])
+            );
+          }
+          variables['before'] = cursor;
+          body = {
+            query: queryHolder.query,
+            variables,
+          };
+        })
+        .catch((error) => {
+          console.error('Error making the request:', error);
+        });
+    }
+    return store;
   }
 }

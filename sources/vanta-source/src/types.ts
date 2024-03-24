@@ -1,6 +1,14 @@
-const queryTypeToQuery = {
-  git: `
-  query MyQuery($last: Int, $before: String) {
+export type QueryType = 'git' | 'aws' | 'awsv2';
+export interface QueryHolder {
+  objectName: string;
+  query: string;
+}
+
+const queryTypeToQueryHolder: Record<QueryType, QueryHolder> = {
+  git: {
+    objectName: 'GithubDependabotVulnerabilityList',
+    query: `
+  query VantaQuery($last: Int, $before: String) {
     organization {
       name
       displayName
@@ -31,8 +39,10 @@ const queryTypeToQuery = {
     }
    }
   `,
-  aws: `
-  query MyQuery($last: Int, $before: String) {
+  },
+  aws: {
+    objectName: 'AwsContainerVulnerabilityList',
+    query: `query VantaQuery($last: Int, $before: String) {
     organization {
       name
       displayName
@@ -64,8 +74,10 @@ const queryTypeToQuery = {
     }
   }
   `,
-  awsv2: `
-  query AWSContainerV2($last: Int, $before: String) {
+  },
+  awsv2: {
+    objectName: 'AwsContainerVulnerabilityV2List',
+    query: ` query VantaQuery($last: Int, $before: String) {
     organization {
       name
       displayName
@@ -102,6 +114,7 @@ const queryTypeToQuery = {
     }
   }
   `,
+  },
 };
 
-export {queryTypeToQuery};
+export {queryTypeToQueryHolder};
