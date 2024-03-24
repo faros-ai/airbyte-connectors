@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "name": "Sample Organization Name 1",
+      "managers": [
+        {
+          "id": "string",
+          "descriptor": "Lorem ipsum dolor sit ame"
+        }
+      ],
+      "code": "Sample-Code",
+      "inactive": true,
+      "descriptor": "Lorem ipsum dolor sit ame",
+      "id": "1"
+    },
+    {
+      "name": "Sample Organization Name 2",
+      "managers": [
+        {
+          "id": "string",
+          "descriptor": "Lorem ipsum dolor sit ame"
+        }
+      ],
+      "code": "Sample-Code",
+      "inactive": true,
+      "descriptor": "Lorem ipsum dolor sit ame",
+      "id": "2"
+    }
+  ],
+  "total": 4
+}

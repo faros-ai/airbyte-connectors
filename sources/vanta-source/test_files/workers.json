@@ -1,0 +1,72 @@
+{
+  "data": [
+    {
+      "primaryJob": {
+        "businessTitle": "Lorem ipsum dolor sit amet, cum choro singulis consectetuer ut, ubique iisque contentiones ex duo. Quo lorem etiam eu.",
+        "supervisoryOrganization": {
+          "descriptor": "Lorem ipsum dolor sit ame",
+          "id": "string"
+        },
+        "jobType": {
+          "descriptor": "Lorem ipsum dolor sit ame"
+        },
+        "jobProfile": {
+          "descriptor": "Lorem ipsum dolor sit ame",
+          "id": "string"
+        },
+        "location": {
+          "country": {
+            "descriptor": "Lorem ipsum dolor sit ame"
+          },
+          "id": "string",
+          "descriptor": "Lorem ipsum dolor sit ame"
+        },
+        "workSpace": {
+          "locationChain": "Sample Location Chain",
+          "descriptor": "Lorem ipsum dolor sit ame",
+          "id": "string"
+        },
+        "descriptor": "Lorem ipsum dolor sit ame",
+        "id": "string"
+      },
+      "person": {
+        "phone": "Lorem ipsum dolor sit amet, cum choro singulis consectetuer ut, ubique iisque contentiones ex duo. Quo lorem etiam eu.",
+        "email": "Lorem ipsum dolor sit amet, cum choro singulis consectetuer ut, ubique iisque contentiones ex duo. Quo lorem etiam eu.",
+        "id": "string"
+      },
+      "additionalJobs": [
+        {
+          "businessTitle": "Lorem ipsum dolor sit amet, cum choro singulis consectetuer ut, ubique iisque contentiones ex duo. Quo lorem etiam eu.",
+          "supervisoryOrganization": {
+            "descriptor": "Lorem ipsum dolor sit ame",
+            "id": "string"
+          },
+          "jobType": {
+            "descriptor": "Lorem ipsum dolor sit ame"
+          },
+          "jobProfile": {
+            "descriptor": "Lorem ipsum dolor sit ame",
+            "id": "string"
+          },
+          "location": {
+            "country": {
+              "descriptor": "Lorem ipsum dolor sit ame"
+            },
+            "id": "string",
+            "descriptor": "Lorem ipsum dolor sit ame"
+          },
+          "workSpace": {
+            "locationChain": "Sample Location Chain",
+            "descriptor": "Lorem ipsum dolor sit ame",
+            "id": "string"
+          },
+          "descriptor": "Lorem ipsum dolor sit ame",
+          "id": "string"
+        }
+      ],
+      "descriptor": "Lorem ipsum dolor sit ame",
+      "id": "string"
+    }
+  ],
+  "total": 4
+}

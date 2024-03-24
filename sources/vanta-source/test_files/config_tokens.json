@@ -1,0 +1,9 @@
+{
+  "tenant": "acme",
+  "credentials": {
+    "clientId": "foo",
+    "clientSecret": "bar",
+    "refreshToken": "baz"
+  },
+  "baseUrl": "https://testurl.com/ccx"
+}
