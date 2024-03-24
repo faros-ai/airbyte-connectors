@@ -22,7 +22,6 @@ export class Vanta {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly apiUrl: string,
-    private readonly tenant: string,
     private readonly skipConnectionCheck: boolean
   ) {}
 
@@ -56,7 +55,6 @@ export class Vanta {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       apiUrl.toString(),
-      cfg.tenant,
       cfg.skipConnectionCheck ? cfg.skipConnectionCheck : true
     );
   }
@@ -72,7 +70,7 @@ export class Vanta {
     }
   }
 
-  private async paginate<T>(queryHolder: QueryHolder): Promise<any[]> {
+  private async paginate(queryHolder: QueryHolder): Promise<any[]> {
     const store: any[] = [];
     let cursor = null;
     // Eventual queries will have cursor as a string
@@ -82,34 +80,32 @@ export class Vanta {
       variables,
     };
     let continueLoop = true;
+    let nPages = 0;
+    this.logger.info('Starting pagination with query: %s', queryHolder.query);
     while (continueLoop) {
       // Assuming vanta_client is an instance of Axios or similar
-      this.api
-        .post(this.apiUrl, body)
-        .then((response) => {
-          const newEdges =
-            response?.data?.organization?.[queryHolder.objectName]?.edges;
-          store.push(...newEdges); // Assuming 'store' is an array that has been defined earlier
-          this.logger.debug(`Number of new edges: ${newEdges.length}`);
-          if (newEdges.length < this.limit) {
-            continueLoop = false;
-          }
-          cursor = newEdges[0].cursor;
-          if (!cursor) {
-            throw new Error(
-              'Cursor is missing from query result: ' +
-                JSON.stringify(newEdges[0])
-            );
-          }
-          variables['before'] = cursor;
-          body = {
-            query: queryHolder.query,
-            variables,
-          };
-        })
-        .catch((error) => {
-          console.error('Error making the request:', error);
-        });
+      this.logger.info(`Running query with page ${nPages++}`);
+      const packed_response = await this.api.post(this.apiUrl, body);
+      const response = packed_response?.data;
+      const newEdges =
+        response?.data?.organization?.[queryHolder.objectName]?.edges;
+      const newNodes = newEdges?.map((edge: any) => edge.node);
+      store.push(...newNodes); // Assuming 'store' is an array that has been defined earlier
+      this.logger.debug(`Number of new edges: ${newEdges.length}`);
+      if (newEdges.length < this.limit) {
+        continueLoop = false;
+      }
+      cursor = newEdges[0].cursor;
+      if (!cursor) {
+        throw new Error(
+          'Cursor is missing from query result: ' + JSON.stringify(newEdges[0])
+        );
+      }
+      variables['before'] = cursor;
+      body = {
+        query: queryHolder.query,
+        variables,
+      };
     }
     return store;
   }

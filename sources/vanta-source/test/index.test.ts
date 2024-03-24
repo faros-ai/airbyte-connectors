@@ -18,10 +18,8 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
-const test_base_url = 'https://testurl.com/ccx';
-
 function getVantaInstance(logger, axios_instance, limit): Vanta {
-  return new Vanta(logger, axios_instance, limit, test_base_url, 'acme', true);
+  return new Vanta(logger, axios_instance, limit, 'example.com', true);
 }
 
 describe('index', () => {
