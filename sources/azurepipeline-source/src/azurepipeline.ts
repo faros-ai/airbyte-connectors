@@ -84,7 +84,7 @@ export class AzurePipeline {
           Authorization: `Basic ${accessToken}`,
         },
       },
-      logger.asPino(),
+      logger?.asPino(),
       config.max_retries ?? DEFAULT_RETRIES,
       config.api_retry_delay ?? DEFAULT_RETRY_DELAY_MS
     );
