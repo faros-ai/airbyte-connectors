@@ -15,7 +15,7 @@ function readResourceFile(fileName: string): any {
 
 jest.mock('axios');
 
-function returnResourceByQuery(queryBody: any) {
+function returnResourceByQuery(queryBody: any): any {
   const query = queryBody.query;
   if (query.includes('GithubDependabotVulnerabilityList')) {
     return readTestResourceFile('github_response_page.json');
@@ -34,12 +34,12 @@ const mockAxiosInstance: Partial<AxiosInstance> = {
 
 axios.create = jest.fn(() => mockAxiosInstance as AxiosInstance);
 
-function unpackResourceDataByQueryName(queryName: string, data: any) {
+function unpackResourceDataByQueryName(queryName: string, data: any): any[] {
   const edges = data['data']['data']['organization'][queryName]['edges'];
   return edges.map((edge: any) => edge.node);
 }
 
-function getAxiosInstance(cfg) {
+function getAxiosInstance(cfg): AxiosInstance {
   const timeout = cfg.timeout ?? 60000;
   const headers = {
     'content-type': 'application/json',
@@ -87,7 +87,6 @@ describe('index', () => {
 
   test('git single page', async () => {
     const vanta = getVantaInstance(logger, sampleConfig, 100);
-    // const query = readTestResourceFile('query_single_page.json');
     const queryType = 'git';
     const output = [];
     const res = await vanta.vulns(queryType);
@@ -105,7 +104,6 @@ describe('index', () => {
 
   test('test all query types single page', async () => {
     const vanta = getVantaInstance(logger, sampleConfig, 100);
-    // const query = readTestResourceFile('query_single_page.json');
     const queryTypes = ['git', 'aws', 'awsv2'];
     const output = [];
     for (const queryType of queryTypes) {
