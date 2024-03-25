@@ -1,16 +1,13 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {VError} from 'verror';
+import fs from 'fs-extra';
+import VError from 'verror';
 
 import {VantaConfig} from '.';
 import {QueryHolder, queryTypeToQueryHolder} from './types';
+import {getQueryFromName} from './utils';
 
 const DEFAULT_PAGE_LIMIT = 100;
-
-export interface Page<T> {
-  data: ReadonlyArray<T>;
-  total: number;
-}
 
 /**
  * Vanta REST API client
@@ -60,6 +57,23 @@ export class Vanta {
     );
   }
 
+  async checkConnection(): Promise<[boolean, VError]> {
+    const query = getQueryFromName('Organization');
+    const body = {
+      query,
+      variables: {},
+    };
+    try {
+      const packed_response: AxiosResponse = await this.getAxiosResponse(
+        this.apiUrl,
+        body
+      );
+      return [packed_response.status === 200, undefined];
+    } catch (error) {
+      return [false, new VError(error, 'Connection check failed')];
+    }
+  }
+
   async *vulns(queryType: string): AsyncGenerator<any> {
     const queryHolder: QueryHolder = queryTypeToQueryHolder[queryType];
     if (!queryHolder) {
@@ -102,13 +116,17 @@ export class Vanta {
     let cursor = null;
     // Eventual queries will have cursor as a string
     const variables = {last: this.limit, before: cursor};
+    const query = getQueryFromName(queryHolder.queryName);
     let body = {
-      query: queryHolder.query,
+      query,
       variables,
     };
     let continueLoop = true;
     let nPages = 0;
-    this.logger.info('Starting pagination with query: %s', queryHolder.query);
+    this.logger.info(
+      'Starting pagination with query: %s',
+      queryHolder.queryName
+    );
     while (continueLoop) {
       // Assuming vanta_client is an instance of Axios or similar
       this.logger.info(`Running query with page ${nPages++}`);
@@ -118,7 +136,7 @@ export class Vanta {
       );
       const response = packed_response?.data;
       const newEdges =
-        response?.data?.organization?.[queryHolder.objectName]?.edges;
+        response?.data?.organization?.[queryHolder.queryName]?.edges;
       const newNodes = newEdges?.map((edge: any) => edge.node);
       if (newNodes) {
         store.push(...newNodes);
@@ -139,7 +157,7 @@ export class Vanta {
         }
         variables['before'] = cursor;
         body = {
-          query: queryHolder.query,
+          query,
           variables,
         };
       }

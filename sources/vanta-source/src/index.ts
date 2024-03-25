@@ -10,6 +10,7 @@ import {
 import VError from 'verror';
 
 import {Vulns} from './streams';
+import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
   readonly apiUrl: string;
@@ -38,11 +39,16 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: VantaConfig): Promise<[boolean, VError]> {
-    // TODO: Not implemented
     if (config.skipConnectionCheck) {
       return [true, undefined];
     }
-    return [true, undefined];
+    const vanta = await Vanta.instance(config, this.logger);
+    try {
+      const res = await vanta.checkConnection();
+      return res;
+    } catch (error) {
+      return [false, new VError(error, 'Connection check failed')];
+    }
   }
 
   streams(config: VantaConfig): AirbyteStreamBase[] {
