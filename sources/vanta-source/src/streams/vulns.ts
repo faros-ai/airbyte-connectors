@@ -31,6 +31,5 @@ export class Vulns extends AirbyteStreamBase {
         };
       }
     }
-    // yield records;
   }
 }

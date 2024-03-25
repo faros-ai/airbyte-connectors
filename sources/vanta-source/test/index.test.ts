@@ -68,7 +68,7 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const configWithToken = readTestResourceFile('config_tokens.json');
+  const sampleConfig = readTestResourceFile('sample_cfg.json');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -86,7 +86,7 @@ describe('index', () => {
   });
 
   test('git single page', async () => {
-    const vanta = getVantaInstance(logger, configWithToken, 100);
+    const vanta = getVantaInstance(logger, sampleConfig, 100);
     // const query = readTestResourceFile('query_single_page.json');
     const queryType = 'git';
     const output = [];
@@ -105,7 +105,7 @@ describe('index', () => {
   });
 
   test('test all query types single page', async () => {
-    const vanta = getVantaInstance(logger, configWithToken, 100);
+    const vanta = getVantaInstance(logger, sampleConfig, 100);
     // const query = readTestResourceFile('query_single_page.json');
     const queryTypes = ['git', 'aws', 'awsv2'];
     const output = [];
