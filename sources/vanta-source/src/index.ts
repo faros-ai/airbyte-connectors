@@ -1,16 +1,15 @@
 import {Command} from 'commander';
 import {
   AirbyteConfig,
+  AirbyteLogger,
   AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Vulns} from './streams';
-import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
   readonly apiUrl: string;

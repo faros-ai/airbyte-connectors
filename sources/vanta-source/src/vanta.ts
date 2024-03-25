@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
 import {VantaConfig} from '.';
@@ -71,6 +71,32 @@ export class Vanta {
     }
   }
 
+  async getAxiosResponse(url: string, body: any): Promise<AxiosResponse> {
+    try {
+      const packed_response: AxiosResponse = await this.api.post(url, body);
+      return packed_response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error(`Axios error occurred: ${error.message}`);
+        if (error.response) {
+          this.logger.error(
+            `Server responded with status ${error.response.status}`
+          );
+        } else if (error.request) {
+          this.logger.error(`No response received for the request`);
+        } else {
+          this.logger.error(`Error setting up the request: ${error.message}`);
+        }
+      } else {
+        this.logger.error(
+          `Non-Axios error occurred: ${
+            error instanceof Error ? error.message : error
+          }`
+        );
+      }
+    }
+  }
+
   private async paginate(queryHolder: QueryHolder): Promise<any[]> {
     const store: any[] = [];
     let cursor = null;
@@ -86,28 +112,37 @@ export class Vanta {
     while (continueLoop) {
       // Assuming vanta_client is an instance of Axios or similar
       this.logger.info(`Running query with page ${nPages++}`);
-      const packed_response = await this.api.post(this.apiUrl, body);
+      const packed_response: AxiosResponse = await this.getAxiosResponse(
+        this.apiUrl,
+        body
+      );
       const response = packed_response?.data;
-      console.log('API Response: ', response);
       const newEdges =
         response?.data?.organization?.[queryHolder.objectName]?.edges;
       const newNodes = newEdges?.map((edge: any) => edge.node);
-      store.push(...newNodes); // Assuming 'store' is an array that has been defined earlier
+      if (newNodes) {
+        store.push(...newNodes);
+      }
       this.logger.debug(`Number of new edges: ${newEdges.length}`);
+
+      // Preparing for next cycle
       if (newEdges.length < this.limit) {
         continueLoop = false;
       }
-      cursor = newEdges[0].cursor;
-      if (!cursor) {
-        throw new Error(
-          'Cursor is missing from query result: ' + JSON.stringify(newEdges[0])
-        );
+      if (newEdges.length > 0) {
+        cursor = newEdges[0].cursor;
+        if (!cursor) {
+          throw new Error(
+            'Cursor is missing from query result: ' +
+              JSON.stringify(newEdges[0])
+          );
+        }
+        variables['before'] = cursor;
+        body = {
+          query: queryHolder.query,
+          variables,
+        };
       }
-      variables['before'] = cursor;
-      body = {
-        query: queryHolder.query,
-        variables,
-      };
     }
     return store;
   }

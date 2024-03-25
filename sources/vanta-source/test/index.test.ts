@@ -95,7 +95,6 @@ describe('index', () => {
       output.push(item);
     }
 
-    console.log(`test output: ${output}`);
     const preExpected = readTestResourceFile('github_response_page.json');
     const expected = unpackResourceDataByQueryName(
       'GithubDependabotVulnerabilityList',
@@ -115,7 +114,6 @@ describe('index', () => {
         output.push(item);
       }
     }
-    console.log(`test output: ${output}`);
     const totalExpected = [];
     const preExpected = readTestResourceFile('github_response_page.json');
     const expected = unpackResourceDataByQueryName(
