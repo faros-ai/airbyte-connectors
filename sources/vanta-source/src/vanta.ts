@@ -65,6 +65,7 @@ export class Vanta {
       throw new VError('Unknown query type: %s', queryType);
     }
     const res = await this.paginate(queryHolder);
+    console.log(`res: ${res}`);
     for (const item of res) {
       yield item;
     }

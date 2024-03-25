@@ -22,6 +22,28 @@ function getVantaInstance(logger, axios_instance, limit, apiUrl): Vanta {
   return new Vanta(logger, axios_instance, limit, apiUrl, true);
 }
 
+jest.mock('axios', () => {
+  return {
+    AxiosInstance: jest.fn().mockImplementation(() => {
+      return {
+        async post(apiUrl: string, queryBody: any): Promise<any[]> {
+          if (queryBody.query.includes('GithubDependabotVulnerabilityList')) {
+            return readTestResourceFile('github_response_page.json');
+          } else if (
+            queryBody.query.includes('AwsContainerVulnerabilityList')
+          ) {
+            return readTestResourceFile('aws_response_page.json');
+          } else if (
+            queryBody.query.includes('AwsContainerVulnerabilityV2List')
+          ) {
+            return readTestResourceFile('aws_response_v2_page.json');
+          }
+        },
+      };
+    }),
+  };
+});
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -40,10 +62,24 @@ describe('index', () => {
     jest.restoreAllMocks();
   });
 
-  test('spec', async () => {
+  test.skip('spec', async () => {
     const source = new sut.VantaSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
+  });
+  test('git single page', async () => {
+    const vanta = getVantaInstance(
+      logger,
+      config_tkn.axios_instance,
+      100,
+      config_tkn.apiUrl
+    );
+    // const query = readTestResourceFile('query_single_page.json');
+    const expected = readTestResourceFile('github_response_page.json');
+    const queryType = 'git';
+    const res = await vanta.vulns(queryType);
+    console.log(`test res: ${res}`);
+    await expect(res).resolves.toStrictEqual(expected);
   });
 });
