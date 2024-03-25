@@ -23,7 +23,7 @@ export class Vulns extends AirbyteStreamBase {
   async *readRecords(): AsyncGenerator<Dictionary<any>> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
     for (const queryType of this.cfg.queryTypes) {
-      this.logger.info(`Querying Vanta for ${queryType}`);
+      this.logger.debug(`Querying Vanta for ${queryType}`);
       for await (const record of vanta.vulns(queryType)) {
         yield {
           vuln_type: queryType,

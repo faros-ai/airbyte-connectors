@@ -9,6 +9,12 @@
               "node": {
                 "sample": "test"
               }
+            },
+            {
+              "cursor": "B",
+              "node": {
+                "sample": "test"
+              }
             }
           ]
         }

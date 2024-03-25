@@ -44,7 +44,7 @@
       "skipConnectionCheck": {
         "type": "boolean",
         "title": "Skip Connection Check",
-        "default": true
+        "default": false
       }
     }
   }

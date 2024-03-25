@@ -7,6 +7,7 @@ import {QueryHolder, queryTypeToQueryHolder} from './types';
 import {getQueryFromName} from './utils';
 
 const DEFAULT_PAGE_LIMIT = 100;
+const DEFAULT_TIMEOUT = 60000;
 
 /**
  * Vanta REST API client
@@ -34,7 +35,7 @@ export class Vanta {
 
     // Checks apiUrl is in the correct format
     const apiUrl = new URL(cfg.apiUrl);
-    const timeout = cfg.timeout ?? 60000;
+    const timeout = cfg.timeout ?? DEFAULT_TIMEOUT;
     const headers = {
       'content-type': 'application/json',
       Authorization: `token ${cfg.token}`,
@@ -122,13 +123,13 @@ export class Vanta {
     };
     let continueLoop = true;
     let nPages = 0;
-    this.logger.info(
+    this.logger.debug(
       'Starting pagination with query: %s',
       queryHolder.queryName
     );
     while (continueLoop) {
       // Assuming vanta_client is an instance of Axios or similar
-      this.logger.info(`Running query with page ${nPages++}`);
+      this.logger.debug(`Running query with page ${nPages++}`);
       const packed_response: AxiosResponse = await this.getAxiosResponse(
         this.apiUrl,
         body
