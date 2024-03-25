@@ -2,7 +2,7 @@
   "data": {
     "data": {
       "organization": {
-        "GithubDependabotVulnerabilityList": {
+        "AwsContainerVulnerabilityV2List": {
           "edges": [
             {
               "cursor": "A",

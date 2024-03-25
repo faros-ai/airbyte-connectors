@@ -36,6 +36,7 @@ export class Vanta {
       throw new VError('apiUrl missing.');
     }
 
+    // Checks apiUrl is in the correct format
     const apiUrl = new URL(cfg.apiUrl);
     const timeout = cfg.timeout ?? 60000;
     const headers = {
@@ -65,7 +66,6 @@ export class Vanta {
       throw new VError('Unknown query type: %s', queryType);
     }
     const res = await this.paginate(queryHolder);
-    console.log(`res: ${res}`);
     for (const item of res) {
       yield item;
     }
@@ -88,6 +88,7 @@ export class Vanta {
       this.logger.info(`Running query with page ${nPages++}`);
       const packed_response = await this.api.post(this.apiUrl, body);
       const response = packed_response?.data;
+      console.log('API Response: ', response);
       const newEdges =
         response?.data?.organization?.[queryHolder.objectName]?.edges;
       const newNodes = newEdges?.map((edge: any) => edge.node);
