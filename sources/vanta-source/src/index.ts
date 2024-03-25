@@ -7,6 +7,7 @@ import {
   AirbyteSpec,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Vulns} from './streams';
@@ -24,7 +25,8 @@ export interface VantaConfig extends AirbyteConfig {
 export function mainCommand(): Command {
   const logger = new AirbyteLogger();
   const source = new VantaSource(logger);
-  return new AirbyteSourceRunner(logger, source).mainCommand();
+  const sourceLogger = new AirbyteSourceLogger();
+  return new AirbyteSourceRunner(sourceLogger, source).mainCommand();
 }
 
 /** Vanta source implementation. */
