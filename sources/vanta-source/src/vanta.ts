@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import VError from 'verror';
 
 import {VantaConfig} from '.';
