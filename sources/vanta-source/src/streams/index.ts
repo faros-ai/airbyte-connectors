@@ -1,3 +1,3 @@
-import {Vulns} from './vulns';
+import {Vulnerabilities} from './vulnerabilities';
 
-export {Vulns};
+export {Vulnerabilities};

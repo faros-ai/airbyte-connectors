@@ -5,7 +5,7 @@ import {Dictionary} from 'ts-essentials';
 import {VantaConfig} from '..';
 import {Vanta} from '../vanta';
 
-export class Vulns extends AirbyteStreamBase {
+export class Vulnerabilities extends AirbyteStreamBase {
   constructor(
     private readonly cfg: VantaConfig,
     protected readonly logger: AirbyteLogger

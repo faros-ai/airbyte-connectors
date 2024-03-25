@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Vulns} from './streams';
+import {Vulnerabilities} from './streams';
 import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
@@ -52,6 +52,6 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
   }
 
   streams(config: VantaConfig): AirbyteStreamBase[] {
-    return [new Vulns(config, this.logger)];
+    return [new Vulnerabilities(config, this.logger)];
   }
 }
