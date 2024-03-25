@@ -18,8 +18,8 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
-function getVantaInstance(logger, axios_instance, limit): Vanta {
-  return new Vanta(logger, axios_instance, limit, 'example.com', true);
+function getVantaInstance(logger, axios_instance, limit, apiUrl): Vanta {
+  return new Vanta(logger, axios_instance, limit, apiUrl, true);
 }
 
 describe('index', () => {
@@ -31,7 +31,6 @@ describe('index', () => {
   );
 
   const config_tkn = readTestResourceFile('config_tokens.json');
-  const config_unpw = readTestResourceFile('config_unpw.json');
 
   beforeEach(() => {
     jest.clearAllMocks();

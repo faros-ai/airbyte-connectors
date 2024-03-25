@@ -1,9 +1,0 @@
-{
-    "tenant": "acme",
-    "credentials": {
-        "username": "foo",
-        "password": "bar"
-    },
-    "baseUrl": "https://testurl.com/ccx",
-    "customReportName": "CR"
-  }

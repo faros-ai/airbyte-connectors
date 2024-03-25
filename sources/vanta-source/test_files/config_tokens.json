@@ -1,9 +1,5 @@
 {
-  "tenant": "acme",
-  "credentials": {
-    "clientId": "foo",
-    "clientSecret": "bar",
-    "refreshToken": "baz"
-  },
-  "baseUrl": "https://testurl.com/ccx"
+  "apiUrl": "https://testurl.com/graphql",
+  "token": "1234",
+  "queryTypes": ["git", "aws", "awsv2"]
 }
