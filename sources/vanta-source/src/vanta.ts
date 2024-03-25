@@ -90,24 +90,13 @@ export class Vanta {
       const packed_response: AxiosResponse = await this.api.post(url, body);
       return packed_response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        this.logger.error(`Axios error occurred: ${error.message}`);
-        if (error.response) {
-          this.logger.error(
-            `Server responded with status ${error.response.status}`
-          );
-        } else if (error.request) {
-          this.logger.error(`No response received for the request`);
-        } else {
-          this.logger.error(`Error setting up the request: ${error.message}`);
-        }
-      } else {
-        this.logger.error(
-          `Non-Axios error occurred: ${
-            error instanceof Error ? error.message : error
-          }`
-        );
-      }
+      this.logger.error(
+        `Error occurred: ${error instanceof Error ? error.message : error}`
+      );
+      throw new VError(
+        'Error occurred while fetching data from Vanta API: %s',
+        error
+      );
     }
   }
 

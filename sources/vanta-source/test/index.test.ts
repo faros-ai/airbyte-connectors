@@ -15,14 +15,41 @@ function readResourceFile(fileName: string): any {
 
 jest.mock('axios');
 
+function paginatedValues(data: any, variables: any): any {
+  const cursor = variables.before;
+  const last = variables.last;
+  const edges =
+    data['data']['data']['organization']['AwsContainerVulnerabilityV2List'][
+      'edges'
+    ];
+  let new_edges = [];
+  if (cursor === null) {
+    new_edges = edges.slice(-1 * last);
+  } else {
+    const index = edges.findIndex((edge: any) => edge.cursor === cursor);
+    if (index - last < 0) {
+      new_edges = edges.slice(0, index);
+    } else {
+      new_edges = edges.slice(index - last, index);
+    }
+  }
+  // We replace edges in the original data with new_edges:
+  data['data']['data']['organization']['AwsContainerVulnerabilityV2List'][
+    'edges'
+  ] = new_edges;
+  return data;
+}
+
 function returnResourceByQuery(queryBody: any): any {
   const query = queryBody.query;
+  const variables = queryBody.variables;
   if (query.includes('GithubDependabotVulnerabilityList')) {
     return readTestResourceFile('github_response_page.json');
   } else if (query.includes('AwsContainerVulnerabilityList')) {
     return readTestResourceFile('aws_response_page.json');
   } else if (query.includes('AwsContainerVulnerabilityV2List')) {
-    return readTestResourceFile('aws_response_v2_page.json');
+    const aws_v2_data = readTestResourceFile('aws_response_v2_page.json');
+    return paginatedValues(aws_v2_data, variables);
   } else {
     throw new Error('Unknown query');
   }
@@ -131,6 +158,7 @@ describe('index', () => {
       preExpected3
     );
     totalExpected.push(...expected3);
+    console.log(expected3.length);
     await expect(output).toStrictEqual(totalExpected);
   });
 });
