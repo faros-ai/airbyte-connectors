@@ -1,0 +1,24 @@
+{
+  "data": {
+    "data": {
+      "organization": {
+        "AwsContainerVulnerabilityList": {
+          "edges": [
+            {
+              "cursor": "A",
+              "node": {
+                "sample": "test"
+              }
+            },
+            {
+              "cursor": "B",
+              "node": {
+                "sample": "test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

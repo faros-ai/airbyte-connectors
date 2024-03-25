@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "vuln_type": {
+      "type": "string",
+      "enum": ["git", "aws", "awsv2"]
+    },
+    "vuln_data": {}
+  }
+}
+
