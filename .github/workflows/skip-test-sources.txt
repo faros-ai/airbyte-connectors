@@ -28,5 +28,6 @@ sheets-source
 squadcast-source
 testrails-source
 trello-source
+vanta-source
 victorops-source
 workday-source
