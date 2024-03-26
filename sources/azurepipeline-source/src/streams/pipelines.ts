@@ -41,7 +41,7 @@ export class Pipelines extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Pipeline> {
-    const azurePipeline = AzurePipeline.instance(this.config);
+    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
     yield* azurePipeline.getPipelines(streamSlice.project, this.logger);
   }
 }
