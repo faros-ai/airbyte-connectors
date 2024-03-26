@@ -5,5 +5,5 @@
     "clientSecret": "bar",
     "refreshToken": "baz"
   },
-  "baseUrl": "https://testurl.com/ccx"
+  "baseUrl": "https://testurl.com"
 }
