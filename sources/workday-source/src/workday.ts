@@ -158,11 +158,10 @@ export class Workday {
   }
 
   async *customReports(customReportName: string): AsyncGenerator<any> {
-    const baseURL = ccxUrl(
-      `/service/customreport2/${this.tenant}`,
+    const finalPathURL = ccxUrl(
+      `/service/customreport2/${this.tenant}/${customReportName}`,
       this.baseUrl
     );
-    const finalPathURL = ccxUrl(`/${customReportName}`, baseURL);
     const finalPath = finalPathURL.toString();
     this.logger.info(
       `Fetching Custom Report '${customReportName}' from - ${finalPath}`
