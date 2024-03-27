@@ -76,7 +76,7 @@ export class Trello {
           Authorization: `OAuth oauth_consumer_key="${config.credentials.key}", oauth_token="${config.credentials.token}"`,
         },
       },
-      logger.asPino(),
+      logger?.asPino(),
       config.max_retries ?? DEFAULT_RETRIES,
       10000
     );
