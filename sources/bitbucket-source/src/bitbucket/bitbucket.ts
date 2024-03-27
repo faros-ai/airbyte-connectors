@@ -952,7 +952,7 @@ export class Bitbucket {
         type: data.target?.type,
         refType: data.target?.ref_type,
         refName: data.target?.ref_name,
-        selector: {type: data.target?.selector.type},
+        selector: {type: data.target?.selector?.type},
         commit: {
           type: data.target?.commit?.type,
           hash: data.target?.commit?.hash,
