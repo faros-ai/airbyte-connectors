@@ -461,6 +461,9 @@ export class Cards extends TrelloConverter {
 
     for (const action of this.updateActions.get(cardId) ?? []) {
       const changedAt: Date = Utils.toDate(action.date);
+      if (!changedAt) {
+        continue;
+      }
       if (action.data?.listAfter) {
         const status: TmsTaskStatus = this.getStatusFromList(
           action.data.listAfter
