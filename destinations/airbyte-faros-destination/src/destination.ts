@@ -614,7 +614,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 endedAt: new Date(),
                 status: syncErrors.fatal.length ? 'error' : 'success',
                 metrics: stats.asObject(),
-                errors: syncErrors.fatal.concat(syncErrors.warnings),
+                errors: syncErrors.fatal.concat(syncErrors.nonFatal),
                 warnings: syncErrors.warnings,
               }
             );
