@@ -600,7 +600,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           const destinationError: SyncMessage = {
             summary: wrappedError.message ?? JSON.stringify(wrappedError),
             code: 0, // placeholder
-            action: 'Contact Faros support', // placeholder
+            action: 'Contact Faros Support', // placeholder
             type: 'ERROR',
           };
           syncErrors.fatal.push(destinationError);
