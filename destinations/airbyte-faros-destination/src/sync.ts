@@ -175,7 +175,7 @@ class FarosSyncClient extends FarosClient {
         headers: {
           'content-length': content.length,
           'content-md5': hash,
-          'content-type': 'text/plain',
+          'content-type': 'text/plain; charset=UTF-8',
         },
       }),
       'Failed to upload sync logs'
