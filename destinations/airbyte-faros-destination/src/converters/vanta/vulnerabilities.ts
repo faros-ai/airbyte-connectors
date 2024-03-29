@@ -247,6 +247,7 @@ export abstract class Vulnerabilities extends Converter {
     res.push(...vcsMappings);
 
     // Getting cicd_ArtifactVulnerability records
+    // Ensure it maps to the correct artifact
     // TODO
     return res;
   }
