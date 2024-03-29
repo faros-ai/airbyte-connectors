@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {ZendeskConverter} from './common';
+import {toGroupUid,ZendeskConverter} from './common';
 
 export class SatisfactionRatings extends ZendeskConverter {
   private readonly definitionUid = 'zendesk-satisfaction-ratings';
@@ -51,7 +51,7 @@ export class SatisfactionRatings extends ZendeskConverter {
     recs.push({
       model: 'org_TeamMetric',
       record: {
-        team: {uid: `zendesk-group-${rating.group_id}`},
+        team: {uid: toGroupUid(rating.group_id)},
         value: {...metricValueKey},
       },
     });

@@ -14,3 +14,7 @@ export abstract class ZendeskConverter extends Converter {
     return record?.record?.data?.id;
   }
 }
+
+export function toGroupUid(groupId: number): string {
+  return `zendesk-group-${groupId}`;
+}

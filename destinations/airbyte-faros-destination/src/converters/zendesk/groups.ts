@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {ZendeskConverter} from './common';
+import {toGroupUid,ZendeskConverter} from './common';
 
 export class Groups extends ZendeskConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['org_Team'];
@@ -14,7 +14,7 @@ export class Groups extends ZendeskConverter {
       {
         model: 'org_Team',
         record: {
-          uid: `zendesk-group-${group.id}`,
+          uid: toGroupUid(group.id),
           name: group.name,
           description: group.description,
         },
