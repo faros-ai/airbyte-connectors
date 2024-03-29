@@ -7,6 +7,7 @@ import {
   TicketFieldsStream,
   TicketMetricsStream,
 } from '../../src/converters/zendesk/common';
+import {Groups} from '../../src/converters/zendesk/groups';
 import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_ratings';
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
@@ -47,6 +48,7 @@ describe('zendesk', () => {
     logger.debug(stdout);
 
     const processedByStream = {
+      groups: 2,
       satisfaction_ratings: 2,
       tags: 8,
       ticket_fields: 9,
@@ -65,6 +67,8 @@ describe('zendesk', () => {
       faros_MetricDefinition: 1,
       faros_MetricValue: 2,
       faros_TmsTaskBoardOptions: 1,
+      org_Team: 2,
+      org_TeamMetric: 2,
       tms_Label: 8,
       tms_Project: 1,
       tms_Task: 14,
@@ -361,13 +365,25 @@ describe('satisfaction ratings', () => {
     created_at: '2024-02-07T21:51:23Z',
     updated_at: '2024-02-07T21:51:23Z',
     comment: null,
+    group_id: 23111598987540,
   };
 
   test('rating', async () => {
     const record = AirbyteRecord.make('satisfaction_rating', rating);
 
     const res = await converter.convert(record);
-    expect(res).toHaveLength(2);
+    expect(res).toHaveLength(3);
+    expect(res).toMatchSnapshot();
+  });
+});
+
+describe('groups', () => {
+  const converter = new Groups();
+  const group = {id: 1, name: 'Group 1', description: 'Group 1'};
+  test('group', async () => {
+    const record = AirbyteRecord.make('group', group);
+
+    const res = await converter.convert(record);
     expect(res).toMatchSnapshot();
   });
 });

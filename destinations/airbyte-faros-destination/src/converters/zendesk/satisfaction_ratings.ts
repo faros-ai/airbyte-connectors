@@ -11,6 +11,7 @@ export class SatisfactionRatings extends ZendeskConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
     'faros_MetricValue',
+    'org_TeamMetric',
   ];
 
   async convert(
@@ -34,15 +35,24 @@ export class SatisfactionRatings extends ZendeskConverter {
     }
 
     const rating = record.record.data;
-    const ratingId = rating.id;
+    const metricValueKey = {
+      uid: `zendesk-satisfaction-rating-${rating.id}`,
+      definition: definitionKey,
+    };
 
     recs.push({
       model: 'faros_MetricValue',
       record: {
-        uid: 'zendesk-satisfaction-rating-' + ratingId,
+        ...metricValueKey,
         value: rating.score,
         computedAt: Utils.toDate(rating.updated_at),
-        definition: definitionKey,
+      },
+    });
+    recs.push({
+      model: 'org_TeamMetric',
+      record: {
+        team: {uid: `zendesk-group-${rating.group_id}`},
+        value: {...metricValueKey},
       },
     });
 

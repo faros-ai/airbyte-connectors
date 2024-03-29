@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`groups group 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "description": "Group 1",
+      "name": "Group 1",
+      "uid": "zendesk-group-1",
+    },
+  },
+]
+`;
+
 exports[`satisfaction ratings rating 1`] = `
 Array [
   Object {
@@ -20,6 +33,20 @@ Array [
       },
       "uid": "zendesk-satisfaction-rating-1",
       "value": "offered",
+    },
+  },
+  Object {
+    "model": "org_TeamMetric",
+    "record": Object {
+      "team": Object {
+        "uid": "zendesk-group-23111598987540",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "zendesk-satisfaction-ratings",
+        },
+        "uid": "zendesk-satisfaction-rating-1",
+      },
     },
   },
 ]
