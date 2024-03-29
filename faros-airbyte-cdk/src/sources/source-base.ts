@@ -237,18 +237,13 @@ export abstract class AirbyteSourceBase<
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
       streamInstance.supportsIncremental;
 
-    const recordGenerator = useIncremental
-      ? this.readIncremental(
-          streamInstance,
-          configuredStream,
-          connectorState,
-          maxSliceFailures
-        )
-      : this.readFullRefresh(
-          streamInstance,
-          configuredStream,
-          maxSliceFailures
-        );
+    const recordGenerator = this.doReadStream(
+      streamInstance,
+      configuredStream,
+      useIncremental ? SyncMode.INCREMENTAL : SyncMode.FULL_REFRESH,
+      connectorState,
+      maxSliceFailures
+    );
 
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
@@ -266,21 +261,21 @@ export abstract class AirbyteSourceBase<
     );
   }
 
-  private async *readIncremental(
+  private async *doReadStream(
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
+    syncMode: SyncMode,
     connectorState: AirbyteState,
     maxSliceFailures?: number
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
-    let streamState = connectorState[streamName] ?? {};
-    if (streamState) {
-      this.logger.info(
-        `Setting initial state of ${streamName} stream to ${JSON.stringify(
-          streamState
-        )}`
-      );
-    }
+    let streamState =
+      syncMode === SyncMode.INCREMENTAL ? connectorState[streamName] ?? {} : {};
+    this.logger.info(
+      `Setting initial state of ${streamName} stream to ${JSON.stringify(
+        streamState
+      )}`
+    );
 
     const checkpointInterval = streamInstance.stateCheckpointInterval;
     if (checkpointInterval < 0) {
@@ -289,7 +284,7 @@ export abstract class AirbyteSourceBase<
       );
     }
     const slices = streamInstance.streamSlices(
-      SyncMode.INCREMENTAL,
+      syncMode,
       configuredStream.cursor_field,
       streamState
     );
@@ -304,7 +299,7 @@ export abstract class AirbyteSourceBase<
       }
       let recordCounter = 0;
       const records = streamInstance.readRecords(
-        SyncMode.INCREMENTAL,
+        syncMode,
         configuredStream.cursor_field,
         slice,
         streamState
@@ -370,72 +365,6 @@ export abstract class AirbyteSourceBase<
         streamState
       )}`
     );
-  }
-
-  private async *readFullRefresh(
-    streamInstance: AirbyteStreamBase,
-    configuredStream: AirbyteConfiguredStream,
-    maxSliceFailures?: number
-  ): AsyncGenerator<AirbyteMessage> {
-    const streamName = configuredStream.stream.name;
-    const slices = streamInstance.streamSlices(
-      SyncMode.FULL_REFRESH,
-      configuredStream.cursor_field
-    );
-    const failedSlices = [];
-    for await (const slice of slices) {
-      if (slice) {
-        this.logger.info(
-          `Started processing ${streamName} stream slice ${JSON.stringify(
-            slice
-          )}`
-        );
-      }
-      let recordCounter = 0;
-      const records = streamInstance.readRecords(
-        SyncMode.FULL_REFRESH,
-        configuredStream.cursor_field,
-        slice
-      );
-      try {
-        for await (const record of records) {
-          recordCounter++;
-          yield AirbyteRecord.make(configuredStream.stream.name, record);
-        }
-        if (slice) {
-          this.logger.info(
-            `Finished processing ${streamName} stream slice ${JSON.stringify(
-              slice
-            )}. Read ${recordCounter} records`
-          );
-        }
-      } catch (e: any) {
-        if (!slice || maxSliceFailures == null) {
-          throw e;
-        }
-        failedSlices.push(slice);
-        this.logger.error(
-          `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
-            slice
-          )}: ${e.message ?? JSON.stringify(e)}`,
-          e.stack
-        );
-        // -1 means unlimited allowed slice failures
-        if (maxSliceFailures !== -1 && failedSlices.length > maxSliceFailures) {
-          this.logger.error(
-            `Exceeded maximum number of allowed slice failures: ${maxSliceFailures}`
-          );
-          break;
-        }
-      }
-    }
-    if (failedSlices.length > 0) {
-      throw new VError(
-        `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
-          failedSlices
-        )}`
-      );
-    }
   }
 
   private checkpointState(
