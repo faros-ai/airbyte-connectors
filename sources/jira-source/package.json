@@ -39,7 +39,7 @@
     "typescript-memoize": "^1.1.0",
     "jira.js": "^3.0.1",
     "verror": "^1.10.1",
-    "p-limit": "3.1.0"
+    "p-limit": "5.0.0"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
