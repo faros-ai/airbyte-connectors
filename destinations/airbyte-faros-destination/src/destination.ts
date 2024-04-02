@@ -706,7 +706,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             sync.syncId,
             logs.hash
           );
-          await client.uploadLogs(url, logs.content, logs.hash);
+          if (url) {
+            await client.uploadLogs(url, logs.content, logs.hash);
+          }
         }
       }
     }
