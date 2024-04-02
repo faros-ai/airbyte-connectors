@@ -36,7 +36,15 @@
             "default": "{}",
             "examples": [
               "{ \"Group 1\": \"team1\", \"*\": \"all_teams\" }"
-            ]
+            ],
+            "order": 3
+          },
+          "sync_groups": {
+            "type": "boolean",
+            "title": "Sync Groups",
+            "description": "Store groups as org teams based on Zendesk group name",
+            "default": false,
+            "order": 4
           }
         }
       }
