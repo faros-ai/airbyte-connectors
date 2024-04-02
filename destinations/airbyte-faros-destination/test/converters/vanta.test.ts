@@ -80,12 +80,11 @@ describe('vanta', () => {
   test('test1', async () => {
     const configPath = await getTempConfig(mockttp);
     const processedByStream = {
-      vulnerabilities: 1,
+      vulnerabilities: 3,
     };
     const writtenByModel = {
-      sec_Vulnerabilities: 0,
-      vcs_RepositoryVulnerability: 0,
-      cicd_ArtifactVulnerability: 0,
+      cicd_ArtifactVulnerability: 1,
+      sec_Vulnerability: 3,
     };
     await runTest(
       configPath,
