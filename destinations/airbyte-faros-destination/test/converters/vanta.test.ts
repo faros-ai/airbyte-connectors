@@ -6,7 +6,6 @@ import {
   readTestResourceAsJSON,
   readTestResourceFile,
   tempConfig,
-  testLogger,
 } from '../testing-tools';
 import {runTest} from './utils';
 
@@ -46,7 +45,6 @@ function getQueryResponse(
 }
 
 describe('vanta', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/vanta/catalog.json';
   const streamNamePrefix = 'mytestsource__vanta__';

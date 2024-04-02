@@ -1,5 +1,4 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal, Mockttp} from 'mockttp';
 
 import {
@@ -9,13 +8,11 @@ import {
   StreamContext,
 } from '../../src';
 import {Customreports} from '../../src/converters/workday/customreports';
-import {CLI, read} from '../cli';
 import {
   getConf,
   initMockttp,
   readTestResourceFile,
   tempConfig,
-  testLogger,
 } from '../testing-tools';
 import {
   workdayV1StreamsLog,
@@ -87,7 +84,6 @@ function runCustomReportDestination(
 }
 
 describe('workday', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/workday/catalog.json';
   const streamNamePrefix = 'mytestsource__workday__';

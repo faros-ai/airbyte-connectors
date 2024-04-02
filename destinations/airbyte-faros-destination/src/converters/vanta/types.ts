@@ -1,6 +1,6 @@
 type OptString = string | null | undefined;
 
-export interface baseVulnerabilityType {
+export interface BaseVulnerabilityType {
   uid: OptString;
   displayName: OptString;
   createdAt: OptString;
@@ -8,7 +8,7 @@ export interface baseVulnerabilityType {
   severity: OptString;
 }
 
-export type ExtendedVulnerabilityType = baseVulnerabilityType & {
+export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
   description?: OptString;
   externalIds?: OptString[];
   [key: string]: any;

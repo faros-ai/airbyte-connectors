@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {replace} from 'lodash';
 
 import {
   Converter,
@@ -15,17 +14,16 @@ import {
 import {
   AWSV2VulnerabilityData,
   AWSVulnerabilityData,
-  cicdArtifactKey,
+  CicdArtifactKey,
   ExtendedVulnerabilityType,
   GithubVulnerabilityData,
-  vcsRepoKey,
+  VcsRepoKey,
 } from './types';
 
 export function looksLikeGithubCommitSha(sha: string): boolean {
   return /^[a-f0-9]{40}$/i.test(sha);
 }
 
-/** Trello converter base */
 export abstract class Vulnerabilities extends Converter {
   source = 'vanta';
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -116,7 +114,7 @@ export abstract class Vulnerabilities extends Converter {
   async getVCSRepositoryFromName(
     vcsRepoName: string,
     ctx: StreamContext
-  ): Promise<vcsRepoKey | null> {
+  ): Promise<VcsRepoKey | null> {
     const replacedQuery = vcsRepositoryQuery.replace('<REPONAME>', vcsRepoName);
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
@@ -145,7 +143,7 @@ export abstract class Vulnerabilities extends Converter {
   async getCICDArtifactFromCommitSha(
     commitSha: string,
     ctx: StreamContext
-  ): Promise<cicdArtifactKey | null> {
+  ): Promise<CicdArtifactKey | null> {
     const replacedQuery = cicdArtifactQueryByCommitSha.replace(
       '<COMMIT_SHA>',
       commitSha
@@ -175,7 +173,7 @@ export abstract class Vulnerabilities extends Converter {
   async getAWSCicdArtifactFromName(
     repoName: string,
     ctx: StreamContext
-  ): Promise<cicdArtifactKey | null> {
+  ): Promise<CicdArtifactKey | null> {
     // Because we don't have the actual commit sha, we can't query the cicd_Artifact table
     // using the uid. Instead, we'll need to query the cicd_Artifact table using the repository name
     // and choosing the most recent artifact.
@@ -226,14 +224,6 @@ export abstract class Vulnerabilities extends Converter {
             source: this.source,
           };
           const vuln: GithubVulnerabilityData = this.gitUidsToVulns[uid];
-          // externalURL: OptString;
-          // repositoryName: OptString;
-          // severity: OptString;
-          // slaDeadline: OptString;
-          // uid: OptString;
-          // vantaDescription: OptString;
-          // securityAdvisory: GithubSecurityAdvisory;
-
           vuln_data.push({
             model: 'vcs_RepositoryVulnerability',
             record: {
@@ -326,15 +316,15 @@ export abstract class Vulnerabilities extends Converter {
       }
 
       // At this point, we have a commit sha
-      const cicdArtifactKey = await this.getCICDArtifactFromCommitSha(
+      const CicdArtifactKey = await this.getCICDArtifactFromCommitSha(
         commitSha,
         ctx
       );
-      if (cicdArtifactKey) {
+      if (CicdArtifactKey) {
         res.push({
           model: 'cicd_ArtifactVulnerability',
           record: {
-            artifact: cicdArtifactKey,
+            artifact: CicdArtifactKey,
             vulnerability: {
               uid: this.getUidFromAWSV2Vuln(vuln),
               source: this.source,
@@ -382,7 +372,8 @@ export abstract class Vulnerabilities extends Converter {
 
   combineAwsVulns(
     aws_v1_vulns: DestinationRecord[],
-    aws_v2_vulns: DestinationRecord[]
+    aws_v2_vulns: DestinationRecord[],
+    ctx: StreamContext
   ): DestinationRecord[] {
     const seenUids = new Set();
     const combined = [];
@@ -397,16 +388,10 @@ export abstract class Vulnerabilities extends Converter {
         combined.push(vuln);
         seenUids.add(vuln.record.uid);
       } else {
-        // TODO: Update this to be logged to the logger
-        console.log('Found duplicate vuln id: ' + vuln.record.uid);
+        ctx.logger.info('Found duplicate vuln id: ' + vuln.record.uid);
       }
     }
     return combined;
-  }
-
-  getVulnerabilityIdsFromData(data: any): string[] {
-    // TODO: implement
-    return [];
   }
 
   getSecVulnerabilityRecordFromData(
@@ -457,7 +442,11 @@ export abstract class Vulnerabilities extends Converter {
     res.push(...this.getVulnRecordsFromGit(this.git_vulns));
     const aws_v1_vulns = this.getVulnRecordsFromAws(this.aws_vulns);
     const aws_v2_vulns = this.getVulnRecordsFromAwsV2(this.awsv2_vulns);
-    const combined_aws_vulns = this.combineAwsVulns(aws_v1_vulns, aws_v2_vulns);
+    const combined_aws_vulns = this.combineAwsVulns(
+      aws_v1_vulns,
+      aws_v2_vulns,
+      ctx
+    );
     res.push(...combined_aws_vulns);
 
     // Getting vcs_RepositoryVulnerability records
