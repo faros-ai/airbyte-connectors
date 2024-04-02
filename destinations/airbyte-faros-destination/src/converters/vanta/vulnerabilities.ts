@@ -7,7 +7,11 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {cicdArtifactQueryByCommitSha, vcsRepositoryQuery} from './queries';
+import {
+  cicdArtifactQueryByCommitSha,
+  cicdArtifactQueryByRepoName,
+  vcsRepositoryQuery,
+} from './queries';
 import {
   AWSV2VulnerabilityData,
   AWSVulnerabilityData,
@@ -40,17 +44,24 @@ export abstract class Vulnerabilities extends Converter {
     CRITICAL: 10.0,
   };
   repositoryNamesToUids: Record<string, string[]> = {};
+  awsV2ContainerNamesToUids: Record<string, string[]> = {};
+  gitUidsToVulns: Record<string, GithubVulnerabilityData> = {};
+  awsUidsToVulns: Record<string, AWSVulnerabilityData> = {};
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.vuln_data?.id;
   }
 
-  addRepositoryNameToUID(name: string, uid: string) {
-    if (name in this.repositoryNamesToUids) {
-      this.repositoryNamesToUids[name].push(uid);
+  addUIDToMapping(
+    name: string,
+    uid: string,
+    mapping: Record<string, string[]>
+  ): void {
+    if (name in mapping) {
+      mapping[name].push(uid);
     } else {
-      this.repositoryNamesToUids[name] = [uid];
+      mapping[name] = [uid];
     }
   }
 
@@ -62,12 +73,17 @@ export abstract class Vulnerabilities extends Converter {
         continue;
       }
       vuln['description'] = vuln.vantaDescription;
-      this.addRepositoryNameToUID(vuln.repositoryName, vuln.uid);
+      this.addUIDToMapping(
+        vuln.repositoryName,
+        vuln.uid,
+        this.repositoryNamesToUids
+      );
       vuln_data.push(
         this.getSecVulnerabilityRecordFromData(
           vuln as ExtendedVulnerabilityType
         )
       );
+      this.gitUidsToVulns[vuln.uid] = vuln;
     }
     return vuln_data;
   }
@@ -91,6 +107,7 @@ export abstract class Vulnerabilities extends Converter {
             new_vuln as ExtendedVulnerabilityType
           )
         );
+        this.awsUidsToVulns[new_vuln.uid] = new_vuln;
       }
     }
     return vuln_data;
@@ -132,7 +149,6 @@ export abstract class Vulnerabilities extends Converter {
       if (results.length > 0) {
         result = results[0];
       } else {
-        console.log(resp);
         ctx.logger.warn(
           `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
         );
@@ -142,10 +158,44 @@ export abstract class Vulnerabilities extends Converter {
     return null;
   }
 
+  async getAWSCicdArtifactFromName(
+    repoName: string,
+    ctx: StreamContext
+  ): Promise<cicdArtifactKey | null> {
+    // Because we don't have the actual commit sha, we can't query the cicd_Artifact table
+    // using the uid. Instead, we'll need to query the cicd_Artifact table using the repository name
+    // and choosing the most recent artifact.
+
+    const replacedQuery = cicdArtifactQueryByRepoName.replace(
+      '<REPONAME>',
+      repoName
+    );
+    if (ctx.farosClient) {
+      const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      const results = resp?.cicd_Artifact;
+      let result = null;
+      if (results.length > 0) {
+        result = results[0];
+      } else {
+        ctx.logger.warn(
+          `Did not get any results for cicdArtifact query with repository name "${repoName}"`
+        );
+      }
+      return result;
+    }
+  }
+
   async getVCSMappingsFromGit(
     gitRepoNamesToUIDs: Record<string, string[]>,
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
+    // url: String
+    // dueAt: Timestamp
+    // createdAt: Timestamp
+    // acknowledgedAt: Timestamp
+    // resolvedAt: Timestamp
+    // status: sec_VulnerabilityStatus
+
     const vuln_data: DestinationRecord[] = [];
     for (const [repoName, uids] of Object.entries(gitRepoNamesToUIDs)) {
       const repoKey = await this.getVCSRepositoryFromName(repoName, ctx);
@@ -155,11 +205,22 @@ export abstract class Vulnerabilities extends Converter {
             uid: uid,
             source: this.source,
           };
+          const vuln: GithubVulnerabilityData = this.gitUidsToVulns[uid];
+          // externalURL: OptString;
+          // repositoryName: OptString;
+          // severity: OptString;
+          // slaDeadline: OptString;
+          // uid: OptString;
+          // vantaDescription: OptString;
+          // securityAdvisory: GithubSecurityAdvisory;
+
           vuln_data.push({
             model: 'vcs_RepositoryVulnerability',
             record: {
               repository: repoKey,
               vulnerability: vulnKey,
+              url: vuln.externalURL,
+              dueAt: vuln.slaDeadline,
             },
           });
         }
@@ -176,6 +237,47 @@ export abstract class Vulnerabilities extends Converter {
     } else {
       return 'ACTIVE';
     }
+  }
+
+  async getCICDMappingsFromAWS(
+    ctx: StreamContext
+  ): Promise<DestinationRecord[]> {
+    // We iterate through the key-value pairs of awsUidsToVulns
+    // We get the repository name from the vuln, and we take the most
+    // recent cicd_Artifact, rather than getting the cicd_Artifact by commit sha
+    const res: DestinationRecord[] = [];
+    for (const [uid, vuln] of Object.entries(this.awsUidsToVulns)) {
+      let repoName = vuln.repositoryName;
+      if (!repoName) {
+        ctx.logger.warn(
+          `Could not find repository name for vulnerability with uid "${uid}"`
+        );
+        continue;
+      }
+      // If repoName has '/' in it, we split by backslash and take the last piece:
+      if (repoName.includes('/')) {
+        const split = repoName.split('/');
+        repoName = split[split.length - 1];
+      }
+      const repoKey = await this.getAWSCicdArtifactFromName(repoName, ctx);
+      console.log(`for repo name: ${repoName}, got key:`);
+      console.log(repoKey);
+      res.push({
+        model: 'cicd_ArtifactVulnerability',
+        record: {
+          artifact: repoKey,
+          vulnerability: {
+            uid: uid,
+            source: this.source,
+          },
+          url: vuln.externalURL,
+          dueAt: vuln.slaDeadline,
+          createdAt: vuln.createdAt,
+          acknowledgedAt: vuln.createdAt,
+        },
+      });
+    }
+    return res;
   }
 
   async getCICDMappingsFromAWSV2(
@@ -214,10 +316,11 @@ export abstract class Vulnerabilities extends Converter {
           record: {
             artifact: cicdArtifactKey,
             vulnerability: {
-              uid: vuln.uid,
+              uid: this.getUidFromAWSV2Vuln(vuln),
               source: this.source,
             },
             url: vuln.externalURL,
+            dueAt: vuln.remediateBy,
             createdAt: vuln.createdAt,
             acknowledgedAt: vuln.createdAt,
             status: {
@@ -230,6 +333,10 @@ export abstract class Vulnerabilities extends Converter {
     return res;
   }
 
+  getUidFromAWSV2Vuln(vuln: AWSV2VulnerabilityData): string {
+    return vuln.uid;
+  }
+
   getVulnRecordsFromAwsV2(data: AWSV2VulnerabilityData[]): DestinationRecord[] {
     const vuln_data = [];
     for (const vuln of data) {
@@ -238,14 +345,16 @@ export abstract class Vulnerabilities extends Converter {
         continue;
       }
       const sev: number = this.severityMap[vuln.severity];
+      const uid = this.getUidFromAWSV2Vuln(vuln);
       const vuln_copy: ExtendedVulnerabilityType = {
-        uid: vuln.uid,
+        uid,
         createdAt: vuln.createdAt,
         externalURL: vuln.externalURL,
         severity: sev.toString(),
         description: vuln.description,
         displayName: vuln.asset.displayName,
       };
+
       vuln_data.push(this.getSecVulnerabilityRecordFromData(vuln_copy));
     }
     return vuln_data;
@@ -339,12 +448,13 @@ export abstract class Vulnerabilities extends Converter {
     res.push(...vcsMappings);
 
     // Getting cicd_ArtifactVulnerability records
-    // Ensure it maps to the correct artifact
-    const cicdArtifactMappings = await this.getCICDMappingsFromAWSV2(
+    const cicdArtifactMappingsAWSV2 = await this.getCICDMappingsFromAWSV2(
       this.awsv2_vulns,
       ctx
     );
-    res.push(...cicdArtifactMappings);
+    res.push(...cicdArtifactMappingsAWSV2);
+    const cicdArtifactMappingsAWS = await this.getCICDMappingsFromAWS(ctx);
+    res.push(...cicdArtifactMappingsAWS);
 
     return res;
   }

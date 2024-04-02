@@ -27,7 +27,11 @@ query MyQuery {
 
 export const cicdArtifactQueryByRepoName = `
 query MyQuery {
-  cicd_Artifact(where: {repository: {uid: {_eq: "<REPONAME>"}}}, limit: 1) {
+  cicd_Artifact(
+    where: {repository: {uid: {_eq: "<REPONAME>"}}}
+    limit: 1
+    order_by: {refreshedAt: asc}
+  ) {
     uid
     repository {
       organization {
