@@ -10,7 +10,22 @@ query MyQuery {
 }
 `;
 
-export const cicdArtifactQuery = `
+export const cicdArtifactQueryByCommitSha = `
+query MyQuery {
+  cicd_Artifact(where: {uid: {_eq: "<COMMIT_SHA>"}}) {
+    uid
+    repository {
+      organization {
+        uid
+        source
+      }
+      uid
+    }
+  }
+}
+`;
+
+export const cicdArtifactQueryByRepoName = `
 query MyQuery {
   cicd_Artifact(where: {repository: {uid: {_eq: "<REPONAME>"}}}, limit: 1) {
     uid

@@ -95,3 +95,18 @@ export interface vcsRepoKey {
   organization: vcsOrgKey;
   name: string;
 }
+
+export interface cicdOrgKey {
+  uid: string;
+  source: string;
+}
+
+export interface cicdRepoKey {
+  organization: cicdOrgKey;
+  uid: string;
+}
+
+export interface cicdArtifactKey {
+  uid: string;
+  repository: cicdRepoKey;
+}

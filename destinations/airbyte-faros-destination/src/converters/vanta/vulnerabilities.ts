@@ -7,14 +7,19 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {vcsRepositoryQuery} from './queries';
+import {cicdArtifactQueryByCommitSha, vcsRepositoryQuery} from './queries';
 import {
   AWSV2VulnerabilityData,
   AWSVulnerabilityData,
+  cicdArtifactKey,
   ExtendedVulnerabilityType,
   GithubVulnerabilityData,
   vcsRepoKey,
 } from './types';
+
+function looksLikeGithubCommitSha(sha: string): boolean {
+  return /^[a-f0-9]{40}$/i.test(sha);
+}
 
 /** Trello converter base */
 export abstract class Vulnerabilities extends Converter {
@@ -112,6 +117,31 @@ export abstract class Vulnerabilities extends Converter {
     return null;
   }
 
+  async getCICDArtifactFromCommitSha(
+    commitSha: string,
+    ctx: StreamContext
+  ): Promise<cicdArtifactKey | null> {
+    const replacedQuery = cicdArtifactQueryByCommitSha.replace(
+      '<COMMIT_SHA>',
+      commitSha
+    );
+    if (ctx.farosClient) {
+      const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      const results = resp?.cicd_Artifact;
+      let result = null;
+      if (results.length > 0) {
+        result = results[0];
+      } else {
+        console.log(resp);
+        ctx.logger.warn(
+          `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
+        );
+      }
+      return result;
+    }
+    return null;
+  }
+
   async getVCSMappingsFromGit(
     gitRepoNamesToUIDs: Record<string, string[]>,
     ctx: StreamContext
@@ -136,6 +166,68 @@ export abstract class Vulnerabilities extends Converter {
       }
     }
     return vuln_data;
+  }
+
+  getAWSV2VulnStatusCategory(vuln: AWSV2VulnerabilityData): string {
+    if (vuln.ignored?.ignoreReason) {
+      return 'IGNORED';
+    } else if (vuln.ignored?.ignoredUntil) {
+      return 'IGNORED';
+    } else {
+      return 'ACTIVE';
+    }
+  }
+
+  async getCICDMappingsFromAWSV2(
+    aws_vulns: AWSV2VulnerabilityData[],
+    ctx: StreamContext
+  ): Promise<DestinationRecord[]> {
+    const res = [];
+    for (const vuln of aws_vulns) {
+      // We need to do the following for each vuln:
+      // Get the image tags. For each image tag, check if it is a github commit sha
+      // If you get the github commit sha, query the cicd_Artifact table by commit sha
+      // If you get a cicd_Artifact, add the mapping to the cicd_ArtifactVulnerability table
+      const imageTags = vuln.imageTags;
+      if (!imageTags || imageTags.length === 0) {
+        continue;
+      }
+      let commitSha = null;
+      for (const tag of imageTags) {
+        if (looksLikeGithubCommitSha(tag)) {
+          commitSha = tag;
+          break;
+        }
+      }
+      if (!commitSha) {
+        continue;
+      }
+
+      // At this point, we have a commit sha
+      const cicdArtifactKey = await this.getCICDArtifactFromCommitSha(
+        commitSha,
+        ctx
+      );
+      if (cicdArtifactKey) {
+        res.push({
+          model: 'cicd_ArtifactVulnerability',
+          record: {
+            artifact: cicdArtifactKey,
+            vulnerability: {
+              uid: vuln.uid,
+              source: this.source,
+            },
+            url: vuln.externalURL,
+            createdAt: vuln.createdAt,
+            acknowledgedAt: vuln.createdAt,
+            status: {
+              category: this.getAWSV2VulnStatusCategory(vuln),
+            },
+          },
+        });
+      }
+    }
+    return res;
   }
 
   getVulnRecordsFromAwsV2(data: AWSV2VulnerabilityData[]): DestinationRecord[] {
@@ -238,8 +330,8 @@ export abstract class Vulnerabilities extends Converter {
     const aws_v2_vulns = this.getVulnRecordsFromAwsV2(this.awsv2_vulns);
     const combined_aws_vulns = this.combineAwsVulns(aws_v1_vulns, aws_v2_vulns);
     res.push(...combined_aws_vulns);
+
     // Getting vcs_RepositoryVulnerability records
-    // TODO
     const vcsMappings = await this.getVCSMappingsFromGit(
       this.repositoryNamesToUids,
       ctx
@@ -248,7 +340,12 @@ export abstract class Vulnerabilities extends Converter {
 
     // Getting cicd_ArtifactVulnerability records
     // Ensure it maps to the correct artifact
-    // TODO
+    const cicdArtifactMappings = await this.getCICDMappingsFromAWSV2(
+      this.awsv2_vulns,
+      ctx
+    );
+    res.push(...cicdArtifactMappings);
+
     return res;
   }
 }
