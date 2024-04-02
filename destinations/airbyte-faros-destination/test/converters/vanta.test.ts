@@ -73,8 +73,6 @@ describe('vanta', () => {
     return await tempConfig(mockttp.url);
   };
 
-  // TODO: Implement a mock http for requests to Faros
-
   test('test1', async () => {
     const configPath = await getTempConfig(mockttp);
     const processedByStream = {
