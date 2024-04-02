@@ -15,9 +15,9 @@ export interface ZendeskConfig {
   additional_fields_array_limit: number;
   customStatuses: any;
   fieldIdsByName: Map<string, Set<number>>;
+  sync_groups?: boolean;
   team_mapping?: TeamMapping;
   ticket_additional_fields?: ReadonlyArray<string>;
-  sync_groups?: boolean;
 }
 
 interface OrgTeam {

@@ -42,8 +42,12 @@ Array [
     "record": Object {
       "name": "Zendesk Satisfaction Ratings",
       "uid": "zendesk-satisfaction-ratings",
-      "valueSourceType": "MetricValueEntries",
-      "valueType": "String",
+      "valueSourceType": Object {
+        "category": "MetricValueEntries",
+      },
+      "valueType": Object {
+        "category": "String",
+      },
     },
   },
   Object {

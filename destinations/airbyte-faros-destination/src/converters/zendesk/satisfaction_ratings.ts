@@ -38,8 +38,8 @@ export class SatisfactionRatings extends ZendeskConverter {
         record: {
           ...definitionKey,
           name: 'Zendesk Satisfaction Ratings',
-          valueType: 'String',
-          valueSourceType: 'MetricValueEntries',
+          valueType: {category: 'String'},
+          valueSourceType: {category: 'MetricValueEntries'},
         },
       });
       this.createDefinition = false;
