@@ -7,6 +7,7 @@ import {
 } from 'faros-js-client';
 import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 export interface Account {
   accountId: string;
@@ -189,9 +190,12 @@ class FarosSyncClient extends FarosClient {
   ): Promise<T | undefined> {
     return f.catch((error) => {
       if (failureMessage) {
-        this.airbyteLogger?.warn(
-          failureMessage + `. Error: ${error?.message ?? JSON.stringify(error)}`
-        );
+        let message = `Error: ${error?.message ?? JSON.stringify(error)}`;
+        const response = VError.info(error)?.res?.data;
+        if (response) {
+          message += `. Response: ${JSON.stringify(response)}`;
+        }
+        this.airbyteLogger?.warn(`${failureMessage}. ${message}`);
       }
       return undefined;
     });
