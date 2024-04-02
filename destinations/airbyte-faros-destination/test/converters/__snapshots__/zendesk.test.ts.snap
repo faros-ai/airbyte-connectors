@@ -7,7 +7,41 @@ Array [
     "record": Object {
       "description": "Group 1",
       "name": "Group 1",
-      "uid": "zendesk-group-1",
+      "uid": Object {
+        "description": "Group 1",
+        "name": "Group 1",
+        "uid": "Group 1",
+      },
+    },
+  },
+]
+`;
+
+exports[`groups group with fallback team 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "description": "Group 1",
+      "name": "Group 2",
+      "uid": Object {
+        "uid": "all_teams",
+      },
+    },
+  },
+]
+`;
+
+exports[`groups group with team mapping 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "description": "Group 1",
+      "name": "Group 1",
+      "uid": Object {
+        "uid": "Team 1",
+      },
     },
   },
 ]
@@ -39,7 +73,7 @@ Array [
     "model": "org_TeamMetric",
     "record": Object {
       "team": Object {
-        "uid": "zendesk-group-23111598987540",
+        "uid": "Group 101",
       },
       "value": Object {
         "definition": Object {

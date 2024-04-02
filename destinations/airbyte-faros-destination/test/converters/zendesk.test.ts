@@ -4,6 +4,7 @@ import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src/converters/converter';
 import {
+  GroupsStream,
   TicketFieldsStream,
   TicketMetricsStream,
 } from '../../src/converters/zendesk/common';
@@ -358,6 +359,18 @@ describe('users', () => {
 
 describe('satisfaction ratings', () => {
   const converter = new SatisfactionRatings();
+
+  const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}}, {});
+  ctx.set(
+    GroupsStream.asString,
+    '101',
+    AirbyteRecord.make('groups', {
+      id: 101,
+      name: 'Group 101',
+      description: 'Group 101',
+    })
+  );
+
   const rating = {
     id: 1,
     ticket_id: 15,
@@ -365,25 +378,58 @@ describe('satisfaction ratings', () => {
     created_at: '2024-02-07T21:51:23Z',
     updated_at: '2024-02-07T21:51:23Z',
     comment: null,
-    group_id: 23111598987540,
+    group_id: 101,
   };
 
   test('rating', async () => {
     const record = AirbyteRecord.make('satisfaction_rating', rating);
 
-    const res = await converter.convert(record);
+    const res = await converter.convert(record, ctx);
     expect(res).toHaveLength(3);
     expect(res).toMatchSnapshot();
   });
 });
 
 describe('groups', () => {
+  const ctx = new StreamContext(
+    new AirbyteLogger(),
+    {
+      edition_configs: {},
+      source_specific_configs: {
+        zendesk: {
+          team_mapping: {
+            '*': 'all_teams',
+            'Group 1': 'Team 1',
+          },
+        },
+      },
+    },
+    {}
+  );
+
   const converter = new Groups();
   const group = {id: 1, name: 'Group 1', description: 'Group 1'};
-  test('group', async () => {
-    const record = AirbyteRecord.make('group', group);
 
-    const res = await converter.convert(record);
+  test('group', async () => {
+    const teamCtx = new StreamContext(
+      new AirbyteLogger(),
+      {edition_configs: {}},
+      {}
+    );
+    const record = AirbyteRecord.make('group', group);
+    const res = await converter.convert(record, teamCtx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('group with team mapping', async () => {
+    const record = AirbyteRecord.make('group', group);
+    const res = await converter.convert(record, ctx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('group with fallback team', async () => {
+    const record = AirbyteRecord.make('group', {...group, name: 'Group 2'});
+    const res = await converter.convert(record, ctx);
     expect(res).toMatchSnapshot();
   });
 });

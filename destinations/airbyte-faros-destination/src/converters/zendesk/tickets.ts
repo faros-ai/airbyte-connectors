@@ -11,25 +11,18 @@ import {
 import {
   TicketFieldsStream,
   TicketMetricsStream,
+  ZendeskConfig,
   ZendeskConverter,
 } from './common';
 
-interface Config {
-  additional_fields_array_limit: number;
-  customStatuses: any;
-  fieldIdsByName: Map<string, Set<number>>;
-  ticket_additional_fields?: ReadonlyArray<string>;
-}
-
 export class Tickets extends ZendeskConverter {
-  private config: Config = undefined;
+  private config: ZendeskConfig = undefined;
   private addedProjectBoard = false;
 
   private initialize(ctx?: StreamContext): void {
     if (this.config) return;
 
-    this.config =
-      this.config ?? ctx?.config.source_specific_configs?.zendesk ?? {};
+    this.config = this.config ?? this.zendeskConfig(ctx);
 
     // Create mapping of field Ids to field names once and store the custom_statuses
     // so we do not keep querying for them from StreamContext

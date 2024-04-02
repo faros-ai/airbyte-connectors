@@ -1,12 +1,22 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {trim} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
-import {toGroupUid,ZendeskConverter} from './common';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {GroupsStream, ZendeskConverter} from './common';
 
 export class SatisfactionRatings extends ZendeskConverter {
   private readonly definitionUid = 'zendesk-satisfaction-ratings';
   private createDefinition = true;
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [GroupsStream];
+  }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
@@ -15,7 +25,8 @@ export class SatisfactionRatings extends ZendeskConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const recs = [];
     const definitionKey = {uid: this.definitionUid};
@@ -48,13 +59,19 @@ export class SatisfactionRatings extends ZendeskConverter {
         computedAt: Utils.toDate(rating.updated_at),
       },
     });
-    recs.push({
-      model: 'org_TeamMetric',
-      record: {
-        team: {uid: toGroupUid(rating.group_id)},
-        value: {...metricValueKey},
-      },
-    });
+
+    // Assign metric value to team
+    const group = ctx.get(GroupsStream.asString, rating.group_id)?.record?.data;
+    if (group) {
+      const team = this.orgTeam(ctx, group);
+      recs.push({
+        model: 'org_TeamMetric',
+        record: {
+          team: {uid: team.uid},
+          value: {...metricValueKey},
+        },
+      });
+    }
 
     return recs;
   }
