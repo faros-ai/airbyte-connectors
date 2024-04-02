@@ -7,11 +7,7 @@ Array [
     "record": Object {
       "description": "Group 1",
       "name": "Group 1",
-      "uid": Object {
-        "description": "Group 1",
-        "name": "Group 1",
-        "uid": "Group 1",
-      },
+      "uid": "Group 1",
     },
   },
 ]
@@ -22,11 +18,7 @@ Array [
   Object {
     "model": "org_Team",
     "record": Object {
-      "description": "Group 1",
-      "name": "Group 2",
-      "uid": Object {
-        "uid": "all_teams",
-      },
+      "uid": "all_teams",
     },
   },
 ]
@@ -37,11 +29,7 @@ Array [
   Object {
     "model": "org_Team",
     "record": Object {
-      "description": "Group 1",
-      "name": "Group 1",
-      "uid": Object {
-        "uid": "Team 1",
-      },
+      "uid": "Team 1",
     },
   },
 ]

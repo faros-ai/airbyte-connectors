@@ -11,16 +11,16 @@ export class Groups extends ZendeskConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    if (!this.zendeskConfig(ctx)?.sync_groups) {
+      return [];
+    }
+
     const group = record.record.data;
-    const uid = this.orgTeam(ctx, group);
+    const orgTeam = this.orgTeam(ctx, group);
     return [
       {
         model: 'org_Team',
-        record: {
-          uid,
-          name: group.name,
-          description: group.description,
-        },
+        record: {...orgTeam},
       },
     ];
   }

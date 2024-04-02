@@ -17,6 +17,7 @@ export interface ZendeskConfig {
   fieldIdsByName: Map<string, Set<number>>;
   team_mapping?: TeamMapping;
   ticket_additional_fields?: ReadonlyArray<string>;
+  sync_groups?: boolean;
 }
 
 interface OrgTeam {
@@ -39,7 +40,7 @@ export abstract class ZendeskConverter extends Converter {
   }
 
   protected zendeskConfig(ctx: StreamContext): ZendeskConfig {
-    return ctx.config.source_specific_configs?.zendesk ?? {};
+    return ctx?.config?.source_specific_configs?.zendesk ?? {};
   }
 
   protected teamMapping(ctx: StreamContext): TeamMapping {

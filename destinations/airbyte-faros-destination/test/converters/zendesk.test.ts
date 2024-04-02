@@ -397,6 +397,7 @@ describe('groups', () => {
       edition_configs: {},
       source_specific_configs: {
         zendesk: {
+          sync_groups: true,
           team_mapping: {
             '*': 'all_teams',
             'Group 1': 'Team 1',
@@ -413,7 +414,12 @@ describe('groups', () => {
   test('group', async () => {
     const teamCtx = new StreamContext(
       new AirbyteLogger(),
-      {edition_configs: {}},
+      {
+        edition_configs: {},
+        source_specific_configs: {
+          zendesk: {sync_groups: true},
+        },
+      },
       {}
     );
     const record = AirbyteRecord.make('group', group);
@@ -431,5 +437,22 @@ describe('groups', () => {
     const record = AirbyteRecord.make('group', {...group, name: 'Group 2'});
     const res = await converter.convert(record, ctx);
     expect(res).toMatchSnapshot();
+  });
+
+  test('disable syncing', async () => {
+    const syncCtx = new StreamContext(
+      new AirbyteLogger(),
+      {
+        edition_configs: {},
+        source_specific_configs: {
+          zendesk: {sync_groups: false},
+        },
+      },
+      {}
+    );
+
+    const record = AirbyteRecord.make('group', {...group, name: 'Group 3'});
+    const res = await converter.convert(record, syncCtx);
+    expect(res).toHaveLength(0);
   });
 });
