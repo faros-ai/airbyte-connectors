@@ -13,8 +13,6 @@ const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'vanta/mockQueryNamesToObjects.json'
 );
 
-const sample_commit_sha = 'a123456789012345678901234567890123456789';
-
 function getQueryResponse(
   query: string,
   test_by_groups: Record<string, Record<string, any[]>>
@@ -93,15 +91,19 @@ describe('vanta', () => {
   });
 
   test('github commit sha', async () => {
+    // hex string of length 40
+    const sample_commit_sha = 'a123456789012345678901234567890123456789';
+
     // Examples of strings, some of which are valid and some are not
     const inp = [
       sample_commit_sha,
-      'a12345678901234567890123456789012345678',
+      sample_commit_sha + 'a',
+      sample_commit_sha.slice(0, 39),
       'f'.repeat(40),
       // g is outside the alloted hex symbols
       'g'.repeat(40),
     ];
-    const out = [true, false, true, false];
+    const out = [true, false, false, true, false];
     const res = [];
     for (const s of inp) {
       res.push(looksLikeGithubCommitSha(s));
