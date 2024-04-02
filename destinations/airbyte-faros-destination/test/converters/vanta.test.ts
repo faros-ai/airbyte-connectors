@@ -45,18 +45,6 @@ function getQueryResponse(
   return res;
 }
 
-jest.mock('faros-js-client', () => {
-  return {
-    FarosClient: jest.fn().mockImplementation(() => {
-      return {
-        async gql(graph: string, query: string): Promise<any[]> {
-          return getQueryResponse(query, mockQueryToResponse);
-        },
-      };
-    }),
-  };
-});
-
 describe('vanta', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
