@@ -42,7 +42,7 @@ Array [
     "record": Object {
       "name": "Zendesk Satisfaction Ratings",
       "uid": "zendesk-satisfaction-ratings",
-      "valueSourceType": Object {
+      "valueSource": Object {
         "category": "MetricValueEntries",
       },
       "valueType": Object {

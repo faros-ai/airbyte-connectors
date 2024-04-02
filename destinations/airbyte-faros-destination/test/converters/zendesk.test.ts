@@ -2,6 +2,7 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {StreamContext} from '../../src/converters/converter';
 import {
   GroupsStream,
@@ -27,7 +28,13 @@ describe('zendesk', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      {zendesk: {sync_groups: true}}
+    );
   });
 
   afterEach(async () => {
