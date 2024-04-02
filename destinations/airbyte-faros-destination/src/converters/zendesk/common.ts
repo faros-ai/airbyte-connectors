@@ -53,13 +53,9 @@ export abstract class ZendeskConverter extends Converter {
 
   protected orgTeam(ctx: StreamContext, group: Dictionary<any>): OrgTeam {
     const teamMapping = this.teamMapping(ctx);
-    const mappedTeam = teamMapping[trim(group.name)];
+    const mappedTeam = teamMapping[trim(group.name)] || teamMapping['*'];
     if (mappedTeam) {
       return {uid: mappedTeam};
-    }
-    const defaultTeam = teamMapping['*'];
-    if (defaultTeam) {
-      return {uid: defaultTeam};
     }
     return {
       uid: trim(group.name),

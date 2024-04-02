@@ -27,6 +27,16 @@
             "description": "Truncates an additional field's array value to the given length.",
             "default": 50,
             "order": 2
+          },
+          "team_mapping": {
+            "type": "string",
+            "title": "Team Mapping",
+            "description": "JSON map of Zendesk group(s) name, to org_Team uids.",
+            "multiline": true,
+            "default": "{}",
+            "examples": [
+              "{ \"Group 1\": \"team1\", \"*\": \"all_teams\" }"
+            ]
           }
         }
       }
