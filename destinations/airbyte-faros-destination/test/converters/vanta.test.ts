@@ -50,7 +50,7 @@ describe('vanta', () => {
   const streamNamePrefix = 'mytestsource__vanta__';
   const streamsLog = readTestResourceFile('vanta/streams.log');
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await initMockttp(mockttp);
     await mockttp
       .forPost('/graphs/test-graph/graphql')
@@ -65,7 +65,7 @@ describe('vanta', () => {
       });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await mockttp.stop();
   });
 

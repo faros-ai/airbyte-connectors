@@ -15,7 +15,7 @@ query vcsRepositoryQuery {
 
 export const cicdArtifactQueryByCommitSha = `
 query cicdArtifactQueryByCommitSha {
-  cicd_Artifact(where: {uid: {_eq: "<COMMIT_SHA>"}}) {
+  cicd_Artifact(where: {uid: {_eq: "<COMMIT_SHA>"}}, limit: 1) {
     uid
     repository {
       organization {
