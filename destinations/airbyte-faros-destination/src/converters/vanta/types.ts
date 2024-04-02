@@ -86,27 +86,27 @@ export interface AWSV2VulnerabilityData {
 
 export const vulnTypeOptions: string[] = ['git', 'aws', 'awsv2'];
 
-export interface vcsOrgKey {
+export interface VcsOrgKey {
   uid: string;
   source: string;
 }
 
-export interface vcsRepoKey {
-  organization: vcsOrgKey;
+export interface VcsRepoKey {
+  organization: VcsOrgKey;
   name: string;
 }
 
-export interface cicdOrgKey {
+export interface CicdOrgKey {
   uid: string;
   source: string;
 }
 
-export interface cicdRepoKey {
-  organization: cicdOrgKey;
+export interface CicdRepoKey {
+  organization: CicdOrgKey;
   uid: string;
 }
 
-export interface cicdArtifactKey {
+export interface CicdArtifactKey {
   uid: string;
-  repository: cicdRepoKey;
+  repository: CicdRepoKey;
 }
