@@ -21,7 +21,7 @@ import {
   vcsRepoKey,
 } from './types';
 
-function looksLikeGithubCommitSha(sha: string): boolean {
+export function looksLikeGithubCommitSha(sha: string): boolean {
   return /^[a-f0-9]{40}$/i.test(sha);
 }
 
@@ -120,10 +120,18 @@ export abstract class Vulnerabilities extends Converter {
     const replacedQuery = vcsRepositoryQuery.replace('<REPONAME>', vcsRepoName);
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      if (!resp) {
+        ctx.logger.warn(
+          `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
+        );
+        return null;
+      }
       const results = resp?.vcs_Repository;
       let result = null;
       if (results.length > 0) {
         result = results[0];
+        console.log('RESULT');
+        console.log(result);
       } else {
         ctx.logger.warn(
           `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
@@ -144,6 +152,12 @@ export abstract class Vulnerabilities extends Converter {
     );
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      if (!resp) {
+        ctx.logger.warn(
+          `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
+        );
+        return null;
+      }
       const results = resp?.cicd_Artifact;
       let result = null;
       if (results.length > 0) {
@@ -172,6 +186,12 @@ export abstract class Vulnerabilities extends Converter {
     );
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      if (!resp) {
+        ctx.logger.warn(
+          `Did not get any results for cicdArtifact query with repository name "${repoName}"`
+        );
+        return null;
+      }
       const results = resp?.cicd_Artifact;
       let result = null;
       if (results.length > 0) {

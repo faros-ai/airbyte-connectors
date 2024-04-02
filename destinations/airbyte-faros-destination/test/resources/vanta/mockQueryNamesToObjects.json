@@ -1,0 +1,17 @@
+{
+  "vcsRepositoryQuery": {
+    "sample": {
+      "vcs_Repository": [{}]
+    }
+  },
+  "cicdArtifactQueryByCommitSha": {
+    "78cc491be01ad237d5db4809289e26876e872eb9": {
+      "cicd_Artifact": [{}]
+    }
+  },
+  "cicdArtifactQueryByRepoName": {
+    "SAMPLE": {
+      "cicd_Artifact": [{}]
+    }
+  }
+}
