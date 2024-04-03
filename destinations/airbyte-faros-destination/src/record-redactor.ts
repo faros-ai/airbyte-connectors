@@ -7,21 +7,18 @@ export class RecordRedactor {
   private readonly redactor: SyncRedactor;
 
   constructor(
-    private readonly redactCustomReplace?: string,
-    private readonly redactCustomRegex?: string
+    private readonly redactCustomReplace: string = undefined,
+    private readonly redactCustomRegex: ReadonlyArray<string> = []
   ) {
+    const customRegexRedactors = this.redactCustomRegex.map((regex) => ({
+      regexpPattern: new RegExp(regex, 'gi'),
+      replaceWith: this.redactCustomReplace || 'REDACTED',
+    }));
     this.redactor = new SyncRedactor({
       globalReplaceWith: this.redactCustomReplace,
-      ...(this.redactCustomRegex && {
-        customRedactors: {
-          before: [
-            {
-              regexpPattern: new RegExp(this.redactCustomRegex, 'gi'),
-              replaceWith: this.redactCustomReplace || 'REDACTED',
-            },
-          ],
-        },
-      }),
+      customRedactors: {
+        before: [...customRegexRedactors],
+      },
     });
   }
 

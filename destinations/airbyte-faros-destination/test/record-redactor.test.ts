@@ -34,7 +34,7 @@ describe('RecordRedactor', () => {
     });
 
     it('should replace matching custom pattern', async () => {
-      redactor = new RecordRedactor(undefined, 'secretword');
+      redactor = new RecordRedactor(undefined, ['secretword']);
       const redacted = redactor.redactRecord(
         {name: 'The secret word is secretword. End'},
         ['name']

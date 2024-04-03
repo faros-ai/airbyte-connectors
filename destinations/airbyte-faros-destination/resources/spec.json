@@ -84,7 +84,10 @@
       },
       "redact_custom_regex": {
         "order": 7,
-        "type": "string",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
         "title": "Redact Custom Regex"
       },
       "dry_run": {
