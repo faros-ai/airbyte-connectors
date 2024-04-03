@@ -15,24 +15,15 @@ const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
 
 function getQueryResponse(
   query: string,
+  vars: Record<string, any>,
   test_by_groups: Record<string, Record<string, any[]>>
 ): {data: any} | null {
   const split_query = query.split(' ');
-  const query_name = split_query[1];
-  // We grab the object name, which is currently the only string between double quotes:
-  const regex = /"([^"]*)"/g;
-  let match;
-  const matches = [];
-  while ((match = regex.exec(query)) !== null) {
-    matches.push(match[1]);
-  }
-  if (matches.length === 0) {
-    throw new Error('No double quotes found in query.');
-  }
-  if (matches.length > 1) {
-    throw new Error('Multiple double quotes found in query.');
-  }
-  const object_name = matches[0];
+  let query_name = split_query[1];
+  query_name = query_name.split('(')[0];
+  // Note that the object name is the value for the ONLY key in the "vars" object.
+  // If this is not the case, we'll need to change the test code to handle this.
+  const object_name = Object.values(vars)[0];
   const resList = test_by_groups[query_name][object_name];
   if (!resList) {
     throw new Error(
@@ -60,8 +51,9 @@ describe('vanta', () => {
       .forPost('/graphs/test-graph/graphql')
       .thenCallback(async (req) => {
         const body = await req.body.getJson();
+        const vars = body['variables'];
         const query = body['query'];
-        const res = getQueryResponse(query, mockQueryToResponse);
+        const res = getQueryResponse(query, vars, mockQueryToResponse);
         return {
           status: 200,
           body: JSON.stringify(res),

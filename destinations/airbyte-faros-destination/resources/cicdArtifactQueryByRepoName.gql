@@ -1,0 +1,16 @@
+query cicdArtifactQueryByRepoName($repoName: String!) {
+  cicd_Artifact(
+    where: {repository: {uid: {_eq: $repoName}}}
+    limit: 1
+    order_by: {refreshedAt: asc}
+  ) {
+    uid
+    repository {
+      organization {
+        uid
+        source
+      }
+      uid
+    }
+  }
+}
