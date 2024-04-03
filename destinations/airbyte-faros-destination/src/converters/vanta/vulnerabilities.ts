@@ -205,13 +205,6 @@ export abstract class Vulnerabilities extends Converter {
     gitRepoNamesToUIDs: Record<string, string[]>,
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
-    // url: String
-    // dueAt: Timestamp
-    // createdAt: Timestamp
-    // acknowledgedAt: Timestamp
-    // resolvedAt: Timestamp
-    // status: sec_VulnerabilityStatus
-
     const vuln_data: DestinationRecord[] = [];
     for (const [repoName, uids] of Object.entries(gitRepoNamesToUIDs)) {
       const repoKey = await this.getVCSRepositoryFromName(repoName, ctx);
@@ -319,7 +312,6 @@ export abstract class Vulnerabilities extends Converter {
         continue;
       }
 
-      // At this point, we have a commit sha
       const CicdArtifactKey = await this.getCICDArtifactFromCommitSha(
         commitSha,
         ctx

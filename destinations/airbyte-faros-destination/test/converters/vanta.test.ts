@@ -7,7 +7,6 @@ import {
   readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
-import {datadogAllStreamsLog} from './data';
 import {runTest} from './utils';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
