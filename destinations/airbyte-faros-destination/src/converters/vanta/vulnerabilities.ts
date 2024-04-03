@@ -318,8 +318,10 @@ export abstract class Vulnerabilities extends Converter {
         }
       }
       if (!commitSha) {
-        console.log('SKIPPED DUE TO NOT GIT COMMIT SHA');
-        console.log(imageTags);
+        ctx.logger.info(
+          `Skipped getting commit Sha from below imageTags due to not finding git commit sha:`
+        );
+        ctx.logger.info(JSON.stringify(imageTags));
         continue;
       }
 
