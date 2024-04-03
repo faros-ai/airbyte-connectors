@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import fs from 'fs';
 
 import {
   Converter,
@@ -46,6 +47,19 @@ export abstract class Vulnerabilities extends Converter {
   gitUidsToVulns: Record<string, GithubVulnerabilityData> = {};
   awsUidsToVulns: Record<string, AWSVulnerabilityData> = {};
   duplicateAwsUids: Set<string> = new Set();
+  // We read from file synchronously to get query from file
+  vcsRepositoryQuery = fs.readFileSync(
+    'resources/vcsRepositoryQuery.gql',
+    'utf8'
+  );
+  cicdArtifactQueryByCommitSha = fs.readFileSync(
+    'resources/cicdArtifactQueryByCommitSha.gql',
+    'utf8'
+  );
+  cicdArtifactQueryByRepoName = fs.readFileSync(
+    'resources/cicdArtifactQueryByRepoName.gql',
+    'utf8'
+  );
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
@@ -116,9 +130,13 @@ export abstract class Vulnerabilities extends Converter {
     vcsRepoName: string,
     ctx: StreamContext
   ): Promise<VcsRepoKey | null> {
-    const replacedQuery = vcsRepositoryQuery.replace('<REPONAME>', vcsRepoName);
+    // const replacedQuery = this.vcsRepositoryQuery.replace('<REPONAME>', vcsRepoName);
     if (ctx.farosClient) {
-      const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      const resp = await ctx.farosClient.gql(
+        ctx.graph,
+        this.vcsRepositoryQuery,
+        {repoName: vcsRepoName}
+      );
       if (!resp) {
         ctx.logger.warn(
           `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
@@ -143,12 +161,16 @@ export abstract class Vulnerabilities extends Converter {
     commitSha: string,
     ctx: StreamContext
   ): Promise<CicdArtifactKey | null> {
-    const replacedQuery = cicdArtifactQueryByCommitSha.replace(
-      '<COMMIT_SHA>',
-      commitSha
-    );
+    // const replacedQuery = this.cicdArtifactQueryByCommitSha.replace(
+    //   '<COMMIT_SHA>',
+    //   commitSha
+    // );
     if (ctx.farosClient) {
-      const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      const resp = await ctx.farosClient.gql(
+        ctx.graph,
+        this.cicdArtifactQueryByCommitSha,
+        {commitSha}
+      );
       if (!resp) {
         ctx.logger.warn(
           `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
@@ -177,12 +199,16 @@ export abstract class Vulnerabilities extends Converter {
     // using the uid. Instead, we'll need to query the cicd_Artifact table using the repository name
     // and choosing the most recent artifact.
 
-    const replacedQuery = cicdArtifactQueryByRepoName.replace(
-      '<REPONAME>',
-      repoName
-    );
+    // const replacedQuery = cicdArtifactQueryByRepoName.replace(
+    //   '<REPONAME>',
+    //   repoName
+    // );
     if (ctx.farosClient) {
-      const resp = await ctx.farosClient.gql(ctx.graph, replacedQuery);
+      const resp = await ctx.farosClient.gql(
+        ctx.graph,
+        this.cicdArtifactQueryByRepoName,
+        {repoName}
+      );
       if (!resp) {
         ctx.logger.warn(
           `Did not get any results for cicdArtifact query with repository name "${repoName}"`
@@ -304,7 +330,7 @@ export abstract class Vulnerabilities extends Converter {
       // First we check for dup uids
       const uid = this.getUidFromAWSV2Vuln(vuln);
       if (seenUids.has(uid)) {
-        ctx.logger.info('Found duplicate vuln id: ' + uid);
+        ctx.logger.debug('Found duplicate vuln id: ' + uid);
         this.duplicateAwsUids.add(uid);
         continue;
       }
@@ -329,7 +355,7 @@ export abstract class Vulnerabilities extends Converter {
         ctx.logger.info(
           `Skipped getting commit Sha from below imageTags due to not finding git commit sha:`
         );
-        ctx.logger.info(JSON.stringify(imageTags));
+        ctx.logger.debug(JSON.stringify(imageTags));
         continue;
       }
 
@@ -459,15 +485,21 @@ export abstract class Vulnerabilities extends Converter {
       nVulnsMissingIds: this.vulnsMissingIds.length,
       nDuplicateAwsUids: this.duplicateAwsUids.size,
     };
-    ctx.logger.info('Vulnerabilities converter report:');
-    ctx.logger.info(JSON.stringify(report_obj, null, 2));
+    ctx.logger.info(
+      'Vulnerabilities converter report: \n' +
+        JSON.stringify(report_obj, null, 2)
+    );
     if (this.vulnsMissingIds.length > 0) {
-      ctx.logger.warn('Vulnerabilities missing ids:');
-      ctx.logger.warn(JSON.stringify(this.vulnsMissingIds, null, 2));
+      ctx.logger.debug(
+        'Vulnerabilities missing ids: \n' +
+          JSON.stringify(this.vulnsMissingIds, null, 2)
+      );
     }
     if (this.duplicateAwsUids.size > 0) {
-      ctx.logger.warn('Duplicate AWS vuln uids:');
-      ctx.logger.warn(JSON.stringify(this.duplicateAwsUids, null, 2));
+      ctx.logger.debug(
+        'Duplicate AWS vuln uids: \n' +
+          JSON.stringify(this.duplicateAwsUids, null, 2)
+      );
     }
   }
 
