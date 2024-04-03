@@ -8,11 +8,6 @@ import {
   StreamContext,
 } from '../converter';
 import {
-  cicdArtifactQueryByCommitSha,
-  cicdArtifactQueryByRepoName,
-  vcsRepositoryQuery,
-} from './queries';
-import {
   AWSV2VulnerabilityData,
   AWSVulnerabilityData,
   CicdArtifactKey,
@@ -130,7 +125,6 @@ export abstract class Vulnerabilities extends Converter {
     vcsRepoName: string,
     ctx: StreamContext
   ): Promise<VcsRepoKey | null> {
-    // const replacedQuery = this.vcsRepositoryQuery.replace('<REPONAME>', vcsRepoName);
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(
         ctx.graph,
@@ -161,10 +155,6 @@ export abstract class Vulnerabilities extends Converter {
     commitSha: string,
     ctx: StreamContext
   ): Promise<CicdArtifactKey | null> {
-    // const replacedQuery = this.cicdArtifactQueryByCommitSha.replace(
-    //   '<COMMIT_SHA>',
-    //   commitSha
-    // );
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(
         ctx.graph,
@@ -199,10 +189,6 @@ export abstract class Vulnerabilities extends Converter {
     // using the uid. Instead, we'll need to query the cicd_Artifact table using the repository name
     // and choosing the most recent artifact.
 
-    // const replacedQuery = cicdArtifactQueryByRepoName.replace(
-    //   '<REPONAME>',
-    //   repoName
-    // );
     if (ctx.farosClient) {
       const resp = await ctx.farosClient.gql(
         ctx.graph,
