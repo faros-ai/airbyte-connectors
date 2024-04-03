@@ -45,6 +45,7 @@ export abstract class Vulnerabilities extends Converter {
   awsV2ContainerNamesToUids: Record<string, string[]> = {};
   gitUidsToVulns: Record<string, GithubVulnerabilityData> = {};
   awsUidsToVulns: Record<string, AWSVulnerabilityData> = {};
+  duplicateAwsUids: Set<string> = new Set();
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
@@ -290,7 +291,17 @@ export abstract class Vulnerabilities extends Converter {
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
     const res = [];
+    const seenUids: Set<string> = new Set();
     for (const vuln of aws_vulns) {
+      // First we check for dup uids
+      const uid = this.getUidFromAWSV2Vuln(vuln);
+      if (seenUids.has(uid)) {
+        ctx.logger.info('Found duplicate vuln id: ' + uid);
+        this.duplicateAwsUids.add(uid);
+        continue;
+      }
+      seenUids.add(uid);
+
       // We need to do the following for each vuln:
       // Get the image tags. For each image tag, check if it is a github commit sha
       // If you get the github commit sha, query the cicd_Artifact table by commit sha
@@ -351,12 +362,18 @@ export abstract class Vulnerabilities extends Converter {
         continue;
       }
       const sev: number = this.severityMap[vuln.severity];
+      let sevString: string;
+      if (!sev) {
+        sevString = 'UNKNOWN';
+      } else {
+        sevString = sev.toString();
+      }
       const uid = this.getUidFromAWSV2Vuln(vuln);
       const vuln_copy: ExtendedVulnerabilityType = {
         uid,
         createdAt: vuln.createdAt,
         externalURL: vuln.externalURL,
-        severity: sev.toString(),
+        severity: sevString,
         description: vuln.description,
         displayName: vuln.asset.displayName,
       };
@@ -371,22 +388,21 @@ export abstract class Vulnerabilities extends Converter {
     aws_v2_vulns: DestinationRecord[],
     ctx: StreamContext
   ): DestinationRecord[] {
-    const seenUids = new Set();
+    const seenUids: Set<string> = new Set();
     const combined = [];
-    for (const vuln of aws_v2_vulns) {
-      if (!seenUids.has(vuln.record.uid)) {
-        combined.push(vuln);
-        seenUids.add(vuln.record.uid);
+
+    for (const vuln_list of [aws_v2_vulns, aws_v1_vulns]) {
+      for (const vuln of vuln_list) {
+        if (!seenUids.has(vuln.record.uid)) {
+          combined.push(vuln);
+          seenUids.add(vuln.record.uid);
+        } else {
+          ctx.logger.info('Found duplicate vuln id: ' + vuln.record.uid);
+          this.duplicateAwsUids.add(vuln.record.uid);
+        }
       }
     }
-    for (const vuln of aws_v1_vulns) {
-      if (!seenUids.has(vuln.record.uid)) {
-        combined.push(vuln);
-        seenUids.add(vuln.record.uid);
-      } else {
-        ctx.logger.info('Found duplicate vuln id: ' + vuln.record.uid);
-      }
-    }
+
     return combined;
   }
 
@@ -427,6 +443,15 @@ export abstract class Vulnerabilities extends Converter {
     return [];
   }
 
+  printReport(ctx: StreamContext): void {
+    const report_obj = {
+      nVulnsMissingIds: this.vulnsMissingIds.length,
+      nDuplicateAwsUids: this.duplicateAwsUids.size,
+    };
+    ctx.logger.info('Vulnerabilities converter report:');
+    ctx.logger.info(JSON.stringify(report_obj, null, 2));
+  }
+
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -460,7 +485,7 @@ export abstract class Vulnerabilities extends Converter {
     res.push(...cicdArtifactMappingsAWSV2);
     const cicdArtifactMappingsAWS = await this.getCICDMappingsFromAWS(ctx);
     res.push(...cicdArtifactMappingsAWS);
-
+    this.printReport(ctx);
     return res;
   }
 }
