@@ -7,6 +7,7 @@ import {
   readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
+import {datadogAllStreamsLog} from './data';
 import {runTest} from './utils';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
@@ -16,7 +17,7 @@ const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
 function getQueryResponse(
   query: string,
   test_by_groups: Record<string, Record<string, any[]>>
-): any[] | null {
+): {data: any} | null {
   const split_query = query.split(' ');
   const query_name = split_query[1];
   // We grab the object name, which is currently the only string between double quotes:
@@ -33,22 +34,23 @@ function getQueryResponse(
     throw new Error('Multiple double quotes found in query.');
   }
   const object_name = matches[0];
-  const res = test_by_groups[query_name][object_name];
-  if (!res) {
+  const resList = test_by_groups[query_name][object_name];
+  if (!resList) {
     throw new Error(
       `Query name ${query_name} or object name ${object_name} not found in test_by_groups.`
     );
   }
-  return res;
+  return {data: resList};
 }
 
 describe('vanta', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/vanta/catalog.json';
   const streamNamePrefix = 'mytestsource__vanta__';
-  const streamsLog = readTestResourceFile('vanta/streams.log');
+  const streamsLog1 = readTestResourceFile('vanta/streams.log');
+  const streamsLog2 = readTestResourceFile('vanta/streams2.log');
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await initMockttp(mockttp);
     await mockttp
       .forPost('/graphs/test-graph/graphql')
@@ -63,7 +65,7 @@ describe('vanta', () => {
       });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await mockttp.stop();
   });
 
@@ -71,13 +73,32 @@ describe('vanta', () => {
     return await tempConfig(mockttp.url);
   };
 
-  test('test1', async () => {
+  test('test entries', async () => {
     const configPath = await getTempConfig(mockttp);
     const processedByStream = {
       vulnerabilities: 3,
     };
     const writtenByModel = {
-      cicd_ArtifactVulnerability: 1,
+      cicd_ArtifactVulnerability: 2,
+      sec_Vulnerability: 3,
+      vcs_RepositoryVulnerability: 1,
+    };
+    await runTest(
+      configPath,
+      catalogPath,
+      processedByStream,
+      writtenByModel,
+      streamsLog2,
+      streamNamePrefix
+    );
+  });
+
+  test('test no entries', async () => {
+    const configPath = await getTempConfig(mockttp);
+    const processedByStream = {
+      vulnerabilities: 3,
+    };
+    const writtenByModel = {
       sec_Vulnerability: 3,
     };
     await runTest(
@@ -85,7 +106,7 @@ describe('vanta', () => {
       catalogPath,
       processedByStream,
       writtenByModel,
-      streamsLog,
+      streamsLog1,
       streamNamePrefix
     );
   });

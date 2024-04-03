@@ -128,8 +128,6 @@ export abstract class Vulnerabilities extends Converter {
       let result = null;
       if (results.length > 0) {
         result = results[0];
-        console.log('RESULT');
-        console.log(result);
       } else {
         ctx.logger.warn(
           `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
@@ -270,8 +268,12 @@ export abstract class Vulnerabilities extends Converter {
         repoName = split[split.length - 1];
       }
       const repoKey = await this.getAWSCicdArtifactFromName(repoName, ctx);
-      console.log(`for repo name: ${repoName}, got key:`);
-      console.log(repoKey);
+      if (!repoKey) {
+        ctx.logger.warn(
+          `Could not find cicd_Artifact for vulnerability with uid "${uid}"`
+        );
+        continue;
+      }
       res.push({
         model: 'cicd_ArtifactVulnerability',
         record: {
@@ -312,6 +314,8 @@ export abstract class Vulnerabilities extends Converter {
         }
       }
       if (!commitSha) {
+        console.log('SKIPPED DUE TO NOT GIT COMMIT SHA');
+        console.log(imageTags);
         continue;
       }
 
