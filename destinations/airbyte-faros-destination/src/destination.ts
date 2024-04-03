@@ -694,6 +694,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (latestStateMessage) {
         yield latestStateMessage;
       }
+
+      if (config.fail_on_source_error) {
+        const sourceErrors = syncErrors.fatal.concat(syncErrors.nonFatal);
+        if (sourceErrors.length) {
+          throw new VError(
+            `Failing sync due to ${sourceErrors.length} source error(s): ` +
+              `${sourceErrors.map((e) => e.summary).join('; ')}`
+          );
+        }
+      }
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
