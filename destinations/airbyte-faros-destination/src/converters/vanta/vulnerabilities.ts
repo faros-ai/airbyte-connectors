@@ -450,6 +450,14 @@ export abstract class Vulnerabilities extends Converter {
     };
     ctx.logger.info('Vulnerabilities converter report:');
     ctx.logger.info(JSON.stringify(report_obj, null, 2));
+    if (this.vulnsMissingIds.length > 0) {
+      ctx.logger.warn('Vulnerabilities missing ids:');
+      ctx.logger.warn(JSON.stringify(this.vulnsMissingIds, null, 2));
+    }
+    if (this.duplicateAwsUids.size > 0) {
+      ctx.logger.warn('Duplicate AWS vuln uids:');
+      ctx.logger.warn(JSON.stringify(this.duplicateAwsUids, null, 2));
+    }
   }
 
   async onProcessingComplete(
