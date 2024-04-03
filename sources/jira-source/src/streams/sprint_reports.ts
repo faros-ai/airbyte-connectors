@@ -27,12 +27,20 @@ export class SprintReports extends StreamWithBoardSlices {
   ): AsyncGenerator<SprintReport> {
     const boardId = streamSlice.board;
     if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
-      this.logger.info(`Skipped board with id ${boardId}`);
+      this.logger.info(
+        `Skipped board with id ${boardId} not included in boardIds config`
+      );
       return;
     }
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
     if (board.type !== 'scrum') return;
+    if (!board?.location?.projectKey) {
+      this.logger.warn(
+        `Skipped board ${boardId} with no project key associated`
+      );
+      return;
+    }
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
