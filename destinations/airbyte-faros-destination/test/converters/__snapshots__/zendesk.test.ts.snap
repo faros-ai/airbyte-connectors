@@ -1,5 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`groups group 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "description": "Group 1",
+      "name": "Group 1",
+      "uid": "Group 1",
+    },
+  },
+]
+`;
+
+exports[`groups group with fallback team 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "uid": "all_teams",
+    },
+  },
+]
+`;
+
+exports[`groups group with team mapping 1`] = `
+Array [
+  Object {
+    "model": "org_Team",
+    "record": Object {
+      "uid": "Team 1",
+    },
+  },
+]
+`;
+
 exports[`satisfaction ratings rating 1`] = `
 Array [
   Object {
@@ -7,8 +42,12 @@ Array [
     "record": Object {
       "name": "Zendesk Satisfaction Ratings",
       "uid": "zendesk-satisfaction-ratings",
-      "valueSourceType": "MetricValueEntries",
-      "valueType": "String",
+      "valueSource": Object {
+        "category": "MetricValueEntries",
+      },
+      "valueType": Object {
+        "category": "String",
+      },
     },
   },
   Object {
@@ -20,6 +59,20 @@ Array [
       },
       "uid": "zendesk-satisfaction-rating-1",
       "value": "offered",
+    },
+  },
+  Object {
+    "model": "org_TeamMetric",
+    "record": Object {
+      "team": Object {
+        "uid": "Group 101",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "zendesk-satisfaction-ratings",
+        },
+        "uid": "zendesk-satisfaction-rating-1",
+      },
     },
   },
 ]

@@ -2,11 +2,14 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {Edition, InvalidRecordStrategy} from '../../src';
 import {StreamContext} from '../../src/converters/converter';
 import {
+  GroupsStream,
   TicketFieldsStream,
   TicketMetricsStream,
 } from '../../src/converters/zendesk/common';
+import {Groups} from '../../src/converters/zendesk/groups';
 import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_ratings';
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
@@ -25,7 +28,13 @@ describe('zendesk', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig(
+      mockttp.url,
+      InvalidRecordStrategy.SKIP,
+      Edition.CLOUD,
+      undefined,
+      {zendesk: {sync_groups: true}}
+    );
   });
 
   afterEach(async () => {
@@ -47,6 +56,7 @@ describe('zendesk', () => {
     logger.debug(stdout);
 
     const processedByStream = {
+      groups: 2,
       satisfaction_ratings: 2,
       tags: 8,
       ticket_fields: 9,
@@ -65,6 +75,8 @@ describe('zendesk', () => {
       faros_MetricDefinition: 1,
       faros_MetricValue: 2,
       faros_TmsTaskBoardOptions: 1,
+      org_Team: 2,
+      org_TeamMetric: 2,
       tms_Label: 8,
       tms_Project: 1,
       tms_Task: 14,
@@ -354,6 +366,18 @@ describe('users', () => {
 
 describe('satisfaction ratings', () => {
   const converter = new SatisfactionRatings();
+
+  const ctx = new StreamContext(new AirbyteLogger(), {edition_configs: {}}, {});
+  ctx.set(
+    GroupsStream.asString,
+    '101',
+    AirbyteRecord.make('groups', {
+      id: 101,
+      name: 'Group 101',
+      description: 'Group 101',
+    })
+  );
+
   const rating = {
     id: 1,
     ticket_id: 15,
@@ -361,13 +385,81 @@ describe('satisfaction ratings', () => {
     created_at: '2024-02-07T21:51:23Z',
     updated_at: '2024-02-07T21:51:23Z',
     comment: null,
+    group_id: 101,
   };
 
   test('rating', async () => {
     const record = AirbyteRecord.make('satisfaction_rating', rating);
 
-    const res = await converter.convert(record);
-    expect(res).toHaveLength(2);
+    const res = await converter.convert(record, ctx);
+    expect(res).toHaveLength(3);
     expect(res).toMatchSnapshot();
+  });
+});
+
+describe('groups', () => {
+  const ctx = new StreamContext(
+    new AirbyteLogger(),
+    {
+      edition_configs: {},
+      source_specific_configs: {
+        zendesk: {
+          sync_groups: true,
+          team_mapping: {
+            '*': 'all_teams',
+            'Group 1': 'Team 1',
+          },
+        },
+      },
+    },
+    {}
+  );
+
+  const converter = new Groups();
+  const group = {id: 1, name: 'Group 1', description: 'Group 1'};
+
+  test('group', async () => {
+    const teamCtx = new StreamContext(
+      new AirbyteLogger(),
+      {
+        edition_configs: {},
+        source_specific_configs: {
+          zendesk: {sync_groups: true},
+        },
+      },
+      {}
+    );
+    const record = AirbyteRecord.make('group', group);
+    const res = await converter.convert(record, teamCtx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('group with team mapping', async () => {
+    const record = AirbyteRecord.make('group', group);
+    const res = await converter.convert(record, ctx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('group with fallback team', async () => {
+    const record = AirbyteRecord.make('group', {...group, name: 'Group 2'});
+    const res = await converter.convert(record, ctx);
+    expect(res).toMatchSnapshot();
+  });
+
+  test('disable syncing', async () => {
+    const syncCtx = new StreamContext(
+      new AirbyteLogger(),
+      {
+        edition_configs: {},
+        source_specific_configs: {
+          zendesk: {sync_groups: false},
+        },
+      },
+      {}
+    );
+
+    const record = AirbyteRecord.make('group', {...group, name: 'Group 3'});
+    const res = await converter.convert(record, syncCtx);
+    expect(res).toHaveLength(0);
   });
 });

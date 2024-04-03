@@ -1,20 +1,31 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
-import {ZendeskConverter} from './common';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {GroupsStream, ZendeskConverter} from './common';
 
 export class SatisfactionRatings extends ZendeskConverter {
   private readonly definitionUid = 'zendesk-satisfaction-ratings';
   private createDefinition = true;
 
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [GroupsStream];
+  }
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
     'faros_MetricValue',
+    'org_TeamMetric',
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const recs = [];
     const definitionKey = {uid: this.definitionUid};
@@ -26,25 +37,40 @@ export class SatisfactionRatings extends ZendeskConverter {
         record: {
           ...definitionKey,
           name: 'Zendesk Satisfaction Ratings',
-          valueType: 'String',
-          valueSourceType: 'MetricValueEntries',
+          valueType: {category: 'String'},
+          valueSource: {category: 'MetricValueEntries'},
         },
       });
       this.createDefinition = false;
     }
 
     const rating = record.record.data;
-    const ratingId = rating.id;
+    const metricValueKey = {
+      uid: `zendesk-satisfaction-rating-${rating.id}`,
+      definition: definitionKey,
+    };
 
     recs.push({
       model: 'faros_MetricValue',
       record: {
-        uid: 'zendesk-satisfaction-rating-' + ratingId,
+        ...metricValueKey,
         value: rating.score,
         computedAt: Utils.toDate(rating.updated_at),
-        definition: definitionKey,
       },
     });
+
+    // Assign metric value to team
+    const group = ctx.get(GroupsStream.asString, rating.group_id)?.record?.data;
+    if (group) {
+      const team = this.orgTeam(ctx, group);
+      recs.push({
+        model: 'org_TeamMetric',
+        record: {
+          team: {uid: team.uid},
+          value: {...metricValueKey},
+        },
+      });
+    }
 
     return recs;
   }
