@@ -231,13 +231,21 @@ export abstract class Vulnerabilities extends Converter {
     return vuln_data;
   }
 
+  getAWSV2VulnStatusDetail(vuln: AWSV2VulnerabilityData): string {
+    if (vuln.ignored?.ignoreReason) {
+      return vuln.ignored.ignoreReason;
+    } else {
+      return '';
+    }
+  }
+
   getAWSV2VulnStatusCategory(vuln: AWSV2VulnerabilityData): string {
     if (vuln.ignored?.ignoreReason) {
-      return 'IGNORED';
+      return 'Ignored';
     } else if (vuln.ignored?.ignoredUntil) {
-      return 'IGNORED';
+      return 'Ignored';
     } else {
-      return 'ACTIVE';
+      return 'Open';
     }
   }
 
@@ -344,6 +352,7 @@ export abstract class Vulnerabilities extends Converter {
             acknowledgedAt: vuln.createdAt,
             status: {
               category: this.getAWSV2VulnStatusCategory(vuln),
+              detail: this.getAWSV2VulnStatusDetail(vuln),
             },
           },
         });
