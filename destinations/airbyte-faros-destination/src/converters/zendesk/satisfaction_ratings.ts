@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import {trim} from 'lodash';
 
 import {
   DestinationModel,
