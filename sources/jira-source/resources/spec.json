@@ -33,13 +33,13 @@
         "description": "Token for authentication (optional)",
         "type": "string"
       },
-      "syncAdditionalFields": {
+      "sync_additional_fields": {
         "order": 5,
         "title": "Sync Additional Fields",
         "description": "Flag to indicate if additional fields should be synced",
         "type": "boolean"
       },
-      "additionalFields": {
+      "additional_fields": {
         "order": 6,
         "title": "Additional Fields",
         "description": "Additional fields to be synced",
@@ -48,34 +48,34 @@
           "type": "string"
         }
       },
-      "additionalFieldsArrayLimit": {
+      "additional_fields_array_limit": {
         "order": 7,
         "title": "Additional Fields Array Limit",
         "description": "Limit for additional fields array",
         "type": "integer"
       },
-      "rejectUnauthorized": {
+      "reject_unauthorized": {
         "order": 8,
         "title": "Reject Unauthorized",
         "description": "Flag to indicate if unauthorized requests should be rejected",
         "type": "boolean"
       },
-      "concurrencyLimit": {
+      "concurrency_limit": {
         "order": 9,
         "title": "Concurrency Limit",
         "description": "Limit for concurrency",
         "type": "integer"
       },
-      "maxRetries": {
+      "max_retries": {
         "order": 10,
         "title": "Max Retries",
         "description": "Maximum number of retries",
         "type": "integer"
       },
-      "maxPageSize": {
+      "page_size": {
         "order": 11,
-        "title": "Max Page Size",
-        "description": "Maximum page size",
+        "title": "Page Size",
+        "description": "Page size for pagination",
         "type": "integer"
       },
       "timeout": {
@@ -84,16 +84,37 @@
         "description": "Request timeout in milliseconds",
         "type": "integer"
       },
-      "useUsersPrefixSearch": {
+      "use_user_prefix_search": {
         "order": 13,
-        "title": "Use Users Prefix Search",
+        "title": "Use User Prefix Search",
         "description": "Flag to indicate if user prefix search should be used (optional)",
         "type": "boolean"
       },
-      "projectKeys": {
+      "project_keys": {
         "order": 14,
         "title": "Project Keys",
         "description": "Project keys to filter the search (optional)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "order": 15,
+        "title": "Cutoff Days",
+        "description": "Number of days to cutoff for syncing (optional)",
+        "type": "integer"
+      },
+      "cutoff_lag_days": {
+        "order": 16,
+        "title": "Cutoff Lag Days",
+        "description": "Lag days to consider for cutoff (optional)",
+        "type": "integer"
+      },
+      "board_ids": {
+        "order": 17,
+        "title": "Board IDs",
+        "description": "Board IDs to filter the search (optional)",
         "type": "array",
         "items": {
           "type": "string"

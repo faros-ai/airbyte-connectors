@@ -36,7 +36,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
       ? Utils.toDate(cutoff)
       : moment()
           .utc()
-          .subtract(this.config.cutoffDays || DEFAULT_CUTOFF_DAYS, 'days')
+          .subtract(this.config.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
           .toDate();
     return [fromCutoff, newCutoff];
   }
@@ -52,7 +52,10 @@ export abstract class StreamBase extends AirbyteStreamBase {
     if (latestRecordCutoff > currentCutoff) {
       const newCutoff = moment().utc().toDate();
       const cutoffLag = moment
-        .duration(this.config.cutoffLagDays || DEFAULT_CUTOFF_LAG_DAYS, 'days')
+        .duration(
+          this.config.cutoff_lag_days || DEFAULT_CUTOFF_LAG_DAYS,
+          'days'
+        )
         .asMilliseconds();
       const newState = {
         cutoff: Math.max(
@@ -71,13 +74,13 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
-    if (!this.config.projectKeys) {
+    if (!this.config.project_keys) {
       const jira = await Jira.instance(this.config, this.logger);
       for await (const project of jira.getProjects()) {
         yield {project: project.key};
       }
     } else {
-      for (const project of this.config.projectKeys) {
+      for (const project of this.config.project_keys) {
         yield {project};
       }
     }
@@ -86,13 +89,13 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
-    if (!this.config.boardIds) {
+    if (!this.config.board_ids) {
       const jira = await Jira.instance(this.config, this.logger);
       for await (const board of jira.getBoards()) {
         yield {board: board.id.toString()};
       }
     } else {
-      for (const board of this.config.boardIds) {
+      for (const board of this.config.board_ids) {
         yield {board};
       }
     }

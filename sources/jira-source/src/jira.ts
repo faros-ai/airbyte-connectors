@@ -18,19 +18,19 @@ export interface JiraConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly syncAdditionalFields: boolean;
-  readonly additionalFields: ReadonlyArray<string>;
-  readonly additionalFieldsArrayLimit: number;
-  readonly rejectUnauthorized: boolean;
-  readonly concurrencyLimit: number;
-  readonly maxRetries: number;
-  readonly maxPageSize: number;
+  readonly sync_additional_fields: boolean;
+  readonly additional_fields: ReadonlyArray<string>;
+  readonly additional_fields_array_limit: number;
+  readonly reject_unauthorized: boolean;
+  readonly concurrency_limit: number;
+  readonly max_retries: number;
+  readonly page_size: number;
   readonly timeout: number;
-  readonly useUsersPrefixSearch?: boolean;
-  readonly projectKeys?: ReadonlyArray<string>;
-  readonly cutoffDays?: number;
-  readonly cutoffLagDays?: number;
-  readonly boardIds?: ReadonlyArray<string>;
+  readonly use_user_prefix_search?: boolean;
+  readonly project_keys?: ReadonlyArray<string>;
+  readonly cutoff_days?: number;
+  readonly cutoff_lag_days?: number;
+  readonly board_ids?: ReadonlyArray<string>;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -105,7 +105,7 @@ export class Jira {
 
     const authentication = Jira.auth(cfg);
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: cfg.rejectUnauthorized,
+      rejectUnauthorized: cfg.reject_unauthorized,
     });
 
     const http = setupCache(axios.create(), {ttl: 60 * 60 * 1000}); // 60 minutes cache
@@ -122,14 +122,14 @@ export class Jira {
         },
         timeout: cfg.timeout,
       },
-      maxRetries: cfg.maxRetries,
+      maxRetries: cfg.max_retries,
       logger: logger,
     });
 
     const addAllFields =
-      cfg.syncAdditionalFields && !cfg.additionalFields.length;
+      cfg.sync_additional_fields && !cfg.additional_fields.length;
     const additionalFields = new Set(
-      cfg.syncAdditionalFields ? cfg.additionalFields : []
+      cfg.sync_additional_fields ? cfg.additional_fields : []
     );
     // We always add the following custom fields since they
     // are promoted to standard fields
@@ -161,8 +161,8 @@ export class Jira {
       http,
       fieldNameById,
       isCloud,
-      cfg.concurrencyLimit,
-      cfg.maxPageSize,
+      cfg.concurrency_limit,
+      cfg.page_size,
       logger
     );
   }
