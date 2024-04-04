@@ -137,7 +137,8 @@ describe('index', () => {
         getDevStatusDetail: jest
           .fn()
           .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
-      }
+      },
+      {project: 'TEST'}
     );
   });
 
