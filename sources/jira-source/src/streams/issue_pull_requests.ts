@@ -30,31 +30,28 @@ export class IssuePullRequests extends StreamWithProjectSlices {
     streamState?: StreamState
   ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
-    const projectKeys =
-      this.config.projectKeys ?? (await jira.getProjectsByKey()).keys();
-    for (const projectKey of projectKeys) {
-      const updateRange =
-        syncMode === SyncMode.INCREMENTAL
-          ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
-          : undefined;
-      for await (const issue of jira.getIssues(
-        projectKey,
-        true,
-        updateRange,
-        true,
-        true,
-        [DEV_FIELD_NAME]
-      )) {
-        for (const pullRequest of issue.pullRequests || []) {
-          yield {
-            issue: {
-              key: issue.key,
-              updated: issue.updated,
-              project: projectKey,
-            },
-            ...pullRequest,
-          };
-        }
+    const projectKey = streamSlice?.project;
+    const updateRange =
+      syncMode === SyncMode.INCREMENTAL
+        ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
+        : undefined;
+    for await (const issue of jira.getIssues(
+      projectKey,
+      true,
+      updateRange,
+      true,
+      true,
+      [DEV_FIELD_NAME]
+    )) {
+      for (const pullRequest of issue.pullRequests || []) {
+        yield {
+          issue: {
+            key: issue.key,
+            updated: issue.updated,
+            project: projectKey,
+          },
+          ...pullRequest,
+        };
       }
     }
   }

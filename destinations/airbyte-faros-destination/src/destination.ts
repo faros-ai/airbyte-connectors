@@ -359,7 +359,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     this.redactor = new RecordRedactor(
       config.redact_custom_replace,
-      config.redact_custom_regex
+      typeof config.redact_custom_regex === 'string'
+        ? JSON.parse(config.redact_custom_regex)
+        : config.redact_custom_regex
     );
 
     const jira_configs = config.source_specific_configs?.jira ?? {};
@@ -706,7 +708,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             sync.syncId,
             logs.hash
           );
-          await client.uploadLogs(url, logs.content, logs.hash);
+          if (url) {
+            await client.uploadLogs(url, logs.content, logs.hash);
+          }
         }
       }
     }

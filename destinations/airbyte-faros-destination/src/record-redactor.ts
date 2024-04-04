@@ -1,34 +1,30 @@
 import {mapValues} from 'lodash';
 import {SyncRedactor} from 'redact-pii';
-
-import {DestinationRecord} from './converters/converter';
+import {Dictionary} from 'ts-essentials';
 
 export class RecordRedactor {
   private readonly redactor: SyncRedactor;
 
   constructor(
-    private readonly redactCustomReplace?: string,
-    private readonly redactCustomRegex?: string
+    private readonly redactCustomReplace: string | undefined = undefined,
+    private readonly redactCustomRegex: ReadonlyArray<string> = []
   ) {
+    const customRegexRedactors = this.redactCustomRegex.map((regex) => ({
+      regexpPattern: new RegExp(regex, 'gi'),
+      replaceWith: this.redactCustomReplace || 'REDACTED',
+    }));
     this.redactor = new SyncRedactor({
       globalReplaceWith: this.redactCustomReplace,
-      ...(this.redactCustomRegex && {
-        customRedactors: {
-          before: [
-            {
-              regexpPattern: new RegExp(this.redactCustomRegex, 'gi'),
-              replaceWith: this.redactCustomReplace || 'REDACTED',
-            },
-          ],
-        },
-      }),
+      customRedactors: {
+        before: [...customRegexRedactors],
+      },
     });
   }
 
   redactRecord(
-    record: DestinationRecord['record'],
+    record: Dictionary<any>,
     fieldsToRedact: ReadonlyArray<string>
-  ): DestinationRecord['record'] {
+  ): Dictionary<any> {
     return mapValues(record, (v, k) =>
       fieldsToRedact.includes(k) && typeof v === 'string'
         ? this.redactor.redact(v)
