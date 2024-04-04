@@ -55,6 +55,12 @@
       "title": "Check Faros API Connection",
       "description": "Check Faros API connection on init.",
       "default": true
+    },
+    "upload_sync_logs": {
+      "type": "boolean",
+      "title": "Upload sync logs",
+      "description": "Upload sync logs to Faros.",
+      "default": true
     }
   }
 }

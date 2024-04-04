@@ -21,6 +21,5 @@
     "number": {
       "type": "integer"
     }
-  },
-  "required": ["repo", "number"]
+  }
 }

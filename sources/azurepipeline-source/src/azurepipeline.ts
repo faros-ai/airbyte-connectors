@@ -1,5 +1,6 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {VError} from 'verror';
 
 import {
@@ -17,6 +18,8 @@ const DEFAULT_API_VERSION = '6.0';
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_RETRIES = 3;
+const DEFAULT_RETRY_DELAY_MS = 1000;
 const CONTINUATION_TOKEN_HEADER = 'x-ms-continuationtoken';
 
 export interface AzurePipelineConfig {
@@ -27,6 +30,8 @@ export interface AzurePipelineConfig {
   readonly page_size?: number;
   readonly api_version?: string;
   readonly api_timeout?: number;
+  readonly max_retries?: number;
+  readonly api_retry_delay?: number;
 }
 
 export class AzurePipeline {
@@ -40,7 +45,10 @@ export class AzurePipeline {
     private readonly pageSize: number
   ) {}
 
-  static instance(config: AzurePipelineConfig): AzurePipeline {
+  static instance(
+    config: AzurePipelineConfig,
+    logger?: AirbyteLogger
+  ): AzurePipeline {
     if (AzurePipeline.azurePipeline) return AzurePipeline.azurePipeline;
 
     if (!config.access_token) {
@@ -64,29 +72,39 @@ export class AzurePipeline {
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
 
-    const httpClient = axios.create({
-      baseURL: `https://dev.azure.com/${config.organization}`,
-      timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://dev.azure.com/${config.organization}`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity, //default is 2000 bytes
+        params: {
+          'api-version': version,
+        },
+        headers: {
+          Authorization: `Basic ${accessToken}`,
+        },
       },
-      headers: {
-        Authorization: `Basic ${accessToken}`,
-      },
-    });
+      logger?.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      config.api_retry_delay ?? DEFAULT_RETRY_DELAY_MS
+    );
 
-    const httpVSRMClient = axios.create({
-      baseURL: `https://vsrm.dev.azure.com/${config.organization}`,
-      timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
+    const httpVSRMClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://vsrm.dev.azure.com/${config.organization}`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity, //default is 2000 bytes
+        params: {
+          'api-version': version,
+        },
+        headers: {
+          Authorization: `Basic ${accessToken}`,
+        },
       },
-      headers: {
-        Authorization: `Basic ${accessToken}`,
-      },
-    });
+      logger?.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      config.api_retry_delay ?? DEFAULT_RETRY_DELAY_MS
+    );
 
     AzurePipeline.azurePipeline = new AzurePipeline(
       httpClient,

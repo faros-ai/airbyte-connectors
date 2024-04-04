@@ -82,7 +82,8 @@ describe('index', () => {
   const testStream = async (
     streamIndex: any,
     expectedData: any,
-    mockedImplementation?: any
+    mockedImplementation?: any,
+    streamSlice?: any
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -99,7 +100,12 @@ describe('index', () => {
     const source = new sut.JiraSource(logger);
     const streams = source.streams(config);
     const stream = streams[streamIndex];
-    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {});
+    const iter = stream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      streamSlice,
+      {}
+    );
 
     const items = [];
     for await (const item of iter) {
@@ -140,75 +146,80 @@ describe('index', () => {
         },
       ],
     };
-    await testStream(0, expectedPullRequests, {
-      v2: {
-        issueSearch: {
-          searchForIssuesUsingJql: paginate(
-            [
-              {
-                id: '1',
-                key: 'TEST-1',
-                fields: {
-                  summary: 'summary1',
-                  description: 'description1',
-                  status: {
-                    name: 'status',
-                    statusCategory: {
-                      name: 'statusCategory',
+    await testStream(
+      0,
+      expectedPullRequests,
+      {
+        v2: {
+          issueSearch: {
+            searchForIssuesUsingJql: paginate(
+              [
+                {
+                  id: '1',
+                  key: 'TEST-1',
+                  fields: {
+                    summary: 'summary1',
+                    description: 'description1',
+                    status: {
+                      name: 'status',
+                      statusCategory: {
+                        name: 'statusCategory',
+                      },
                     },
+                    updated: issueUpdated,
+                    field_001:
+                      'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
                   },
-                  updated: issueUpdated,
-                  field_001:
-                    'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
                 },
-              },
-              {
-                id: '2',
-                key: 'TEST-2',
-                fields: {
-                  summary: 'summary2',
-                  description: 'description2',
-                  status: {
-                    name: 'status',
-                    statusCategory: {
-                      name: 'statusCategory',
+                {
+                  id: '2',
+                  key: 'TEST-2',
+                  fields: {
+                    summary: 'summary2',
+                    description: 'description2',
+                    status: {
+                      name: 'status',
+                      statusCategory: {
+                        name: 'statusCategory',
+                      },
                     },
+                    updated: issueUpdated,
+                    field_001:
+                      'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
                   },
-                  updated: issueUpdated,
-                  field_001:
-                    'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
                 },
-              },
-            ],
-            'issues'
-          ),
+              ],
+              'issues'
+            ),
+          },
         },
-      },
-      getDevStatusSummary: jest.fn().mockResolvedValue({
-        summary: {
-          repository: {
-            byInstanceType: {
-              Github: {count: 1},
+        getDevStatusSummary: jest.fn().mockResolvedValue({
+          summary: {
+            repository: {
+              byInstanceType: {
+                Github: {count: 1},
+              },
             },
           },
-        },
-      }),
-      getDevStatusDetail: jest.fn().mockResolvedValue({
-        detail: [
-          {
-            branches: [],
-            pullRequests: [
-              {
-                source: {
-                  url: 'https://github.com/test-org/test-repo',
+        }),
+        getDevStatusDetail: jest.fn().mockResolvedValue({
+          detail: [
+            {
+              branches: [],
+              pullRequests: [
+                {
+                  source: {
+                    url: 'https://github.com/test-org/test-repo',
+                  },
+                  id: '123',
                 },
-                id: '123',
-              },
-            ],
-          },
-        ],
-      }),
-    });
+              ],
+            },
+          ],
+        }),
+      },
+      {project: 'TEST'}
+    );
   });
 });
 

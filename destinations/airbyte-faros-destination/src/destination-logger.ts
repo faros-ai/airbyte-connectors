@@ -28,8 +28,14 @@ export class LogFiles {
     const logDir = os.tmpdir();
     this.srcPath = `${logDir}/src.log`;
     this.dstPath = `${logDir}/dst.log`;
-    this.srcStream = fs.createWriteStream(this.srcPath, {flags: 'a'});
-    this.dstStream = fs.createWriteStream(this.dstPath, {flags: 'a'});
+    this.srcStream = fs.createWriteStream(this.srcPath, {
+      flags: 'a',
+      encoding: 'utf-8',
+    });
+    this.dstStream = fs.createWriteStream(this.dstPath, {
+      flags: 'a',
+      encoding: 'utf-8',
+    });
   }
 
   writeSourceLogs(...logs: AirbyteSourceLog[]): void {
@@ -94,8 +100,12 @@ export class LogFiles {
 
       logger?.debug('Gathering sync logs for uploading to Faros');
       await Promise.all([
-        readFile(this.srcPath, (line) => srcLogs.push(JSON.parse(line))),
-        readFile(this.dstPath, (line) => dstLogs.push(JSON.parse(line))),
+        readFile(this.srcPath, (line) =>
+          processLogLineFromFile(line, srcLogs, logger)
+        ),
+        readFile(this.dstPath, (line) =>
+          processLogLineFromFile(line, dstLogs, logger)
+        ),
       ]);
       const allLogs = srcLogs.concat(dstLogs);
       allLogs.sort((a, b) => a.timestamp - b.timestamp);
@@ -110,12 +120,28 @@ export class LogFiles {
   }
 }
 
+function processLogLineFromFile(
+  line: string,
+  logArray: AirbyteSourceLog[],
+  logger?: AirbyteLogger
+): AirbyteSourceLog {
+  try {
+    const log = JSON.parse(line);
+    logArray.push(log);
+  } catch (err: any) {
+    logger?.warn(
+      `Failed to parse log line: ${line}. Error: ${JSON.stringify(err)}`
+    );
+    return undefined;
+  }
+}
+
 async function readFile(
   filePath: string,
   processLine: (line: string) => void
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const fileStream = fs.createReadStream(filePath);
+    const fileStream = fs.createReadStream(filePath, 'utf-8');
 
     const rl = readline.createInterface({
       input: fileStream,
@@ -146,6 +172,10 @@ export class FarosDestinationLogger extends AirbyteLogger {
       this._logFiles.writeDestinationLogs(...this.pendingLogs);
       this.pendingLogs.length = 0;
     }
+  }
+
+  get shouldSaveLogs(): boolean {
+    return this._shouldSaveLogs;
   }
 
   set shouldSaveLogs(shouldSaveLogs: boolean) {

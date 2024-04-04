@@ -1,5 +1,4 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal, Mockttp} from 'mockttp';
 
 import {
@@ -9,20 +8,18 @@ import {
   StreamContext,
 } from '../../src';
 import {Customreports} from '../../src/converters/workday/customreports';
-import {CLI, read} from '../cli';
 import {
   getConf,
   initMockttp,
   readTestResourceFile,
   tempConfig,
-  testLogger,
 } from '../testing-tools';
 import {
   workdayV1StreamsLog,
   workdayV3StreamsLog,
   workdayV4StreamsLog,
 } from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {runTest} from './utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,
@@ -87,7 +84,6 @@ function runCustomReportDestination(
 }
 
 describe('workday', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/workday/catalog.json';
   const streamNamePrefix = 'mytestsource__workday__';
@@ -103,36 +99,20 @@ describe('workday', () => {
       {workday: {orgs_to_keep, orgs_to_ignore}}
     );
   };
-  const runTest = async (
+
+  const runTestLocal = async (
     configPath,
     processedByStream,
     writtenByModel,
     workdayStreamsLog
   ): Promise<void> => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
+    await runTest(
       configPath,
-      '--catalog',
       catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(workdayStreamsLog, 'utf8');
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    await assertProcessedAndWrittenModels(
       processedByStream,
       writtenByModel,
-      stdout,
-      processed,
-      cli
+      workdayStreamsLog,
+      streamNamePrefix
     );
   };
 
@@ -156,7 +136,7 @@ describe('workday', () => {
       org_Team: 2,
       org_TeamMembership: 3,
     };
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,
@@ -170,7 +150,7 @@ describe('workday', () => {
       customreports: 3,
     };
     const writtenByModel = {};
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,
@@ -190,7 +170,7 @@ describe('workday', () => {
       org_Team: 4,
       org_TeamMembership: 100,
     };
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,
@@ -209,7 +189,7 @@ describe('workday', () => {
       org_Team: 12,
       org_TeamMembership: 99,
     };
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,
@@ -232,7 +212,7 @@ describe('workday', () => {
       org_Team: 9,
       org_TeamMembership: 79,
     };
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,
@@ -256,7 +236,7 @@ describe('workday', () => {
       org_Team: 9,
       org_TeamMembership: 79,
     };
-    await runTest(
+    await runTestLocal(
       configPath,
       processedByStream,
       writtenByModel,

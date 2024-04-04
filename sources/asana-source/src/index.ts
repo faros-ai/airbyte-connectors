@@ -1,11 +1,11 @@
 import {Command} from 'commander';
 import {
   AirbyteSourceBase,
-  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Asana, AsanaConfig} from './asana';
@@ -30,7 +30,7 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
   }
   async checkConnection(config: AsanaConfig): Promise<[boolean, VError]> {
     try {
-      const asana = Asana.instance(config);
+      const asana = Asana.instance(config, this.logger);
       await asana.checkConnection();
     } catch (err: any) {
       return [false, err];

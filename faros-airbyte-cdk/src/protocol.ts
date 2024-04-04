@@ -273,6 +273,7 @@ export interface SyncMessage {
   entity?: string; // The project/repository/branch/etc. that the error is associated with
   details?: any;
   messages?: SyncMessage[];
+  type: 'ERROR' | 'WARNING';
 }
 
 export interface AirbyteSourceStatusBase {
@@ -281,17 +282,17 @@ export interface AirbyteSourceStatusBase {
 
 export interface AirbyteSourceErrorStatus extends AirbyteSourceStatusBase {
   status: 'ERRORED';
-  error: string | SyncMessage;
+  message: SyncMessage & {type: 'ERROR'};
 }
 
 export interface AirbyteSourceRunningStatus extends AirbyteSourceStatusBase {
   status: 'RUNNING';
-  message?: string;
+  message?: SyncMessage;
 }
 
 export interface AirbyteSourceSuccessStatus extends AirbyteSourceStatusBase {
   status: 'SUCCESS';
-  message?: string;
+  message?: SyncMessage;
 }
 
 export type AirbyteSourceStatus =

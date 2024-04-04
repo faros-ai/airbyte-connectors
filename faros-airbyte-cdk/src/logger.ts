@@ -1,4 +1,3 @@
-import {isNil} from 'lodash';
 import pino, {DestinationStream, Level, Logger} from 'pino';
 import stream from 'stream';
 import {Dictionary} from 'ts-essentials';

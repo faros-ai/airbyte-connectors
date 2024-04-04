@@ -7,6 +7,7 @@ import {
 } from 'faros-js-client';
 import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 export interface Account {
   accountId: string;
@@ -26,7 +27,7 @@ export interface AccountSync {
   endedAt?: Date;
   status: 'error' | 'running' | 'success' | 'unknown';
   warnings?: SyncMessage[];
-  errors?: SyncMessage[];
+  errors?: SyncMessage[]; // can be non-empty and status = 'success', a.k.a. "partial success"
   metrics?: Dictionary<any>;
 }
 
@@ -141,8 +142,8 @@ class FarosSyncClient extends FarosClient {
         this.request('PATCH', `/accounts/${accountId}/syncs/${syncId}`, {
           ...props,
           endedAt: props.endedAt?.toISOString(),
-          warnings: props.warnings ?? [],
-          errors: props.errors ?? [],
+          warnings: props.warnings?.map(cleanSyncMessage) ?? [],
+          errors: props.errors?.map(cleanSyncMessage) ?? [],
           metrics: props.metrics ?? {},
         }),
         `Failed to update sync ${syncId} for account ${accountId}`
@@ -175,7 +176,7 @@ class FarosSyncClient extends FarosClient {
         headers: {
           'content-length': content.length,
           'content-md5': hash,
-          'content-type': 'text/plain',
+          'content-type': 'text/plain; charset=UTF-8',
         },
       }),
       'Failed to upload sync logs'
@@ -189,8 +190,12 @@ class FarosSyncClient extends FarosClient {
   ): Promise<T | undefined> {
     return f.catch((error) => {
       if (failureMessage) {
-        this.airbyteLogger?.warn(failureMessage);
-        this.airbyteLogger?.traceError(error);
+        let message = `Error: ${error?.message ?? JSON.stringify(error)}`;
+        const response = VError.info(error)?.res?.data;
+        if (response) {
+          message += `. Response: ${JSON.stringify(response)}`;
+        }
+        this.airbyteLogger?.warn(`${failureMessage}. ${message}`);
       }
       return undefined;
     });
@@ -212,6 +217,13 @@ function syncResult(response?: AccountSyncResponse): AccountSync | undefined {
       ? new Date(response.sync.endedAt)
       : undefined,
   };
+}
+
+type CleanedSyncMessage = Omit<SyncMessage, 'type'>;
+
+function cleanSyncMessage(m: SyncMessage): CleanedSyncMessage {
+  const {type, ...rest} = m;
+  return rest;
 }
 
 export default FarosSyncClient;

@@ -22,6 +22,13 @@ export function readTestResourceFile(fileName: string): string {
 const writeFile = util.promisify(fs.write);
 
 /**
+ * Parse a test resource into JSON
+ */
+export function readTestResourceAsJSON(fileName: string): any {
+  return JSON.parse(readTestResourceFile(fileName));
+}
+
+/**
  * Creates a temporary file
  * @return path to the temporary file
  */

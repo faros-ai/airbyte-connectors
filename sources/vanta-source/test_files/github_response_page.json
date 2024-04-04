@@ -1,0 +1,18 @@
+{
+  "data": {
+    "data": {
+      "organization": {
+        "GithubDependabotVulnerabilityList": {
+          "edges": [
+            {
+              "cursor": "A",
+              "node": {
+                "sample": "test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

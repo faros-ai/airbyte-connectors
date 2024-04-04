@@ -11,6 +11,7 @@ import VError from 'verror';
 import {Jira, JiraConfig} from './jira';
 import {BoardIssues} from './streams/board_issues';
 import {IssuePullRequests} from './streams/issue_pull_requests';
+import {SprintReports} from './streams/sprint_reports';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -40,6 +41,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   streams(config: JiraConfig): AirbyteStreamBase[] {
     return [
       new IssuePullRequests(config, this.logger),
+      new SprintReports(config, this.logger),
       new BoardIssues(config, this.logger),
     ];
   }

@@ -18,7 +18,7 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
-const test_base_url = 'https://testurl.com/ccx';
+const test_base_url = 'https://testurl.com';
 
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
   return new Workday(

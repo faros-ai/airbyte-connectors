@@ -1,3 +1,4 @@
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 
 import FarosSyncClient from '../src/sync';
@@ -8,7 +9,10 @@ describe('FarosSyncClient', () => {
 
   beforeEach(async () => {
     await mockttp.start({startPort: 30000, endPort: 50000});
-    farosSyncClient = new FarosSyncClient({apiKey: 'test', url: mockttp.url});
+    farosSyncClient = new FarosSyncClient(
+      {apiKey: 'test', url: mockttp.url},
+      new AirbyteLogger()
+    );
   });
 
   afterEach(async () => {
@@ -191,7 +195,17 @@ describe('FarosSyncClient', () => {
       const accountSync = await farosSyncClient.updateAccountSync(
         accountId,
         syncId,
-        {status, endedAt, metrics, warnings, errors}
+        {
+          status,
+          endedAt,
+          metrics,
+          warnings: warnings.map((w) => {
+            return {type: 'WARNING', ...w};
+          }),
+          errors: errors.map((e) => {
+            return {type: 'ERROR', ...e};
+          }),
+        }
       );
 
       // Assertions
