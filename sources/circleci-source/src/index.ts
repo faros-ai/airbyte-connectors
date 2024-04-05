@@ -53,6 +53,11 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }> {
     const circleCI = CircleCI.instance(config, this.logger);
     const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
+    if (projectSlugBlocklist.has('*')) {
+      throw new VError(
+        'Global wildcard * is not supported in project blocklist'
+      );
+    }
 
     let excludedRepoSlugs: Set<string>;
     if (config.pull_blocklist_from_graph) {
@@ -84,10 +89,10 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       allProjectSlugs.push(...config.project_slugs);
     }
 
-    config.project_slugs = allProjectSlugs.filter(
-      (slug) =>
-        !projectSlugBlocklist.has(slug.toLowerCase()) &&
-        !excludedRepoSlugs?.has(slug.toLowerCase())
+    config.project_slugs = CircleCISource.filterBlockList(
+      allProjectSlugs,
+      projectSlugBlocklist,
+      excludedRepoSlugs
     );
 
     this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
@@ -102,5 +107,32 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       new Pipelines(circleCI, config, this.logger),
       new Tests(circleCI, config, this.logger),
     ];
+  }
+
+  static filterBlockList(
+    projectSlugs: ReadonlyArray<string>,
+    projectSlugBlocklist: Set<string>,
+    excludedRepoSlugs: Set<string>
+  ): ReadonlyArray<string> {
+    // Convert filter patterns to regular expressions
+    const regexFilters = Array.from(projectSlugBlocklist).map((filter) => {
+      // Escape special regex characters except for '*', and escape hyphens
+      const regexPattern = filter
+        .replace(/[-\\^$+.()|[\]{}]/g, '\\$&')
+        .replace(/\*/g, '.*')
+        .replace(/([*])/g, '.$1');
+
+      // Ensure matching from start, and match exact paths
+      const patternToMatch = `^${regexPattern}$`;
+
+      return new RegExp(patternToMatch, 'i'); // 'i' flag for case-insensitive matching
+    });
+
+    // Filter out directories that match any of the regex patterns
+    return projectSlugs.filter(
+      (slug) =>
+        !regexFilters.some((regex) => regex.test(slug)) &&
+        !excludedRepoSlugs?.has(slug.toLowerCase())
+    );
   }
 }
