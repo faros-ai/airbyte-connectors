@@ -7,7 +7,6 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {Dictionary} from 'ts-essentials';
-import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from '../src/circleci/circleci';
 import * as sut from '../src/index';
@@ -247,6 +246,9 @@ describe('index', () => {
       'gh/exactpath-to-remove',
       'gh/exactpath-to-remove-suffix',
       'gh/exactpath-to-remove/keptsubpath',
+      'gh/pathwildcardblock1',
+      'gh/pathwildcardblock-2',
+      'gh/pathwildcardblock-test',
     ];
     const blocklist = new Set([
       'gh/testingcaps',
@@ -254,6 +256,7 @@ describe('index', () => {
       'gh/*/wildcardsubpath',
       'gh/hyphen-path/*',
       'gh/exactpath-to-remove',
+      'gh/pathwildcardblock*',
     ]);
     const excludedRepoSlugs = new Set(['gh/excluded-from-graph']);
     const projects = sut.CircleCISource.filterBlockList(
