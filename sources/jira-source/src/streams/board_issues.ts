@@ -20,9 +20,8 @@ export class BoardIssues extends StreamWithBoardSlices {
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<Issue> {
-    if (!this.config.useBoardOwnership) return;
     const boardId = streamSlice.board;
-    if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
+    if (this.config.board_ids && !this.config.board_ids.includes(boardId)) {
       this.logger.info(`Skipped board with id ${boardId}`);
       return;
     }
