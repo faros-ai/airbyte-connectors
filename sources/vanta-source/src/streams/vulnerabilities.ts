@@ -14,7 +14,7 @@ export class Vulnerabilities extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/customreports.json');
+    return require('../../resources/schemas/vulnerabilities.json');
   }
   get primaryKey(): StreamKey {
     return ['id'];

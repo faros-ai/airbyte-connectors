@@ -31,6 +31,7 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly keep_alive?: boolean;
   readonly skip_source_success_check?: boolean;
   readonly faros_source_id?: string;
+  readonly fail_on_source_error?: boolean;
 }
 
 export enum Operation {

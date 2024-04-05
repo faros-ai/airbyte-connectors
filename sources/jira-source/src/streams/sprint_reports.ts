@@ -26,7 +26,7 @@ export class SprintReports extends StreamWithBoardSlices {
     streamState?: StreamState
   ): AsyncGenerator<SprintReport> {
     const boardId = streamSlice.board;
-    if (this.config.boardIds && !this.config.boardIds.includes(boardId)) {
+    if (this.config.board_ids && !this.config.board_ids.includes(boardId)) {
       this.logger.info(
         `Skipped board with id ${boardId} not included in boardIds config`
       );
