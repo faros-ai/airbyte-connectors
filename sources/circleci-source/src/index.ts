@@ -8,6 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import GlobToRegExp from 'glob-to-regexp';
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
@@ -115,23 +116,14 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     excludedRepoSlugs: Set<string>
   ): ReadonlyArray<string> {
     // Convert filter patterns to regular expressions
-    const regexFilters = Array.from(projectSlugBlocklist).map((filter) => {
-      // Escape special regex characters except for '*', and escape hyphens
-      const regexPattern = filter
-        .replace(/[-\\^$+.()|[\]{}]/g, '\\$&')
-        .replace(/\*/g, '.*')
-        .replace(/([*])/g, '.$1');
-
-      // Ensure matching from start, and match exact paths
-      const patternToMatch = `^${regexPattern}$`;
-
-      return new RegExp(patternToMatch, 'i'); // 'i' flag for case-insensitive matching
-    });
+    const slugBlockListRegexes = Array.from(projectSlugBlocklist).map(
+      (projectSlug) => GlobToRegExp(projectSlug, {flags: 'i'})
+    );
 
     // Filter out directories that match any of the regex patterns
     return projectSlugs.filter(
       (slug) =>
-        !regexFilters.some((regex) => regex.test(slug)) &&
+        !slugBlockListRegexes.some((regex) => regex.test(slug)) &&
         !excludedRepoSlugs?.has(slug.toLowerCase())
     );
   }
