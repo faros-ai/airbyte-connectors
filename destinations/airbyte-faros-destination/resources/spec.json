@@ -161,6 +161,13 @@
         "type": "string",
         "title": "Faros Source Id",
         "description": "The Id of the Faros Source that is being used to track sync statuses. If left blank, it will use the determined origin value as the source id."
+      },
+      "fail_on_source_error": {
+        "order": 16,
+        "type": "boolean",
+        "title": "Fail on source error",
+        "description": "Fail the sync if the source has an error, even if it's not a fatal error.",
+        "default": false
       }
     }
   }
