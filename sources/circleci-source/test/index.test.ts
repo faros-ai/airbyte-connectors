@@ -37,8 +37,12 @@ describe('index', () => {
 
   const sourceConfig: CircleCIConfig = {
     token: '',
-    project_slugs: ['gh/faros-ai/test-project'],
-    project_blocklist: [],
+    project_slugs: [
+      'gh/faros-ai/test-project',
+      'gh/faros-test/test-project',
+      'gh/faros-test/test-project2',
+    ],
+    project_blocklist: ['gh/faros-test/*'],
     cutoff_days: 90,
     reject_unauthorized: true,
   };
@@ -210,5 +214,63 @@ describe('index', () => {
     }
     expect(fnTestsList).toHaveBeenCalledTimes(4);
     expect(tests).toStrictEqual(readTestResourceFile('tests.json'));
+  });
+
+  test('filter projects', () => {
+    CircleCI.instance = jest.fn().mockImplementation(() => {
+      return new CircleCI(
+        logger,
+        null,
+        {
+          get: jest.fn().mockResolvedValue({}),
+        } as unknown as AxiosInstance,
+        10000,
+        1
+      );
+    });
+
+    const allProjectSlugs = [
+      'GH/testingCAPS',
+      'gh/blockedsubpath',
+      'gh/blockedsubpath/deep/nested',
+      'gh/keptsubpath',
+      'gh/keptsubpath/subsubpath',
+      'gh/wildcard1/wildcardsubpath',
+      'gh/wildcard2/wildcardsubpath',
+      'gh/wildcard2/subpath/wildcardsubpath',
+      'gh/hyphen-path/subpath1',
+      'gh/hyphen-path/subpath2',
+      'gh/hyphen-path/subpath2/subpath',
+      'gh/anotherkept/subpath',
+      'gh/excluded-from-graph',
+      'gh/exactpath-to-remove',
+      'gh/exactpath-to-remove-suffix',
+      'gh/exactpath-to-remove/keptsubpath',
+      'gh/pathwildcardblock1',
+      'gh/pathwildcardblock-2',
+      'gh/pathwildcardblock-test',
+    ];
+    const blocklist = new Set([
+      'gh/testingcaps',
+      'gh/blockedsubpath/*',
+      'gh/*/wildcardsubpath',
+      'gh/hyphen-path/*',
+      'gh/exactpath-to-remove',
+      'gh/pathwildcardblock*',
+    ]);
+    const excludedRepoSlugs = new Set(['gh/excluded-from-graph']);
+    const projects = sut.CircleCISource.filterBlockList(
+      allProjectSlugs,
+      blocklist,
+      excludedRepoSlugs
+    );
+    expect(projects).toStrictEqual([
+      'gh/blockedsubpath',
+      'gh/keptsubpath',
+      'gh/keptsubpath/subsubpath',
+      'gh/anotherkept/subpath',
+      'gh/exactpath-to-remove-suffix',
+      'gh/exactpath-to-remove/keptsubpath',
+    ]);
   });
 });
