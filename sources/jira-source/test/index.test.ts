@@ -7,10 +7,8 @@ import {
 import fs from 'fs-extra';
 import VError from 'verror';
 
-import {JiraConfig} from '../lib/jira';
-import {SprintReport} from '../lib/models';
 import * as sut from '../src/index';
-import {Jira} from '../src/jira';
+import {Jira, JiraConfig} from '../src/jira';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -75,7 +73,6 @@ describe('index', () => {
 
   const testStream = async (
     streamIndex: any,
-    expectedData: any,
     streamConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any
@@ -106,21 +103,12 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    expect(items).toStrictEqual(expectedData.data);
+    expect(items).toMatchSnapshot();
   };
 
   test('streams - pull_requests', async () => {
-    const expectedPullRequests = readTestResourceFile('pull_requests.json');
-    expectedPullRequests.data = expectedPullRequests.data.map((pr: any) => ({
-      ...pr,
-      issue: {
-        ...pr.issue,
-        updated: new Date(pr.issue.updated),
-      },
-    }));
     await testStream(
       0,
-      expectedPullRequests,
       readTestResourceFile('config.json'),
       {
         v2: {
@@ -142,20 +130,9 @@ describe('index', () => {
     );
   });
 
-  function getExpectedSprintReports(): {data: SprintReport[]} {
-    const expectedSprintReports = readTestResourceFile('sprint_reports.json');
-    expectedSprintReports.data = expectedSprintReports.data.map((sr: any) => ({
-      ...sr,
-      completedAt: new Date(sr.completedAt),
-    }));
-    return expectedSprintReports;
-  }
-
   test('streams - sprint_reports', async () => {
-    const expectedSprintReports = getExpectedSprintReports();
     await testStream(
       1,
-      expectedSprintReports,
       readTestResourceFile('config.json'),
       {
         agile: {
