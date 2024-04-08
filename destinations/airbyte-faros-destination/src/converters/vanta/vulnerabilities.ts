@@ -1,5 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import fs from 'fs';
 
 import {
   Converter,
