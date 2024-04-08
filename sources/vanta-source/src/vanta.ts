@@ -105,7 +105,6 @@ export class Vanta {
     let cursor = null;
     // Eventual queries will have cursor as a string
     const variables = {last: this.limit, before: cursor};
-    this.logger.warn('Current dir: %s', process.cwd());
     const query = getQueryFromName(queryHolder.queryName);
     let body = {
       query,
