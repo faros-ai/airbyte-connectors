@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index streams - board_issues using board ids 1`] = `
+[
+  {
+    "boardId": "1",
+    "key": "TEST-1",
+  },
+  {
+    "boardId": "1",
+    "key": "TEST-2",
+  },
+]
+`;
+
 exports[`index streams - pull_requests 1`] = `
 [
   {

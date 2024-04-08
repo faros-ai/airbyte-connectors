@@ -15,7 +15,7 @@
           "type": "boolean",
           "title": "Use Board Ownership",
           "description": "Use Jira boards for assigning owners of tasks, or use projects.",
-          "default": false
+          "default": true
         },
         "truncate_limit": {
           "type": "integer",

@@ -150,4 +150,36 @@ describe('index', () => {
       {board: '1'}
     );
   });
+
+  test('streams - board_issues using board ids', async () => {
+    await testStream(
+      2,
+      readTestResourceFile('config.json'),
+      {
+        agile: {
+          board: {
+            getConfiguration: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('board_configuration.json')
+              ),
+          },
+        },
+        v2: {
+          filters: {
+            getFilter: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board_filter.json')),
+          },
+          issueSearch: {
+            searchForIssuesUsingJql: paginate(
+              readTestResourceFile('issues_from_board.json'),
+              'issues'
+            ),
+          },
+        },
+      },
+      {board: '1'}
+    );
+  });
 });

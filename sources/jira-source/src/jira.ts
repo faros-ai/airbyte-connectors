@@ -501,10 +501,14 @@ export class Jira {
     syncPullRequests: boolean,
     updateRange?: [Date, Date],
     fetchKeysOnly = false,
+    filterJql?: string,
     includeAdditionalFields = true,
     additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
     let jql = `project = "${projectId}"`;
+    if (filterJql) {
+      jql += ` AND ${filterJql}`;
+    }
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
@@ -693,5 +697,21 @@ export class Jira {
       completedInAnotherSprintPoints,
       plannedPoints,
     };
+  }
+
+  async getBoardConfiguration(
+    boardId: string
+  ): Promise<AgileModels.GetConfiguration> {
+    return this.api.agile.board.getConfiguration({
+      boardId: Utils.parseInteger(boardId),
+    });
+  }
+
+  async getBoardJQL(filterId: string): Promise<string> {
+    const filterJQL = await this.api.v2.filters.getFilter({
+      id: Utils.parseInteger(filterId),
+      expand: 'jql',
+    });
+    return filterJQL.jql;
   }
 }
