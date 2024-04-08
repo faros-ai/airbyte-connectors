@@ -7,9 +7,17 @@ import {
 import fs from 'fs-extra';
 import VError from 'verror';
 
-import {JiraConfig} from '../lib/jira';
 import * as sut from '../src/index';
-import {DEFAULT_CONCURRENCY_LIMIT, DEFAULT_TIMEOUT, Jira} from '../src/jira';
+import {Jira, JiraConfig} from '../src/jira';
+
+function readResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
+}
+
+function readTestResourceFile(fileName: string): any {
+  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+}
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -38,27 +46,11 @@ describe('index', () => {
     ]);
   });
 
-  const config: JiraConfig = {
-    url: 'https://jira.com',
-    username: 'user',
-    password: 'pass',
-    project_keys: ['TEST'],
-    additional_fields: [],
-    additional_fields_array_limit: 100,
-    concurrency_limit: DEFAULT_CONCURRENCY_LIMIT,
-    page_size: 100,
-    max_retries: 5,
-    reject_unauthorized: true,
-    sync_additional_fields: true,
-    timeout: DEFAULT_TIMEOUT,
-  };
-
   test('check connection', async () => {
     const source = new sut.JiraSource(logger);
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
-      true,
-      undefined,
-    ]);
+    await expect(
+      source.checkConnection(readTestResourceFile('config.json'))
+    ).resolves.toStrictEqual([true, undefined]);
   });
 
   function paginate<V>(
@@ -81,7 +73,7 @@ describe('index', () => {
 
   const testStream = async (
     streamIndex: any,
-    expectedData: any,
+    streamConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any
   ) => {
@@ -98,7 +90,7 @@ describe('index', () => {
       );
     });
     const source = new sut.JiraSource(logger);
-    const streams = source.streams(config);
+    const streams = source.streams(streamConfig);
     const stream = streams[streamIndex];
     const iter = stream.readRecords(
       SyncMode.FULL_REFRESH,
@@ -111,118 +103,51 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    expect(items).toStrictEqual(expectedData.data);
+    expect(items).toMatchSnapshot();
   };
 
   test('streams - pull_requests', async () => {
-    const issueUpdated = new Date();
-    const expectedPullRequests = {
-      data: [
-        {
-          repo: {
-            source: 'GitHub',
-            org: 'test-org',
-            name: 'test-repo',
-          },
-          number: 123,
-          issue: {
-            key: 'TEST-1',
-            updated: issueUpdated,
-            project: 'TEST',
-          },
-        },
-        {
-          repo: {
-            source: 'GitHub',
-            org: 'test-org',
-            name: 'test-repo',
-          },
-          number: 123,
-          issue: {
-            key: 'TEST-2',
-            updated: issueUpdated,
-            project: 'TEST',
-          },
-        },
-      ],
-    };
     await testStream(
       0,
-      expectedPullRequests,
+      readTestResourceFile('config.json'),
       {
         v2: {
           issueSearch: {
             searchForIssuesUsingJql: paginate(
-              [
-                {
-                  id: '1',
-                  key: 'TEST-1',
-                  fields: {
-                    summary: 'summary1',
-                    description: 'description1',
-                    status: {
-                      name: 'status',
-                      statusCategory: {
-                        name: 'statusCategory',
-                      },
-                    },
-                    updated: issueUpdated,
-                    field_001:
-                      'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
-                  },
-                },
-                {
-                  id: '2',
-                  key: 'TEST-2',
-                  fields: {
-                    summary: 'summary2',
-                    description: 'description2',
-                    status: {
-                      name: 'status',
-                      statusCategory: {
-                        name: 'statusCategory',
-                      },
-                    },
-                    updated: issueUpdated,
-                    field_001:
-                      'PullRequestOverallDetails{openCount=1, mergedCount=1, declinedCount=0}',
-                  },
-                },
-              ],
+              readTestResourceFile('issues_with_pull_requests.json'),
               'issues'
             ),
           },
         },
-        getDevStatusSummary: jest.fn().mockResolvedValue({
-          summary: {
-            repository: {
-              byInstanceType: {
-                Github: {count: 1},
-              },
-            },
-          },
-        }),
-        getDevStatusDetail: jest.fn().mockResolvedValue({
-          detail: [
-            {
-              branches: [],
-              pullRequests: [
-                {
-                  source: {
-                    url: 'https://github.com/test-org/test-repo',
-                  },
-                  id: '123',
-                },
-              ],
-            },
-          ],
-        }),
+        getDevStatusSummary: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('dev_status_summary.json')),
+        getDevStatusDetail: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
       },
       {project: 'TEST'}
     );
   });
-});
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
+  test('streams - sprint_reports', async () => {
+    await testStream(
+      1,
+      readTestResourceFile('config.json'),
+      {
+        agile: {
+          board: {
+            getBoard: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board.json')),
+            getAllSprints: paginate(readTestResourceFile('sprints.json')),
+          },
+        },
+        getSprintReport: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('sprint_report.json')),
+      },
+      {board: '1'}
+    );
+  });
+});
