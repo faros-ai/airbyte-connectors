@@ -38,6 +38,9 @@ describe('vanta', () => {
   // 1. Check Duplicate UIDs across AWS vulns
   // 2. Check Github Commit Sha Regex
 
+  // print current dir:
+  console.log(process.cwd());
+
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/vanta/catalog.json';
   const streamNamePrefix = 'mytestsource__vanta__';

@@ -1,7 +1,37 @@
 import fs from 'fs-extra';
+import path from 'path';
+
+// Function to find a specific parent directory
+function findParentDirectory(
+  currentDir: string,
+  targetDirName: string
+): string | null {
+  let currentPath = currentDir;
+  while (currentPath !== '/') {
+    if (path.basename(currentPath) === targetDirName) {
+      return currentPath;
+    }
+    currentPath = path.dirname(currentPath);
+  }
+  return null;
+}
 
 export function getQueryFromName(name: string): string {
-  const gql_dir = `resources`;
+  const crt_dir = __dirname;
+  // We go back to the part of dir which ends with 'vanta-source':
+  const targetDirPath = findParentDirectory(crt_dir, 'vanta-source');
+  if (!targetDirPath) {
+    throw new Error('vanta-source directory not found');
+  }
+
+  const gql_dir = path.join(targetDirPath, 'resources');
+  // const gql_dir = `../resources`;
+
+  // Get the current working directory
+  const currentWorkingDirectory = process.cwd();
+
+  // Print the current working directory
+  console.log(`The current working directory is: ${currentWorkingDirectory}`);
   const fn = `${name}.gql`;
   // Check if fn is in gql_dir:
   if (!fs.existsSync(`${gql_dir}/${fn}`)) {
