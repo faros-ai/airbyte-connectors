@@ -25,13 +25,10 @@ export function getQueryFromName(name: string): string {
   }
 
   const gql_dir = path.join(targetDirPath, 'resources');
-  // const gql_dir = `../resources`;
 
   // Get the current working directory
   const currentWorkingDirectory = process.cwd();
 
-  // Print the current working directory
-  console.log(`The current working directory is: ${currentWorkingDirectory}`);
   const fn = `${name}.gql`;
   // Check if fn is in gql_dir:
   if (!fs.existsSync(`${gql_dir}/${fn}`)) {
