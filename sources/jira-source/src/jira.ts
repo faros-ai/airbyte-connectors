@@ -699,12 +699,17 @@ export class Jira {
     };
   }
 
-  async getBoardJQL(boardId: string): Promise<string> {
-    const board = await this.api.agile.board.getConfiguration({
+  async getBoardConfiguration(
+    boardId: string
+  ): Promise<AgileModels.GetConfiguration> {
+    return this.api.agile.board.getConfiguration({
       boardId: Utils.parseInteger(boardId),
     });
+  }
+
+  async getBoardJQL(filterId: string): Promise<string> {
     const filterJQL = await this.api.v2.filters.getFilter({
-      id: Utils.parseInteger(board.filter.id),
+      id: Utils.parseInteger(filterId),
       expand: 'jql',
     });
     return filterJQL.jql;

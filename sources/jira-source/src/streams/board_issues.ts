@@ -20,16 +20,18 @@ export class BoardIssues extends StreamWithBoardSlices {
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<Issue> {
+    const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
-    if (this.config.board_ids && !this.config.board_ids.includes(boardId)) {
-      this.logger.info(`Skipped board with id ${boardId}`);
+    const boardConfig = await jira.getBoardConfiguration(boardId);
+    const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
+    // Jira Agile API GetConfiguration response type does not include key property
+    const projectKey = (boardConfig.location as any)?.key;
+    if (!projectKey) {
+      this.logger.warn(`No project key found for board ${boardId}`);
       return;
     }
-    const jira = await Jira.instance(this.config, this.logger);
-    const boardJql = await jira.getBoardJQL(boardId);
-    const board = await jira.getBoard(boardId);
     for await (const issue of jira.getIssues(
-      board.location.projectKey,
+      projectKey,
       false,
       undefined,
       true,
