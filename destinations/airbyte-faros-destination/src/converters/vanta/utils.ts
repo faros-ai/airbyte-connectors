@@ -18,7 +18,7 @@ function findParentDirectory(
 
 export function getQueryFromName(name: string): string {
   const crt_dir = __dirname;
-  // We go back to the part of dir which ends with 'vanta-source':
+  // We go back to the part of dir which ends with name:
   const targetDirPath = findParentDirectory(
     crt_dir,
     'airbyte-faros-destination'
