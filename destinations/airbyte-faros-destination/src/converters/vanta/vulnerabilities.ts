@@ -15,6 +15,7 @@ import {
   GithubVulnerabilityData,
   VcsRepoKey,
 } from './types';
+import {getQueryFromName} from './utils';
 
 export function looksLikeGithubCommitSha(sha: string): boolean {
   return /^[a-f0-9]{40}$/i.test(sha);
@@ -43,18 +44,11 @@ export abstract class Vulnerabilities extends Converter {
   awsUidsToVulns: Record<string, AWSVulnerabilityData> = {};
   duplicateAwsUids: Set<string> = new Set();
   // We read from file synchronously to get query from file
-  vcsRepositoryQuery = fs.readFileSync(
-    'resources/vcsRepositoryQuery.gql',
-    'utf8'
+  vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
+  cicdArtifactQueryByCommitSha = getQueryFromName(
+    'cicdArtifactQueryByCommitSha'
   );
-  cicdArtifactQueryByCommitSha = fs.readFileSync(
-    'resources/cicdArtifactQueryByCommitSha.gql',
-    'utf8'
-  );
-  cicdArtifactQueryByRepoName = fs.readFileSync(
-    'resources/cicdArtifactQueryByRepoName.gql',
-    'utf8'
-  );
+  cicdArtifactQueryByRepoName = getQueryFromName('cicdArtifactQueryByRepoName');
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
@@ -132,7 +126,7 @@ export abstract class Vulnerabilities extends Converter {
         {repoName: vcsRepoName}
       );
       if (!resp) {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
         );
         return null;
@@ -142,7 +136,7 @@ export abstract class Vulnerabilities extends Converter {
       if (results.length > 0) {
         result = results[0];
       } else {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
         );
       }
@@ -162,7 +156,7 @@ export abstract class Vulnerabilities extends Converter {
         {commitSha}
       );
       if (!resp) {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
         );
         return null;
@@ -172,7 +166,7 @@ export abstract class Vulnerabilities extends Converter {
       if (results.length > 0) {
         result = results[0];
       } else {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for cicdArtifact query with commit sha "${commitSha}"`
         );
       }
@@ -196,7 +190,7 @@ export abstract class Vulnerabilities extends Converter {
         {repoName}
       );
       if (!resp) {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for cicdArtifact query with repository name "${repoName}"`
         );
         return null;
@@ -206,7 +200,7 @@ export abstract class Vulnerabilities extends Converter {
       if (results.length > 0) {
         result = results[0];
       } else {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Did not get any results for cicdArtifact query with repository name "${repoName}"`
         );
       }
@@ -271,7 +265,7 @@ export abstract class Vulnerabilities extends Converter {
     for (const [uid, vuln] of Object.entries(this.awsUidsToVulns)) {
       let repoName = vuln.repositoryName;
       if (!repoName) {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Could not find repository name for vulnerability with uid "${uid}"`
         );
         continue;
@@ -283,7 +277,7 @@ export abstract class Vulnerabilities extends Converter {
       }
       const repoKey = await this.getAWSCicdArtifactFromName(repoName, ctx);
       if (!repoKey) {
-        ctx.logger.warn(
+        ctx.logger.info(
           `Could not find cicd_Artifact for vulnerability with uid "${uid}"`
         );
         continue;
@@ -338,10 +332,10 @@ export abstract class Vulnerabilities extends Converter {
         }
       }
       if (!commitSha) {
-        ctx.logger.info(
-          `Skipped getting commit Sha from below imageTags due to not finding git commit sha:`
+        ctx.logger.debug(
+          `Skipped getting commit Sha from below imageTags due to not finding git commit sha:` +
+            JSON.stringify(imageTags)
         );
-        ctx.logger.debug(JSON.stringify(imageTags));
         continue;
       }
 
