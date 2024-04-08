@@ -78,6 +78,36 @@ Array [
 ]
 `;
 
+exports[`satisfaction ratings rating fallback to group when no group in context 1`] = `
+Array [
+  Object {
+    "model": "faros_MetricValue",
+    "record": Object {
+      "computedAt": 2024-02-07T21:51:23.000Z,
+      "definition": Object {
+        "uid": "zendesk-satisfaction-ratings",
+      },
+      "uid": "zendesk-satisfaction-rating-1",
+      "value": "offered",
+    },
+  },
+  Object {
+    "model": "org_TeamMetric",
+    "record": Object {
+      "team": Object {
+        "uid": "all_teams",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "zendesk-satisfaction-ratings",
+        },
+        "uid": "zendesk-satisfaction-rating-1",
+      },
+    },
+  },
+]
+`;
+
 exports[`tags tag 1`] = `
 Array [
   Object {

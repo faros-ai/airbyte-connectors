@@ -16,6 +16,10 @@ export class Groups extends ZendeskConverter {
 
     const group = record.record.data;
     const orgTeam = this.orgTeam(ctx, group);
+    if (!orgTeam) {
+      return [];
+    }
+
     return [
       {
         model: 'org_Team',

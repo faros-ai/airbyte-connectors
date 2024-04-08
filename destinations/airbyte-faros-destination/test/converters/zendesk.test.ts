@@ -395,6 +395,26 @@ describe('satisfaction ratings', () => {
     expect(res).toHaveLength(3);
     expect(res).toMatchSnapshot();
   });
+
+  test('rating fallback to group when no group in context', async () => {
+    const fallbackCtx = new StreamContext(
+      new AirbyteLogger(),
+      {
+        edition_configs: {},
+        source_specific_configs: {
+          zendesk: {
+            team_mapping: {'*': 'all_teams'},
+          },
+        },
+      },
+      {}
+    );
+    const record = AirbyteRecord.make('satisfaction_rating', rating);
+
+    const res = await converter.convert(record, fallbackCtx);
+    expect(res).toHaveLength(2);
+    expect(res).toMatchSnapshot();
+  });
 });
 
 describe('groups', () => {
