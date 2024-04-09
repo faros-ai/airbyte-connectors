@@ -148,6 +148,152 @@ Array [
 ]
 `;
 
+exports[`asana tasks deletes old project memberships 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "board": Object {
+          "source": "Asana",
+          "uid": "1",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "project": Object {
+          "source": "Asana",
+          "uid": "1",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "board": Object {
+          "source": "Asana",
+          "uid": "2",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "project": Object {
+          "source": "Asana",
+          "uid": "2",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskBoardRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "board": Object {
+          "source": "Asana",
+          "uid": "3",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship__Deletion",
+    "record": Object {
+      "where": Object {
+        "project": Object {
+          "source": "Asana",
+          "uid": "3",
+        },
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "tms_Task",
+    "record": Object {
+      "additionalFields": Array [],
+      "createdAt": 2023-08-24T15:52:00.014Z,
+      "description": "Task 1 notes",
+      "name": "Task 1",
+      "parent": null,
+      "resolvedAt": 2023-08-25T15:52:00.014Z,
+      "source": "Asana",
+      "status": Object {
+        "category": "Todo",
+        "detail": "incomplete",
+      },
+      "statusChangedAt": 2023-08-25T20:59:25.575Z,
+      "statusChangelog": Array [],
+      "type": Object {
+        "category": "Task",
+        "detail": "task",
+      },
+      "uid": "1205346703408262",
+      "updatedAt": 2023-08-25T20:59:25.575Z,
+      "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
+    },
+  },
+]
+`;
+
 exports[`asana tasks memberships 1`] = `
 Array [
   Object {

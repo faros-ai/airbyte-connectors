@@ -1,4 +1,10 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteRecord,
+  DestinationSyncMode,
+} from 'faros-airbyte-cdk';
+import {FarosClient} from 'faros-js-client';
+import {mocked} from 'jest-mock';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
@@ -11,6 +17,15 @@ import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
+
+jest.mock('faros-js-client', () => {
+  const original = jest.requireActual('faros-js-client');
+  const mocks = jest.genMockFromModule('faros-js-client') as any;
+  return {
+    ...mocks,
+    Utils: original.Utils,
+  };
+});
 
 describe('asana', () => {
   const logger = testLogger();
@@ -175,6 +190,78 @@ describe('asana', () => {
         ],
       });
       const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('deletes old project memberships', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        memberships: [
+          {
+            project: {
+              gid: '1205346703408259',
+            },
+          },
+        ],
+      });
+      const nodes = [
+        {
+          boards: [
+            {
+              board: {
+                uid: '1',
+                source: 'Asana',
+              },
+            },
+            {
+              board: {
+                uid: '2',
+                source: 'Asana',
+              },
+            },
+            {
+              board: {
+                uid: '1205346703408259',
+                source: 'Asana',
+              },
+            },
+          ],
+          projects: [
+            {
+              project: {
+                uid: '1',
+                source: 'Asana',
+              },
+            },
+            {
+              project: {
+                uid: '3',
+                source: 'Asana',
+              },
+            },
+          ],
+        },
+      ];
+      mocked(FarosClient).mockReturnValue({
+        nodeIterable: jest.fn().mockImplementation(() => {
+          return {
+            async *[Symbol.asyncIterator](): AsyncIterator<any> {
+              for (const item of nodes) {
+                yield item;
+              }
+            },
+          };
+        }),
+      } as any);
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {edition_configs: {}},
+        {tasks: DestinationSyncMode.APPEND},
+        'graph1',
+        'origin1',
+        new FarosClient({url: 'https://faros.example.com', apiKey: 'api-key'})
+      );
+      const res = await converter.convert(record, ctx);
       expect(res).toMatchSnapshot();
     });
 

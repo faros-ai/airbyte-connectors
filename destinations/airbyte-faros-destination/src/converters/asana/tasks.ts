@@ -1,5 +1,6 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
+import {paginatedQueryV2, Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -107,9 +108,11 @@ export class Tasks extends AsanaConverter {
     }
 
     const additionalFields = taskCustomFields.map((f) => this.toTaskField(f));
+    const projectMemberships = new Set<string>();
 
     for (const membership of task.memberships ?? []) {
       if (membership.project) {
+        projectMemberships.add(membership.project.gid);
         res.push({
           model: 'tms_TaskBoardRelationship',
           record: {
@@ -137,6 +140,14 @@ export class Tasks extends AsanaConverter {
         });
       }
     }
+
+    res.push(
+      ...(await this.deleteOldProjectMemberships(
+        taskKey,
+        projectMemberships,
+        ctx
+      ))
+    );
 
     res.push({
       model: 'tms_Task',
@@ -238,5 +249,93 @@ export class Tasks extends AsanaConverter {
         customField.multi_enum_values?.name ??
         customField.display_value,
     };
+  }
+
+  private async deleteOldProjectMemberships(
+    taskKey: {uid: string; source: string},
+    projectMemberships: Set<string>,
+    ctx?: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    if (
+      !ctx ||
+      ctx.streamsSyncMode[this.streamName.asString] ===
+        DestinationSyncMode.OVERWRITE ||
+      isNil(ctx.farosClient) ||
+      isNil(ctx.graph)
+    ) {
+      return [];
+    }
+
+    const query = `
+    {
+      tms_Task(
+        where: {_and: [{uid: {_eq: "${taskKey.uid}"}}, {source: {_eq: "${taskKey.source}"}}]}
+      ) {
+        boards {
+          board {
+            uid
+            source
+          }
+        }
+        projects {
+          project {
+            uid
+            source
+          }
+        }
+      }
+    }`;
+
+    const projectMembershipsToDelete = new Set<string>();
+
+    for await (const task of ctx.farosClient.nodeIterable(
+      ctx.graph,
+      query,
+      100,
+      paginatedQueryV2
+    )) {
+      for (const board of task.boards || []) {
+        if (
+          !projectMemberships.has(board.board.uid) &&
+          board.board.source === this.source
+        ) {
+          projectMembershipsToDelete.add(board.board.uid);
+        }
+      }
+
+      for (const project of task.projects || []) {
+        if (
+          !projectMemberships.has(project.project.uid) &&
+          project.project.source === this.source
+        ) {
+          projectMembershipsToDelete.add(project.project.uid);
+        }
+      }
+    }
+
+    const res: DestinationRecord[] = [];
+
+    for (const project of projectMembershipsToDelete) {
+      res.push({
+        model: 'tms_TaskBoardRelationship__Deletion',
+        record: {
+          where: {
+            task: taskKey,
+            board: {uid: project, source: this.source},
+          },
+        },
+      });
+      res.push({
+        model: 'tms_TaskProjectRelationship__Deletion',
+        record: {
+          where: {
+            task: taskKey,
+            project: {uid: project, source: this.source},
+          },
+        },
+      });
+    }
+
+    return res;
   }
 }
