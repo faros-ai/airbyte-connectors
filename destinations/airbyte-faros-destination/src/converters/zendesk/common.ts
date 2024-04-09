@@ -52,11 +52,17 @@ export abstract class ZendeskConverter extends Converter {
     );
   }
 
-  protected orgTeam(ctx: StreamContext, group: Dictionary<any>): OrgTeam {
+  protected orgTeam(
+    ctx: StreamContext,
+    group?: Dictionary<any>
+  ): OrgTeam | undefined {
     const teamMapping = this.teamMapping(ctx);
-    const mappedTeam = teamMapping[trim(group.name)] || teamMapping['*'];
+    const mappedTeam = teamMapping[trim(group?.name)] || teamMapping['*'];
     if (mappedTeam) {
       return {uid: mappedTeam};
+    }
+    if (!group) {
+      return undefined;
     }
     return {
       uid: trim(group.name),
