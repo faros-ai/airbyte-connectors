@@ -26,6 +26,18 @@ jest.mock('faros-js-client', () => {
     Utils: original.Utils,
   };
 });
+let nodes;
+mocked(FarosClient).mockReturnValue({
+  nodeIterable: jest.fn().mockImplementation(() => {
+    return {
+      async *[Symbol.asyncIterator](): AsyncIterator<any> {
+        for (const item of nodes) {
+          yield item;
+        }
+      },
+    };
+  }),
+} as any);
 
 describe('asana', () => {
   const logger = testLogger();
@@ -37,6 +49,7 @@ describe('asana', () => {
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
+    nodes = [];
   });
 
   afterEach(async () => {
@@ -204,7 +217,7 @@ describe('asana', () => {
           },
         ],
       });
-      const nodes = [
+      nodes = [
         {
           boards: [
             {
@@ -242,17 +255,6 @@ describe('asana', () => {
           ],
         },
       ];
-      mocked(FarosClient).mockReturnValue({
-        nodeIterable: jest.fn().mockImplementation(() => {
-          return {
-            async *[Symbol.asyncIterator](): AsyncIterator<any> {
-              for (const item of nodes) {
-                yield item;
-              }
-            },
-          };
-        }),
-      } as any);
       const ctx = new StreamContext(
         new AirbyteLogger(),
         {edition_configs: {}},
