@@ -235,7 +235,7 @@ describe('tickets', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('ticket with tags', async () => {
+  test('tags', async () => {
     const record = AirbyteRecord.make('ticket', {
       ...ticket,
       tags: ['tag1', 'tag2'],
@@ -244,7 +244,7 @@ describe('tickets', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('ticket with assignee', async () => {
+  test('assignee', async () => {
     const record = AirbyteRecord.make('ticket', {
       ...ticket,
       assignee_id: 23123038291476,
@@ -266,7 +266,7 @@ describe('tickets', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('ticket is solved', async () => {
+  test('solved', async () => {
     const record = AirbyteRecord.make('ticket', {
       ...ticket,
       status: 'solved',
@@ -288,7 +288,7 @@ describe('tickets', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('ticket has follow ups', async () => {
+  test('follow ups', async () => {
     const record = AirbyteRecord.make('ticket', {
       ...ticket,
       followup_ids: [2],
@@ -297,7 +297,7 @@ describe('tickets', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('ticket with custom status', async () => {
+  test('custom status', async () => {
     const record = AirbyteRecord.make('ticket', {
       ...ticket,
       status: 'pending',
@@ -396,7 +396,7 @@ describe('satisfaction ratings', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('rating fallback to group when no group in context', async () => {
+  test('fallback to group when no group in context', async () => {
     const fallbackCtx = new StreamContext(
       new AirbyteLogger(),
       {
@@ -454,19 +454,19 @@ describe('groups', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('group with team mapping', async () => {
+  test('team mapping', async () => {
     const record = AirbyteRecord.make('group', group);
     const res = await converter.convert(record, ctx);
     expect(res).toMatchSnapshot();
   });
 
-  test('group with fallback team', async () => {
+  test('fallback team', async () => {
     const record = AirbyteRecord.make('group', {...group, name: 'Group 2'});
     const res = await converter.convert(record, ctx);
     expect(res).toMatchSnapshot();
   });
 
-  test('disable syncing', async () => {
+  test('syncing disabled', async () => {
     const syncCtx = new StreamContext(
       new AirbyteLogger(),
       {
