@@ -7,7 +7,7 @@ import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/farosIssuePullRequests.json');
+    return require('../../resources/schemas/farosBoardIssues.json');
   }
 
   get primaryKey(): StreamKey | undefined {
