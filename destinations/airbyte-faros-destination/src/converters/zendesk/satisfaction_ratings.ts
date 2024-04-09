@@ -61,12 +61,12 @@ export class SatisfactionRatings extends ZendeskConverter {
 
     // Assign metric value to team
     const group = ctx.get(GroupsStream.asString, rating.group_id)?.record?.data;
-    if (group) {
-      const team = this.orgTeam(ctx, group);
+    const orgTeam = this.orgTeam(ctx, group);
+    if (orgTeam) {
       recs.push({
         model: 'org_TeamMetric',
         record: {
-          team: {uid: team.uid},
+          team: {uid: orgTeam.uid},
           value: {...metricValueKey},
         },
       });
