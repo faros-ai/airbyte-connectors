@@ -78,8 +78,10 @@ describe('jira', () => {
       issue_fields: 74,
       projects: 1,
       project_versions: 3,
-      issue_pull_requests: 1,
       workflow_statuses: 8,
+      faros_issue_pull_requests: 1,
+      faros_sprint_reports: 2,
+      faros_board_issues: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -93,7 +95,7 @@ describe('jira', () => {
       tms_Project: 1,
       tms_ProjectReleaseRelationship: 3,
       tms_Release: 3,
-      tms_Sprint: 10,
+      tms_Sprint: 12,
       tms_Task: 5,
       tms_TaskAssignment: 1,
       tms_TaskBoard: 1,

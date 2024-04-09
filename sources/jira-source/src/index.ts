@@ -9,9 +9,9 @@ import {
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
-import {BoardIssues} from './streams/board_issues';
-import {IssuePullRequests} from './streams/issue_pull_requests';
-import {SprintReports} from './streams/sprint_reports';
+import {FarosBoardIssues} from './streams/faros_board_issues';
+import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
+import {FarosSprintReports} from './streams/faros_sprint_reports';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -40,9 +40,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   streams(config: JiraConfig): AirbyteStreamBase[] {
     return [
-      new IssuePullRequests(config, this.logger),
-      new SprintReports(config, this.logger),
-      new BoardIssues(config, this.logger),
+      new FarosIssuePullRequests(config, this.logger),
+      new FarosSprintReports(config, this.logger),
+      new FarosBoardIssues(config, this.logger),
     ];
   }
 }

@@ -10,9 +10,9 @@ import {
   StreamWithProjectSlices,
 } from './common';
 
-export class IssuePullRequests extends StreamWithProjectSlices {
+export class FarosIssuePullRequests extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/issuePullRequests.json');
+    return require('../../resources/schemas/farosIssuePullRequests.json');
   }
 
   get primaryKey(): StreamKey | undefined {

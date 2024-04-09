@@ -5,9 +5,9 @@ import {Jira} from '../jira';
 import {Issue} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
-export class BoardIssues extends StreamWithBoardSlices {
+export class FarosBoardIssues extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/issuePullRequests.json');
+    return require('../../resources/schemas/farosBoardIssues.json');
   }
 
   get primaryKey(): StreamKey | undefined {

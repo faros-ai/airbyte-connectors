@@ -4,7 +4,7 @@ import {toString} from 'lodash';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
-export class SprintReports extends JiraConverter {
+export class FarosSprintReports extends JiraConverter {
   get destinationModels(): ReadonlyArray<DestinationModel> {
     return ['tms_Sprint'];
   }
