@@ -6,9 +6,9 @@ import {Jira} from '../jira';
 import {SprintReport} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
-export class SprintReports extends StreamWithBoardSlices {
+export class FarosSprintReports extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/sprintReports.json');
+    return require('../../resources/schemas/farosSprintReports.json');
   }
 
   get primaryKey(): StreamKey | undefined {
