@@ -166,7 +166,6 @@ export class Asana {
       'completed',
       'created_at',
       'custom_fields',
-      'memberships.project',
       'memberships.section',
       'memberships.section.name',
       'modified_at',
