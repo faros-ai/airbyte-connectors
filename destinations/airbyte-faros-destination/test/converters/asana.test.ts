@@ -1,9 +1,4 @@
-import {
-  AirbyteLogger,
-  AirbyteRecord,
-  DestinationSyncMode,
-} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
@@ -35,11 +30,6 @@ describe('asana', () => {
   });
 
   test('process records from all streams', async () => {
-    await mockttp
-      .forPost('/graphs/test-graph/graphql')
-      .always()
-      .thenReply(200, JSON.stringify({}));
-
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -187,76 +177,6 @@ describe('asana', () => {
       });
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
-    });
-
-    test('deletes old project memberships', async () => {
-      const nodes = [
-        {
-          boards: [
-            {
-              board: {
-                uid: '1',
-                source: 'Asana',
-              },
-            },
-            {
-              board: {
-                uid: '2',
-                source: 'Asana',
-              },
-            },
-            {
-              board: {
-                uid: '1205346703408259',
-                source: 'Asana',
-              },
-            },
-          ],
-          projects: [
-            {
-              project: {
-                uid: '1',
-                source: 'Asana',
-              },
-            },
-            {
-              project: {
-                uid: '3',
-                source: 'Asana',
-              },
-            },
-          ],
-        },
-      ];
-      const spy = jest.spyOn(FarosClient.prototype, 'nodeIterable');
-      spy.mockImplementation(() => ({
-        async *[Symbol.asyncIterator](): AsyncIterator<any> {
-          for (const item of nodes) {
-            yield item;
-          }
-        },
-      }));
-      const record = AirbyteRecord.make('tasks', {
-        ...TASK,
-        memberships: [
-          {
-            project: {
-              gid: '1205346703408259',
-            },
-          },
-        ],
-      });
-      const ctx = new StreamContext(
-        new AirbyteLogger(),
-        {edition_configs: {}},
-        {tasks: DestinationSyncMode.APPEND},
-        'graph1',
-        'origin1',
-        new FarosClient({url: 'https://faros.example.com', apiKey: 'api-key'})
-      );
-      const res = await converter.convert(record, ctx);
-      expect(res).toMatchSnapshot();
-      spy.mockRestore();
     });
 
     test('task with stories writes statusChangelog', async () => {
