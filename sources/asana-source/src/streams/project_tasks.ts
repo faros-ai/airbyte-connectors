@@ -26,7 +26,7 @@ export class ProjectTasks extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'gid';
+    return ['project_gid', 'task_gid'];
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
