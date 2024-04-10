@@ -7,10 +7,13 @@ import {
 import {Dictionary} from 'ts-essentials';
 
 import {Asana, AsanaConfig} from '../asana';
-import {User} from '../models';
-import {StreamSlice} from './common';
+import {ProjectTaskAssociation} from '../models';
 
-export class Users extends AirbyteStreamBase {
+type StreamSlice = {
+  project: string;
+};
+
+export class ProjectTasks extends AirbyteStreamBase {
   constructor(
     private readonly config: AsanaConfig,
     protected readonly logger: AirbyteLogger
@@ -19,7 +22,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/users.json');
+    return require('../../resources/schemas/project_tasks.json');
   }
 
   get primaryKey(): StreamKey {
@@ -30,7 +33,12 @@ export class Users extends AirbyteStreamBase {
     const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
-      yield {workspace: workspace.gid};
+      for await (const project of asana.getProjects(
+        workspace.gid,
+        this.logger
+      )) {
+        yield {project: project.gid};
+      }
     }
   }
 
@@ -38,9 +46,9 @@ export class Users extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice
-  ): AsyncGenerator<User> {
+  ): AsyncGenerator<ProjectTaskAssociation> {
     const asana = Asana.instance(this.config, this.logger);
 
-    yield* asana.getUsers(streamSlice.workspace);
+    yield* asana.getProjectTasks(streamSlice.project, this.logger);
   }
 }

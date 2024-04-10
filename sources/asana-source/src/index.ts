@@ -9,7 +9,14 @@ import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Asana, AsanaConfig} from './asana';
-import {Projects, Tags, Tasks, Users, Workspaces} from './streams';
+import {
+  Projects,
+  ProjectTasks,
+  Tags,
+  Tasks,
+  Users,
+  Workspaces,
+} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -44,6 +51,7 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
       new Tasks(config, this.logger),
       new Users(config, this.logger),
       new Workspaces(config, this.logger),
+      new ProjectTasks(config, this.logger),
     ];
   }
 }

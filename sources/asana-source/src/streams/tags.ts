@@ -41,6 +41,6 @@ export class Tags extends AirbyteStreamBase {
   ): AsyncGenerator<Tag> {
     const asana = Asana.instance(this.config, this.logger);
 
-    yield* asana.getTags(streamSlice.workspace, this.logger);
+    yield* asana.getTags(streamSlice.workspace);
   }
 }
