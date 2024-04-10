@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
-import {maxBy} from 'lodash';
+import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -151,17 +151,23 @@ export class CircleCI {
         // //circleci.com/organization_id/project_id
         // https://github.com/organization/repository
         const projectMatch = projectVCSUrl.match(
-          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([^./]+)$/
+          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([\w.-]+)$/
         );
-        if (!projectMatch || projectMatch.length < 1) {
+        if (projectMatch?.length < 1) {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const vcsProvider = projectMatch[1];
+        const vcsType = this.toVcsType(projectMatch[1]);
+        if (!vcsType) {
+          this.logger.error(
+            `Could not get vcs type from provider: "${projectMatch[1]}"`
+          );
+          continue;
+        }
         const orgId = projectMatch[2];
         const projectId = projectMatch[3];
 
-        res.push(`${vcsProvider}/${orgId}/${projectId}`);
+        res.push(`${vcsType}/${orgId}/${projectId}`);
       }
     } catch (error: any) {
       throw new Error(
@@ -173,6 +179,17 @@ export class CircleCI {
 
     this.logger.info(`Retrieved project slugs: ${res}`);
     return res;
+  }
+
+  private toVcsType(vcsProvider: string): 'gh' | 'bb' | undefined {
+    switch (toLower(vcsProvider)) {
+      case 'github':
+        return 'gh';
+      case 'bitbucket':
+        return 'bb';
+      default:
+        return undefined;
+    }
   }
 
   private async iterate<V>(
@@ -269,6 +286,7 @@ export class CircleCI {
 
   @Memoize()
   async fetchProject(projectSlugOrId: string): Promise<Project> {
+    this.logger.info(`Fetching project: ${projectSlugOrId}`);
     return (await this.get({path: `/project/${projectSlugOrId}`})).data;
   }
 
@@ -280,8 +298,17 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - this.cutoffDays);
 
     const lastUpdatedAt = since ? new Date(since) : startDate;
+    this.logger.info(
+      `Fetching pipelines for project ${projectName} since ${lastUpdatedAt}`
+    );
     const gracePeriod = lastUpdatedAt;
     gracePeriod.setDate(gracePeriod.getDate() - this.cutoffDays);
+    this.logger.info(
+      `Pipelines for ${projectName} grace period ${lastUpdatedAt}`
+    );
+    this.logger.info(
+      `Check: Fetching pipelines for ${projectName} since ${lastUpdatedAt}`
+    );
 
     const url = `/project/${projectName}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
