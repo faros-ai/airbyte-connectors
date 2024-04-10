@@ -4,7 +4,6 @@ import {
   DestinationSyncMode,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-import {mocked} from 'jest-mock';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
@@ -18,27 +17,6 @@ import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {asanaAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
-jest.mock('faros-js-client', () => {
-  const original = jest.requireActual('faros-js-client');
-  const mocks = jest.genMockFromModule('faros-js-client') as any;
-  return {
-    ...mocks,
-    Utils: original.Utils,
-  };
-});
-let nodes;
-mocked(FarosClient).mockReturnValue({
-  nodeIterable: jest.fn().mockImplementation(() => {
-    return {
-      async *[Symbol.asyncIterator](): AsyncIterator<any> {
-        for (const item of nodes) {
-          yield item;
-        }
-      },
-    };
-  }),
-} as any);
-
 describe('asana', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -49,7 +27,6 @@ describe('asana', () => {
   beforeEach(async () => {
     await initMockttp(mockttp);
     configPath = await tempConfig(mockttp.url);
-    nodes = [];
   });
 
   afterEach(async () => {
@@ -57,6 +34,11 @@ describe('asana', () => {
   });
 
   test('process records from all streams', async () => {
+    await mockttp
+      .forPost('/graphs/test-graph/graphql')
+      .always()
+      .thenReply(200, JSON.stringify({}));
+
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -207,17 +189,7 @@ describe('asana', () => {
     });
 
     test('deletes old project memberships', async () => {
-      const record = AirbyteRecord.make('tasks', {
-        ...TASK,
-        memberships: [
-          {
-            project: {
-              gid: '1205346703408259',
-            },
-          },
-        ],
-      });
-      nodes = [
+      const nodes = [
         {
           boards: [
             {
@@ -255,6 +227,24 @@ describe('asana', () => {
           ],
         },
       ];
+      const spy = jest.spyOn(FarosClient.prototype, 'nodeIterable');
+      spy.mockImplementation(() => ({
+        async *[Symbol.asyncIterator](): AsyncIterator<any> {
+          for (const item of nodes) {
+            yield item;
+          }
+        },
+      }));
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        memberships: [
+          {
+            project: {
+              gid: '1205346703408259',
+            },
+          },
+        ],
+      });
       const ctx = new StreamContext(
         new AirbyteLogger(),
         {edition_configs: {}},
@@ -265,6 +255,7 @@ describe('asana', () => {
       );
       const res = await converter.convert(record, ctx);
       expect(res).toMatchSnapshot();
+      spy.mockRestore();
     });
 
     test('task with stories writes statusChangelog', async () => {
