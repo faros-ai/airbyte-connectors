@@ -182,32 +182,6 @@ Array [
 exports[`asana tasks memberships 1`] = `
 Array [
   Object {
-    "model": "tms_TaskBoardRelationship",
-    "record": Object {
-      "board": Object {
-        "source": "Asana",
-        "uid": "1205346703408259",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
-  Object {
-    "model": "tms_TaskProjectRelationship",
-    "record": Object {
-      "project": Object {
-        "source": "Asana",
-        "uid": "1205346703408259",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
-  Object {
     "model": "tms_Task",
     "record": Object {
       "additionalFields": Array [
