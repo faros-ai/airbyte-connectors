@@ -21,7 +21,7 @@ export interface CircleCIConfig {
   readonly token: string;
   readonly url?: string;
   project_slugs: ReadonlyArray<string>;
-  readonly project_blocklist?: string[];
+  readonly project_block_list?: string[];
   readonly pull_blocklist_from_graph?: boolean;
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
@@ -157,7 +157,7 @@ export class CircleCI {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const vcsType = this.toVcsType(projectMatch[1]);
+        const vcsType = CircleCI.toVcsType(projectMatch[1]);
         if (!vcsType) {
           this.logger.error(
             `Could not get vcs type from provider: "${projectMatch[1]}"`
@@ -177,16 +177,18 @@ export class CircleCI {
       );
     }
 
-    this.logger.info(`Retrieved project slugs: ${res}`);
+    this.logger.info(`Retrieved ${res.length} project slugs: ${res}`);
     return res;
   }
 
-  private toVcsType(vcsProvider: string): 'gh' | 'bb' | undefined {
+  static toVcsType(vcsProvider: string): 'gh' | 'bb' | 'circleci' | undefined {
     switch (toLower(vcsProvider)) {
-      case 'github':
-        return 'gh';
       case 'bitbucket':
         return 'bb';
+      case 'circleci':
+        return 'circleci';
+      case 'github':
+        return 'gh';
       default:
         return undefined;
     }
@@ -286,7 +288,6 @@ export class CircleCI {
 
   @Memoize()
   async fetchProject(projectSlugOrId: string): Promise<Project> {
-    this.logger.info(`Fetching project: ${projectSlugOrId}`);
     return (await this.get({path: `/project/${projectSlugOrId}`})).data;
   }
 
@@ -298,17 +299,8 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - this.cutoffDays);
 
     const lastUpdatedAt = since ? new Date(since) : startDate;
-    this.logger.info(
-      `Fetching pipelines for project ${projectName} since ${lastUpdatedAt}`
-    );
-    const gracePeriod = lastUpdatedAt;
+    const gracePeriod = new Date(lastUpdatedAt);
     gracePeriod.setDate(gracePeriod.getDate() - this.cutoffDays);
-    this.logger.info(
-      `Pipelines for ${projectName} grace period ${lastUpdatedAt}`
-    );
-    this.logger.info(
-      `Check: Fetching pipelines for ${projectName} since ${lastUpdatedAt}`
-    );
 
     const url = `/project/${projectName}/pipeline`;
     const pipelines = await this.iterate<Pipeline>(
