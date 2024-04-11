@@ -43,7 +43,13 @@
           "type": "string"
         },
         "title": "Project Slugs",
-        "description": "Project slugs should look like \"vcs-slug/org-name/repo-name\". Only enter \"*\" for all projects."
+        "description": "Project slugs to sync in the form \"vcs-slug/org-name/repo-name\". Enter \"*\" for all projects. For projects that use GitLab or GitHub App use \"circleci/org-id/project-id\".",
+        "examples": [
+          "gh/CircleCI-Public/api-preview-docs",
+          "bb/CircleCI-Public/api-preview-docs",
+          "circleci/CircleCI-Public/497f6eca-6276-4993-bfeb-53cbbbba6f08",
+          "*"
+        ]
       },
       "project_block_list": {
         "type": "array",
@@ -51,7 +57,13 @@
           "type": "string"
         },
         "title": "Project Slug Blocklist",
-        "description": "Project slugs should look like \"vcs-slug/org-name/repo-name\""
+        "description": "List of project slugs that should be excluded from syncing. Use exact project slugs or use wildcard characters to filter according to slug patterns, similar to regular expressions.",
+        "examples": [
+          "gh/CircleCI-Public/api-preview-docs",
+          "gh/CircleCI-Public/*",
+          "gh/CircleCI*",
+          "circleci/*/test-builds"
+        ]
       },
       "pull_blocklist_from_graph": {
         "type": "boolean",

@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
-import {maxBy} from 'lodash';
+import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -21,7 +21,7 @@ export interface CircleCIConfig {
   readonly token: string;
   readonly url?: string;
   project_slugs: ReadonlyArray<string>;
-  readonly project_blocklist?: string[];
+  readonly project_block_list?: string[];
   readonly pull_blocklist_from_graph?: boolean;
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
@@ -49,7 +49,7 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.project_slugs || config.project_slugs.length == 0) {
+    if (!config.project_slugs?.length) {
       throw new VError('No project slugs provided');
     }
     if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
@@ -151,17 +151,23 @@ export class CircleCI {
         // //circleci.com/organization_id/project_id
         // https://github.com/organization/repository
         const projectMatch = projectVCSUrl.match(
-          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([^./]+)$/
+          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([\w.-]+)$/
         );
-        if (!projectMatch || projectMatch.length < 1) {
+        if (!projectMatch || projectMatch.length < 4) {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const vcsProvider = projectMatch[1];
+        const vcsType = CircleCI.toVcsType(projectMatch[1]);
+        if (!vcsType) {
+          this.logger.error(
+            `Could not get vcs type from provider: "${projectMatch[1]}"`
+          );
+          continue;
+        }
         const orgId = projectMatch[2];
         const projectId = projectMatch[3];
 
-        res.push(`${vcsProvider}/${orgId}/${projectId}`);
+        res.push(`${vcsType}/${orgId}/${projectId}`);
       }
     } catch (error: any) {
       throw new Error(
@@ -171,8 +177,21 @@ export class CircleCI {
       );
     }
 
-    this.logger.info(`Retrieved project slugs: ${res}`);
+    this.logger.info(`Retrieved ${res.length} project slugs: ${res}`);
     return res;
+  }
+
+  static toVcsType(vcsProvider: string): 'gh' | 'bb' | 'circleci' | undefined {
+    switch (toLower(vcsProvider)) {
+      case 'bitbucket':
+        return 'bb';
+      case 'circleci':
+        return 'circleci';
+      case 'github':
+        return 'gh';
+      default:
+        return undefined;
+    }
   }
 
   private async iterate<V>(
@@ -280,7 +299,7 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - this.cutoffDays);
 
     const lastUpdatedAt = since ? new Date(since) : startDate;
-    const gracePeriod = lastUpdatedAt;
+    const gracePeriod = new Date(lastUpdatedAt);
     gracePeriod.setDate(gracePeriod.getDate() - this.cutoffDays);
 
     const url = `/project/${projectName}/pipeline`;

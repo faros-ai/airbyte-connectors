@@ -9,6 +9,7 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import GlobToRegExp from 'glob-to-regexp';
+import {toLower} from 'lodash';
 import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
@@ -53,7 +54,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     state?: AirbyteState;
   }> {
     const circleCI = CircleCI.instance(config, this.logger);
-    const projectSlugBlocklist = new Set(config.project_blocklist ?? []);
+    const projectSlugBlocklist = new Set(config.project_block_list ?? []);
     if (projectSlugBlocklist.has('*')) {
       throw new VError(
         'Global wildcard * is not supported in project blocklist'
@@ -74,13 +75,17 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       );
       excludedRepoSlugs = new Set(
         excludedRepos.map((repo) => {
-          const source = repo.organization.source.toLowerCase();
-          const orgUid = repo.organization.uid.toLowerCase();
-          const repoName = repo.name.toLowerCase();
+          const source = CircleCI.toVcsType(toLower(repo.organization.source));
+          const orgUid = toLower(repo.organization.uid);
+          const repoName = toLower(repo.name);
           return `${source}/${orgUid}/${repoName}`;
         })
       );
     }
+
+    this.logger.debug(
+      `Excluded repo slugs: ${Array.from(excludedRepoSlugs ?? new Set())}`
+    );
 
     const allProjectSlugs: string[] = [];
     if (config.project_slugs.includes('*')) {
@@ -96,7 +101,9 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       excludedRepoSlugs
     );
 
-    this.logger.info(`Will sync project slugs: ${config.project_slugs}`);
+    this.logger.info(
+      `Will sync ${config.project_slugs.length} project slugs: ${config.project_slugs}`
+    );
 
     return {config, catalog, state};
   }

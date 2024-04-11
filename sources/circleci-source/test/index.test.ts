@@ -42,7 +42,7 @@ describe('index', () => {
       'gh/faros-test/test-project',
       'gh/faros-test/test-project2',
     ],
-    project_blocklist: ['gh/faros-test/*'],
+    project_block_list: ['gh/faros-test/*'],
     cutoff_days: 90,
     reject_unauthorized: true,
   };
