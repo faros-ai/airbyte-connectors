@@ -55,7 +55,7 @@ describe('index', () => {
 
   const config = {credentials: {personal_access_token: 'token'}};
 
-  const testStream = async (streamIndex, expectedData) => {
+  const testStream = async (streamIndex, expectedData): Promise<void> => {
     const fnList = jest.fn();
 
     Asana.instance = jest.fn().mockImplementation(() => {
@@ -149,6 +149,50 @@ describe('index', () => {
     const stream = streams[2];
     const tasks = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       workspace: 'workspace1',
+    });
+
+    const items = [];
+    for await (const item of tasks) {
+      items.push(item);
+    }
+
+    expect(items).toMatchSnapshot();
+  });
+
+  test('streams - workspaces', async () => {
+    const expectedWorkspaces = {data: [{gid: 'w1', name: 'workspace1'}]};
+    await testStream(4, expectedWorkspaces);
+  });
+
+  test('streams - project tasks', async () => {
+    const expectedProjects = {data: [{gid: 'p1', name: 'project1'}]};
+    const expectedTasks = {data: [{gid: 't1', name: 'task1'}]};
+
+    Asana.instance = jest.fn().mockImplementation(() => {
+      return new Asana(
+        {
+          get: jest
+            .fn()
+            .mockImplementation(async (path: string): Promise<any> => {
+              if (path.startsWith('workspaces/workspace1/projects')) {
+                return {data: expectedProjects};
+              } else if (path.startsWith('projects/p1/tasks')) {
+                return {data: expectedTasks};
+              }
+            }),
+        } as any,
+        '2021-01-01',
+        '2021-01-02',
+        ['w1'],
+        100
+      );
+    });
+
+    const source = new sut.AsanaSource(logger);
+    const streams = source.streams(config);
+    const stream = streams[5];
+    const tasks = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      project: 'p1',
     });
 
     const items = [];

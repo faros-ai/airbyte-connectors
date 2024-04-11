@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index streams - project tasks 1`] = `
+Array [
+  Object {
+    "project_gid": "p1",
+    "task_gid": "t1",
+  },
+]
+`;
+
 exports[`index streams - tasks 1`] = `
 Array [
   Object {
