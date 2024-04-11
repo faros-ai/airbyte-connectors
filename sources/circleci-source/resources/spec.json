@@ -43,7 +43,7 @@
           "type": "string"
         },
         "title": "Project Slugs",
-        "description": "Project slugs should look like \"vcs-slug/org-name/repo-name\". Only enter \"*\" for all projects."
+        "description": "Project slugs look like \"vcs-slug/org-name/repo-name\". Enter \"*\" for all projects."
       },
       "project_block_list": {
         "type": "array",
@@ -51,7 +51,7 @@
           "type": "string"
         },
         "title": "Project Slug Blocklist",
-        "description": "Project slugs should look like \"vcs-slug/org-name/repo-name\""
+        "description": "Project slugs look like \"vcs-slug/org-name/repo-name\" or with wildcards like \"vcs-slug/org-name/*\""
       },
       "pull_blocklist_from_graph": {
         "type": "boolean",
