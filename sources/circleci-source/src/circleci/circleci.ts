@@ -49,7 +49,7 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.project_slugs || config.project_slugs.length == 0) {
+    if (!config.project_slugs?.length) {
       throw new VError('No project slugs provided');
     }
     if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
