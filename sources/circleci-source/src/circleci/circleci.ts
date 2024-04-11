@@ -153,7 +153,7 @@ export class CircleCI {
         const projectMatch = projectVCSUrl.match(
           /^[^/]*\/\/([^./]+).*\/([^./]+)\/([\w.-]+)$/
         );
-        if (projectMatch?.length < 1) {
+        if (!projectMatch || projectMatch.length < 1) {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
