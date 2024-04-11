@@ -1,5 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`asana project tasks basic project task 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskBoardRelationship",
+    "record": Object {
+      "board": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+  Object {
+    "model": "tms_TaskProjectRelationship",
+    "record": Object {
+      "project": Object {
+        "source": "Asana",
+        "uid": "1205346703408259",
+      },
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+    },
+  },
+]
+`;
+
 exports[`asana projects basic project 1`] = `
 Array [
   Object {
@@ -150,32 +181,6 @@ Array [
 
 exports[`asana tasks memberships 1`] = `
 Array [
-  Object {
-    "model": "tms_TaskBoardRelationship",
-    "record": Object {
-      "board": Object {
-        "source": "Asana",
-        "uid": "1205346703408259",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
-  Object {
-    "model": "tms_TaskProjectRelationship",
-    "record": Object {
-      "project": Object {
-        "source": "Asana",
-        "uid": "1205346703408259",
-      },
-      "task": Object {
-        "source": "Asana",
-        "uid": "1205346703408262",
-      },
-    },
-  },
   Object {
     "model": "tms_Task",
     "record": Object {

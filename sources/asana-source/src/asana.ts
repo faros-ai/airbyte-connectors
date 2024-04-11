@@ -7,7 +7,9 @@ import {VError} from 'verror';
 
 import {
   AsanaResponse,
+  CompactTask,
   Project,
+  ProjectTaskAssociation,
   Story,
   Tag,
   Task,
@@ -164,7 +166,6 @@ export class Asana {
       'completed',
       'created_at',
       'custom_fields',
-      'memberships.project',
       'memberships.section',
       'memberships.section.name',
       'modified_at',
@@ -208,7 +209,7 @@ export class Asana {
         modified_at_after = task.modified_at;
         yield {
           ...task,
-          stories: await this.getFilteredStories(task.gid, logger),
+          stories: await this.getFilteredStories(task.gid),
         };
       }
 
@@ -221,17 +222,32 @@ export class Asana {
     logger?: AirbyteLogger
   ): AsyncGenerator<Project> {
     logger?.info(`Fetching projects for workspace ${workspace}`);
-    yield* this.fetchData<Project>(
-      `workspaces/${workspace}/projects`,
-      ['name', 'created_at', 'modified_at', 'workspace', 'notes'],
-      logger
-    );
+    yield* this.fetchData<Project>(`workspaces/${workspace}/projects`, [
+      'name',
+      'created_at',
+      'modified_at',
+      'workspace',
+      'notes',
+    ]);
   }
 
-  async getFilteredStories(
-    task: string,
+  async *getProjectTasks(
+    project: string,
     logger?: AirbyteLogger
-  ): Promise<ReadonlyArray<Story>> {
+  ): AsyncGenerator<ProjectTaskAssociation> {
+    logger?.info(`Fetching tasks for project ${project}`);
+    for await (const compactTask of this.fetchData<CompactTask>(
+      `projects/${project}/tasks`,
+      []
+    )) {
+      yield {
+        project_gid: project,
+        task_gid: compactTask.gid,
+      };
+    }
+  }
+
+  async getFilteredStories(task: string): Promise<ReadonlyArray<Story>> {
     const opt_fields = [
       'assignee',
       'created_at',
@@ -242,8 +258,7 @@ export class Asana {
     const stories: Story[] = [];
     for await (const story of this.fetchData<Story>(
       `tasks/${task}/stories`,
-      opt_fields,
-      logger
+      opt_fields
     )) {
       if (
         [
@@ -264,34 +279,19 @@ export class Asana {
     return stories;
   }
 
-  async *getTags(
-    workspace: string,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<Tag> {
+  async *getTags(workspace: string): AsyncGenerator<Tag> {
     const opt_fields = ['name'];
-    yield* this.fetchData<Tag>(
-      `workspaces/${workspace}/tags`,
-      opt_fields,
-      logger
-    );
+    yield* this.fetchData<Tag>(`workspaces/${workspace}/tags`, opt_fields);
   }
 
-  async *getUsers(
-    workspace: string,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<User> {
+  async *getUsers(workspace: string): AsyncGenerator<User> {
     const opt_fields = ['email', 'name'];
-    yield* this.fetchData<User>(
-      `workspaces/${workspace}/users`,
-      opt_fields,
-      logger
-    );
+    yield* this.fetchData<User>(`workspaces/${workspace}/users`, opt_fields);
   }
 
   async *fetchData<T>(
     endpoint: string,
-    optFields: string[],
-    logger?: AirbyteLogger
+    optFields: string[]
   ): AsyncGenerator<T> {
     const params = {limit: this.pageSize, opt_fields: optFields.join(',')};
     let hasNext = true;

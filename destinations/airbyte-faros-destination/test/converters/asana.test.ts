@@ -3,6 +3,7 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';
+import {ProjectTasks} from '../../src/converters/asana/project_tasks';
 import {Projects} from '../../src/converters/asana/projects';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
@@ -285,6 +286,19 @@ describe('asana', () => {
         ...USER,
         email: 'johndoe@example.com',
       });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+  });
+
+  describe('project tasks', () => {
+    const converter = new ProjectTasks();
+    const PROJECT_TASK = {
+      project_gid: '1205346703408259',
+      task_gid: '1205346703408262',
+    };
+    test('basic project task', async () => {
+      const record = AirbyteRecord.make('project_tasks', PROJECT_TASK);
       const res = await converter.convert(record);
       expect(res).toMatchSnapshot();
     });

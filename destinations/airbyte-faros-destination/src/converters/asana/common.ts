@@ -38,6 +38,11 @@ enum TmsTaskCategory {
   Task = 'Task',
 }
 
+export type ProjectTaskAssociation = {
+  project_gid: string;
+  task_gid: string;
+};
+
 /** Common functions shares across Asana converters */
 export class AsanaCommon {
   // Max length for free-form description text fields such as issue body

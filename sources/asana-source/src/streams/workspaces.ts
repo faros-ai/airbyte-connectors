@@ -1,14 +1,8 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Asana, AsanaConfig} from '../asana';
 import {Workspace} from '../models';
-import {StreamSlice} from './common';
 
 export class Workspaces extends AirbyteStreamBase {
   constructor(
