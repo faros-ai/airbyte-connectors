@@ -119,6 +119,17 @@
         "items": {
           "type": "string"
         }
+      },
+      "run_mode": {
+        "order": 18,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "Full",
+          "WebhookGaps"
+        ]
       }
     }
   }
