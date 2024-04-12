@@ -1,14 +1,17 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
+import {RunMode, WebhookGapsStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
@@ -44,5 +47,26 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosSprintReports(config, this.logger),
       new FarosBoardIssues(config, this.logger),
     ];
+  }
+
+  async onBeforeRead(
+    config: JiraConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: JiraConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const isWebhookGapsMode = config.run_mode === RunMode.WebhookGaps;
+    let streams = catalog.streams;
+
+    if (isWebhookGapsMode) {
+      streams = streams.filter((stream) =>
+        WebhookGapsStreamNames.includes(stream.stream.name)
+      );
+    }
+
+    return {config, catalog: {streams}, state};
   }
 }
