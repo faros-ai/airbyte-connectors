@@ -35,7 +35,7 @@ exports[`index onBeforeRead with run_mode Full should not filter streams 1`] = `
 }
 `;
 
-exports[`index onBeforeRead with run_mode WebhookComplement should filter streams 1`] = `
+exports[`index onBeforeRead with run_mode WebhookSupplement should filter streams 1`] = `
 {
   "streams": [
     {

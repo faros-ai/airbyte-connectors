@@ -11,7 +11,7 @@ import {
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
-import {RunMode, WebhookComplementStreamNames} from './streams/common';
+import {RunMode, WebhookSupplementStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
@@ -59,9 +59,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     state?: AirbyteState;
   }> {
     let streams = catalog.streams;
-    if (config.run_mode === RunMode.WebhookComplement) {
+    if (config.run_mode === RunMode.WebhookSupplement) {
       streams = streams.filter((stream) =>
-        WebhookComplementStreamNames.includes(stream.stream.name)
+        WebhookSupplementStreamNames.includes(stream.stream.name)
       );
     }
     return {config, catalog: {streams}, state};

@@ -23,10 +23,10 @@ export type StreamState = {
 
 export enum RunMode {
   Full = 'Full',
-  WebhookComplement = 'WebhookComplement',
+  WebhookSupplement = 'WebhookSupplement',
 }
 
-export const WebhookComplementStreamNames = [
+export const WebhookSupplementStreamNames = [
   'faros_board_issues',
   'faros_sprint_reports',
   'faros_issue_pull_requests',
