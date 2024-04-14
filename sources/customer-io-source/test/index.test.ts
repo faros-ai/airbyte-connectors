@@ -1,8 +1,8 @@
 import axios from 'axios';
 import AxiosMock from 'axios-mock-adapter';
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
+  AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
@@ -20,7 +20,7 @@ describe('index', () => {
   let axiosMock: AxiosMock;
 
   beforeEach(() => {
-    const logger = new AirbyteLogger(
+    const logger = new AirbyteSourceLogger(
       // Shush messages in tests, unless in debug
       process.env.LOG_LEVEL === 'debug'
         ? AirbyteLogLevel.DEBUG

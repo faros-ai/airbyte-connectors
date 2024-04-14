@@ -1,7 +1,8 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /home/node/airbyte
 
+ARG project
 COPY lerna.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/jest\|mockttp/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
@@ -11,8 +12,8 @@ COPY ./destinations ./destinations
 
 RUN apk -U upgrade
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
-    && npm install -g lerna @lerna/legacy-package-management tsc
-RUN lerna bootstrap --hoist
+    && npm install -g npm lerna @lerna/legacy-package-management tsc
+RUN lerna bootstrap --hoist --scope faros-airbyte-common --scope faros-airbyte-cdk --scope ${project}
 
 ARG version
 RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg version=x.y.z" && false)

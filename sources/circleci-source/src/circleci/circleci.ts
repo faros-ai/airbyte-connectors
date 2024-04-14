@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
-import {maxBy} from 'lodash';
+import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -15,13 +15,13 @@ import {Job, Pipeline, Project, TestMetadata, Workflow} from './types';
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_REQUEST_TIMEOUT = 60000;
+const DEFAULT_REQUEST_TIMEOUT = 120000;
 
 export interface CircleCIConfig {
   readonly token: string;
   readonly url?: string;
   project_slugs: ReadonlyArray<string>;
-  readonly project_blocklist?: string[];
+  readonly project_block_list?: string[];
   readonly pull_blocklist_from_graph?: boolean;
   readonly faros_api_url?: string;
   readonly faros_api_key?: string;
@@ -49,7 +49,7 @@ export class CircleCI {
     if (!config.token) {
       throw new VError('No token provided');
     }
-    if (!config.project_slugs || config.project_slugs.length == 0) {
+    if (!config.project_slugs?.length) {
       throw new VError('No project slugs provided');
     }
     if (config.project_slugs.includes('*') && config.project_slugs.length > 1) {
@@ -104,7 +104,7 @@ export class CircleCI {
         accept: 'application/json',
         'Circle-Token': config.token,
       },
-      httpsAgent: new https.Agent({rejectUnauthorized}),
+      httpsAgent: new https.Agent({rejectUnauthorized, keepAlive: true}),
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       // CircleCI responses can be very large hence the infinity
       maxContentLength: Infinity,
@@ -151,17 +151,23 @@ export class CircleCI {
         // //circleci.com/organization_id/project_id
         // https://github.com/organization/repository
         const projectMatch = projectVCSUrl.match(
-          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([^./]+)$/
+          /^[^/]*\/\/([^./]+).*\/([^./]+)\/([\w.-]+)$/
         );
-        if (!projectMatch || projectMatch.length < 1) {
+        if (!projectMatch || projectMatch.length < 4) {
           this.logger.error(`Could not parse vcs url: "${projectVCSUrl}"`);
           continue;
         }
-        const vcsProvider = projectMatch[1];
+        const vcsType = CircleCI.toVcsType(projectMatch[1]);
+        if (!vcsType) {
+          this.logger.error(
+            `Could not get vcs type from provider: "${projectMatch[1]}"`
+          );
+          continue;
+        }
         const orgId = projectMatch[2];
         const projectId = projectMatch[3];
 
-        res.push(`${vcsProvider}/${orgId}/${projectId}`);
+        res.push(`${vcsType}/${orgId}/${projectId}`);
       }
     } catch (error: any) {
       throw new Error(
@@ -171,8 +177,21 @@ export class CircleCI {
       );
     }
 
-    this.logger.info(`Retrieved project slugs: ${res}`);
+    this.logger.info(`Retrieved ${res.length} project slugs: ${res}`);
     return res;
+  }
+
+  static toVcsType(vcsProvider: string): 'gh' | 'bb' | 'circleci' | undefined {
+    switch (toLower(vcsProvider)) {
+      case 'bitbucket':
+        return 'bb';
+      case 'circleci':
+        return 'circleci';
+      case 'github':
+        return 'gh';
+      default:
+        return undefined;
+    }
   }
 
   private async iterate<V>(
@@ -228,11 +247,13 @@ export class CircleCI {
     api = this.v2,
     config = {},
     attempt = 1,
+    sleepMs = 1000,
   }: {
     path: string;
     api?: AxiosInstance;
     config?: AxiosRequestConfig<D>;
     attempt?: number;
+    sleepMs?: number;
   }): Promise<AxiosResponse<T> | undefined> {
     try {
       const res = await api.get<T, AxiosResponse<T>>(path, config);
@@ -241,13 +262,27 @@ export class CircleCI {
     } catch (err: any) {
       if (err?.response?.status === 429 && attempt <= this.maxRetries) {
         this.logger.warn(
-          `Request to ${path} was rate limited. Retrying... ` +
+          `Request to "${path}" was rate limited. Retrying... ` +
             `(attempt ${attempt} of ${this.maxRetries})`
         );
         await this.maybeSleepOnResponse(path, err?.response);
         return await this.get({path, api, config, attempt: attempt + 1});
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.get({
+          path,
+          api,
+          config,
+          attempt: attempt + 1,
+          sleepMs: sleepMs * 2,
+        });
       }
-      throw wrapApiError(err, `Failed to get "${path}". `);
+      throw wrapApiError(err, `Failed to get "${path}"`);
     }
   }
 
@@ -264,7 +299,7 @@ export class CircleCI {
     startDate.setDate(startDate.getDate() - this.cutoffDays);
 
     const lastUpdatedAt = since ? new Date(since) : startDate;
-    const gracePeriod = lastUpdatedAt;
+    const gracePeriod = new Date(lastUpdatedAt);
     gracePeriod.setDate(gracePeriod.getDate() - this.cutoffDays);
 
     const url = `/project/${projectName}/pipeline`;

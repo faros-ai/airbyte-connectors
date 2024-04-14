@@ -6,7 +6,7 @@ import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {jenkinsAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('jenkins', () => {
   const logger = testLogger();
@@ -48,7 +48,14 @@ describe('jenkins', () => {
       .fromPairs()
       .value();
 
-    const { processedTotal, writtenTotal } = await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    const {processedTotal, writtenTotal} =
+      await assertProcessedAndWrittenModels(
+        processedByStream,
+        writtenByModel,
+        stdout,
+        processed,
+        cli
+      );
   }
 
   test('process records from all streams', async () => {

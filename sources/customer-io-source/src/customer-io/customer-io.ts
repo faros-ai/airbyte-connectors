@@ -30,7 +30,9 @@ export class CustomerIO {
     axiosInstance?: AxiosInstance
   ): CustomerIO {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS));
+    startDate.setDate(
+      startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS)
+    );
     return new CustomerIO(
       axiosInstance ??
         axios.create({

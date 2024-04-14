@@ -33,7 +33,7 @@ export class Tasks extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
       yield {workspace: workspace.gid};
@@ -51,7 +51,7 @@ export class Tasks extends AirbyteStreamBase {
         ? streamState?.[streamSlice.workspace]?.modified_at
         : undefined;
 
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     yield* asana.getTasks(streamSlice.workspace, modified_at, this.logger);
   }

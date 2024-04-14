@@ -72,16 +72,23 @@
         "description": "Timeout (in milliseconds) to use when making requests to Asana API. 0 means no timeout.",
         "default": 0
       },
+      "max_retries": {
+        "order": 5,
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Asana API.",
+        "default": 3
+      },
       "start_date": {
         "airbyte_hidden": true,
-        "order": 5,
+        "order": 6,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
         "airbyte_hidden": true,
-        "order": 6,
+        "order": 7,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."

@@ -1,9 +1,4 @@
-import {
-  AirbyteLog,
-  AirbyteLogLevel,
-  AirbyteRecord,
-  AirbyteStateMessage,
-} from 'faros-airbyte-cdk';
+import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
@@ -18,7 +13,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {githubAllStreamsLog, githubLog, githubPGRawLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('github', () => {
   const logger = testLogger();
@@ -221,21 +216,44 @@ describe('github', () => {
     ]);
     cli.stdin.end(
       JSON.stringify(
-        new AirbyteStateMessage(
+        new AirbyteSourceStatusMessage(
           {data: {}},
-          {status: 'ERRORED', error: 'Source error message'}
+          {
+            status: 'RUNNING',
+            message: {
+              summary: 'Source error message',
+              code: 0,
+              action: 'test',
+              type: 'ERROR',
+            },
+          }
         )
-      ) + os.EOL,
+      ) +
+        os.EOL +
+        JSON.stringify(
+          new AirbyteSourceStatusMessage(
+            {data: {}},
+            {
+              status: 'ERRORED',
+              message: {
+                summary: 'Error from sync message',
+                code: 1,
+                action: 'test',
+                type: 'ERROR',
+              },
+            }
+          )
+        ),
       'utf8'
     );
     const stdout = await read(cli.stdout);
     logger.debug(stdout);
-    expect(stdout).toMatch('Read 1 messages');
+    expect(stdout).toMatch('Read 2 messages');
     expect(stdout).toMatch('Processed 0 records');
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch(
       'Skipping reset of non-incremental models due to' +
-        ' Airbyte Source failure: Source error message'
+        ' Airbyte Source errors: Error from sync message; Source error message'
     );
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
@@ -317,6 +335,12 @@ describe('github', () => {
       vcs_User: 195,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

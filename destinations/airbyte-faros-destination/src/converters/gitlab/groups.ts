@@ -41,7 +41,7 @@ export class Groups extends GitlabConverter {
           uid: group.full_path,
           name: group.name,
           htmlUrl: group.web_url,
-          type: { category: 'Group', detail: '' },
+          type: {category: 'Group', detail: ''},
           createdAt: Utils.toDate(group.created_at),
           source,
         },
@@ -49,8 +49,11 @@ export class Groups extends GitlabConverter {
     } else {
       res.push(
         GitlabCommon.tms_TaskBoard(
-          { uid: group.full_path.slice(group.full_path.indexOf('/') + 1), source },
-          group.name,
+          {
+            uid: group.full_path.slice(group.full_path.indexOf('/') + 1),
+            source,
+          },
+          group.name
         )
       );
     }

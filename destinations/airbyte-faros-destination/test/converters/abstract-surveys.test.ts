@@ -167,8 +167,8 @@ describe('abstract-surveys', () => {
             surveys: {
               ...DEFAULT_CONFIG,
               exclude_columns: ['Team Info'],
-            }
-          }
+            },
+          },
         },
         {}
       );

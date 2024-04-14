@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,12 +12,16 @@ import {ServiceNow, ServiceNowConfig} from './servicenow/servicenow';
 import {Incidents, Users} from './streams';
 
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new ServiceNowSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 export class ServiceNowSource extends AirbyteSourceBase<ServiceNowConfig> {
+  get type(): string {
+    return 'servicenow';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

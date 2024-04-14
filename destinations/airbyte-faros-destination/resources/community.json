@@ -8,7 +8,6 @@
     "edition": {
       "type": "string",
       "title": "Community Edition",
-      "description": "Community Edition",
       "const": "community"
     },
     "hasura_admin_secret": {

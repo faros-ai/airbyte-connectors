@@ -15,7 +15,7 @@
     "resources/"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "main": "./lib",
   "scripts": {
@@ -32,8 +32,8 @@
     "avsc": "5.7.7",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",
-    "faros-js-client": "^0.3.8",
-    "graphql": "^16.3.0",
+    "faros-js-client": "^0.4.1",
+    "graphql": "^16.8.1",
     "verror": "^1.10.1"
   },
   "jest": {
@@ -41,10 +41,13 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "test/tsconfig.json"
-      }
+    "transform": {
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     },
     "snapshotFormat": {
       "printBasicPrototype": true

@@ -230,12 +230,6 @@
     },
     {
       "stream": {
-        "name": "mytestsource__jira__pull_requests"
-      },
-      "destination_sync_mode": "append"
-    },
-    {
-      "stream": {
         "name": "mytestsource__jira__screen_schemes"
       },
       "destination_sync_mode": "append"
@@ -309,6 +303,24 @@
     {
       "stream": {
         "name": "mytestsource__jira__something_else"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_issue_pull_requests"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_sprint_reports"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_board_issues"
       },
       "destination_sync_mode": "append"
     }

@@ -3,12 +3,15 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
-import {AirbyteLogger, base64Encode} from 'faros-airbyte-cdk';
-import isRetryAllowed from 'is-retry-allowed';
 import {chunk, flatten} from 'lodash';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 
+import {
+  AirbyteLogger,
+  base64Encode,
+  wrapApiError,
+} from '../../../faros-airbyte-cdk/lib';
 import {
   Board,
   User,
@@ -16,6 +19,7 @@ import {
   WorkItemResponse1,
   WorkItemResponse2,
 } from './models';
+import {isRetryAllowed} from './utils';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
@@ -129,13 +133,20 @@ export class AzureWorkitems {
   //TODO: Check connection does nothing once you import the source to a conector and click Test Connection button on UI
   async checkConnection(): Promise<void> {
     try {
-      const board = await this.getBoards().next();
-      this.logger.info(`Found board ${board.value.name}`);
+      const iter = this.getStories();
+      await iter.next();
     } catch (err: any) {
-      throw new VError(
-        err,
-        'Please verify your access token and other information are correct'
-      );
+      let errorMessage = 'Please verify your access token is correct. Error: ';
+      if (err.error_code || err.error_info) {
+        errorMessage += `${err.error_code}: ${err.error_info}`;
+        throw new VError(errorMessage);
+      }
+      try {
+        errorMessage += err.message ?? err.statusText ?? wrapApiError(err);
+      } catch (wrapError: any) {
+        errorMessage += wrapError.message;
+      }
+      throw new VError(errorMessage);
     }
   }
 
@@ -167,25 +178,89 @@ export class AzureWorkitems {
     );
   }
 
-  async *getWorkitems(): AsyncGenerator<any> {
-    const promises = await this.getIdsFromAWorkItemType();
-    const results = await Promise.all(promises);
-    const ids: ReadonlyArray<string> = flatten(results);
-
-    for (const c of chunk(ids, MAX_BATCH_SIZE)) {
-      const url = `/_apis/wit/workitems?ids=${c}&$expand=all`;
-      const res = await this.get<WorkItemResponse1>(url);
-      for (const item of res?.data?.value ?? []) {
-        const id = item?.id;
-        const url2 = `/_apis/wit/workitems/${id}/updates`;
-        const res2 = await this.get<WorkItemResponse2>(url2);
-        const item2 = res2?.data?.value;
-        yield {item, item2};
+  async *getStories(): AsyncGenerator<any> {
+    // const data = {
+    //   query:
+    //     "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' order by [id] asc",
+    // };
+    const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
+    const cutoffDateFormatted = cutoffDate.toFormat('MM-dd-yyyy');
+    const userStories = [];
+    for (const project of this.projects) {
+      const data = {
+        query: `Select [System.Id], [System.Title], [System.State] From WorkItems 
+           Where [System.WorkItemType] = 'User Story' 
+           AND  [System.TeamProject] = '${project}'
+           AND [System.CreatedDate] > '${cutoffDateFormatted}'
+           order by [id] asc`,
+      };
+      const ids: string[] = [];
+      const ids2: string[] = [];
+      const list = await this.post<any>(`${project}/_apis/wit/wiql`, data);
+      console.log(JSON.stringify(list.data, null, 2));
+      for (let i = 0; i < list.data.workItems.length; i++) {
+        ids.push(list.data.workItems[i].id);
       }
+      for (const id of ids) {
+        if (ids2.length == MAX_BATCH_SIZE) {
+          userStories.push(
+            await this.get<WorkItemResponse1>(
+              `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
+            )
+          );
+          ids2.splice(0);
+        }
+        ids2.push(id);
+      }
+      if (ids2.length > 0) {
+        userStories.push(
+          await this.get<WorkItemResponse1>(
+            `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
+          )
+        );
+      }
+    }
+    for (const item of userStories) {
+      yield item;
     }
   }
 
-  async getIdsFromAWorkItemType(): Promise<ReadonlyArray<string>> {
+  async *getWorkitems(): AsyncGenerator<any> {
+    const promises = [
+      "'Task'",
+      "'User Story'",
+      "'BUG'",
+      "'Feature'",
+      "'Epic'",
+      "'Issue'",
+      "'Product Backlog Item'",
+      "'Requirement'",
+    ].map((n) => this.getIdsFromAWorkItemType(n));
+
+    const results = await Promise.all(promises);
+    const ids: ReadonlyArray<string> = flatten(results);
+    const itemsArray: any[] = [];
+    for (const project of this.projects) {
+      for (const c of chunk(ids, MAX_BATCH_SIZE)) {
+        const url = `${project}/_apis/wit/workitems?ids=${c}&$expand=all`;
+        const res = await this.get<WorkItemResponse1>(url);
+        for (const item of res?.data?.value ?? []) {
+          const id = item?.id;
+          const url2 = `${project}/_apis/wit/workitems/${id}/updates`;
+          const res2 = await this.get<WorkItemResponse2>(url2);
+          const item2 = res2?.data?.value;
+          itemsArray.push({item, item2});
+        }
+      }
+    }
+    for (const item of itemsArray) {
+      yield item;
+    }
+  }
+
+  async getIdsFromAWorkItemType(
+    workItemsType: string
+  ): Promise<ReadonlyArray<string>> {
     const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
     const cutoffDateFormatted = cutoffDate.toFormat('MM-dd-yyyy');
     const ids = [];
@@ -200,10 +275,12 @@ export class AzureWorkitems {
           " AND [System.CreatedDate] > '" +
           cutoffDateFormatted +
           "'" +
+          ' AND [System.WorkItemType] = ' +
+          workItemsType +
           ' order by [id] asc',
       };
 
-      const list = await this.post<any>(`/_apis/wit/wiql`, data);
+      const list = await this.post<any>(`${project}/_apis/wit/wiql`, data);
 
       for (let i = 0; i < list.data.workItems.length; i++) {
         ids.push(list.data.workItems[i].id);
@@ -226,12 +303,16 @@ export class AzureWorkitems {
   }
 
   async *getIterations(): AsyncGenerator<any> {
+    const iterationArray: any[] = [];
     for (const project of this.projects) {
       const res = await this.get<any>(
         `/${project}/_apis/work/teamsettings/iterations`
       );
       let response;
       let response2;
+      this.logger.info(
+        `Found ${res.data?.value?.length} boards for project ${project}`
+      );
       for (const item of res.data?.value ?? []) {
         response = await this.httpClient.get(item?.url);
         response2 = await this.httpClient.get(
@@ -240,19 +321,27 @@ export class AzureWorkitems {
         if (typeof response2?.data?.id !== 'undefined') {
           item.id = response2.data?.id;
         }
-        yield item;
+        iterationArray.push(item);
       }
+    }
+    for (const item of iterationArray) {
+      yield item;
     }
   }
 
   async *getBoards(): AsyncGenerator<Board> {
+    const allBoards: Board[] = [];
     for (const project of this.projects) {
       const res = await this.get<any>(`/${project}/_apis/work/boards`);
       const boards = res.data?.value ?? [];
       this.logger.info(`Found ${boards.length} boards for project ${project}`);
       for (const item of boards) {
-        yield item;
+        allBoards.push(item);
       }
+    }
+    for (const item of allBoards) {
+      this.logger.info(`Yielding board ${item.name}`);
+      yield item;
     }
   }
 }

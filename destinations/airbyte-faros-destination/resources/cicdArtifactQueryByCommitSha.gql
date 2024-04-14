@@ -1,0 +1,12 @@
+query cicdArtifactQueryByCommitSha($commitSha: String!) {
+  cicd_Artifact(where: {uid: {_eq: $commitSha}}, limit: 1) {
+    uid
+    repository {
+      organization {
+        uid
+        source
+      }
+      uid
+    }
+  }
+}

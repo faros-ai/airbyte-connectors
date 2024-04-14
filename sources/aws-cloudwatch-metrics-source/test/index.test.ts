@@ -1,6 +1,6 @@
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
+  AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
@@ -11,7 +11,7 @@ import {CloudWatch, Config} from '../src/cloudwatch';
 import * as sut from '../src/index';
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL

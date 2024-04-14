@@ -16,7 +16,7 @@
     "resources/"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "main": "./lib",
   "scripts": {
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@pagerduty/pdjs": "^2.2.4",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "0.0.1",
     "luxon": "^3.2.1",
@@ -46,10 +46,13 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "test/tsconfig.json"
-      }
+    "transform": {
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     }
   }
 }

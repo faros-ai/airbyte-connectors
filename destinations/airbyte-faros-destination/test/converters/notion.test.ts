@@ -2,9 +2,13 @@ import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {CLI, read} from '../cli';
-import {initMockttp, sourceSpecificTempConfig, testLogger} from '../testing-tools';
+import {
+  initMockttp,
+  sourceSpecificTempConfig,
+  testLogger,
+} from '../testing-tools';
 import {notionAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('notion', () => {
   const logger = testLogger();
@@ -15,38 +19,35 @@ describe('notion', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await sourceSpecificTempConfig(
-      mockttp.url,
-      {
-        notion: {
-          kind_property: 'Kind',
-          projects: {
-            kind: 'Project',
-          },
-          epics: {
-            kind: 'Epic',
-          },
-          sprints: {
-            kind: 'Sprint',
-          },
-          tasks: {
-            kind: 'Task',
-            include_additional_properties: true,
-            properties: {
-              type: 'Task Type',
-              status: {
-                name: 'Status',
-                mapping: {
-                  todo: ['Not started'],
-                  in_progress: ['In progress'],
-                  done: ['Done'],
-                },
+    configPath = await sourceSpecificTempConfig(mockttp.url, {
+      notion: {
+        kind_property: 'Kind',
+        projects: {
+          kind: 'Project',
+        },
+        epics: {
+          kind: 'Epic',
+        },
+        sprints: {
+          kind: 'Sprint',
+        },
+        tasks: {
+          kind: 'Task',
+          include_additional_properties: true,
+          properties: {
+            type: 'Task Type',
+            status: {
+              name: 'Status',
+              mapping: {
+                todo: ['Not started'],
+                in_progress: ['In progress'],
+                done: ['Done'],
               },
             },
           },
         },
-      }
-    );
+      },
+    });
   });
 
   afterEach(() => mockttp.stop());
@@ -86,6 +87,12 @@ describe('notion', () => {
       tms_User: 2,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

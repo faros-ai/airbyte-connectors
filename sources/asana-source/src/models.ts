@@ -9,6 +9,13 @@ export type Workspace = {
   resource_type: string;
 };
 
+export type CompactTask = {
+  gid?: string;
+  name?: string;
+  resource_type?: string;
+  resource_subtype?: string;
+};
+
 export type Task = {
   gid?: string;
   resource_type?: string;
@@ -243,6 +250,11 @@ export type Section = {
     resource_type: string;
     name: string;
   };
+};
+
+export type ProjectTaskAssociation = {
+  project_gid?: string;
+  task_gid?: string;
 };
 
 export type Story = {

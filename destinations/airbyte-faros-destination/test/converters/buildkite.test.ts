@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {buildkiteAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('buildkite', () => {
   const logger = testLogger();
@@ -56,6 +56,12 @@ describe('buildkite', () => {
       cicd_Pipeline: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

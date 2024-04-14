@@ -11,6 +11,7 @@ export abstract class AzureWorkitemsConverter extends Converter {
   }
 
   getOrganizationFromUrl(url: string): string {
+    console.log('============> URL to Split: ', url, ' <============');
     return url.split('/')[3];
   }
 }

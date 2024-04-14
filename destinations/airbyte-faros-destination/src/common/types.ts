@@ -24,9 +24,14 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly accept_input_records_origin?: boolean;
   readonly replace_origin_map?: string;
   readonly exclude_fields_map?: string;
+  readonly redact_fields_map?: string;
+  readonly redact_custom_replace?: string;
+  readonly redact_custom_regex?: ReadonlyArray<string>;
   readonly source_specific_configs?: Dictionary<any>;
   readonly keep_alive?: boolean;
   readonly skip_source_success_check?: boolean;
+  readonly faros_source_id?: string;
+  readonly fail_on_source_error?: boolean;
 }
 
 export enum Operation {

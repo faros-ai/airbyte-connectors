@@ -1,11 +1,11 @@
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {AirbyteLogLevel, AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import {DateTime} from 'luxon';
 
 import * as sut from '../src/pagerduty';
 import {Incident, LogEntry, PagerdutyResponse} from '../src/pagerduty';
 
 describe('Pagerduty', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG

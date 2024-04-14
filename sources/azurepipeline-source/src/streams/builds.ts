@@ -51,7 +51,7 @@ export class Builds extends AirbyteStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.lastQueueTime
         : undefined;
-    const azurePipeline = AzurePipeline.instance(this.config);
+    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
     yield* azurePipeline.getBuilds(
       streamSlice.project,
       lastQueueTime,

@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {semaphoreciAllStreamLogs} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('semaphoreci', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -53,6 +53,12 @@ describe('semaphoreci', () => {
       cicd_Repository: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

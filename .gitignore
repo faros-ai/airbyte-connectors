@@ -5,7 +5,8 @@ node_modules/
 acceptance_tests_logs/
 .vscode/
 .idea/
-
+.history/
+.nx/
 .DS_Store
 acceptance-test-*.log
 *.code-workspace
@@ -22,3 +23,4 @@ sources/**/package-lock.json
 **/jenkins/data/.java
 **/jenkins/data/.lastStarted
 **/jenkins/data/*.log
+sources/azure-workitems-source/test/uat.test.ts

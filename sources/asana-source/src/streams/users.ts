@@ -27,7 +27,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
       yield {workspace: workspace.gid};
@@ -39,8 +39,8 @@ export class Users extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<User> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
-    yield* asana.getUsers(streamSlice.workspace, this.logger);
+    yield* asana.getUsers(streamSlice.workspace);
   }
 }

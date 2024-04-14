@@ -221,4 +221,10 @@ describe('traverse', () => {
       traverseObject(loadJSON('one-of-airbyte-hidden.json'), [])
     ).toMatchSnapshot();
   });
+
+  test('array of objects', () => {
+    expect(
+      traverseObject(loadJSON('array-of-objects.json'), [])
+    ).toMatchSnapshot();
+  });
 });

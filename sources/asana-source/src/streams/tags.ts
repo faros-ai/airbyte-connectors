@@ -27,7 +27,7 @@ export class Tags extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
       yield {workspace: workspace.gid};
@@ -39,8 +39,8 @@ export class Tags extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Tag> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
-    yield* asana.getTags(streamSlice.workspace, this.logger);
+    yield* asana.getTags(streamSlice.workspace);
   }
 }

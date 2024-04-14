@@ -69,15 +69,36 @@
           "{ \"tms_Task\": [ \"description\" ], \"vcs_PullRequest\": [ \"description\", \"htmlUrl\" ] }"
         ]
       },
-      "dry_run": {
+      "redact_fields_map": {
         "order": 5,
+        "type": "string",
+        "title": "Redact Fields",
+        "description": "JSON map to redact specific records field values",
+        "multiline": true,
+        "default": "{}"
+      },
+      "redact_custom_replace": {
+        "order": 6,
+        "type": "string",
+        "title": "Redact Custom Replace"
+      },
+      "redact_custom_regex": {
+        "order": 7,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Redact Custom Regex"
+      },
+      "dry_run": {
+        "order": 8,
         "type": "boolean",
         "title": "Dry run",
         "description": "Process all input records but avoid writing into Faros API",
         "default": false
       },
       "invalid_record_strategy": {
-        "order": 6,
+        "order": 9,
         "type": "string",
         "title": "Invalid record strategy",
         "description": "Strategy to follow to handle an invalid input record.",
@@ -88,14 +109,14 @@
         ]
       },
       "jsonata_expression": {
-        "order": 7,
+        "order": 10,
         "type": "string",
         "title": "JSONata expression",
         "description": "JSONata expression for converting input records. If provided applies the expression based on specified JSONata apply mode.",
         "multiline": true
       },
       "jsonata_mode": {
-        "order": 8,
+        "order": 11,
         "type": "string",
         "title": "JSONata apply mode",
         "description": "JSONata apply mode when converting input records.",
@@ -106,7 +127,7 @@
         ]
       },
       "jsonata_destination_models": {
-        "order": 9,
+        "order": 12,
         "type": "array",
         "items": {
           "type": "string"
@@ -122,17 +143,30 @@
         "$ref": "source-specific-configs/spec.json"
       },
       "keep_alive": {
-        "order": 10,
+        "order": 13,
         "type": "boolean",
         "title": "HTTP Keep Alive",
         "description": "Should keep connection between client and server alive",
         "default": false
       },
       "skip_source_success_check": {
-        "order": 11,
+        "order": 14,
         "type": "boolean",
         "title": "Skip source success check",
         "description": "Skip checking if source ran successfully before resetting non-incremental models",
+        "default": false
+      },
+      "faros_source_id": {
+        "order": 15,
+        "type": "string",
+        "title": "Faros Source Id",
+        "description": "The Id of the Faros Source that is being used to track sync statuses. If left blank, it will use the determined origin value as the source id."
+      },
+      "fail_on_source_error": {
+        "order": 16,
+        "type": "boolean",
+        "title": "Fail on source error",
+        "description": "Fail the sync if the source has an error, even if it's not a fatal error.",
         "default": false
       }
     }

@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__trello__boards"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__trello__users"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

@@ -50,7 +50,6 @@ export class Workday {
       throw new VError('baseUrl must not be an empty string');
     }
 
-    const baseUrl = new URL(cfg.baseUrl);
     const timeout = cfg.timeout ?? 60000;
     const headers = {'content-type': 'application/json'};
 
@@ -59,7 +58,7 @@ export class Workday {
       'clientId' in cfg.credentials &&
       'clientSecret' in cfg.credentials
     ) {
-      const res = await Workday.getAccessToken(baseUrl, cfg, logger);
+      const res = await Workday.getAccessToken(cfg.baseUrl, cfg, logger);
       headers['authorization'] = `Bearer ${res.access_token}`;
     } else if ('password' in cfg.credentials && 'username' in cfg.credentials) {
       const usernamePass = `${cfg.credentials.username}:${cfg.credentials.password}`;
@@ -81,14 +80,14 @@ export class Workday {
       logger,
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
-      baseUrl.toString(),
+      cfg.baseUrl,
       cfg.tenant,
       cfg.skipConnectionCheck ? cfg.skipConnectionCheck : true
     );
   }
 
   private static async getAccessToken(
-    baseURL: URL,
+    baseURL: string,
     cfg: any,
     logger: AirbyteLogger
   ): Promise<{
@@ -96,7 +95,7 @@ export class Workday {
     token_type: string;
     access_token: string;
   }> {
-    const authUrl = baseURL.toString() + `/oauth2/${cfg.tenant}/token`;
+    const authUrl = ccxUrl(`/oauth2/${cfg.tenant}/token`, baseURL).toString();
     logger.debug('Requesting an access token - %s', authUrl);
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -111,7 +110,8 @@ export class Workday {
   }
 
   private apiBaseUrl(version: string): string {
-    return `${this.baseUrl}/api/${version}/${this.tenant}`;
+    const apiBaseUrl = ccxUrl(`/api/${version}/${this.tenant}`, this.baseUrl);
+    return apiBaseUrl.toString();
   }
 
   async checkConnection(): Promise<void> {
@@ -158,8 +158,11 @@ export class Workday {
   }
 
   async *customReports(customReportName: string): AsyncGenerator<any> {
-    const baseURL = `${this.baseUrl}/service/customreport2/${this.tenant}`;
-    const finalPath = `${baseURL}/${customReportName}`;
+    const finalPathURL = ccxUrl(
+      `/service/customreport2/${this.tenant}/${customReportName}`,
+      this.baseUrl
+    );
+    const finalPath = finalPathURL.toString();
     this.logger.info(
       `Fetching Custom Report '${customReportName}' from - ${finalPath}`
     );
@@ -216,4 +219,9 @@ export class Workday {
       }
     } while (offset < total && pages < maxPages);
   }
+}
+
+export function ccxUrl(postCxxPath: string, baseUrl: string): string {
+  const url = new URL('/ccx' + postCxxPath, baseUrl);
+  return url.toString();
 }

@@ -8,7 +8,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {pagerdutyAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('pagerduty', () => {
   const logger = testLogger();
@@ -76,6 +76,12 @@ describe('pagerduty', () => {
       org_ApplicationOwnership: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

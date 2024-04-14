@@ -1,26 +1,30 @@
 import {Command} from 'commander';
+import VError from 'verror';
+
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
-} from 'faros-airbyte-cdk';
-import VError from 'verror';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
 import {Boards, Iterations, Users} from './streams';
 import {Workitems} from './streams/workitems';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new AzureWorkitemsSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Example source implementation. */
 export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig> {
+  get type(): string {
+    return 'azure-workitems';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

@@ -47,11 +47,7 @@ no danger of accidentally checking in sensitive information. See
 bin/main spec
 bin/main check --config secrets/config.json
 bin/main discover --config secrets/config.json
-```
-
-Now you can run the source and output the content to `log.json`
-```
-bin/main read --config secrets/config.json --catalog test_files/full_configured_catalog.json > log.json
+bin/main read --config secrets/config.json --catalog test_files/full_configured_catalog.json
 ```
 
 ### Locally running the connector docker image
@@ -62,7 +58,7 @@ Go back to the root repository directory and run:
 First, make sure you build the latest Docker image:
 
 ```
-docker build . --build-arg path=sources/azure-repos-source --build-arg version=0.0.1 -t flowyzer/azure-repos-source
+docker build . --build-arg path=sources/azure-repos-source --build-arg version=0.0.1 -t azure-repos-source
 ```
 
 #### Run

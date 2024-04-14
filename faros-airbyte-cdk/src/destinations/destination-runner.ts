@@ -8,7 +8,7 @@ import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteLogger} from '../logger';
 import {AirbyteConfig, AirbyteSpec} from '../protocol';
-import {Runner} from '../runner';
+import {ConnectorVersion, Runner} from '../runner';
 import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
@@ -76,7 +76,9 @@ export class AirbyteDestinationRunner<
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
           const {catalog, spec, config} = await this.loadConfig(opts);
-          this.logger.info(`Config: ${redactConfig(config, spec)}`);
+          const redactedConfig = redactConfig(config, spec);
+          this.logger.info(`Destination version: ${ConnectorVersion}`);
+          this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
           this.logger.info(`Catalog: ${JSON.stringify(catalog)}`);
 
           try {
@@ -84,6 +86,7 @@ export class AirbyteDestinationRunner<
 
             const iter = this.destination.write(
               config,
+              redactedConfig,
               catalog,
               process.stdin,
               opts.dryRun
@@ -151,6 +154,11 @@ export class AirbyteDestinationRunner<
         'Include fields marked as hidden in the spec',
         false
       )
+      .option(
+        '--autofill',
+        'Automatically fill in the destination configuration with default/placeholder values',
+        false
+      )
       .description(
         'Run a wizard command to prepare arguments for Airbyte Local CLI'
       )
@@ -173,12 +181,12 @@ export class AirbyteDestinationRunner<
         );
 
         if (opts.json) {
-          fs.writeFileSync(opts.json, await buildJson(rows));
+          fs.writeFileSync(opts.json, await buildJson(rows, opts.autofill));
         } else {
           console.log(
             '\n\nUse the arguments below when running this destination' +
               ' with Airbyte Local CLI (https://github.com/faros-ai/airbyte-local-cli):' +
-              `\n\n${await buildArgs(rows)}`
+              `\n\n${await buildArgs(rows, opts.autofill)}`
           );
         }
       });

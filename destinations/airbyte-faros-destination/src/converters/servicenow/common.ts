@@ -56,11 +56,7 @@ export abstract class ServiceNowConverter extends Converter {
     return this.config(ctx).application_field ?? DEFAULT_APPLICATION_FIELD;
   }
 
-  protected onlyStoreCurrentIncidentsAssociations(
-    ctx: StreamContext
-  ): boolean {
-    return (
-      this.config(ctx).store_current_incidents_associations ?? false
-    );
+  protected onlyStoreCurrentIncidentsAssociations(ctx: StreamContext): boolean {
+    return this.config(ctx).store_current_incidents_associations ?? false;
   }
 }

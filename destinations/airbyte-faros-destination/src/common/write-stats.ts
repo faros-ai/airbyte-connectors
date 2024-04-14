@@ -47,4 +47,17 @@ export class WriteStats {
     logger.info(`Skipped ${this.recordsSkipped} records`);
     logger.info(`Errored ${this.recordsErrored} records`);
   }
+
+  asObject(): Dictionary<any> {
+    return {
+      messagesRead: this.messagesRead,
+      recordsRead: this.recordsRead,
+      recordsProcessed: this.recordsProcessed,
+      recordsWritten: this.recordsWritten,
+      recordsErrored: this.recordsErrored,
+      recordsSkipped: this.recordsSkipped,
+      processedByStream: this.processedByStream,
+      writtenByModel: this.writtenByModel,
+    };
+  }
 }

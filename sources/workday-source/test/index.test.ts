@@ -1,6 +1,6 @@
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
+  AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
@@ -18,12 +18,21 @@ function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
 }
 
+const test_base_url = 'https://testurl.com';
+
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
-  return new Workday(logger, axios_instance, limit, 'base-url', 'acme', true);
+  return new Workday(
+    logger,
+    axios_instance,
+    limit,
+    test_base_url,
+    'acme',
+    true
+  );
 }
 
 describe('index', () => {
-  const logger = new AirbyteLogger(
+  const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
@@ -193,7 +202,7 @@ describe('index', () => {
           get: fnCustomreports.mockResolvedValue({data: expected}),
         } as any,
         0,
-        'base-url',
+        test_base_url,
         'my_tenant',
         true
       );

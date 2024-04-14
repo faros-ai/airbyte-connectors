@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {azurepipelineAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('azurepipeline', () => {
   const logger = testLogger();
@@ -57,6 +57,12 @@ describe('azurepipeline', () => {
       cicd_Release: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

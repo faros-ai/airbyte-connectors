@@ -22,7 +22,7 @@
   ],
   "main": "./lib",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "exports": {
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
@@ -62,10 +62,13 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "test/tsconfig.json"
-      }
+    "transform": {
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     },
     "snapshotFormat": {
       "printBasicPrototype": true

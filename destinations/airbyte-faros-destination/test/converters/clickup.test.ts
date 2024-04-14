@@ -8,7 +8,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {clickupAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('clickup', () => {
   const logger = testLogger();
@@ -73,6 +73,12 @@ describe('clickup', () => {
       tms_User: 3,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });
