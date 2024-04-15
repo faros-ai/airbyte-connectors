@@ -107,7 +107,7 @@ export abstract class StreamWithBoardSlices extends StreamBase {
       }
     } else {
       for (const board of this.config.board_ids) {
-        if (await jira.isBoardInProjectBucket(board)) yield {board};
+        if (await jira.isBoardInBucket(board)) yield {board};
       }
     }
   }

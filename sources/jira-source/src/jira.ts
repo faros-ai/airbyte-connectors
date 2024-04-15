@@ -748,17 +748,17 @@ export class Jira {
     return filterJQL.jql;
   }
 
-  bucket(repoFullName: string): number {
+  bucket(project: string): number {
     const md5 = createHmac('md5', 'farosai/airbyte-jira-source');
-    md5.update(repoFullName);
+    md5.update(project);
     const hex = md5.digest('hex').substring(0, 8);
     return (parseInt(hex, 16) % this.projectBucketTotal) + 1; // 1-index for readability
   }
 
-  async isBoardInProjectBucket(boardId: string): Promise<boolean> {
+  async isBoardInBucket(boardId: string): Promise<boolean> {
     const board = await this.getBoard(boardId);
     const boardProject = board?.location?.projectKey;
-    return boardProject && this.bucket(boardProject) === this.projectBucketId;
+    return boardProject && this.isProjectInBucket(boardProject);
   }
 
   isProjectInBucket(projectKey: string): boolean {
