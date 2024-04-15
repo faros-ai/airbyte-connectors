@@ -18,20 +18,23 @@
       "username": {
         "order": 2,
         "title": "Username",
-        "description": "Username for authentication (optional)",
-        "type": "string"
+        "description": "Username for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "password": {
         "order": 3,
         "title": "Password",
-        "description": "Password for authentication (optional)",
-        "type": "string"
+        "description": "Password for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "token": {
         "order": 4,
         "title": "Token",
-        "description": "Token for authentication (optional)",
-        "type": "string"
+        "description": "Token for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "sync_additional_fields": {
         "order": 5,
@@ -128,7 +131,7 @@
         "default": "Full",
         "enum": [
           "Full",
-          "WebhookGaps"
+          "WebhookSupplement"
         ]
       }
     }

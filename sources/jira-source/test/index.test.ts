@@ -190,7 +190,6 @@ describe('index', () => {
     const config = readTestResourceFile('config.json');
     config.run_mode = RunMode.WebhookSupplement;
     const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
-    expect(newCatalog.streams).toHaveLength(3);
     expect(newCatalog).toMatchSnapshot();
   });
 
@@ -200,7 +199,6 @@ describe('index', () => {
     const config = readTestResourceFile('config.json');
     config.run_mode = RunMode.Full;
     const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
-    expect(newCatalog.streams).toHaveLength(4);
     expect(newCatalog).toMatchSnapshot();
   });
 });
