@@ -25,6 +25,7 @@ import {
   JiraCommon,
   JiraConverter,
   PullRequest,
+  PullRequestStream,
   Repo,
   RepoSource,
   Status,
@@ -399,20 +400,21 @@ export class Issues extends JiraConverter {
     const pulls: PullRequest[] = [];
     const record = ctx.get(Issues.pullRequestsStream.asString, issueId);
     if (!record) return pulls;
-    const detail = record.record.data;
+    const detail = record.record.data as PullRequestStream;
     try {
       const branchToRepoUrl = new Map<string, string>();
       for (const branch of detail.branches ?? []) {
         branchToRepoUrl.set(branch.url, branch.repository.url);
       }
       for (const pull of detail.pullRequests ?? []) {
-        const repoUrl = pull?.repositoryUrl;
+        const repoUrl = pull?.url;
         if (!repoUrl) {
           continue;
         }
         pulls.push({
           repo: Issues.extractRepo(repoUrl),
           number: Utils.parseInteger(pull.id.replace('#', '')),
+          repoUrl: repoUrl,
         });
       }
     } catch (err: any) {
@@ -482,8 +484,8 @@ export class Issues extends JiraConverter {
         number: pull.number,
         uid: pull.number.toString(),
         repository,
+        url: pull.repoUrl,
       };
-
       results.push({
         model: 'tms_TaskPullRequestAssociation',
         record: {

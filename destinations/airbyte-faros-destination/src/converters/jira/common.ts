@@ -26,8 +26,26 @@ export interface Repo {
 export interface PullRequest {
   readonly repo: Repo;
   readonly number: number;
+  repoUrl: string;
 }
 
+export interface PullRequestStream {
+  id?: string;
+  updated: string;
+  branches?: any[];
+  _instance?: PullRequestInstance;
+  pullRequests?: any[];
+  repositories?: [];
+}
+
+export interface PullRequestInstance {
+  id?: string;
+  name?: string;
+  type?: string;
+  baseUrl?: string;
+  typeName?: string;
+  singleInstance?: boolean;
+}
 export interface Status {
   readonly category: string;
   readonly detail: string;
