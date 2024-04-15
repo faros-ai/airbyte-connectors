@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
+import {createHmac} from 'crypto';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
@@ -31,6 +32,8 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly board_ids?: ReadonlyArray<string>;
+  readonly project_bucket_id?: number;
+  readonly project_bucket_total?: number;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -85,6 +88,8 @@ export class Jira {
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
     private readonly maxPageSize: number,
+    private readonly projectBucketId: number,
+    private readonly projectBucketTotal: number,
     private readonly logger: AirbyteLogger
   ) {
     // Create inverse mapping from field name -> ids
@@ -104,6 +109,9 @@ export class Jira {
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
 
     const authentication = Jira.auth(cfg);
+
+    this.validateBucketingConfig(cfg);
+
     const httpsAgent = new https.Agent({
       rejectUnauthorized: cfg.reject_unauthorized,
     });
@@ -163,6 +171,8 @@ export class Jira {
       isCloud,
       cfg.concurrency_limit,
       cfg.page_size,
+      cfg.project_bucket_id ?? 1,
+      cfg.project_bucket_total ?? 1,
       logger
     );
   }
@@ -176,6 +186,19 @@ export class Jira {
     } else {
       throw new VError(
         'Either Jira personal token or Jira username and password must be provided'
+      );
+    }
+  }
+
+  private static validateBucketingConfig(config: JiraConfig): void {
+    const projectBucketTotal = config.project_bucket_total ?? 1;
+    if (projectBucketTotal < 1) {
+      throw new VError('project_bucket_total must be a positive integer');
+    }
+    const projectBucketId = config.project_bucket_id ?? 1;
+    if (projectBucketId < 1 || projectBucketId > projectBucketTotal) {
+      throw new VError(
+        `project_bucket_id must be between 1 and ${projectBucketTotal}`
       );
     }
   }
@@ -419,7 +442,8 @@ export class Jira {
         })
       );
       for await (const project of projects) {
-        yield project;
+        // Bucket projects based on projectBucketId
+        if (this.isProjectInBucket(project.key)) yield project;
       }
       return;
     }
@@ -603,8 +627,10 @@ export class Jira {
     return fieldIds;
   }
 
-  getBoards(projectId?: string): AsyncIterableIterator<AgileModels.Board> {
-    return this.iterate(
+  async *getBoards(
+    projectId?: string
+  ): AsyncIterableIterator<AgileModels.Board> {
+    const boards = this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
           startAt,
@@ -613,6 +639,11 @@ export class Jira {
         }),
       (item: AgileModels.Board) => item
     );
+    for await (const board of boards) {
+      const boardProject = board?.location?.projectKey;
+      if (boardProject && this.bucket(boardProject) === this.projectBucketId)
+        yield board;
+    }
   }
 
   getBoard(id: string): Promise<AgileModels.Board> {
@@ -713,5 +744,22 @@ export class Jira {
       expand: 'jql',
     });
     return filterJQL.jql;
+  }
+
+  bucket(repoFullName: string): number {
+    const md5 = createHmac('md5', 'farosai/airbyte-jira-source');
+    md5.update(repoFullName);
+    const hex = md5.digest('hex').substring(0, 8);
+    return (parseInt(hex, 16) % this.projectBucketTotal) + 1; // 1-index for readability
+  }
+
+  async isBoardInProjectBucket(boardId: string): Promise<boolean> {
+    const board = await this.getBoard(boardId);
+    const boardProject = board?.location?.projectKey;
+    return boardProject && this.bucket(boardProject) === this.projectBucketId;
+  }
+
+  isProjectInBucket(projectKey: string): boolean {
+    return this.bucket(projectKey) === this.projectBucketId;
   }
 }
