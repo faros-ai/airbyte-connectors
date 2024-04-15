@@ -18,20 +18,23 @@
       "username": {
         "order": 2,
         "title": "Username",
-        "description": "Username for authentication (optional)",
-        "type": "string"
+        "description": "Username for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "password": {
         "order": 3,
         "title": "Password",
-        "description": "Password for authentication (optional)",
-        "type": "string"
+        "description": "Password for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "token": {
         "order": 4,
         "title": "Token",
-        "description": "Token for authentication (optional)",
-        "type": "string"
+        "description": "Token for authentication",
+        "type": "string",
+        "airbyte_secret": true
       },
       "sync_additional_fields": {
         "order": 5,
@@ -119,6 +122,17 @@
         "items": {
           "type": "string"
         }
+      },
+      "run_mode": {
+        "order": 18,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "Full",
+          "WebhookSupplement"
+        ]
       }
     }
   }

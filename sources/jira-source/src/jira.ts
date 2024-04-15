@@ -12,6 +12,7 @@ import {VError} from 'verror';
 
 import {JiraClient} from './client';
 import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
+import {RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
@@ -31,6 +32,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly board_ids?: ReadonlyArray<string>;
+  readonly run_mode?: RunMode;
 }
 
 // Check for field name differences between classic and next-gen projects

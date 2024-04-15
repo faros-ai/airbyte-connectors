@@ -9,6 +9,7 @@ import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
+import {RunMode} from '../src/streams/common';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -181,5 +182,23 @@ describe('index', () => {
       },
       {board: '1'}
     );
+  });
+
+  test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
+    const source = new sut.JiraSource(logger);
+    const catalog = readTestResourceFile('catalog.json');
+    const config = readTestResourceFile('config.json');
+    config.run_mode = RunMode.WebhookSupplement;
+    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
+    expect(newCatalog).toMatchSnapshot();
+  });
+
+  test('onBeforeRead with run_mode Full should not filter streams', async () => {
+    const source = new sut.JiraSource(logger);
+    const catalog = readTestResourceFile('catalog.json');
+    const config = readTestResourceFile('config.json');
+    config.run_mode = RunMode.Full;
+    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
+    expect(newCatalog).toMatchSnapshot();
   });
 });
