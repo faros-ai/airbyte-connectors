@@ -1,5 +1,68 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index onBeforeRead with run_mode Full should not filter streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_pull_requests",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprint_reports",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_board_issues",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issues",
+      },
+      "sync_mode": "incremental",
+    },
+  ],
+}
+`;
+
+exports[`index onBeforeRead with run_mode WebhookSupplement should filter streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_pull_requests",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprint_reports",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_board_issues",
+      },
+      "sync_mode": "incremental",
+    },
+  ],
+}
+`;
+
 exports[`index streams - board_issues using board ids 1`] = `
 [
   {

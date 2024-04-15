@@ -21,6 +21,17 @@ export type StreamState = {
   readonly [projectOrBoard: string]: {cutoff: number};
 };
 
+export enum RunMode {
+  Full = 'Full',
+  WebhookSupplement = 'WebhookSupplement',
+}
+
+export const WebhookSupplementStreamNames = [
+  'faros_board_issues',
+  'faros_sprint_reports',
+  'faros_issue_pull_requests',
+];
+
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: JiraConfig,
