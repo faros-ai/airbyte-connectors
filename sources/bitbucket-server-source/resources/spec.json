@@ -49,7 +49,7 @@
           "type": "string"
         },
         "title": "Repositories",
-        "description": "Names of your Bitbucket repositories in the format 'project-key/repo-slug'. If none are provided, data from all repositories for the specified projects will be pulled.",
+        "description": "Names of your Bitbucket repositories in the format 'project-key/repo-slug'. If you want to pull all repositories from a project, you can add the project key to the Projects list instead of listing the repositories here",
         "examples": [
           "PROJ/myrepo"
         ]

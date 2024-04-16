@@ -123,7 +123,7 @@ describe('index', () => {
       );
     });
     const source = new sut.BitbucketServerSource(logger);
-    const streams = source.streams({} as any);
+    const streams = source.streams({repositories: ['PROJ1/repo1']} as any);
     const projectsStream = streams[6];
     const iter = projectsStream.readRecords(SyncMode.FULL_REFRESH, null, {
       projectKey: 'PROJ1',

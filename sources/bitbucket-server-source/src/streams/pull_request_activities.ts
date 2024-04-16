@@ -14,7 +14,7 @@ export class PullRequestActivities extends PullRequestSubStream {
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any> {

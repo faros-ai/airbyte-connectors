@@ -12,7 +12,7 @@ export class ProjectUsers extends StreamBase {
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any> {
@@ -24,7 +24,7 @@ export class ProjectUsers extends StreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of await this.server.projects(this.config.projects)) {
+    for await (const project of this.projects()) {
       yield {projectKey: project.key};
     }
   }

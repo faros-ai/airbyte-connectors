@@ -12,7 +12,7 @@ export class Repositories extends StreamBase {
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any> {
@@ -36,7 +36,7 @@ export class Repositories extends StreamBase {
   ): AsyncGenerator<Repository> {
     for (const repo of await this.server.repositories(
       streamSlice.projectKey,
-      this.config.repositories
+      this.projectRepoFilter
     )) {
       yield repo;
     }
