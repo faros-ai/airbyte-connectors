@@ -1,4 +1,4 @@
-import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket-server';
 import {Dictionary} from 'ts-essentials';
 
@@ -10,7 +10,7 @@ export class Users extends StreamBase {
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any> {

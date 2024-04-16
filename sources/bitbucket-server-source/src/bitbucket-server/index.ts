@@ -22,6 +22,7 @@ import {
   MoreEndpointMethodsPlugin,
   Prefix as MEP,
 } from './more-endpoint-methods';
+import {ProjectRepoFilter} from './project-repo-filter';
 
 export interface BitbucketServerConfig extends AirbyteConfig {
   readonly server_url?: string;
@@ -429,7 +430,7 @@ export class BitbucketServer {
   )
   async repositories(
     projectKey: string,
-    include?: ReadonlyArray<string>
+    projectRepoFilter?: ProjectRepoFilter
   ): Promise<ReadonlyArray<Repository>> {
     try {
       this.logger.debug(`Fetching repositories for project ${projectKey}`);
@@ -467,7 +468,8 @@ export class BitbucketServer {
           const repoFullName = repo.computedProperties.fullName;
           return {
             shouldEmit:
-              (!include || include.includes(repoFullName)) &&
+              (!projectRepoFilter ||
+                projectRepoFilter.isIncluded(repoFullName)) &&
               this.bucket(repoFullName) === this.repoBucketId,
             shouldBreakEarly: false,
           };
