@@ -1,7 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
-import {createHmac} from 'crypto';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
+import {bucket} from 'faros-airbyte-common/common';
 import {Utils, wrapApiError} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
@@ -747,13 +747,6 @@ export class Jira {
     return filterJQL.jql;
   }
 
-  bucket(project: string): number {
-    const md5 = createHmac('md5', 'farosai/airbyte-jira-source');
-    md5.update(project);
-    const hex = md5.digest('hex').substring(0, 8);
-    return (parseInt(hex, 16) % this.projectBucketTotal) + 1; // 1-index for readability
-  }
-
   async isBoardInBucket(boardId: string): Promise<boolean> {
     const board = await this.getBoard(boardId);
     const boardProject = board?.location?.projectKey;
@@ -761,6 +754,12 @@ export class Jira {
   }
 
   isProjectInBucket(projectKey: string): boolean {
-    return this.bucket(projectKey) === this.projectBucketId;
+    return (
+      bucket(
+        'farosai/airbyte-jira-source',
+        projectKey,
+        this.projectBucketTotal
+      ) === this.projectBucketId
+    );
   }
 }
