@@ -87,6 +87,8 @@ describe('index', () => {
         true,
         5,
         100,
+        1,
+        1,
         logger
       );
     });
