@@ -643,8 +643,7 @@ export class Jira {
     );
     for await (const board of boards) {
       const boardProject = board?.location?.projectKey;
-      if (boardProject && this.bucket(boardProject) === this.projectBucketId)
-        yield board;
+      if (boardProject && this.isProjectInBucket(boardProject)) yield board;
     }
   }
 
