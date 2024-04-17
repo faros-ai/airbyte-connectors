@@ -27,7 +27,7 @@
   "exports": {
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./clickup": "./lib/clickup/index.js",
-    "./common": "./lib/common/common.js"
+    "./common": "./lib/common/index.js"
   },
   "typesVersions": {
     "*": {

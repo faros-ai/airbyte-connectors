@@ -1,6 +1,6 @@
-// TODO: Try https://www.npmjs.com/package/diff
 import {createHmac} from 'crypto';
 
+// TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
   deletions: number;
   additions: number;
