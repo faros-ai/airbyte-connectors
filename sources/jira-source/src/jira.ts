@@ -34,8 +34,8 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_lag_days?: number;
   readonly board_ids?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
-  readonly project_bucket_id?: number;
-  readonly project_bucket_total?: number;
+  readonly bucket_id?: number;
+  readonly bucket_total?: number;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -90,8 +90,8 @@ export class Jira {
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
     private readonly maxPageSize: number,
-    private readonly projectBucketId: number,
-    private readonly projectBucketTotal: number,
+    private readonly bucketId: number,
+    private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger
   ) {
     // Create inverse mapping from field name -> ids
@@ -173,8 +173,8 @@ export class Jira {
       isCloud,
       cfg.concurrency_limit,
       cfg.page_size,
-      cfg.project_bucket_id ?? 1,
-      cfg.project_bucket_total ?? 1,
+      cfg.bucket_id ?? 1,
+      cfg.bucket_total ?? 1,
       logger
     );
   }
@@ -193,15 +193,13 @@ export class Jira {
   }
 
   private static validateBucketingConfig(config: JiraConfig): void {
-    const projectBucketTotal = config.project_bucket_total ?? 1;
-    if (projectBucketTotal < 1) {
-      throw new VError('project_bucket_total must be a positive integer');
+    const bucketTotal = config.bucket_total ?? 1;
+    if (bucketTotal < 1) {
+      throw new VError('bucket_total must be a positive integer');
     }
-    const projectBucketId = config.project_bucket_id ?? 1;
-    if (projectBucketId < 1 || projectBucketId > projectBucketTotal) {
-      throw new VError(
-        `project_bucket_id must be between 1 and ${projectBucketTotal}`
-      );
+    const bucketId = config.bucket_id ?? 1;
+    if (bucketId < 1 || bucketId > bucketTotal) {
+      throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
     }
   }
 
@@ -444,7 +442,7 @@ export class Jira {
         })
       );
       for await (const project of projects) {
-        // Bucket projects based on projectBucketId
+        // Bucket projects based on bucketId
         if (this.isProjectInBucket(project.key)) yield project;
       }
       return;
@@ -755,11 +753,8 @@ export class Jira {
 
   isProjectInBucket(projectKey: string): boolean {
     return (
-      bucket(
-        'farosai/airbyte-jira-source',
-        projectKey,
-        this.projectBucketTotal
-      ) === this.projectBucketId
+      bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
+      this.bucketId
     );
   }
 }

@@ -134,14 +134,14 @@
           "WebhookSupplement"
         ]
       },
-      "project_bucket_id": {
+      "bucket_id": {
         "order": 19,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of projects and boards to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
-      "project_bucket_total": {
+      "bucket_total": {
         "order": 20,
         "type": "integer",
         "title": "Total Number of Buckets",
