@@ -3,6 +3,8 @@
   "username": "user",
   "password": "pass",
   "project_keys": ["TEST"],
+  "bucket_id": 1,
+  "bucket_total": 1,
   "additional_fields": [],
   "additional_fields_array_limit": 100,
   "concurrency_limit": 5,

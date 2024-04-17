@@ -7,6 +7,7 @@ import {
 import fs from 'fs-extra';
 import VError from 'verror';
 
+import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
 import {RunMode} from '../src/streams/common';
@@ -35,7 +36,7 @@ describe('index', () => {
     );
   });
 
-  test('check connection - invalid', async () => {
+  test('check connection - missing credentials ', async () => {
     const source = new sut.JiraSource(logger);
     await expect(
       source.checkConnection({url: 'https://jira.com'} as any)
@@ -44,6 +45,28 @@ describe('index', () => {
       new VError(
         'Either Jira personal token or Jira username and password must be provided'
       ),
+    ]);
+  });
+
+  test('check connection - invalid bucketing config - out of range', async () => {
+    const source = new sut.JiraSource(logger);
+    const config = readTestResourceFile('config.json');
+    config.bucket_id = 3;
+    config.bucket_total = 2;
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      false,
+      new VError(`bucket_id must be between 1 and ${config.bucket_total}`),
+    ]);
+  });
+
+  test('check connection - invalid bucketing config - non positive integer', async () => {
+    const source = new sut.JiraSource(logger);
+    const config = readTestResourceFile('config.json');
+    config.bucket_id = 1;
+    config.bucket_total = -1;
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      false,
+      new VError(`bucket_total must be a positive integer`),
     ]);
   });
 
@@ -87,8 +110,8 @@ describe('index', () => {
         true,
         5,
         100,
-        1,
-        1,
+        streamConfig.bucket_id,
+        streamConfig.bucket_total,
         logger
       );
     });
@@ -109,26 +132,28 @@ describe('index', () => {
     expect(items).toMatchSnapshot();
   };
 
-  test('streams - pull_requests', async () => {
+  const getIssuePullRequestsMockedImplementation = () => ({
+    v2: {
+      issueSearch: {
+        searchForIssuesUsingJql: paginate(
+          readTestResourceFile('issues_with_pull_requests.json'),
+          'issues'
+        ),
+      },
+    },
+    getDevStatusSummary: jest
+      .fn()
+      .mockResolvedValue(readTestResourceFile('dev_status_summary.json')),
+    getDevStatusDetail: jest
+      .fn()
+      .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
+  });
+
+  test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
       readTestResourceFile('config.json'),
-      {
-        v2: {
-          issueSearch: {
-            searchForIssuesUsingJql: paginate(
-              readTestResourceFile('issues_with_pull_requests.json'),
-              'issues'
-            ),
-          },
-        },
-        getDevStatusSummary: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('dev_status_summary.json')),
-        getDevStatusDetail: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
-      },
+      getIssuePullRequestsMockedImplementation(),
       {project: 'TEST'}
     );
   });
@@ -202,5 +227,28 @@ describe('index', () => {
     config.run_mode = RunMode.Full;
     const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
     expect(newCatalog).toMatchSnapshot();
+  });
+
+  async function testStreamSlices(config: JiraConfig): Promise<void> {
+    const stream = new FarosIssuePullRequests(config, logger);
+    const slices = stream.streamSlices();
+    // collect slices in an array and match with snapshot
+    const sliceArray = [];
+    for await (const slice of slices) {
+      sliceArray.push(slice);
+    }
+    expect(sliceArray).toMatchSnapshot();
+  }
+
+  test('stream with project slices using bucketing', async () => {
+    const config = readTestResourceFile('config.json');
+    config.project_keys = ['TEST', 'TEST2', 'TEST3'];
+    config.bucket_total = 2;
+    // test with bucket_id 1 and 2
+    config.bucket_id = 1;
+    await testStreamSlices(config);
+
+    config.bucket_id = 2;
+    await testStreamSlices(config);
   });
 });

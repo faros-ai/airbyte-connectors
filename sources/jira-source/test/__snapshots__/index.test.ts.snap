@@ -63,6 +63,25 @@ exports[`index onBeforeRead with run_mode WebhookSupplement should filter stream
 }
 `;
 
+exports[`index stream with project slices using bucketing 1`] = `
+[
+  {
+    "project": "TEST",
+  },
+  {
+    "project": "TEST3",
+  },
+]
+`;
+
+exports[`index stream with project slices using bucketing 2`] = `
+[
+  {
+    "project": "TEST2",
+  },
+]
+`;
+
 exports[`index streams - board_issues using board ids 1`] = `
 [
   {
@@ -76,7 +95,7 @@ exports[`index streams - board_issues using board ids 1`] = `
 ]
 `;
 
-exports[`index streams - pull_requests 1`] = `
+exports[`index streams - issue_pull_requests 1`] = `
 [
   {
     "issue": {
