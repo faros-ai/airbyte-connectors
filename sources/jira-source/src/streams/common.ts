@@ -85,14 +85,14 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
+    const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.project_keys) {
-      const jira = await Jira.instance(this.config, this.logger);
       for await (const project of jira.getProjects()) {
         yield {project: project.key};
       }
     } else {
       for (const project of this.config.project_keys) {
-        yield {project};
+        if (jira.isProjectInBucket(project)) yield {project};
       }
     }
   }
@@ -100,14 +100,14 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
+    const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.board_ids) {
-      const jira = await Jira.instance(this.config, this.logger);
       for await (const board of jira.getBoards()) {
         yield {board: board.id.toString()};
       }
     } else {
       for (const board of this.config.board_ids) {
-        yield {board};
+        if (await jira.isBoardInBucket(board)) yield {board};
       }
     }
   }
