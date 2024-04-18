@@ -27,6 +27,11 @@ export interface PullRequest {
   readonly repo: Repo;
   readonly number: number;
   repoUrl: string;
+  title: string;
+  state: PullRequestState;
+  origin: string;
+  mergedAt: string;
+  author: {uid: string; source: string};
 }
 
 export interface PullRequestStream {
@@ -34,7 +39,7 @@ export interface PullRequestStream {
   updated: string;
   branches?: any[];
   _instance?: PullRequestInstance;
-  pullRequests?: any[];
+  pullRequests?: PullRequestData[];
   repositories?: [];
 }
 
@@ -46,6 +51,44 @@ export interface PullRequestInstance {
   typeName?: string;
   singleInstance?: boolean;
 }
+
+export interface PullRequestData {
+  author?: PullRequestDataAuthor;
+  id?: string;
+  name?: string;
+  commentCount?: number;
+  source?: PullRequestDataBranchInfo;
+  destination?: PullRequestDataBranchInfo;
+  reviewers?: any[];
+  status?: string;
+  url?: string;
+  lastUpdate?: string;
+  repositoryId?: string;
+  repositoryName?: string;
+  repositoryUrl?: string;
+}
+
+export interface PullRequestDataAuthor {
+  name: string;
+  avatar: string;
+}
+
+export interface PullRequestDataBranchInfo {
+  branch: string;
+  url: string;
+}
+export interface PullRequestState {
+  category: PullRequestStateCategory;
+  detail: string;
+}
+
+export enum PullRequestStateCategory {
+  Closed = 'Closed',
+  Merged = 'Merged',
+  Open = 'Open',
+  Custom = 'Custom',
+}
+
 export interface Status {
   readonly category: string;
   readonly detail: string;

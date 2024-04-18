@@ -25,6 +25,8 @@ import {
   JiraCommon,
   JiraConverter,
   PullRequest,
+  PullRequestState,
+  PullRequestStateCategory,
   PullRequestStream,
   Repo,
   RepoSource,
@@ -397,6 +399,7 @@ export class Issues extends JiraConverter {
     ctx: StreamContext,
     issueId: string
   ): ReadonlyArray<PullRequest> {
+    const source = 'jira';
     const pulls: PullRequest[] = [];
     const record = ctx.get(Issues.pullRequestsStream.asString, issueId);
     if (!record) return pulls;
@@ -407,14 +410,19 @@ export class Issues extends JiraConverter {
         branchToRepoUrl.set(branch.url, branch.repository.url);
       }
       for (const pull of detail.pullRequests ?? []) {
-        const repoUrl = pull?.url;
+        const repoUrl = pull?.repositoryUrl;
         if (!repoUrl) {
           continue;
         }
         pulls.push({
           repo: Issues.extractRepo(repoUrl),
           number: Utils.parseInteger(pull.id.replace('#', '')),
-          repoUrl: repoUrl,
+          repoUrl: pull?.url,
+          title: pull?.name,
+          author: {uid: pull?.author.name, source: 'jira'},
+          origin: source,
+          mergedAt: pull?.lastUpdate,
+          state: this.convertPullRequestState(pull?.status),
         });
       }
     } catch (err: any) {
@@ -423,6 +431,31 @@ export class Issues extends JiraConverter {
       );
     }
     return pulls;
+  }
+
+  convertPullRequestState(status: string): PullRequestState {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return {
+          category: PullRequestStateCategory.Closed,
+          detail: status,
+        };
+      case 'merged':
+        return {
+          category: PullRequestStateCategory.Merged,
+          detail: status,
+        };
+      case 'open':
+        return {
+          category: PullRequestStateCategory.Open,
+          detail: status,
+        };
+      default:
+        return {
+          category: PullRequestStateCategory.Custom,
+          detail: status,
+        };
+    }
   }
 
   private stringifyNonString(value: any): string {
@@ -485,6 +518,11 @@ export class Issues extends JiraConverter {
         uid: pull.number.toString(),
         repository,
         url: pull.repoUrl,
+        title: pull.title,
+        state: pull.state,
+        author: pull.author,
+        mergedAt: pull.mergedAt,
+        origin: pull.origin,
       };
       results.push({
         model: 'tms_TaskPullRequestAssociation',
