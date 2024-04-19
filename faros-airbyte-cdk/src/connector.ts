@@ -10,7 +10,7 @@ export abstract class AirbyteConnector {
    * describing the required configurations (e.g: username and password)
    * required to run this integration.
    */
-  abstract spec(): Promise<AirbyteSpec>;
+  abstract spec(minimize?: boolean): Promise<AirbyteSpec>;
 
   /**
    * Tests if the input configuration can be used to successfully connect to the
