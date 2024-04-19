@@ -17,6 +17,7 @@ import {
   isSourceLogsMessage,
   isSourceStatusMessage,
   isStateMessage,
+  minimizeSpec,
   parseAirbyteMessage,
   SpecLoader,
   SyncMessage,
@@ -113,9 +114,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     throw new VError('GraphQL Client is not initialized');
   }
 
-  async spec(): Promise<AirbyteSpec> {
-    if (this.specOverride) return this.specOverride;
-    return SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
+  async spec(minimize: boolean = true): Promise<AirbyteSpec> {
+    const spec = this.specOverride
+      ? this.specOverride
+      : await SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
+    return minimize ? minimizeSpec(spec) : spec;
   }
 
   async check(
