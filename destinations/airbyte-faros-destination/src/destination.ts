@@ -115,10 +115,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   async spec(minimize: boolean = true): Promise<AirbyteSpec> {
-    if (this.specOverride) return this.specOverride;
-    const spec = await SpecLoader.loadSpec(
-      path.join(BASE_RESOURCES_DIR, 'spec.json')
-    );
+    const spec = this.specOverride
+      ? this.specOverride
+      : await SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
     return minimize ? minimizeSpec(spec) : spec;
   }
 
