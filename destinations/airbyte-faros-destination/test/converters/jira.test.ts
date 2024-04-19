@@ -1,11 +1,11 @@
-import {
-  AirbyteConnectionStatus,
-  AirbyteConnectionStatusMessage,
-} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
+import {
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+} from '../../../../faros-airbyte-cdk/lib';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';

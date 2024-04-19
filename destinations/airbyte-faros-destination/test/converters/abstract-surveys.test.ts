@@ -1,8 +1,8 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {DestinationRecord, StreamContext} from '../../src';
 import {
   SurveyCategory,

@@ -20,7 +20,7 @@ export interface WorkItem2 {
   fields: fields;
   id: string;
   workItemId: string;
-  revisedBy: string;
+  revisedBy: user;
   revisedDate: string;
   rev: string;
   url: string;
@@ -84,6 +84,7 @@ export interface user {
   url: string;
   _links: string;
   id: string;
+  imageUrl?: string;
   uniqueName: string;
 }
 

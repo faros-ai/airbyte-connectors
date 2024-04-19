@@ -6,7 +6,7 @@ import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {azureworkitemsAllStreamsLog} from './data';
 import {assertProcessedAndWrittenModels} from './utils';
 
-describe('azure-repos', () => {
+describe('azure-workitems', () => {
   const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/azure-workitems/catalog.json';

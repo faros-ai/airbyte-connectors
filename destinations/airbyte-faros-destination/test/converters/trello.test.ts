@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {StreamContext} from '../../src';
 import {Boards} from '../../src/converters/trello/boards';
 import {Users} from '../../src/converters/trello/users';

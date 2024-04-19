@@ -213,16 +213,19 @@ export class AzureWorkitems {
         ids2.push(id);
       }
       if (ids2.length > 0) {
-        userStories.push(
-          await this.get<WorkItemResponse1>(
-            `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
-          )
+        yield await this.get<WorkItemResponse1>(
+          `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
         );
+        // userStories.push(
+        //   await this.get<WorkItemResponse1>(
+        //     `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
+        //   )
+        // );
       }
     }
-    for (const item of userStories) {
-      yield item;
-    }
+    // for (const item of userStories) {
+    //   yield item;
+    // }
   }
 
   async *getWorkitems(): AsyncGenerator<any> {
@@ -249,12 +252,14 @@ export class AzureWorkitems {
           const url2 = `${project}/_apis/wit/workitems/${id}/updates`;
           const res2 = await this.get<WorkItemResponse2>(url2);
           const item2 = res2?.data?.value;
-          itemsArray.push({item, item2});
+          console.log('=========> SOURCE GENERATED WORK ITEM RECORD <========');
+          console.log(JSON.stringify({item, item2}, null, 2));
+          console.log(
+            '=======> SOURCE GENERATED  WORK ITEM RECORD END<======='
+          );
+          yield {item, item2};
         }
       }
-    }
-    for (const item of itemsArray) {
-      yield item;
     }
   }
 
@@ -321,12 +326,13 @@ export class AzureWorkitems {
         if (typeof response2?.data?.id !== 'undefined') {
           item.id = response2.data?.id;
         }
-        iterationArray.push(item);
+        // iterationArray.push(item);
+        yield item;
       }
     }
-    for (const item of iterationArray) {
-      yield item;
-    }
+    // for (const item of iterationArray) {
+    //   yield item;
+    // }
   }
 
   async *getBoards(): AsyncGenerator<Board> {
@@ -336,12 +342,13 @@ export class AzureWorkitems {
       const boards = res.data?.value ?? [];
       this.logger.info(`Found ${boards.length} boards for project ${project}`);
       for (const item of boards) {
-        allBoards.push(item);
+        yield item;
+        // allBoards.push(item);
       }
     }
-    for (const item of allBoards) {
-      this.logger.info(`Yielding board ${item.name}`);
-      yield item;
-    }
+    // for (const item of allBoards) {
+    //   this.logger.info(`Yielding board ${item.name}`);
+    //   yield item;
+    // }
   }
 }

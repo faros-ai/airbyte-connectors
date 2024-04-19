@@ -1,8 +1,11 @@
-import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
+import {
+  AirbyteRecord,
+  AirbyteSourceStatusMessage,
+} from '../../../../faros-airbyte-cdk/lib';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {GitHubCommon} from '../../src/converters/github/common';
 import {CLI, read} from '../cli';

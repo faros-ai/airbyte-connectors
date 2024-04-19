@@ -1,4 +1,16 @@
 import {Analytics} from '@segment/analytics-node';
+import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
+import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
+import http from 'http';
+import https from 'https';
+import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
+import path from 'path';
+import readline from 'readline';
+import {Writable} from 'stream';
+import {Dictionary} from 'ts-essentials';
+import {v4 as uuidv4, validate} from 'uuid';
+import {VError} from 'verror';
+
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -22,19 +34,7 @@ import {
   SyncMessage,
   SyncMode,
   wrapApiError,
-} from 'faros-airbyte-cdk';
-import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
-import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
-import http from 'http';
-import https from 'https';
-import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
-import path from 'path';
-import readline from 'readline';
-import {Writable} from 'stream';
-import {Dictionary} from 'ts-essentials';
-import {v4 as uuidv4, validate} from 'uuid';
-import {VError} from 'verror';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {GraphQLClient} from './common/graphql-client';
 import {GraphQLWriter} from './common/graphql-writer';
 import {
@@ -756,6 +756,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
+        console.log('------>> ', line);
         let stateMessage: AirbyteStateMessage = undefined;
 
         await this.handleRecordProcessingError(stats, async () => {

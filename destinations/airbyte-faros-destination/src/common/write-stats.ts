@@ -1,6 +1,7 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
+
+import {AirbyteLogger} from '../../../../faros-airbyte-cdk/lib';
 
 export class WriteStats {
   constructor(

@@ -1,5 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-
+import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {StatusValue, WorkItem} from './models';
@@ -51,6 +50,13 @@ export class Workitems extends AzureWorkitemsConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const WorkItem = record.record.data as WorkItem;
+    console.log(
+      '=========> DESTINATION RECORD RECEIVED WORK ITEM RECORD <========'
+    );
+    console.log(JSON.stringify(record, null, 2));
+    console.log(
+      '=======> DESTINATION RECORD RECEIVED WORK ITEM RECORD END<======='
+    );
     const organizationName = this.getOrganizationFromUrl(WorkItem?.item?.url);
     const organization = {uid: organizationName, source};
     const statusChangelog = this.statusChangelog(WorkItem);

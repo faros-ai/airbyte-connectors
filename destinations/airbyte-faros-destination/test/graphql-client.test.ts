@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {Schema} from 'faros-js-client';
 import fs from 'fs-extra';
 
+import {AirbyteLogger, AirbyteLogLevel} from '../../../faros-airbyte-cdk/lib';
 import {
   batchIterator,
   GraphQLBackend,
