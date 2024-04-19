@@ -37,14 +37,7 @@ describe('index', () => {
 
   test('spec', async () => {
     const cli = await CLI.runWith(['spec']);
-    const expectedSpec =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      JSON.stringify(
-        await SpecLoader.loadSpec(
-          path.join(__dirname, '../resources/spec.json')
-        )
-      ) + os.EOL;
-    expect(await read(cli.stdout)).toBe(expectedSpec);
+    expect(await read(cli.stdout)).toMatchSnapshot();
     expect(await read(cli.stderr)).toBe('');
     expect(await cli.wait()).toBe(0);
   });
