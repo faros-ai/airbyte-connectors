@@ -1,5 +1,6 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {FarosClient} from 'faros-js-client';
 import moment from 'moment';
 
 import {
@@ -35,7 +36,8 @@ export const WebhookSupplementStreamNames = [
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
   }

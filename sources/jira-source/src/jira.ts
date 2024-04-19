@@ -36,6 +36,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
+  readonly api_url?: string;
+  readonly api_key?: string;
+  readonly graph?: string;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -551,37 +554,41 @@ export class Jira {
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
-        let pullRequests: ReadonlyArray<PullRequest> = [];
-        if (syncPullRequests) {
-          const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
-          for (const devFieldId of devFieldIds) {
-            if (
-              pullRequests.length === 0 &&
-              Jira.hasPullRequests(item.fields[devFieldId])
-            ) {
-              try {
-                pullRequests = await this.getPullRequests(item.id);
-                this.logger?.debug(
-                  `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
-                );
-              } catch (err: any) {
-                this.logger?.warn(
-                  `Failed to get pull requests for issue ${item.key}: ${err.message}`
-                );
-              }
-            }
-          }
-        }
         return {
           id: item.id,
           key: item.key,
+          fields: item.fields,
           created: Utils.toDate(item.fields.created),
           updated: Utils.toDate(item.fields.updated),
-          pullRequests,
         };
       },
       'issues'
     );
+  }
+
+  async getIssuePullRequests(
+    issue: Issue
+  ): Promise<ReadonlyArray<PullRequest>> {
+    let pullRequests: ReadonlyArray<PullRequest> = [];
+    const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
+    for (const devFieldId of devFieldIds) {
+      if (
+        pullRequests.length === 0 &&
+        Jira.hasPullRequests(issue.fields[devFieldId])
+      ) {
+        try {
+          pullRequests = await this.getPullRequests(issue.id);
+          this.logger?.debug(
+            `Fetched ${pullRequests.length} pull requests for issue ${issue.key}`
+          );
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to get pull requests for issue ${issue.key}: ${err.message}`
+          );
+        }
+      }
+    }
+    return pullRequests;
   }
 
   private getIssueFields(

@@ -1,0 +1,16 @@
+query Task(
+    $source: String!
+    $project: String!
+    $updatedAt: Timestamp
+) {
+  tms_Task(
+    where: {
+      source: {_eq: $source}
+      projects: {project: {uid: {_eq: $project}}},
+      updatedAt: {_gte: $updatedAt}
+    }
+  ) {
+    uid
+    sourceSystemId
+  }
+}
