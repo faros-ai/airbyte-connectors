@@ -138,7 +138,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .command('spec-pretty')
       .description('pretty spec command')
       .action(async () => {
-        const spec = await this.source.spec();
+        const spec = await this.source.spec(false);
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           [
@@ -189,7 +189,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .action(async (opts) => {
         const spec = opts.specFile
           ? JSON.parse(fs.readFileSync(opts.specFile, 'utf8'))
-          : await this.source.spec();
+          : await this.source.spec(false);
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           opts.json
