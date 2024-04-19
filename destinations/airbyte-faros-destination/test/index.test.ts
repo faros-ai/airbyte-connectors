@@ -3,11 +3,9 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteSpec,
-  SpecLoader,
 } from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
-import path from 'path';
 
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {FarosDestination} from '../src/destination';

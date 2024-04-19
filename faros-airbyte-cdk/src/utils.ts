@@ -122,7 +122,9 @@ interface SpecProperty {
 
 export function minimizeSpec(airbyteSpec: AirbyteSpec): AirbyteSpec {
   const spec = cloneDeep(airbyteSpec.spec);
-  for (const prop of Object.values(spec.connectionSpecification.properties)) {
+  for (const prop of Object.values(
+    spec.connectionSpecification?.properties ?? {}
+  )) {
     minimizeSpecProperty(prop as SpecProperty);
   }
   return new AirbyteSpec(spec);
