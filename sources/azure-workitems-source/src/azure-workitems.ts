@@ -14,6 +14,7 @@ import {
 } from '../../../faros-airbyte-cdk/lib';
 import {
   Board,
+  CustomWorkItem,
   User,
   UserResponse,
   WorkItemResponse1,
@@ -216,19 +217,11 @@ export class AzureWorkitems {
         yield await this.get<WorkItemResponse1>(
           `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
         );
-        // userStories.push(
-        //   await this.get<WorkItemResponse1>(
-        //     `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
-        //   )
-        // );
       }
     }
-    // for (const item of userStories) {
-    //   yield item;
-    // }
   }
 
-  async *getWorkitems(): AsyncGenerator<any> {
+  async *getWorkitems(): AsyncGenerator<CustomWorkItem> {
     const promises = [
       "'Task'",
       "'User Story'",
@@ -252,12 +245,12 @@ export class AzureWorkitems {
           const url2 = `${project}/_apis/wit/workitems/${id}/updates`;
           const res2 = await this.get<WorkItemResponse2>(url2);
           const item2 = res2?.data?.value;
-          console.log('=========> SOURCE GENERATED WORK ITEM RECORD <========');
-          console.log(JSON.stringify({item, item2}, null, 2));
-          console.log(
-            '=======> SOURCE GENERATED  WORK ITEM RECORD END<======='
-          );
-          yield {item, item2};
+          // NB: We need to append the CustomWorkItem object to a property called custom
+          // within fields object since in the new version destination doesn't support
+          // custom work item fields.
+          const returnObj = item as CustomWorkItem;
+          returnObj.fields.custom = item2;
+          yield returnObj;
         }
       }
     }
@@ -326,13 +319,9 @@ export class AzureWorkitems {
         if (typeof response2?.data?.id !== 'undefined') {
           item.id = response2.data?.id;
         }
-        // iterationArray.push(item);
         yield item;
       }
     }
-    // for (const item of iterationArray) {
-    //   yield item;
-    // }
   }
 
   async *getBoards(): AsyncGenerator<Board> {
@@ -343,12 +332,7 @@ export class AzureWorkitems {
       this.logger.info(`Found ${boards.length} boards for project ${project}`);
       for (const item of boards) {
         yield item;
-        // allBoards.push(item);
       }
     }
-    // for (const item of allBoards) {
-    //   this.logger.info(`Yielding board ${item.name}`);
-    //   yield item;
-    // }
   }
 }

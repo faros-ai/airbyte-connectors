@@ -16,12 +16,23 @@ export interface WorkItem {
   item2: WorkItem2[];
 }
 
+export interface WorkItemTest {
+  item: WorkItem1;
+}
+
 export interface WorkItem2 {
   fields: fields;
   id: string;
   workItemId: string;
   revisedBy: user;
   revisedDate: string;
+  rev: string;
+  url: string;
+}
+
+export interface CustomWorkItem {
+  fields: any;
+  id: string;
   rev: string;
   url: string;
 }
