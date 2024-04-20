@@ -60,9 +60,6 @@ export interface AirbyteConfig {
 export function parseAirbyteMessage(s: string): AirbyteMessage {
   try {
     const res: AirbyteMessage = JSON.parse(s);
-    console.log(' ==========> FAROS CDK CORE <=========');
-    console.log(JSON.stringify(res, null, 2));
-    console.log('=============> END OF CDK CORE <========');
     if (!res.type) {
       throw new VError(`Message type is not set`);
     }

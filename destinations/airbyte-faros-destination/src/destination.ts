@@ -756,7 +756,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
-        console.log('------>> ', line);
         let stateMessage: AirbyteStateMessage = undefined;
 
         await this.handleRecordProcessingError(stats, async () => {

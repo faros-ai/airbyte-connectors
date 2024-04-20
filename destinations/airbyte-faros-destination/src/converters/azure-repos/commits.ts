@@ -28,7 +28,9 @@ export class Commits extends AzureReposConverter {
       uid: projectRepo,
       organization,
     };
-
+    console.log('=====> commit Branch Details <======');
+    console.log(JSON.stringify(commitItem.branch, null, 2));
+    console.log('=====> end <=====');
     res.push({
       model: 'vcs_Commit',
       record: {

@@ -19,7 +19,6 @@ export class Workitems extends AirbyteStreamBase {
 
   getJsonSchema(): Dictionary<any, string> {
     const jsonSchema = require('../../resources/schemas/workitems.json');
-    console.log('JSON Schema: ', JSON.stringify(jsonSchema, null, 2));
     return jsonSchema;
   }
   get primaryKey(): StreamKey {
