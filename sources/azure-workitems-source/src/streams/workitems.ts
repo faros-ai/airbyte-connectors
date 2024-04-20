@@ -1,3 +1,4 @@
+import {json} from 'stream/consumers';
 import {Dictionary} from 'ts-essentials';
 
 import {
@@ -6,7 +7,7 @@ import {
   StreamKey,
 } from '../../../../faros-airbyte-cdk/lib';
 import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
-import {WorkItem1} from '../models';
+import {CustomWorkItem, WorkItem, WorkItem1, WorkItemTest} from '../models';
 
 export class Workitems extends AirbyteStreamBase {
   constructor(
@@ -17,13 +18,15 @@ export class Workitems extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/workitems.json');
+    const jsonSchema = require('../../resources/schemas/workitems.json');
+    console.log('JSON Schema: ', JSON.stringify(jsonSchema, null, 2));
+    return jsonSchema;
   }
   get primaryKey(): StreamKey {
     return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<WorkItem1> {
+  async *readRecords(): AsyncGenerator<CustomWorkItem> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger

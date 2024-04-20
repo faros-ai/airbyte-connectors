@@ -1,6 +1,6 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {Converter, StreamContext} from '../../src';
 import {
   DestinationModel,

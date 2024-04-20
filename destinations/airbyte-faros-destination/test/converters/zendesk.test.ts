@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {StreamContext} from '../../src/converters/converter';
 import {

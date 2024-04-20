@@ -1,8 +1,7 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-
+import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {StatusValue, WorkItem} from './models';
+import {CustomWorkItem, StatusValue, WorkItem} from './models';
 
 interface StatusChange {
   readonly status: StatusValue;
@@ -15,11 +14,13 @@ export class Workitems extends AzureWorkitemsConverter {
     'tms_TaskAssignment',
   ];
 
-  private statusChangelog(workItem: WorkItem): ReadonlyArray<StatusChange> {
+  private statusChangelog(
+    workItem: CustomWorkItem
+  ): ReadonlyArray<StatusChange> {
     const statusChangelog: Array<StatusChange> = [];
 
-    if (workItem && workItem?.item2) {
-      for (const item of workItem.item2) {
+    if (workItem && workItem?.fields?.custom) {
+      for (const item of workItem.fields.custom) {
         if (
           item &&
           item.fields &&
@@ -50,8 +51,15 @@ export class Workitems extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const WorkItem = record.record.data as WorkItem;
-    const organizationName = this.getOrganizationFromUrl(WorkItem?.item?.url);
+    const WorkItem = record.record.data as CustomWorkItem;
+    console.log(
+      '=========> DESTINATION RECORD RECEIVED WORK ITEM RECORD <========'
+    );
+    console.log(JSON.stringify(record, null, 2));
+    console.log(
+      '=======> DESTINATION RECORD RECEIVED WORK ITEM RECORD END<======='
+    );
+    const organizationName = this.getOrganizationFromUrl(WorkItem?.url);
     const organization = {uid: organizationName, source};
     const statusChangelog = this.statusChangelog(WorkItem);
 
@@ -59,41 +67,39 @@ export class Workitems extends AzureWorkitemsConverter {
       {
         model: 'tms_Task',
         record: {
-          uid: String(WorkItem?.item?.id),
-          id: String(WorkItem?.item?.id),
-          url: WorkItem?.item?.url,
+          uid: String(WorkItem?.id),
+          id: String(WorkItem?.id),
+          url: WorkItem?.url,
           type: {
-            category: String(WorkItem?.item?.fields['System.WorkItemType']),
+            category: String(WorkItem?.fields['System.WorkItemType']),
           },
-          name: WorkItem?.item?.fields['System.Title'],
-          createdAt: new Date(WorkItem?.item?.fields['System.CreatedDate']),
+          name: WorkItem?.fields['System.Title'],
+          createdAt: new Date(WorkItem?.fields['System.CreatedDate']),
           parent: {
-            uid: String(WorkItem?.item?.fields['System.Parent']),
+            uid: String(WorkItem?.fields['System.Parent']),
             source,
           },
-          description: WorkItem?.item?.fields['System.Description'],
-          status: {category: WorkItem?.item?.fields['System.State']},
-          statusChangedAt: WorkItem?.item?.fields[
+          description: WorkItem?.fields['System.Description'],
+          status: {category: WorkItem?.fields['System.State']},
+          statusChangedAt: WorkItem?.fields[
             'Microsoft.VSTS.Common.StateChangeDate'
           ]
             ? new Date(
-                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
+                WorkItem?.fields['Microsoft.VSTS.Common.StateChangeDate']
               )
             : null,
           statusChangelog: statusChangelog,
-          updatedAt: WorkItem?.item?.fields[
-            'Microsoft.VSTS.Common.StateChangeDate'
-          ]
+          updatedAt: WorkItem?.fields['Microsoft.VSTS.Common.StateChangeDate']
             ? new Date(
-                WorkItem?.item?.fields['Microsoft.VSTS.Common.StateChangeDate']
+                WorkItem?.fields['Microsoft.VSTS.Common.StateChangeDate']
               )
             : null,
           creator: {
-            uid: WorkItem?.item?.fields['System.CreatedBy']['uniqueName'],
+            uid: WorkItem?.fields['System.CreatedBy']['uniqueName'],
             source,
           },
           sprint: {
-            uid: String(WorkItem?.item?.fields['System.IterationId']),
+            uid: String(WorkItem?.fields['System.IterationId']),
             source,
           },
           source,
@@ -103,11 +109,10 @@ export class Workitems extends AzureWorkitemsConverter {
       {
         model: 'tms_TaskAssignment',
         record: {
-          task: {uid: String(WorkItem?.item?.id), source},
+          task: {uid: String(WorkItem?.id), source},
           assignee: {
             uid:
-              WorkItem?.item?.fields['System.AssignedTo']?.uniqueName ||
-              'Unassigned',
+              WorkItem?.fields['System.AssignedTo']?.uniqueName || 'Unassigned',
             source,
           },
           source,

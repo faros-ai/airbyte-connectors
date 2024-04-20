@@ -1,5 +1,4 @@
 import dateformat from 'date-format';
-import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {
@@ -27,6 +26,7 @@ import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {AirbyteLogger} from '../../../../faros-airbyte-cdk/lib';
 import {
   DeletionRecord,
   Operation,

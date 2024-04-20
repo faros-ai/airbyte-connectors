@@ -1,5 +1,4 @@
 import {AxiosRequestConfig} from 'axios';
-import {AirbyteConfig, AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
 import {
   FarosClient,
   FarosClientConfig,
@@ -8,6 +7,12 @@ import {
 import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
+
+import {
+  AirbyteConfig,
+  AirbyteLogger,
+  SyncMessage,
+} from '../../../faros-airbyte-cdk/lib';
 
 export interface Account {
   accountId: string;

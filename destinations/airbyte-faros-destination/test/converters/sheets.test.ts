@@ -1,6 +1,6 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {StreamContext} from '../../src';
 import {SurveysConfig} from '../../src/converters/abstract-surveys/surveys';
 import {Surveys} from '../../src/converters/sheets/surveys';

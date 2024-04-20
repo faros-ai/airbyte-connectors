@@ -1,16 +1,13 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "properties": {
-    "id": {
-      "type": "integer"
-    },
-    "rev": {
-      "type": "integer"
-    },
+  "properties": { 
     "fields": {
       "type": "object",
       "properties": {
+        "custom": {
+          "type": "object"
+        },
         "System.Id": {
           "type": "integer"
         },
@@ -345,8 +342,15 @@
         }
       }
     },
+    "id": {
+      "type": "string"
+    },
+    "rev": {
+      "type": "string"
+    },
     "url": {
       "type": "string"
     }
   }
 }
+

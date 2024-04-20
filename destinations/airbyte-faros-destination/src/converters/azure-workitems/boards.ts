@@ -1,5 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-
+import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {Board} from './models';

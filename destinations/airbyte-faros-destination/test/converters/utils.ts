@@ -1,7 +1,7 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {AirbyteLog, AirbyteLogLevel} from '../../../../faros-airbyte-cdk/lib';
 import {CLI, read} from '../cli';
 
 export type ProcessedAndWrittenModels = {

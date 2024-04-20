@@ -15,14 +15,30 @@ export interface WorkItem1 {
   url: string;
 }
 
+export interface CustomWorkItem {
+  fields: any;
+  id: string;
+  rev: string;
+  url: string;
+}
+
 export interface WorkItem2 {
   fields: fields;
   id: string;
   workItemId: string;
-  revisedBy: string;
+  revisedBy: user;
   revisedDate: string;
   rev: string;
   url: string;
+}
+
+export interface WorkItem {
+  item: WorkItem1;
+  item2: WorkItem2[];
+}
+
+export interface WorkItemTest {
+  item: WorkItem1;
 }
 
 export interface System {
@@ -53,6 +69,7 @@ export interface user {
   url: string;
   _links: string;
   id: string;
+  imageUrl?: string;
   uniqueName: string;
 }
 

@@ -1,5 +1,9 @@
 import pQueue from '@esm2cjs/p-queue';
 import crypto from 'crypto';
+import fs from 'fs';
+import os from 'os';
+import readline from 'readline';
+
 import {
   AirbyteLog,
   AirbyteLogger,
@@ -9,10 +13,7 @@ import {
   AirbyteSourceLog,
   isAirbyteLog,
   shouldWriteLog,
-} from 'faros-airbyte-cdk';
-import fs from 'fs';
-import os from 'os';
-import readline from 'readline';
+} from '../../../faros-airbyte-cdk/lib';
 
 export class LogFiles {
   private readonly srcPath: string;

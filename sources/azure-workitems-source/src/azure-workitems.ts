@@ -14,6 +14,7 @@ import {
 } from '../../../faros-airbyte-cdk/lib';
 import {
   Board,
+  CustomWorkItem,
   User,
   UserResponse,
   WorkItemResponse1,
@@ -213,19 +214,14 @@ export class AzureWorkitems {
         ids2.push(id);
       }
       if (ids2.length > 0) {
-        userStories.push(
-          await this.get<WorkItemResponse1>(
-            `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
-          )
+        yield await this.get<WorkItemResponse1>(
+          `${project}/_apis/wit/workitems?ids=${ids2}&$expand=all`
         );
       }
     }
-    for (const item of userStories) {
-      yield item;
-    }
   }
 
-  async *getWorkitems(): AsyncGenerator<any> {
+  async *getWorkitems(): AsyncGenerator<CustomWorkItem> {
     const promises = [
       "'Task'",
       "'User Story'",
@@ -249,12 +245,14 @@ export class AzureWorkitems {
           const url2 = `${project}/_apis/wit/workitems/${id}/updates`;
           const res2 = await this.get<WorkItemResponse2>(url2);
           const item2 = res2?.data?.value;
-          itemsArray.push({item, item2});
+          // NB: We need to append the CustomWorkItem object to a property called custom
+          // within fields object since in the new version destination doesn't support
+          // custom work item fields.
+          const returnObj = item as CustomWorkItem;
+          returnObj.fields.custom = item2;
+          yield returnObj;
         }
       }
-    }
-    for (const item of itemsArray) {
-      yield item;
     }
   }
 
@@ -321,11 +319,8 @@ export class AzureWorkitems {
         if (typeof response2?.data?.id !== 'undefined') {
           item.id = response2.data?.id;
         }
-        iterationArray.push(item);
+        yield item;
       }
-    }
-    for (const item of iterationArray) {
-      yield item;
     }
   }
 
@@ -336,12 +331,8 @@ export class AzureWorkitems {
       const boards = res.data?.value ?? [];
       this.logger.info(`Found ${boards.length} boards for project ${project}`);
       for (const item of boards) {
-        allBoards.push(item);
+        yield item;
       }
-    }
-    for (const item of allBoards) {
-      this.logger.info(`Yielding board ${item.name}`);
-      yield item;
     }
   }
 }

@@ -1,10 +1,10 @@
 import {Command} from 'commander';
+
 import {
   AirbyteConfig,
   AirbyteDestinationRunner,
   AirbyteSpec,
-} from 'faros-airbyte-cdk';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {DestinationConfig} from './common/types';
 import {Converter} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
