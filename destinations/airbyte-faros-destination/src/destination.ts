@@ -788,6 +788,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
+            console.log(
+              `----->> Processing Record Stream : ${recordMessage.record.stream}`
+            );
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }
