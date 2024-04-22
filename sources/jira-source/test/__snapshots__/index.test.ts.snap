@@ -141,3 +141,19 @@ exports[`index streams - sprint_reports 1`] = `
   },
 ]
 `;
+
+exports[`index streams - sprint_reports with run mode WebhookSupplement using Faros client 1`] = `
+[
+  {
+    "boardId": "1",
+    "completedAt": 2024-01-01T00:00:00.000Z,
+    "completedInAnotherSprintPoints": 5,
+    "completedPoints": 10,
+    "id": "1",
+    "notCompletedPoints": 15,
+    "plannedPoints": 50,
+    "projectKey": "TEST",
+    "puntedPoints": 20,
+  },
+]
+`;
