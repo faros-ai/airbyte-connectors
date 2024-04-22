@@ -12,7 +12,10 @@ export class ProjectMilestones extends GitlabConverter {
     const source = this.streamName.source;
     const milestone = record.record.data;
 
-    const repository = GitlabCommon.parseRepositoryKey(milestone.web_url, source);
+    const repository = GitlabCommon.parseRepositoryKey(
+      milestone.web_url,
+      source
+    );
 
     return [
       {

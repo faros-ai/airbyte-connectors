@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,12 +12,16 @@ import {Datadog, DatadogConfig} from './datadog';
 import {Incidents, Metrics, Users} from './streams';
 
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new DatadogSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
+  get type(): string {
+    return 'Datadog';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

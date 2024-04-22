@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -12,13 +12,17 @@ import {BambooHR, BambooHRConfig} from './bamboohr';
 import {Users} from './streams';
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new BambooHRSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** BambooHR source implementation. */
 export class BambooHRSource extends AirbyteSourceBase<BambooHRConfig> {
+  get type(): string {
+    return 'bamboohr';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

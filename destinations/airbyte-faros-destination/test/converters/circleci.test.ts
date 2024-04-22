@@ -5,7 +5,7 @@ import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {circleciAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('circleci', () => {
   const logger = testLogger();
@@ -68,6 +68,12 @@ describe('circleci', () => {
       qa_TestSuiteTestCaseAssociation: 2,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

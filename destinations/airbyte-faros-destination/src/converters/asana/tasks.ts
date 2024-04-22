@@ -55,8 +55,6 @@ export class Tasks extends AsanaConverter {
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
-    'tms_TaskProjectRelationship',
-    'tms_TaskBoardRelationship',
     'tms_TaskDependency',
     'tms_TaskAssignment',
     'tms_TaskTag',
@@ -109,23 +107,6 @@ export class Tasks extends AsanaConverter {
     const additionalFields = taskCustomFields.map((f) => this.toTaskField(f));
 
     for (const membership of task.memberships ?? []) {
-      if (membership.project) {
-        res.push({
-          model: 'tms_TaskBoardRelationship',
-          record: {
-            task: taskKey,
-            board: {uid: membership.project.gid, source},
-          },
-        });
-        res.push({
-          model: 'tms_TaskProjectRelationship',
-          record: {
-            task: taskKey,
-            project: {uid: membership.project.gid, source},
-          },
-        });
-      }
-
       if (membership.section) {
         additionalFields.push({
           name: 'section_gid',
@@ -156,6 +137,7 @@ export class Tasks extends AsanaConverter {
         statusChangedAt: Utils.toDate(task.modified_at),
         parent,
         statusChangelog: statusChangelog ?? null,
+        resolvedAt: Utils.toDate(task.completed_at),
       },
     });
 

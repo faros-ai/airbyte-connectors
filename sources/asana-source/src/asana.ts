@@ -1,12 +1,15 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import _ from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {
   AsanaResponse,
+  CompactTask,
   Project,
+  ProjectTaskAssociation,
   Story,
   Tag,
   Task,
@@ -21,6 +24,7 @@ export const MAX_DATE = new Date(7258118400000).toISOString();
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_RETRIES = 3;
 
 export interface AsanaConfig {
   credentials: {
@@ -29,6 +33,7 @@ export interface AsanaConfig {
   workspaces?: ReadonlyArray<string>;
   page_size?: number;
   api_timeout?: number;
+  max_retries?: number;
   start_date?: string;
   end_date?: string;
   cutoff_days?: number;
@@ -45,7 +50,7 @@ export class Asana {
     private readonly pageSize: number
   ) {}
 
-  static instance(config: AsanaConfig): Asana {
+  static instance(config: AsanaConfig, logger?: AirbyteLogger): Asana {
     if (Asana.asana) return Asana.asana;
 
     if (!config.credentials?.personal_access_token) {
@@ -66,14 +71,19 @@ export class Asana {
       endDate = new Date().toISOString();
     }
 
-    const httpClient = axios.create({
-      baseURL: `https://app.asana.com/api/1.0`,
-      timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
-      maxContentLength: Infinity, //default is 2000 bytes
-      headers: {
-        Authorization: `Bearer ${config.credentials.personal_access_token}`,
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://app.asana.com/api/1.0`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity, //default is 2000 bytes
+        headers: {
+          Authorization: `Bearer ${config.credentials.personal_access_token}`,
+        },
       },
-    });
+      logger.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      10000
+    );
 
     Asana.asana = new Asana(
       httpClient,
@@ -156,7 +166,6 @@ export class Asana {
       'completed',
       'created_at',
       'custom_fields',
-      'memberships.project',
       'memberships.section',
       'memberships.section.name',
       'modified_at',
@@ -166,6 +175,7 @@ export class Asana {
       'permalink_url',
       'resource_type',
       'workspace',
+      'completed_at',
     ];
 
     const params = {
@@ -199,7 +209,7 @@ export class Asana {
         modified_at_after = task.modified_at;
         yield {
           ...task,
-          stories: await this.getFilteredStories(task.gid, logger),
+          stories: await this.getFilteredStories(task.gid),
         };
       }
 
@@ -212,17 +222,32 @@ export class Asana {
     logger?: AirbyteLogger
   ): AsyncGenerator<Project> {
     logger?.info(`Fetching projects for workspace ${workspace}`);
-    yield* this.fetchData<Project>(
-      `workspaces/${workspace}/projects`,
-      ['name', 'created_at', 'modified_at', 'workspace', 'notes'],
-      logger
-    );
+    yield* this.fetchData<Project>(`workspaces/${workspace}/projects`, [
+      'name',
+      'created_at',
+      'modified_at',
+      'workspace',
+      'notes',
+    ]);
   }
 
-  async getFilteredStories(
-    task: string,
+  async *getProjectTasks(
+    project: string,
     logger?: AirbyteLogger
-  ): Promise<ReadonlyArray<Story>> {
+  ): AsyncGenerator<ProjectTaskAssociation> {
+    logger?.info(`Fetching tasks for project ${project}`);
+    for await (const compactTask of this.fetchData<CompactTask>(
+      `projects/${project}/tasks`,
+      []
+    )) {
+      yield {
+        project_gid: project,
+        task_gid: compactTask.gid,
+      };
+    }
+  }
+
+  async getFilteredStories(task: string): Promise<ReadonlyArray<Story>> {
     const opt_fields = [
       'assignee',
       'created_at',
@@ -233,8 +258,7 @@ export class Asana {
     const stories: Story[] = [];
     for await (const story of this.fetchData<Story>(
       `tasks/${task}/stories`,
-      opt_fields,
-      logger
+      opt_fields
     )) {
       if (
         [
@@ -255,34 +279,19 @@ export class Asana {
     return stories;
   }
 
-  async *getTags(
-    workspace: string,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<Tag> {
+  async *getTags(workspace: string): AsyncGenerator<Tag> {
     const opt_fields = ['name'];
-    yield* this.fetchData<Tag>(
-      `workspaces/${workspace}/tags`,
-      opt_fields,
-      logger
-    );
+    yield* this.fetchData<Tag>(`workspaces/${workspace}/tags`, opt_fields);
   }
 
-  async *getUsers(
-    workspace: string,
-    logger?: AirbyteLogger
-  ): AsyncGenerator<User> {
+  async *getUsers(workspace: string): AsyncGenerator<User> {
     const opt_fields = ['email', 'name'];
-    yield* this.fetchData<User>(
-      `workspaces/${workspace}/users`,
-      opt_fields,
-      logger
-    );
+    yield* this.fetchData<User>(`workspaces/${workspace}/users`, opt_fields);
   }
 
   async *fetchData<T>(
     endpoint: string,
-    optFields: string[],
-    logger?: AirbyteLogger
+    optFields: string[]
   ): AsyncGenerator<T> {
     const params = {limit: this.pageSize, opt_fields: optFields.join(',')};
     let hasNext = true;

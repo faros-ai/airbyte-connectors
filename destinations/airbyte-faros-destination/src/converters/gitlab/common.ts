@@ -31,7 +31,7 @@ export class GitlabCommon {
 
   static mapRepositoryHierarchy<T>(
     repository: RepositoryKey,
-    callback: (k: ProjectKey) => T,
+    callback: (k: ProjectKey) => T
   ): T[] {
     return repository.uid.split('/').map((_, i, a) => {
       const key = {
@@ -39,13 +39,10 @@ export class GitlabCommon {
         source: repository.organization.source,
       };
       return callback(key);
-    })
+    });
   }
 
-  static tms_TaskBoard(
-    boardKey: ProjectKey,
-    name: string,
-  ): DestinationRecord {
+  static tms_TaskBoard(boardKey: ProjectKey, name: string): DestinationRecord {
     return {
       model: 'tms_TaskBoard',
       record: {
@@ -57,7 +54,7 @@ export class GitlabCommon {
 
   static tms_TaskBoardProjectRelationship(
     boardKey: ProjectKey,
-    projectKey: ProjectKey,
+    projectKey: ProjectKey
   ): DestinationRecord {
     return {
       model: 'tms_TaskBoardProjectRelationship',
@@ -95,16 +92,15 @@ export class GitlabCommon {
       },
       this.tms_TaskBoard(projectKey, name),
       // traverse the hierarchy to link boards for the sub groups and the project itself
-      ...this.mapRepositoryHierarchy<DestinationRecord>(
-        repository,
-        key => this.tms_TaskBoardProjectRelationship(key, projectKey),
+      ...this.mapRepositoryHierarchy<DestinationRecord>(repository, (key) =>
+        this.tms_TaskBoardProjectRelationship(key, projectKey)
       ),
     ];
   }
 
   static parseRepositoryKey(
     webUrl: string | undefined,
-    source: string,    
+    source: string
   ): undefined | RepositoryKey {
     if (!webUrl) {
       return undefined;
@@ -114,7 +110,7 @@ export class GitlabCommon {
 
   static parseGroupKey(
     webUrl: string | undefined,
-    source: string,    
+    source: string
   ): undefined | OrgKey {
     if (!webUrl) {
       return undefined;
@@ -135,18 +131,22 @@ export class GitlabCommon {
   ): OrgKey | RepositoryKey {
     const startIndex = hasGroupPrefix ? 4 : 3;
     const nameParts: ReadonlyArray<string> = webUrl.split('/');
-    const endIndex = nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
-    const uid = nameParts.slice(startIndex + 1, endIndex).join('/').toLowerCase();
-    
+    const endIndex =
+      nameParts.indexOf('-') == -1 ? nameParts.length : nameParts.indexOf('-');
+    const uid = nameParts
+      .slice(startIndex + 1, endIndex)
+      .join('/')
+      .toLowerCase();
+
     if (hasGroupPrefix) {
-      return { uid: uid, source };
+      return {uid: uid, source};
     }
-    
+
     const org = nameParts[startIndex].toLowerCase();
     const name = nameParts[endIndex - 1].toLowerCase();
 
     return {
-      organization: { uid: org, source },
+      organization: {uid: org, source},
       uid,
       name,
     };

@@ -1,17 +1,17 @@
-import {
-  AirbyteConfig,
-  AirbyteConnectionStatus,
-  AirbyteConnectionStatusMessage,
-  AirbyteLogger,
-  AirbyteSpec,
-  SpecLoader,
-} from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 import os from 'os';
 import path from 'path';
 
+import {
+  AirbyteConfig,
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+  AirbyteSpec,
+  SpecLoader,
+} from '../../../faros-airbyte-cdk/lib';
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {FarosDestination} from '../src/destination';
+import {FarosDestinationLogger} from '../src/destination-logger';
 import {CLI, read} from './cli';
 import {initMockttp, tempConfig} from './testing-tools';
 
@@ -99,7 +99,7 @@ describe('index', () => {
   });
 
   test('check for circular converter dependencies', async () => {
-    const dest = new FarosDestination(new AirbyteLogger());
+    const dest = new FarosDestination(new FarosDestinationLogger());
     expect(() =>
       dest.checkForCircularDependencies({
         s1: new Set(['s2', 's3', 's4']),

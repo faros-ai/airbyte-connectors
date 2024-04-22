@@ -1,8 +1,8 @@
 import {Command} from 'commander';
 import {
   AirbyteConfig,
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -34,13 +34,17 @@ export interface WorkdayConfig extends AirbyteConfig {
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new WorkdaySource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Workday source implementation. */
 export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
+  get type(): string {
+    return 'workday';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

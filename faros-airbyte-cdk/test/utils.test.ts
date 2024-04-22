@@ -1,6 +1,6 @@
 import path from 'path';
 
-import {redactConfig, SpecLoader} from '../src';
+import {redactConfig, redactConfigAsString, SpecLoader} from '../src';
 
 const BASE_RESOURCES_DIR = path.join(__dirname, 'resources');
 
@@ -17,14 +17,9 @@ describe('utils', () => {
       },
     };
 
-    expect(redactConfig(cfg, spec)).toEqual(
-      JSON.stringify({
-        prop1: {
-          name: 'John Doe',
-          token: 'REDACTED',
-        },
-      })
-    );
+    const expected = {prop1: {name: 'John Doe', token: 'REDACTED'}};
+    expect(redactConfig(cfg, spec)).toEqual(expected);
+    expect(redactConfigAsString(cfg, spec)).toEqual(JSON.stringify(expected));
   });
 
   test('redact config with string array', async () => {
@@ -39,14 +34,11 @@ describe('utils', () => {
       },
     };
 
-    expect(redactConfig(cfg, spec)).toEqual(
-      JSON.stringify({
-        prop1: {
-          name: 'John Doe',
-          token_array: ['REDACTED', 'REDACTED'],
-        },
-      })
-    );
+    const expected = {
+      prop1: {name: 'John Doe', token_array: ['REDACTED', 'REDACTED']},
+    };
+    expect(redactConfig(cfg, spec)).toEqual(expected);
+    expect(redactConfigAsString(cfg, spec)).toEqual(JSON.stringify(expected));
   });
 
   test('redact config with object array', async () => {
@@ -61,13 +53,13 @@ describe('utils', () => {
       },
     };
 
-    expect(redactConfig(cfg, spec)).toEqual(
-      JSON.stringify({
-        prop1: {
-          name: 'John Doe',
-          object_token_array: [{token: 'REDACTED'}, {token: 'REDACTED'}],
-        },
-      })
-    );
+    const expected = {
+      prop1: {
+        name: 'John Doe',
+        object_token_array: [{token: 'REDACTED'}, {token: 'REDACTED'}],
+      },
+    };
+    expect(redactConfig(cfg, spec)).toEqual(expected);
+    expect(redactConfigAsString(cfg, spec)).toEqual(JSON.stringify(expected));
   });
 });

@@ -18,6 +18,9 @@
         "asana": {
           "$ref": "asana.json"
         },
+        "aws-cloudwatch-metrics": {
+          "$ref": "aws-cloudwatch-metrics.json"
+        },
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
@@ -78,11 +81,17 @@
         "surveys": {
           "$ref": "surveys.json"
         },
+        "trello": {
+          "$ref": "trello.json"
+        },
         "victorops": {
           "$ref": "victorops.json"
         },
         "workday": {
           "$ref": "workday.json"
+        },
+        "zendesk": {
+          "$ref": "zendesk.json"
         }
       }
     }

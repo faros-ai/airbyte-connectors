@@ -92,12 +92,3 @@ export interface TestMetadata {
   name: string;
   classname: string;
 }
-
-export interface CircleCIOnReadInfo {
-  org_slug: string;
-  repoNamesToProjectIds: Map<string, string>;
-  repoNamesToOrgIds: Map<string, string>;
-  repoNames: string[];
-  orgIds: string[];
-  uses_github_or_gitlab: boolean;
-}

@@ -55,7 +55,7 @@ export class Releases extends AirbyteStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.lastCreatedOn
         : undefined;
-    const azurePipeline = AzurePipeline.instance(this.config);
+    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
     yield* azurePipeline.getReleases(
       streamSlice.project,
       lastCreatedOn,

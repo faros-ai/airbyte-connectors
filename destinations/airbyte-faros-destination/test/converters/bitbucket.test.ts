@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {bitbucketAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('bitbucket', () => {
   const logger = testLogger();
@@ -82,6 +82,12 @@ describe('bitbucket', () => {
       vcs_User: 33,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

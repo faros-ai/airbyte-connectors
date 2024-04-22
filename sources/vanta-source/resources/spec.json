@@ -1,0 +1,51 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Vanta Spec",
+    "type": "object",
+    "required": ["token", "queryTypes"],
+    "additionalProperties": true,
+    "properties": {
+      "token": {
+        "type": "string",
+        "title": "API Token",
+        "const": "token"
+      },
+      "queryTypes": {
+        "type": "array",
+        "title": "Query Types",
+        "items": {
+          "type": "string",
+          "enum": ["git", "aws", "awsv2"]
+        },
+        "default": ["git", "aws", "awsv2"]
+      },
+      "apiUrl": {
+        "type": "string",
+        "title": "Vanta GraphQL API URL",
+        "description": "Vanta GraphQL API, e.g. ",
+        "default": "https://api.vanta.com/graphql"
+      },
+      "limit": {
+        "type": "number",
+        "title": "Page Limit",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 100,
+        "description": "The maximum number of objects in a single response."
+      },
+      "timeout": {
+        "type": "number",
+        "title": "Request Timeout",
+        "default": 60000,
+        "description": "The time allowed for a request to timeout (in milliseconds)."
+      },
+      "skipConnectionCheck": {
+        "type": "boolean",
+        "title": "Skip Connection Check",
+        "default": false
+      }
+    }
+  }
+}

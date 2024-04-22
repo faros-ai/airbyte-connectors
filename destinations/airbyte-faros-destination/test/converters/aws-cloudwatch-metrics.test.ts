@@ -1,9 +1,12 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {Metrics} from '../../src/converters/aws-cloudwatch-metrics/metrics';
-import {DestinationRecord} from '../../src/converters/converter';
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
+import {
+  Metrics,
+  MetricsConfig,
+} from '../../src/converters/aws-cloudwatch-metrics/metrics';
+import {DestinationRecord, StreamContext} from '../../src/converters/converter';
 import {CLI, read} from '../cli';
 import {
   initMockttp,
@@ -85,5 +88,33 @@ describe('AWS Cloudwatch Metrics', () => {
     }
 
     expect(outputRecords).toMatchSnapshot();
+  });
+
+  test('should use tag configuration', async () => {
+    const record = AirbyteRecord.make('metrics', {
+      queryName: 'TotalCharacterCount',
+      timestamp: '2023-12-11T19:38:00.000Z',
+      value: 22,
+      label: 'CodeWhisperer',
+    });
+    for (const should_tag_definition of [false, true, undefined]) {
+      const converter = new Metrics();
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            aws_cloudwatch_metrics: {
+              tag_key: 'tag-key',
+              tag_value: 'tag-value',
+              should_tag_definition,
+            } as MetricsConfig,
+          },
+        },
+        {}
+      );
+      const res = await converter.convert(record, ctx);
+      expect(res).toMatchSnapshot();
+    }
   });
 });

@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {phabricatorAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('phabricator', () => {
   const logger = testLogger();
@@ -70,6 +70,12 @@ describe('phabricator', () => {
       vcs_User: 4,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

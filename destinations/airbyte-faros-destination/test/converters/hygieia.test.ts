@@ -1,7 +1,3 @@
-import {
-  AirbyteLog,
-  AirbyteLogLevel,
-} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
@@ -9,7 +5,7 @@ import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {hygieiaAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('hygieia', () => {
   const logger = testLogger();
@@ -56,6 +52,12 @@ describe('hygieia', () => {
       cicd_Pipeline: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

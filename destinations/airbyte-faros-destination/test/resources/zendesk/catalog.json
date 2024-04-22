@@ -1,0 +1,46 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__groups"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__satisfaction_ratings"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__ticket_metrics"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__ticket_fields"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__tickets"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zendesk__tags"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

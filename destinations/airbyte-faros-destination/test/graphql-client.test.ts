@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {Schema} from 'faros-js-client';
 import fs from 'fs-extra';
 
+import {AirbyteLogger, AirbyteLogLevel} from '../../../faros-airbyte-cdk/lib';
 import {
   batchIterator,
   GraphQLBackend,
@@ -501,6 +501,18 @@ describe('graphql-client write batch upsert', () => {
         source: null,
         name: 'vitality',
       },
+      {
+        uid: 'jeniii',
+        name: null,
+        email: null,
+        htmlUrl: 'https://github.com/jeniii',
+      },
+      {
+        uid: 'jeniii',
+        name: 'some-name',
+        email: 'some-email',
+        htmlUrl: 'https://github.com/jeniii',
+      },
     ];
     const primaryKeys = ['uid', 'source'];
     expect(mergeByPrimaryKey(users, primaryKeys)).toMatchSnapshot();
@@ -846,6 +858,52 @@ describe('graphql-client write batch upsert', () => {
     await client.writeRecord('vcs_Organization', {uid: 'u2'}, 'mytestsource');
     await client.flush();
     expect(queries).toEqual(responses.length);
+  });
+  test('upsert same object', async () => {
+    const res1 = JSON.parse(`
+    {
+      "data": {
+        "insert_vcs_User": {
+          "returning": [
+            {
+              "id": "0add74f62dd2509722f89e77805409f364c087df",
+              "refreshedAt": "2024-01-10T00:17:08.106684+00:00",
+              "source": null,
+              "uid": "jeniii"
+            }
+          ]
+        }
+      }
+    }`);
+    const responses = [res1];
+    const record1 = JSON.parse(
+      '{"uid":"jeniii","name":null,"email":null,"htmlUrl":"https://github.com/jeniii"}'
+    );
+    const record2 = JSON.parse(
+      '{"uid":"jeniii","name":"some-name","email":"some-email","htmlUrl":"https://github.com/jeniii"}'
+    );
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any) {
+        expect(query).toMatchSnapshot();
+        return Promise.resolve(responses[queries++]);
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1
+    );
+    await client.loadSchema();
+    await client.writeRecord('vcs_User', record1, 'mytestsource');
+    await client.writeRecord('vcs_User', record2, 'mytestsource');
+    await client.flush();
+    expect(queries).toEqual(1);
   });
 });
 

@@ -1,0 +1,11 @@
+{
+  "contents": {
+    "completedIssuesInitialEstimateSum": {"value": 10},
+    "completedIssuesEstimateSum": {"value": 10},
+    "issuesNotCompletedInitialEstimateSum": {"value": 15},
+    "issuesNotCompletedEstimateSum": {"value": 15},
+    "puntedIssuesEstimateSum": {"value": 20},
+    "issuesCompletedInAnotherSprintEstimateSum": {"value": 5},
+    "plannedPoints": 25
+  }
+}

@@ -9,7 +9,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {gitlabAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('gitlab', () => {
   const logger = testLogger();
@@ -148,6 +148,12 @@ describe('gitlab', () => {
       vcs_User: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

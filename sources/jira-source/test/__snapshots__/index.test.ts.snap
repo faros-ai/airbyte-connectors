@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index streams - board_issues using board ids 1`] = `
+[
+  {
+    "boardId": "1",
+    "key": "TEST-1",
+  },
+  {
+    "boardId": "1",
+    "key": "TEST-2",
+  },
+]
+`;
+
+exports[`index streams - pull_requests 1`] = `
+[
+  {
+    "issue": {
+      "key": "TEST-1",
+      "project": "TEST",
+      "updated": 2024-03-14T12:00:00.000Z,
+    },
+    "number": 123,
+    "repo": {
+      "name": "test-repo",
+      "org": "test-org",
+      "source": "GitHub",
+    },
+  },
+  {
+    "issue": {
+      "key": "TEST-2",
+      "project": "TEST",
+      "updated": 2024-03-14T12:00:00.000Z,
+    },
+    "number": 123,
+    "repo": {
+      "name": "test-repo",
+      "org": "test-org",
+      "source": "GitHub",
+    },
+  },
+]
+`;
+
+exports[`index streams - sprint_reports 1`] = `
+[
+  {
+    "boardId": "1",
+    "completedAt": 2024-03-14T12:00:00.000Z,
+    "completedInAnotherSprintPoints": 5,
+    "completedPoints": 10,
+    "id": 1,
+    "notCompletedPoints": 15,
+    "plannedPoints": 50,
+    "projectKey": "TEST",
+    "puntedPoints": 20,
+  },
+]
+`;

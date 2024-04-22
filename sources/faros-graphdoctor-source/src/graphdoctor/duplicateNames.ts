@@ -80,7 +80,7 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
     let new_query = query.replace('%modelName%', modelName);
     new_query = new_query.replace('%modelName%', modelName);
     new_query = new_query.replace(name_replace, name_field);
-    cfg.logger.info('Duplicate Name Query: ' + new_query);
+    cfg.logger.debug('Duplicate Name Query: ' + new_query);
     const query_results = await get_paginated_query_results(
       modelName,
       new_query,
@@ -89,7 +89,6 @@ export const duplicateNames: GraphDoctorTestFunction = async function* (
       cfg,
       limit
     );
-    cfg.logger.info('Results: ' + JSON.stringify(query_results));
     const new_data_issues = process_name_query_results(
       query_results,
       name_field,

@@ -4,7 +4,7 @@ import {getLocal} from 'mockttp';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {CLI, read} from './../cli';
 import {azureactivedirectoryAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('azureactivedirectory', () => {
   const logger = testLogger();
@@ -57,6 +57,12 @@ describe('azureactivedirectory', () => {
       org_TeamMembership: 2,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

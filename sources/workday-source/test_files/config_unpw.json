@@ -1,9 +1,9 @@
 {
-    "tenant": "acme",
-    "credentials": {
-        "username": "foo",
-        "password": "bar"
-    },
-    "baseUrl": "test.test",
-    "customReportName": "CR"
-  }
+  "tenant": "acme",
+  "credentials": {
+    "username": "foo",
+    "password": "bar"
+  },
+  "baseUrl": "https://testurl.com",
+  "customReportName": "CR"
+}

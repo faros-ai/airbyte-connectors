@@ -1,15 +1,15 @@
 import {Command} from 'commander';
+
 import {
   AirbyteConfig,
   AirbyteDestinationRunner,
-  AirbyteLogger,
   AirbyteSpec,
-} from 'faros-airbyte-cdk';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {DestinationConfig} from './common/types';
 import {Converter} from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {FarosDestination} from './destination';
+import {FarosDestinationLogger} from './destination-logger';
 
 /** Faros Destination Runner */
 export class FarosDestinationRunner extends AirbyteDestinationRunner<DestinationConfig> {
@@ -21,7 +21,7 @@ export class FarosDestinationRunner extends AirbyteDestinationRunner<Destination
    * @param specOverride overrides the default specification with a custom one
    */
   constructor(specOverride: AirbyteSpec = undefined) {
-    const logger = new AirbyteLogger();
+    const logger = new FarosDestinationLogger();
     const destination = new FarosDestination(logger, specOverride);
     super(logger, destination);
     this.program = super.mainCommand();

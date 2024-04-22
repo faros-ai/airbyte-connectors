@@ -1,7 +1,7 @@
 import {Command} from 'commander';
 import {
-  AirbyteLogger,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteStreamBase,
@@ -14,13 +14,17 @@ import {Executions} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
-  const logger = new AirbyteLogger();
+  const logger = new AirbyteSourceLogger();
   const source = new HarnessSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
 /** Harness source implementation. */
 export class HarnessSource extends AirbyteSourceBase<HarnessConfig> {
+  get type(): string {
+    return 'harness';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));

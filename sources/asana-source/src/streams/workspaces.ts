@@ -1,14 +1,8 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Asana, AsanaConfig} from '../asana';
 import {Workspace} from '../models';
-import {StreamSlice} from './common';
 
 export class Workspaces extends AirbyteStreamBase {
   constructor(
@@ -27,7 +21,7 @@ export class Workspaces extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Workspace> {
-    const asana = Asana.instance(this.config);
+    const asana = Asana.instance(this.config, this.logger);
 
     for (const workspace of await asana.getWorkspaces()) {
       yield workspace;

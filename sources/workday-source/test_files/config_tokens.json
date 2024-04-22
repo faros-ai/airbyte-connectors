@@ -5,5 +5,5 @@
     "clientSecret": "bar",
     "refreshToken": "baz"
   },
-  "baseUrl": "test.test"
+  "baseUrl": "https://testurl.com"
 }

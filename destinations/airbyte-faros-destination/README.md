@@ -203,4 +203,5 @@ Run `./bin/main --help` for detailed information on available commands.
     ]
 }
 ```
-Done forget to rebuild after code changes
+
+Don't forget to rebuild after code changes

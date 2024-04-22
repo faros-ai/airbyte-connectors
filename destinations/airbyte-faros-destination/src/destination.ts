@@ -1,28 +1,6 @@
-import Analytics from 'analytics-node';
-import {
-  AirbyteConfiguredCatalog,
-  AirbyteConfiguredStream,
-  AirbyteConnectionStatus,
-  AirbyteConnectionStatusMessage,
-  AirbyteDestination,
-  AirbyteLogger,
-  AirbyteMessageType,
-  AirbyteRecord,
-  AirbyteSourceErrorStatus,
-  AirbyteSpec,
-  AirbyteStateMessage,
-  DestinationSyncMode,
-  parseAirbyteMessage,
-  SpecLoader,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {Analytics} from '@segment/analytics-node';
 import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
-import {
-  FarosClient,
-  FarosClientConfig,
-  HasuraSchemaLoader,
-  Schema,
-} from 'faros-js-client';
+import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
 import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
@@ -30,10 +8,33 @@ import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
-import util from 'util';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
+import {
+  AirbyteConfig,
+  AirbyteConfiguredCatalog,
+  AirbyteConfiguredStream,
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+  AirbyteDestination,
+  AirbyteMessageType,
+  AirbyteRecord,
+  AirbyteSourceConfigMessage,
+  AirbyteSourceStatus,
+  AirbyteSpec,
+  AirbyteStateMessage,
+  DestinationSyncMode,
+  isSourceConfigMessage,
+  isSourceLogsMessage,
+  isSourceStatusMessage,
+  isStateMessage,
+  parseAirbyteMessage,
+  SpecLoader,
+  SyncMessage,
+  SyncMode,
+  wrapApiError,
+} from '../../../faros-airbyte-cdk/lib';
 import {GraphQLClient} from './common/graphql-client';
 import {GraphQLWriter} from './common/graphql-writer';
 import {
@@ -53,10 +54,14 @@ import {
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
+import {FarosDestinationLogger, LogFiles} from './destination-logger';
+import {RecordRedactor} from './record-redactor';
+import FarosSyncClient, {Account, AccountSync} from './sync';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const SEGMENT_KEY = 'YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn';
 
 interface FarosDestinationState {
   readonly lastSynced: string;
@@ -67,20 +72,28 @@ export interface HttpAgents {
   httpsAgent?: https.Agent;
 }
 
+interface SyncErrors {
+  fatal: SyncMessage[];
+  nonFatal: SyncMessage[];
+  warnings: SyncMessage[];
+}
+
 /** Faros destination implementation. */
 export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   constructor(
-    private readonly logger: AirbyteLogger,
+    private readonly logger: FarosDestinationLogger,
     private specOverride: AirbyteSpec = undefined,
     private edition: Edition = undefined,
     private farosClientConfig: FarosClientConfig = undefined,
-    private farosClient: FarosClient = undefined,
+    private farosClient: FarosSyncClient = undefined,
     private farosGraph: string = undefined,
     private farosRevisionExpiration: string = undefined,
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
     private excludeFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
+    private redactFieldsByModel: Dictionary<ReadonlyArray<string>> = {},
+    private redactor: RecordRedactor = undefined,
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
     private segmentUserId: string = undefined
@@ -90,7 +103,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   onConfigCheck: (config: DestinationConfig) => Promise<void> = undefined;
 
-  getFarosClient(): FarosClient {
+  getFarosClient(): FarosSyncClient {
     if (this.farosClient) return this.farosClient;
     throw new VError('Faros Client is not initialized');
   }
@@ -178,8 +191,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       // Segment host is used for testing purposes only
       const host = config.edition_configs?.segment_test_host;
       // Only create the client if there's a user id specified
-      this.analytics = new Analytics('YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn', {
+      this.analytics = new Analytics({
+        writeKey: SEGMENT_KEY,
         host,
+      }).on('error', (err) => {
+        this.logger.error(
+          `Failed to send write stats to Segment: ${err.code}`,
+          JSON.stringify(err.reason)
+        );
       });
     }
   }
@@ -200,9 +219,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         timeout: 60000,
         ...this.makeHttpAgents(config.keep_alive),
       };
-      this.farosClient = new FarosClient(
+      this.farosClient = new FarosSyncClient(
         this.farosClientConfig,
-        this.logger.asPino('info'),
+        this.logger,
         axiosConfig
       );
     } catch (e) {
@@ -320,9 +339,30 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       );
     }
 
-    this.excludeFieldsByModel = config.exclude_fields_map
-      ? JSON.parse(config.exclude_fields_map)
-      : {};
+    if (config.exclude_fields_map) {
+      this.excludeFieldsByModel =
+        typeof config.exclude_fields_map === 'object'
+          ? config.exclude_fields_map
+          : JSON.parse(config.exclude_fields_map);
+    } else {
+      this.excludeFieldsByModel = {};
+    }
+
+    if (config.redact_fields_map) {
+      this.redactFieldsByModel =
+        typeof config.redact_fields_map === 'object'
+          ? config.redact_fields_map
+          : JSON.parse(config.redact_fields_map);
+    } else {
+      this.redactFieldsByModel = {};
+    }
+
+    this.redactor = new RecordRedactor(
+      config.redact_custom_replace,
+      typeof config.redact_custom_regex === 'string'
+        ? JSON.parse(config.redact_custom_regex)
+        : config.redact_custom_regex
+    );
 
     const jira_configs = config.source_specific_configs?.jira ?? {};
     if (
@@ -408,13 +448,45 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   async *write(
     config: DestinationConfig,
+    redactedConfig: AirbyteConfig,
     catalog: AirbyteConfiguredCatalog,
     stdin: NodeJS.ReadStream,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
+    const startedAt = new Date();
+    const origin = this.getOrigin(config, catalog);
+    const accountId = config.faros_source_id || origin;
+    const dryRunEnabled = config.dry_run === true || dryRun;
     await this.init(config);
 
-    const origin = this.getOrigin(config, catalog);
+    let account: Account;
+    let sync: AccountSync;
+    let logFiles: LogFiles;
+    if (!dryRunEnabled && this.edition === Edition.CLOUD) {
+      account = await this.getFarosClient().getOrCreateAccount(
+        accountId,
+        this.farosGraph,
+        redactedConfig
+      );
+
+      // WORKER_JOB_ID is populated by Airbyte
+      let logId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
+      if (account) {
+        this.logger.shouldSaveLogs =
+          !!account.local && config.edition_configs.upload_sync_logs !== false;
+        if (this.logger.shouldSaveLogs) {
+          logId = undefined; // let Faros generate a unique log id
+          logFiles = new LogFiles(this.logger);
+          this.logger.logFiles = logFiles;
+        }
+        sync = await this.getFarosClient().createAccountSync(
+          accountId,
+          startedAt,
+          logId
+        );
+      }
+    }
+
     const {streams, deleteModelEntries, converterDependencies} =
       this.initStreamsCheckConverters(catalog);
 
@@ -425,8 +497,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     let latestStateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
-
-    const dryRunEnabled = config.dry_run === true || dryRun;
+    const syncErrors: SyncErrors = {fatal: [], nonFatal: [], warnings: []};
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
@@ -448,7 +519,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stdin,
           streams,
           converterDependencies,
-          stats
+          stats,
+          syncErrors
         )) {
           latestStateMessage = stateMessage;
         }
@@ -487,23 +559,68 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           this
         );
 
-        for await (const stateMessage of this.writeEntries(
-          config,
-          streamContext,
-          stdin,
-          streams,
-          converterDependencies,
-          stats,
-          writer,
-          async () =>
-            await graphQLClient.resetData(
-              origin,
-              Array.from(streamContext.resetModels),
-              this.edition === Edition.COMMUNITY
-            )
-        )) {
-          await graphQLClient.flush();
-          yield stateMessage;
+        try {
+          for await (const stateMessage of this.writeEntries(
+            config,
+            streamContext,
+            stdin,
+            streams,
+            converterDependencies,
+            stats,
+            syncErrors,
+            writer,
+            logFiles,
+            async () =>
+              await graphQLClient.resetData(
+                origin,
+                Array.from(streamContext.resetModels),
+                this.edition === Edition.COMMUNITY
+              ),
+            async (msg: AirbyteSourceConfigMessage) => {
+              if (account?.local) {
+                await this.getFarosClient().updateLocalAccount(
+                  accountId,
+                  this.farosGraph,
+                  {...redactedConfig, ...msg.redactedConfig},
+                  msg.sourceType,
+                  msg.sourceMode
+                );
+              }
+            }
+          )) {
+            await graphQLClient.flush();
+            yield stateMessage;
+          }
+        } catch (error: any) {
+          const wrappedError = wrapApiError(error);
+          this.logger.error(
+            `Encountered an error while writing records to Faros: ${wrappedError} - ${JSON.stringify(
+              wrappedError
+            )}`,
+            wrappedError.stack
+          );
+          const destinationError: SyncMessage = {
+            summary: wrappedError.message ?? JSON.stringify(wrappedError),
+            code: 0, // placeholder
+            action: 'Contact Faros Support', // placeholder
+            type: 'ERROR',
+          };
+          syncErrors.fatal.push(destinationError);
+          throw error;
+        } finally {
+          if (sync?.syncId) {
+            await this.getFarosClient().updateAccountSync(
+              accountId,
+              sync.syncId,
+              {
+                endedAt: new Date(),
+                status: syncErrors.fatal.length ? 'error' : 'success',
+                metrics: stats.asObject(),
+                errors: syncErrors.fatal.concat(syncErrors.nonFatal),
+                warnings: syncErrors.warnings,
+              }
+            );
+          }
         }
       } else {
         this.logger.info(
@@ -547,6 +664,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 streams,
                 converterDependencies,
                 stats,
+                syncErrors,
                 writer
               )) {
                 latestStateMessage = stateMessage;
@@ -563,26 +681,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       if (this.analytics) {
         this.logger.debug('Sending write stats to Segment');
-        const fn = (callback: ((err: Error) => void) | undefined): void => {
-          this.analytics
-            .track(
-              {
-                event: 'Write Stats',
-                userId: this.segmentUserId,
-                properties: stats,
-              },
-              callback
-            )
-            .flush(callback);
-        };
-        await util
-          .promisify(fn)()
-          .catch((err) =>
-            this.logger.error(
-              `Failed to send write stats to Segment: ${err.message}`,
-              err.stack
-            )
-          );
+        this.analytics.track({
+          event: 'Write Stats',
+          userId: this.segmentUserId,
+          properties: stats,
+        });
+        this.analytics.closeAndFlush();
       }
 
       // Airbyte updates connection state whenever the destination emits a state
@@ -592,9 +696,33 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (latestStateMessage) {
         yield latestStateMessage;
       }
+
+      if (config.fail_on_source_error) {
+        const sourceErrors = syncErrors.fatal.concat(syncErrors.nonFatal);
+        if (sourceErrors.length) {
+          throw new VError(
+            `Failing sync due to ${sourceErrors.length} source error(s): ` +
+              `${sourceErrors.map((e) => e.summary).join('; ')}`
+          );
+        }
+      }
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
+      if (logFiles) {
+        const logs = await logFiles.sortedLogs(this.logger);
+        if (account?.local && sync?.syncId && logs) {
+          const client = this.getFarosClient();
+          const url = await client.getAccountSyncLogFileUrl(
+            accountId,
+            sync.syncId,
+            logs.hash
+          );
+          if (url) {
+            await client.uploadLogs(url, logs.content, logs.hash);
+          }
+        }
+      }
     }
   }
 
@@ -605,8 +733,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
     stats: WriteStats,
+    syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
-    resetData?: () => Promise<void>
+    logFiles?: LogFiles,
+    resetData?: () => Promise<void>,
+    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>
   ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -619,28 +750,41 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       input: stdin,
       terminal: stdin.isTTY,
     });
+
     try {
-      let sourceFailed: AirbyteSourceErrorStatus = undefined;
       let sourceSucceeded = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
+        console.log('------>> ', line);
         let stateMessage: AirbyteStateMessage = undefined;
 
         await this.handleRecordProcessingError(stats, async () => {
           const msg = parseAirbyteMessage(line);
           stats.messagesRead++;
-          if (msg.type === AirbyteMessageType.STATE) {
-            const message = msg as AirbyteStateMessage;
-            if (message.sourceStatus?.status === 'SUCCESS') {
-              sourceSucceeded = true;
-            } else if (message.sourceStatus?.status === 'ERRORED') {
-              this.logger.error(
-                'Airbyte Source has failed: ' + message.sourceStatus.error
-              );
-              sourceFailed = message.sourceStatus;
+          if (isStateMessage(msg)) {
+            if (isSourceStatusMessage(msg)) {
+              const status = msg.sourceStatus?.status;
+              if (status === 'SUCCESS') {
+                sourceSucceeded = true;
+              }
+              const syncMessage = getSyncMessage(msg.sourceStatus);
+              if (syncMessage) {
+                if (status === 'ERRORED') {
+                  syncErrors.fatal.push(syncMessage);
+                } else if (syncMessage.type === 'ERROR') {
+                  syncErrors.nonFatal.push(syncMessage);
+                } else {
+                  syncErrors.warnings.push(syncMessage);
+                }
+              }
+            } else if (isSourceConfigMessage(msg)) {
+              await updateLocalAccount?.(msg);
+            } else if (isSourceLogsMessage(msg)) {
+              this.logger.debug(`Received ${msg.logs.length} source logs`);
+              logFiles?.writeSourceLogs(...msg.logs);
             } else {
-              stateMessage = message;
+              stateMessage = msg;
             }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
@@ -744,12 +888,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         );
       }
 
-      if (sourceFailed) {
+      const isResetSync =
+        process.env.WORKER_JOB_ID &&
+        stats.recordsProcessed === 0 &&
+        Object.values(streams)
+          .map((s) => s.destination_sync_mode)
+          .every((m) => m === DestinationSyncMode.OVERWRITE);
+
+      const allSourceErrors = syncErrors.fatal.concat(syncErrors.nonFatal);
+      if (allSourceErrors.length) {
+        const errorSummary = allSourceErrors.map((e) => e.summary).join('; ');
         this.logger.error(
           'Skipping reset of non-incremental models due to' +
-            ` Airbyte Source failure: ${sourceFailed.error}`
+            ` Airbyte Source errors: ${errorSummary}`
         );
-      } else if (sourceSucceeded || config.skip_source_success_check) {
+      } else if (
+        sourceSucceeded ||
+        config.skip_source_success_check ||
+        isResetSync
+      ) {
         await resetData?.();
       } else {
         this.logger.warn(
@@ -908,6 +1065,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           (_v, k) => !exclusions.includes(k)
         );
       }
+      // Redact record fields if necessary
+      const fieldsToRedact = this.redactFieldsByModel[result.model];
+      if (fieldsToRedact?.length > 0) {
+        result.record = this.redactor.redactRecord(
+          result.record,
+          fieldsToRedact
+        );
+      }
 
       // Write the record & increment the stats
       let isTimestamped = false;
@@ -958,4 +1123,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       this.addToPath(depsByStream, dep, []);
     });
   }
+}
+
+function getSyncMessage(
+  sourceStatus: AirbyteSourceStatus
+): SyncMessage | undefined {
+  // backwards compatibility with older Airbyte Source versions
+  if ((sourceStatus as any).error) {
+    return (sourceStatus as any).error as SyncMessage;
+  }
+
+  return sourceStatus.message;
 }

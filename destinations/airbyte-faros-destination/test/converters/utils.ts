@@ -1,7 +1,7 @@
-import {AirbyteLog, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {AirbyteLog, AirbyteLogLevel} from '../../../../faros-airbyte-cdk/lib';
 import {CLI, read} from '../cli';
 
 export type ProcessedAndWrittenModels = {
@@ -42,3 +42,37 @@ export async function assertProcessedAndWrittenModels<T>(
   expect(await cli.wait()).toBe(0);
   return {processedTotal, writtenTotal};
 }
+
+export const runTest = async (
+  configPath: string,
+  catalogPath: string,
+  processedByStream: Dictionary<number>,
+  writtenByModel: Dictionary<number>,
+  streamsLog: string,
+  streamNamePrefix: string
+): Promise<void> => {
+  const cli = await CLI.runWith([
+    'write',
+    '--config',
+    configPath,
+    '--catalog',
+    catalogPath,
+    '--dry-run',
+  ]);
+  cli.stdin.end(streamsLog, 'utf8');
+  const stdout = await read(cli.stdout);
+  const processed = _(processedByStream)
+    .toPairs()
+    .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
+    .orderBy(0, 'asc')
+    .fromPairs()
+    .value();
+
+  await assertProcessedAndWrittenModels(
+    processedByStream,
+    writtenByModel,
+    stdout,
+    processed,
+    cli
+  );
+};

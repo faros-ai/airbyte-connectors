@@ -298,8 +298,8 @@ export function compute_zscore_for_timestamps(
   const clusters: number[][] = find_clusters(seconds_timestamp, 10);
 
   if (!clusters) {
-    cfg.logger.info(JSON.stringify(datetimes));
-    cfg.logger.info(JSON.stringify(seconds_timestamp));
+    cfg.logger.debug(JSON.stringify(datetimes));
+    cfg.logger.debug(JSON.stringify(seconds_timestamp));
     return {status: 1, msg: `No clusters, nResults: "${nResults}".`};
   }
 
@@ -366,7 +366,7 @@ export const checkIfWithinLastXDays: GraphDoctorTestFunction = async function* (
     'vcs_PullRequest',
     'tms_Task',
   ];
-  cfg.logger.info(
+  cfg.logger.debug(
     `Starting to compute if objects appeared within the last ${days} days for models: ${model_test_list}`
   );
 

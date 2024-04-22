@@ -1,0 +1,9 @@
+query vcsRepositoryQuery($repoName: String!) {
+  vcs_Repository(where: {name: {_eq: $repoName}}, limit: 1) {
+    organization {
+      uid
+      source
+    }
+    name
+  }
+}

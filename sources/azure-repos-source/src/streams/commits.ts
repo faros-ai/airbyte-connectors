@@ -1,11 +1,11 @@
+import {Dictionary} from 'ts-essentials';
+
 import {
   AirbyteLogger,
   AirbyteStreamBase,
   StreamKey,
   SyncMode,
-} from 'faros-airbyte-cdk';
-import {Dictionary} from 'ts-essentials';
-
+} from '../../../../faros-airbyte-cdk/lib';
 import {AzureRepoConfig, AzureRepos} from '../azure-repos';
 import {Commit} from '../models';
 

@@ -14,8 +14,7 @@ const packageInfo = JSON.parse(
 
 export const PACKAGE_VERSION = packageInfo.version;
 
-/** Redact config of all secret values based on the provided specification */
-export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
+export function pathsToRedact(spec: AirbyteSpec): string[] {
   const paths = [];
   traverse(spec.spec.connectionSpecification ?? {}, {
     cb: (schema, pointer) => {
@@ -24,7 +23,27 @@ export function redactConfig(config: AirbyteConfig, spec: AirbyteSpec): string {
       }
     },
   });
-  const redact = fastRedact({paths, censor: 'REDACTED'});
+  return paths;
+}
+
+/** Redact config of all secret values based on the provided specification */
+export function redactConfig(
+  config: AirbyteConfig,
+  spec: AirbyteSpec
+): AirbyteConfig {
+  const redact = fastRedact({
+    paths: pathsToRedact(spec),
+    censor: 'REDACTED',
+    serialize: false,
+  });
+  return redact(_.cloneDeep(config)) as AirbyteConfig;
+}
+
+export function redactConfigAsString(
+  config: AirbyteConfig,
+  spec: AirbyteSpec
+): string {
+  const redact = fastRedact({paths: pathsToRedact(spec), censor: 'REDACTED'});
   return `${redact(config)}`;
 }
 

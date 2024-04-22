@@ -8,7 +8,6 @@ import axiosRetry, {
   IAxiosRetryConfig,
   isIdempotentRequestError,
 } from 'axios-retry';
-import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import https from 'https';
 import isRetryAllowed from 'is-retry-allowed';
 import {DateTime} from 'luxon';
@@ -18,14 +17,17 @@ import url from 'url';
 import {VError} from 'verror';
 
 import {
+  AirbyteLogger,
+  base64Encode,
+  wrapApiError,
+} from '../../../faros-airbyte-cdk/lib';
+import {
   Branch,
   Commit,
   CommitRepository,
   ProjectResponse,
-  PullRequestCommit,
   PullRequestCommitResponse,
   PullRequestThreadResponse,
-  PullRequestWorkItem,
   PullRequestWorkItemResponse,
   TagCommit,
   User,
@@ -43,7 +45,7 @@ import {
 } from './models';
 
 const DEFAULT_API_VERSION = '7.0';
-export const DEFAULT_BRANCH_PATTERN = '^main$';
+export const DEFAULT_BRANCH_PATTERN = '^master$';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -110,8 +112,7 @@ export class AzureRepos {
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       });
     }
-
-    const httpClient = axios.create({
+    const httpClientConfig = {
       baseURL: `${config.api_url ?? DEFAULT_API_URL}/${config.organization}`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
@@ -119,8 +120,8 @@ export class AzureRepos {
       params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
       httpsAgent: makeAgent(config.api_url ?? DEFAULT_API_URL),
-    });
-    const graphClient = axios.create({
+    };
+    const graphClientConfig = {
       baseURL: `${config.graph_api_url ?? DEFAULT_GRAPH_URL}/${
         config.organization
       }/_apis/graph`,
@@ -130,7 +131,10 @@ export class AzureRepos {
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
       httpsAgent: makeAgent(config.graph_api_url ?? DEFAULT_GRAPH_URL),
-    });
+    };
+    // console.log(JSON.stringify(graphClientConfig, null, 2));
+    const httpClient = axios.create(httpClientConfig);
+    const graphClient = axios.create(graphClientConfig);
 
     const top = config.page_size ?? DEFAULT_PAGE_SIZE;
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
@@ -207,6 +211,7 @@ export class AzureRepos {
       await this.getRepositories().next();
       await this.getUsers().next();
     } catch (err: any) {
+      // console.log(JSON.stringify(err, null, 2));
       throw new VError(err, 'Please verify your access token is correct');
     }
   }
@@ -268,6 +273,7 @@ export class AzureRepos {
       const res = await this.graphClient.get<UserResponse>('users', {
         params: {subjectTypes: 'msa,aad,imp', continuationToken},
       });
+      console.log(JSON.stringify(res.data, null, 2));
       continuationToken = res.headers?.['X-MS-ContinuationToken'];
       for (const item of res.data?.value ?? []) {
         yield item;

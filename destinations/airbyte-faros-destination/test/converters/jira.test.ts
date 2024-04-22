@@ -1,18 +1,16 @@
-import {
-  AirbyteConnectionStatus,
-  AirbyteConnectionStatusMessage,
-  AirbyteLog,
-  AirbyteLogLevel,
-} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
+import {
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+} from '../../../../faros-airbyte-cdk/lib';
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {jiraAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('jira', () => {
   const logger = testLogger();
@@ -80,8 +78,10 @@ describe('jira', () => {
       issue_fields: 74,
       projects: 1,
       project_versions: 3,
-      pull_requests: 1,
       workflow_statuses: 8,
+      faros_issue_pull_requests: 1,
+      faros_sprint_reports: 2,
+      faros_board_issues: 4,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -95,7 +95,7 @@ describe('jira', () => {
       tms_Project: 1,
       tms_ProjectReleaseRelationship: 3,
       tms_Release: 3,
-      tms_Sprint: 10,
+      tms_Sprint: 12,
       tms_Task: 5,
       tms_TaskAssignment: 1,
       tms_TaskBoard: 1,
@@ -103,13 +103,19 @@ describe('jira', () => {
       tms_TaskBoardRelationship: 5,
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 5,
-      tms_TaskPullRequestAssociation: 2,
+      tms_TaskPullRequestAssociation: 1,
       tms_TaskReleaseRelationship__Deletion: 1,
       tms_TaskReleaseRelationship__Upsert: 3,
       tms_TaskTag: 2,
       tms_User: 29,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await assertProcessedAndWrittenModels(
+      processedByStream,
+      writtenByModel,
+      stdout,
+      processed,
+      cli
+    );
   });
 });

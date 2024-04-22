@@ -2,10 +2,11 @@ import _ from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
+import {SEGMENT_KEY} from '../../src/destination';
 import {CLI, read} from '../cli';
 import {initMockttp, tempConfig, testLogger} from '../testing-tools';
 import {firehydrantAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {assertProcessedAndWrittenModels} from './utils';
 
 describe('firehydrant', () => {
   const logger = testLogger();
@@ -75,7 +76,14 @@ describe('firehydrant', () => {
       tms_User: 1,
     };
 
-    const { processedTotal, writtenTotal } = await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    const {processedTotal, writtenTotal} =
+      await assertProcessedAndWrittenModels(
+        processedByStream,
+        writtenByModel,
+        stdout,
+        processed,
+        cli
+      );
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -86,6 +94,7 @@ describe('firehydrant', () => {
           _metadata: expect.anything(),
           context: expect.anything(),
           event: 'Write Stats',
+          integrations: {},
           messageId: expect.anything(),
           properties: {
             messagesRead: 7,
@@ -103,7 +112,7 @@ describe('firehydrant', () => {
         },
       ],
       sentAt: expect.anything(),
-      timestamp: expect.anything(),
+      writeKey: SEGMENT_KEY,
     });
   });
 });
