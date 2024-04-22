@@ -12,6 +12,7 @@ export class Workitems extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskProjectRelationship',
   ];
 
   private statusChangelog(
@@ -109,6 +110,13 @@ export class Workitems extends AzureWorkitemsConverter {
             source,
           },
           source,
+        },
+      },
+      {
+        model: 'tms_TaskProjectRelationship',
+        record: {
+          task: {uid: String(WorkItem?.item?.id), source},
+          project: {uid: WorkItem?.item?.name, source},
         },
       },
     ];

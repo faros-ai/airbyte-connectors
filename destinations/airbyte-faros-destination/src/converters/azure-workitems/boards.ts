@@ -15,15 +15,27 @@ export class Boards extends AzureWorkitemsConverter {
     const board = record.record.data as Board;
     const organizationName = this.getOrganizationFromUrl(board.url);
     const organization = {uid: organizationName, source};
-    return [
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          uid: String(board.id),
-          name: board.name,
-          organization,
-        },
+    const results = [];
+    const uid = board.id;
+
+    results.push({
+      model: 'tms_Project',
+      record: {
+        uid,
+        name: board.name,
+        organization,
       },
-    ];
+    });
+
+    results.push({
+      model: 'tms_TaskBoard',
+      record: {
+        uid: String(board.id),
+        name: board.name,
+        organization,
+      },
+    });
+
+    return results;
   }
 }
