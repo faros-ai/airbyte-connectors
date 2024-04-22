@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {AirbyteLogger} from '../../../../faros-airbyte-cdk/lib';
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 
 export class WriteStats {
   constructor(
@@ -60,5 +60,30 @@ export class WriteStats {
       processedByStream: this.processedByStream,
       writtenByModel: this.writtenByModel,
     };
+  }
+}
+
+export class WriteStatsWithRecord extends WriteStats {
+  constructor(
+    public messagesRead: number = 0,
+    public recordsRead: number = 0,
+    public recordsProcessed: number = 0,
+    public recordsWritten: number = 0,
+    public recordsErrored: number = 0,
+    public recordsSkipped: number = 0,
+    public processedByStream: Dictionary<number> = {},
+    public writtenByModel: Dictionary<number> = {},
+    public currentRecord: AirbyteRecord = null
+  ) {
+    super(
+      messagesRead,
+      recordsErrored,
+      recordsProcessed,
+      recordsWritten,
+      recordsErrored,
+      recordsSkipped,
+      processedByStream,
+      writtenByModel
+    );
   }
 }
