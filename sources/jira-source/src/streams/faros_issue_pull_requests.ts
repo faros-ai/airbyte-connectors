@@ -1,22 +1,14 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import * as fs from 'fs';
-import path from 'path';
 import {Dictionary} from 'ts-essentials';
 
 import {DEV_FIELD_NAME, Jira} from '../jira';
 import {PullRequest} from '../models';
 import {
   ProjectStreamSlice,
-  RunMode,
   StreamState,
   StreamWithProjectSlices,
 } from './common';
-
-const TASKS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-task.gql'),
-  'utf8'
-);
 
 export class FarosIssuePullRequests extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -43,25 +35,8 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
         : undefined;
-    // if mode is WebhookSupplement, we fetch issues from the graph and then we will fetch pull requests
-    if (
-      this.config.run_mode === RunMode.WebhookSupplement &&
-      this.farosClient
-    ) {
-      // fetch issues from Faros graph
-      const issues = await this.farosClient.gql(
-        this.config.graph,
-        TASKS_QUERY,
-        {
-          source: 'Jira',
-          project: projectKey,
-          updatedAt: updateRange[0],
-        }
-      );
-    }
     for await (const issue of jira.getIssues(
       projectKey,
-      true,
       updateRange,
       true,
       undefined,

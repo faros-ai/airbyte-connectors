@@ -83,6 +83,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
     }
     return currentStreamState;
   }
+
+  protected supportsFarosClient(): boolean {
+    return (
+      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
+    );
+  }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {

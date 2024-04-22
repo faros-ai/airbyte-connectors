@@ -1,7 +1,7 @@
 export interface Issue {
   readonly id?: string;
   readonly key: string;
-  readonly fields: any;
+  readonly fields?: any;
   readonly created?: Date;
   readonly updated?: Date;
   readonly boardId?: string;
@@ -43,4 +43,16 @@ export interface SprintReport {
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+}
+
+export interface Sprint {
+  readonly uid: number;
+  readonly name: string;
+  readonly state: 'future' | 'active' | 'closed' | string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+  readonly completeDate?: string;
+  readonly createdDate?: string;
+  readonly originBoardId?: number;
+  readonly goal?: string;
 }
