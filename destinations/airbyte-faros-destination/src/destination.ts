@@ -42,7 +42,7 @@ import {
   Edition,
   InvalidRecordStrategy,
 } from './common/types';
-import {WriteStats} from './common/write-stats';
+import {WriteStats, WriteStatsWithRecord} from './common/write-stats';
 import {HasuraBackend} from './community/hasura-backend';
 import {
   Converter,
@@ -519,7 +519,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stdin,
           streams,
           converterDependencies,
-          stats,
+          stats as WriteStatsWithRecord,
           syncErrors
         )) {
           latestStateMessage = stateMessage;
@@ -566,7 +566,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             stdin,
             streams,
             converterDependencies,
-            stats,
+            stats as WriteStatsWithRecord,
             syncErrors,
             writer,
             logFiles,
@@ -663,7 +663,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 stdin,
                 streams,
                 converterDependencies,
-                stats,
+                stats as WriteStatsWithRecord,
                 syncErrors,
                 writer
               )) {
@@ -732,7 +732,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
-    stats: WriteStats,
+    stats: WriteStatsWithRecord,
     syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
@@ -756,7 +756,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
-        console.log('------>> ', line);
         let stateMessage: AirbyteStateMessage = undefined;
 
         await this.handleRecordProcessingError(stats, async () => {
@@ -789,6 +788,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
+            stats.currentRecord = recordMessage;
+            console.log(
+              `----->> Processing Record Stream : ${recordMessage.record.stream}`
+            );
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }
@@ -922,20 +925,24 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   async handleRecordProcessingError(
-    stats: WriteStats,
+    stats: any,
     processRecord: () => Promise<void>
   ): Promise<void> {
     try {
       await processRecord();
     } catch (e: any) {
-      stats.recordsErrored++;
+      const statObj = stats as WriteStatsWithRecord;
+      statObj.recordsErrored++;
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`,
         e.stack
       );
+      this.logger.error(
+        `Current record: ${JSON.stringify(statObj.currentRecord, null, 2)}`
+      );
       switch (this.invalidRecordStrategy) {
         case InvalidRecordStrategy.SKIP:
-          stats.recordsSkipped++;
+          statObj.recordsSkipped++;
           break;
         case InvalidRecordStrategy.FAIL:
           throw e;

@@ -198,7 +198,6 @@ export class AzureWorkitems {
       const ids: string[] = [];
       const ids2: string[] = [];
       const list = await this.post<any>(`${project}/_apis/wit/wiql`, data);
-      console.log(JSON.stringify(list.data, null, 2));
       for (let i = 0; i < list.data.workItems.length; i++) {
         ids.push(list.data.workItems[i].id);
       }

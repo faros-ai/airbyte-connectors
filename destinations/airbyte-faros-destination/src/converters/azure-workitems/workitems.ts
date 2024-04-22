@@ -52,13 +52,6 @@ export class Workitems extends AzureWorkitemsConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const WorkItem = record.record.data as CustomWorkItem;
-    console.log(
-      '=========> DESTINATION RECORD RECEIVED WORK ITEM RECORD <========'
-    );
-    console.log(JSON.stringify(record, null, 2));
-    console.log(
-      '=======> DESTINATION RECORD RECEIVED WORK ITEM RECORD END<======='
-    );
     const organizationName = this.getOrganizationFromUrl(WorkItem?.url);
     const organization = {uid: organizationName, source};
     const statusChangelog = this.statusChangelog(WorkItem);
