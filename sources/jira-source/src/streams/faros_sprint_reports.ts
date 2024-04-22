@@ -45,13 +45,14 @@ export class FarosSprintReports extends StreamWithBoardSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : undefined;
-    for await (const sprint of this.supportsFarosClient()
+    const sprints = this.supportsFarosClient()
       ? jira.getSprintsFromFarosGraph(
           boardId,
           this.farosClient,
           this.config.graph
         )
-      : jira.getSprints(boardId)) {
+      : jira.getSprints(boardId);
+    for await (const sprint of sprints) {
       const report = await jira.getSprintReport(sprint, boardId, updateRange);
       yield {
         ...report,
