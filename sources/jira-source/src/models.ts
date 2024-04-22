@@ -44,15 +44,3 @@ export interface SprintReport {
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
 }
-
-export interface Sprint {
-  readonly uid: number;
-  readonly name: string;
-  readonly state: 'future' | 'active' | 'closed' | string;
-  readonly startDate?: string;
-  readonly endDate?: string;
-  readonly completeDate?: string;
-  readonly createdDate?: string;
-  readonly originBoardId?: number;
-  readonly goal?: string;
-}
