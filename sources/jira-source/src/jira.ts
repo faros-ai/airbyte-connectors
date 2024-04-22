@@ -80,6 +80,16 @@ const SPRINT_BOARD_QUERY = fs.readFileSync(
   'utf8'
 );
 
+const PROJECT_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project.gql'),
+  'utf8'
+);
+
+const BOARD_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+  'utf8'
+);
+
 export const DEFAULT_CONCURRENCY_LIMIT = 5;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
@@ -497,6 +507,30 @@ export class Jira {
     }
   }
 
+  async *getProjectsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<Version2Models.Project> {
+    const projects = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, PROJECT_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_Project;
+      },
+      async (item: any) => {
+        return {
+          key: item.uid,
+        };
+      }
+    );
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) yield project;
+    }
+  }
+
   async getProject(id: string): Promise<Version2Models.Project> {
     const project = await this.api.v2.projects.getProject({
       projectIdOrKey: id,
@@ -647,6 +681,37 @@ export class Jira {
     for await (const board of boards) {
       const boardProject = board?.location?.projectKey;
       if (boardProject && this.isProjectInBucket(boardProject)) yield board;
+    }
+  }
+
+  async *getBoardsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<AgileModels.Board> {
+    const boards = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, BOARD_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_TaskBoard;
+      },
+      async (item: any) => {
+        return {
+          id: item.uid,
+          projectsKeys:
+            item.projects?.map((project: any) => project.project.uid) ?? [],
+        };
+      }
+    );
+    for await (const board of boards) {
+      if (
+        board.projectsKeys.some((projectKey: string) =>
+          this.isProjectInBucket(projectKey)
+        )
+      )
+        yield board;
     }
   }
 
