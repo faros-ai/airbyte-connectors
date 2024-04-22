@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
-import {FarosClient} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import moment from 'moment';
 
 import {

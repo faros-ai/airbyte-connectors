@@ -2,8 +2,7 @@ import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
-import {Utils, wrapApiError} from 'faros-js-client';
-import {FarosClient} from 'faros-js-client';
+import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
@@ -748,18 +747,14 @@ export class Jira {
         return data?.tms_SprintBoardRelationship;
       },
       async (item: any) => {
-        return this.farosSprintToJiraSprint(item.sprint);
+        return {
+          id: item.sprint.uid,
+          name: item.sprint.name,
+          state: item.sprint.state,
+          completeDate: item.sprint.closedAt,
+        };
       }
     );
-  }
-
-  async farosSprintToJiraSprint(sprint: any): Promise<AgileModels.Sprint> {
-    return {
-      id: sprint.uid,
-      name: sprint.name,
-      state: sprint.state,
-      completeDate: sprint.closedAt,
-    };
   }
 
   async getSprintReport(
