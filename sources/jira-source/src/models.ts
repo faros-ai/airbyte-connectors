@@ -30,7 +30,7 @@ export interface PullRequestIssue {
 export interface PullRequest {
   readonly repo: Repo;
   readonly number: number;
-  readonly issue?: PullRequestIssue;
+  readonly issue: PullRequestIssue;
 }
 
 export interface SprintReport {

@@ -15,11 +15,25 @@
         "name": {
           "type": "string"
         }
-      },
-      "required": ["source", "org", "name"]
+      }
     },
     "number": {
       "type": "integer"
+    },
+    "issue": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "project": {
+          "type": "string"
+        }
+      }
     }
   }
 }
