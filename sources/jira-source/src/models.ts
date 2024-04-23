@@ -1,9 +1,9 @@
 export interface Issue {
   readonly id?: string;
   readonly key: string;
+  readonly fields?: any;
   readonly created?: Date;
   readonly updated?: Date;
-  readonly pullRequests?: ReadonlyArray<PullRequest>;
   readonly boardId?: string;
 }
 

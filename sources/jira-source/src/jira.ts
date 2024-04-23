@@ -2,12 +2,14 @@ import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
-import {Utils, wrapApiError} from 'faros-js-client';
+import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
+import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
+import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -36,6 +38,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
+  readonly api_url?: string;
+  readonly api_key?: string;
+  readonly graph?: string;
 }
 
 // Check for field name differences between classic and next-gen projects
@@ -65,10 +70,24 @@ const prRegex = new RegExp(
     'stateCount=(?<count>[0-9]+)})'
 );
 
-const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
+
+const SPRINT_BOARD_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-sprint-board.gql'),
+  'utf8'
+);
+
+const PROJECT_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project.gql'),
+  'utf8'
+);
+
+const BOARD_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+  'utf8'
+);
 
 export const DEFAULT_CONCURRENCY_LIMIT = 5;
 export const DEFAULT_CUTOFF_DAYS = 90;
@@ -487,6 +506,30 @@ export class Jira {
     }
   }
 
+  async *getProjectsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<Version2Models.Project> {
+    const projects = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, PROJECT_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_Project;
+      },
+      async (item: any) => {
+        return {
+          key: item.uid,
+        };
+      }
+    );
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) yield project;
+    }
+  }
+
   async getProject(id: string): Promise<Version2Models.Project> {
     const project = await this.api.v2.projects.getProject({
       projectIdOrKey: id,
@@ -511,18 +554,9 @@ export class Jira {
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
 
-  async getProjectsByKey(): Promise<Map<string, Version2Models.Project>> {
-    const projectsByKey = new Map<string, Version2Models.Project>();
-    for await (const project of this.getProjects()) {
-      projectsByKey.set(project.key, project);
-    }
-    return projectsByKey;
-  }
-
   @Memoize()
   getIssues(
     projectId: string,
-    syncPullRequests: boolean,
     updateRange?: [Date, Date],
     fetchKeysOnly = false,
     filterJql?: string,
@@ -551,37 +585,41 @@ export class Jira {
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
-        let pullRequests: ReadonlyArray<PullRequest> = [];
-        if (syncPullRequests) {
-          const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
-          for (const devFieldId of devFieldIds) {
-            if (
-              pullRequests.length === 0 &&
-              Jira.hasPullRequests(item.fields[devFieldId])
-            ) {
-              try {
-                pullRequests = await this.getPullRequests(item.id);
-                this.logger?.debug(
-                  `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
-                );
-              } catch (err: any) {
-                this.logger?.warn(
-                  `Failed to get pull requests for issue ${item.key}: ${err.message}`
-                );
-              }
-            }
-          }
-        }
         return {
           id: item.id,
           key: item.key,
+          fields: item.fields,
           created: Utils.toDate(item.fields.created),
           updated: Utils.toDate(item.fields.updated),
-          pullRequests,
         };
       },
       'issues'
     );
+  }
+
+  async getIssuePullRequests(
+    issue: Issue
+  ): Promise<ReadonlyArray<PullRequest>> {
+    let pullRequests: ReadonlyArray<PullRequest> = [];
+    const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
+    for (const devFieldId of devFieldIds) {
+      if (
+        pullRequests.length === 0 &&
+        Jira.hasPullRequests(issue.fields[devFieldId])
+      ) {
+        try {
+          pullRequests = await this.getPullRequests(issue.id);
+          this.logger?.debug(
+            `Fetched ${pullRequests.length} pull requests for issue ${issue.key}`
+          );
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to get pull requests for issue ${issue.key}: ${err.message}`
+          );
+        }
+      }
+    }
+    return pullRequests;
   }
 
   private getIssueFields(
@@ -645,15 +683,43 @@ export class Jira {
     }
   }
 
+  async *getBoardsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<AgileModels.Board> {
+    const boards = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, BOARD_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_TaskBoard;
+      },
+      async (item: any) => {
+        return {
+          id: item.uid,
+          projectsKeys:
+            item.projects?.map((project: any) => project.project.uid) ?? [],
+        };
+      }
+    );
+    for await (const board of boards) {
+      if (
+        board.projectsKeys.some((projectKey: string) =>
+          this.isProjectInBucket(projectKey)
+        )
+      )
+        yield board;
+    }
+  }
+
   getBoard(id: string): Promise<AgileModels.Board> {
     const boardId = Utils.parseInteger(id);
     return this.api.agile.board.getBoard({boardId});
   }
 
-  getSprintReports(
-    boardId: string,
-    range?: [Date, Date]
-  ): AsyncIterableIterator<SprintReport> {
+  getSprints(boardId: string): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllSprints({
@@ -661,38 +727,68 @@ export class Jira {
           startAt,
           maxResults: this.maxPageSize,
         }),
+      async (item: AgileModels.Sprint) => item
+    );
+  }
+
+  getSprintsFromFarosGraph(
+    board: string,
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<AgileModels.Sprint> {
+    return this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, SPRINT_BOARD_QUERY, {
+          board,
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_SprintBoardRelationship;
+      },
       async (item: any) => {
-        const completeDate = Utils.toDate(item.completeDate);
-        // Ignore sprints completed before the input date range cutoff date
-        if (range && completeDate && completeDate < range[0]) {
-          return;
-        }
-        let report;
-        try {
-          if (
-            this.sprintHistoryFetchFailures <
-              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
-            toLower(item.state) != 'future'
-          ) {
-            report = await this.api.getSprintReport(boardId, item.id);
-            this.sprintHistoryFetchFailures = 0;
-          }
-        } catch (err: any) {
-          this.logger?.warn(
-            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
-          );
-          if (
-            this.sprintHistoryFetchFailures++ >=
-            MAX_SPRINT_HISTORY_FETCH_FAILURES
-          ) {
-            this.logger?.warn(
-              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
-            );
-          }
-        }
-        return this.toSprintReportFields(report?.contents, item);
+        return {
+          id: item.sprint.uid,
+          name: item.sprint.name,
+          state: item.sprint.state,
+          completeDate: item.sprint.closedAt,
+        };
       }
     );
+  }
+
+  async getSprintReport(
+    sprint: AgileModels.Sprint,
+    boardId: string,
+    range?: [Date, Date]
+  ): Promise<SprintReport> {
+    const completeDate = Utils.toDate(sprint.completeDate);
+    // Ignore sprints completed before the input date range cutoff date
+    if (range && completeDate && completeDate < range[0]) {
+      return;
+    }
+    let report;
+    try {
+      if (
+        this.sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+        toLower(sprint.state) != 'future'
+      ) {
+        report = await this.api.getSprintReport(boardId, sprint.id);
+        this.sprintHistoryFetchFailures = 0;
+      }
+    } catch (err: any) {
+      this.logger?.warn(
+        `Failed to get sprint report for sprint ${sprint.id}: ${err.message}`
+      );
+      if (
+        this.sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES
+      ) {
+        this.logger?.warn(
+          `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+        );
+      }
+    }
+    return this.toSprintReportFields(report?.contents, sprint);
   }
 
   private toSprintReportFields(report: any, sprint: any): SprintReport {

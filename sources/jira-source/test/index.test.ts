@@ -4,6 +4,7 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 import VError from 'verror';
 
@@ -149,6 +150,20 @@ describe('index', () => {
       .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
   });
 
+  const getSprintReportsMockedImplementation = () => ({
+    agile: {
+      board: {
+        getBoard: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('board.json')),
+        getAllSprints: paginate(readTestResourceFile('sprints.json')),
+      },
+    },
+    getSprintReport: jest
+      .fn()
+      .mockResolvedValue(readTestResourceFile('sprint_report.json')),
+  });
+
   test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
@@ -162,21 +177,41 @@ describe('index', () => {
     await testStream(
       1,
       readTestResourceFile('config.json'),
-      {
-        agile: {
-          board: {
-            getBoard: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('board.json')),
-            getAllSprints: paginate(readTestResourceFile('sprints.json')),
-          },
-        },
-        getSprintReport: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('sprint_report.json')),
-      },
+      getSprintReportsMockedImplementation(),
       {board: '1'}
     );
+  });
+
+  test('streams - sprint_reports with run mode WebhookSupplement using Faros client', async () => {
+    const gqlMock = jest.spyOn(FarosClient.prototype, 'gql');
+    gqlMock.mockReturnValueOnce(
+      Promise.resolve({
+        tms_SprintBoardRelationship: [
+          {
+            sprint: {
+              uid: '1',
+              name: 'Sprint 1',
+              state: 'closed',
+              closedAt: '2024-01-01T00:00:00Z',
+            },
+          },
+        ],
+      })
+    );
+    gqlMock.mockReturnValueOnce(
+      Promise.resolve({tms_SprintBoardRelationship: []})
+    );
+    let config = readTestResourceFile('config.json');
+    config = {
+      ...config,
+      run_mode: RunMode.WebhookSupplement,
+      api_key: 'SECRET',
+      api_url: 'https://dev.api.faros.ai',
+      graph: 'test',
+    };
+    await testStream(1, config, getSprintReportsMockedImplementation(), {
+      board: '1',
+    });
   });
 
   test('streams - board_issues using board ids', async () => {

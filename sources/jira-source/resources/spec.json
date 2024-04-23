@@ -147,6 +147,27 @@
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute projects and boards across. Use it when distributing the load between multiple sources",
         "default": 1
+      },
+      "api_url": {
+        "order": 0,
+        "type": "string",
+        "title": "Faros API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai",
+        "examples": ["https://prod.api.faros.ai"]
+      },
+      "api_key": {
+        "order": 1,
+        "title": "Faros API Key",
+        "type": "string",
+        "description": "The Faros API key to use to access the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "order": 2,
+        "type": "string",
+        "title": "Faros Graph name",
+        "description": "The graph name."
       }
     }
   }

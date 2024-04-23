@@ -8,6 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
@@ -15,6 +16,8 @@ import {RunMode, WebhookSupplementStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
+
+const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -41,11 +44,24 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     }
     return [true, undefined];
   }
+
+  makeFarosClient(config: JiraConfig): FarosClient {
+    return new FarosClient({
+      url: config.api_url ?? DEFAULT_API_URL,
+      apiKey: config.api_key,
+      useGraphQLV2: true,
+    });
+  }
+
   streams(config: JiraConfig): AirbyteStreamBase[] {
+    let farosClient;
+    if (config.api_key && config.api_url) {
+      farosClient = this.makeFarosClient(config);
+    }
     return [
-      new FarosIssuePullRequests(config, this.logger),
-      new FarosSprintReports(config, this.logger),
-      new FarosBoardIssues(config, this.logger),
+      new FarosIssuePullRequests(config, this.logger, farosClient),
+      new FarosSprintReports(config, this.logger, farosClient),
+      new FarosBoardIssues(config, this.logger, farosClient),
     ];
   }
 

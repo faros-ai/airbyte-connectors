@@ -1,5 +1,5 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import moment from 'moment';
 
 import {
@@ -35,7 +35,8 @@ export const WebhookSupplementStreamNames = [
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
   }
@@ -81,13 +82,22 @@ export abstract class StreamBase extends AirbyteStreamBase {
     }
     return currentStreamState;
   }
+
+  protected supportsFarosClient(): boolean {
+    return (
+      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
+    );
+  }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.project_keys) {
-      for await (const project of jira.getProjects()) {
+      const projects = this.supportsFarosClient()
+        ? jira.getProjectsFromGraph(this.farosClient, this.config.graph)
+        : jira.getProjects();
+      for await (const project of projects) {
         yield {project: project.key};
       }
     } else {
@@ -102,7 +112,10 @@ export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.board_ids) {
-      for await (const board of jira.getBoards()) {
+      const boards = this.supportsFarosClient()
+        ? jira.getBoardsFromGraph(this.farosClient, this.config.graph)
+        : jira.getBoards();
+      for await (const board of boards) {
         yield {board: board.id.toString()};
       }
     } else {

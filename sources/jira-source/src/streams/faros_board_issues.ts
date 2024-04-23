@@ -32,7 +32,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     }
     for await (const issue of jira.getIssues(
       projectKey,
-      false,
       undefined,
       true,
       boardJql,

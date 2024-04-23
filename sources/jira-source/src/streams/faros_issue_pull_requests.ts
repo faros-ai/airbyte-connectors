@@ -37,14 +37,14 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
         : undefined;
     for await (const issue of jira.getIssues(
       projectKey,
-      true,
       updateRange,
       true,
       undefined,
       true,
       [DEV_FIELD_NAME]
     )) {
-      for (const pullRequest of issue.pullRequests || []) {
+      for (const pullRequest of (await jira.getIssuePullRequests(issue)) ||
+        []) {
         yield {
           issue: {
             key: issue.key,
