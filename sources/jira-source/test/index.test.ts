@@ -246,6 +246,24 @@ describe('index', () => {
     );
   });
 
+  test('streams - sprints', async () => {
+    await testStream(
+      3,
+      readTestResourceFile('config.json'),
+      {
+        agile: {
+          board: {
+            getBoard: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board.json')),
+            getAllSprints: paginate(readTestResourceFile('sprints.json')),
+          },
+        },
+      },
+      {board: '1'}
+    );
+  });
+
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');

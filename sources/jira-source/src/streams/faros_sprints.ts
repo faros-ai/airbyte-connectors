@@ -3,12 +3,12 @@ import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {SprintReport} from '../models';
+import {Sprint} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
-export class FarosSprintReports extends StreamWithBoardSlices {
+export class FarosSprints extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/farosSprintReports.json');
+    return require('../../resources/schemas/farosSprints.json');
   }
 
   get primaryKey(): StreamKey | undefined {
@@ -24,7 +24,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<SprintReport> {
+  ): AsyncGenerator<Sprint> {
     const boardId = streamSlice.board;
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
@@ -33,26 +33,22 @@ export class FarosSprintReports extends StreamWithBoardSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : undefined;
-    const sprints = this.supportsFarosClient()
-      ? jira.getSprintsFromFarosGraph(
-          boardId,
-          this.farosClient,
-          this.config.graph,
-          updateRange?.[0]
-        )
-      : jira.getSprints(boardId, updateRange);
-    for await (const sprint of sprints) {
-      const report = await jira.getSprintReport(sprint, boardId);
+    for await (const sprint of jira.getSprints(boardId, updateRange)) {
       yield {
-        ...report,
+        id: sprint.id,
         boardId,
+        name: sprint.name,
+        state: sprint.state,
+        startedAt: Utils.toDate(sprint.startDate),
+        endedAt: Utils.toDate(sprint.endDate),
+        closedAt: Utils.toDate(sprint.completeDate),
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: SprintReport
+    latestRecord: Sprint
   ): StreamState {
     const board = latestRecord.boardId;
     const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
