@@ -251,10 +251,11 @@
 {"type": "LOG", "log": {"level": "INFO", "message": "Syncing stream: workflow_status_categories "}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Read 4 records from workflow_status_categories stream"}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_issue_pull_requests", "emitted_at": 1709750000862, "data": {"issue": {"key": "TEST-123", "updated": "2024-03-05T17:56:24.884Z", "project": "TEST" }, "repo": {"source": "GitHub", "org": "faros", "name": "test" },"number": 1234}}}
-{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprint_reports", "emitted_at": 1712673712093, "data": {"id": 52, "completedAt": null, "completedPoints": 10, "notCompletedPoints": 3, "puntedPoints": 4, "completedInAnotherSprintPoints": 1, "plannedPoints": 18, "projectKey": "TEST", "boardId": "1"}}}
-{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprint_reports", "emitted_at": 1712673712187, "data": {"id": 53, "completedAt": null, "completedPoints": 9, "notCompletedPoints": 4, "puntedPoints": 4, "completedInAnotherSprintPoints": 3, "plannedPoints": 20, "projectKey": "TEST", "boardId": "2"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprint_reports", "emitted_at": 1712673712093, "data": {"id": 52, "completedAt": null, "completedPoints": 10, "notCompletedPoints": 3, "puntedPoints": 4, "completedInAnotherSprintPoints": 1, "plannedPoints": 18, "boardId": "1"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprint_reports", "emitted_at": 1712673712187, "data": {"id": 53, "completedAt": null, "completedPoints": 9, "notCompletedPoints": 4, "puntedPoints": 4, "completedInAnotherSprintPoints": 3, "plannedPoints": 20, "boardId": "2"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-1","boardId": "1"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-2","boardId": "1"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-3","boardId": "1"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-4","boardId": "1"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprints", "emmited_at": 1712678736940, "data": {"id": 54, "boardId": "1", "name": "Test Sprint", "state": "closed", "startedAt": "2024-04-12T15:30:44.439Z", "endedAt": "2024-04-19T07:00:00.000Z", "closedAt": "2024-04-12T15:31:06.115Z"}}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}

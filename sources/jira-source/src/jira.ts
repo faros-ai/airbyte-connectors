@@ -719,7 +719,11 @@ export class Jira {
     return this.api.agile.board.getBoard({boardId});
   }
 
-  getSprints(boardId: string): AsyncIterableIterator<AgileModels.Sprint> {
+  @Memoize()
+  getSprints(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllSprints({
@@ -727,14 +731,22 @@ export class Jira {
           startAt,
           maxResults: this.maxPageSize,
         }),
-      async (item: AgileModels.Sprint) => item
+      async (item: AgileModels.Sprint) => {
+        const completeDate = Utils.toDate(item.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          return;
+        }
+        return item;
+      }
     );
   }
 
   getSprintsFromFarosGraph(
     board: string,
     farosClient: FarosClient,
-    graph: string
+    graph: string,
+    closedAtAfter?: Date
   ): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       async (startAt) => {
@@ -743,6 +755,7 @@ export class Jira {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
+          closedAtAfter,
         });
         return data?.tms_SprintBoardRelationship;
       },
@@ -759,14 +772,8 @@ export class Jira {
 
   async getSprintReport(
     sprint: AgileModels.Sprint,
-    boardId: string,
-    range?: [Date, Date]
+    boardId: string
   ): Promise<SprintReport> {
-    const completeDate = Utils.toDate(sprint.completeDate);
-    // Ignore sprints completed before the input date range cutoff date
-    if (range && completeDate && completeDate < range[0]) {
-      return;
-    }
     let report;
     try {
       if (
@@ -816,7 +823,7 @@ export class Jira {
 
     return {
       id: sprint.id,
-      completedAt: Utils.toDate(sprint.completeDate),
+      closedAt: Utils.toDate(sprint.completeDate),
       completedPoints,
       notCompletedPoints,
       puntedPoints,
