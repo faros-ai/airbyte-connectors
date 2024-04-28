@@ -4,7 +4,12 @@ import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
 import {SprintReport} from '../models';
-import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
+import {
+  BoardStreamSlice,
+  RunMode,
+  StreamState,
+  StreamWithBoardSlices,
+} from './common';
 
 export class FarosSprintReports extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -41,8 +46,9 @@ export class FarosSprintReports extends StreamWithBoardSlices {
           updateRange?.[0]
         )
       : jira.getSprints(boardId, updateRange);
+    const includeIssues = this.config.run_mode === RunMode.Full;
     for await (const sprint of sprints) {
-      const report = await jira.getSprintReport(sprint, boardId);
+      const report = await jira.getSprintReport(sprint, boardId, includeIssues);
       yield {
         ...report,
         boardId,

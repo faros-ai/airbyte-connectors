@@ -42,6 +42,14 @@ export interface SprintReport {
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+  readonly issues: SprintIssue[];
+}
+
+export interface SprintIssue {
+  readonly key: string;
+  readonly points: number;
+  readonly status: string;
+  readonly addedDuringSprint?: boolean;
 }
 
 export interface Sprint {
