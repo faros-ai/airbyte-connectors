@@ -5,8 +5,8 @@
     "id": {
       "type": "number"
     },
-    "boardId": {
-      "type": "string"
+    "originBoardId": {
+      "type": "number"
     },
     "name": {
       "type": "string"
@@ -14,15 +14,15 @@
     "state": {
       "type": "string"
     },
-    "startedAt": {
+    "startDate": {
       "type": "string",
       "format": "date-time"
     },
-    "endedAt": {
+    "endDate": {
       "type": "string",
       "format": "date-time"
     },
-    "closedAt": {
+    "completeDate": {
       "type": "string",
       "format": "date-time"
     }
