@@ -1,9 +1,10 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {AgileModels} from 'jira.js';
+import {toInteger, toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {Sprint} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprints extends StreamWithBoardSlices {
@@ -16,7 +17,7 @@ export class FarosSprints extends StreamWithBoardSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['closedAt'];
+    return ['completeDate'];
   }
 
   async *readRecords(
@@ -24,7 +25,7 @@ export class FarosSprints extends StreamWithBoardSlices {
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<Sprint> {
+  ): AsyncGenerator<AgileModels.Sprint> {
     const boardId = streamSlice.board;
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
@@ -36,22 +37,22 @@ export class FarosSprints extends StreamWithBoardSlices {
     for await (const sprint of jira.getSprints(boardId, updateRange)) {
       yield {
         id: sprint.id,
-        boardId,
+        originBoardId: sprint.originBoardId ?? toInteger(boardId),
         name: sprint.name,
         state: sprint.state,
-        startedAt: Utils.toDate(sprint.startDate),
-        endedAt: Utils.toDate(sprint.endDate),
-        closedAt: Utils.toDate(sprint.completeDate),
+        startDate: sprint.startDate,
+        endDate: sprint.endDate,
+        completeDate: sprint.completeDate,
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: Sprint
+    latestRecord: AgileModels.Sprint
   ): StreamState {
-    const board = latestRecord.boardId;
-    const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
+    const board = toString(latestRecord.originBoardId);
+    const latestRecordCutoff = Utils.toDate(latestRecord.completeDate);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

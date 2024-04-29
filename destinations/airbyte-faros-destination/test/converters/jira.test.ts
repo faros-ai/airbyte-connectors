@@ -97,6 +97,7 @@ describe('jira', () => {
       tms_ProjectReleaseRelationship: 3,
       tms_Release: 3,
       tms_Sprint: 13,
+      tms_SprintBoardRelationship: 1,
       tms_Task: 5,
       tms_TaskAssignment: 1,
       tms_TaskBoard: 1,
