@@ -164,6 +164,14 @@ describe('index', () => {
       .mockResolvedValue(readTestResourceFile('sprint_report.json')),
   });
 
+  const getUsersMockedImplementation = () => ({
+    v2: {
+      users: {
+        getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+      },
+    },
+  });
+
   test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
@@ -285,5 +293,13 @@ describe('index', () => {
 
     config.bucket_id = 2;
     await testStreamSlices(config);
+  });
+
+  test('streams - users', async () => {
+    await testStream(
+      0,
+      readTestResourceFile('config.json'),
+      getUsersMockedImplementation()
+    );
   });
 });

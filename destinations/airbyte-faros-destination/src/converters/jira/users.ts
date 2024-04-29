@@ -11,10 +11,10 @@ export class Users extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data;
-    const uid = user.accountId ?? user.name;
+    const uid = user.accountId ?? user.key;
     if (!uid) {
       ctx.logger.warn(
-        `Skipping user. User has no accountId or name defined: ${JSON.stringify(
+        `Skipping user. User has no accountId or key defined: ${JSON.stringify(
           user
         )}`
       );

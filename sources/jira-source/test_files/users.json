@@ -1,0 +1,39 @@
+[
+  {
+    "self": "https://test.atlassian.net/rest/api/2/user?accountId=8425d037692dx1332747h4e74",
+    "accountId": "8425d037692dx1332747h4e74",
+    "accountType": "atlassian",
+    "displayName": "User 1",
+    "active": true,
+    "timeZone": "America/Los_Angeles",
+    "locale": "en_US"
+  },
+  {
+    "self": "https://test.atlassian.net/rest/api/2/user?accountId=557058:f58131cb-b67d-43c7-b30d-6b58d40bd077",
+    "accountId": "557058:f58131cb-b67d-43c7-b30d-6b58d40bd077",
+    "accountType": "app",
+    "displayName": "Automation for Jira",
+    "active": true
+  },
+  {
+    "self": "https://test.atlassian.net/rest/api/2/user?accountId=5d53f3cbc6b9320d9ea5bdc2",
+    "accountId": "5d53f3cbc6b9320d9ea5bdc2",
+    "accountType": "app",
+    "displayName": "Jira Outlook",
+    "active": true
+  },
+  {
+    "self": "https://test.atlassian.net/rest/api/2/user?accountId=557058:0867a421-a9ee-4659-801a-bc0ee4a4487e",
+    "accountId": "557058:0867a421-a9ee-4659-801a-bc0ee4a4487e",
+    "accountType": "app",
+    "displayName": "Slack",
+    "active": true
+  },
+  {
+    "self": "https://test.atlassian.net/rest/api/2/user?accountId=5f849a1e0756940075e95f72",
+    "accountId": "8j849p1e0756990975d95k56",
+    "accountType": "atlassian",
+    "displayName": "User 2",
+    "active": false
+  }
+]

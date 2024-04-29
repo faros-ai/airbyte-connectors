@@ -82,6 +82,7 @@ describe('jira', () => {
       faros_issue_pull_requests: 1,
       faros_sprint_reports: 2,
       faros_board_issues: 4,
+      faros_users: 3,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -107,7 +108,7 @@ describe('jira', () => {
       tms_TaskReleaseRelationship__Deletion: 1,
       tms_TaskReleaseRelationship__Upsert: 3,
       tms_TaskTag: 2,
-      tms_User: 29,
+      tms_User: 32,
     };
 
     await assertProcessedAndWrittenModels(

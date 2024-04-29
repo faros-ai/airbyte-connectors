@@ -157,3 +157,20 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
   },
 ]
 `;
+
+exports[`index streams - users 1`] = `
+[
+  {
+    "accountId": "8425d037692dx1332747h4e74",
+    "active": true,
+    "displayName": "User 1",
+    "id": "8425d037692dx1332747h4e74",
+  },
+  {
+    "accountId": "8j849p1e0756990975d95k56",
+    "active": false,
+    "displayName": "User 2",
+    "id": "8j849p1e0756990975d95k56",
+  },
+]
+`;

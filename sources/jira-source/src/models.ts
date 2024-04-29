@@ -1,3 +1,5 @@
+import {Version2Models} from 'jira.js/out/version2';
+
 export interface Issue {
   readonly id?: string;
   readonly key: string;
@@ -43,4 +45,8 @@ export interface SprintReport {
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+}
+
+export interface User extends Version2Models.User {
+  id: string;
 }
