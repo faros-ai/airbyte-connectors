@@ -164,14 +164,6 @@ describe('index', () => {
       .mockResolvedValue(readTestResourceFile('sprint_report.json')),
   });
 
-  const getUsersMockedImplementation = () => ({
-    v2: {
-      users: {
-        getAllUsersDefault: paginate(readTestResourceFile('users.json')),
-      },
-    },
-  });
-
   test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
@@ -254,6 +246,24 @@ describe('index', () => {
     );
   });
 
+  test('streams - sprints', async () => {
+    await testStream(
+      3,
+      readTestResourceFile('config.json'),
+      {
+        agile: {
+          board: {
+            getBoard: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board.json')),
+            getAllSprints: paginate(readTestResourceFile('sprints.json')),
+          },
+        },
+      },
+      {board: '1'}
+    );
+  });
+
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
@@ -296,10 +306,12 @@ describe('index', () => {
   });
 
   test('streams - users', async () => {
-    await testStream(
-      0,
-      readTestResourceFile('config.json'),
-      getUsersMockedImplementation()
-    );
+    await testStream(4, readTestResourceFile('config.json'), {
+      v2: {
+        users: {
+          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+        },
+      },
+    });
   });
 });

@@ -38,13 +38,22 @@ export interface PullRequest {
 export interface SprintReport {
   readonly id: number;
   readonly boardId?: string;
-  readonly projectKey?: string;
-  readonly completedAt?: Date;
+  readonly closedAt?: Date;
   readonly completedPoints?: number;
   readonly completedInAnotherSprintPoints?: number;
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+}
+
+export interface Sprint {
+  readonly id: number;
+  readonly boardId?: string;
+  readonly name: string;
+  readonly state: string;
+  readonly startedAt?: Date;
+  readonly endedAt?: Date;
+  readonly closedAt?: Date;
 }
 
 export interface User extends Version2Models.User {

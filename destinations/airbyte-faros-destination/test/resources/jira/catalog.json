@@ -326,6 +326,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__jira__faros_sprints"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__jira__faros_users"
       },
       "destination_sync_mode": "append"
