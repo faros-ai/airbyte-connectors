@@ -49,6 +49,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     const includeIssues = this.config.run_mode !== RunMode.WebhookSupplement;
     for await (const sprint of sprints) {
       const report = await jira.getSprintReport(sprint, boardId, includeIssues);
+      if (!report) continue;
       yield {
         ...report,
         boardId,

@@ -51,13 +51,3 @@ export interface SprintIssue {
   readonly status: string;
   readonly addedDuringSprint?: boolean;
 }
-
-export interface Sprint {
-  readonly id: number;
-  readonly boardId?: string;
-  readonly name: string;
-  readonly state: string;
-  readonly startedAt?: Date;
-  readonly endedAt?: Date;
-  readonly closedAt?: Date;
-}
