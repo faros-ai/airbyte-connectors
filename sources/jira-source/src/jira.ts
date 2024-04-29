@@ -782,8 +782,7 @@ export class Jira {
 
   async getSprintReport(
     sprint: AgileModels.Sprint,
-    boardId: string,
-    includeIssues = true
+    boardId: string
   ): Promise<SprintReport> {
     let report;
     try {
@@ -806,13 +805,12 @@ export class Jira {
         );
       }
     }
-    return this.toSprintReportFields(report?.contents, sprint, includeIssues);
+    return this.toSprintReportFields(report?.contents, sprint);
   }
 
   private toSprintReportFields(
     report: any,
-    sprint: AgileModels.Sprint,
-    includeIssues: boolean = true
+    sprint: AgileModels.Sprint
   ): SprintReport {
     if (!report) {
       return;
@@ -841,7 +839,7 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
       plannedPoints,
-      ...(includeIssues && {issues: this.toSprintReportIssues(report)}),
+      issues: this.toSprintReportIssues(report),
     };
   }
 
