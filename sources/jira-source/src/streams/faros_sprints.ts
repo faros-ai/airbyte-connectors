@@ -43,7 +43,7 @@ export class FarosSprints extends StreamWithBoardSlices {
         startDate: sprint.startDate,
         endDate: sprint.endDate,
         completeDate: sprint.completeDate,
-        activatedDate: (sprint as any).activatedDate,
+        activatedDate: sprint['activatedDate'],
       };
     }
   }

@@ -47,5 +47,6 @@ export interface SprintReport {
 }
 
 export interface Sprint extends AgileModels.Sprint {
+  // The date the sprint is opened in Jira Server
   readonly activatedDate?: string;
 }
