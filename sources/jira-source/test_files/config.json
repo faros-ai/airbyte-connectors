@@ -12,5 +12,6 @@
   "max_retries": 5,
   "reject_unauthorized": true,
   "sync_additional_fields": true,
-  "timeout": 120000
+  "timeout": 120000,
+  "run_mode": "Full"
 }

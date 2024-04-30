@@ -7,14 +7,21 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, sum, toLower} from 'lodash';
+import {concat, isNil, pick, sum, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
+import {
+  Issue,
+  PullRequest,
+  Repo,
+  RepoSource,
+  SprintIssue,
+  SprintReport,
+} from './models';
 import {RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
@@ -42,6 +49,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
 }
+
+export const toFloat = (value: any): number | undefined =>
+  isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
@@ -71,6 +81,7 @@ const prRegex = new RegExp(
 );
 
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
+const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
@@ -96,7 +107,7 @@ export const DEFAULT_TIMEOUT = 120000; // 120 seconds
 
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
-  // Counts the number of failes calls to fetch sprint history
+  // Counts the number of failed calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
 
   constructor(
@@ -111,7 +122,8 @@ export class Jira {
     private readonly maxPageSize: number,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly useUsersPrefixSearch?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -194,7 +206,8 @@ export class Jira {
       cfg.page_size,
       cfg.bucket_id ?? 1,
       cfg.bucket_total ?? 1,
-      logger
+      logger,
+      cfg.use_user_prefix_search
     );
   }
 
@@ -798,12 +811,13 @@ export class Jira {
     return this.toSprintReportFields(report?.contents, sprint);
   }
 
-  private toSprintReportFields(report: any, sprint: any): SprintReport {
+  private toSprintReportFields(
+    report: any,
+    sprint: AgileModels.Sprint
+  ): SprintReport {
     if (!report) {
       return;
     }
-    const toFloat = (value: any): number | undefined =>
-      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
     const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
     const notCompletedPoints = toFloat(
@@ -820,7 +834,6 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
     ]);
-
     return {
       id: sprint.id,
       closedAt: Utils.toDate(sprint.completeDate),
@@ -829,7 +842,39 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
       plannedPoints,
+      issues: this.toSprintReportIssues(report),
     };
+  }
+
+  toSprintReportIssues(report: any): SprintIssue[] {
+    const toSprintIssues = (issues, status): any[] =>
+      issues?.map((issue) => {
+        return {
+          key: issue.key,
+          status,
+          points: toFloat(
+            issue.currentEstimateStatistic?.statFieldValue?.value
+          ),
+          addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
+        };
+      }) || [];
+
+    const issues: SprintIssue[] = [];
+    issues.push(...toSprintIssues(report?.completedIssues, 'Completed'));
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesCompletedInAnotherSprint,
+        'CompletedOutsideSprint'
+      )
+    );
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesNotCompletedInCurrentSprint,
+        'NotCompleted'
+      )
+    );
+    issues.push(...toSprintIssues(report?.puntedIssues, 'Removed'));
+    return issues;
   }
 
   async getBoardConfiguration(
@@ -859,5 +904,91 @@ export class Jira {
       bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
       this.bucketId
     );
+  }
+
+  getUsers(): AsyncIterableIterator<Version2Models.User> {
+    if (this.isCloud) {
+      return this.iterate(
+        (startAt) =>
+          this.api.v2.users.getAllUsersDefault({
+            startAt,
+            maxResults: this.maxPageSize,
+          }),
+        (item: Version2Models.User) => this.toUser(item)
+      );
+    }
+
+    if (!this.useUsersPrefixSearch) {
+      return this.findUsers('.');
+    }
+
+    return this.getUsersByPrefix();
+  }
+
+  private findUsers(
+    username: string
+  ): AsyncIterableIterator<Version2Models.User> {
+    this.logger?.debug("Searching for users with username '%s'", username);
+    return this.iterate(
+      (startAt) =>
+        // use custom method searchUsers for Jira Server
+        this.api.searchUsers(username, startAt, this.maxPageSize),
+      (item: Version2Models.User) => this.toUser(item)
+    );
+  }
+
+  private async *getUsersByPrefix(): AsyncIterableIterator<Version2Models.User> {
+    // Keep track of seen users in order to avoid returning duplicates
+    const seenUsers = new Set<string>();
+
+    // Try searching users by a single character prefix first
+    for (const prefix of PREFIX_CHARS) {
+      let userCount = 0;
+      const res = this.findUsers(prefix);
+      for await (const u of res) {
+        userCount++;
+        const uid = this.userId(u);
+        if (!seenUsers.has(uid)) {
+          seenUsers.add(uid);
+          yield u;
+        }
+      }
+      // Since we got exactly 1000 results back we are probably hitting
+      // the limit of Jira search API. Let's try searching by two character prefix
+      // https://jira.atlassian.com/browse/JRASERVER-65089
+      if (userCount === 1000) {
+        for (const prefix2 of PREFIX_CHARS) {
+          const res = this.findUsers(prefix + prefix2);
+          for await (const u of res) {
+            const uid = this.userId(u);
+            if (!seenUsers.has(uid)) {
+              seenUsers.add(uid);
+              yield u;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private userId(u: Version2Models.User): string {
+    let id = '';
+    for (const k of Object.keys(u).sort((a, b) => a.localeCompare(b))) {
+      id += `[${k}:${u[k]}]`;
+    }
+    return id;
+  }
+
+  private toUser(user: Version2Models.User): Version2Models.User | undefined {
+    if (!user.accountType || user.accountType === 'atlassian') {
+      return pick(user, [
+        'key',
+        'accountId',
+        'displayName',
+        'emailAddress',
+        'active',
+      ]);
+    }
+    return undefined;
   }
 }

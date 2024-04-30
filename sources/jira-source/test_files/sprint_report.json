@@ -6,6 +6,63 @@
     "issuesNotCompletedEstimateSum": {"value": 15},
     "puntedIssuesEstimateSum": {"value": 20},
     "issuesCompletedInAnotherSprintEstimateSum": {"value": 5},
-    "plannedPoints": 25
+    "plannedPoints": 25,
+    "completedIssues": [
+      {
+        "key": "TEST-1",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 5
+          }
+        }
+      },
+      {
+        "key": "TEST-2",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 5
+          }
+        }
+      }
+    ],
+    "issuesNotCompletedInCurrentSprint": [
+      {
+        "key": "TEST-3",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 10
+          }
+        }
+      },
+      {
+        "key": "TEST-4",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 15
+          }
+        }
+      }
+    ],
+    "issuesCompletedInAnotherSprint": [
+      {
+        "key": "TEST-5",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 5
+          }
+        }
+      }
+    ],
+    "puntedIssues": [
+      {
+        "key": "TEST-6",
+        "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 20
+          }
+        }
+      }
+    ],
+    "issueKeysAddedDuringSprint": {"TEST-3": true, "TEST-6": true}
   }
 }
