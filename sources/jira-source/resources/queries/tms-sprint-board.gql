@@ -2,7 +2,8 @@ query SprintBoardRelationship(
   $source: String!
   $board: String!
   $pageSize: Int,
-  $offset: Int
+  $offset: Int,
+  $closedAtAfter: timestamptz
 ) {
   tms_SprintBoardRelationship(
     where: {
@@ -12,6 +13,7 @@ query SprintBoardRelationship(
       },
       sprint: {
         source: { _eq: $source }
+        closedAt: { _gte: $closedAtAfter }
       },
     },
     limit: $pageSize,

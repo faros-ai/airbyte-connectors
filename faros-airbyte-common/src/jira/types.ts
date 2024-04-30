@@ -94,13 +94,20 @@ export interface PullRequest {
 export interface SprintReport {
   readonly id: number;
   readonly boardId?: string;
-  readonly projectKey?: string;
-  readonly completedAt?: Date;
+  readonly closedAt?: Date;
   readonly completedPoints?: number;
   readonly completedInAnotherSprintPoints?: number;
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+  readonly issues: SprintIssue[];
+}
+
+export interface SprintIssue {
+  readonly key: string;
+  readonly points: number;
+  readonly status: string;
+  readonly addedDuringSprint?: boolean;
 }
 
 export interface IssueField {

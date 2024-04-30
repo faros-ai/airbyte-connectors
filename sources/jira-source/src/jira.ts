@@ -9,6 +9,7 @@ import {
   PullRequest,
   Repo,
   RepoSource,
+  SprintIssue,
   SprintReport,
   Status,
 } from 'faros-airbyte-common/jira';
@@ -52,6 +53,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
 }
+
+export const toFloat = (value: any): number | undefined =>
+  isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
@@ -760,7 +764,11 @@ export class Jira {
     return this.api.agile.board.getBoard({boardId});
   }
 
-  getSprints(boardId: string): AsyncIterableIterator<AgileModels.Sprint> {
+  @Memoize()
+  getSprints(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllSprints({
@@ -768,14 +776,22 @@ export class Jira {
           startAt,
           maxResults: this.maxPageSize,
         }),
-      async (item: AgileModels.Sprint) => item
+      async (item: AgileModels.Sprint) => {
+        const completeDate = Utils.toDate(item.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          return;
+        }
+        return item;
+      }
     );
   }
 
   getSprintsFromFarosGraph(
     board: string,
     farosClient: FarosClient,
-    graph: string
+    graph: string,
+    closedAtAfter?: Date
   ): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       async (startAt) => {
@@ -784,6 +800,7 @@ export class Jira {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
+          closedAtAfter,
         });
         return data?.tms_SprintBoardRelationship;
       },
@@ -800,14 +817,8 @@ export class Jira {
 
   async getSprintReport(
     sprint: AgileModels.Sprint,
-    boardId: string,
-    range?: [Date, Date]
+    boardId: string
   ): Promise<SprintReport> {
-    const completeDate = Utils.toDate(sprint.completeDate);
-    // Ignore sprints completed before the input date range cutoff date
-    if (range && completeDate && completeDate < range[0]) {
-      return;
-    }
     let report;
     try {
       if (
@@ -832,12 +843,13 @@ export class Jira {
     return this.toSprintReportFields(report?.contents, sprint);
   }
 
-  private toSprintReportFields(report: any, sprint: any): SprintReport {
+  private toSprintReportFields(
+    report: any,
+    sprint: AgileModels.Sprint
+  ): SprintReport {
     if (!report) {
       return;
     }
-    const toFloat = (value: any): number | undefined =>
-      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
     const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
     const notCompletedPoints = toFloat(
@@ -854,16 +866,47 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
     ]);
-
     return {
       id: sprint.id,
-      completedAt: Utils.toDate(sprint.completeDate),
+      closedAt: Utils.toDate(sprint.completeDate),
       completedPoints,
       notCompletedPoints,
       puntedPoints,
       completedInAnotherSprintPoints,
       plannedPoints,
+      issues: this.toSprintReportIssues(report),
     };
+  }
+
+  toSprintReportIssues(report: any): SprintIssue[] {
+    const toSprintIssues = (issues, status): any[] =>
+      issues?.map((issue) => {
+        return {
+          key: issue.key,
+          status,
+          points: toFloat(
+            issue.currentEstimateStatistic?.statFieldValue?.value
+          ),
+          addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
+        };
+      }) || [];
+
+    const issues: SprintIssue[] = [];
+    issues.push(...toSprintIssues(report?.completedIssues, 'Completed'));
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesCompletedInAnotherSprint,
+        'CompletedOutsideSprint'
+      )
+    );
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesNotCompletedInCurrentSprint,
+        'NotCompleted'
+      )
+    );
+    issues.push(...toSprintIssues(report?.puntedIssues, 'Removed'));
+    return issues;
   }
 
   async getBoardConfiguration(
