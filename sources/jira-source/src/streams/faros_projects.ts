@@ -21,9 +21,9 @@ export class FarosProjects extends StreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Version2Models.Project> {
     const jira = await Jira.instance(this.config, this.logger);
-    const projectKeys = this.config.project_keys;
     for await (const project of jira.getProjects()) {
       // Skip projects that are not in the project_keys list
+      const projectKeys = this.config.project_keys;
       if (projectKeys && !projectKeys.includes(project.key)) {
         continue;
       }

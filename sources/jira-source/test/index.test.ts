@@ -100,7 +100,8 @@ describe('index', () => {
     streamIndex: any,
     streamConfig: JiraConfig,
     mockedImplementation?: any,
-    streamSlice?: any
+    streamSlice?: any,
+    isCloud = true
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -108,7 +109,7 @@ describe('index', () => {
         mockedImplementation ?? ({} as any),
         {} as any,
         new Map([['field_001', 'Development']]),
-        true,
+        isCloud,
         5,
         100,
         streamConfig.bucket_id,
@@ -261,6 +262,49 @@ describe('index', () => {
         },
       },
       {board: '1'}
+    );
+  });
+
+  test('streams - projects - pull all projects', async () => {
+    await testStream(4, readTestResourceFile('config.json'), {
+      v2: {
+        projects: {
+          searchProjects: paginate(readTestResourceFile('projects.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - filter projects', async () => {
+    const config = readTestResourceFile('config.json');
+    config.project_keys = ['TEST-1', 'TEST-2'];
+    await testStream(4, config, {
+      v2: {
+        projects: {
+          searchProjects: paginate(readTestResourceFile('projects.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - Jira Server', async () => {
+    await testStream(
+      4,
+      readTestResourceFile('config.json'),
+      {
+        v2: {
+          permissions: {
+            getMyPermissions: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('permissions.json')),
+          },
+        },
+        getAllProjects: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('projects.json')),
+      },
+      undefined,
+      false
     );
   });
 

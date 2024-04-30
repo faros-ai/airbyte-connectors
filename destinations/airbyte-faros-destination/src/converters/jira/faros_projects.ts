@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
@@ -18,7 +19,10 @@ export class FarosProjects extends JiraConverter {
         record: {
           uid: project.key,
           name: project.name,
-          description: this.truncate(ctx, project.description),
+          description: Utils.cleanAndTruncate(
+            project.description,
+            this.truncateLimit(ctx)
+          ),
           sourceSystemId: project.id,
           source,
         },

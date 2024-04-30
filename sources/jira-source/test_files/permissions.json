@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "BROWSE_PROJECTS": {
+      "havePermission": true
+    }
+  }
+}

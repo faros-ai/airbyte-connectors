@@ -259,4 +259,7 @@
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-3","boardId": "1"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-4","boardId": "1"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_sprints", "emitted_at": 1712678736940, "data": {"id": 54, "originBoardId": 1, "name": "Test Sprint", "state": "closed", "startDate": "2024-04-12T15:30:44.439Z", "endDate": "2024-04-19T07:00:00.000Z", "completeDate": "2024-04-12T15:31:06.115Z"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_projects", "emitted_at": 1712678736940, "data": {"id": 1234, "key": "TEST-1", "name": "Test Project 1", "description": "This is a test"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_projects", "emitted_at": 1712678736940, "data": {"id": 1235, "key": "TEST-2", "name": "Test Project 2", "description": "This is a test"}}}
+{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_projects", "emitted_at": 1712678736940, "data": {"id": 1236, "key": "TEST-3", "TEST-3": "Test Project 3", "description": "This is a test"}}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}

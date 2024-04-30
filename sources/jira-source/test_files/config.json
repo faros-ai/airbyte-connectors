@@ -2,7 +2,6 @@
   "url": "https://jira.com",
   "username": "user",
   "password": "pass",
-  "project_keys": ["TEST"],
   "bucket_id": 1,
   "bucket_total": 1,
   "additional_fields": [],
