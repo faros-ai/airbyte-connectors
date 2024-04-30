@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Dependency, Issue} from 'faros-airbyte-common/jira';
+import {Issue} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
-import {isNil, pick} from 'lodash';
+import {isNil} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraCommon, JiraConverter} from './common';
@@ -110,13 +110,7 @@ export class FarosIssues extends JiraConverter {
       sourceSystemId: issue.id,
     };
 
-    const excludeFields = this.excludeFields(ctx);
-    if (excludeFields.size > 0) {
-      const keys = Object.keys(task).filter((f) => !excludeFields.has(f));
-      results.push({model: 'tms_Task', record: pick(task, keys)});
-    } else {
-      results.push({model: 'tms_Task', record: task});
-    }
+    results.push({model: 'tms_Task', record: task});
 
     if (issue.assignees) {
       // assignees are sorted form earliest to latest
