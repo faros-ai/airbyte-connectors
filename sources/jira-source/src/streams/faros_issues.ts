@@ -1,6 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Issue} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
+import {omit} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
@@ -38,7 +39,7 @@ export class FarosIssues extends StreamWithProjectSlices {
         ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
         : undefined;
     for await (const issue of jira.getIssues(this.projectKey, updateRange)) {
-      yield issue;
+      yield omit(issue, 'fields');
     }
   }
 
