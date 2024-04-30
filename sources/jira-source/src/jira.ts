@@ -14,7 +14,14 @@ import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
+import {
+  Issue,
+  PullRequest,
+  Repo,
+  RepoSource,
+  SprintIssue,
+  SprintReport,
+} from './models';
 import {RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
@@ -42,6 +49,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
 }
+
+export const toFloat = (value: any): number | undefined =>
+  isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
@@ -797,12 +807,13 @@ export class Jira {
     return this.toSprintReportFields(report?.contents, sprint);
   }
 
-  private toSprintReportFields(report: any, sprint: any): SprintReport {
+  private toSprintReportFields(
+    report: any,
+    sprint: AgileModels.Sprint
+  ): SprintReport {
     if (!report) {
       return;
     }
-    const toFloat = (value: any): number | undefined =>
-      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
     const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
     const notCompletedPoints = toFloat(
@@ -819,7 +830,6 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
     ]);
-
     return {
       id: sprint.id,
       closedAt: Utils.toDate(sprint.completeDate),
@@ -828,7 +838,39 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
       plannedPoints,
+      issues: this.toSprintReportIssues(report),
     };
+  }
+
+  toSprintReportIssues(report: any): SprintIssue[] {
+    const toSprintIssues = (issues, status): any[] =>
+      issues?.map((issue) => {
+        return {
+          key: issue.key,
+          status,
+          points: toFloat(
+            issue.currentEstimateStatistic?.statFieldValue?.value
+          ),
+          addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
+        };
+      }) || [];
+
+    const issues: SprintIssue[] = [];
+    issues.push(...toSprintIssues(report?.completedIssues, 'Completed'));
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesCompletedInAnotherSprint,
+        'CompletedOutsideSprint'
+      )
+    );
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesNotCompletedInCurrentSprint,
+        'NotCompleted'
+      )
+    );
+    issues.push(...toSprintIssues(report?.puntedIssues, 'Removed'));
+    return issues;
   }
 
   async getBoardConfiguration(

@@ -42,14 +42,12 @@ export interface SprintReport {
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+  readonly issues: SprintIssue[];
 }
 
-export interface Sprint {
-  readonly id: number;
-  readonly boardId?: string;
-  readonly name: string;
-  readonly state: string;
-  readonly startedAt?: Date;
-  readonly endedAt?: Date;
-  readonly closedAt?: Date;
+export interface SprintIssue {
+  readonly key: string;
+  readonly points: number;
+  readonly status: string;
+  readonly addedDuringSprint?: boolean;
 }
