@@ -466,7 +466,7 @@ export class IssueTransformer {
         detail: item.fields.status?.name,
       },
       priority: item.fields.priority?.name,
-      project: item.fields.project?.id,
+      project: item.fields.project?.key,
       labels: item.fields.labels ?? [],
       creator: item.fields.creator?.accountId || item.fields.creator?.name,
       created,
