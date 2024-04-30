@@ -265,8 +265,18 @@ describe('index', () => {
     );
   });
 
-  test('streams - projects - pull all projects', async () => {
+  test('streams - users', async () => {
     await testStream(4, readTestResourceFile('config.json'), {
+      v2: {
+        users: {
+          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - pull all projects', async () => {
+    await testStream(5, readTestResourceFile('config.json'), {
       v2: {
         projects: {
           searchProjects: paginate(readTestResourceFile('projects.json')),
@@ -278,7 +288,7 @@ describe('index', () => {
   test('streams - projects - filter projects', async () => {
     const config = readTestResourceFile('config.json');
     config.project_keys = ['TEST-1', 'TEST-2'];
-    await testStream(4, config, {
+    await testStream(5, config, {
       v2: {
         projects: {
           searchProjects: paginate(readTestResourceFile('projects.json')),
@@ -289,7 +299,7 @@ describe('index', () => {
 
   test('streams - projects - Jira Server', async () => {
     await testStream(
-      4,
+      5,
       readTestResourceFile('config.json'),
       {
         v2: {
@@ -347,15 +357,5 @@ describe('index', () => {
 
     config.bucket_id = 2;
     await testStreamSlices(config);
-  });
-
-  test('streams - users', async () => {
-    await testStream(4, readTestResourceFile('config.json'), {
-      v2: {
-        users: {
-          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
-        },
-      },
-    });
   });
 });
