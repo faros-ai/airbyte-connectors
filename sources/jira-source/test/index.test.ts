@@ -348,4 +348,14 @@ describe('index', () => {
     config.bucket_id = 2;
     await testStreamSlices(config);
   });
+
+  test('streams - users', async () => {
+    await testStream(4, readTestResourceFile('config.json'), {
+      v2: {
+        users: {
+          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+        },
+      },
+    });
+  });
 });

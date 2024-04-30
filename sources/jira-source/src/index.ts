@@ -18,6 +18,7 @@ import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
 import {FarosSprints} from './streams/faros_sprints';
+import {FarosUsers} from './streams/faros_users';
 
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
@@ -65,6 +66,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosSprintReports(config, this.logger, farosClient),
       new FarosBoardIssues(config, this.logger, farosClient),
       new FarosSprints(config, this.logger),
+      new FarosUsers(config, this.logger),
       new FarosProjects(config, this.logger),
     ];
   }

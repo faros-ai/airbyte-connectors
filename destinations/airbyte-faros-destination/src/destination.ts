@@ -475,18 +475,20 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       // WORKER_JOB_ID is populated by Airbyte
       let logId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
       if (account) {
-        this.logger.shouldSaveLogs =
-          !!account.local && config.edition_configs.upload_sync_logs !== false;
-        if (this.logger.shouldSaveLogs) {
-          logId = undefined; // let Faros generate a unique log id
-          logFiles = new LogFiles(this.logger);
-          this.logger.logFiles = logFiles;
-        }
         sync = await this.getFarosClient().createAccountSync(
           accountId,
           startedAt,
           logId
         );
+        this.logger.shouldSaveLogs =
+          !!account.local &&
+          sync &&
+          config.edition_configs.upload_sync_logs !== false;
+        if (this.logger.shouldSaveLogs) {
+          logId = undefined; // let Faros generate a unique log id
+          logFiles = new LogFiles(this.logger);
+          this.logger.logFiles = logFiles;
+        }
       }
     }
 
