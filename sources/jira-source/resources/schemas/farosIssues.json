@@ -8,10 +8,6 @@
     "key": {
       "type": "string"
     },
-    "fields": {
-      "type": "object",
-      "additionalProperties": true
-    },
     "created": {
       "type": "string",
       "format": "date-time"
