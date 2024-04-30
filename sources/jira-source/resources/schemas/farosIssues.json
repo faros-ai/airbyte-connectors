@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "boardId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "detail"
+      ]
+    },
+    "creator": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "inward": {
+            "type": "string"
+          },
+          "outward": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "inward",
+          "outward"
+        ]
+      }
+    },
+    "subtasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parent": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key"
+      ]
+    },
+    "statusChanged": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "statusChangelog": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "detail": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "category",
+              "detail"
+            ]
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      }
+    },
+    "keyChangelog": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "assignees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "uid",
+          "assignedAt"
+        ]
+      }
+    },
+    "assigned": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "points": {
+      "type": "number"
+    },
+    "epic": {
+      "type": "string"
+    },
+    "sprintInfo": {
+      "type": "object",
+      "properties": {
+        "currentSprintId": {
+          "type": "string"
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "string"
+              },
+              "addedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "removedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "uid",
+              "addedAt"
+            ]
+          }
+        }
+      },
+      "required": [
+        "currentSprintId",
+        "history"
+      ]
+    },
+    "additionalFields": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "url": {
+      "type": "string"
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "resolutionDate": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "key"
+  ]
+}

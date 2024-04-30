@@ -1,9 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {DEV_FIELD_NAME, Jira} from '../jira';
-import {PullRequest} from '../models';
 import {
   ProjectStreamSlice,
   StreamState,
