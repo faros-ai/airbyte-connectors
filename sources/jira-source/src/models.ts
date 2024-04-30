@@ -1,3 +1,5 @@
+import {AgileModels} from 'jira.js';
+
 export interface Issue {
   readonly id?: string;
   readonly key: string;
@@ -42,4 +44,8 @@ export interface SprintReport {
   readonly notCompletedPoints?: number;
   readonly puntedPoints?: number;
   readonly plannedPoints?: number;
+}
+
+export interface Sprint extends AgileModels.Sprint {
+  readonly activatedDate?: string;
 }

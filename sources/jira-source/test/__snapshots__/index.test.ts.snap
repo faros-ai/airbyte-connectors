@@ -159,6 +159,7 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
 exports[`index streams - sprints 1`] = `
 [
   {
+    "activatedDate": "2024-03-14T12:00:00Z",
     "completeDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
     "id": 1,
