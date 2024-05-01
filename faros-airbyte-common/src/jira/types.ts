@@ -1,3 +1,4 @@
+import {AgileModels} from 'jira.js/out/agile';
 import {Version2Models} from 'jira.js/out/version2';
 
 export interface IssueCompact {
@@ -91,6 +92,11 @@ export interface PullRequest {
   readonly repo: Repo;
   readonly number: number;
   readonly issue?: PullRequestIssue;
+}
+
+export interface Sprint extends AgileModels.Sprint {
+  // The date the sprint is opened in Jira Server
+  readonly activatedDate?: string;
 }
 
 export interface SprintReport {
