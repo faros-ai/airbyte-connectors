@@ -1,3 +1,5 @@
+import {Version2Models} from 'jira.js/out/version2';
+
 export interface IssueCompact {
   readonly id?: string;
   readonly key: string;
@@ -114,4 +116,8 @@ export interface IssueField {
   readonly id: string;
   readonly name: string;
   readonly value?: string;
+}
+
+export interface User extends Version2Models.User {
+  id: string;
 }
