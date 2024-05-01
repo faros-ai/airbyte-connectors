@@ -51,10 +51,7 @@ export class AirbyteSourceLogger extends AirbyteLogger {
       return;
     }
     super.write(
-      new AirbyteSourceLogsMessage(
-        {data: {state: this._getState()}},
-        this.batch
-      )
+      new AirbyteSourceLogsMessage({data: this._getState()}, this.batch)
     );
     this.batch.length = 0; // clears the array
     this.totalSize = 0;

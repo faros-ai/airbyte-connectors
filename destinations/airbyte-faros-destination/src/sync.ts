@@ -1,4 +1,4 @@
-import {AxiosRequestConfig} from 'axios';
+import {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AirbyteConfig, AirbyteLogger, SyncMessage} from 'faros-airbyte-cdk';
 import {
   FarosClient,
@@ -196,6 +196,12 @@ class FarosSyncClient extends FarosClient {
           message += `. Response: ${JSON.stringify(response)}`;
         }
         this.airbyteLogger?.warn(`${failureMessage}. ${message}`);
+        if (isAxiosResponse(error.response)) {
+          const response = error.response as AxiosResponse;
+          this.logger.warn(
+            `Error response code: ${response.status}. Body: ${response.data}`
+          );
+        }
       }
       return undefined;
     });
@@ -224,6 +230,10 @@ type CleanedSyncMessage = Omit<SyncMessage, 'type'>;
 function cleanSyncMessage(m: SyncMessage): CleanedSyncMessage {
   const {type, ...rest} = m;
   return rest;
+}
+
+function isAxiosResponse(object: any): object is AxiosResponse {
+  return object && object.status && typeof object.status === 'number';
 }
 
 export default FarosSyncClient;
