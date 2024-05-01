@@ -1,10 +1,10 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Sprint} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {toInteger, toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {Sprint} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprints extends StreamWithBoardSlices {
