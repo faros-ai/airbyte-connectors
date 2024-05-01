@@ -1,8 +1,8 @@
 import {StreamKey} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/jira';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {User} from '../models';
 import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {

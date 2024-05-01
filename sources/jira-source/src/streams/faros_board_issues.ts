@@ -1,8 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {IssueCompact} from 'faros-airbyte-common/jira';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {Issue} from '../models';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
@@ -19,7 +19,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<Issue> {
+  ): AsyncGenerator<IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
     const boardConfig = await jira.getBoardConfiguration(boardId);

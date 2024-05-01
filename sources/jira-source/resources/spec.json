@@ -54,7 +54,8 @@
         "order": 7,
         "title": "Additional Fields Array Limit",
         "description": "Limit for additional fields array",
-        "type": "integer"
+        "type": "integer",
+        "default": 50
       },
       "reject_unauthorized": {
         "order": 8,
