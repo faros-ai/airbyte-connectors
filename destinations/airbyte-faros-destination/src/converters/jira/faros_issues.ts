@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Issue} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
+import {isNil, pick} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraCommon, JiraConverter} from './common';
@@ -33,12 +33,13 @@ const fulfillingTypeCategories: ReadonlyMap<string, string> = new Map(
 
 export class FarosIssues extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Epic',
+    'tms_Label',
+    'tms_SprintHistory',
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskDependency',
     'tms_TaskTag',
-    'tms_Label',
-    'tms_SprintHistory',
   ];
 
   labels: Set<string> = new Set();
@@ -111,6 +112,24 @@ export class FarosIssues extends JiraConverter {
     };
 
     results.push({model: 'tms_Task', record: task});
+
+    if (JiraCommon.normalize(issue.type) === 'epic') {
+      results.push({
+        model: 'tms_Epic',
+        record: {
+          ...pick(task, [
+            'uid',
+            'name',
+            'createdAt',
+            'updatedAt',
+            'description',
+            'status',
+            'source',
+          ]),
+          project: {uid: issue.project, source: this.source},
+        },
+      });
+    }
 
     if (issue.assignees) {
       // assignees are sorted form earliest to latest
