@@ -59,7 +59,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     projectOrBoardKey: string
   ): StreamState {
     const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectOrBoardKey]?.cutoff
+      currentStreamState?.[projectOrBoardKey]?.cutoff ?? 0
     );
     if (latestRecordCutoff > currentCutoff) {
       const newCutoff = moment().utc().toDate();

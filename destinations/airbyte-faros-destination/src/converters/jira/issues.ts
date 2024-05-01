@@ -1,4 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  Assignee,
+  PullRequest,
+  Repo,
+  RepoSource,
+  Status,
+} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -19,15 +26,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {
-  Assignee,
-  JiraCommon,
-  JiraConverter,
-  PullRequest,
-  Repo,
-  RepoSource,
-  Status,
-} from './common';
+import {JiraCommon, JiraConverter} from './common';
 
 const dependencyRegex = /((is (?<type>\w+))|tested) by/;
 const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
