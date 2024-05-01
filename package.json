@@ -15,7 +15,7 @@
     "@types/eslint": "8.56.7",
     "@types/fast-redact": "^3.0.1",
     "@types/fs-extra": "^11.0.1",
-    "@types/jenkins": "^0.23.2",
+    "@types/jenkins": "^1.0.2",
     "@types/jest": "^29.5.10",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/lodash": "^4.14.173",
