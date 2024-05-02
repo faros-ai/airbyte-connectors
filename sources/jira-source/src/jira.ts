@@ -40,11 +40,11 @@ export interface JiraConfig extends AirbyteConfig {
   readonly max_retries: number;
   readonly page_size: number;
   readonly timeout: number;
-  readonly use_user_prefix_search?: boolean;
-  readonly project_keys?: ReadonlyArray<string>;
+  readonly use_users_prefix_search?: boolean;
+  readonly projects?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
-  readonly board_ids?: ReadonlyArray<string>;
+  readonly boards?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -226,7 +226,7 @@ export class Jira {
       cfg.bucket_id ?? 1,
       cfg.bucket_total ?? 1,
       logger,
-      cfg.use_user_prefix_search
+      cfg.use_users_prefix_search
     );
   }
 

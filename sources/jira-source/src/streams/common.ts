@@ -93,7 +93,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.project_keys) {
+    if (!this.config.projects) {
       const projects = this.supportsFarosClient()
         ? jira.getProjectsFromGraph(this.farosClient, this.config.graph)
         : jira.getProjects();
@@ -101,7 +101,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
         yield {project: project.key};
       }
     } else {
-      for (const project of this.config.project_keys) {
+      for (const project of this.config.projects) {
         if (jira.isProjectInBucket(project)) yield {project};
       }
     }
@@ -111,7 +111,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.board_ids) {
+    if (!this.config.boards) {
       const boards = this.supportsFarosClient()
         ? jira.getBoardsFromGraph(this.farosClient, this.config.graph)
         : jira.getBoards();
@@ -119,7 +119,7 @@ export abstract class StreamWithBoardSlices extends StreamBase {
         yield {board: board.id.toString()};
       }
     } else {
-      for (const board of this.config.board_ids) {
+      for (const board of this.config.boards) {
         if (await jira.isBoardInBucket(board)) yield {board};
       }
     }
