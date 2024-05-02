@@ -41,24 +41,29 @@
       },
       "sync_additional_fields": {
         "order": 5,
+        "type": "boolean",
         "title": "Sync Additional Fields",
-        "description": "Flag to indicate if additional fields should be synced",
-        "type": "boolean"
+        "description": "Include additional fields on tasks.",
+        "default": false
       },
       "additional_fields": {
         "order": 6,
-        "title": "Additional Fields",
-        "description": "Additional fields to be synced",
         "type": "array",
+        "title": "Additional Fields",
         "items": {
           "type": "string"
-        }
+        },
+        "description": "Fields to include on tasks when sync of additional fields is enabled (defaults to all fields).",
+        "examples": [
+          "Last Viewed",
+          "Priority"
+        ]
       },
       "additional_fields_array_limit": {
         "order": 7,
-        "title": "Additional Fields Array Limit",
-        "description": "Limit for additional fields array",
         "type": "integer",
+        "title": "Additional Fields Array Limit",
+        "description": "Truncates an additional fields array value to the given length",
         "default": 50
       },
       "reject_unauthorized": {
