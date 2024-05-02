@@ -18,6 +18,7 @@ import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -112,7 +113,6 @@ const DEFAULT_TIMEOUT = 120000; // 2 minutes
 const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
-const DEFAULT_RUN_MODE = 'Full';
 const DEFAULT_BUCKET_ID = 1;
 const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
@@ -152,6 +152,10 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (isEmpty(cfg.url)) {
+      throw new VError('Please provide a Jira URL');
+    }
+
     const isCloud = cfg.url.match(jiraCloudRegex) != null;
     const jiraType = isCloud ? 'Cloud' : 'Server/DC';
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
