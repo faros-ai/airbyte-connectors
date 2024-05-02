@@ -5,6 +5,7 @@ node_modules/
 acceptance_tests_logs/
 .vscode/
 .idea/
+.nx/
 
 .DS_Store
 acceptance-test-*.log
