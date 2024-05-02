@@ -5,6 +5,7 @@ import moment from 'moment';
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
+  DEFAULT_GRAPH,
   Jira,
   JiraConfig,
 } from '../jira';
@@ -95,7 +96,10 @@ export abstract class StreamWithProjectSlices extends StreamBase {
     const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.projects) {
       const projects = this.supportsFarosClient()
-        ? jira.getProjectsFromGraph(this.farosClient, this.config.graph)
+        ? jira.getProjectsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
         : jira.getProjects();
       for await (const project of projects) {
         yield {project: project.key};
@@ -113,7 +117,10 @@ export abstract class StreamWithBoardSlices extends StreamBase {
     const jira = await Jira.instance(this.config, this.logger);
     if (!this.config.boards) {
       const boards = this.supportsFarosClient()
-        ? jira.getBoardsFromGraph(this.farosClient, this.config.graph)
+        ? jira.getBoardsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
         : jira.getBoards();
       for await (const board of boards) {
         yield {board: board.id.toString()};

@@ -3,7 +3,7 @@ import {SprintReport} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {Jira} from '../jira';
+import {DEFAULT_GRAPH, Jira} from '../jira';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprintReports extends StreamWithBoardSlices {
@@ -37,7 +37,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
       ? jira.getSprintsFromFarosGraph(
           boardId,
           this.farosClient,
-          this.config.graph,
+          this.config.graph ?? DEFAULT_GRAPH,
           updateRange?.[0]
         )
       : jira.getSprints(boardId, updateRange);
