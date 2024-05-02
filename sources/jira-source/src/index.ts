@@ -11,7 +11,7 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {Jira, JiraConfig} from './jira';
+import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
 import {RunMode, WebhookSupplementStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
@@ -19,8 +19,6 @@ import {FarosIssues} from './streams/faros_issues';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
 import {FarosSprints} from './streams/faros_sprints';
 import {FarosUsers} from './streams/faros_users';
-
-const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -52,13 +50,12 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     return new FarosClient({
       url: config.api_url ?? DEFAULT_API_URL,
       apiKey: config.api_key,
-      useGraphQLV2: true,
     });
   }
 
   streams(config: JiraConfig): AirbyteStreamBase[] {
     let farosClient;
-    if (config.api_key && config.api_url) {
+    if (config.api_key) {
       farosClient = this.makeFarosClient(config);
     }
     return [

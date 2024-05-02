@@ -18,6 +18,7 @@ import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -32,19 +33,19 @@ export interface JiraConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly sync_additional_fields: boolean;
-  readonly additional_fields: ReadonlyArray<string>;
-  readonly additional_fields_array_limit: number;
-  readonly reject_unauthorized: boolean;
-  readonly concurrency_limit: number;
-  readonly max_retries: number;
-  readonly page_size: number;
-  readonly timeout: number;
-  readonly use_user_prefix_search?: boolean;
-  readonly project_keys?: ReadonlyArray<string>;
+  readonly sync_additional_fields?: boolean;
+  readonly additional_fields?: ReadonlyArray<string>;
+  readonly additional_fields_array_limit?: number;
+  readonly reject_unauthorized?: boolean;
+  readonly concurrency_limit?: number;
+  readonly max_retries?: number;
+  readonly page_size?: number;
+  readonly timeout?: number;
+  readonly use_users_prefix_search?: boolean;
+  readonly projects?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
-  readonly board_ids?: ReadonlyArray<string>;
+  readonly boards?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -103,11 +104,19 @@ const BOARD_QUERY = fs.readFileSync(
   'utf8'
 );
 
-export const DEFAULT_CONCURRENCY_LIMIT = 5;
+const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
+const DEFAULT_REJECT_UNAUTHORIZED = true;
+const DEFAULT_CONCURRENCY_LIMIT = 5;
+const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_PAGE_SIZE = 250;
+const DEFAULT_TIMEOUT = 120000; // 2 minutes
+const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
-export const DEFAULT_TIMEOUT = 120000; // 120 seconds
-const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
+const DEFAULT_BUCKET_ID = 1;
+const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const DEFAULT_GRAPH = 'default';
 
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
@@ -124,7 +133,7 @@ export class Jira {
     private readonly additionalFieldsArrayLimit: number,
     private readonly statusByName: Map<string, Status>,
     private readonly isCloud: boolean,
-    private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
+    private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
@@ -143,6 +152,10 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (isEmpty(cfg.url)) {
+      throw new VError('Please provide a Jira URL');
+    }
+
     const isCloud = cfg.url.match(jiraCloudRegex) != null;
     const jiraType = isCloud ? 'Cloud' : 'Server/DC';
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
@@ -152,7 +165,8 @@ export class Jira {
     this.validateBucketingConfig(cfg);
 
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: cfg.reject_unauthorized,
+      rejectUnauthorized:
+        cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
     });
 
     const http = setupCache(axios.create(), {ttl: 60 * 60 * 1000}); // 60 minutes cache
@@ -167,16 +181,16 @@ export class Jira {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
         },
-        timeout: cfg.timeout,
+        timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
       },
-      maxRetries: cfg.max_retries,
+      maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
       logger: logger,
     });
 
     const addAllFields =
-      cfg.sync_additional_fields && !cfg.additional_fields.length;
+      cfg.sync_additional_fields && (cfg.additional_fields ?? []).length === 0;
     const additionalFields = new Set(
-      cfg.sync_additional_fields ? cfg.additional_fields : []
+      cfg.sync_additional_fields ? cfg.additional_fields ?? [] : []
     );
     // We always add the following custom fields since they
     // are promoted to standard fields
@@ -221,12 +235,12 @@ export class Jira {
         DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
       statusByName,
       isCloud,
-      cfg.concurrency_limit,
-      cfg.page_size,
-      cfg.bucket_id ?? 1,
-      cfg.bucket_total ?? 1,
+      cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
+      cfg.page_size ?? DEFAULT_PAGE_SIZE,
+      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
+      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
-      cfg.use_user_prefix_search
+      cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH
     );
   }
 

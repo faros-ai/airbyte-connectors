@@ -37,6 +37,20 @@ describe('index', () => {
     );
   });
 
+  test('check connection - missing url', async () => {
+    const source = new sut.JiraSource(logger);
+    const configs = [{}, {url: undefined}, {url: null}, {url: ''}];
+
+    for (const config of configs) {
+      await expect(
+        source.checkConnection(config as any)
+      ).resolves.toStrictEqual([
+        false,
+        new VError('Please provide a Jira URL'),
+      ]);
+    }
+  });
+
   test('check connection - missing credentials ', async () => {
     const source = new sut.JiraSource(logger);
     await expect(
@@ -297,7 +311,7 @@ describe('index', () => {
 
   test('stream with project slices using bucketing', async () => {
     const config = readTestResourceFile('config.json');
-    config.project_keys = ['TEST', 'TEST2', 'TEST3'];
+    config.projects = ['TEST', 'TEST2', 'TEST3'];
     config.bucket_total = 2;
     // test with bucket_id 1 and 2
     config.bucket_id = 1;
