@@ -11,28 +11,32 @@
     "properties": {
       "url": {
         "order": 1,
+        "type": "string",
         "title": "Jira URL",
-        "description": "URL of the Jira instance",
-        "type": "string"
+        "description": "URL of the Jira instance, e.g., https://airbyteio.atlassian.net (Cloud), https://my-jira-server.com (Server/DC)",
+        "examples": [
+          "https://domainname.atlassian.net",
+          "https://my-jira-server.com"
+        ]
       },
       "username": {
         "order": 2,
+        "type": "string",
         "title": "Username",
-        "description": "Username for authentication",
-        "type": "string"
+        "description": "The user email for your Jira account. Required when using Cloud. Do NOT use in combination with Server/DC Personal access token"
       },
       "password": {
         "order": 3,
-        "title": "Password",
-        "description": "Password for authentication",
         "type": "string",
+        "title": "Password (Server/DC) or API Token (Cloud)",
+        "description": "The password (Server/DC) or API Token (Cloud) for your Jira account. Required when using Cloud. Do NOT use in combination with Server/DC Personal access token",
         "airbyte_secret": true
       },
       "token": {
         "order": 4,
-        "title": "Token",
-        "description": "Token for authentication",
         "type": "string",
+        "title": "Personal access token (Server/DC)",
+        "description": "Personal access token. See https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html for more information.",
         "airbyte_secret": true
       },
       "sync_additional_fields": {
@@ -154,7 +158,9 @@
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai",
-        "examples": ["https://prod.api.faros.ai"]
+        "examples": [
+          "https://prod.api.faros.ai"
+        ]
       },
       "api_key": {
         "order": 22,
