@@ -38,6 +38,20 @@ describe('index', () => {
     );
   });
 
+  test('check connection - missing url', async () => {
+    const source = new sut.JiraSource(logger);
+    const configs = [{}, {url: undefined}, {url: null}, {url: ''}];
+
+    for (const config of configs) {
+      await expect(
+        source.checkConnection(config as any)
+      ).resolves.toStrictEqual([
+        false,
+        new VError('Please provide a Jira URL'),
+      ]);
+    }
+  });
+
   test('check connection - missing credentials ', async () => {
     const source = new sut.JiraSource(logger);
     await expect(
