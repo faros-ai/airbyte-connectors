@@ -1,8 +1,8 @@
 {
   "url": "https://jira.com",
-  "username": "user",
-  "password": "pass",
-  "project_keys": ["TEST"],
+  "username": "suren.mywork@gmail.com",
+  "password": "intel@123",
+  "project_keys": ["FJT"],
   "additional_fields": [],
   "additional_fields_array_limit": 100,
   "concurrency_limit": 5,
