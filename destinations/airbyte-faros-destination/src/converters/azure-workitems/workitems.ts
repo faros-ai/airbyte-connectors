@@ -1,7 +1,7 @@
 import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {CustomWorkItem, StatusValue, WorkItem} from './models';
+import {CustomWorkItem, StatusValue} from './models';
 
 interface StatusChange {
   readonly status: StatusValue;
