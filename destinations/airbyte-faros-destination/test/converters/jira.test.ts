@@ -84,6 +84,7 @@ describe('jira', () => {
       faros_board_issues: 4,
       faros_sprints: 1,
       faros_users: 3,
+      faros_boards: 2,
     };
     const processed = _(processedByStream)
       .toPairs()
@@ -102,8 +103,8 @@ describe('jira', () => {
       tms_SprintHistory: 6,
       tms_Task: 5,
       tms_TaskAssignment: 1,
-      tms_TaskBoard: 1,
-      tms_TaskBoardProjectRelationship: 1,
+      tms_TaskBoard: 3,
+      tms_TaskBoardProjectRelationship: 3,
       tms_TaskBoardRelationship: 5,
       tms_TaskDependency: 1,
       tms_TaskProjectRelationship: 5,
