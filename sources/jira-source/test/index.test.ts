@@ -66,12 +66,16 @@ describe('index', () => {
 
   test('check connection - invalid bucketing config - out of range', async () => {
     const source = new sut.JiraSource(logger);
-    const bucket_total = 2;
+    const bucketTotal = 2;
     await expect(
-      source.checkConnection({...config, bucket_id: 3, bucket_total})
+      source.checkConnection({
+        ...config,
+        bucket_id: 3,
+        bucket_total: bucketTotal,
+      })
     ).resolves.toStrictEqual([
       false,
-      new VError(`bucket_id must be between 1 and ${bucket_total}`),
+      new VError(`bucket_id must be between 1 and ${bucketTotal}`),
     ]);
   });
 
