@@ -5,10 +5,9 @@ import moment from 'moment';
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
-  DEFAULT_GRAPH,
-  Jira,
   JiraConfig,
 } from '../jira';
+import {ProjectBoardFilter} from '../project-board-filter';
 
 export type ProjectStreamSlice = {
   project: string;
@@ -34,12 +33,18 @@ export const WebhookSupplementStreamNames = [
 ];
 
 export abstract class StreamBase extends AirbyteStreamBase {
+  readonly projectBoardFilter: ProjectBoardFilter;
   constructor(
     protected readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger,
     protected readonly farosClient?: FarosClient
   ) {
     super(logger);
+    this.projectBoardFilter = new ProjectBoardFilter(
+      config,
+      logger,
+      farosClient
+    );
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {
@@ -93,42 +98,16 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
-    const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.projects) {
-      const projects = this.supportsFarosClient()
-        ? jira.getProjectsFromGraph(
-            this.farosClient,
-            this.config.graph ?? DEFAULT_GRAPH
-          )
-        : jira.getProjects();
-      for await (const project of projects) {
-        yield {project: project.key};
-      }
-    } else {
-      for (const project of this.config.projects) {
-        if (jira.isProjectInBucket(project)) yield {project};
-      }
+    for (const project of await this.projectBoardFilter.getProjects()) {
+      yield {project};
     }
   }
 }
 
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
-    const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.boards) {
-      const boards = this.supportsFarosClient()
-        ? jira.getBoardsFromGraph(
-            this.farosClient,
-            this.config.graph ?? DEFAULT_GRAPH
-          )
-        : jira.getBoards();
-      for await (const board of boards) {
-        yield {board: board.id.toString()};
-      }
-    } else {
-      for (const board of this.config.boards) {
-        if (await jira.isBoardInBucket(board)) yield {board};
-      }
+    for (const board of await this.projectBoardFilter.getBoards()) {
+      yield {board};
     }
   }
 }

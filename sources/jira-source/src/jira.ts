@@ -70,7 +70,6 @@ const POINTS_FIELD_NAMES: ReadonlyArray<string> = [
 const EPIC_LINK_FIELD_NAME = 'Epic Link';
 // https://community.developer.atlassian.com/t/jira-api-v3-include-sprint-in-get-issue-search/35411
 const SPRINT_FIELD_NAME = 'Sprint';
-const EPIC_TYPE_NAME = 'Epic';
 
 const BROWSE_PROJECTS_PERM = 'BROWSE_PROJECTS';
 
@@ -644,13 +643,25 @@ export class Jira {
     );
     return this.iterate(
       (startAt) =>
-        this.api.v2.issueSearch.searchForIssuesUsingJql({
-          jql,
-          startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
-          expand: fetchKeysOnly ? undefined : 'changelog',
-          maxResults: this.maxPageSize,
-        }),
+        this.api.v2.issueSearch
+          .searchForIssuesUsingJql({
+            jql,
+            startAt,
+            fields: [...fieldIds, ...additionalFieldIds],
+            expand: fetchKeysOnly ? undefined : 'changelog',
+            maxResults: this.maxPageSize,
+          })
+          .catch((err: any) => {
+            // https://github.com/MrRefactoring/jira.js/blob/master/src/clients/baseClient.ts#L138
+            if (err?.status !== 400) {
+              throw wrapApiError(err);
+            }
+            // FAI-5497: Log an error instead of failing feed if 400
+            this.logger.warn(
+              `Failed to sync project ${projectId} due to invalid filter. Skipping.`
+            );
+            return {issues: []};
+          }),
       async (item: any) => {
         return issueTransformer.toIssue(item);
       },
@@ -925,6 +936,7 @@ export class Jira {
     return issues;
   }
 
+  @Memoize()
   async getBoardConfiguration(
     boardId: string
   ): Promise<AgileModels.GetConfiguration> {

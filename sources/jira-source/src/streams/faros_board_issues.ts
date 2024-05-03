@@ -3,7 +3,7 @@ import {IssueCompact} from 'faros-airbyte-common/jira';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
+import {BoardStreamSlice, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -17,8 +17,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: BoardStreamSlice,
-    streamState?: StreamState
+    streamSlice?: BoardStreamSlice
   ): AsyncGenerator<IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
@@ -26,10 +25,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
     // Jira Agile API GetConfiguration response type does not include key property
     const projectKey = (boardConfig.location as any)?.key;
-    if (!projectKey) {
-      this.logger.warn(`No project key found for board ${boardId}`);
-      return;
-    }
     for await (const issue of jira.getIssues(
       projectKey,
       undefined,
