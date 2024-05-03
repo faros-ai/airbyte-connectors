@@ -1,10 +1,11 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import moment from 'moment';
 
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
+  DEFAULT_GRAPH,
   Jira,
   JiraConfig,
 } from '../jira';
@@ -21,10 +22,22 @@ export type StreamState = {
   readonly [projectOrBoard: string]: {cutoff: number};
 };
 
+export enum RunMode {
+  Full = 'Full',
+  WebhookSupplement = 'WebhookSupplement',
+}
+
+export const WebhookSupplementStreamNames = [
+  'faros_board_issues',
+  'faros_sprint_reports',
+  'faros_issue_pull_requests',
+];
+
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
   }
@@ -47,7 +60,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     projectOrBoardKey: string
   ): StreamState {
     const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectOrBoardKey]?.cutoff
+      currentStreamState?.[projectOrBoardKey]?.cutoff ?? 0
     );
     if (latestRecordCutoff > currentCutoff) {
       const newCutoff = moment().utc().toDate();
@@ -70,18 +83,30 @@ export abstract class StreamBase extends AirbyteStreamBase {
     }
     return currentStreamState;
   }
+
+  protected supportsFarosClient(): boolean {
+    return (
+      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
+    );
+  }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
-    if (!this.config.project_keys) {
-      const jira = await Jira.instance(this.config, this.logger);
-      for await (const project of jira.getProjects()) {
+    const jira = await Jira.instance(this.config, this.logger);
+    if (!this.config.projects) {
+      const projects = this.supportsFarosClient()
+        ? jira.getProjectsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
+        : jira.getProjects();
+      for await (const project of projects) {
         yield {project: project.key};
       }
     } else {
-      for (const project of this.config.project_keys) {
-        yield {project};
+      for (const project of this.config.projects) {
+        if (jira.isProjectInBucket(project)) yield {project};
       }
     }
   }
@@ -89,14 +114,20 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
-    if (!this.config.board_ids) {
-      const jira = await Jira.instance(this.config, this.logger);
-      for await (const board of jira.getBoards()) {
+    const jira = await Jira.instance(this.config, this.logger);
+    if (!this.config.boards) {
+      const boards = this.supportsFarosClient()
+        ? jira.getBoardsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
+        : jira.getBoards();
+      for await (const board of boards) {
         yield {board: board.id.toString()};
       }
     } else {
-      for (const board of this.config.board_ids) {
-        yield {board};
+      for (const board of this.config.boards) {
+        if (await jira.isBoardInBucket(board)) yield {board};
       }
     }
   }

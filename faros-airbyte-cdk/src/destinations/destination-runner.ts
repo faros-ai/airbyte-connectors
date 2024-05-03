@@ -114,7 +114,7 @@ export class AirbyteDestinationRunner<
       .command('spec-pretty')
       .description('pretty spec command')
       .action(async () => {
-        const spec = await this.destination.spec();
+        const spec = await this.destination.spec(false);
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           [
@@ -165,7 +165,7 @@ export class AirbyteDestinationRunner<
       .action(async (opts) => {
         const spec = opts.specFile
           ? JSON.parse(fs.readFileSync(opts.specFile, 'utf8'))
-          : await this.destination.spec();
+          : await this.destination.spec(false);
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           opts.json

@@ -1,0 +1,29 @@
+query SprintBoardRelationship(
+  $source: String!
+  $board: String!
+  $pageSize: Int,
+  $offset: Int,
+  $closedAtAfter: timestamptz
+) {
+  tms_SprintBoardRelationship(
+    where: {
+      board: {
+        uid: { _eq: $board },
+        source: { _eq: $source }
+      },
+      sprint: {
+        source: { _eq: $source }
+        closedAt: { _gte: $closedAtAfter }
+      },
+    },
+    limit: $pageSize,
+    offset: $offset
+  ) {
+    sprint {
+      uid
+      name
+      state
+      closedAt
+    }
+  }
+}

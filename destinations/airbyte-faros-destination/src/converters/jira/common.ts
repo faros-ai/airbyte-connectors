@@ -4,34 +4,6 @@ import {Dictionary} from 'ts-essentials';
 
 import {Converter, StreamContext} from '../converter';
 
-export interface Assignee {
-  readonly uid: string;
-  readonly assignedAt: Date;
-}
-
-export enum RepoSource {
-  BITBUCKET = 'Bitbucket',
-  GITHUB = 'GitHub',
-  GITLAB = 'GitLab',
-  VCS = 'VCS',
-}
-
-export interface Repo {
-  readonly source: RepoSource;
-  readonly org: string;
-  readonly name: string;
-}
-
-export interface PullRequest {
-  readonly repo: Repo;
-  readonly number: number;
-}
-
-export interface Status {
-  readonly category: string;
-  readonly detail: string;
-}
-
 export interface SprintIssue {
   id: number;
   key: string;

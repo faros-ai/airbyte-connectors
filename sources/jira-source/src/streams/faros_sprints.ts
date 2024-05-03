@@ -1,14 +1,15 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {SprintReport} from 'faros-airbyte-common/jira';
+import {Sprint} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
+import {toInteger, toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_GRAPH, Jira} from '../jira';
+import {Jira} from '../jira';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
-export class FarosSprintReports extends StreamWithBoardSlices {
+export class FarosSprints extends StreamWithBoardSlices {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/farosSprintReports.json');
+    return require('../../resources/schemas/farosSprints.json');
   }
 
   get primaryKey(): StreamKey | undefined {
@@ -16,7 +17,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['closedAt'];
+    return ['completeDate'];
   }
 
   async *readRecords(
@@ -24,7 +25,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<SprintReport> {
+  ): AsyncGenerator<Sprint> {
     const boardId = streamSlice.board;
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
@@ -33,30 +34,26 @@ export class FarosSprintReports extends StreamWithBoardSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : undefined;
-    const sprints = this.supportsFarosClient()
-      ? jira.getSprintsFromFarosGraph(
-          boardId,
-          this.farosClient,
-          this.config.graph ?? DEFAULT_GRAPH,
-          updateRange?.[0]
-        )
-      : jira.getSprints(boardId, updateRange);
-    for await (const sprint of sprints) {
-      const report = await jira.getSprintReport(sprint, boardId);
-      if (!report) continue;
+    for await (const sprint of jira.getSprints(boardId, updateRange)) {
       yield {
-        ...report,
-        boardId,
+        id: sprint.id,
+        originBoardId: sprint.originBoardId ?? toInteger(boardId),
+        name: sprint.name,
+        state: sprint.state,
+        startDate: sprint.startDate,
+        endDate: sprint.endDate,
+        completeDate: sprint.completeDate,
+        activatedDate: sprint['activatedDate'],
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: SprintReport
+    latestRecord: Sprint
   ): StreamState {
-    const board = latestRecord.boardId;
-    const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
+    const board = toString(latestRecord.originBoardId);
+    const latestRecordCutoff = Utils.toDate(latestRecord.completeDate);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

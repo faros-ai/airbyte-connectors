@@ -1,7 +1,7 @@
 import fastRedact from 'fast-redact';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';
-import _ from 'lodash';
+import _, {cloneDeep} from 'lodash';
 import path from 'path';
 
 import {AirbyteConfig, AirbyteSpec} from './protocol';
@@ -97,4 +97,57 @@ export function toDate(
 
 export function base64Encode(str: string): string {
   return Buffer.from(str, 'binary').toString('base64');
+}
+
+type Properties = {[propName: string]: SpecProperty};
+
+interface SpecObject {
+  title: string;
+  type: string;
+  required?: string[];
+  properties: Properties;
+}
+
+interface SpecProperty {
+  type: string;
+  order?: number;
+  const?: string;
+  title?: string;
+  description?: string;
+  examples?: any[];
+  items?: {type: string; title?: string; properties?: Properties};
+  oneOf?: SpecObject[];
+  properties?: Properties;
+}
+
+export function minimizeSpec(airbyteSpec: AirbyteSpec): AirbyteSpec {
+  const spec = cloneDeep(airbyteSpec.spec);
+  for (const prop of Object.values(
+    spec.connectionSpecification?.properties ?? {}
+  )) {
+    minimizeSpecProperty(prop as SpecProperty);
+  }
+  return new AirbyteSpec(spec);
+}
+
+function minimizeSpecProperty(prop: SpecProperty): void {
+  prop.title = undefined;
+  prop.description = undefined;
+  prop.examples = undefined;
+  prop.order = undefined;
+  for (const object of prop.oneOf ?? []) {
+    minimizeSpecObject(object);
+  }
+  for (const item of Object.values(prop.items?.properties ?? {})) {
+    minimizeSpecProperty(item);
+  }
+  for (const property of Object.values(prop.properties ?? {})) {
+    minimizeSpecProperty(property);
+  }
+}
+
+function minimizeSpecObject(config: SpecObject): void {
+  for (const prop of Object.values(config.properties)) {
+    minimizeSpecProperty(prop);
+  }
 }
