@@ -1,0 +1,15 @@
+query Project(
+  $source: String!
+  $pageSize: Int
+  $offset: Int
+) {
+  tms_Project(
+    where: {
+      source: { _eq: $source }
+    },
+    limit: $pageSize,
+    offset: $offset
+  ) {
+    uid
+  }
+}

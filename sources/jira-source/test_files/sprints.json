@@ -1,7 +1,11 @@
 [
   {
     "id": 1,
+    "name": "Test Sprint",
     "state": "closed",
+    "startDate": "2024-03-14T12:00:00Z",
+    "activatedDate": "2024-03-14T12:00:00Z",
+    "endDate": "2024-03-14T12:00:00Z",
     "completeDate": "2024-03-14T12:00:00Z"
   }
 ]

@@ -18,7 +18,7 @@ export class Users extends JiraConverter {
 
     if (!uid) {
       ctx.logger.warn(
-        `Skipping user. User has no accountId or name defined: ${JSON.stringify(
+        `Skipping user. User has no accountId or key defined: ${JSON.stringify(
           user
         )}`
       );

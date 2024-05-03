@@ -1,37 +1,61 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {Utils, wrapApiError} from 'faros-js-client';
+import {bucket} from 'faros-airbyte-common/common';
+import {
+  Issue,
+  IssueField,
+  PullRequest,
+  Repo,
+  RepoSource,
+  SprintIssue,
+  SprintReport,
+  Status,
+} from 'faros-airbyte-common/jira';
+import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
+import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, sum, toLower} from 'lodash';
+import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
+import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {Issue, PullRequest, Repo, RepoSource, SprintReport} from './models';
+import {IssueTransformer} from './issue_transformer';
+import {RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly sync_additional_fields: boolean;
-  readonly additional_fields: ReadonlyArray<string>;
-  readonly additional_fields_array_limit: number;
-  readonly reject_unauthorized: boolean;
-  readonly concurrency_limit: number;
-  readonly max_retries: number;
-  readonly page_size: number;
-  readonly timeout: number;
-  readonly use_user_prefix_search?: boolean;
-  readonly project_keys?: ReadonlyArray<string>;
+  readonly sync_additional_fields?: boolean;
+  readonly additional_fields?: ReadonlyArray<string>;
+  readonly additional_fields_array_limit?: number;
+  readonly reject_unauthorized?: boolean;
+  readonly concurrency_limit?: number;
+  readonly max_retries?: number;
+  readonly page_size?: number;
+  readonly timeout?: number;
+  readonly use_users_prefix_search?: boolean;
+  readonly projects?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
-  readonly board_ids?: ReadonlyArray<string>;
+  readonly boards?: ReadonlyArray<string>;
+  readonly run_mode?: RunMode;
+  readonly bucket_id?: number;
+  readonly bucket_total?: number;
+  readonly api_url?: string;
+  readonly api_key?: string;
+  readonly graph?: string;
 }
+
+export const toFloat = (value: any): number | undefined =>
+  isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
 // Check for field name differences between classic and next-gen projects
 // for fields to promote to top-level fields.
@@ -60,19 +84,43 @@ const prRegex = new RegExp(
     'stateCount=(?<count>[0-9]+)})'
 );
 
-const sprintRegex = /([\w]+)=([\w-:. ]+)/g;
 const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
+const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
-export const DEFAULT_CONCURRENCY_LIMIT = 5;
+const SPRINT_BOARD_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-sprint-board.gql'),
+  'utf8'
+);
+
+const PROJECT_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project.gql'),
+  'utf8'
+);
+
+const BOARD_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+  'utf8'
+);
+
+const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
+const DEFAULT_REJECT_UNAUTHORIZED = true;
+const DEFAULT_CONCURRENCY_LIMIT = 5;
+const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_PAGE_SIZE = 250;
+const DEFAULT_TIMEOUT = 120000; // 2 minutes
+const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
-export const DEFAULT_TIMEOUT = 120000; // 120 seconds
+const DEFAULT_BUCKET_ID = 1;
+const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const DEFAULT_GRAPH = 'default';
 
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
-  // Counts the number of failes calls to fetch sprint history
+  // Counts the number of failed calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
 
   constructor(
@@ -82,10 +130,15 @@ export class Jira {
     private readonly api: JiraClient,
     private readonly http: AxiosInstance,
     private readonly fieldNameById: Map<string, string>,
+    private readonly additionalFieldsArrayLimit: number,
+    private readonly statusByName: Map<string, Status>,
     private readonly isCloud: boolean,
-    private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
+    private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
-    private readonly logger: AirbyteLogger
+    private readonly bucketId: number,
+    private readonly bucketTotal: number,
+    private readonly logger: AirbyteLogger,
+    private readonly useUsersPrefixSearch?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -99,13 +152,21 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (isEmpty(cfg.url)) {
+      throw new VError('Please provide a Jira URL');
+    }
+
     const isCloud = cfg.url.match(jiraCloudRegex) != null;
     const jiraType = isCloud ? 'Cloud' : 'Server/DC';
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
 
     const authentication = Jira.auth(cfg);
+
+    this.validateBucketingConfig(cfg);
+
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: cfg.reject_unauthorized,
+      rejectUnauthorized:
+        cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
     });
 
     const http = setupCache(axios.create(), {ttl: 60 * 60 * 1000}); // 60 minutes cache
@@ -120,16 +181,16 @@ export class Jira {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
         },
-        timeout: cfg.timeout,
+        timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
       },
-      maxRetries: cfg.max_retries,
+      maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
       logger: logger,
     });
 
     const addAllFields =
-      cfg.sync_additional_fields && !cfg.additional_fields.length;
+      cfg.sync_additional_fields && (cfg.additional_fields ?? []).length === 0;
     const additionalFields = new Set(
-      cfg.sync_additional_fields ? cfg.additional_fields : []
+      cfg.sync_additional_fields ? cfg.additional_fields ?? [] : []
     );
     // We always add the following custom fields since they
     // are promoted to standard fields
@@ -155,15 +216,31 @@ export class Jira {
       `Total number of fields: ${totalNumFields}. Projected field mapping: ${fieldMapping}`
     );
 
+    const statusByName = new Map<string, Status>();
+    for (const status of await api.v2.workflowStatuses.getStatuses()) {
+      if (status.name && status.statusCategory?.name) {
+        statusByName.set(status.name, {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+    }
+
     return new Jira(
       cfg.url,
       api,
       http,
       fieldNameById,
+      cfg.additional_fields_array_limit ??
+        DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
+      statusByName,
       isCloud,
-      cfg.concurrency_limit,
-      cfg.page_size,
-      logger
+      cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
+      cfg.page_size ?? DEFAULT_PAGE_SIZE,
+      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
+      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      logger,
+      cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH
     );
   }
 
@@ -177,6 +254,17 @@ export class Jira {
       throw new VError(
         'Either Jira personal token or Jira username and password must be provided'
       );
+    }
+  }
+
+  private static validateBucketingConfig(config: JiraConfig): void {
+    const bucketTotal = config.bucket_total ?? 1;
+    if (bucketTotal < 1) {
+      throw new VError('bucket_total must be a positive integer');
+    }
+    const bucketId = config.bucket_id ?? 1;
+    if (bucketId < 1 || bucketId > bucketTotal) {
+      throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
     }
   }
 
@@ -419,7 +507,8 @@ export class Jira {
         })
       );
       for await (const project of projects) {
-        yield project;
+        // Bucket projects based on bucketId
+        if (this.isProjectInBucket(project.key)) yield project;
       }
       return;
     }
@@ -463,6 +552,30 @@ export class Jira {
     }
   }
 
+  async *getProjectsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<Version2Models.Project> {
+    const projects = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, PROJECT_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_Project;
+      },
+      async (item: any) => {
+        return {
+          key: item.uid,
+        };
+      }
+    );
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) yield project;
+    }
+  }
+
   async getProject(id: string): Promise<Version2Models.Project> {
     const project = await this.api.v2.projects.getProject({
       projectIdOrKey: id,
@@ -486,19 +599,23 @@ export class Jira {
 
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
-
-  async getProjectsByKey(): Promise<Map<string, Version2Models.Project>> {
-    const projectsByKey = new Map<string, Version2Models.Project>();
-    for await (const project of this.getProjects()) {
-      projectsByKey.set(project.key, project);
+  @Memoize()
+  async getStatuses(): Promise<Map<string, Status>> {
+    const statusByName = new Map<string, Status>();
+    for (const status of await this.api.v2.workflowStatuses.getStatuses()) {
+      if (status.name && status.statusCategory?.name) {
+        statusByName.set(status.name, {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
     }
-    return projectsByKey;
+    return statusByName;
   }
 
   @Memoize()
   getIssues(
     projectId: string,
-    syncPullRequests: boolean,
     updateRange?: [Date, Date],
     fetchKeysOnly = false,
     filterJql?: string,
@@ -512,59 +629,65 @@ export class Jira {
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
-    const fields = this.getIssueFields(
+    const {fieldIds, additionalFieldIds} = this.getIssueFields(
       fetchKeysOnly,
       includeAdditionalFields,
       additionalFields
+    );
+    const issueTransformer = new IssueTransformer(
+      this.baseURL,
+      this.fieldNameById,
+      this.fieldIdsByName,
+      this.statusByName,
+      additionalFieldIds,
+      this.additionalFieldsArrayLimit
     );
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields,
+          fields: [...fieldIds, ...additionalFieldIds],
           expand: fetchKeysOnly ? undefined : 'changelog',
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
-        let pullRequests: ReadonlyArray<PullRequest> = [];
-        if (syncPullRequests) {
-          const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
-          for (const devFieldId of devFieldIds) {
-            if (
-              pullRequests.length === 0 &&
-              Jira.hasPullRequests(item.fields[devFieldId])
-            ) {
-              try {
-                pullRequests = await this.getPullRequests(item.id);
-                this.logger?.debug(
-                  `Fetched ${pullRequests.length} pull requests for issue ${item.key}`
-                );
-              } catch (err: any) {
-                this.logger?.warn(
-                  `Failed to get pull requests for issue ${item.key}: ${err.message}`
-                );
-              }
-            }
-          }
-        }
-        return {
-          id: item.id,
-          key: item.key,
-          created: Utils.toDate(item.fields.created),
-          updated: Utils.toDate(item.fields.updated),
-          pullRequests,
-        };
+        return issueTransformer.toIssue(item);
       },
       'issues'
     );
+  }
+
+  async getIssuePullRequests(
+    issue: Issue
+  ): Promise<ReadonlyArray<PullRequest>> {
+    let pullRequests: ReadonlyArray<PullRequest> = [];
+    const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
+    for (const devFieldId of devFieldIds) {
+      if (
+        pullRequests.length === 0 &&
+        Jira.hasPullRequests(issue.fields[devFieldId])
+      ) {
+        try {
+          pullRequests = await this.getPullRequests(issue.id);
+          this.logger?.debug(
+            `Fetched ${pullRequests.length} pull requests for issue ${issue.key}`
+          );
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to get pull requests for issue ${issue.key}: ${err.message}`
+          );
+        }
+      }
+    }
+    return pullRequests;
   }
 
   private getIssueFields(
     fetchKeysOnly: boolean,
     includeAdditionalFields: boolean,
     additionalFields?: string[]
-  ): string[] {
+  ): {fieldIds: string[]; additionalFieldIds: string[]} {
     const fieldIds = fetchKeysOnly
       ? ['id', 'key', 'created', 'updated']
       : [
@@ -598,13 +721,15 @@ export class Jira {
           additionalFieldIds.push(fieldId);
         }
       }
-      return [...fieldIds, ...additionalFieldIds];
+      return {fieldIds, additionalFieldIds};
     }
-    return fieldIds;
+    return {fieldIds, additionalFieldIds: []};
   }
 
-  getBoards(projectId?: string): AsyncIterableIterator<AgileModels.Board> {
-    return this.iterate(
+  async *getBoards(
+    projectId?: string
+  ): AsyncIterableIterator<AgileModels.Board> {
+    const boards = this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
           startAt,
@@ -613,6 +738,41 @@ export class Jira {
         }),
       (item: AgileModels.Board) => item
     );
+    for await (const board of boards) {
+      const boardProject = board?.location?.projectKey;
+      if (boardProject && this.isProjectInBucket(boardProject)) yield board;
+    }
+  }
+
+  async *getBoardsFromGraph(
+    farosClient: FarosClient,
+    graph: string
+  ): AsyncIterableIterator<AgileModels.Board> {
+    const boards = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, BOARD_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+        });
+        return data?.tms_TaskBoard;
+      },
+      async (item: any) => {
+        return {
+          id: item.uid,
+          projectsKeys:
+            item.projects?.map((project: any) => project.project.uid) ?? [],
+        };
+      }
+    );
+    for await (const board of boards) {
+      if (
+        board.projectsKeys.some((projectKey: string) =>
+          this.isProjectInBucket(projectKey)
+        )
+      )
+        yield board;
+    }
   }
 
   getBoard(id: string): Promise<AgileModels.Board> {
@@ -620,10 +780,11 @@ export class Jira {
     return this.api.agile.board.getBoard({boardId});
   }
 
-  getSprintReports(
+  @Memoize()
+  getSprints(
     boardId: string,
     range?: [Date, Date]
-  ): AsyncIterableIterator<SprintReport> {
+  ): AsyncIterableIterator<AgileModels.Sprint> {
     return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllSprints({
@@ -631,46 +792,80 @@ export class Jira {
           startAt,
           maxResults: this.maxPageSize,
         }),
-      async (item: any) => {
+      async (item: AgileModels.Sprint) => {
         const completeDate = Utils.toDate(item.completeDate);
         // Ignore sprints completed before the input date range cutoff date
         if (range && completeDate && completeDate < range[0]) {
           return;
         }
-        let report;
-        try {
-          if (
-            this.sprintHistoryFetchFailures <
-              MAX_SPRINT_HISTORY_FETCH_FAILURES &&
-            toLower(item.state) != 'future'
-          ) {
-            report = await this.api.getSprintReport(boardId, item.id);
-            this.sprintHistoryFetchFailures = 0;
-          }
-        } catch (err: any) {
-          this.logger?.warn(
-            `Failed to get sprint report for sprint ${item.id}: ${err.message}`
-          );
-          if (
-            this.sprintHistoryFetchFailures++ >=
-            MAX_SPRINT_HISTORY_FETCH_FAILURES
-          ) {
-            this.logger?.warn(
-              `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
-            );
-          }
-        }
-        return this.toSprintReportFields(report?.contents, item);
+        return item;
       }
     );
   }
 
-  private toSprintReportFields(report: any, sprint: any): SprintReport {
+  getSprintsFromFarosGraph(
+    board: string,
+    farosClient: FarosClient,
+    graph: string,
+    closedAtAfter?: Date
+  ): AsyncIterableIterator<AgileModels.Sprint> {
+    return this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, SPRINT_BOARD_QUERY, {
+          board,
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+          closedAtAfter,
+        });
+        return data?.tms_SprintBoardRelationship;
+      },
+      async (item: any) => {
+        return {
+          id: item.sprint.uid,
+          name: item.sprint.name,
+          state: item.sprint.state,
+          completeDate: item.sprint.closedAt,
+        };
+      }
+    );
+  }
+
+  async getSprintReport(
+    sprint: AgileModels.Sprint,
+    boardId: string
+  ): Promise<SprintReport> {
+    let report;
+    try {
+      if (
+        this.sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+        toLower(sprint.state) != 'future'
+      ) {
+        report = await this.api.getSprintReport(boardId, sprint.id);
+        this.sprintHistoryFetchFailures = 0;
+      }
+    } catch (err: any) {
+      this.logger?.warn(
+        `Failed to get sprint report for sprint ${sprint.id}: ${err.message}`
+      );
+      if (
+        this.sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES
+      ) {
+        this.logger?.warn(
+          `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+        );
+      }
+    }
+    return this.toSprintReportFields(report?.contents, sprint);
+  }
+
+  private toSprintReportFields(
+    report: any,
+    sprint: AgileModels.Sprint
+  ): SprintReport {
     if (!report) {
       return;
     }
-    const toFloat = (value: any): number | undefined =>
-      isNil(value) ? undefined : Utils.parseFloatFixedPoint(value);
 
     const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
     const notCompletedPoints = toFloat(
@@ -687,16 +882,47 @@ export class Jira {
       puntedPoints,
       completedInAnotherSprintPoints,
     ]);
-
     return {
       id: sprint.id,
-      completedAt: Utils.toDate(sprint.completeDate),
+      closedAt: Utils.toDate(sprint.completeDate),
       completedPoints,
       notCompletedPoints,
       puntedPoints,
       completedInAnotherSprintPoints,
       plannedPoints,
+      issues: this.toSprintReportIssues(report),
     };
+  }
+
+  toSprintReportIssues(report: any): SprintIssue[] {
+    const toSprintIssues = (issues, status): any[] =>
+      issues?.map((issue) => {
+        return {
+          key: issue.key,
+          status,
+          points: toFloat(
+            issue.currentEstimateStatistic?.statFieldValue?.value
+          ),
+          addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
+        };
+      }) || [];
+
+    const issues: SprintIssue[] = [];
+    issues.push(...toSprintIssues(report?.completedIssues, 'Completed'));
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesCompletedInAnotherSprint,
+        'CompletedOutsideSprint'
+      )
+    );
+    issues.push(
+      ...toSprintIssues(
+        report?.issuesNotCompletedInCurrentSprint,
+        'NotCompleted'
+      )
+    );
+    issues.push(...toSprintIssues(report?.puntedIssues, 'Removed'));
+    return issues;
   }
 
   async getBoardConfiguration(
@@ -713,5 +939,110 @@ export class Jira {
       expand: 'jql',
     });
     return filterJQL.jql;
+  }
+
+  async isBoardInBucket(boardId: string): Promise<boolean> {
+    const board = await this.getBoard(boardId);
+    const boardProject = board?.location?.projectKey;
+    return boardProject && this.isProjectInBucket(boardProject);
+  }
+
+  isProjectInBucket(projectKey: string): boolean {
+    return (
+      bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
+      this.bucketId
+    );
+  }
+
+  async *getFields(): AsyncGenerator<IssueField> {
+    for (const [id, name] of this.fieldNameById) {
+      yield {id, name};
+    }
+  }
+
+  getUsers(): AsyncIterableIterator<Version2Models.User> {
+    if (this.isCloud) {
+      return this.iterate(
+        (startAt) =>
+          this.api.v2.users.getAllUsersDefault({
+            startAt,
+            maxResults: this.maxPageSize,
+          }),
+        (item: Version2Models.User) => this.toUser(item)
+      );
+    }
+
+    if (!this.useUsersPrefixSearch) {
+      return this.findUsers('.');
+    }
+
+    return this.getUsersByPrefix();
+  }
+
+  private findUsers(
+    username: string
+  ): AsyncIterableIterator<Version2Models.User> {
+    this.logger?.debug("Searching for users with username '%s'", username);
+    return this.iterate(
+      (startAt) =>
+        // use custom method searchUsers for Jira Server
+        this.api.searchUsers(username, startAt, this.maxPageSize),
+      (item: Version2Models.User) => this.toUser(item)
+    );
+  }
+
+  private async *getUsersByPrefix(): AsyncIterableIterator<Version2Models.User> {
+    // Keep track of seen users in order to avoid returning duplicates
+    const seenUsers = new Set<string>();
+
+    // Try searching users by a single character prefix first
+    for (const prefix of PREFIX_CHARS) {
+      let userCount = 0;
+      const res = this.findUsers(prefix);
+      for await (const u of res) {
+        userCount++;
+        const uid = this.userId(u);
+        if (!seenUsers.has(uid)) {
+          seenUsers.add(uid);
+          yield u;
+        }
+      }
+      // Since we got exactly 1000 results back we are probably hitting
+      // the limit of Jira search API. Let's try searching by two character prefix
+      // https://jira.atlassian.com/browse/JRASERVER-65089
+      if (userCount === 1000) {
+        for (const prefix2 of PREFIX_CHARS) {
+          const res = this.findUsers(prefix + prefix2);
+          for await (const u of res) {
+            const uid = this.userId(u);
+            if (!seenUsers.has(uid)) {
+              seenUsers.add(uid);
+              yield u;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private userId(u: Version2Models.User): string {
+    let id = '';
+    for (const k of Object.keys(u).sort((a, b) => a.localeCompare(b))) {
+      id += `[${k}:${u[k]}]`;
+    }
+    return id;
+  }
+
+  private toUser(user: Version2Models.User): Version2Models.User | undefined {
+    if (!user.accountType || user.accountType === 'atlassian') {
+      return pick(user, [
+        'key',
+        'accountId',
+        'displayName',
+        'emailAddress',
+        'active',
+      ]);
+    }
+    return undefined;
   }
 }

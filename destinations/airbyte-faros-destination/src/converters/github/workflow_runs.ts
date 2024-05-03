@@ -30,6 +30,7 @@ export class WorkflowRuns extends GitHubConverter {
     const build = {
       uid: run.id.toString(),
       name: run.name,
+      runAttempt: run.run_attempt,
       number: run.run_number,
       createdAt: Utils.toDate(run.created_at),
       startedAt: Utils.toDate(run.run_started_at),

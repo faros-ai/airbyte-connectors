@@ -1,0 +1,20 @@
+query Board(
+  $source: String!
+  $pageSize: Int
+  $offset: Int
+) {
+  tms_TaskBoard(
+    where: {
+      source: { _eq: $source }
+    },
+    limit: $pageSize,
+    offset: $offset
+  ) {
+    uid
+    projects {
+      project {
+        uid
+      }
+    }
+  }
+}

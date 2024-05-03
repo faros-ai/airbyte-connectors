@@ -2,7 +2,9 @@
   "url": "https://jira.com",
   "username": "suren.mywork@gmail.com",
   "password": "intel@123",
-  "project_keys": ["FJT"],
+  "projects": ["FJT"],
+  "bucket_id": 1,
+  "bucket_total": 1,
   "additional_fields": [],
   "additional_fields_array_limit": 100,
   "concurrency_limit": 5,
@@ -10,5 +12,6 @@
   "max_retries": 5,
   "reject_unauthorized": true,
   "sync_additional_fields": true,
-  "timeout": 120000
+  "timeout": 120000,
+  "run_mode": "Full"
 }
