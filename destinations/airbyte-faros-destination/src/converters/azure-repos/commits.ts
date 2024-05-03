@@ -1,6 +1,6 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
+import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
 import {Commit} from './models';
@@ -28,7 +28,9 @@ export class Commits extends AzureReposConverter {
       uid: projectRepo,
       organization,
     };
-
+    console.log('=====> commit Branch Details <======');
+    console.log(JSON.stringify(commitItem.branch, null, 2));
+    console.log('=====> end <=====');
     res.push({
       model: 'vcs_Commit',
       record: {

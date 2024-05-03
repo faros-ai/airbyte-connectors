@@ -13,6 +13,26 @@
 1. Audit fix `npm audit fix`
 2. Clean your project `npm run clean`
 
+# Build Docker Images for Flowyzer
+```sh
+docker build -f Dockerfile.source . --build-arg project=azure-workitems-source --build-arg version=0.1.2 -t bksdrodrigo/azure-workitems-source-99x:0.1.2
+docker run --rm bksdrodrigo/azure-workitems-source-99x:0.1.2 spec
+docker run --rm -v $(pwd)/secrets:/secrets bksdrodrigo/azure-workitems-source-99x:0.1.2 check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets bksdrodrigo/azure-workitems-source-99x:0.1.2 discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files bksdrodrigo/azure-workitems-source-99x:0.1.2 read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+
+
+docker build -f Dockerfile.source . --build-arg project=azure-repos-source --build-arg version=0.1.1 -t bksdrodrigo/azure-repos-source-99x:0.1.1
+docker run --rm bksdrodrigo/azure-repos-source-99x:0.1.1 spec
+docker run --rm -v $(pwd)/secrets:/secrets bksdrodrigo/azure-repos-source-99x:0.1.1 check --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets bksdrodrigo/azure-repos-source-99x:0.1.1 discover --config /secrets/config.json
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files bksdrodrigo/azure-repos-source-99x:0.1.1 read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+
+
+docker build -f Dockerfile.destination . --build-arg version=0.1.2 -t bksdrodrigo/airbyte-faros-destination-99x:0.1.2
+
+```
+
 ## Build Docker Image
 ```sh
 docker build . --build-arg path=destinations/airbyte-faros-destination --build-arg version=0.0.1 -t flowyzer/airbyte-faros-destination

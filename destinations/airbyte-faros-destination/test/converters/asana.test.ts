@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger, AirbyteRecord} from '../../../../faros-airbyte-cdk/lib';
 import {StreamContext} from '../../src';
 import {ProjectTasks} from '../../src/converters/asana/project_tasks';
 import {Projects} from '../../src/converters/asana/projects';

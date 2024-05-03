@@ -1,6 +1,6 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {getLocal} from 'mockttp';
 
+import {AirbyteLogger} from '../../../faros-airbyte-cdk/lib';
 import FarosSyncClient from '../src/sync';
 
 describe('FarosSyncClient', () => {

@@ -1,4 +1,16 @@
 import {Analytics} from '@segment/analytics-node';
+import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
+import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
+import http from 'http';
+import https from 'https';
+import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
+import path from 'path';
+import readline from 'readline';
+import {Writable} from 'stream';
+import {Dictionary} from 'ts-essentials';
+import {v4 as uuidv4, validate} from 'uuid';
+import {VError} from 'verror';
+
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -22,19 +34,7 @@ import {
   SyncMessage,
   SyncMode,
   wrapApiError,
-} from 'faros-airbyte-cdk';
-import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
-import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
-import http from 'http';
-import https from 'https';
-import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
-import path from 'path';
-import readline from 'readline';
-import {Writable} from 'stream';
-import {Dictionary} from 'ts-essentials';
-import {v4 as uuidv4, validate} from 'uuid';
-import {VError} from 'verror';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {GraphQLClient} from './common/graphql-client';
 import {GraphQLWriter} from './common/graphql-writer';
 import {
@@ -42,7 +42,7 @@ import {
   Edition,
   InvalidRecordStrategy,
 } from './common/types';
-import {WriteStats} from './common/write-stats';
+import {WriteStats, WriteStatsWithRecord} from './common/write-stats';
 import {HasuraBackend} from './community/hasura-backend';
 import {
   Converter,
@@ -519,7 +519,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           stdin,
           streams,
           converterDependencies,
-          stats,
+          stats as WriteStatsWithRecord,
           syncErrors
         )) {
           latestStateMessage = stateMessage;
@@ -566,7 +566,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             stdin,
             streams,
             converterDependencies,
-            stats,
+            stats as WriteStatsWithRecord,
             syncErrors,
             writer,
             logFiles,
@@ -663,7 +663,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 stdin,
                 streams,
                 converterDependencies,
-                stats,
+                stats as WriteStatsWithRecord,
                 syncErrors,
                 writer
               )) {
@@ -732,7 +732,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stdin: NodeJS.ReadStream,
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
-    stats: WriteStats,
+    stats: WriteStatsWithRecord,
     syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
@@ -788,6 +788,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
             const recordMessage = msg as AirbyteRecord;
+            stats.currentRecord = recordMessage;
+            console.log(
+              `----->> Processing Record Stream : ${recordMessage.record.stream}`
+            );
             if (!recordMessage.record) {
               throw new VError('Empty record');
             }
@@ -921,20 +925,24 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   async handleRecordProcessingError(
-    stats: WriteStats,
+    stats: any,
     processRecord: () => Promise<void>
   ): Promise<void> {
     try {
       await processRecord();
     } catch (e: any) {
-      stats.recordsErrored++;
+      const statObj = stats as WriteStatsWithRecord;
+      statObj.recordsErrored++;
       this.logger.error(
         `Error processing input: ${e.message ?? JSON.stringify(e)}`,
         e.stack
       );
+      this.logger.error(
+        `Current record: ${JSON.stringify(statObj.currentRecord, null, 2)}`
+      );
       switch (this.invalidRecordStrategy) {
         case InvalidRecordStrategy.SKIP:
-          stats.recordsSkipped++;
+          statObj.recordsSkipped++;
           break;
         case InvalidRecordStrategy.FAIL:
           throw e;

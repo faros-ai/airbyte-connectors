@@ -1,6 +1,6 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {AirbyteConfig} from '../../../../faros-airbyte-cdk/lib';
 import {JSONataApplyMode} from '../converters/jsonata';
 
 export enum Edition {

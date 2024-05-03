@@ -1,6 +1,9 @@
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getLocal, Mockttp} from 'mockttp';
 
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+} from '../../../../faros-airbyte-cdk/lib';
 import {
   DestinationRecord,
   Edition,

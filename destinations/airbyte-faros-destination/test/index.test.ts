@@ -1,14 +1,14 @@
+import {getLocal} from 'mockttp';
+import os from 'os';
+import path from 'path';
+
 import {
   AirbyteConfig,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteSpec,
   SpecLoader,
-} from 'faros-airbyte-cdk';
-import {getLocal} from 'mockttp';
-import os from 'os';
-import path from 'path';
-
+} from '../../../faros-airbyte-cdk/lib';
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {FarosDestination} from '../src/destination';
 import {FarosDestinationLogger} from '../src/destination-logger';
