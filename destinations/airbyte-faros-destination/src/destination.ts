@@ -29,6 +29,7 @@ import {
   isSourceLogsMessage,
   isSourceStatusMessage,
   isStateMessage,
+  minimizeSpec,
   parseAirbyteMessage,
   SpecLoader,
   SyncMessage,
@@ -113,9 +114,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     throw new VError('GraphQL Client is not initialized');
   }
 
-  async spec(): Promise<AirbyteSpec> {
-    if (this.specOverride) return this.specOverride;
-    return SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
+  async spec(minimize: boolean = true): Promise<AirbyteSpec> {
+    const spec = this.specOverride
+      ? this.specOverride
+      : await SpecLoader.loadSpec(path.join(BASE_RESOURCES_DIR, 'spec.json'));
+    return minimize ? minimizeSpec(spec) : spec;
   }
 
   async check(
@@ -472,18 +475,20 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       // WORKER_JOB_ID is populated by Airbyte
       let logId = process.env['WORKER_JOB_ID'] || undefined; // don't send empty string
       if (account) {
-        this.logger.shouldSaveLogs =
-          !!account.local && config.edition_configs.upload_sync_logs !== false;
-        if (this.logger.shouldSaveLogs) {
-          logId = undefined; // let Faros generate a unique log id
-          logFiles = new LogFiles(this.logger);
-          this.logger.logFiles = logFiles;
-        }
         sync = await this.getFarosClient().createAccountSync(
           accountId,
           startedAt,
           logId
         );
+        this.logger.shouldSaveLogs =
+          !!account.local &&
+          sync &&
+          config.edition_configs.upload_sync_logs !== false;
+        if (this.logger.shouldSaveLogs) {
+          logId = undefined; // let Faros generate a unique log id
+          logFiles = new LogFiles(this.logger);
+          this.logger.logFiles = logFiles;
+        }
       }
     }
 

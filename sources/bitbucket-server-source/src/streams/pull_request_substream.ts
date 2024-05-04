@@ -29,7 +29,7 @@ export abstract class PullRequestSubStream extends StreamBase {
       const projectKey = await this.fetchProjectKey(project.key);
       for (const repo of await this.server.repositories(
         projectKey,
-        this.config.repositories
+        this.projectRepoFilter
       )) {
         yield {
           projectKey,

@@ -1,9 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {SprintReport} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {Jira} from '../jira';
-import {SprintReport} from '../models';
+import {DEFAULT_GRAPH, Jira} from '../jira';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprintReports extends StreamWithBoardSlices {
@@ -16,7 +16,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['completedAt'];
+    return ['closedAt'];
   }
 
   async *readRecords(
@@ -26,29 +26,26 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     streamState?: StreamState
   ): AsyncGenerator<SprintReport> {
     const boardId = streamSlice.board;
-    if (this.config.board_ids && !this.config.board_ids.includes(boardId)) {
-      this.logger.info(
-        `Skipped board with id ${boardId} not included in boardIds config`
-      );
-      return;
-    }
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
     if (board.type !== 'scrum') return;
-    if (!board?.location?.projectKey) {
-      this.logger.warn(
-        `Skipped board ${boardId} with no project key associated`
-      );
-      return;
-    }
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : undefined;
-    for await (const report of jira.getSprintReports(boardId, updateRange)) {
+    const sprints = this.supportsFarosClient()
+      ? jira.getSprintsFromFarosGraph(
+          boardId,
+          this.farosClient,
+          this.config.graph ?? DEFAULT_GRAPH,
+          updateRange?.[0]
+        )
+      : jira.getSprints(boardId, updateRange);
+    for await (const sprint of sprints) {
+      const report = await jira.getSprintReport(sprint, boardId);
+      if (!report) continue;
       yield {
         ...report,
-        projectKey: board.location.projectKey,
         boardId,
       };
     }
@@ -59,7 +56,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     latestRecord: SprintReport
   ): StreamState {
     const board = latestRecord.boardId;
-    const latestRecordCutoff = Utils.toDate(latestRecord.completedAt);
+    const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

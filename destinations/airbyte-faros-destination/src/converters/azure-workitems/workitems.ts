@@ -1,7 +1,7 @@
 import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {CustomWorkItem, StatusValue, WorkItem} from './models';
+import {CustomWorkItem, StatusValue} from './models';
 
 interface StatusChange {
   readonly status: StatusValue;
@@ -12,7 +12,7 @@ export class Workitems extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',
-    'tms_TaskProjectRelationship',
+    // 'tms_TaskProjectRelationship',
   ];
 
   private statusChangelog(
@@ -111,14 +111,14 @@ export class Workitems extends AzureWorkitemsConverter {
           },
           source,
         },
-      },
-      {
-        model: 'tms_TaskProjectRelationship',
-        record: {
-          task: {uid: String(WorkItem?.item?.id), source},
-          project: {uid: WorkItem?.item?.name, source},
-        },
-      },
+      }, // ,
+      // {
+      //   model: 'tms_TaskProjectRelationship',
+      //   record: {
+      //     task: {uid: String(WorkItem?.item?.id), source},
+      //     project: {uid: WorkItem?.item?.name, source},
+      //   },
+      // },
     ];
   }
 }

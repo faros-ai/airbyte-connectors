@@ -1,5 +1,87 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index onBeforeRead with run_mode Full should not filter streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_pull_requests",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprint_reports",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_board_issues",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issues",
+      },
+      "sync_mode": "incremental",
+    },
+  ],
+}
+`;
+
+exports[`index onBeforeRead with run_mode WebhookSupplement should filter streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_pull_requests",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprint_reports",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_board_issues",
+      },
+      "sync_mode": "incremental",
+    },
+  ],
+}
+`;
+
+exports[`index stream with project slices using bucketing 1`] = `
+[
+  {
+    "project": "TEST",
+  },
+  {
+    "project": "TEST3",
+  },
+]
+`;
+
+exports[`index stream with project slices using bucketing 2`] = `
+[
+  {
+    "project": "TEST2",
+  },
+]
+`;
+
 exports[`index streams - board_issues using board ids 1`] = `
 [
   {
@@ -13,7 +95,7 @@ exports[`index streams - board_issues using board ids 1`] = `
 ]
 `;
 
-exports[`index streams - pull_requests 1`] = `
+exports[`index streams - issue_pull_requests 1`] = `
 [
   {
     "issue": {
@@ -48,14 +130,136 @@ exports[`index streams - sprint_reports 1`] = `
 [
   {
     "boardId": "1",
-    "completedAt": 2024-03-14T12:00:00.000Z,
+    "closedAt": 2024-03-14T12:00:00.000Z,
     "completedInAnotherSprintPoints": 5,
     "completedPoints": 10,
     "id": 1,
+    "issues": [
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-1",
+        "points": 5,
+        "status": "Completed",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-2",
+        "points": 5,
+        "status": "Completed",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-5",
+        "points": 5,
+        "status": "CompletedOutsideSprint",
+      },
+      {
+        "addedDuringSprint": true,
+        "key": "TEST-3",
+        "points": 10,
+        "status": "NotCompleted",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-4",
+        "points": 15,
+        "status": "NotCompleted",
+      },
+      {
+        "addedDuringSprint": true,
+        "key": "TEST-6",
+        "points": 20,
+        "status": "Removed",
+      },
+    ],
     "notCompletedPoints": 15,
     "plannedPoints": 50,
-    "projectKey": "TEST",
     "puntedPoints": 20,
+  },
+]
+`;
+
+exports[`index streams - sprint_reports with run mode WebhookSupplement using Faros client 1`] = `
+[
+  {
+    "boardId": "1",
+    "closedAt": 2024-01-01T00:00:00.000Z,
+    "completedInAnotherSprintPoints": 5,
+    "completedPoints": 10,
+    "id": "1",
+    "issues": [
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-1",
+        "points": 5,
+        "status": "Completed",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-2",
+        "points": 5,
+        "status": "Completed",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-5",
+        "points": 5,
+        "status": "CompletedOutsideSprint",
+      },
+      {
+        "addedDuringSprint": true,
+        "key": "TEST-3",
+        "points": 10,
+        "status": "NotCompleted",
+      },
+      {
+        "addedDuringSprint": undefined,
+        "key": "TEST-4",
+        "points": 15,
+        "status": "NotCompleted",
+      },
+      {
+        "addedDuringSprint": true,
+        "key": "TEST-6",
+        "points": 20,
+        "status": "Removed",
+      },
+    ],
+    "notCompletedPoints": 15,
+    "plannedPoints": 50,
+    "puntedPoints": 20,
+  },
+]
+`;
+
+exports[`index streams - sprints 1`] = `
+[
+  {
+    "activatedDate": "2024-03-14T12:00:00Z",
+    "completeDate": "2024-03-14T12:00:00Z",
+    "endDate": "2024-03-14T12:00:00Z",
+    "id": 1,
+    "name": "Test Sprint",
+    "originBoardId": 1,
+    "startDate": "2024-03-14T12:00:00Z",
+    "state": "closed",
+  },
+]
+`;
+
+exports[`index streams - users 1`] = `
+[
+  {
+    "accountId": "8425d037692dx1332747h4e74",
+    "active": true,
+    "displayName": "User 1",
+    "id": "8425d037692dx1332747h4e74",
+  },
+  {
+    "accountId": "8j849p1e0756990975d95k56",
+    "active": false,
+    "displayName": "User 2",
+    "id": "8j849p1e0756990975d95k56",
   },
 ]
 `;

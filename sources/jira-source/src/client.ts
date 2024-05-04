@@ -80,4 +80,26 @@ export class JiraClient {
       undefined
     );
   }
+
+  /** This method is for Jira Server only to enable getting inactive users */
+  // https://docs.atlassian.com/software/jira/docs/api/REST/8.20.14/#api/2/user-findUsers
+  async searchUsers(
+    username?: string,
+    startAt?: number,
+    maxResults?: number,
+    includeInactive = true
+  ): Promise<any> {
+    const config: RequestConfig = {
+      url: '/rest/api/2/user/search',
+      method: 'GET',
+      params: {
+        username,
+        includeInactive,
+        startAt,
+        maxResults,
+      },
+    };
+
+    return await this.v2.sendRequest<any>(config, undefined);
+  }
 }

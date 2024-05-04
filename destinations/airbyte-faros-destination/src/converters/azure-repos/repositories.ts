@@ -56,6 +56,14 @@ export class Repositories extends AzureReposConverter {
     });
 
     for (const branch of repositoryItem.branches ?? []) {
+      console.log(
+        '=====> Branch: ',
+        branch.name,
+        ', repo full name: ',
+        repositoryItem.name,
+        ', main_branch: ',
+        repositoryItem.defaultBranch
+      );
       res.push({
         model: 'vcs_Branch',
         record: {

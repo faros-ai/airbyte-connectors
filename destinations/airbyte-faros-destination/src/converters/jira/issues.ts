@@ -1,5 +1,4 @@
 import axios from 'axios';
-import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -14,6 +13,16 @@ import {
 import {Dictionary} from 'ts-essentials';
 import TurndownService from 'turndown';
 
+import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
+import {
+  Assignee,
+  PullRequest,
+  PullRequestState,
+  PullRequestStateCategory,
+  Repo,
+  RepoSource,
+  Status,
+} from '../../../../../faros-airbyte-common/lib/jira';
 import {
   DestinationModel,
   DestinationRecord,
@@ -21,16 +30,9 @@ import {
   StreamName,
 } from '../converter';
 import {
-  Assignee,
   JiraCommon,
   JiraConverter,
-  PullRequest,
-  PullRequestState,
-  PullRequestStateCategory,
   PullRequestStream,
-  Repo,
-  RepoSource,
-  Status,
   StatusValue,
 } from './common';
 

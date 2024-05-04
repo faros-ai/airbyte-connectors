@@ -1,5 +1,4 @@
 import Client, {ResponseError, Schema} from '@atlassian/bitbucket-server';
-import {createHmac} from 'crypto';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Commit,
@@ -12,6 +11,7 @@ import {
   Tag,
   User,
 } from 'faros-airbyte-common/bitbucket-server';
+import {bucket} from 'faros-airbyte-common/common';
 import {pick} from 'lodash';
 import parseDiff from 'parse-diff';
 import {AsyncOrSync} from 'ts-essentials';
@@ -22,6 +22,7 @@ import {
   MoreEndpointMethodsPlugin,
   Prefix as MEP,
 } from './more-endpoint-methods';
+import {ProjectRepoFilter} from './project-repo-filter';
 
 export interface BitbucketServerConfig extends AirbyteConfig {
   readonly server_url?: string;
@@ -429,7 +430,7 @@ export class BitbucketServer {
   )
   async repositories(
     projectKey: string,
-    include?: ReadonlyArray<string>
+    projectRepoFilter?: ProjectRepoFilter
   ): Promise<ReadonlyArray<Repository>> {
     try {
       this.logger.debug(`Fetching repositories for project ${projectKey}`);
@@ -467,8 +468,13 @@ export class BitbucketServer {
           const repoFullName = repo.computedProperties.fullName;
           return {
             shouldEmit:
-              (!include || include.includes(repoFullName)) &&
-              this.bucket(repoFullName) === this.repoBucketId,
+              (!projectRepoFilter ||
+                projectRepoFilter.isIncluded(repoFullName)) &&
+              bucket(
+                'farosai/airbyte-bitbucket-server-source',
+                repoFullName,
+                this.repoBucketTotal
+              ) === this.repoBucketId,
             shouldBreakEarly: false,
           };
         }
@@ -603,13 +609,6 @@ export class BitbucketServer {
     } catch (err) {
       throw new VError(innerError(err), `Error fetching users`);
     }
-  }
-
-  bucket(repoFullName: string): number {
-    const md5 = createHmac('md5', 'farosai/airbyte-bitbucket-server-source');
-    md5.update(repoFullName);
-    const hex = md5.digest('hex').substring(0, 8);
-    return (parseInt(hex, 16) % this.repoBucketTotal) + 1; // 1-index for readability
   }
 }
 

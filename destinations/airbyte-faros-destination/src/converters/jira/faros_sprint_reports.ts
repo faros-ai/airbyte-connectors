@@ -6,18 +6,19 @@ import {JiraConverter} from './common';
 
 export class FarosSprintReports extends JiraConverter {
   get destinationModels(): ReadonlyArray<DestinationModel> {
-    return ['tms_Sprint'];
+    return ['tms_Sprint', 'tms_SprintHistory'];
   }
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprintReport = record.record.data;
-    return [
+    const uid = toString(sprintReport.id);
+    const results: DestinationRecord[] = [
       {
         model: 'tms_Sprint',
         record: {
-          uid: toString(sprintReport.id),
+          uid,
           completedPoints: sprintReport.completedPoints,
           completedOutsideSprintPoints:
             sprintReport.completedInAnotherSprintPoints,
@@ -28,5 +29,18 @@ export class FarosSprintReports extends JiraConverter {
         },
       },
     ];
+    for (const issue of sprintReport.issues || []) {
+      results.push({
+        model: 'tms_SprintHistory',
+        record: {
+          sprint: {uid, source: this.streamName.source},
+          issue: {uid: issue.key, source: this.streamName.source},
+          points: issue.points,
+          status: {category: issue.status},
+          addedDuringSprint: issue.addedDuringSprint,
+        },
+      });
+    }
+    return results;
   }
 }

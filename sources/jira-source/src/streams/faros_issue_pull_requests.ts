@@ -1,9 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {DEV_FIELD_NAME, Jira} from '../jira';
-import {PullRequest} from '../models';
 import {
   ProjectStreamSlice,
   StreamState,
@@ -37,14 +37,14 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
         : undefined;
     for await (const issue of jira.getIssues(
       projectKey,
-      true,
       updateRange,
       true,
       undefined,
       true,
       [DEV_FIELD_NAME]
     )) {
-      for (const pullRequest of issue.pullRequests || []) {
+      for (const pullRequest of (await jira.getIssuePullRequests(issue)) ||
+        []) {
         yield {
           issue: {
             key: issue.key,

@@ -12,7 +12,7 @@ export class Tags extends StreamBase {
     readonly config: BitbucketServerConfig,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any> {
@@ -28,7 +28,7 @@ export class Tags extends StreamBase {
       const projectKey = await this.fetchProjectKey(project.key);
       for (const repo of await this.server.repositories(
         projectKey,
-        this.config.repositories
+        this.projectRepoFilter
       )) {
         yield {
           projectKey,
