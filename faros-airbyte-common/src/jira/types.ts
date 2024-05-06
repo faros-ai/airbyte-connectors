@@ -127,3 +127,8 @@ export interface IssueField {
 export interface User extends Version2Models.User {
   id: string;
 }
+
+export interface Board extends AgileModels.Board {
+  uid: string;
+  projectKey: string;
+}

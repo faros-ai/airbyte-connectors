@@ -14,6 +14,7 @@ import VError from 'verror';
 import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
 import {RunMode, WebhookSupplementStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
+import {FarosBoards} from './streams/faros_boards';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
@@ -65,6 +66,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosSprints(config, this.logger),
       new FarosUsers(config, this.logger),
       new FarosIssues(config, this.logger),
+      new FarosBoards(config, this.logger),
     ];
   }
 
