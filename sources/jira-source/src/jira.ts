@@ -643,25 +643,13 @@ export class Jira {
     );
     return this.iterate(
       (startAt) =>
-        this.api.v2.issueSearch
-          .searchForIssuesUsingJql({
-            jql,
-            startAt,
-            fields: [...fieldIds, ...additionalFieldIds],
-            expand: fetchKeysOnly ? undefined : 'changelog',
-            maxResults: this.maxPageSize,
-          })
-          .catch((err: any) => {
-            // https://github.com/MrRefactoring/jira.js/blob/master/src/clients/baseClient.ts#L138
-            if (err?.status !== 400) {
-              throw wrapApiError(err);
-            }
-            // FAI-5497: Log an error instead of failing feed if 400
-            this.logger.warn(
-              `Failed to sync project ${projectId} due to invalid filter. Skipping.`
-            );
-            return {issues: []};
-          }),
+        this.api.v2.issueSearch.searchForIssuesUsingJql({
+          jql,
+          startAt,
+          fields: [...fieldIds, ...additionalFieldIds],
+          expand: fetchKeysOnly ? undefined : 'changelog',
+          maxResults: this.maxPageSize,
+        }),
       async (item: any) => {
         return issueTransformer.toIssue(item);
       },
