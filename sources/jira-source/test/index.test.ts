@@ -309,19 +309,21 @@ describe('index', () => {
   }
 
   test('stream with project slices using bucketing', async () => {
-    // test with bucket_id 1 and 2
+    const projects = ['TEST', 'TEST2', 'TEST3'];
+    // test with bucket_id 1
     await testStreamSlices({
       ...config,
       bucket_total: 2,
       bucket_id: 1,
-      project_keys: ['TEST', 'TEST2', 'TEST3'],
+      projects,
     });
 
+    // test with bucket_id 2
     await testStreamSlices({
       ...config,
       bucket_total: 2,
       bucket_id: 2,
-      project_keys: ['TEST', 'TEST2', 'TEST3'],
+      projects,
     });
   });
 
