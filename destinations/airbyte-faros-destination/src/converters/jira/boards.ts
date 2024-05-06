@@ -15,7 +15,7 @@ export class Boards extends JiraConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     if (!this.useBoardOwnership(ctx)) return [];
     const board = record.record.data;
-    const uid = board.uid ?? board.id.toString();
+    const uid = board.id.toString();
     const source = this.streamName.source;
     return [
       {
