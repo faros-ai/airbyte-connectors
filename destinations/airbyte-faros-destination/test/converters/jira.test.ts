@@ -84,6 +84,7 @@ describe('jira', () => {
       faros_board_issues: 4,
       faros_sprints: 1,
       faros_users: 3,
+      faros_projects: 3,
       faros_boards: 2,
     };
     const processed = _(processedByStream)
@@ -95,7 +96,7 @@ describe('jira', () => {
 
     const writtenByModel = {
       tms_Epic: 1,
-      tms_Project: 1,
+      tms_Project: 4,
       tms_ProjectReleaseRelationship: 3,
       tms_Release: 3,
       tms_Sprint: 14,

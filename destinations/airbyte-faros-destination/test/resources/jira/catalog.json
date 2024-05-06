@@ -338,6 +338,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__jira__faros_projects"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__jira__faros_boards"
       },
       "destination_sync_mode": "append"

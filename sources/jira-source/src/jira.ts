@@ -503,7 +503,6 @@ export class Jira {
           key: item.key,
           name: item.name,
           description: item.description,
-          type: item.type,
         })
       );
       for await (const project of projects) {
@@ -548,7 +547,7 @@ export class Jira {
       );
     }
     for (const project of browseableProjects) {
-      yield project;
+      if (this.isProjectInBucket(project.key)) yield project;
     }
   }
 

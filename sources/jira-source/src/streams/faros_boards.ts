@@ -1,4 +1,4 @@
-import {StreamKey,SyncMode} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Board} from 'faros-airbyte-common/jira';
 import {pick, toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';

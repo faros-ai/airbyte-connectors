@@ -118,7 +118,8 @@ describe('index', () => {
     streamIndex: any,
     streamConfig: JiraConfig,
     mockedImplementation?: any,
-    streamSlice?: any
+    streamSlice?: any,
+    isCloud = true
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -128,7 +129,7 @@ describe('index', () => {
         new Map([['field_001', 'Development']]),
         50,
         new Map(),
-        true,
+        isCloud,
         5,
         100,
         streamConfig.bucket_id,
@@ -277,6 +278,59 @@ describe('index', () => {
     );
   });
 
+  test('streams - users', async () => {
+    await testStream(4, readTestResourceFile('config.json'), {
+      v2: {
+        users: {
+          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - pull all projects', async () => {
+    await testStream(5, readTestResourceFile('config.json'), {
+      v2: {
+        projects: {
+          searchProjects: paginate(readTestResourceFile('projects.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - filter projects', async () => {
+    const config = readTestResourceFile('config.json');
+    config.project_keys = ['TEST-1', 'TEST-2'];
+    await testStream(5, config, {
+      v2: {
+        projects: {
+          searchProjects: paginate(readTestResourceFile('projects.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - projects - Jira Server', async () => {
+    await testStream(
+      5,
+      readTestResourceFile('config.json'),
+      {
+        v2: {
+          permissions: {
+            getMyPermissions: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('permissions.json')),
+          },
+        },
+        getAllProjects: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('projects.json')),
+      },
+      undefined,
+      false
+    );
+  });
+
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
@@ -327,19 +381,9 @@ describe('index', () => {
     });
   });
 
-  test('streams - users', async () => {
-    await testStream(4, config, {
-      v2: {
-        users: {
-          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
-        },
-      },
-    });
-  });
-
   test('streams - boards', async () => {
     await testStream(
-      6,
+      7,
       config,
       {
         agile: {

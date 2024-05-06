@@ -157,6 +157,69 @@ exports[`index streams - issue_pull_requests 1`] = `
 ]
 `;
 
+exports[`index streams - projects - Jira Server 1`] = `
+[
+  {
+    "description": "This is a test",
+    "id": 1234,
+    "key": "TEST-1",
+    "name": "Test 1",
+  },
+  {
+    "description": "This is a test",
+    "id": 1235,
+    "key": "TEST-2",
+    "name": "Test 2",
+  },
+  {
+    "description": "This is a test",
+    "id": 1236,
+    "key": "TEST-3",
+    "name": "Test 3",
+  },
+]
+`;
+
+exports[`index streams - projects - filter projects 1`] = `
+[
+  {
+    "description": "This is a test",
+    "id": "1234",
+    "key": "TEST-1",
+    "name": "Test 1",
+  },
+  {
+    "description": "This is a test",
+    "id": "1235",
+    "key": "TEST-2",
+    "name": "Test 2",
+  },
+]
+`;
+
+exports[`index streams - projects - pull all projects 1`] = `
+[
+  {
+    "description": "This is a test",
+    "id": "1234",
+    "key": "TEST-1",
+    "name": "Test 1",
+  },
+  {
+    "description": "This is a test",
+    "id": "1235",
+    "key": "TEST-2",
+    "name": "Test 2",
+  },
+  {
+    "description": "This is a test",
+    "id": "1236",
+    "key": "TEST-3",
+    "name": "Test 3",
+  },
+]
+`;
+
 exports[`index streams - sprint_reports 1`] = `
 [
   {
