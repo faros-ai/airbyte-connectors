@@ -25,6 +25,10 @@
     "completeDate": {
       "type": "string",
       "format": "date-time"
+    },
+    "activatedDate": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 }

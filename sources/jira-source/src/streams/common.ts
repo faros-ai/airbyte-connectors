@@ -5,6 +5,7 @@ import moment from 'moment';
 import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_CUTOFF_LAG_DAYS,
+  DEFAULT_GRAPH,
   Jira,
   JiraConfig,
 } from '../jira';
@@ -59,7 +60,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     projectOrBoardKey: string
   ): StreamState {
     const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectOrBoardKey]?.cutoff
+      currentStreamState?.[projectOrBoardKey]?.cutoff ?? 0
     );
     if (latestRecordCutoff > currentCutoff) {
       const newCutoff = moment().utc().toDate();
@@ -93,15 +94,18 @@ export abstract class StreamBase extends AirbyteStreamBase {
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.project_keys) {
+    if (!this.config.projects) {
       const projects = this.supportsFarosClient()
-        ? jira.getProjectsFromGraph(this.farosClient, this.config.graph)
+        ? jira.getProjectsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
         : jira.getProjects();
       for await (const project of projects) {
         yield {project: project.key};
       }
     } else {
-      for (const project of this.config.project_keys) {
+      for (const project of this.config.projects) {
         if (jira.isProjectInBucket(project)) yield {project};
       }
     }
@@ -111,15 +115,18 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     const jira = await Jira.instance(this.config, this.logger);
-    if (!this.config.board_ids) {
+    if (!this.config.boards) {
       const boards = this.supportsFarosClient()
-        ? jira.getBoardsFromGraph(this.farosClient, this.config.graph)
+        ? jira.getBoardsFromGraph(
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH
+          )
         : jira.getBoards();
       for await (const board of boards) {
         yield {board: board.id.toString()};
       }
     } else {
-      for (const board of this.config.board_ids) {
+      for (const board of this.config.boards) {
         if (await jira.isBoardInBucket(board)) yield {board};
       }
     }

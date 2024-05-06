@@ -95,6 +95,37 @@ exports[`index streams - board_issues using board ids 1`] = `
 ]
 `;
 
+exports[`index streams - boards 1`] = `
+[
+  {
+    "name": "Tasks without a board in project TEST",
+    "projectKey": "TEST",
+    "uid": "faros-tasks-with-no-board-TEST",
+  },
+  {
+    "id": 1,
+    "name": "Board 1",
+    "projectKey": "TEST",
+    "type": "scrum",
+    "uid": "1",
+  },
+  {
+    "id": 2,
+    "name": "Board 2",
+    "projectKey": "TEST",
+    "type": "scrum",
+    "uid": "2",
+  },
+  {
+    "id": 3,
+    "name": "Board 3",
+    "projectKey": "TEST",
+    "type": "kanban",
+    "uid": "3",
+  },
+]
+`;
+
 exports[`index streams - issue_pull_requests 1`] = `
 [
   {
@@ -298,6 +329,7 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
 exports[`index streams - sprints 1`] = `
 [
   {
+    "activatedDate": "2024-03-14T12:00:00Z",
     "completeDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
     "id": 1,

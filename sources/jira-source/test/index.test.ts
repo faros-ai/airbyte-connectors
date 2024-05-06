@@ -30,11 +30,26 @@ describe('index', () => {
   );
 
   const source = new sut.JiraSource(logger);
+  const config = readTestResourceFile('config.json');
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
+  });
+
+  test('check connection - missing url', async () => {
+    const source = new sut.JiraSource(logger);
+    const configs = [{}, {url: undefined}, {url: null}, {url: ''}];
+
+    for (const config of configs) {
+      await expect(
+        source.checkConnection(config as any)
+      ).resolves.toStrictEqual([
+        false,
+        new VError('Please provide a Jira URL'),
+      ]);
+    }
   });
 
   test('check connection - missing credentials ', async () => {
@@ -51,21 +66,24 @@ describe('index', () => {
 
   test('check connection - invalid bucketing config - out of range', async () => {
     const source = new sut.JiraSource(logger);
-    const config = readTestResourceFile('config.json');
-    config.bucket_id = 3;
-    config.bucket_total = 2;
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+    const bucketTotal = 2;
+    await expect(
+      source.checkConnection({
+        ...config,
+        bucket_id: 3,
+        bucket_total: bucketTotal,
+      })
+    ).resolves.toStrictEqual([
       false,
-      new VError(`bucket_id must be between 1 and ${config.bucket_total}`),
+      new VError(`bucket_id must be between 1 and ${bucketTotal}`),
     ]);
   });
 
   test('check connection - invalid bucketing config - non positive integer', async () => {
     const source = new sut.JiraSource(logger);
-    const config = readTestResourceFile('config.json');
-    config.bucket_id = 1;
-    config.bucket_total = -1;
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+    await expect(
+      source.checkConnection({...config, bucket_id: 1, bucket_total: -1})
+    ).resolves.toStrictEqual([
       false,
       new VError(`bucket_total must be a positive integer`),
     ]);
@@ -109,6 +127,8 @@ describe('index', () => {
         mockedImplementation ?? ({} as any),
         {} as any,
         new Map([['field_001', 'Development']]),
+        50,
+        new Map(),
         isCloud,
         5,
         100,
@@ -166,21 +186,15 @@ describe('index', () => {
   });
 
   test('streams - issue_pull_requests', async () => {
-    await testStream(
-      0,
-      readTestResourceFile('config.json'),
-      getIssuePullRequestsMockedImplementation(),
-      {project: 'TEST'}
-    );
+    await testStream(0, config, getIssuePullRequestsMockedImplementation(), {
+      project: 'TEST',
+    });
   });
 
   test('streams - sprint_reports', async () => {
-    await testStream(
-      1,
-      readTestResourceFile('config.json'),
-      getSprintReportsMockedImplementation(),
-      {board: '1'}
-    );
+    await testStream(1, config, getSprintReportsMockedImplementation(), {
+      board: '1',
+    });
   });
 
   test('streams - sprint_reports with run mode WebhookSupplement using Faros client', async () => {
@@ -202,15 +216,14 @@ describe('index', () => {
     gqlMock.mockReturnValueOnce(
       Promise.resolve({tms_SprintBoardRelationship: []})
     );
-    let config = readTestResourceFile('config.json');
-    config = {
+    const reportsConfig = {
       ...config,
       run_mode: RunMode.WebhookSupplement,
       api_key: 'SECRET',
       api_url: 'https://dev.api.faros.ai',
       graph: 'test',
     };
-    await testStream(1, config, getSprintReportsMockedImplementation(), {
+    await testStream(1, reportsConfig, getSprintReportsMockedImplementation(), {
       board: '1',
     });
   });
@@ -250,7 +263,7 @@ describe('index', () => {
   test('streams - sprints', async () => {
     await testStream(
       3,
-      readTestResourceFile('config.json'),
+      config,
       {
         agile: {
           board: {
@@ -321,18 +334,20 @@ describe('index', () => {
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
-    const config = readTestResourceFile('config.json');
-    config.run_mode = RunMode.WebhookSupplement;
-    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
+    const {catalog: newCatalog} = await source.onBeforeRead(
+      {...config, run_mode: RunMode.WebhookSupplement},
+      catalog
+    );
     expect(newCatalog).toMatchSnapshot();
   });
 
   test('onBeforeRead with run_mode Full should not filter streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
-    const config = readTestResourceFile('config.json');
-    config.run_mode = RunMode.Full;
-    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
+    const {catalog: newCatalog} = await source.onBeforeRead(
+      {...config, run_mode: RunMode.Full},
+      catalog
+    );
     expect(newCatalog).toMatchSnapshot();
   });
 
@@ -348,14 +363,36 @@ describe('index', () => {
   }
 
   test('stream with project slices using bucketing', async () => {
-    const config = readTestResourceFile('config.json');
-    config.project_keys = ['TEST', 'TEST2', 'TEST3'];
-    config.bucket_total = 2;
-    // test with bucket_id 1 and 2
-    config.bucket_id = 1;
-    await testStreamSlices(config);
+    const projects = ['TEST', 'TEST2', 'TEST3'];
+    // test with bucket_id 1
+    await testStreamSlices({
+      ...config,
+      bucket_total: 2,
+      bucket_id: 1,
+      projects,
+    });
 
-    config.bucket_id = 2;
-    await testStreamSlices(config);
+    // test with bucket_id 2
+    await testStreamSlices({
+      ...config,
+      bucket_total: 2,
+      bucket_id: 2,
+      projects,
+    });
+  });
+
+  test('streams - boards', async () => {
+    await testStream(
+      7,
+      config,
+      {
+        agile: {
+          board: {
+            getAllBoards: paginate(readTestResourceFile('boards.json')),
+          },
+        },
+      },
+      {project: 'TEST'}
+    );
   });
 });

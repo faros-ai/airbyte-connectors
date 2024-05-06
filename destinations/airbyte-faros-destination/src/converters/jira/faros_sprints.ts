@@ -25,6 +25,7 @@ export class FarosSprints extends JiraConverter {
           name: sprint.name,
           state: upperFirst(camelCase(sprint.state)),
           startedAt: Utils.toDate(sprint.startDate),
+          openedAt: Utils.toDate(sprint.activatedDate),
           endedAt: Utils.toDate(sprint.endDate),
           closedAt: Utils.toDate(sprint.completeDate),
           source,

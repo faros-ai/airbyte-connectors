@@ -2,26 +2,30 @@ import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
+import {
+  Issue,
+  IssueField,
+  PullRequest,
+  Repo,
+  RepoSource,
+  SprintIssue,
+  SprintReport,
+  Status,
+} from 'faros-airbyte-common/jira';
 import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
-import {
-  Issue,
-  PullRequest,
-  Repo,
-  RepoSource,
-  SprintIssue,
-  SprintReport,
-} from './models';
+import {IssueTransformer} from './issue_transformer';
 import {RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
@@ -29,19 +33,19 @@ export interface JiraConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly sync_additional_fields: boolean;
-  readonly additional_fields: ReadonlyArray<string>;
-  readonly additional_fields_array_limit: number;
-  readonly reject_unauthorized: boolean;
-  readonly concurrency_limit: number;
-  readonly max_retries: number;
-  readonly page_size: number;
-  readonly timeout: number;
-  readonly use_user_prefix_search?: boolean;
-  readonly project_keys?: ReadonlyArray<string>;
+  readonly sync_additional_fields?: boolean;
+  readonly additional_fields?: ReadonlyArray<string>;
+  readonly additional_fields_array_limit?: number;
+  readonly reject_unauthorized?: boolean;
+  readonly concurrency_limit?: number;
+  readonly max_retries?: number;
+  readonly page_size?: number;
+  readonly timeout?: number;
+  readonly use_users_prefix_search?: boolean;
+  readonly projects?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
-  readonly board_ids?: ReadonlyArray<string>;
+  readonly boards?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -100,10 +104,19 @@ const BOARD_QUERY = fs.readFileSync(
   'utf8'
 );
 
-export const DEFAULT_CONCURRENCY_LIMIT = 5;
+const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
+const DEFAULT_REJECT_UNAUTHORIZED = true;
+const DEFAULT_CONCURRENCY_LIMIT = 5;
+const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_PAGE_SIZE = 250;
+const DEFAULT_TIMEOUT = 120000; // 2 minutes
+const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
-export const DEFAULT_TIMEOUT = 120000; // 120 seconds
+const DEFAULT_BUCKET_ID = 1;
+const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
+export const DEFAULT_GRAPH = 'default';
 
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
@@ -117,8 +130,10 @@ export class Jira {
     private readonly api: JiraClient,
     private readonly http: AxiosInstance,
     private readonly fieldNameById: Map<string, string>,
+    private readonly additionalFieldsArrayLimit: number,
+    private readonly statusByName: Map<string, Status>,
     private readonly isCloud: boolean,
-    private readonly concurrencyLimit: number = DEFAULT_CONCURRENCY_LIMIT,
+    private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
@@ -137,6 +152,10 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (isEmpty(cfg.url)) {
+      throw new VError('Please provide a Jira URL');
+    }
+
     const isCloud = cfg.url.match(jiraCloudRegex) != null;
     const jiraType = isCloud ? 'Cloud' : 'Server/DC';
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
@@ -146,7 +165,8 @@ export class Jira {
     this.validateBucketingConfig(cfg);
 
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: cfg.reject_unauthorized,
+      rejectUnauthorized:
+        cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
     });
 
     const http = setupCache(axios.create(), {ttl: 60 * 60 * 1000}); // 60 minutes cache
@@ -161,16 +181,16 @@ export class Jira {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
         },
-        timeout: cfg.timeout,
+        timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
       },
-      maxRetries: cfg.max_retries,
+      maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
       logger: logger,
     });
 
     const addAllFields =
-      cfg.sync_additional_fields && !cfg.additional_fields.length;
+      cfg.sync_additional_fields && (cfg.additional_fields ?? []).length === 0;
     const additionalFields = new Set(
-      cfg.sync_additional_fields ? cfg.additional_fields : []
+      cfg.sync_additional_fields ? cfg.additional_fields ?? [] : []
     );
     // We always add the following custom fields since they
     // are promoted to standard fields
@@ -196,18 +216,31 @@ export class Jira {
       `Total number of fields: ${totalNumFields}. Projected field mapping: ${fieldMapping}`
     );
 
+    const statusByName = new Map<string, Status>();
+    for (const status of await api.v2.workflowStatuses.getStatuses()) {
+      if (status.name && status.statusCategory?.name) {
+        statusByName.set(status.name, {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+    }
+
     return new Jira(
       cfg.url,
       api,
       http,
       fieldNameById,
+      cfg.additional_fields_array_limit ??
+        DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
+      statusByName,
       isCloud,
-      cfg.concurrency_limit,
-      cfg.page_size,
-      cfg.bucket_id ?? 1,
-      cfg.bucket_total ?? 1,
+      cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
+      cfg.page_size ?? DEFAULT_PAGE_SIZE,
+      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
+      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
-      cfg.use_user_prefix_search
+      cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH
     );
   }
 
@@ -565,6 +598,19 @@ export class Jira {
 
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
+  @Memoize()
+  async getStatuses(): Promise<Map<string, Status>> {
+    const statusByName = new Map<string, Status>();
+    for (const status of await this.api.v2.workflowStatuses.getStatuses()) {
+      if (status.name && status.statusCategory?.name) {
+        statusByName.set(status.name, {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+    }
+    return statusByName;
+  }
 
   @Memoize()
   getIssues(
@@ -582,28 +628,30 @@ export class Jira {
     if (updateRange) {
       jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
     }
-    const fields = this.getIssueFields(
+    const {fieldIds, additionalFieldIds} = this.getIssueFields(
       fetchKeysOnly,
       includeAdditionalFields,
       additionalFields
+    );
+    const issueTransformer = new IssueTransformer(
+      this.baseURL,
+      this.fieldNameById,
+      this.fieldIdsByName,
+      this.statusByName,
+      additionalFieldIds,
+      this.additionalFieldsArrayLimit
     );
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields,
+          fields: [...fieldIds, ...additionalFieldIds],
           expand: fetchKeysOnly ? undefined : 'changelog',
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
-        return {
-          id: item.id,
-          key: item.key,
-          fields: item.fields,
-          created: Utils.toDate(item.fields.created),
-          updated: Utils.toDate(item.fields.updated),
-        };
+        return issueTransformer.toIssue(item);
       },
       'issues'
     );
@@ -638,7 +686,7 @@ export class Jira {
     fetchKeysOnly: boolean,
     includeAdditionalFields: boolean,
     additionalFields?: string[]
-  ): string[] {
+  ): {fieldIds: string[]; additionalFieldIds: string[]} {
     const fieldIds = fetchKeysOnly
       ? ['id', 'key', 'created', 'updated']
       : [
@@ -672,9 +720,9 @@ export class Jira {
           additionalFieldIds.push(fieldId);
         }
       }
-      return [...fieldIds, ...additionalFieldIds];
+      return {fieldIds, additionalFieldIds};
     }
-    return fieldIds;
+    return {fieldIds, additionalFieldIds: []};
   }
 
   async *getBoards(
@@ -903,6 +951,12 @@ export class Jira {
       bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
       this.bucketId
     );
+  }
+
+  async *getFields(): AsyncGenerator<IssueField> {
+    for (const [id, name] of this.fieldNameById) {
+      yield {id, name};
+    }
   }
 
   getUsers(): AsyncIterableIterator<Version2Models.User> {

@@ -782,6 +782,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.warnings.push(syncMessage);
                 }
               }
+              stateMessage = new AirbyteStateMessage(msg.state);
             } else if (isSourceConfigMessage(msg)) {
               await updateLocalAccount?.(msg);
             } else if (isSourceLogsMessage(msg)) {

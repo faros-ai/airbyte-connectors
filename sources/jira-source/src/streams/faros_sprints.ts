@@ -1,6 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Sprint} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
-import {AgileModels} from 'jira.js';
 import {toInteger, toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -25,7 +25,7 @@ export class FarosSprints extends StreamWithBoardSlices {
     cursorField?: string[],
     streamSlice?: BoardStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<AgileModels.Sprint> {
+  ): AsyncGenerator<Sprint> {
     const boardId = streamSlice.board;
     const jira = await Jira.instance(this.config, this.logger);
     const board = await jira.getBoard(boardId);
@@ -43,13 +43,14 @@ export class FarosSprints extends StreamWithBoardSlices {
         startDate: sprint.startDate,
         endDate: sprint.endDate,
         completeDate: sprint.completeDate,
+        activatedDate: sprint['activatedDate'],
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: AgileModels.Sprint
+    latestRecord: Sprint
   ): StreamState {
     const board = toString(latestRecord.originBoardId);
     const latestRecordCutoff = Utils.toDate(latestRecord.completeDate);
