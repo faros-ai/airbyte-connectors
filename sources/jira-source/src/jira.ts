@@ -70,7 +70,6 @@ const POINTS_FIELD_NAMES: ReadonlyArray<string> = [
 const EPIC_LINK_FIELD_NAME = 'Epic Link';
 // https://community.developer.atlassian.com/t/jira-api-v3-include-sprint-in-get-issue-search/35411
 const SPRINT_FIELD_NAME = 'Sprint';
-const EPIC_TYPE_NAME = 'Epic';
 
 const BROWSE_PROJECTS_PERM = 'BROWSE_PROJECTS';
 
@@ -924,6 +923,7 @@ export class Jira {
     return issues;
   }
 
+  @Memoize()
   async getBoardConfiguration(
     boardId: string
   ): Promise<AgileModels.GetConfiguration> {
