@@ -1,0 +1,295 @@
+import axios from 'axios';
+import {BaseClient} from 'jira.js';
+import {DateTime} from 'luxon';
+
+import * as sut from '../src/client';
+import {WithRetry} from '../src/retry';
+
+jest.mock('axios');
+jest.mock('faros-js-client');
+
+function apiError(status: number, headers: Record<string, any> = {}): Error {
+  const err = new Error('API error');
+  (err as any).status = status;
+  (err as any).response = {headers};
+  return err;
+}
+
+describe('client', () => {
+  const project = {
+    id: 1,
+    key: 'PJ',
+    name: 'Project',
+    description: 'Description',
+  };
+
+  const ClientWithRetry = WithRetry(BaseClient, 3);
+
+  function getProject(projectIdOrKey: string): Promise<any> {
+    const client = new sut.JiraClient({
+      host: 'http://test.test',
+      authentication: {
+        basic: {username: 'username', password: 'password'},
+      },
+      maxRetries: 1,
+    });
+    return client.v2.projects.getProject({projectIdOrKey});
+  }
+
+  beforeEach(() => jest.clearAllMocks());
+
+  test('succeeds on 200', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest.fn().mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).resolves.toEqual(project);
+  });
+
+  test('fails on 404', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(400))
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).rejects.toEqual(apiError(400));
+  });
+
+  test('retries on 429', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(429))
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).resolves.toEqual(project);
+  });
+
+  test('fails on repeated 429s', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(429))
+            .mockRejectedValueOnce(apiError(429))
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).rejects.toEqual(apiError(429));
+  });
+
+  test('retries on 500', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(500))
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).resolves.toEqual(project);
+  });
+
+  test('fails on repeated 500s', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(500))
+            .mockRejectedValueOnce(apiError(500))
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).rejects.toEqual(apiError(500));
+  });
+
+  test('retries on ETIMEDOUT', async () => {
+    const error: any = new Error('connect ETIMEDOUT url');
+    error.code = 'ETIMEDOUT';
+    error.response = undefined;
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(error)
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).resolves.toEqual(project);
+  });
+
+  test('fails on repeated ETIMEDOUT)', async () => {
+    const error: any = new Error('connect ETIMEDOUT url');
+    error.code = 'ETIMEDOUT';
+    error.response = undefined;
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(error)
+            .mockRejectedValueOnce(error)
+            .mockResolvedValueOnce({data: project}),
+        } as any)
+    );
+    await expect(getProject(project.key)).rejects.toEqual(error);
+  });
+
+  test('agile client has retries on 500', async () => {
+    const board = {id: 1, name: 'board 1'};
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(500))
+            .mockResolvedValueOnce({data: board}),
+        } as any)
+    );
+
+    const client = new sut.JiraClient({
+      host: 'http://test.test',
+      authentication: {
+        basic: {username: 'username', password: 'password'},
+      },
+      maxRetries: 1,
+    });
+    await expect(client.agile.board.getBoard({boardId: 1})).resolves.toEqual(
+      board
+    );
+  });
+
+  test('internal api client has retries', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(apiError(500))
+            .mockResolvedValueOnce({data: [project]}),
+        } as any)
+    );
+
+    const client = new sut.JiraClient({
+      host: 'http://test.test',
+      authentication: {
+        basic: {username: 'username', password: 'password'},
+      },
+      maxRetries: 1,
+    });
+    await expect(client.getAllProjects()).resolves.toEqual([project]);
+  });
+
+  test('gets attempt delay', () => {
+    const delay1 = ClientWithRetry.getDelay(1, {});
+    expect(delay1).toBeGreaterThanOrEqual(3000);
+    expect(delay1).toBeLessThanOrEqual(3500);
+
+    const delay2 = ClientWithRetry.getDelay(2, {});
+    expect(delay2).toBeGreaterThanOrEqual(6000);
+    expect(delay2).toBeLessThanOrEqual(6500);
+
+    const delay3 = ClientWithRetry.getDelay(3, {});
+    expect(delay3).toBeGreaterThanOrEqual(9000);
+    expect(delay3).toBeLessThanOrEqual(9500);
+  });
+
+  test('gets attempt delay when undefined response', () => {
+    const delay1 = ClientWithRetry.getDelay(1, undefined);
+    expect(delay1).toBeGreaterThanOrEqual(3000);
+    expect(delay1).toBeLessThanOrEqual(3500);
+
+    const delay2 = ClientWithRetry.getDelay(2, undefined);
+    expect(delay2).toBeGreaterThanOrEqual(6000);
+    expect(delay2).toBeLessThanOrEqual(6500);
+
+    const delay3 = ClientWithRetry.getDelay(3, undefined);
+    expect(delay3).toBeGreaterThanOrEqual(9000);
+    expect(delay3).toBeLessThanOrEqual(9500);
+  });
+
+  test('gets delay from Retry-After header', () => {
+    const response = {headers: {'Retry-After': 60}};
+    const delay = ClientWithRetry.getDelay(1, response);
+    expect(delay).toBeGreaterThanOrEqual(60_000);
+    expect(delay).toBeLessThanOrEqual(60_500);
+  });
+
+  test('gets delay from X-RateLimit-Reset header', () => {
+    const reset = DateTime.utc().plus({minutes: 1, seconds: 1}).toISO();
+    const response = {headers: {'X-RateLimit-Reset': reset}};
+    const delay = ClientWithRetry.getDelay(1, response);
+    expect(delay).toBeGreaterThanOrEqual(60_000);
+    expect(delay).toBeLessThanOrEqual(61_500);
+  });
+
+  test('ignores invalid Retry-After header', () => {
+    const response = {headers: {'Retry-After': 'invalid'}};
+    const delay = ClientWithRetry.getDelay(1, response);
+    expect(delay).toBeGreaterThanOrEqual(3000);
+    expect(delay).toBeLessThanOrEqual(3500);
+  });
+
+  test('ignores invalid X-RateLimit-Reset header', () => {
+    const response = {headers: {'X-RateLimit-Reset': 'invalid'}};
+    const delay = ClientWithRetry.getDelay(1, response);
+    expect(delay).toBeGreaterThanOrEqual(3000);
+    expect(delay).toBeLessThanOrEqual(3500);
+  });
+
+  test('uses attempt delay if larger than response delay', () => {
+    const response = {headers: {'Retry-After': 2}};
+    const delay = ClientWithRetry.getDelay(1, response);
+    expect(delay).toBeGreaterThanOrEqual(3000);
+    expect(delay).toBeLessThanOrEqual(3500);
+  });
+
+  test('get API stats', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest.fn().mockResolvedValue({data: [project]}),
+        } as any)
+    );
+
+    const client = new sut.JiraClient({
+      host: 'http://test.test',
+      authentication: {
+        basic: {username: 'username', password: 'password'},
+      },
+      maxRetries: 1,
+    });
+    await Promise.all([
+      // V2Client calls
+      client.v2.projects.searchProjects(),
+      client.v2.workflowStatuses.getStatuses(),
+      client.agile.board.getAllBoards(),
+      client.agile.board.getAllSprints({boardId: 1}),
+      client.getDevStatusSummary('1'),
+    ]);
+  });
+});
