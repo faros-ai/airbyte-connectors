@@ -252,6 +252,7 @@ export class AzureRepos {
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
         for (const branch of await this.listBranches(project, repository)) {
+          console.log('=========> Sourcing Commits for Branch: ', branch.name);
           for await (const commit of this.listCommits(
             project,
             repository,
@@ -259,7 +260,13 @@ export class AzureRepos {
             sinceDate > cutoffDate ? sinceDate : cutoffDate
           )) {
             commit.repository = repository as CommitRepository;
-            commit.branch = branch;
+            commit.branch = branch as Branch;
+            console.log(
+              '======>Found Commit: ',
+              commit.commitId,
+              ' for branch: ',
+              branch
+            );
             yield commit;
           }
         }
