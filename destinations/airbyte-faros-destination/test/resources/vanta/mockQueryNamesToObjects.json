@@ -9,7 +9,7 @@
         "uid": "123",
         "source": "github"
        },
-       "name": "test"
+       "name": "sample2"
       }]
     }
   },
@@ -19,7 +19,7 @@
     },
     "aaaaaaaaaaaaaaaaaaaadddddddddddddddddddd": {
       "cicd_Artifact": [{
-        "uid": "123",
+        "uid": "aaaaaaaaaaaaaaaaaaaadddddddddddddddddddd",
         "repository": {
           "organization": {
             "uid": "123",
@@ -42,9 +42,15 @@
             "uid": "123",
             "source": "github"
           },
-          "uid": "123"
+          "uid": "SAMPLE2"
         }
       }]
     }
+  }, 
+  "vcsRepositoryVulnerabilityQuery": {
+    "vcs_RepositoryVulnerability": []
+  },
+  "cicdArtifactVulnerabilityQuery": {
+    "cicd_ArtifactVulnerability": []
   }
 }

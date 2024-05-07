@@ -1,5 +1,5 @@
-query vcsRepositoryQuery($repoName: String!) {
-  vcs_Repository(where: {name: {_eq: $repoName}}, limit: 1) {
+query vcsRepositoryQuery($vcsRepoNames: [String], $limit: Int) {
+  vcs_Repository(where: {name: {_in: $vcsRepoNames}}, limit: $limit, distinct_on: name) {
     organization {
       uid
       source

@@ -85,11 +85,27 @@ export class Vanta {
     }
   }
 
-  async getAxiosResponse(url: string, body: any): Promise<AxiosResponse> {
+  async getAxiosResponse(
+    url: string,
+    body: any,
+    requestCount: number = 0
+  ): Promise<AxiosResponse> {
+    if (requestCount > 5) {
+      throw new VError('Too many retries for Vanta API');
+    }
     try {
       const packed_response: AxiosResponse = await this.api.post(url, body);
       return packed_response;
     } catch (error) {
+      if (error instanceof Error && error.message?.includes('504')) {
+        // Sleep for 30 seconds and continue:
+        this.logger.info(
+          'Got 504 from Vanta API, sleeping for 30 seconds, then retrying. Retry count: %s',
+          (requestCount + 1).toString()
+        );
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+        return await this.getAxiosResponse(url, body, requestCount + 1);
+      }
       this.logger.error(
         `Error occurred: ${error instanceof Error ? error.message : error}`
       );
