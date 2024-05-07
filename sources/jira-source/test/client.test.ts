@@ -291,5 +291,13 @@ describe('client', () => {
       client.agile.board.getAllSprints({boardId: 1}),
       client.getDevStatusSummary('1'),
     ]);
+    expect(client.getStats()).toStrictEqual({
+      totalCalls: 5,
+      '/rest/agile/1.0/board': 1,
+      '/rest/agile/1.0/board/1/sprint': 1,
+      '/rest/dev-status/1.0/issue/summary': 1,
+      '/rest/api/2/project/search': 1,
+      '/rest/api/2/status': 1,
+    });
   });
 });

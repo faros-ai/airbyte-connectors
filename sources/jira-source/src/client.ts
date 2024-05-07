@@ -102,4 +102,15 @@ export class JiraClient {
 
     return await this.v2.sendRequest<any>(config, undefined);
   }
+
+  getStats(): {[key: string]: number} {
+    const v2Stats = this.v2.getStats();
+    const agileStats = this.agile.getStats();
+    const totalCalls = v2Stats.totalCalls + agileStats.totalCalls;
+    return {
+      ...v2Stats,
+      ...agileStats,
+      totalCalls,
+    };
+  }
 }
