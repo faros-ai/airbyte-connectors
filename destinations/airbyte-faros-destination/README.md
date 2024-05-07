@@ -168,6 +168,13 @@ Example `catalog.json`
 }
 ```
 
+To view debug logs from airbyte, set the following environment variable:
+
+```shell
+export LOG_LEVEL="debug";
+./bin/main write --config config.json --catalog catalog.json;
+```
+
 **Tip**: you can even pipe data directly from your custom source into your custom destination without Airbyte server while prefixing your streams (as expected by Faros Destination):
 
 ```shell

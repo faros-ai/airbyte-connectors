@@ -1,6 +1,6 @@
 import {getLocal, Mockttp} from 'mockttp';
 
-import {looksLikeGithubCommitSha} from '../../src/converters/vanta/vulnerabilities';
+import {looksLikeGithubCommitSha} from '../../src/converters/vanta/utils';
 import {
   initMockttp,
   readTestResourceAsJSON,
@@ -16,18 +16,26 @@ const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
 function getQueryResponse(
   query: string,
   vars: Record<string, any>,
-  test_by_groups: Record<string, Record<string, any[]>>
+  mockQueryToResponse: Record<string, Record<string, any[]>>
 ): {data: any} | null {
   const split_query = query.split(' ');
   let query_name = split_query[1];
   query_name = query_name.split('(')[0];
-  // Note that the object name is the value for the ONLY key in the "vars" object.
-  // If this is not the case, we'll need to change the test code to handle this.
+  if (
+    [
+      'cicdArtifactVulnerabilityQuery',
+      'vcsRepositoryVulnerabilityQuery',
+    ].includes(query_name)
+  ) {
+    return {
+      data: mockQueryToResponse[query_name],
+    };
+  }
   const object_name = Object.values(vars)[0];
-  const resList = test_by_groups[query_name][object_name];
+  const resList = mockQueryToResponse[query_name][object_name];
   if (!resList) {
     throw new Error(
-      `Query name ${query_name} or object name ${object_name} not found in test_by_groups.`
+      `Query name ${query_name} or object name ${object_name} not found in mockQueryToResponses.`
     );
   }
   return {data: resList};
@@ -95,6 +103,7 @@ describe('vanta', () => {
       vulnerabilities: 3,
     };
     const writtenByModel = {
+      cicd_ArtifactVulnerability: 1,
       sec_Vulnerability: 3,
     };
     await runTest(

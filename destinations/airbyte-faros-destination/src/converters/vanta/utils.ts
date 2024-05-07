@@ -37,3 +37,7 @@ export function getQueryFromName(name: string): string {
   // We access the directory resources/gql_queries to get the query
   return fs.readFileSync(`${gql_dir}/${fn}`, 'utf8');
 }
+
+export function looksLikeGithubCommitSha(sha: string): boolean {
+  return /^[a-f0-9]{40}$/i.test(sha);
+}

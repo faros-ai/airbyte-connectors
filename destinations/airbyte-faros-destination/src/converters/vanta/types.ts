@@ -1,11 +1,13 @@
 type OptString = string | null | undefined;
+type OptBool = boolean | null | undefined;
+type OptNumber = number | null | undefined;
 
 export interface BaseVulnerabilityType {
   uid: OptString;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
-  severity: OptString;
+  severity: OptString | OptNumber;
 }
 
 export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
@@ -21,13 +23,13 @@ export interface GithubSecurityAdvisory {
 }
 
 export interface GithubVulnerabilityData {
-  createdAt: OptString;
-  displayName: OptString;
-  externalURL: OptString;
-  repositoryName: OptString;
-  severity: OptString;
-  slaDeadline: OptString;
   uid: OptString;
+  displayName: OptString;
+  createdAt: OptString;
+  externalURL: OptString;
+  severity: OptNumber;
+  repositoryName: OptString;
+  slaDeadline: OptString;
   vantaDescription: OptString;
   securityAdvisory: GithubSecurityAdvisory;
 }
@@ -39,17 +41,16 @@ export interface AWSFindings {
 }
 
 export interface AWSVulnerabilityData {
+  uid: OptString;
+  displayName: OptString;
   createdAt: OptString;
+  externalURL: OptString;
+  severity: OptNumber;
   packageName: OptString;
   packageVersion: OptString;
-  externalURL: OptString;
-  scanType: OptString;
-  severity: OptString;
   slaDeadline: OptString;
-  uid: OptString;
   repositoryName: OptString;
   repositoryArn: OptString;
-  displayName: OptString;
   findings: AWSFindings[];
 }
 
@@ -64,19 +65,17 @@ export interface AWSV2Asset {
 }
 
 export interface AWSV2VulnerabilityData {
+  uid: OptString;
+  displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
+  severity: OptString;
+
   packageName: OptString;
   packageIdentifier: OptString;
-  scanType: OptString;
-  scannerScore: OptString;
-  severity: OptString;
-  uid: OptString;
   description: OptString;
-  displayName: OptString;
   name: OptString;
-  isFixable: OptString;
-  remediation: OptString;
+  isFixable: OptBool;
   remediateBy: OptString;
   asset: AWSV2Asset;
   ignored: AWSV2Ignored;
@@ -110,3 +109,17 @@ export interface CicdArtifactKey {
   uid: string;
   repository: CicdRepoKey;
 }
+
+export type VulnerabilityInfo = {
+  id: string;
+  resolvedAt: OptString;
+  vulnerabilityUid: OptString;
+};
+
+// All the keys have a single abstract type that can represent them:
+export type FarosObjectKey =
+  | VcsOrgKey
+  | VcsRepoKey
+  | CicdOrgKey
+  | CicdRepoKey
+  | CicdArtifactKey;

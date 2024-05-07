@@ -1,8 +1,7 @@
-query cicdArtifactQueryByRepoName($repoName: String!) {
+query cicdArtifactQueryByRepoName($repoNames: [String], $limit: Int) {
   cicd_Artifact(
-    where: {repository: {uid: {_eq: $repoName}}}
-    limit: 1
-    order_by: {refreshedAt: asc}
+    where: {repository: {uid: {_in: $repoNames}}}
+    limit: $limit
   ) {
     uid
     repository {
