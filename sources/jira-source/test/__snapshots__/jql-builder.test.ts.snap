@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JqlBuilder builds JQL with multiple clauses 1`] = `"issueType = "Bug" AND project = "PROJECT-123" AND updated >= 1640995200000 AND updated < 1643587200000"`;
+
+exports[`JqlBuilder throws error for invalid date range 1`] = `"invalid update range: end timestamp 'Fri Dec 31 2021 19:00:00 GMT-0500 (Eastern Standard Time)' is strictly less than start timestamp 'Sun Jan 30 2022 19:00:00 GMT-0500 (Eastern Standard Time)'"`;

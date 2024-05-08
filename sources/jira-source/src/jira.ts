@@ -613,20 +613,11 @@ export class Jira {
 
   @Memoize()
   getIssues(
-    projectId: string,
-    updateRange?: [Date, Date],
+    jql: string,
     fetchKeysOnly = false,
-    filterJql?: string,
     includeAdditionalFields = true,
     additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
-    let jql = `project = "${projectId}"`;
-    if (filterJql) {
-      jql += ` AND ${filterJql}`;
-    }
-    if (updateRange) {
-      jql += ` AND ${Jira.updatedBetweenJql(updateRange)}`;
-    }
     const {fieldIds, additionalFieldIds} = this.getIssueFields(
       fetchKeysOnly,
       includeAdditionalFields,
