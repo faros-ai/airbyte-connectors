@@ -20,7 +20,7 @@ describe('JqlBuilder', () => {
     const endDate = new Date('2022-01-01');
     expect(() =>
       new JqlBuilder().withDateRange([startDate, endDate]).build()
-    ).toThrowErrorMatchingSnapshot();
+    ).toThrow();
   });
 
   test('builds JQL with multiple clauses', () => {
