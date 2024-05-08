@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JqlBuilder builds JQL with multiple clauses 1`] = `"issueType = "Bug" AND project = "PROJECT-123" AND updated >= 1640995200000 AND updated < 1643587200000"`;

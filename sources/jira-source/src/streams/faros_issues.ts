@@ -5,6 +5,7 @@ import {omit} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
+import {JqlBuilder} from '../jql-builder';
 import {
   ProjectStreamSlice,
   StreamState,
@@ -38,7 +39,12 @@ export class FarosIssues extends StreamWithProjectSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
         : undefined;
-    for await (const issue of jira.getIssues(this.projectKey, updateRange)) {
+    for await (const issue of jira.getIssues(
+      new JqlBuilder()
+        .withProject(this.projectKey)
+        .withDateRange(updateRange)
+        .build()
+    )) {
       yield omit(issue, 'fields');
     }
   }

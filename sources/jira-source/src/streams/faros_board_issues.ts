@@ -4,6 +4,7 @@ import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
+import {JqlBuilder} from '../jql-builder';
 import {BoardStreamSlice, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
@@ -29,10 +30,8 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const projectKey = boardConfig.location['key'];
     try {
       for await (const issue of jira.getIssues(
-        projectKey,
-        undefined,
+        new JqlBuilder(boardJql).withProject(projectKey).build(),
         true,
-        boardJql,
         false
       )) {
         yield {

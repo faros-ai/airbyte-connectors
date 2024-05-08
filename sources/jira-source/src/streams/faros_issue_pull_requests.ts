@@ -4,6 +4,7 @@ import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {DEV_FIELD_NAME, Jira} from '../jira';
+import {JqlBuilder} from '../jql-builder';
 import {
   ProjectStreamSlice,
   StreamState,
@@ -36,10 +37,11 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
         ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
         : undefined;
     for await (const issue of jira.getIssues(
-      projectKey,
-      updateRange,
+      new JqlBuilder()
+        .withProject(projectKey)
+        .withDateRange(updateRange)
+        .build(),
       true,
-      undefined,
       true,
       [DEV_FIELD_NAME]
     )) {
