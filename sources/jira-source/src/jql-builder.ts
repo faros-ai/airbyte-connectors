@@ -1,27 +1,36 @@
 import VError from 'verror';
 
 export class JqlBuilder {
-  private jql: string[] = [];
+  private jql?: string;
+  private projectId?: string;
+  private range?: [Date, Date];
 
   constructor(jql?: string) {
-    this.jql = jql ? [jql] : [];
+    this.jql = jql;
   }
 
   withProject(projectId: string): JqlBuilder {
-    this.jql.push(`project = "${projectId}"`);
+    this.projectId = projectId;
     return this;
   }
 
   withDateRange(range?: [Date, Date]): JqlBuilder {
-    if (!range) {
-      return this;
-    }
-    this.jql.push(JqlBuilder.updatedBetweenJql(range));
+    this.range = range;
     return this;
   }
 
   build(): string {
-    return this.jql.join(' AND ');
+    const parts = [];
+    if (this.projectId) {
+      parts.push(`project = "${this.projectId}"`);
+    }
+    if (this.jql) {
+      parts.push(this.jql);
+    }
+    if (this.range) {
+      parts.push(JqlBuilder.updatedBetweenJql(this.range));
+    }
+    return parts.join(' AND ');
   }
 
   private static updatedBetweenJql(range: [Date, Date]): string {
