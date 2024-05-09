@@ -17,7 +17,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {concat, isNil, pick, toLower} from 'lodash';
 import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
