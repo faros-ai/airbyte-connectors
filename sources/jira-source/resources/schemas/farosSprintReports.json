@@ -8,27 +8,29 @@
     "boardId": {
       "type": "string"
     },
-    "projectKey": {
-      "type": "string"
-    },
     "closedAt": {
       "type": "string",
       "format": "date-time"
     },
-    "completedPoints": {
-      "type": "number"
-    },
-    "completedInAnotherSprintPoints": {
-      "type": "number"
-    },
-    "notCompletedPoints": {
-      "type": "number"
-    },
-    "puntedPoints": {
-      "type": "number"
-    },
-    "plannedPoints": {
-      "type": "number"
+    "issues": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "points": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string"
+              },
+              "addedDuringSprint": {
+                "type": "boolean"
+              }
+            }
+        }
     }
   }
 }

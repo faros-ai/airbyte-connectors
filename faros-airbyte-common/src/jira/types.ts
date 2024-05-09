@@ -103,11 +103,6 @@ export interface SprintReport {
   readonly id: number;
   readonly boardId?: string;
   readonly closedAt?: Date;
-  readonly completedPoints?: number;
-  readonly completedInAnotherSprintPoints?: number;
-  readonly notCompletedPoints?: number;
-  readonly puntedPoints?: number;
-  readonly plannedPoints?: number;
   readonly issues: SprintIssue[];
 }
 

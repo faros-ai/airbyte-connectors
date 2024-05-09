@@ -855,30 +855,9 @@ export class Jira {
     if (!report) {
       return;
     }
-
-    const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
-    const notCompletedPoints = toFloat(
-      report?.issuesNotCompletedEstimateSum?.value
-    );
-    const puntedPoints = toFloat(report?.puntedIssuesEstimateSum?.value);
-    const completedInAnotherSprintPoints = toFloat(
-      report?.issuesCompletedInAnotherSprintEstimateSum?.value
-    );
-
-    const plannedPoints = sum([
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-    ]);
     return {
       id: sprint.id,
       closedAt: Utils.toDate(sprint.completeDate),
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-      plannedPoints,
       issues: this.toSprintReportIssues(report),
     };
   }
