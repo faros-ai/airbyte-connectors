@@ -16,7 +16,6 @@ export class FarosSprintReports extends JiraConverter {
     const uid = toString(sprintReport.id);
     const results: DestinationRecord[] = [];
     for (const issue of sprintReport.issues || []) {
-      ctx.logger.info(`Converting issue ${JSON.stringify(issue)}`);
       results.push({
         model: 'tms_SprintHistory',
         record: {
