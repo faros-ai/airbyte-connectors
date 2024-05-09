@@ -23,6 +23,17 @@ export abstract class AirbyteStreamBase {
   }
 
   /**
+   * Override to return a list of stream names that this stream depends on. Adding a stream
+   * to this list will ensure that the stream is always run
+   * (if requested in the configured catalog) before this stream.
+   *
+   * @returns An array of stream names that this stream depends on.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return [];
+  }
+
+  /**
    * This method should be overridden by subclasses to read records based on the
    * inputs
    */
