@@ -1,4 +1,5 @@
 import {keyBy} from 'lodash';
+import toposort from 'toposort';
 import VError from 'verror';
 
 import {NonFatalError} from '../errors';
@@ -32,7 +33,7 @@ import {AirbyteStreamBase} from './streams/stream-base';
  * streams.
  */
 export abstract class AirbyteSourceBase<
-  Config extends AirbyteConfig
+  Config extends AirbyteConfig,
 > extends AirbyteSource<Config> {
   constructor(protected readonly logger: AirbyteLogger) {
     super();
@@ -140,18 +141,47 @@ export abstract class AirbyteSourceBase<
     // get the streams once in case the connector needs to make any queries to
     // generate them
     const streamInstances = keyBy(this.streams(config), (s) => s.name);
+    const configuredStreams = keyBy(catalog.streams, (s) => s.stream.name);
+    const configuredStreamNames = Object.keys(configuredStreams);
+
+    const missingStreams = configuredStreamNames.filter(
+      (streamName) => !streamInstances[streamName]
+    );
+    if (missingStreams.length > 0) {
+      throw new VError(
+        `The requested stream(s) ${JSON.stringify(
+          missingStreams
+        )} were not found in the source. Available streams: ${Object.keys(
+          streamInstances
+        )}`
+      );
+    }
+
+    const streamDeps: [string, string][] = [];
+    for (const [streamName, stream] of Object.entries(streamInstances)) {
+      if (!configuredStreamNames.includes(streamName)) {
+        // The stream is not requested in the catalog, ignore it
+        continue;
+      }
+      for (const dependency of stream.dependencies) {
+        if (!configuredStreamNames.includes(dependency)) {
+          // The stream dependency is not requested in the catalog, ignore it
+          continue;
+        }
+        streamDeps.push([dependency, streamName]);
+      }
+    }
+
+    // Requested streams in the order they should be processed
+    const sortedStreams = toposort
+      .array(configuredStreamNames, streamDeps)
+      .reverse();
+
     const failedStreams = [];
-    for (const configuredStream of catalog.streams) {
-      const streamName = configuredStream.stream.name;
+    for (const streamName of sortedStreams) {
+      const configuredStream = configuredStreams[streamName];
       try {
         const streamInstance = streamInstances[streamName];
-        if (!streamInstance) {
-          throw new VError(
-            `The requested stream ${streamName} was not found in the source. Available streams: ${Object.keys(
-              streamInstances
-            )}`
-          );
-        }
         const generator = this.readStream(
           streamInstance,
           configuredStream,
