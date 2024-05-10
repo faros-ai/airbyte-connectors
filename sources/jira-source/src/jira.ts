@@ -118,6 +118,7 @@ export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
 
 export class Jira {
+  private static jira: Jira;
   private readonly fieldIdsByName: Map<string, string[]>;
   // Counts the number of failed calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
@@ -151,6 +152,8 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (Jira.jira) return Jira.jira;
+
     if (isEmpty(cfg.url)) {
       throw new VError('Please provide a Jira URL');
     }
@@ -225,7 +228,7 @@ export class Jira {
       }
     }
 
-    return new Jira(
+    Jira.jira = new Jira(
       cfg.url,
       api,
       http,
@@ -241,6 +244,7 @@ export class Jira {
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH
     );
+    return Jira.jira;
   }
 
   /** Return an auth config object for the Jira API client */
@@ -265,17 +269,6 @@ export class Jira {
     if (bucketId < 1 || bucketId > bucketTotal) {
       throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
     }
-  }
-
-  private static updatedBetweenJql(range: [Date, Date]): string {
-    const [from, to] = range;
-    if (to < from) {
-      throw new VError(
-        `invalid update range: end timestamp '${to}' ` +
-          `is strictly less than start timestamp '${from}'`
-      );
-    }
-    return `updated >= ${from.getTime()} AND updated < ${to.getTime()}`;
   }
 
   private async *iterate<V>(
