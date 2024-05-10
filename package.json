@@ -49,6 +49,7 @@
     "axios": "^1.6.5",
     "degenerator": "^5.0.0",
     "protobufjs": "^7.2.6",
-    "semver": "^7.5.4"
+    "semver": "^7.5.4",
+    "markdown-it": "^13.0.2"
   }
 }
