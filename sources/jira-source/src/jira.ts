@@ -271,17 +271,6 @@ export class Jira {
     }
   }
 
-  private static updatedBetweenJql(range: [Date, Date]): string {
-    const [from, to] = range;
-    if (to < from) {
-      throw new VError(
-        `invalid update range: end timestamp '${to}' ` +
-          `is strictly less than start timestamp '${from}'`
-      );
-    }
-    return `updated >= ${from.getTime()} AND updated < ${to.getTime()}`;
-  }
-
   private async *iterate<V>(
     requester: (startAt: number) => Promise<any>,
     deserializer: (item: any) => Promise<V> | V | undefined,
