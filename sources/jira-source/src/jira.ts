@@ -17,7 +17,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
 import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
@@ -809,12 +809,13 @@ export class Jira {
         });
         return data?.tms_SprintBoardRelationship;
       },
-      async (item: any) => {
+      async (item: any): Promise<AgileModels.Sprint> => {
         return {
-          id: item.sprint.uid,
+          id: toInteger(item.sprint.uid),
           name: item.sprint.name,
           state: item.sprint.state,
           completeDate: item.sprint.closedAt,
+          originBoardId: toInteger(board),
         };
       }
     );
@@ -855,30 +856,10 @@ export class Jira {
     if (!report) {
       return;
     }
-
-    const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
-    const notCompletedPoints = toFloat(
-      report?.issuesNotCompletedEstimateSum?.value
-    );
-    const puntedPoints = toFloat(report?.puntedIssuesEstimateSum?.value);
-    const completedInAnotherSprintPoints = toFloat(
-      report?.issuesCompletedInAnotherSprintEstimateSum?.value
-    );
-
-    const plannedPoints = sum([
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-    ]);
     return {
-      id: sprint.id,
+      sprintId: sprint.id,
+      boardId: toString(sprint.originBoardId),
       closedAt: Utils.toDate(sprint.completeDate),
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-      plannedPoints,
       issues: this.toSprintReportIssues(report),
     };
   }

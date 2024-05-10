@@ -225,9 +225,6 @@ exports[`index streams - sprint_reports 1`] = `
   {
     "boardId": "1",
     "closedAt": 2024-03-14T12:00:00.000Z,
-    "completedInAnotherSprintPoints": 5,
-    "completedPoints": 10,
-    "id": 1,
     "issues": [
       {
         "addedDuringSprint": undefined,
@@ -266,9 +263,7 @@ exports[`index streams - sprint_reports 1`] = `
         "status": "Removed",
       },
     ],
-    "notCompletedPoints": 15,
-    "plannedPoints": 50,
-    "puntedPoints": 20,
+    "sprintId": 1,
   },
 ]
 `;
@@ -278,9 +273,6 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
   {
     "boardId": "1",
     "closedAt": 2024-01-01T00:00:00.000Z,
-    "completedInAnotherSprintPoints": 5,
-    "completedPoints": 10,
-    "id": "1",
     "issues": [
       {
         "addedDuringSprint": undefined,
@@ -319,9 +311,7 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "status": "Removed",
       },
     ],
-    "notCompletedPoints": 15,
-    "plannedPoints": 50,
-    "puntedPoints": 20,
+    "sprintId": 1,
   },
 ]
 `;

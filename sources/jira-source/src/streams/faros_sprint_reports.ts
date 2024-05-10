@@ -11,8 +11,11 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     return require('../../resources/schemas/farosSprintReports.json');
   }
 
+  // The Sprint Report is board-specific
+  // that is, it will only include issues that match your board's saved filter
+  // https://support.atlassian.com/jira-software-cloud/docs/view-and-understand-the-sprint-report
   get primaryKey(): StreamKey | undefined {
-    return 'id';
+    return ['sprintId', 'boardId'];
   }
 
   get cursorField(): string | string[] {
@@ -44,10 +47,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     for await (const sprint of sprints) {
       const report = await jira.getSprintReport(sprint, boardId);
       if (!report) continue;
-      yield {
-        ...report,
-        boardId,
-      };
+      yield report;
     }
   }
 
