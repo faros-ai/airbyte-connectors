@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {SprintReport} from 'faros-airbyte-common/lib/jira';
 import {toString} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -12,8 +13,8 @@ export class FarosSprintReports extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const sprintReport = record.record.data;
-    const uid = toString(sprintReport.id);
+    const sprintReport = record.record.data as SprintReport;
+    const uid = toString(sprintReport.sprintId);
     const results: DestinationRecord[] = [];
     for (const issue of sprintReport.issues || []) {
       results.push({
