@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
@@ -20,8 +21,8 @@ export class Tests extends CircleCIConverter {
   private readonly testSuites: Set<string> = new Set<string>();
   private readonly testCaseResults: Set<string> = new Set<string>();
 
-  private currentTestExecution?: any;
-  private currentTestExecutionCommit?: any;
+  private currentTestExecution?: Dictionary<any> = undefined;
+  private currentTestExecutionCommit?: Dictionary<any> = undefined;
 
   async convert(
     record: AirbyteRecord,
@@ -105,8 +106,8 @@ export class Tests extends CircleCIConverter {
     // Aggragate info about a single test execution until a new one is detected
     // then write the aggragated info and start fresh with new test execution
     // Note: Assumes records are processed in order
-    if (this.currentTestExecution.uid !== testExecutionUid) {
-      if (this.currentTestExecution) {
+    if (this.currentTestExecution?.uid !== testExecutionUid) {
+      if (this.currentTestExecution && this.currentTestExecutionCommit) {
         res.push({
           model: 'qa_TestExecution',
           record: this.currentTestExecution,
