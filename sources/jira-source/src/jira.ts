@@ -638,7 +638,6 @@ export class Jira {
   }
 
   getIssues(jql: string): AsyncIterableIterator<Issue> {
-    this.logger?.info('@getIssuesFull');
     const {fieldIds, additionalFieldIds} = this.getIssueFields();
     const issueTransformer = new IssueTransformer(
       this.baseURL,
@@ -683,10 +682,9 @@ export class Jira {
   }
 
   async *getIssuesCompact(jql: string): AsyncIterableIterator<IssueCompact> {
-    this.logger?.info('@getIssuesCompact');
     const {fieldIds, additionalFieldIds} = this.getIssueFields();
     if (this.seenIssues.has(jql)) {
-      this.logger?.info(`@getIssuesCompact: using memoized issues`);
+      this.logger?.debug(`Using cached issues for JQL: ${jql}`);
       for (const issue of this.seenIssues.get(jql)) {
         yield issue;
       }
