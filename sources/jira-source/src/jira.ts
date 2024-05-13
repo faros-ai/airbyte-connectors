@@ -691,7 +691,7 @@ export class Jira {
       return;
     }
 
-    return this.iterate(
+    yield* this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
