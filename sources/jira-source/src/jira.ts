@@ -688,6 +688,7 @@ export class Jira {
       for (const issue of this.seenIssues.get(jql)) {
         yield issue;
       }
+      return;
     }
 
     return this.iterate(
