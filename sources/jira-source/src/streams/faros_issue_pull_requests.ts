@@ -10,11 +10,10 @@ import {
   StreamState,
   StreamWithProjectSlices,
 } from './common';
-import {FarosIssues} from './faros_issues';
 
 export class FarosIssuePullRequests extends StreamWithProjectSlices {
   get dependencies(): ReadonlyArray<string> {
-    return [FarosIssues.name];
+    return ['faros_issues'];
   }
 
   getJsonSchema(): Dictionary<any, string> {
