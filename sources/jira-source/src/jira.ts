@@ -637,20 +637,9 @@ export class Jira {
     );
   }
 
-  getIssues(jql: string): AsyncIterableIterator<Issue | IssueCompact> {
-    this.logger?.info(`@getIssues: ${jql}`);
-    const {fieldIds, additionalFieldIds} = this.getIssueFields();
-    return this.requestedFarosIssuesStream()
-      ? this.getIssuesFull(jql, fieldIds, additionalFieldIds)
-      : this.getIssuesCompact(jql, fieldIds, additionalFieldIds);
-  }
-
-  private getIssuesFull(
-    jql: string,
-    fieldIds: string[],
-    additionalFieldIds: string[]
-  ): AsyncIterableIterator<Issue> {
+  getIssues(jql: string): AsyncIterableIterator<Issue> {
     this.logger?.info('@getIssuesFull');
+    const {fieldIds, additionalFieldIds} = this.getIssueFields();
     const issueTransformer = new IssueTransformer(
       this.baseURL,
       this.fieldNameById,
@@ -693,15 +682,14 @@ export class Jira {
     this.seenIssues.get(jql).push(issue);
   }
 
-  private getIssuesCompact(
-    jql: string,
-    fieldIds: string[],
-    additionalFieldIds: string[]
-  ): AsyncIterableIterator<IssueCompact> {
+  async *getIssuesCompact(jql: string): AsyncIterableIterator<IssueCompact> {
     this.logger?.info('@getIssuesCompact');
+    const {fieldIds, additionalFieldIds} = this.getIssueFields();
     if (this.seenIssues.has(jql)) {
       this.logger?.info(`@getIssuesCompact: using memoized issues`);
-      return this.seenIssues.get(jql)[Symbol.asyncIterator]();
+      for (const issue of this.seenIssues.get(jql)) {
+        yield issue;
+      }
     }
 
     return this.iterate(
