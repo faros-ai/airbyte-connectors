@@ -29,13 +29,11 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     // but, in practice, it is actually present
     const projectKey = boardConfig.location['key'];
     try {
-      for await (const issue of jira.getIssues(
-        new JqlBuilder(boardJql).withProject(projectKey).build(),
-        true,
-        false
+      for await (const issue of jira.getIssuesKeys(
+        new JqlBuilder(boardJql).withProject(projectKey).build()
       )) {
         yield {
-          key: issue.key,
+          key: issue,
           boardId,
         };
       }

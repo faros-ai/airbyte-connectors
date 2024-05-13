@@ -87,6 +87,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
         WebhookSupplementStreamNames.includes(stream.stream.name)
       );
     }
-    return {config, catalog: {streams}, state};
+    const requestedStreams = new Set(
+      streams.map((stream) => stream.stream.name)
+    );
+    return {config: {...config, requestedStreams}, catalog: {streams}, state};
   }
 }
