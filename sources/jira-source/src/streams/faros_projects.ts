@@ -8,7 +8,7 @@ import {StreamBase} from './common';
 
 export class FarosProjects extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/farosSprints.json');
+    return require('../../resources/schemas/farosProjects.json');
   }
 
   get primaryKey(): StreamKey | undefined {
