@@ -362,22 +362,23 @@ describe('index', () => {
     expect(sliceArray).toMatchSnapshot();
   }
 
-  test('stream with project slices using bucketing', async () => {
-    const projects = ['TEST', 'TEST2', 'TEST3'];
+  test('stream with project slices using bucket 1', async () => {
     // test with bucket_id 1
     await testStreamSlices({
       ...config,
       bucket_total: 2,
       bucket_id: 1,
-      projects,
+      projects: ['TEST', 'TEST2', 'TEST3'],
     });
+  });
 
+  test('stream with project slices using bucket 2', async () => {
     // test with bucket_id 2
     await testStreamSlices({
       ...config,
       bucket_total: 2,
       bucket_id: 2,
-      projects,
+      projects: ['TEST', 'TEST2', 'TEST3'],
     });
   });
 

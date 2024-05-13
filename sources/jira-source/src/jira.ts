@@ -18,7 +18,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, pick, sum, toLower} from 'lodash';
+import {concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
 import {isEmpty} from 'lodash';
 import moment from 'moment';
 import pLimit from 'p-limit';
@@ -123,6 +123,7 @@ export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
 
 export class Jira {
+  private static jira: Jira;
   private readonly fieldIdsByName: Map<string, string[]>;
   // Counts the number of failed calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
@@ -161,6 +162,8 @@ export class Jira {
   }
 
   static async instance(cfg: JiraConfig, logger: AirbyteLogger): Promise<Jira> {
+    if (Jira.jira) return Jira.jira;
+
     if (isEmpty(cfg.url)) {
       throw new VError('Please provide a Jira URL');
     }
@@ -258,6 +261,7 @@ export class Jira {
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
       cfg.requestedStreams
     );
+    return Jira.jira;
   }
 
   /** Return an auth config object for the Jira API client */
@@ -282,17 +286,6 @@ export class Jira {
     if (bucketId < 1 || bucketId > bucketTotal) {
       throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
     }
-  }
-
-  private static updatedBetweenJql(range: [Date, Date]): string {
-    const [from, to] = range;
-    if (to < from) {
-      throw new VError(
-        `invalid update range: end timestamp '${to}' ` +
-          `is strictly less than start timestamp '${from}'`
-      );
-    }
-    return `updated >= ${from.getTime()} AND updated < ${to.getTime()}`;
   }
 
   private async *iterate<V>(
@@ -890,12 +883,13 @@ export class Jira {
         });
         return data?.tms_SprintBoardRelationship;
       },
-      async (item: any) => {
+      async (item: any): Promise<AgileModels.Sprint> => {
         return {
-          id: item.sprint.uid,
+          id: toInteger(item.sprint.uid),
           name: item.sprint.name,
           state: item.sprint.state,
           completeDate: item.sprint.closedAt,
+          originBoardId: toInteger(board),
         };
       }
     );
@@ -936,30 +930,10 @@ export class Jira {
     if (!report) {
       return;
     }
-
-    const completedPoints = toFloat(report?.completedIssuesEstimateSum?.value);
-    const notCompletedPoints = toFloat(
-      report?.issuesNotCompletedEstimateSum?.value
-    );
-    const puntedPoints = toFloat(report?.puntedIssuesEstimateSum?.value);
-    const completedInAnotherSprintPoints = toFloat(
-      report?.issuesCompletedInAnotherSprintEstimateSum?.value
-    );
-
-    const plannedPoints = sum([
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-    ]);
     return {
-      id: sprint.id,
+      sprintId: sprint.id,
+      boardId: toString(sprint.originBoardId),
       closedAt: Utils.toDate(sprint.completeDate),
-      completedPoints,
-      notCompletedPoints,
-      puntedPoints,
-      completedInAnotherSprintPoints,
-      plannedPoints,
       issues: this.toSprintReportIssues(report),
     };
   }
