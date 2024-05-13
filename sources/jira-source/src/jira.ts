@@ -244,7 +244,7 @@ export class Jira {
       .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
       .toDate();
 
-    return new Jira(
+    Jira.jira = new Jira(
       cfg.url,
       api,
       http,
