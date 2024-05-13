@@ -45,7 +45,7 @@ export class FarosIssues extends StreamWithProjectSlices {
         .withDateRange(updateRange)
         .build()
     )) {
-      yield omit(issue as Issue, 'fields');
+      yield omit(issue, 'fields');
     }
   }
 
