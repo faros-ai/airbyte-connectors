@@ -19,9 +19,10 @@ export class Tests extends CircleCIConverter {
   private skipWritingTestCases: boolean | undefined = undefined;
   private readonly testCases: Set<string> = new Set<string>();
   private readonly testSuites: Set<string> = new Set<string>();
-  private readonly testExecutionCommits: Set<string> = new Set<string>();
-  private readonly testExecutions: Dictionary<any> = {};
   private readonly testCaseResults: Set<string> = new Set<string>();
+
+  private currentTestExecution?: Dictionary<any> = undefined;
+  private currentTestExecutionCommit?: Dictionary<any> = undefined;
 
   async convert(
     record: AirbyteRecord,
@@ -74,6 +75,19 @@ export class Tests extends CircleCIConverter {
       });
       this.testCases.add(testCaseUid);
     }
+    // Write the test suite only once
+    if (!this.testSuites.has(testSuiteUid)) {
+      res.push({
+        model: 'qa_TestSuite',
+        record: {
+          uid: testSuiteUid,
+          name: test.workflow_name,
+          source,
+          type: {category: 'Custom', detail: 'unknown'},
+        },
+      });
+      this.testSuites.add(testSuiteUid);
+    }
     // Write the test case result on every test outcome
     const testCaseResultStatus = this.convertTestStatus(test.result);
     if (!this.skipWritingTestCases) {
@@ -89,36 +103,22 @@ export class Tests extends CircleCIConverter {
       });
     }
 
-    // Write the test suite only once
-    if (!this.testSuites.has(testSuiteUid)) {
-      res.push({
-        model: 'qa_TestSuite',
-        record: {
-          uid: testSuiteUid,
-          name: test.workflow_name,
-          source,
-          type: {category: 'Custom', detail: 'unknown'},
-        },
-      });
-      this.testSuites.add(testSuiteUid);
-    }
-    // Write the commit association only once
-    if (!this.testExecutionCommits.has(testExecutionUid)) {
-      res.push({
-        model: 'qa_TestExecutionCommitAssociation',
-        record: {
-          testExecution: {uid: testExecutionUid, source},
-          commit: CircleCICommon.getCommitKey(
-            test.pipeline_vcs,
-            test.project_slug
-          ),
-        },
-      });
-      this.testExecutionCommits.add(testExecutionUid);
-    }
+    // Aggragate info about a single test execution until a new one is detected
+    // then write the aggragated info and start fresh with new test execution
+    // Note: Assumes records are processed in order
+    if (this.currentTestExecution?.uid !== testExecutionUid) {
+      if (this.currentTestExecution && this.currentTestExecutionCommit) {
+        res.push({
+          model: 'qa_TestExecution',
+          record: this.currentTestExecution,
+        });
+        res.push({
+          model: 'qa_TestExecutionCommitAssociation',
+          record: this.currentTestExecutionCommit,
+        });
+      }
 
-    if (!(testExecutionUid in this.testExecutions)) {
-      this.testExecutions[testExecutionUid] = {
+      this.currentTestExecution = {
         uid: testExecutionUid,
         name: `${test.workflow_name} - ${test.job_number}`,
         source,
@@ -141,22 +141,30 @@ export class Tests extends CircleCIConverter {
           source
         ),
       };
-    }
-    // Update test execution status & stats
-    const te = this.testExecutions[testExecutionUid];
-    if (testCaseResultStatus.category === 'Failure') {
-      te.status = {category: 'Failure', detail: null};
-      te.testCaseResultsStats.failure += 1;
-    } else if (testCaseResultStatus.category === 'Success') {
-      te.testCaseResultsStats.success += 1;
-    } else if (testCaseResultStatus.category === 'Skipped') {
-      te.testCaseResultsStats.skipped += 1;
-    } else if (testCaseResultStatus.category === 'Custom') {
-      te.testCaseResultsStats.custom += 1;
+      this.currentTestExecutionCommit = {
+        testExecution: {uid: testExecutionUid, source},
+        commit: CircleCICommon.getCommitKey(
+          test.pipeline_vcs,
+          test.project_slug
+        ),
+      };
+      // Reset test case results set
+      this.testCaseResults.clear();
     } else {
-      te.testCaseResultsStats.unknown += 1;
+      if (testCaseResultStatus.category === 'Failure') {
+        this.currentTestExecution.status = {category: 'Failure', detail: null};
+        this.currentTestExecution.testCaseResultsStats.failure += 1;
+      } else if (testCaseResultStatus.category === 'Success') {
+        this.currentTestExecution.testCaseResultsStats.success += 1;
+      } else if (testCaseResultStatus.category === 'Skipped') {
+        this.currentTestExecution.testCaseResultsStats.skipped += 1;
+      } else if (testCaseResultStatus.category === 'Custom') {
+        this.currentTestExecution.testCaseResultsStats.custom += 1;
+      } else {
+        this.currentTestExecution.testCaseResultsStats.unknown += 1;
+      }
+      this.currentTestExecution.testCaseResultsStats.total += 1;
     }
-    te.testCaseResultsStats.total += 1;
 
     return res;
   }
@@ -165,10 +173,16 @@ export class Tests extends CircleCIConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     ctx.logger.info('tests - onProcessingComplete');
+    ctx.logger.info('writing final test execution and commit association');
     const res: DestinationRecord[] = [];
-    for (const record of Object.values(this.testExecutions)) {
-      res.push({model: 'qa_TestExecution', record});
-    }
+    res.push({
+      model: 'qa_TestExecution',
+      record: this.currentTestExecution,
+    });
+    res.push({
+      model: 'qa_TestExecutionCommitAssociation',
+      record: this.currentTestExecutionCommit,
+    });
     return res;
   }
 
