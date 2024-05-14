@@ -173,8 +173,6 @@ export abstract class Vulnerabilities extends Converter {
         // the name field contains the CVE string at the beginning
         const pre_cve_str = finding['name'] ? finding['name'] : '';
         const cve_str = pre_cve_str.split(' ')[0];
-        const uid_addition = '|' + cve_str;
-        new_vuln.uid += uid_addition;
         new_vuln['externalIds'] = [cve_str];
         new_vuln['description'] = finding['description']
           ? finding['description']
