@@ -141,6 +141,13 @@ export abstract class Vulnerabilities extends Converter {
         vuln.uid,
         this.repositoryNamesToUids
       );
+      const cveId = vuln.securityAdvisory.cveId
+        ? vuln.securityAdvisory.cveId
+        : '';
+      const ghsaId = vuln.securityAdvisory.ghsaId
+        ? vuln.securityAdvisory.ghsaId
+        : '';
+      vuln['externalIds'] = [cveId, ghsaId];
       vuln_data.push(
         this.getSecVulnerabilityRecordFromData(
           vuln as ExtendedVulnerabilityType
@@ -165,6 +172,7 @@ export abstract class Vulnerabilities extends Converter {
         const cve_str = finding['name'] ? finding['name'] : '';
         const uid_addition = '|' + cve_str.split(' ')[0];
         new_vuln.uid += uid_addition;
+        new_vuln['externalIds'] = [cve_str];
         new_vuln['description'] = finding['description']
           ? finding['description']
           : 'No description found';
@@ -566,6 +574,7 @@ export abstract class Vulnerabilities extends Converter {
         severity: sevString,
         description: vuln.description,
         displayName: vuln.displayName,
+        vulnerabilityIds: [vuln.packageIdentifier],
       };
 
       vuln_data.push(this.getSecVulnerabilityRecordFromData(vuln_copy));
@@ -599,7 +608,7 @@ export abstract class Vulnerabilities extends Converter {
   getSecVulnerabilityRecordFromData(
     data: ExtendedVulnerabilityType
   ): DestinationRecord {
-    // The essential fields (ones which cannot be null) are uid and source
+    // The required fields (ones which cannot be null) are uid and source
     if (!data.uid || !this.source) {
       throw new Error(
         'Vulnerability data must have a uid and source. Data: ' +
