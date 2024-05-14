@@ -289,31 +289,73 @@ describe('index', () => {
   });
 
   test('streams - projects - pull all projects', async () => {
-    await testStream(5, readTestResourceFile('config.json'), {
-      v2: {
-        projects: {
-          searchProjects: paginate(readTestResourceFile('projects.json')),
-        },
-      },
+    const searchProjects = paginate(
+      readTestResourceFile('projects.json'),
+      'values',
+      50
+    );
+    await testStream(
+      5,
+      {...readTestResourceFile('config.json'), projects: undefined},
+      {v2: {projects: {searchProjects}}}
+    );
+    expect(searchProjects).toHaveBeenCalledWith({
+      action: 'browse',
+      expand: 'description',
+      maxResults: 100,
+      startAt: 0,
     });
   });
 
-  test('streams - projects - filter projects', async () => {
-    const config = readTestResourceFile('config.json');
-    config.project_keys = ['TEST-1', 'TEST-2'];
-    await testStream(5, config, {
-      v2: {
-        projects: {
-          searchProjects: paginate(readTestResourceFile('projects.json')),
-        },
-      },
+  test('streams - projects - Cloud project list', async () => {
+    const keys = ['TEST-1', 'TEST-2', 'TEST-3', 'TEST-4'];
+    const searchProjects = paginate(
+      readTestResourceFile('projects.json'),
+      'values',
+      50
+    );
+    await testStream(
+      5,
+      {...readTestResourceFile('config.json'), projects: keys},
+      {v2: {projects: {searchProjects}}}
+    );
+    expect(searchProjects).toHaveBeenCalledWith({
+      action: 'browse',
+      expand: 'description',
+      keys,
+      maxResults: 100,
+      startAt: 0,
     });
   });
 
   test('streams - projects - Jira Server', async () => {
     await testStream(
       5,
-      readTestResourceFile('config.json'),
+      {...readTestResourceFile('config.json'), projects: undefined},
+      {
+        v2: {
+          permissions: {
+            getMyPermissions: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('permissions.json')),
+          },
+        },
+        getAllProjects: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('projects.json')),
+      },
+      undefined,
+      false
+    );
+  });
+
+  test('streams - projects - Jira Server - project list', async () => {
+    const serverConfig = readTestResourceFile('config.json');
+    serverConfig.projects = ['TEST-1', 'TEST-2'];
+
+    await testStream(
+      5,
+      serverConfig,
       {
         v2: {
           permissions: {

@@ -17,7 +17,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
+import {chunk, concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
 import {isEmpty} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
@@ -184,6 +184,8 @@ export class Jira {
           'X-Force-Accept-Language': true,
         },
         timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
+        // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
+        paramsSerializer: {indexes: null},
       },
       maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
       logger: logger,
@@ -480,46 +482,76 @@ export class Jira {
   }
 
   @Memoize()
-  async *getProjects(): AsyncIterableIterator<Version2Models.Project> {
+  async *getProjects(
+    keys?: Set<string>
+  ): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
-      const projects = this.iterate(
-        (startAt) =>
-          this.api.v2.projects.searchProjects({
-            expand: 'description',
-            action: 'browse',
-            startAt,
-            maxResults: this.maxPageSize,
-          }),
-        (item: any) => ({
-          id: item.id.toString(),
-          key: item.key,
-          name: item.name,
-          description: item.description,
-        })
-      );
-      for await (const project of projects) {
-        // Bucket projects based on bucketId
-        if (this.isProjectInBucket(project.key)) yield project;
+      if (!keys?.size) {
+        yield* this.getProjectsFromCloud();
+        return;
+      }
+      // Fetch 50 project keys at a time, the max allowed by the API
+      for (const batch of chunk(Array.from(keys), 50)) {
+        yield* this.getProjectsFromCloud(batch);
       }
       return;
     }
 
-    // Jira Server doesn't support searchProjects API, use getAllProjects
-    // Get all projects returns all projects which are visible for the user
-    // i.e. where the user has any of one of Browse Projects,
-    // Administer Projects, Administer Jira permissions. To view issues the
-    // user should have `BROWSE_PROJECTS` permissions on the project, so check
-    // that permission is granted for the user using mypermissions endpoint.
+    yield* this.getProjectsFromServer(keys);
+  }
+
+  private async *getProjectsFromCloud(
+    keys?: ReadonlyArray<string>
+  ): AsyncIterableIterator<Version2Models.Project> {
+    const projects = this.iterate(
+      (startAt) =>
+        this.api.v2.projects.searchProjects({
+          expand: 'description',
+          action: 'browse',
+          startAt,
+          maxResults: this.maxPageSize,
+          ...(keys?.length && {keys: [...keys]}),
+        }),
+      (item: any) => ({
+        id: item.id.toString(),
+        key: item.key,
+        name: item.name,
+        description: item.description,
+      })
+    );
+    for await (const project of projects) {
+      // Bucket projects based on bucketId
+      this.logger?.debug(`Project ${project.key} found`);
+      if (this.isProjectInBucket(project.key)) yield project;
+    }
+  }
+
+  // Jira Server doesn't support searchProjects API, use getAllProjects
+  // which returns all projects which are visible for the user
+  // i.e. where the user has any of one of Browse Projects,
+  // Administer Projects, Administer Jira permissions. To view issues the
+  // user should have `BROWSE_PROJECTS` permissions on the project, so check
+  // that permission is granted for the user using mypermissions endpoint.
+  private async *getProjectsFromServer(
+    keys: Set<string>
+  ): AsyncIterableIterator<Version2Models.Project> {
     const skippedProjects: string[] = [];
-    const browseableProjects: Version2Models.Project[] = [];
     for await (const project of await this.api.getAllProjects()) {
+      // Skip projects that are not in the project_keys list or bucket
+      if (
+        (keys?.size && !keys.has(project.key)) ||
+        !this.isProjectInBucket(project.key)
+      ) {
+        continue;
+      }
+
       try {
         const hasPermission = await this.hasBrowseProjectPerms(project.key);
         if (!hasPermission) {
           skippedProjects.push(project.key);
           continue;
         }
-        browseableProjects.push(project);
+        yield project;
       } catch (error: any) {
         if (error.response?.status === 404) {
           skippedProjects.push(project.key);
@@ -537,9 +569,6 @@ export class Jira {
       this.logger?.warn(
         `Skipped projects due to missing 'Browse Projects' permission: ${skippedProjects}`
       );
-    }
-    for (const project of browseableProjects) {
-      if (this.isProjectInBucket(project.key)) yield project;
     }
   }
 
