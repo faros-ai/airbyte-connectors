@@ -169,8 +169,11 @@ export abstract class Vulnerabilities extends Converter {
       for (const finding of vuln.findings) {
         // We copy vuln data and add the finding data to it
         const new_vuln = {...vuln};
-        const cve_str = finding['name'] ? finding['name'] : '';
-        const uid_addition = '|' + cve_str.split(' ')[0];
+        // In the case of AWS vuln objects as provided by Vanta,
+        // the name field contains the CVE string at the beginning
+        const pre_cve_str = finding['name'] ? finding['name'] : '';
+        const cve_str = pre_cve_str.split(' ')[0];
+        const uid_addition = '|' + cve_str;
         new_vuln.uid += uid_addition;
         new_vuln['externalIds'] = [cve_str];
         new_vuln['description'] = finding['description']
@@ -574,7 +577,7 @@ export abstract class Vulnerabilities extends Converter {
         severity: sevString,
         description: vuln.description,
         displayName: vuln.displayName,
-        vulnerabilityIds: [vuln.packageIdentifier],
+        vulnerabilityIds: [vuln.externalVulnerabilityId],
       };
 
       vuln_data.push(this.getSecVulnerabilityRecordFromData(vuln_copy));

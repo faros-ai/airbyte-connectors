@@ -70,7 +70,7 @@ export interface AWSV2VulnerabilityData {
   createdAt: OptString;
   externalURL: OptString;
   severity: OptString;
-
+  externalVulnerabilityId: OptString;
   packageName: OptString;
   packageIdentifier: OptString;
   description: OptString;
