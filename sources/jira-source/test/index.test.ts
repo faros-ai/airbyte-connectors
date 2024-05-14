@@ -190,7 +190,12 @@ describe('index', () => {
   test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
-      {...config, requestedStreams: new Set(['faros_issue_pull_requests'])},
+      {
+        ...config,
+        requestedStreams: new Set(['faros_issue_pull_requests']),
+        start_date: new Date('2021-01-01'),
+        end_date: new Date('2021-01-02'),
+      },
       getIssuePullRequestsMockedImplementation(),
       {
         project: 'TEST',
