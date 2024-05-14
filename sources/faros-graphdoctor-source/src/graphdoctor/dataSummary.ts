@@ -61,16 +61,20 @@ export async function getDataQualitySummary(
     'cicd_Build',
     'cicd_Repository',
     'cicd_Artifact',
+    'cicd_ArtifactVulnerability',
     'cicd_Deployment',
     'faros_Tag',
     'ims_Incident',
     'qa_TestCase',
     'qa_TestExecution',
+    'sec_Vulnerability',
     'survey_Survey',
     'tms_Task',
     'tms_Project',
-    'vcs_PullRequest',
     'vcs_Commit',
+    'vcs_PullRequest',
+    'vcs_Repository',
+    'vcs_RepositoryVulnerability',
   ];
   const dataQualityRecordCounts: FarosDataQualityRecordCount[] = [];
   const phantomFarosClient = new FarosClient({

@@ -24,6 +24,7 @@
         "ams_Project_aggregate": {"aggregate": {"count": 100}},
         "ams_Activity_aggregate": {"aggregate": {"count": -3}},
         "cal_Event_aggregate": {"aggregate": {"count": 0}},
+        "cicd_ArtifactVulnerability_aggregate": {"aggregate": {"count": 0}},
         "cicd_Pipeline_aggregate": {"aggregate": {"count": 400}},
         "cicd_Build_aggregate": {"aggregate": {"count": 0}},
         "cicd_Repository_aggregate": {"aggregate": {"count": 0}},
@@ -33,10 +34,13 @@
         "ims_Incident_aggregate": {"aggregate": {"count": 0}},
         "qa_TestCase_aggregate": {"aggregate": {"count": 0}},
         "qa_TestExecution_aggregate": {"aggregate": {"count": 0}},
+        "sec_Vulnerability_aggregate": {"aggregate": {"count": 0}},
         "survey_Survey_aggregate": {"aggregate": {"count": 0}},
         "tms_Task_aggregate": {"aggregate": {"count": 0}},
         "tms_Project_aggregate": {"aggregate": {"count": 0}},
         "vcs_PullRequest_aggregate": {"aggregate": {"count": 0}},
+        "vcs_Repository_aggregate": {"aggregate": {"count": 0}},
+        "vcs_RepositoryVulnerability_aggregate": {"aggregate": {"count": 0}},
         "vcs_Commit_aggregate": {"aggregate": {"count": 0}}
     }
 }
