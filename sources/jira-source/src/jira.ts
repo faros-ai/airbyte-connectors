@@ -184,6 +184,7 @@ export class Jira {
           'X-Force-Accept-Language': true,
         },
         timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
+        // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
         paramsSerializer: {indexes: null},
       },
       maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
