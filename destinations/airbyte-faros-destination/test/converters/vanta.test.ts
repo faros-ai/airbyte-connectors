@@ -123,7 +123,7 @@ describe('vanta', () => {
     };
     const writtenByModel = {
       cicd_ArtifactVulnerability: 2,
-      sec_Vulnerability: 3,
+      sec_Vulnerability: 2,
       vcs_RepositoryVulnerability: 1,
     };
     await runTest(

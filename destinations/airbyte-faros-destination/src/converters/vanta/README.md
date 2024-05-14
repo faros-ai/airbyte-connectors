@@ -34,9 +34,6 @@ This query shows that the returned vcs_Repository objects need to have their nam
 input query names. The vcsRepoNames are constructed out of the "repositoryName" field from the streams
 coming from the source.
 
-# The difference between AWS Container Data vs AWS Container V2 Data
-With AWS Container data, 
-
 
 # The source vanta GraphQL Queries and types (sources/vanta-source/resources/*.gql)
 
