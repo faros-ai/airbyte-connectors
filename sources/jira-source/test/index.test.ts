@@ -116,7 +116,7 @@ describe('index', () => {
 
   const testStream = async (
     streamIndex: any,
-    streamConfig: JiraConfig,
+    sourceConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any,
     isCloud = true
@@ -132,13 +132,15 @@ describe('index', () => {
         isCloud,
         5,
         100,
-        streamConfig.bucket_id,
-        streamConfig.bucket_total,
-        logger
+        sourceConfig.bucket_id,
+        sourceConfig.bucket_total,
+        logger,
+        undefined,
+        sourceConfig?.requestedStreams
       );
     });
     const source = new sut.JiraSource(logger);
-    const streams = source.streams(streamConfig);
+    const streams = source.streams(sourceConfig);
     const stream = streams[streamIndex];
     const iter = stream.readRecords(
       SyncMode.FULL_REFRESH,
@@ -186,9 +188,19 @@ describe('index', () => {
   });
 
   test('streams - issue_pull_requests', async () => {
-    await testStream(0, config, getIssuePullRequestsMockedImplementation(), {
-      project: 'TEST',
-    });
+    await testStream(
+      0,
+      {
+        ...config,
+        requestedStreams: new Set(['faros_issue_pull_requests']),
+        start_date: new Date('2021-01-01'),
+        end_date: new Date('2021-01-02'),
+      },
+      getIssuePullRequestsMockedImplementation(),
+      {
+        project: 'TEST',
+      }
+    );
   });
 
   test('streams - sprint_reports', async () => {

@@ -44,7 +44,7 @@ describe('client', () => {
         ({
           getUri: jest.fn().mockReturnValue('uri'),
           request: jest.fn().mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).resolves.toEqual(project);
   });
@@ -58,7 +58,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(apiError(400))
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).rejects.toEqual(apiError(400));
   });
@@ -72,7 +72,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(apiError(429))
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).resolves.toEqual(project);
   });
@@ -87,7 +87,7 @@ describe('client', () => {
             .mockRejectedValueOnce(apiError(429))
             .mockRejectedValueOnce(apiError(429))
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).rejects.toEqual(apiError(429));
   });
@@ -101,7 +101,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(apiError(500))
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).resolves.toEqual(project);
   });
@@ -116,7 +116,7 @@ describe('client', () => {
             .mockRejectedValueOnce(apiError(500))
             .mockRejectedValueOnce(apiError(500))
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).rejects.toEqual(apiError(500));
   });
@@ -133,7 +133,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(error)
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).resolves.toEqual(project);
   });
@@ -151,7 +151,7 @@ describe('client', () => {
             .mockRejectedValueOnce(error)
             .mockRejectedValueOnce(error)
             .mockResolvedValueOnce({data: project}),
-        } as any)
+        }) as any
     );
     await expect(getProject(project.key)).rejects.toEqual(error);
   });
@@ -166,7 +166,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(apiError(500))
             .mockResolvedValueOnce({data: board}),
-        } as any)
+        }) as any
     );
 
     const client = new sut.JiraClient({
@@ -190,7 +190,7 @@ describe('client', () => {
             .fn()
             .mockRejectedValueOnce(apiError(500))
             .mockResolvedValueOnce({data: [project]}),
-        } as any)
+        }) as any
     );
 
     const client = new sut.JiraClient({
@@ -273,7 +273,7 @@ describe('client', () => {
         ({
           getUri: jest.fn().mockReturnValue('uri'),
           request: jest.fn().mockResolvedValue({data: [project]}),
-        } as any)
+        }) as any
     );
 
     const client = new sut.JiraClient({

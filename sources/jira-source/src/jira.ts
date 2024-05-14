@@ -4,6 +4,7 @@ import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
   Issue,
+  IssueCompact,
   IssueField,
   PullRequest,
   Repo,
@@ -19,6 +20,7 @@ import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {chunk, concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
 import {isEmpty} from 'lodash';
+import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -52,6 +54,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_url?: string;
   readonly api_key?: string;
   readonly graph?: string;
+  readonly requestedStreams?: Set<string>;
+  start_date?: Date;
+  end_date?: Date;
 }
 
 export const toFloat = (value: any): number | undefined =>
@@ -122,6 +127,10 @@ export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
   // Counts the number of failed calls to fetch sprint history
   private sprintHistoryFetchFailures = 0;
+  private readonly seenIssues: Map<string, IssueCompact[]> = new Map<
+    string,
+    IssueCompact[]
+  >();
 
   constructor(
     // Pass base url to enable creating issue url that can navigated in browser
@@ -138,7 +147,8 @@ export class Jira {
     private readonly bucketId: number,
     private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger,
-    private readonly useUsersPrefixSearch?: boolean
+    private readonly useUsersPrefixSearch?: boolean,
+    private readonly requestedStreams?: Set<string>
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -230,6 +240,12 @@ export class Jira {
       }
     }
 
+    cfg.end_date = moment().utc().toDate();
+    cfg.start_date = moment()
+      .utc()
+      .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
+      .toDate();
+
     Jira.jira = new Jira(
       cfg.url,
       api,
@@ -244,7 +260,8 @@ export class Jira {
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
-      cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH
+      cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
+      cfg.requestedStreams
     );
     return Jira.jira;
   }
@@ -633,18 +650,24 @@ export class Jira {
     return statusByName;
   }
 
-  @Memoize()
-  getIssues(
-    jql: string,
-    fetchKeysOnly = false,
-    includeAdditionalFields = true,
-    additionalFields?: string[]
-  ): AsyncIterableIterator<Issue> {
-    const {fieldIds, additionalFieldIds} = this.getIssueFields(
-      fetchKeysOnly,
-      includeAdditionalFields,
-      additionalFields
+  getIssuesKeys(jql: string): AsyncIterableIterator<string> {
+    return this.iterate(
+      (startAt) =>
+        this.api.v2.issueSearch.searchForIssuesUsingJql({
+          jql,
+          startAt,
+          fields: ['key'],
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => {
+        return item.key;
+      },
+      'issues'
     );
+  }
+
+  getIssues(jql: string): AsyncIterableIterator<Issue> {
+    const {fieldIds, additionalFieldIds} = this.getIssueFields();
     const issueTransformer = new IssueTransformer(
       this.baseURL,
       this.fieldNameById,
@@ -653,24 +676,71 @@ export class Jira {
       additionalFieldIds,
       this.additionalFieldsArrayLimit
     );
+
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
           fields: [...fieldIds, ...additionalFieldIds],
-          expand: fetchKeysOnly ? undefined : 'changelog',
+          expand: 'changelog',
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
+        this.memoizeIssue(item, jql);
+
         return issueTransformer.toIssue(item);
       },
       'issues'
     );
   }
 
+  private memoizeIssue(item: any, jql: string) {
+    const issue: IssueCompact = {
+      id: item.id,
+      key: item.key,
+      created: Utils.toDate(item.fields.created),
+      updated: Utils.toDate(item.fields.updated),
+      fields: item.fields,
+    };
+
+    if (!this.seenIssues.has(jql)) {
+      this.seenIssues.set(jql, []);
+    }
+    this.seenIssues.get(jql).push(issue);
+  }
+
+  async *getIssuesCompact(jql: string): AsyncIterableIterator<IssueCompact> {
+    const {fieldIds, additionalFieldIds} = this.getIssueFields();
+    if (this.seenIssues.has(jql)) {
+      this.logger?.debug(`Using cached issues for JQL: ${jql}`);
+      for (const issue of this.seenIssues.get(jql)) {
+        yield issue;
+      }
+      return;
+    }
+
+    yield* this.iterate(
+      (startAt) =>
+        this.api.v2.issueSearch.searchForIssuesUsingJql({
+          jql,
+          startAt,
+          fields: [...fieldIds, ...additionalFieldIds],
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => ({
+        id: item.id,
+        key: item.key,
+        created: Utils.toDate(item.fields.created),
+        updated: Utils.toDate(item.fields.updated),
+        fields: item.fields,
+      }),
+      'issues'
+    );
+  }
+
   async getIssuePullRequests(
-    issue: Issue
+    issue: IssueCompact
   ): Promise<ReadonlyArray<PullRequest>> {
     let pullRequests: ReadonlyArray<PullRequest> = [];
     const devFieldIds = this.fieldIdsByName.get(DEV_FIELD_NAME) ?? [];
@@ -694,47 +764,45 @@ export class Jira {
     return pullRequests;
   }
 
-  private getIssueFields(
-    fetchKeysOnly: boolean,
-    includeAdditionalFields: boolean,
-    additionalFields?: string[]
-  ): {fieldIds: string[]; additionalFieldIds: string[]} {
-    const fieldIds = fetchKeysOnly
-      ? ['id', 'key', 'created', 'updated']
-      : [
-          'assignee',
-          'created',
-          'creator',
-          'description',
-          'issuelinks',
-          'issuetype',
-          'labels',
-          'parent',
-          'priority',
-          'project',
-          'resolution',
-          'resolutiondate',
-          'status',
-          'subtasks',
-          'summary',
-          'updated',
-        ];
-    if (includeAdditionalFields) {
-      const additionalFieldIds: string[] = [];
-      for (const fieldId of this.fieldNameById.keys()) {
-        // Skip fields that are already included in the fields above,
-        // or that are not in the additional fields list if provided
-        if (
-          !fieldIds.includes(fieldId) &&
-          (!additionalFields ||
-            additionalFields.includes(this.fieldNameById.get(fieldId)))
-        ) {
-          additionalFieldIds.push(fieldId);
-        }
-      }
-      return {fieldIds, additionalFieldIds};
+  private getIssueFields(): {fieldIds: string[]; additionalFieldIds: string[]} {
+    const fieldIds = new Set<string>(['id', 'key', 'created', 'updated']);
+
+    if (this.requestedStreams?.has('faros_issue_pull_requests')) {
+      fieldIds.add(DEV_FIELD_NAME);
     }
-    return {fieldIds, additionalFieldIds: []};
+
+    if (this.requestedFarosIssuesStream()) {
+      [
+        'assignee',
+        'created',
+        'creator',
+        'description',
+        'issuelinks',
+        'issuetype',
+        'labels',
+        'parent',
+        'priority',
+        'project',
+        'resolution',
+        'resolutiondate',
+        'status',
+        'subtasks',
+        'summary',
+        'updated',
+      ].forEach((field) => fieldIds.add(field));
+    }
+    const additionalFieldIds: string[] = [];
+    for (const fieldId of this.fieldNameById.keys()) {
+      // Skip fields that are already included in the fields above
+      if (!fieldIds.has(fieldId)) {
+        additionalFieldIds.push(fieldId);
+      }
+    }
+    return {fieldIds: Array.from(fieldIds), additionalFieldIds};
+  }
+
+  private requestedFarosIssuesStream() {
+    return this.requestedStreams?.has('faros_issues');
   }
 
   async *getBoards(

@@ -173,9 +173,7 @@ export abstract class AirbyteSourceBase<
     }
 
     // Requested streams in the order they should be processed
-    const sortedStreams = toposort
-      .array(configuredStreamNames, streamDeps)
-      .reverse();
+    const sortedStreams = toposort.array(configuredStreamNames, streamDeps);
 
     const failedStreams = [];
     for (const streamName of sortedStreams) {

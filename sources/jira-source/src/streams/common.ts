@@ -2,11 +2,7 @@ import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
 import moment from 'moment';
 
-import {
-  DEFAULT_CUTOFF_DAYS,
-  DEFAULT_CUTOFF_LAG_DAYS,
-  JiraConfig,
-} from '../jira';
+import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
 import {ProjectBoardFilter} from '../project-board-filter';
 
 export type ProjectStreamSlice = {
@@ -48,15 +44,10 @@ export abstract class StreamBase extends AirbyteStreamBase {
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {
-    const newCutoff = moment().utc().toDate();
-    // If no state with cutoff, use the default one applying cutoffDays
-    const fromCutoff = cutoff
-      ? Utils.toDate(cutoff)
-      : moment()
-          .utc()
-          .subtract(this.config.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
-          .toDate();
-    return [fromCutoff, newCutoff];
+    return [
+      cutoff ? Utils.toDate(cutoff) : this.config.start_date,
+      this.config.end_date,
+    ];
   }
 
   protected getUpdatedStreamState(

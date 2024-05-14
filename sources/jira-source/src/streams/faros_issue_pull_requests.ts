@@ -3,7 +3,7 @@ import {PullRequest} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {DEV_FIELD_NAME, Jira} from '../jira';
+import {Jira} from '../jira';
 import {JqlBuilder} from '../jql-builder';
 import {
   ProjectStreamSlice,
@@ -12,6 +12,10 @@ import {
 } from './common';
 
 export class FarosIssuePullRequests extends StreamWithProjectSlices {
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_issues'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosIssuePullRequests.json');
   }
@@ -36,15 +40,11 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
         : this.getUpdateRange();
-
-    for await (const issue of jira.getIssues(
+    for await (const issue of jira.getIssuesCompact(
       new JqlBuilder()
         .withProject(projectKey)
         .withDateRange(updateRange)
-        .build(),
-      true,
-      true,
-      [DEV_FIELD_NAME]
+        .build()
     )) {
       for (const pullRequest of (await jira.getIssuePullRequests(issue)) ||
         []) {
