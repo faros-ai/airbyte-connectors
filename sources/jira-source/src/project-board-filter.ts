@@ -1,5 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+import {toUpper} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 
 import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
@@ -33,7 +34,8 @@ export class ProjectBoardFilter {
         }
       } else {
         for (const project of this.config.projects) {
-          if (jira.isProjectInBucket(project)) this.projects.add(project);
+          if (jira.isProjectInBucket(project))
+            this.projects.add(toUpper(project));
         }
       }
     }
