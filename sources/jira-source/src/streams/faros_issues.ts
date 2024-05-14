@@ -38,7 +38,8 @@ export class FarosIssues extends StreamWithProjectSlices {
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
-        : undefined;
+        : this.getUpdateRange();
+
     for await (const issue of jira.getIssues(
       new JqlBuilder()
         .withProject(this.projectKey)

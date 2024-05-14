@@ -16,12 +16,13 @@ export class FarosSprintReports extends JiraConverter {
     const sprintReport = record.record.data as SprintReport;
     const uid = toString(sprintReport.sprintId);
     const results: DestinationRecord[] = [];
+    const source = this.streamName.source;
     for (const issue of sprintReport.issues || []) {
       results.push({
         model: 'tms_SprintHistory',
         record: {
-          sprint: {uid, source: this.streamName.source},
-          issue: {uid: issue.key, source: this.streamName.source},
+          sprint: {uid, source},
+          task: {uid: issue.key, source},
           points: issue.points,
           status: {category: issue.status},
           addedDuringSprint: issue.addedDuringSprint,
