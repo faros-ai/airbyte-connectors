@@ -367,8 +367,9 @@ export abstract class Vulnerabilities extends Converter {
             record: {
               repository: repoKey,
               vulnerability: vulnKey,
-              url: vuln.externalURL,
+              url: this.encodeURL(vuln.externalURL),
               dueAt: vuln.slaDeadline,
+              createdAt: vuln.createdAt,
             },
           });
         }
@@ -414,7 +415,7 @@ export abstract class Vulnerabilities extends Converter {
               uid: this.getUidFromAWSVuln(vuln),
               source: this.source,
             },
-            url: vuln.externalURL,
+            url: this.encodeURL(vuln.externalURL),
             dueAt: vuln.slaDeadline,
             createdAt: vuln.createdAt,
             acknowledgedAt: vuln.createdAt,
@@ -489,7 +490,7 @@ export abstract class Vulnerabilities extends Converter {
             uid: uid,
             source: this.source,
           },
-          url: vuln.externalURL,
+          url: this.encodeURL(vuln.externalURL),
           dueAt: vuln.slaDeadline,
           createdAt: vuln.createdAt,
           acknowledgedAt: vuln.createdAt,
@@ -580,6 +581,18 @@ export abstract class Vulnerabilities extends Converter {
     return [allCommitShas, commitShasToVulns, commitShaToArtifact];
   }
 
+  encodeURL(url: string): string {
+    // We split by 'findingArn=' and encode the second part and add to the first:
+    const split = url.split('findingArn=');
+    if (split.length !== 2) {
+      return encodeURIComponent(url);
+    }
+    const arn = split[1];
+    const encodedArn: string = encodeURIComponent(arn);
+    const encodedUrl: string = split[0] + 'findingArn=' + encodedArn;
+    return encodedUrl;
+  }
+
   async getCICDMappingsFromAWSV2(
     aws_vulns: AWSV2VulnerabilityData[],
     fc: FarosClient,
@@ -608,7 +621,7 @@ export abstract class Vulnerabilities extends Converter {
               uid: this.getUidFromAWSVuln(vuln),
               source: this.source,
             },
-            url: vuln.externalURL,
+            url: this.encodeURL(vuln.externalURL),
             dueAt: vuln.remediateBy,
             createdAt: vuln.createdAt,
             acknowledgedAt: vuln.createdAt,
@@ -728,7 +741,7 @@ export abstract class Vulnerabilities extends Converter {
         title: data.displayName,
         description: data.description,
         severity: data.severity,
-        url: data.externalURL,
+        url: this.encodeURL(data.externalURL),
         discoveredAt: data.createdAt,
         vulnerabilityIds: data.externalIds,
       },
