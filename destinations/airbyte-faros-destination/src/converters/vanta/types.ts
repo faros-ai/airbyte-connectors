@@ -3,7 +3,7 @@ type OptBool = boolean | null | undefined;
 type OptNumber = number | null | undefined;
 
 export interface BaseVulnerabilityType {
-  uid: OptString;
+  uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
@@ -23,7 +23,7 @@ export interface GithubSecurityAdvisory {
 }
 
 export interface GithubVulnerabilityData {
-  uid: OptString;
+  uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
@@ -41,7 +41,7 @@ export interface AWSFindings {
 }
 
 export interface AWSVulnerabilityData {
-  uid: OptString;
+  uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
@@ -52,6 +52,7 @@ export interface AWSVulnerabilityData {
   repositoryName: OptString;
   repositoryArn: OptString;
   findings: AWSFindings[];
+  imageTags: string[];
 }
 
 export interface AWSV2Ignored {
@@ -65,12 +66,12 @@ export interface AWSV2Asset {
 }
 
 export interface AWSV2VulnerabilityData {
-  uid: OptString;
+  uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
   severity: OptString;
-
+  externalVulnerabilityId: OptString;
   packageName: OptString;
   packageIdentifier: OptString;
   description: OptString;
@@ -82,6 +83,8 @@ export interface AWSV2VulnerabilityData {
   imageTags: string[];
   imageDigest: OptString;
 }
+
+export type BaseAWSVuln = AWSVulnerabilityData | AWSV2VulnerabilityData;
 
 export const vulnTypeOptions: string[] = ['git', 'aws', 'awsv2'];
 

@@ -31,7 +31,9 @@ query vcsRepositoryQuery($vcsRepoNames: [String], $limit: Int) {
 ```
 
 This query shows that the returned vcs_Repository objects need to have their names correspond to the
-input query names. The vcsRepoNames are constructed out of the "repositoryName" field from the streams.
+input query names. The vcsRepoNames are constructed out of the "repositoryName" field from the streams
+coming from the source.
+
 
 # The source vanta GraphQL Queries and types (sources/vanta-source/resources/*.gql)
 
