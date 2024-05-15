@@ -5,7 +5,7 @@
     "title": "Jira Configuration Spec",
     "type": "object",
     "required": [
-      "url"
+      "url","projects"
     ],
     "additionalProperties": true,
     "properties": {
