@@ -331,12 +331,12 @@ export class BitbucketServer {
         lastPRUpdatedDate
       );
       for (const pr of await prs) {
-        const {data} = await this.client[MEP].pullRequests.getDiff({
-          projectKey,
-          repositorySlug,
-          pullRequestId: pr.id,
-        });
         try {
+          const {data} = await this.client[MEP].pullRequests.getDiff({
+            projectKey,
+            repositorySlug,
+            pullRequestId: pr.id,
+          });
           yield {
             files: parseDiff(data).map((f) =>
               pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
