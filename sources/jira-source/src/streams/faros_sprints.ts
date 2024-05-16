@@ -35,7 +35,7 @@ export class FarosSprints extends StreamWithBoardSlices {
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : this.getUpdateRange();
 
-    for await (const sprint of jira.getSprints(boardId, updateRange)) {
+    for (const sprint of await jira.getSprints(boardId, updateRange)) {
       yield {
         id: sprint.id,
         originBoardId: sprint.originBoardId ?? toInteger(boardId),
