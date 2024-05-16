@@ -45,7 +45,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
           updateRange?.[0]
         )
       : jira.getSprints(boardId, updateRange);
-    for await (const sprint of sprints) {
+    for await (const sprint of await sprints) {
       const report = await jira.getSprintReport(sprint, boardId);
       if (!report) continue;
       yield report;

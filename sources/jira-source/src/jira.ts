@@ -860,7 +860,18 @@ export class Jira {
   }
 
   @Memoize()
-  getSprints(
+  async getSprints(
+    boardId: string,
+    range?: [Date, Date]
+  ): Promise<ReadonlyArray<AgileModels.Sprint>> {
+    const sprints: AgileModels.Sprint[] = [];
+    for await (const sprint of this.getSprintsIterator(boardId, range)) {
+      sprints.push(sprint);
+    }
+    return sprints;
+  }
+
+  private getSprintsIterator(
     boardId: string,
     range?: [Date, Date]
   ): AsyncIterableIterator<AgileModels.Sprint> {
@@ -882,7 +893,25 @@ export class Jira {
     );
   }
 
-  getSprintsFromFarosGraph(
+  async getSprintsFromFarosGraph(
+    board: string,
+    farosClient: FarosClient,
+    graph: string,
+    closedAtAfter?: Date
+  ): Promise<ReadonlyArray<AgileModels.Sprint>> {
+    const sprints: AgileModels.Sprint[] = [];
+    for await (const sprint of this.getSprintsIteratorFromFarosGraph(
+      board,
+      farosClient,
+      graph,
+      closedAtAfter
+    )) {
+      sprints.push(sprint);
+    }
+    return sprints;
+  }
+
+  private getSprintsIteratorFromFarosGraph(
     board: string,
     farosClient: FarosClient,
     graph: string,
