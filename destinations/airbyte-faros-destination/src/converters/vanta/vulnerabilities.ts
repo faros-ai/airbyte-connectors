@@ -1188,8 +1188,7 @@ export abstract class Vulnerabilities extends Converter {
     // If a vuln record no longer appears in vanta (but appears in faros)
     // then we update it's resolvedDate to the current time
     if (
-      ctx.config.source_specific_configs?.vanta
-        ?.updateExistingVulnerabilities == true
+      ctx.config.source_specific_configs?.vanta?.updateExistingVulnerabilities
     ) {
       await this.updateExistingVulnerabilities(ctx);
     } else {

@@ -10,7 +10,13 @@
           "type": "string",
           "const": "Vanta",
           "order": 0
-        }
+        },
+        "updateExistingVulnerabilities": {
+          "type": "boolean",
+          "title": "Update Faros Vulnerabilities to Resolved",
+          "default": true,
+          "order": 1
+        } 
       }
     }
   ]
