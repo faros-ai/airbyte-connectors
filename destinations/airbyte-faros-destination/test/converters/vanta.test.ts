@@ -83,10 +83,13 @@ describe('vanta', () => {
       vulnerabilities: 3,
     };
     const writtenByModel = {
+      cicd_Artifact: 1,
       cicd_ArtifactVulnerability: 2,
+      cicd_Repository: 1,
       sec_Vulnerability: 3,
       vcs_RepositoryVulnerability: 1,
     };
+
     await runTest(
       configPath,
       catalogPath,
@@ -103,8 +106,12 @@ describe('vanta', () => {
       vulnerabilities: 3,
     };
     const writtenByModel = {
+      cicd_Artifact: 1,
       cicd_ArtifactVulnerability: 1,
+      cicd_Repository: 1,
       sec_Vulnerability: 3,
+      vcs_Repository: 1,
+      vcs_RepositoryVulnerability: 1,
     };
     await runTest(
       configPath,
@@ -122,7 +129,9 @@ describe('vanta', () => {
       vulnerabilities: 5,
     };
     const writtenByModel = {
+      cicd_Artifact: 1,
       cicd_ArtifactVulnerability: 2,
+      cicd_Repository: 1,
       sec_Vulnerability: 2,
       vcs_RepositoryVulnerability: 1,
     };
