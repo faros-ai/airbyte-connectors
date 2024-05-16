@@ -172,10 +172,14 @@ export abstract class JiraConverter extends Converter {
     return this.jiraConfig(ctx).use_board_ownership ?? false;
   }
 
-  protected getOrganizationFromUrl(url: string): string {
-    const parts = url.split('/');
-    const username = parts[2].split('.')[0];
-    return username;
+  protected getOrganizationFromUrl(url?: string): string {
+    if (url) {
+      const parts = url.split('/');
+      const username = parts[2].split('.')[0];
+      return username;
+    } else {
+      return '';
+    }
   }
 
   protected getRepoOrganizationFromUrl(url: string): string {
