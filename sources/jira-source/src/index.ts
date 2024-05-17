@@ -62,9 +62,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosIssuePullRequests(config, this.logger, farosClient),
       new FarosSprintReports(config, this.logger, farosClient),
       new FarosBoardIssues(config, this.logger, farosClient),
-      new FarosSprints(config, this.logger),
-      new FarosUsers(config, this.logger),
-      new FarosIssues(config, this.logger),
+      new FarosSprints(config, this.logger, farosClient),
+      new FarosUsers(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
     ];
   }
 

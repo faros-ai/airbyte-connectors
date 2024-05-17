@@ -487,7 +487,7 @@ export class IssueTransformer {
       assignees: assigneeChangelog,
       points: this.getPoints(item) ?? undefined,
       epic: this.getIssueEpic(item),
-      sprintInfo,
+      // sprintInfo,
       additionalFields,
       url: `${this.baseURL.replace(/\/$/, '')}/browse/${item.key}`,
       resolution: item.fields.resolution?.name,
