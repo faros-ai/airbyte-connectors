@@ -98,6 +98,7 @@ export interface Sprint extends AgileModels.Sprint {
   // The date the sprint is opened in Jira Server
   readonly activatedDate?: string;
   // Board sprint is associated that can be not originBoardId
+  // https://support.atlassian.com/jira-software-cloud/docs/view-and-understand-the-sprint-report/
   readonly boardId: number;
 }
 
