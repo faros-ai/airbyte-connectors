@@ -645,6 +645,34 @@ export abstract class Vulnerabilities extends Converter {
     return [allCommitShas, commitShasToVulns, vulnsWithNoCommitShas];
   }
 
+  getRepoNameAndArtifactUidFromAWSVuln(
+    awsVuln: BaseAWSVuln,
+    inpRepo: string,
+    inpArtifactUid: string,
+    vuln_type: string
+  ): [string, string] {
+    // Depending on the vuln type, we pull out the correct repo name and artifact uid
+    if (vuln_type === 'awsv2') {
+      const v = awsVuln as AWSV2VulnerabilityData;
+      const repoName = v.asset.displayName ? v.asset.displayName : inpRepo;
+      const artifactUid = v.imageDigest ? v.imageDigest : inpArtifactUid;
+      return [repoName, artifactUid];
+    } else if (vuln_type === 'aws') {
+      const awsV1vuln = awsVuln as AWSVulnerabilityData;
+      const repoName = awsV1vuln.repositoryName
+        ? awsV1vuln.repositoryName
+        : inpRepo;
+      const imageTags = awsV1vuln.imageTags;
+      let artifactUid = inpArtifactUid;
+      if (imageTags && imageTags.length > 0) {
+        artifactUid = imageTags[0];
+      }
+      return [repoName, artifactUid];
+    } else {
+      throw new Error(`Invalid vuln type: ${vuln_type}`);
+    }
+  }
+
   createAssociatedCicdArtifacts(
     aws_vulns_with_no_associated_commit_shas: BaseAWSVuln[],
     vuln_type: string
@@ -661,24 +689,12 @@ export abstract class Vulnerabilities extends Converter {
       // For every vuln, we start by assuming we won't get a repo name or a cicd artifact uid
       let repoName: string = 'vanta-aws-repo';
       let artifactUid: string = vuln.uid;
-      if (vuln_type === 'awsv2') {
-        const awsV2vuln = vuln as AWSV2VulnerabilityData;
-        repoName = awsV2vuln.asset.displayName
-          ? awsV2vuln.asset.displayName
-          : repoName;
-        artifactUid = awsV2vuln.imageDigest
-          ? awsV2vuln.imageDigest
-          : artifactUid;
-      } else {
-        const awsV1vuln = vuln as AWSVulnerabilityData;
-        repoName = awsV1vuln.repositoryName
-          ? awsV1vuln.repositoryName
-          : repoName;
-        const imageTags = awsV1vuln.imageTags;
-        if (imageTags && imageTags.length > 0) {
-          artifactUid = imageTags[0];
-        }
-      }
+      [repoName, artifactUid] = this.getRepoNameAndArtifactUidFromAWSVuln(
+        vuln,
+        repoName,
+        artifactUid,
+        vuln_type
+      );
       const cicdRepositoryKey: CicdRepoKey = {
         organization: org_key,
         uid: repoName,
