@@ -346,6 +346,7 @@ exports[`index streams - sprints 1`] = `
 [
   {
     "activatedDate": "2024-03-14T12:00:00Z",
+    "boardId": 1,
     "completeDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
     "id": 1,

@@ -97,6 +97,8 @@ export interface PullRequest {
 export interface Sprint extends AgileModels.Sprint {
   // The date the sprint is opened in Jira Server
   readonly activatedDate?: string;
+  // Board sprint is associated that can be not originBoardId
+  readonly boardId: number;
 }
 
 export interface SprintReport {

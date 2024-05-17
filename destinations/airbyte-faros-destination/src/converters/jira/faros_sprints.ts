@@ -35,7 +35,7 @@ export class FarosSprints extends JiraConverter {
         model: 'tms_SprintBoardRelationship',
         record: {
           sprint: {uid, source},
-          board: {uid: toString(sprint.originBoardId)},
+          board: {uid: toString(sprint.boardId), source},
         },
       },
     ];
