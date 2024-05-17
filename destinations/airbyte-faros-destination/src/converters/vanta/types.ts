@@ -13,6 +13,7 @@ export interface BaseVulnerabilityType {
 export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
   description?: OptString;
   externalIds?: OptString[];
+  vulnURL?: OptString;
   [key: string]: any;
 };
 
@@ -38,6 +39,7 @@ export interface AWSFindings {
   description: OptString;
   providerSeverity: OptString;
   name: OptString;
+  uri: OptString;
 }
 
 export interface AWSVulnerabilityData {
@@ -82,6 +84,7 @@ export interface AWSV2VulnerabilityData {
   ignored: AWSV2Ignored;
   imageTags: string[];
   imageDigest: OptString;
+  relatedUrls: string[];
 }
 
 export type BaseAWSVuln = AWSVulnerabilityData | AWSV2VulnerabilityData;

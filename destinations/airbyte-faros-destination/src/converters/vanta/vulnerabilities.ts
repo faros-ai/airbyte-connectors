@@ -164,6 +164,8 @@ export abstract class Vulnerabilities extends Converter {
         ? vuln.securityAdvisory.ghsaId
         : '';
       vuln['externalIds'] = [cveId, ghsaId];
+      vuln['vulnURL'] = '';
+
       farosVulnRecords.push(
         this.getSecVulnerabilityRecordFromData(
           vuln as ExtendedVulnerabilityType
@@ -195,6 +197,7 @@ export abstract class Vulnerabilities extends Converter {
         new_vuln['description'] = finding['description']
           ? finding['description']
           : 'No description found';
+        new_vuln['vulnURL'] = finding['uri'] ? finding['uri'] : '';
         vuln_data.push(
           this.getSecVulnerabilityRecordFromData(
             new_vuln as ExtendedVulnerabilityType
@@ -747,16 +750,21 @@ export abstract class Vulnerabilities extends Converter {
     ];
   }
 
-  encodeURL(url: string): string {
-    // We split by 'findingArn=' and encode the second part and add to the first:
-    const split = url.split('findingArn=');
-    if (split.length !== 2) {
-      return encodeURIComponent(url);
+  encodeURL(url: string | null): string {
+    // For now no encoding applied
+    if (!url) {
+      return '';
     }
-    const arn = split[1];
-    const encodedArn: string = encodeURIComponent(arn);
-    const encodedUrl: string = split[0] + 'findingArn=' + encodedArn;
-    return encodedUrl;
+    return url;
+    // We split by 'findingArn=' and encode the second part and add to the first:
+    // const split = url.split('findingArn=');
+    // if (split.length !== 2) {
+    //   return encodeURIComponent(url);
+    // }
+    // const arn = split[1];
+    // const encodedArn: string = encodeURIComponent(arn);
+    // const encodedUrl: string = split[0] + 'findingArn=' + encodedArn;
+    // return encodedUrl;
   }
 
   async getCICDMappingsFromAWSV2(
@@ -833,6 +841,10 @@ export abstract class Vulnerabilities extends Converter {
         sevString = sev.toString();
       }
       const uid = this.getUidFromAWSVuln(vuln);
+      let vulnURL = '';
+      if (vuln.relatedUrls && vuln.relatedUrls.length > 0) {
+        vulnURL = vuln.relatedUrls[0];
+      }
       const vuln_copy: ExtendedVulnerabilityType = {
         uid,
         createdAt: vuln.createdAt,
@@ -841,6 +853,7 @@ export abstract class Vulnerabilities extends Converter {
         description: vuln.description,
         displayName: vuln.displayName,
         vulnerabilityIds: [vuln.externalVulnerabilityId],
+        vulnURL,
       };
 
       vuln_data.push(this.getSecVulnerabilityRecordFromData(vuln_copy));
@@ -917,7 +930,7 @@ export abstract class Vulnerabilities extends Converter {
         title: data.displayName,
         description: data.description,
         severity: data.severity,
-        url: this.encodeURL(data.externalURL),
+        url: this.encodeURL(data.vulnURL),
         discoveredAt: data.createdAt,
         vulnerabilityIds: data.externalIds,
       },
