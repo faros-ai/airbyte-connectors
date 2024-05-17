@@ -115,7 +115,7 @@ describe('index', () => {
     streamConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any
-  ) => {
+  ): Promise<any> => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
         'https://jira.com',
@@ -149,7 +149,7 @@ describe('index', () => {
     expect(items).toMatchSnapshot();
   };
 
-  const getIssuePullRequestsMockedImplementation = () => ({
+  const getIssuePullRequestsMockedImplementation: any = () => ({
     v2: {
       issueSearch: {
         searchForIssuesUsingJql: paginate(
@@ -166,7 +166,7 @@ describe('index', () => {
       .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
   });
 
-  const getSprintReportsMockedImplementation = () => ({
+  const getSprintReportsMockedImplementation: any = () => ({
     agile: {
       board: {
         getBoard: jest
@@ -326,6 +326,16 @@ describe('index', () => {
       v2: {
         users: {
           getAllUsersDefault: paginate(readTestResourceFile('users.json')),
+        },
+      },
+    });
+  });
+
+  test('streams - issue', async () => {
+    await testStream(5, readTestResourceFile('config.json'), {
+      v2: {
+        issues: {
+          getIssues: paginate(readTestResourceFile('issues_from_board.json')),
         },
       },
     });
