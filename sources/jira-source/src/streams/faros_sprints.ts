@@ -45,7 +45,7 @@ export class FarosSprints extends StreamWithBoardSlices {
         endDate: sprint.endDate,
         completeDate: sprint.completeDate,
         activatedDate: sprint['activatedDate'],
-        boardId: toInteger(sprint.originBoardId),
+        boardId: toInteger(boardId),
       };
     }
   }
