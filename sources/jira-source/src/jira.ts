@@ -965,19 +965,20 @@ export class Jira {
         );
       }
     }
-    return this.toSprintReportFields(report?.contents, sprint);
+    return this.toSprintReportFields(report?.contents, sprint, boardId);
   }
 
   private toSprintReportFields(
     report: any,
-    sprint: AgileModels.Sprint
+    sprint: AgileModels.Sprint,
+    boardId: string
   ): SprintReport {
     if (!report) {
       return;
     }
     return {
       sprintId: sprint.id,
-      boardId: toString(sprint.originBoardId),
+      boardId,
       closedAt: Utils.toDate(sprint.completeDate),
       issues: this.toSprintReportIssues(report),
     };

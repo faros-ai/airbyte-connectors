@@ -1,5 +1,6 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
+import _ from 'lodash';
 import moment from 'moment';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
@@ -55,22 +56,35 @@ export abstract class StreamBase extends AirbyteStreamBase {
     currentStreamState: StreamState,
     projectOrBoardKey: string
   ): StreamState {
+    return StreamBase.calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      projectOrBoardKey,
+      this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS
+    );
+  }
+
+  static calculateUpdatedStreamState(
+    latestRecordCutoff: Date,
+    currentStreamState: StreamState,
+    projectOrBoardKey: string,
+    cutoffLagDays: number
+  ): StreamState {
+    if (_.isNil(latestRecordCutoff)) {
+      return currentStreamState;
+    }
+
     const currentCutoff = Utils.toDate(
       currentStreamState?.[projectOrBoardKey]?.cutoff ?? 0
     );
-    if (latestRecordCutoff > currentCutoff) {
-      const newCutoff = moment().utc().toDate();
-      const cutoffLag = moment
-        .duration(
-          this.config.cutoff_lag_days || DEFAULT_CUTOFF_LAG_DAYS,
-          'days'
-        )
-        .asMilliseconds();
+
+    const adjustedLatestRecordCutoff = moment(latestRecordCutoff)
+      .subtract(cutoffLagDays, 'days')
+      .toDate();
+
+    if (adjustedLatestRecordCutoff > currentCutoff) {
       const newState = {
-        cutoff: Math.max(
-          latestRecordCutoff.getTime(),
-          newCutoff.getTime() - cutoffLag
-        ),
+        cutoff: adjustedLatestRecordCutoff.getTime(),
       };
       return {
         ...currentStreamState,
