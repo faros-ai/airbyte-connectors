@@ -105,7 +105,7 @@ export interface Sprint extends AgileModels.Sprint {
 export interface SprintReport {
   readonly sprintId: number;
   readonly boardId: string;
-  readonly closedAt: Date;
+  readonly completeDate: Date;
   readonly issues: SprintIssue[];
 }
 
