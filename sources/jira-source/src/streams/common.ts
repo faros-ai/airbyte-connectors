@@ -1,6 +1,6 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
-import _ from 'lodash';
+import {isNil} from 'lodash';
 import moment from 'moment';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
@@ -70,7 +70,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     projectOrBoardKey: string,
     cutoffLagDays: number
   ): StreamState {
-    if (_.isNil(latestRecordCutoff)) {
+    if (isNil(latestRecordCutoff)) {
       return currentStreamState;
     }
 
