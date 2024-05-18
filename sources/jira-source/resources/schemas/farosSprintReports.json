@@ -8,7 +8,7 @@
     "boardId": {
       "type": "string"
     },
-    "closedAt": {
+    "completeDate": {
       "type": "string",
       "format": "date-time"
     },

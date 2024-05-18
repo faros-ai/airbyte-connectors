@@ -57,7 +57,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     latestRecord: SprintReport
   ): StreamState {
     const board = latestRecord.boardId;
-    const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
+    const latestRecordCutoff = Utils.toDate(latestRecord.completeDate);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

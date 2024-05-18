@@ -250,7 +250,7 @@ exports[`index streams - sprint_reports 1`] = `
 [
   {
     "boardId": "1",
-    "closedAt": 2024-03-14T12:00:00.000Z,
+    "completeDate": 2024-03-14T12:00:00.000Z,
     "issues": [
       {
         "addedDuringSprint": undefined,
@@ -298,7 +298,7 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
 [
   {
     "boardId": "1",
-    "closedAt": 2024-01-01T00:00:00.000Z,
+    "completeDate": 2024-01-01T00:00:00.000Z,
     "issues": [
       {
         "addedDuringSprint": undefined,

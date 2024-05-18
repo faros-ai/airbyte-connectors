@@ -979,7 +979,7 @@ export class Jira {
     return {
       sprintId: sprint.id,
       boardId,
-      closedAt: Utils.toDate(sprint.completeDate),
+      completeDate: Utils.toDate(sprint.completeDate),
       issues: this.toSprintReportIssues(report),
     };
   }
