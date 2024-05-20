@@ -111,7 +111,7 @@ export class FarosIssues extends JiraConverter {
       resolutionStatus: issue.resolution,
       resolvedAt: issue.resolutionDate,
       sourceSystemId: issue.id,
-      // organization
+      organization,
     };
 
     results.push({model: 'tms_Task', record: task});
@@ -190,7 +190,7 @@ export class FarosIssues extends JiraConverter {
 
     for (const sprint of issue.sprintInfo?.history || []) {
       results.push({
-        model: 'tms_SprintHistory',
+        model: 'tms_Sprint',
         record: {
           task: {uid: issue.key, source},
           sprint: {uid: sprint.uid, source},
