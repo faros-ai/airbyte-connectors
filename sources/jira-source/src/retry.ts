@@ -33,7 +33,7 @@ export function WithRetry<T extends Retryable>(
     // https://developer.atlassian.com/cloud/jira/platform/rate-limiting/#rate-limit-responses
     static getDelay(attempt: number, response: any): number {
       const headers = response?.headers ?? {};
-      const attemptDelay = 3000 * attempt;
+      const attemptDelay = 5000 * attempt;
       let responseDelay = 0;
       if (_.isNumber(headers['Retry-After'])) {
         responseDelay = 1000 * headers['Retry-After'];
@@ -48,7 +48,7 @@ export function WithRetry<T extends Retryable>(
       }
       // Override delay if one is present in the response
       // and is larger than the delay for this attempt
-      const jitter = _.random(0, 5000);
+      const jitter = _.random(0, 500);
       return Math.max(attemptDelay, responseDelay) + jitter;
     }
 

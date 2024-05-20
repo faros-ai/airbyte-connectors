@@ -11,7 +11,7 @@ jest.mock('faros-js-client');
 function apiError(status: number, headers: Record<string, any> = {}): Error {
   const err = new Error('API error');
   (err as any).status = status;
-  (err as any).response = {headers};
+  (err as any).cause = {response: headers};
   return err;
 }
 
@@ -205,30 +205,30 @@ describe('client', () => {
 
   test('gets attempt delay', () => {
     const delay1 = ClientWithRetry.getDelay(1, {});
-    expect(delay1).toBeGreaterThanOrEqual(3000);
-    expect(delay1).toBeLessThanOrEqual(3500);
+    expect(delay1).toBeGreaterThanOrEqual(5000);
+    expect(delay1).toBeLessThanOrEqual(5500);
 
     const delay2 = ClientWithRetry.getDelay(2, {});
-    expect(delay2).toBeGreaterThanOrEqual(6000);
-    expect(delay2).toBeLessThanOrEqual(6500);
+    expect(delay2).toBeGreaterThanOrEqual(10_000);
+    expect(delay2).toBeLessThanOrEqual(10_500);
 
     const delay3 = ClientWithRetry.getDelay(3, {});
-    expect(delay3).toBeGreaterThanOrEqual(9000);
-    expect(delay3).toBeLessThanOrEqual(9500);
+    expect(delay3).toBeGreaterThanOrEqual(15_000);
+    expect(delay3).toBeLessThanOrEqual(15_500);
   });
 
   test('gets attempt delay when undefined response', () => {
     const delay1 = ClientWithRetry.getDelay(1, undefined);
-    expect(delay1).toBeGreaterThanOrEqual(3000);
-    expect(delay1).toBeLessThanOrEqual(3500);
+    expect(delay1).toBeGreaterThanOrEqual(5000);
+    expect(delay1).toBeLessThanOrEqual(5500);
 
     const delay2 = ClientWithRetry.getDelay(2, undefined);
-    expect(delay2).toBeGreaterThanOrEqual(6000);
-    expect(delay2).toBeLessThanOrEqual(6500);
+    expect(delay2).toBeGreaterThanOrEqual(10_000);
+    expect(delay2).toBeLessThanOrEqual(10_500);
 
     const delay3 = ClientWithRetry.getDelay(3, undefined);
-    expect(delay3).toBeGreaterThanOrEqual(9000);
-    expect(delay3).toBeLessThanOrEqual(9500);
+    expect(delay3).toBeGreaterThanOrEqual(15_000);
+    expect(delay3).toBeLessThanOrEqual(15_500);
   });
 
   test('gets delay from Retry-After header', () => {
@@ -242,29 +242,29 @@ describe('client', () => {
     const reset = DateTime.utc().plus({minutes: 1, seconds: 1}).toISO();
     const response = {headers: {'X-RateLimit-Reset': reset}};
     const delay = ClientWithRetry.getDelay(1, response);
-    expect(delay).toBeGreaterThanOrEqual(60_000);
+    expect(delay).toBeGreaterThanOrEqual(61_000);
     expect(delay).toBeLessThanOrEqual(61_500);
   });
 
   test('ignores invalid Retry-After header', () => {
     const response = {headers: {'Retry-After': 'invalid'}};
     const delay = ClientWithRetry.getDelay(1, response);
-    expect(delay).toBeGreaterThanOrEqual(3000);
-    expect(delay).toBeLessThanOrEqual(3500);
+    expect(delay).toBeGreaterThanOrEqual(5000);
+    expect(delay).toBeLessThanOrEqual(5500);
   });
 
   test('ignores invalid X-RateLimit-Reset header', () => {
     const response = {headers: {'X-RateLimit-Reset': 'invalid'}};
     const delay = ClientWithRetry.getDelay(1, response);
-    expect(delay).toBeGreaterThanOrEqual(3000);
-    expect(delay).toBeLessThanOrEqual(3500);
+    expect(delay).toBeGreaterThanOrEqual(5000);
+    expect(delay).toBeLessThanOrEqual(5500);
   });
 
   test('uses attempt delay if larger than response delay', () => {
     const response = {headers: {'Retry-After': 2}};
     const delay = ClientWithRetry.getDelay(1, response);
-    expect(delay).toBeGreaterThanOrEqual(3000);
-    expect(delay).toBeLessThanOrEqual(3500);
+    expect(delay).toBeGreaterThanOrEqual(5000);
+    expect(delay).toBeLessThanOrEqual(5500);
   });
 
   test('get API stats', async () => {
