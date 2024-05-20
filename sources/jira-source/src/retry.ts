@@ -1,4 +1,4 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import jira from 'jira.js';
 import _ from 'lodash';
@@ -32,11 +32,8 @@ export function WithRetry<T extends Retryable>(
 
     // https://developer.atlassian.com/cloud/jira/platform/rate-limiting/#rate-limit-responses
     static getDelay(attempt: number, response: any): number {
-      // TODO - Find a way to get the response headers as new client version
-      // suppresses them with no way to override behavior
-      // https://github.com/MrRefactoring/jira.js/issues/299
       const headers = response?.headers ?? {};
-      const attemptDelay = 3000 * attempt;
+      const attemptDelay = 5000 * attempt;
       let responseDelay = 0;
       if (_.isNumber(headers['Retry-After'])) {
         responseDelay = 1000 * headers['Retry-After'];
@@ -78,7 +75,7 @@ export function WithRetry<T extends Retryable>(
           if (!Retry._isRetryable(err)) {
             break;
           }
-          const delay = Retry.getDelay(attempt, err.response);
+          const delay = Retry.getDelay(attempt, err?.cause?.response);
           logger?.warn(
             `Retry attempt ${attempt} of ${this._maxAttempts}. Retrying in ${delay} milliseconds`
           );
@@ -86,7 +83,7 @@ export function WithRetry<T extends Retryable>(
           attempt++;
         }
       }
-      throw lastErr;
+      throw wrapApiError(lastErr);
     }
 
     async sendRequest<T>(
