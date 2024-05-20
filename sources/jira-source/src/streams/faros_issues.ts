@@ -1,4 +1,4 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteSourceLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Issue} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {omit} from 'lodash';
@@ -10,7 +10,7 @@ import {
   StreamState,
   StreamWithProjectSlices,
 } from './common';
-
+const logger = new AirbyteSourceLogger();
 export class FarosIssues extends StreamWithProjectSlices {
   projectKey: string;
 
@@ -32,14 +32,22 @@ export class FarosIssues extends StreamWithProjectSlices {
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<Issue> {
-    const jira = await Jira.instance(this.config, this.logger);
-    this.projectKey = streamSlice?.project;
-    const updateRange =
-      syncMode === SyncMode.INCREMENTAL
-        ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
-        : undefined;
-    for await (const issue of jira.getIssues(this.projectKey, updateRange)) {
-      yield omit(issue, 'fields');
+    try {
+      const jira = await Jira.instance(this.config, this.logger);
+      this.projectKey = streamSlice?.project;
+      const updateRange =
+        syncMode === SyncMode.INCREMENTAL
+          ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
+          : undefined;
+      for await (const issue of jira.getIssues(this.projectKey, updateRange)) {
+        logger.info('Issue Record received from source');
+        logger.info('Processing record:', JSON.stringify(issue));
+        yield omit(issue, 'fields');
+      }
+    } catch (err: any) {
+      logger?.warn(
+        `Failed to get issue :${err},stream slice : ${streamSlice}},project_key:${this.projectKey}`
+      );
     }
   }
 

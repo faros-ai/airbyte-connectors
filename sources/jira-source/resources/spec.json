@@ -5,9 +5,9 @@
     "title": "Jira Configuration Spec",
     "type": "object",
     "required": [
-      "url","projects"
+      "url","username","projects","sync_additional_fields"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
       "url": {
         "order": 1,
@@ -42,9 +42,9 @@
       "sync_additional_fields": {
         "order": 5,
         "type": "boolean",
-        "title": "Sync Additional Fields",
+        "title": "Sync Additional Fields (Enable this option)",
         "description": "Include additional fields on tasks.",
-        "default": false
+        "default": true
       },
       "additional_fields": {
         "order": 6,
