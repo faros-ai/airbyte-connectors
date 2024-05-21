@@ -1,16 +1,14 @@
 import _ from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
+import {Edition} from '../../src';
 import {Incidents} from '../../src/converters/servicenow/incidents';
 import {SEGMENT_KEY} from '../../src/destination';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {servicenowAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('servicenow', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/servicenow/catalog.json';
   let configPath: string;
@@ -26,15 +24,10 @@ describe('servicenow', () => {
       .once()
       .thenReply(200, JSON.stringify({}));
 
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY,
-      undefined,
-      {
-        servicenow: {},
-      }
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      edition: Edition.COMMUNITY,
+    });
   });
 
   afterEach(async () => {
@@ -42,45 +35,34 @@ describe('servicenow', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(servicenowAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       incidents: 2,
       users: 2,
     };
-    const processed = _(processedByStream)
+    const processed = _(expectedProcessedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       compute_Application: 1,
       ims_Incident: 2,
       ims_IncidentApplicationImpact: 2,
       ims_IncidentAssignment: 2,
       ims_User: 2,
     };
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: servicenowAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
 
-    const {processedTotal, writtenTotal} =
-      await assertProcessedAndWrittenModels(
-        processedByStream,
-        writtenByModel,
-        stdout,
-        processed,
-        cli
-      );
+    const processedTotal = _(expectedProcessedByStream).values().sum();
+    const writtenTotal = _(expectedWrittenByModel).values().sum();
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -101,7 +83,7 @@ describe('servicenow', () => {
             recordsRead: 4,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
-            writtenByModel,
+            writtenByModel: expectedWrittenByModel,
           },
           timestamp: expect.anything(),
           type: 'track',

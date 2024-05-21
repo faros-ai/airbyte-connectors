@@ -2,18 +2,15 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
 } from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
 import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {jiraAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('jira', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/jira/catalog.json';
   let configPath: string;
@@ -21,18 +18,16 @@ describe('jira', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      edition_configs: {},
+      source_specific_configs: {
         jira: {
           use_board_ownership: false,
           truncate_limit: 1000,
         },
-      }
-    );
+      },
+    });
   });
 
   afterEach(async () => {
@@ -54,20 +49,7 @@ describe('jira', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(jiraAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       boards: 1,
       board_issues: 4,
       epics: 1,
@@ -87,14 +69,7 @@ describe('jira', () => {
       faros_projects: 3,
       faros_boards: 2,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       tms_Epic: 1,
       tms_Project: 4,
       tms_ProjectReleaseRelationship: 3,
@@ -116,12 +91,13 @@ describe('jira', () => {
       tms_User: 32,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: jiraAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

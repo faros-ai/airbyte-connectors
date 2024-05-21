@@ -19,7 +19,7 @@ import {
   workdayV3StreamsLog,
   workdayV4StreamsLog,
 } from './data';
-import {runTest} from './utils';
+import {destinationWriteTest} from './utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,
@@ -55,13 +55,15 @@ function getCustomReportandCtxGivenKey(
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
   const orgs_to_ignore = [];
-  const cfg = getConf(
-    mockttp.url,
-    InvalidRecordStrategy.SKIP,
-    Edition.CLOUD,
-    {},
-    {workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles}}
-  );
+  const cfg = getConf({
+    api_url: mockttp.url,
+    invalid_record_strategy: InvalidRecordStrategy.SKIP,
+    edition: Edition.CLOUD,
+    edition_configs: {},
+    source_specific_configs: {
+      workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles},
+    },
+  });
 
   const ctx: StreamContext = new StreamContext(
     new AirbyteLogger(AirbyteLogLevel.WARN),
@@ -91,13 +93,13 @@ describe('workday', () => {
     orgs_to_keep,
     orgs_to_ignore
   ): Promise<string> => {
-    return await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {workday: {orgs_to_keep, orgs_to_ignore}}
-    );
+    return await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.CLOUD,
+      edition_configs: {},
+      source_specific_configs: {workday: {orgs_to_keep, orgs_to_ignore}},
+    });
   };
 
   const runTestLocal = async (
@@ -106,14 +108,14 @@ describe('workday', () => {
     writtenByModel,
     workdayStreamsLog
   ): Promise<void> => {
-    await runTest(
+    await destinationWriteTest({
       configPath,
       catalogPath,
-      processedByStream,
-      writtenByModel,
-      workdayStreamsLog,
-      streamNamePrefix
-    );
+      expectedProcessedByStream: processedByStream,
+      expectedWrittenByModel: writtenByModel,
+      streamsLog: workdayStreamsLog,
+      streamNamePrefix,
+    });
   };
 
   beforeEach(async () => {

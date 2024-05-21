@@ -1,17 +1,10 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {CLI, read} from '../cli';
-import {
-  initMockttp,
-  sourceSpecificTempConfig,
-  testLogger,
-} from '../testing-tools';
+import {initMockttp, sourceSpecificTempConfig} from '../testing-tools';
 import {clickupAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('clickup', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/clickup/catalog.json';
   let configPath: string;
@@ -29,20 +22,7 @@ describe('clickup', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(clickupAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       folders: 2,
       goals: 2,
       lists: 5,
@@ -51,14 +31,7 @@ describe('clickup', () => {
       tasks: 9,
       workspaces: 3,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       tms_Label: 2,
       tms_Project: 3,
       tms_Task: 9,
@@ -73,6 +46,13 @@ describe('clickup', () => {
       tms_User: 3,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: clickupAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });
