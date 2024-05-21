@@ -1091,6 +1091,7 @@ export class Jira {
         'displayName',
         'emailAddress',
         'active',
+        'self',
       ]);
     }
     return undefined;
