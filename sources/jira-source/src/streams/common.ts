@@ -31,6 +31,8 @@ export const WebhookSupplementStreamNames = [
   'faros_board_issues',
   'faros_sprint_reports',
   'faros_issue_pull_requests',
+  'faros_issues',
+  'faros_users',
 ];
 
 export abstract class StreamBase extends AirbyteStreamBase {

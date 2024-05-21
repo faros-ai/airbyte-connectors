@@ -6,7 +6,7 @@ import {JiraConverter} from './common';
 
 export class FarosSprintReports extends JiraConverter {
   get destinationModels(): ReadonlyArray<DestinationModel> {
-    return ['tms_Sprint', 'tms_SprintHistory'];
+    return ['tms_Sprint'];
   }
   async convert(
     record: AirbyteRecord,
@@ -29,18 +29,6 @@ export class FarosSprintReports extends JiraConverter {
         },
       },
     ];
-    for (const issue of sprintReport.issues || []) {
-      results.push({
-        model: 'tms_SprintHistory',
-        record: {
-          sprint: {uid, source: this.streamName.source},
-          issue: {uid: issue.key, source: this.streamName.source},
-          points: issue.points,
-          status: {category: issue.status},
-          addedDuringSprint: issue.addedDuringSprint,
-        },
-      });
-    }
     return results;
   }
 }

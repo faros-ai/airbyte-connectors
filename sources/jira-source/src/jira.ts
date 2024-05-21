@@ -1,6 +1,10 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
-import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
+import {
+  AirbyteConfig,
+  AirbyteLogger,
+  AirbyteSourceLogger,
+} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
   Issue,
@@ -19,6 +23,7 @@ import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {concat, isNil, pick, sum, toLower} from 'lodash';
 import {isEmpty} from 'lodash';
+import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -27,7 +32,6 @@ import {VError} from 'verror';
 import {JiraClient} from './client';
 import {IssueTransformer} from './issue_transformer';
 import {RunMode} from './streams/common';
-
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
   readonly username?: string;
@@ -118,6 +122,7 @@ const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
 
+const logger = new AirbyteSourceLogger();
 export class Jira {
   private readonly fieldIdsByName: Map<string, string[]>;
   // Counts the number of failed calls to fetch sprint history
@@ -276,7 +281,9 @@ export class Jira {
           `is strictly less than start timestamp '${from}'`
       );
     }
-    return `updated >= ${from.getTime()} AND updated < ${to.getTime()}`;
+    return `updated >= '${moment(from).format(
+      'YYYY/MM/DD HH:mm'
+    )}'AND updated < '${moment(to).format('YYYY/MM/DD HH:mm')}'`;
   }
 
   private async *iterate<V>(
@@ -327,7 +334,8 @@ export class Jira {
       if (
         Jira.equalsIgnoreCase(key, RepoSource.GITHUB) ||
         Jira.equalsIgnoreCase(key, RepoSource.BITBUCKET) ||
-        Jira.equalsIgnoreCase(key, RepoSource.GIT_FOR_JIRA_CLOUD)
+        Jira.equalsIgnoreCase(key, RepoSource.GIT_FOR_JIRA_CLOUD) ||
+        Jira.equalsIgnoreCase(key, RepoSource.AZURE)
       ) {
         sources[key] = 1;
       }
@@ -346,6 +354,7 @@ export class Jira {
     if (lowerSource?.includes('bitbucket')) source = RepoSource.BITBUCKET;
     else if (lowerSource?.includes('gitlab')) source = RepoSource.GITLAB;
     else if (lowerSource?.includes('github')) source = RepoSource.GITHUB;
+    else if (lowerSource?.includes('azure')) source = RepoSource.AZURE;
     else source = RepoSource.VCS;
     return {
       source,
@@ -394,6 +403,8 @@ export class Jira {
         return await this.getPullRequestsBitbucket(branchRes, repoRes);
       } else if (Jira.equalsIgnoreCase(source, RepoSource.GIT_FOR_JIRA_CLOUD)) {
         return await this.getPullRequestsGitForJiraCloud(issueId, branchRes);
+      } else if (Jira.equalsIgnoreCase(source, RepoSource.AZURE)) {
+        return await this.getPullRequestsAzureDevOps(issueId, branchRes);
       }
     }
     return [];
@@ -487,6 +498,32 @@ export class Jira {
     return pulls;
   }
 
+  async getPullRequestsAzureDevOps(
+    issueId: string,
+    branchRes: any
+  ): Promise<ReadonlyArray<PullRequest>> {
+    const pulls = [];
+    for (const detail of branchRes.detail ?? []) {
+      for (const pull of detail.pullRequests ?? []) {
+        const repoUrl = pull.source?.url;
+        if (!repoUrl) {
+          continue;
+        }
+        const lowerSource = parseGitUrl(repoUrl).source?.toLowerCase();
+        if (lowerSource?.includes('azure')) {
+          const azurePulls = await this.getPullRequestsGitHub(branchRes);
+          pulls.push(...azurePulls);
+        } else {
+          this.logger?.warn(
+            `Unsupported Azure DevOps VCS source: ${lowerSource} for issueId: ${issueId}`
+          );
+        }
+      }
+    }
+
+    return pulls;
+  }
+
   @Memoize()
   async *getProjects(): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
@@ -508,6 +545,7 @@ export class Jira {
       );
       for await (const project of projects) {
         // Bucket projects based on bucketId
+        this.logger.info(`Projects found:${projects}`);
         if (this.isProjectInBucket(project.key)) yield project;
       }
       return;
@@ -622,7 +660,7 @@ export class Jira {
     includeAdditionalFields = true,
     additionalFields?: string[]
   ): AsyncIterableIterator<Issue> {
-    let jql = `project = "${projectId}"`;
+    let jql = `project = ${projectId}`;
     if (filterJql) {
       jql += ` AND ${filterJql}`;
     }
@@ -642,20 +680,25 @@ export class Jira {
       additionalFieldIds,
       this.additionalFieldsArrayLimit
     );
-    return this.iterate(
-      (startAt) =>
-        this.api.v2.issueSearch.searchForIssuesUsingJql({
-          jql,
-          startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
-          expand: fetchKeysOnly ? undefined : 'changelog',
-          maxResults: this.maxPageSize,
-        }),
-      async (item: any) => {
-        return issueTransformer.toIssue(item);
-      },
-      'issues'
-    );
+    //logger.info(`JQL found :${jql}`); // use to debug JQL
+    try {
+      return this.iterate(
+        (startAt) =>
+          this.api.v2.issueSearch.searchForIssuesUsingJql({
+            jql,
+            startAt,
+            fields: [...fieldIds, ...additionalFieldIds],
+            expand: fetchKeysOnly ? undefined : 'changelog',
+            maxResults: this.maxPageSize,
+          }),
+        async (item: any) => {
+          return issueTransformer.toIssue(item);
+        },
+        'issues'
+      );
+    } catch (err: any) {
+      this.logger?.warn(`Failed to get  issue: ${err.message},JQL=${jql}`);
+    }
   }
 
   async getIssuePullRequests(
@@ -673,6 +716,13 @@ export class Jira {
           this.logger?.debug(
             `Fetched ${pullRequests.length} pull requests for issue ${issue.key}`
           );
+          for (let i = 0; i < pullRequests.length; i++) {
+            this.logger?.debug(
+              `Fetched Pull Request data : ${JSON.stringify(
+                pullRequests[i]
+              )} for issue ${issue.key}`
+            );
+          }
         } catch (err: any) {
           this.logger?.warn(
             `Failed to get pull requests for issue ${issue.key}: ${err.message}`
@@ -1041,6 +1091,7 @@ export class Jira {
         'displayName',
         'emailAddress',
         'active',
+        'self',
       ]);
     }
     return undefined;

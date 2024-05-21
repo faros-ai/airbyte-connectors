@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/jira';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
-
 export class Users extends JiraConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
@@ -10,7 +10,7 @@ export class Users extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const user = record.record.data;
+    const user = record.record.data as User;
     const uid = user.emailAddress ?? user.accountId;
     const source = this.streamName.source;
     const organizationName = this.getOrganizationFromUrl(user.self);

@@ -51,7 +51,9 @@ export class FarosIssues extends JiraConverter {
     const issue = record.record.data as Issue;
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
-
+    const organizationName = this.getOrganizationFromUrl(issue.url);
+    const organization = {uid: organizationName, source};
+    const issueUrl = issue.url;
     // For next-gen projects, epic should be parent of issue with issue
     // type Epic otherwise use the epic key from custom field in the issue
     const epicKey =
@@ -80,7 +82,7 @@ export class FarosIssues extends JiraConverter {
         issue.description,
         this.truncateLimit(ctx)
       ),
-      url: issue.url,
+      url: issueUrl,
       type: {
         category:
           typeCategories.get(JiraCommon.normalize(issue.type)) ?? 'Custom',
@@ -109,6 +111,7 @@ export class FarosIssues extends JiraConverter {
       resolutionStatus: issue.resolution,
       resolvedAt: issue.resolutionDate,
       sourceSystemId: issue.id,
+      organization,
     };
 
     results.push({model: 'tms_Task', record: task});
@@ -187,7 +190,7 @@ export class FarosIssues extends JiraConverter {
 
     for (const sprint of issue.sprintInfo?.history || []) {
       results.push({
-        model: 'tms_SprintHistory',
+        model: 'tms_Sprint',
         record: {
           task: {uid: issue.key, source},
           sprint: {uid: sprint.uid, source},
