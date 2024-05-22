@@ -120,7 +120,8 @@ describe('index', () => {
     mockedImplementation?: any,
     streamSlice?: any,
     isCloud = true,
-    expectedLength?: number
+    // only use if we do not want to write data snapshot
+    expectedResultLength?: number
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -155,10 +156,10 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    if (!expectedLength) {
+    if (!expectedResultLength) {
       expect(items).toMatchSnapshot();
     } else {
-      expect(items).toHaveLength(expectedLength);
+      expect(items).toHaveLength(expectedResultLength);
     }
   };
 
