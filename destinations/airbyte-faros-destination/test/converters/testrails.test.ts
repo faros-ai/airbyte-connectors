@@ -1,14 +1,10 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {testrailsAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('testrails', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/testrails/catalog.json';
   let configPath: string;
@@ -16,13 +12,7 @@ describe('testrails', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {}
-    );
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -30,33 +20,13 @@ describe('testrails', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(testrailsAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       suites: 2,
       cases: 4,
       runs: 2,
       results: 4,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       qa_TestCase: 4,
       qa_TestCaseResult: 4,
       qa_TestExecution: 2,
@@ -64,6 +34,13 @@ describe('testrails', () => {
       qa_TestSuiteTestCaseAssociation: 4,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: testrailsAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

@@ -9,7 +9,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {gitlabAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('gitlab', () => {
   const logger = testLogger();
@@ -22,7 +22,7 @@ describe('gitlab', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -82,20 +82,7 @@ describe('gitlab', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(gitlabAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       branches: 7,
       commits: 2,
       group_labels: 2,
@@ -113,14 +100,7 @@ describe('gitlab', () => {
       tags: 1,
       users: 1,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 2,
       cicd_BuildCommitAssociation: 2,
       cicd_BuildStep: 8,
@@ -148,6 +128,13 @@ describe('gitlab', () => {
       vcs_User: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: gitlabAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

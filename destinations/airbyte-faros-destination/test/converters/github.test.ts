@@ -13,7 +13,7 @@ import {
   testLogger,
 } from '../testing-tools';
 import {githubAllStreamsLog, githubLog, githubPGRawLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('github', () => {
   const logger = testLogger();
@@ -27,15 +27,18 @@ describe('github', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      undefined,
-      undefined,
-      undefined,
-      {vcs_Commit: ['message'], vcs_PullRequest: ['description', 'htmlUrl']}
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.CLOUD,
+      edition_configs: undefined,
+      source_specific_configs: undefined,
+      replace_origin_map: undefined,
+      exclude_fields_map: {
+        vcs_Commit: ['message'],
+        vcs_PullRequest: ['description', 'htmlUrl'],
+      },
+    });
   });
 
   afterEach(async () => {
@@ -178,7 +181,10 @@ describe('github', () => {
   });
 
   test('fail to process bad records when strategy is FAIL', async () => {
-    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.FAIL,
+    });
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -205,7 +211,7 @@ describe('github', () => {
   });
 
   test('skip non-incremental model reset if Source failure detected', async () => {
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -262,20 +268,7 @@ describe('github', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(githubAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       assignees: 12,
       branches: 4,
       collaborators: 12,
@@ -297,14 +290,8 @@ describe('github', () => {
       workflows: 3,
       workflow_runs: 1,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
 
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 1,
       cicd_BuildCommitAssociation: 1,
       cicd_Organization: 1,
@@ -335,12 +322,13 @@ describe('github', () => {
       vcs_User: 195,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: githubAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

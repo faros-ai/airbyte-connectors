@@ -3,13 +3,11 @@ import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {SEGMENT_KEY} from '../../src/destination';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {datadogAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('datadog', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/datadog/catalog.json';
   let configPath: string;
@@ -25,18 +23,18 @@ describe('datadog', () => {
       .once()
       .thenReply(200, JSON.stringify({}));
 
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY,
-      undefined,
-      {
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.COMMUNITY,
+      edition_configs: undefined,
+      source_specific_configs: {
         datadog: {
           application_mapping:
             '{"service1": {"name": "Service 1","platform":"test"}}',
         },
-      }
-    );
+      },
+    });
   });
 
   afterEach(async () => {
@@ -44,31 +42,20 @@ describe('datadog', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(datadogAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       incidents: 2,
       metrics: 168,
       users: 14,
     };
-    const processed = _(processedByStream)
+
+    const processed = _(expectedProcessedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-    const writtenByModel = {
+
+    const expectedWrittenByModel = {
       compute_Application: 2,
       faros_MetricDefinition: 1,
       faros_MetricValue: 168,
@@ -78,14 +65,17 @@ describe('datadog', () => {
       ims_User: 14,
     };
 
-    const {processedTotal, writtenTotal} =
-      await assertProcessedAndWrittenModels(
-        processedByStream,
-        writtenByModel,
-        stdout,
-        processed,
-        cli
-      );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: datadogAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
+
+    const processedTotal = _(expectedProcessedByStream).values().sum();
+    const writtenTotal = _(expectedWrittenByModel).values().sum();
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -106,7 +96,7 @@ describe('datadog', () => {
             recordsRead: 184,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
-            writtenByModel,
+            writtenByModel: expectedWrittenByModel,
           },
           timestamp: expect.anything(),
           type: 'track',

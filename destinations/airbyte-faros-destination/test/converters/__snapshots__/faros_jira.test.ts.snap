@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros_jira process records from all streams 1`] = `
+Array [
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "1",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "TEST-1",
+      },
+    },
+  },
+]
+`;

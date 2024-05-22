@@ -1,17 +1,14 @@
-import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {StreamContext} from '../../src';
 import {Boards} from '../../src/converters/trello/boards';
 import {Users} from '../../src/converters/trello/users';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {trelloAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('trello', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/trello/catalog.json';
   let configPath: string;
@@ -19,7 +16,7 @@ describe('trello', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -27,44 +24,25 @@ describe('trello', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(trelloAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       boards: 1,
       users: 1,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       tms_Project: 1,
       tms_TaskBoard: 1,
       tms_TaskBoardProjectRelationship: 1,
       tms_User: 1,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: trelloAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 
   describe('boards', () => {

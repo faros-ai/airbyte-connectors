@@ -19,7 +19,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['closedAt'];
+    return ['completeDate'];
   }
 
   async *readRecords(

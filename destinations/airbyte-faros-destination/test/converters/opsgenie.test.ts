@@ -1,15 +1,13 @@
 import _ from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
+import {Edition} from '../../src';
 import {SEGMENT_KEY} from '../../src/destination';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {opsgenieAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('opsgenie', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/opsgenie/catalog.json';
   let configPath: string;
@@ -25,11 +23,10 @@ describe('opsgenie', () => {
       .once()
       .thenReply(200, JSON.stringify({}));
 
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      edition: Edition.COMMUNITY,
+    });
   });
 
   afterEach(async () => {
@@ -37,31 +34,18 @@ describe('opsgenie', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(opsgenieAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       incidents: 3,
       teams: 1,
       users: 2,
     };
-    const processed = _(processedByStream)
+    const processed = _(expectedProcessedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       compute_Application: 1,
       ims_Incident: 3,
       ims_IncidentApplicationImpact: 1,
@@ -75,14 +59,17 @@ describe('opsgenie', () => {
       tms_User: 2,
     };
 
-    const {processedTotal, writtenTotal} =
-      await assertProcessedAndWrittenModels(
-        processedByStream,
-        writtenByModel,
-        stdout,
-        processed,
-        cli
-      );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: opsgenieAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
+
+    const processedTotal = _(expectedProcessedByStream).values().sum();
+    const writtenTotal = _(expectedWrittenByModel).values().sum();
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -103,7 +90,7 @@ describe('opsgenie', () => {
             recordsRead: 6,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
-            writtenByModel,
+            writtenByModel: expectedWrittenByModel,
           },
           timestamp: expect.anything(),
           type: 'track',

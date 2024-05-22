@@ -1,13 +1,11 @@
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {bitbucketServerAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('bitbucket-server', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/bitbucket-server/catalog.json';
   let configPath: string;
@@ -15,7 +13,7 @@ describe('bitbucket-server', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -23,20 +21,7 @@ describe('bitbucket-server', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(bitbucketServerAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       commits: 8,
       pull_request_activities: 18,
       pull_request_diffs: 3,
@@ -47,14 +32,7 @@ describe('bitbucket-server', () => {
       tags: 1,
       users: 2,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       vcs_Commit: 7,
       vcs_File: 3,
       vcs_Membership: 4,
@@ -69,12 +47,13 @@ describe('bitbucket-server', () => {
       vcs_User: 6,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: bitbucketServerAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

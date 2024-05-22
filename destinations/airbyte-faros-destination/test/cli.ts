@@ -4,11 +4,16 @@ import path from 'path';
 import {Readable, Writable} from 'stream';
 
 export async function read(s: Readable): Promise<string> {
+  const lines = await readLines(s);
+  return lines.join('');
+}
+
+export async function readLines(s: Readable): Promise<ReadonlyArray<string>> {
   const lines: string[] = [];
   for await (const line of s) {
     lines.push(line);
   }
-  return lines.join('');
+  return lines;
 }
 
 export interface CLIOptions {

@@ -19,7 +19,7 @@ describe('index', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -55,11 +55,11 @@ describe('index', () => {
   });
 
   test('check community edition config', async () => {
-    const configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY
-    );
+    const configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.COMMUNITY,
+    });
     const cli = await CLI.runWith(['check', '--config', configPath]);
 
     expect(await read(cli.stderr)).toBe('');
@@ -74,12 +74,12 @@ describe('index', () => {
   });
 
   test('fail check on invalid segment user id', async () => {
-    const configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY,
-      {segment_user_id: 'badid'}
-    );
+    const configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.COMMUNITY,
+      edition_configs: {segment_user_id: 'badid'},
+    });
     const cli = await CLI.runWith(['check', '--config', configPath]);
 
     expect(await read(cli.stderr)).toBe('');

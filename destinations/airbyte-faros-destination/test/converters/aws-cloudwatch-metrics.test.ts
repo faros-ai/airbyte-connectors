@@ -7,7 +7,6 @@ import {
   MetricsConfig,
 } from '../../src/converters/aws-cloudwatch-metrics/metrics';
 import {DestinationRecord, StreamContext} from '../../src/converters/converter';
-import {CLI, read} from '../cli';
 import {
   initMockttp,
   sourceSpecificTempConfig,
@@ -17,7 +16,7 @@ import {
   awsCloudwatchMetricsStreamsInput,
   awsCloudwatchMetricsStreamsLog,
 } from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('AWS Cloudwatch Metrics', () => {
   const logger = testLogger();
@@ -36,41 +35,22 @@ describe('AWS Cloudwatch Metrics', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(awsCloudwatchMetricsStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       metrics: 4,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       faros_MetricDefinition: 2,
       faros_MetricValue: 4,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: awsCloudwatchMetricsStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 
   test('should correctly convert records', async () => {

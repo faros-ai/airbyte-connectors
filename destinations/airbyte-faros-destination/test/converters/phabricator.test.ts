@@ -1,13 +1,10 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {phabricatorAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('phabricator', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/phabricator/catalog.json';
   let configPath: string;
@@ -15,7 +12,7 @@ describe('phabricator', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -23,20 +20,7 @@ describe('phabricator', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(phabricatorAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       commits: 7,
       projects: 4,
       repositories: 2,
@@ -45,14 +29,7 @@ describe('phabricator', () => {
       transactions: 3,
       users: 4,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       tms_Project: 4,
       tms_TaskBoard: 4,
       tms_TaskBoardProjectRelationship: 4,
@@ -70,6 +47,13 @@ describe('phabricator', () => {
       vcs_User: 4,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: phabricatorAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });
