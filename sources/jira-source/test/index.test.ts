@@ -119,7 +119,8 @@ describe('index', () => {
     sourceConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any,
-    isCloud = true
+    isCloud = true,
+    expectedLength?: number
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -136,7 +137,8 @@ describe('index', () => {
         sourceConfig.bucket_total,
         logger,
         undefined,
-        sourceConfig?.requestedStreams
+        sourceConfig?.requestedStreams,
+        sourceConfig?.use_sprints_reverse_search
       );
     });
     const source = new sut.JiraSource(logger);
@@ -153,7 +155,11 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    expect(items).toMatchSnapshot();
+    if (!expectedLength) {
+      expect(items).toMatchSnapshot();
+    } else {
+      expect(items).toHaveLength(expectedLength);
+    }
   };
 
   const getIssuePullRequestsMockedImplementation = () => ({
@@ -288,6 +294,68 @@ describe('index', () => {
       },
       {board: '1'}
     );
+  });
+
+  test('streams - sprints using most recent', async () => {
+    const sprint = readTestResourceFile('sprints.json')[0];
+    const getAllSprintsfn = jest
+      .fn()
+      .mockResolvedValueOnce({total: 1, values: [sprint]})
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(57).fill(sprint),
+      })
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(50).fill(sprint),
+      })
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(7).fill(sprint),
+      });
+
+    await testStream(
+      3,
+      {...config, use_sprints_reverse_search: true},
+      {
+        agile: {
+          board: {
+            getBoard: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board.json')),
+            getAllSprints: getAllSprintsfn,
+          },
+        },
+      },
+      {board: '1'},
+      true,
+      58
+    );
+
+    expect(getAllSprintsfn).toHaveBeenCalledTimes(4);
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(1, {
+      boardId: 1,
+      startAt: 0,
+      state: 'active,future',
+      maxResults: 100,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(2, {
+      boardId: 1,
+      state: 'closed',
+      maxResults: 50,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(3, {
+      boardId: 1,
+      startAt: 7,
+      state: 'closed',
+      maxResults: 50,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(4, {
+      boardId: 1,
+      startAt: 0,
+      state: 'closed',
+      maxResults: 7,
+    });
   });
 
   test('streams - users', async () => {

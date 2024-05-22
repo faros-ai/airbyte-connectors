@@ -55,6 +55,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
+  readonly use_sprints_reverse_search?: boolean;
   start_date?: Date;
   end_date?: Date;
 }
@@ -121,12 +122,13 @@ const DEFAULT_BUCKET_ID = 1;
 const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
+const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
+// https://community.developer.atlassian.com/t/is-it-possible-to-pull-a-list-of-sprints-in-a-project-via-the-rest-api/53336/3
+const MAX_SPRINTS_RESULTS = 50;
 
 export class Jira {
   private static jira: Jira;
   private readonly fieldIdsByName: Map<string, string[]>;
-  // Counts the number of failed calls to fetch sprint history
-  private sprintHistoryFetchFailures = 0;
   private readonly seenIssues: Map<string, IssueCompact[]> = new Map<
     string,
     IssueCompact[]
@@ -148,7 +150,8 @@ export class Jira {
     private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
-    private readonly requestedStreams?: Set<string>
+    private readonly requestedStreams?: Set<string>,
+    private readonly useSprintsReverseSearch?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -261,7 +264,8 @@ export class Jira {
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
-      cfg.requestedStreams
+      cfg.requestedStreams,
+      cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH
     );
     return Jira.jira;
   }
@@ -864,10 +868,14 @@ export class Jira {
     boardId: string,
     range?: [Date, Date]
   ): Promise<ReadonlyArray<AgileModels.Sprint>> {
+    const sprintsIter = this.useSprintsReverseSearch
+      ? this.getReverseSprintsIterator(boardId, range)
+      : this.getSprintsIterator(boardId, range);
     const sprints: AgileModels.Sprint[] = [];
-    for await (const sprint of this.getSprintsIterator(boardId, range)) {
+    for await (const sprint of sprintsIter) {
       sprints.push(sprint);
     }
+    this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
     return sprints;
   }
 
@@ -890,6 +898,102 @@ export class Jira {
         }
         return item;
       }
+    );
+  }
+
+  private async *getReverseSprintsIterator(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<AgileModels.Sprint> {
+    const parsedBoardId = Utils.parseInteger(boardId);
+
+    // First fetch open and future sprints normally
+    yield* this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllSprints({
+          boardId: parsedBoardId,
+          startAt,
+          state: 'active,future',
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => item
+    );
+
+    this.logger?.debug(
+      `Fetching closed sprints starting with most recent in the backlog ` +
+        `in board ${boardId}`
+    );
+
+    // Initial request to get the total number of closed sprints
+    const initialResult = await this.api.agile.board.getAllSprints({
+      boardId: parsedBoardId,
+      state: 'closed',
+      maxResults: MAX_SPRINTS_RESULTS,
+    });
+
+    const totalClosedSprints = initialResult.total;
+    this.logger?.debug(
+      `Initial total closed sprints in board ${boardId}: ${totalClosedSprints}`
+    );
+
+    if (!totalClosedSprints || totalClosedSprints < 1) {
+      return;
+    }
+
+    let closedSprintsFound = 0;
+    let pagesWithNoResults = 0;
+    let count = 0;
+    let startAt = totalClosedSprints - MAX_SPRINTS_RESULTS;
+    let maxResults = MAX_SPRINTS_RESULTS;
+
+    // Ensure startAt is not negative
+    startAt = Math.max(startAt, 0);
+    let isLast = false;
+
+    do {
+      let foundSprints = false;
+      this.logger?.debug(
+        `Fetching sprints in board ${boardId}: startAt ${startAt}, maxResults ` +
+          `${maxResults}, pagesWithNoResults ${pagesWithNoResults}`
+      );
+
+      const res = await this.api.agile.board.getAllSprints({
+        boardId: parsedBoardId,
+        startAt,
+        state: 'closed',
+        maxResults,
+      });
+
+      const closedSprints = res.values;
+      for (const sprint of closedSprints) {
+        count++;
+        const completeDate = Utils.toDate(sprint.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          continue;
+        }
+
+        yield sprint;
+        closedSprintsFound++;
+        foundSprints = true;
+      }
+      pagesWithNoResults = foundSprints ? 0 : pagesWithNoResults + 1;
+
+      if (pagesWithNoResults > 4) {
+        this.logger?.debug(
+          `No closed sprints found in ${pagesWithNoResults} pages in board ` +
+            `${boardId}, stopping fetching additional sprints.`
+        );
+        break;
+      }
+
+      maxResults = Math.min(startAt, MAX_SPRINTS_RESULTS);
+      startAt = Math.max(startAt - closedSprints.length, 0);
+      isLast = count === totalClosedSprints || closedSprints.length === 0;
+    } while (!isLast);
+
+    this.logger?.debug(
+      `Found ${closedSprintsFound} closed sprints in board ${boardId}.`
     );
   }
 
@@ -944,24 +1048,25 @@ export class Jira {
     sprint: AgileModels.Sprint,
     boardId: string
   ): Promise<SprintReport> {
+    // Counts the number of failed calls to fetch sprint history
+    let sprintHistoryFetchFailures = 0;
     let report;
+
     try {
       if (
-        this.sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+        sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
         toLower(sprint.state) != 'future'
       ) {
         report = await this.api.getSprintReport(boardId, sprint.id);
-        this.sprintHistoryFetchFailures = 0;
+        sprintHistoryFetchFailures = 0;
       }
     } catch (err: any) {
       this.logger?.warn(
         `Failed to get sprint report for sprint ${sprint.id}: ${err.message}`
       );
-      if (
-        this.sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES
-      ) {
+      if (sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES) {
         this.logger?.warn(
-          `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+          `Disabling fetching sprint history, since it has failed ${sprintHistoryFetchFailures} times in a row`
         );
       }
     }
