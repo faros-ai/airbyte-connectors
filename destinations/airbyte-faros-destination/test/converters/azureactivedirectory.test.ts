@@ -1,13 +1,11 @@
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {CLI, read} from './../cli';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {azureactivedirectoryAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('azureactivedirectory', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/azureactivedirectory/catalog.json';
   let configPath: string;
@@ -15,7 +13,7 @@ describe('azureactivedirectory', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -23,31 +21,11 @@ describe('azureactivedirectory', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(azureactivedirectoryAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       groups: 1,
       users: 2,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       geo_Address: 1,
       geo_Location: 1,
       identity_Identity: 2,
@@ -57,6 +35,13 @@ describe('azureactivedirectory', () => {
       org_TeamMembership: 2,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: azureactivedirectoryAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

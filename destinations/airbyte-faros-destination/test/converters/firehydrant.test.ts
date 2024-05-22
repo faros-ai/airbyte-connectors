@@ -3,13 +3,11 @@ import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {SEGMENT_KEY} from '../../src/destination';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {firehydrantAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('firehydrant', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: true});
   const catalogPath = 'test/resources/firehydrant/catalog.json';
   let configPath: string;
@@ -25,11 +23,11 @@ describe('firehydrant', () => {
       .once()
       .thenReply(200, JSON.stringify({}));
 
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.COMMUNITY
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.COMMUNITY,
+    });
   });
 
   afterEach(async () => {
@@ -37,31 +35,18 @@ describe('firehydrant', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(firehydrantAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       incidents: 4,
       teams: 2,
       users: 1,
     };
-    const processed = _(processedByStream)
+    const processed = _(expectedProcessedByStream)
       .toPairs()
       .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
       .orderBy(0, 'asc')
       .fromPairs()
       .value();
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       compute_Application: 1,
       ims_Incident: 4,
       ims_IncidentApplicationImpact: 1,
@@ -76,14 +61,17 @@ describe('firehydrant', () => {
       tms_User: 1,
     };
 
-    const {processedTotal, writtenTotal} =
-      await assertProcessedAndWrittenModels(
-        processedByStream,
-        writtenByModel,
-        stdout,
-        processed,
-        cli
-      );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: firehydrantAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
+
+    const processedTotal = _(expectedProcessedByStream).values().sum();
+    const writtenTotal = _(expectedWrittenByModel).values().sum();
 
     const recordedRequests = await segmentMock.getSeenRequests();
     expect(recordedRequests.length).toBe(1);
@@ -104,7 +92,7 @@ describe('firehydrant', () => {
             recordsRead: 7,
             recordsSkipped: 0,
             recordsWritten: writtenTotal,
-            writtenByModel,
+            writtenByModel: expectedWrittenByModel,
           },
           timestamp: expect.anything(),
           type: 'track',

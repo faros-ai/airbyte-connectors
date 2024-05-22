@@ -1,13 +1,11 @@
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {CLI, read} from './../cli';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {buildkiteAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('buildkite', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/buildkite/catalog.json';
   let configPath: string;
@@ -15,7 +13,7 @@ describe('buildkite', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -23,32 +21,12 @@ describe('buildkite', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(buildkiteAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       builds: 2,
       organizations: 2,
       pipelines: 1,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 2,
       cicd_BuildCommitAssociation: 2,
       cicd_BuildStep: 2,
@@ -56,6 +34,13 @@ describe('buildkite', () => {
       cicd_Pipeline: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: buildkiteAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

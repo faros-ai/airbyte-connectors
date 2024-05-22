@@ -38,56 +38,55 @@ export async function tempFile(data: string, postfix: string): Promise<string> {
   return file.path;
 }
 
+export interface TempConfigOptions {
+  readonly api_url: string;
+  readonly invalid_record_strategy?: InvalidRecordStrategy;
+  readonly edition?: Edition;
+  readonly edition_configs?: Dictionary<any>;
+  readonly source_specific_configs?: Dictionary<any>;
+  readonly replace_origin_map?: Dictionary<any>;
+  readonly exclude_fields_map?: Dictionary<any>;
+  readonly log_records?: boolean;
+}
+
 /**
  * Creates a temporary file with testing configuration
  * @return path to the temporary config file to delete
  */
-export async function tempConfig(
-  url: string,
-  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-  edition = Edition.CLOUD,
-  edition_configs?: Dictionary<any>,
-  source_specific_configs?: Dictionary<any>,
-  replace_origin_map?: Dictionary<any>,
-  exclude_fields_map?: Dictionary<any>
-): Promise<string> {
-  const conf = getConf(
-    url,
-    invalid_record_strategy,
-    edition,
-    edition_configs,
-    source_specific_configs,
-    replace_origin_map,
-    exclude_fields_map
-  );
+export async function tempConfig(options: TempConfigOptions): Promise<string> {
+  const conf = getConf(options);
 
   return tempFile(JSON.stringify(conf), '.json');
 }
 
-export function getConf(
-  url: string,
-  invalid_record_strategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
-  edition = Edition.CLOUD,
-  edition_configs?: Dictionary<any>,
-  source_specific_configs?: Dictionary<any>,
-  replace_origin_map?: Dictionary<any>,
-  exclude_fields_map?: Dictionary<any>
-): any {
+export function getConf(options: TempConfigOptions): any {
+  const {
+    api_url,
+    invalid_record_strategy = InvalidRecordStrategy.FAIL,
+    edition = Edition.CLOUD,
+    edition_configs = {},
+    source_specific_configs = {},
+    replace_origin_map = {},
+    exclude_fields_map = {},
+    log_records = false,
+  } = options;
+
   const edition_configs_defaults =
     edition === Edition.CLOUD
       ? {
           edition,
-          api_url: url,
+          api_url,
           api_key: 'test-api-key',
           graph: 'test-graph',
           graphql_api: 'v1',
         }
       : {
           edition,
-          hasura_url: url,
+          hasura_url: api_url,
           segment_user_id: 'bacaf6e6-41d8-4102-a3a4-5d28100e642f',
-          segment_test_host: url,
+          segment_test_host: api_url,
         };
+
   const conf = {
     edition_configs: {...edition_configs_defaults, ...edition_configs},
     invalid_record_strategy,
@@ -104,7 +103,9 @@ export function getConf(
     replace_origin_map: JSON.stringify(replace_origin_map),
     exclude_fields_map: JSON.stringify(exclude_fields_map),
     faros_source_id: TEST_SOURCE_ID,
+    log_records,
   };
+
   return conf;
 }
 
@@ -112,13 +113,7 @@ export function sourceSpecificTempConfig(
   url: string,
   source_specific_configs: Dictionary<any>
 ): Promise<string> {
-  return tempConfig(
-    url,
-    InvalidRecordStrategy.SKIP,
-    Edition.CLOUD,
-    {},
-    source_specific_configs
-  );
+  return tempConfig({api_url: url, source_specific_configs});
 }
 
 export async function initMockttp(mockttp: Mockttp): Promise<void> {

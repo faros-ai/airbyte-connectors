@@ -7,7 +7,7 @@ import {
   readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
-import {runTest} from './utils';
+import {destinationWriteTest} from './utils';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'vanta/mockQueryNamesToObjects.json'
@@ -74,7 +74,7 @@ describe('vanta', () => {
   });
 
   const getTempConfig = async (mockttp: Mockttp): Promise<string> => {
-    return await tempConfig(mockttp.url);
+    return await tempConfig({api_url: mockttp.url});
   };
 
   test('test entries', async () => {
@@ -87,14 +87,14 @@ describe('vanta', () => {
       sec_Vulnerability: 3,
       vcs_RepositoryVulnerability: 1,
     };
-    await runTest(
+    await destinationWriteTest({
       configPath,
       catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog2,
-      streamNamePrefix
-    );
+      expectedProcessedByStream: processedByStream,
+      expectedWrittenByModel: writtenByModel,
+      streamsLog: streamsLog2,
+      streamNamePrefix,
+    });
   });
 
   test('test no entries', async () => {
@@ -106,14 +106,14 @@ describe('vanta', () => {
       cicd_ArtifactVulnerability: 1,
       sec_Vulnerability: 3,
     };
-    await runTest(
+    await destinationWriteTest({
       configPath,
       catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog1,
-      streamNamePrefix
-    );
+      expectedProcessedByStream: processedByStream,
+      expectedWrittenByModel: writtenByModel,
+      streamsLog: streamsLog1,
+      streamNamePrefix,
+    });
   });
 
   test('test entries with duplicate UIDs', async () => {
@@ -126,14 +126,14 @@ describe('vanta', () => {
       sec_Vulnerability: 2,
       vcs_RepositoryVulnerability: 1,
     };
-    await runTest(
+    await destinationWriteTest({
       configPath,
       catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog3,
-      streamNamePrefix
-    );
+      expectedProcessedByStream: processedByStream,
+      expectedWrittenByModel: writtenByModel,
+      streamsLog: streamsLog3,
+      streamNamePrefix,
+    });
   });
 
   test('github commit sha', async () => {

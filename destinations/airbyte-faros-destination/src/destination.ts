@@ -516,8 +516,18 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       );
 
       if (dryRunEnabled) {
+        let recWriter;
         this.logger.info("Dry run is ENABLED. Won't write any records");
-
+        if (config.log_records) {
+          this.logger.info('Will log converted records');
+          recWriter = new Writable({
+            objectMode: true,
+            write: (chunk, encoding, callback) => {
+              this.logger.write(AirbyteRecord.make('dry_run', chunk));
+              callback();
+            },
+          });
+        }
         for await (const stateMessage of this.writeEntries(
           config,
           streamContext,
@@ -525,7 +535,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           streams,
           converterDependencies,
           stats,
-          syncErrors
+          syncErrors,
+          recWriter
         )) {
           latestStateMessage = stateMessage;
         }

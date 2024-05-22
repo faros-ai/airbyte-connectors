@@ -1,10 +1,8 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {CLI, read} from '../cli';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {semaphoreciAllStreamLogs} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('semaphoreci', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -14,7 +12,7 @@ describe('semaphoreci', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
@@ -22,29 +20,11 @@ describe('semaphoreci', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(semaphoreciAllStreamLogs, 'utf8');
-
-    const stdout = await read(cli.stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       projects: 1,
       pipelines: 5,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 5,
       cicd_BuildCommitAssociation: 5,
       cicd_BuildStep: 20,
@@ -53,6 +33,13 @@ describe('semaphoreci', () => {
       cicd_Repository: 1,
     };
 
-    await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: semaphoreciAllStreamLogs,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

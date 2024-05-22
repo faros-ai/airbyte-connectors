@@ -2,7 +2,6 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
 import {StreamContext} from '../../src/converters/converter';
 import {
   GroupsStream,
@@ -14,13 +13,11 @@ import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_rat
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {zendeskAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('zendesk', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/zendesk/catalog.json';
   let configPath: string;
@@ -28,13 +25,10 @@ describe('zendesk', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      undefined,
-      {zendesk: {sync_groups: true}}
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      source_specific_configs: {zendesk: {sync_groups: true}},
+    });
   });
 
   afterEach(async () => {
@@ -42,20 +36,7 @@ describe('zendesk', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(zendeskAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
+    const expectedProcessedByStream = {
       groups: 2,
       satisfaction_ratings: 2,
       tags: 8,
@@ -64,14 +45,7 @@ describe('zendesk', () => {
       tickets: 14,
       users: 15,
     };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       faros_MetricDefinition: 1,
       faros_MetricValue: 2,
       faros_TmsTaskBoardOptions: 1,
@@ -90,13 +64,14 @@ describe('zendesk', () => {
       tms_User: 15,
     };
 
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: zendeskAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });
 

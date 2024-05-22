@@ -1,15 +1,10 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
-import {Dictionary} from 'ts-essentials';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {jenkinsAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from "./utils";
+import {destinationWriteTest} from './utils';
 
 describe('jenkins', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const catalogPath = 'test/resources/jenkins/catalog.json';
   let configPath: string;
@@ -17,77 +12,64 @@ describe('jenkins', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
     await mockttp.stop();
   });
 
-  async function testStreams(
-    processedByStream: Dictionary<number>,
-    writtenByModel: Dictionary<number>
-  ): Promise<void> {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(jenkinsAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const { processedTotal, writtenTotal } = await assertProcessedAndWrittenModels(processedByStream, writtenByModel, stdout, processed, cli);
-  }
-
   test('process records from all streams', async () => {
-    const processedByStream = {
+    const expectedProcessedByStream = {
       jobs: 2,
       builds: 4,
     };
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 4,
       cicd_BuildCommitAssociation: 1,
       cicd_Organization: 6,
       cicd_Pipeline: 6,
     };
-    await testStreams(processedByStream, writtenByModel);
+
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: jenkinsAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 
   test('process records from all streams with commits', async () => {
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      source_specific_configs: {
         jenkins: {
           create_commit_records: true,
         },
-      }
-    );
-    const processedByStream = {
+      },
+    });
+
+    const expectedProcessedByStream = {
       jobs: 2,
       builds: 4,
     };
-    const writtenByModel = {
+    const expectedWrittenByModel = {
       cicd_Build: 4,
       cicd_BuildCommitAssociation: 1,
       cicd_Organization: 6,
       cicd_Pipeline: 6,
       vcs_Commit: 1,
     };
-    await testStreams(processedByStream, writtenByModel);
+
+    await destinationWriteTest({
+      configPath,
+      catalogPath,
+      streamsLog: jenkinsAllStreamsLog,
+      streamNamePrefix,
+      expectedProcessedByStream,
+      expectedWrittenByModel,
+    });
   });
 });

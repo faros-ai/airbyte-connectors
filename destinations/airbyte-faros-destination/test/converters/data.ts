@@ -8,6 +8,9 @@ export const githubAllStreamsLog = readTestResourceFile(
 export const jenkinsAllStreamsLog = readTestResourceFile(
   'jenkins/all-streams.log'
 );
+export const farosJiraAllStreamsLog = readTestResourceFile(
+  'faros_jira/all-streams.log'
+);
 export const jiraAllStreamsLog = readTestResourceFile('jira/all-streams.log');
 export const airtableSurveysAllStreamsLog = readTestResourceFile(
   'abstract-surveys/surveys/all-streams.log'
