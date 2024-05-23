@@ -27,7 +27,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
     // Jira Agile API GetConfiguration response type does not include key property
     // but, in practice, it is actually present
-    const projectKey = boardConfig.location['key'];
+    const projectKey = boardConfig.location?.['key'];
     try {
       for await (const issue of jira.getIssuesKeys(
         new JqlBuilder(boardJql).withProject(projectKey).build()

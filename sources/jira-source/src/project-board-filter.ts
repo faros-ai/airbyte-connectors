@@ -28,7 +28,7 @@ export class ProjectBoardFilter {
               this.farosClient,
               this.config.graph ?? DEFAULT_GRAPH
             )
-          : jira.getProjects();
+          : await jira.getProjects();
         for await (const project of projects) {
           this.projects.add(project.key);
         }
@@ -48,43 +48,49 @@ export class ProjectBoardFilter {
       this.boards = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
-      if (!this.config.boards) {
-        const boards = this.supportsFarosClient()
-          ? jira.getBoardsFromGraph(
-              this.farosClient,
-              this.config.graph ?? DEFAULT_GRAPH
-            )
-          : jira.getBoards();
+
+      // Ensure projects is populated
+      await this.getProjects();
+
+      if (this.supportsFarosClient()) {
+        const boards = jira.getBoardsFromGraph(
+          this.farosClient,
+          this.config.graph ?? DEFAULT_GRAPH
+        );
         for await (const board of boards) {
-          await this.maybeIncludeBoard(board.id.toString());
+          // If boards are specified, only include those
+          if (
+            this.config.boards &&
+            !this.config.boards.includes(board.id.toString())
+          ) {
+            continue;
+          }
+          // Check if at least one board project key is in the projects list
+          if (
+            board.projectKeys.some((projectKey) =>
+              this.projects?.has(projectKey)
+            )
+          ) {
+            this.boards.add(board.id.toString());
+          }
         }
       } else {
-        for (const board of this.config.boards) {
-          if (await jira.isBoardInBucket(board)) {
-            await this.maybeIncludeBoard(board);
+        for (const project of this.projects) {
+          const boards = jira.getBoards(project);
+          for await (const board of boards) {
+            // If boards are specified, only include those
+            if (
+              this.config.boards &&
+              !this.config.boards.includes(board.id.toString())
+            ) {
+              continue;
+            }
+            this.boards.add(board.id.toString());
           }
         }
       }
     }
     return Array.from(this.boards);
-  }
-
-  private async maybeIncludeBoard(boardId: string): Promise<void> {
-    const jira = await Jira.instance(this.config, this.logger);
-    const boardConfig = await jira.getBoardConfiguration(boardId);
-    // Jira Agile API GetConfiguration response type does not include key property
-    const projectKey = (boardConfig.location as any)?.key;
-    if (!projectKey) {
-      this.logger.warn(`No project key found for board ${boardId}`);
-      return;
-    }
-
-    // Ensure projects is populated
-    await this.getProjects();
-
-    if (this.projects.has(projectKey)) {
-      this.boards.add(boardId);
-    }
   }
 
   private supportsFarosClient(): boolean {
