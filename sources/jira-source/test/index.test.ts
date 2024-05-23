@@ -238,9 +238,7 @@ describe('index', () => {
         end_date: new Date('2021-01-02'),
       },
       getIssuePullRequestsMockedImplementation(),
-      {
-        project: 'TEST',
-      }
+      {project: 'TEST'}
     );
   });
 
@@ -490,5 +488,34 @@ describe('index', () => {
       },
       {project: 'TEST'}
     );
+  });
+
+  test('streams - project versions', async () => {
+    await testStream(8, config, {
+      v2: {
+        projectVersions: {
+          getProjectVersionsPaginated: paginate(
+            readTestResourceFile('project_versions.json')
+          ),
+        },
+      },
+    });
+  });
+
+  test('streams - project version issues', async () => {
+    const version = readTestResourceFile('project_versions.json')[0];
+    await testStream(9, config, {
+      v2: {
+        issueSearch: {
+          searchForIssuesUsingJql: paginate(
+            readTestResourceFile('project_version_issues.json'),
+            'issues'
+          ),
+        },
+        projectVersions: {
+          getProjectVersionsPaginated: paginate([version]),
+        },
+      },
+    });
   });
 });

@@ -268,3 +268,7 @@
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_boards", "data": {"uid": "1", "id": 1, "name": "Test board", "type": "scrum", "projectKey": "TEST"}, "emitted_at": 1714744403608}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_boards", "data": {"uid": "faros-tasks-with-no-board-TEST", "name": "Tasks without a board in project TEST", "projectKey": "TEST"}, "emitted_at": 1714744403135}}
 {"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}
+{"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716484789893,"data":{"id":"10006","name":"Test Release","startDate":"2024-01-15","releaseDate":"2024-03-19","projectId":10011,"projectKey":"TEST"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716484789894,"data":{"id":"10007","name":"Test Overdue Release","startDate":"2024-02-16","releaseDate":"2024-04-16","projectId":10011,"projectKey":"TEST"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379121,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379569,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}

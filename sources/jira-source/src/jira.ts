@@ -538,7 +538,6 @@ export class Jira {
     );
     for await (const project of projects) {
       // Bucket projects based on bucketId
-      this.logger?.debug(`Project ${project.key} found`);
       if (this.isProjectInBucket(project.key)) yield project;
     }
   }
@@ -823,6 +822,13 @@ export class Jira {
     }
   }
 
+  async getBoardsFromCloud(projectId: string): Promise<void> {
+    const releases = this.api.v2.projectVersions.getProjectVersionsPaginated({
+      projectIdOrKey: projectId,
+      maxResults: this.maxPageSize,
+    });
+  }
+
   async *getBoardsFromGraph(
     farosClient: FarosClient,
     graph: string
@@ -1049,6 +1055,27 @@ export class Jira {
     for (const [id, name] of this.fieldNameById) {
       yield {id, name};
     }
+  }
+
+  @Memoize()
+  async getProjectVersions(
+    projectKey: string
+  ): Promise<ReadonlyArray<Version2Models.Version>> {
+    const versionsIterator = this.iterate(
+      (startAt) =>
+        this.api.v2.projectVersions.getProjectVersionsPaginated({
+          startAt,
+          projectIdOrKey: projectKey,
+          maxResults: this.maxPageSize,
+        }),
+      (item: Version2Models.Version) => item
+    );
+
+    const versions = [];
+    for await (const version of versionsIterator) {
+      versions.push(version);
+    }
+    return versions;
   }
 
   getUsers(): AsyncIterableIterator<Version2Models.User> {

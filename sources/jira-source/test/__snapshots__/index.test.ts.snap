@@ -160,6 +160,42 @@ exports[`index streams - issue_pull_requests 1`] = `
 ]
 `;
 
+exports[`index streams - project version issues 1`] = `
+[
+  {
+    "key": "TEST-1",
+    "projectVersionId": "10000",
+  },
+  {
+    "key": "TEST-2",
+    "projectVersionId": "10000",
+  },
+]
+`;
+
+exports[`index streams - project versions 1`] = `
+[
+  {
+    "description": "Initial release of the project",
+    "id": "10000",
+    "name": "Version 1.0",
+    "projectId": 1,
+    "projectKey": undefined,
+    "releaseDate": "2023-03-01",
+    "startDate": "2023-01-01",
+  },
+  {
+    "description": "Second release of the project",
+    "id": "10001",
+    "name": "Version 2.0",
+    "projectId": 1,
+    "projectKey": undefined,
+    "releaseDate": "2023-06-01",
+    "startDate": "2023-04-01",
+  },
+]
+`;
+
 exports[`index streams - projects - Cloud project list 1`] = `
 [
   {
