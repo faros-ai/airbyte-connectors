@@ -1058,12 +1058,6 @@ export class Jira {
     return filterJQL.jql;
   }
 
-  async isBoardInBucket(boardId: string): Promise<boolean> {
-    const board = await this.getBoard(boardId);
-    const boardProject = board?.location?.projectKey;
-    return boardProject && this.isProjectInBucket(boardProject);
-  }
-
   isProjectInBucket(projectKey: string): boolean {
     return (
       bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
