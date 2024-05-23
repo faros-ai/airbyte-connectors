@@ -33,7 +33,7 @@ export class FarosBoards extends StreamWithProjectSlices {
       projectKey: this.projectKey,
     };
 
-    for await (const board of jira.getBoards(this.projectKey)) {
+    for await (const board of await jira.getBoards(this.projectKey)) {
       yield {
         ...pick(board, ['id', 'name', 'type']),
         uid: toString(board.id),

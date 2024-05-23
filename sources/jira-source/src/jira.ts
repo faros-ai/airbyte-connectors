@@ -503,7 +503,7 @@ export class Jira {
   async getProjects(
     keys?: Set<string>
   ): Promise<ReadonlyArray<Version2Models.Project>> {
-    const projects = [];
+    const projects: Version2Models.Project[] = [];
     for await (const project of this.getProjectsIterator(keys)) {
       projects.push(project);
     }
@@ -821,7 +821,18 @@ export class Jira {
     return this.requestedStreams?.has('faros_issues');
   }
 
-  async *getBoards(
+  @Memoize()
+  async getBoards(
+    projectKey?: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const boards: AgileModels.Board[] = [];
+    for await (const board of this.getBoardsIterator(projectKey)) {
+      boards.push(board);
+    }
+    return boards;
+  }
+
+  async *getBoardsIterator(
     projectKey?: string
   ): AsyncIterableIterator<AgileModels.Board> {
     const boards = this.iterate(

@@ -76,8 +76,7 @@ export class ProjectBoardFilter {
         }
       } else {
         for (const project of this.projects) {
-          const boards = jira.getBoards(project);
-          for await (const board of boards) {
+          for await (const board of await jira.getBoards(project)) {
             // If boards are specified, only include those
             if (
               this.config.boards &&
