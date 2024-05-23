@@ -1,5 +1,4 @@
 import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
@@ -12,7 +11,7 @@ import {
   tempConfig,
   testLogger,
 } from '../testing-tools';
-import {githubAllStreamsLog, githubLog, githubPGRawLog} from './data';
+import {githubLog, githubPGRawLog} from './data';
 import {destinationWriteTest} from './utils';
 
 describe('github', () => {
@@ -268,67 +267,10 @@ describe('github', () => {
   });
 
   test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      assignees: 12,
-      branches: 4,
-      collaborators: 12,
-      commits: 77,
-      issue_labels: 24,
-      issue_milestones: 1,
-      issues: 39,
-      organizations: 1,
-      projects: 1,
-      pull_request_stats: 38,
-      pull_requests: 38,
-      pull_request_commits: 3,
-      releases: 1,
-      repositories: 49,
-      review_comments: 87,
-      reviews: 121,
-      tags: 2,
-      users: 24,
-      workflows: 3,
-      workflow_runs: 1,
-    };
-
-    const expectedWrittenByModel = {
-      cicd_Build: 1,
-      cicd_BuildCommitAssociation: 1,
-      cicd_Organization: 1,
-      cicd_Pipeline: 3,
-      cicd_Release: 1,
-      cicd_ReleaseTagAssociation: 1,
-      tms_Epic: 1,
-      tms_Label: 24,
-      tms_Project: 50,
-      tms_Task: 1,
-      tms_TaskBoard: 50,
-      tms_TaskBoardProjectRelationship: 50,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 13,
-      vcs_Branch: 4,
-      vcs_BranchCommitAssociation: 1,
-      vcs_Commit: 77,
-      vcs_Membership: 12,
-      vcs_Organization: 1,
-      vcs_PullRequest: 38,
-      vcs_PullRequestComment: 87,
-      vcs_PullRequestCommit: 3,
-      vcs_PullRequestReview: 121,
-      vcs_PullRequest__Update: 38,
-      vcs_Repository: 49,
-      vcs_Tag: 2,
-      vcs_User: 195,
-    };
-
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      streamsLog: githubAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
+      catalogPath: 'test/resources/github/catalog.json',
+      inputRecordsPath: 'github/all-streams.log',
     });
   });
 });

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gitlab process records from all streams 1`] = `
+Array [
+  "Processed 55 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__branches\\\\\\":7,\\\\\\"mytestsource__gitlab__commits\\\\\\":2,\\\\\\"mytestsource__gitlab__group_labels\\\\\\":2,\\\\\\"mytestsource__gitlab__group_milestones\\\\\\":1,\\\\\\"mytestsource__gitlab__groups\\\\\\":1,\\\\\\"mytestsource__gitlab__issues\\\\\\":2,\\\\\\"mytestsource__gitlab__jobs\\\\\\":8,\\\\\\"mytestsource__gitlab__merge_request_commits\\\\\\":6,\\\\\\"mytestsource__gitlab__merge_requests\\\\\\":6,\\\\\\"mytestsource__gitlab__pipelines\\\\\\":2,\\\\\\"mytestsource__gitlab__project_labels\\\\\\":12,\\\\\\"mytestsource__gitlab__project_milestones\\\\\\":2,\\\\\\"mytestsource__gitlab__projects\\\\\\":1,\\\\\\"mytestsource__gitlab__releases\\\\\\":1,\\\\\\"mytestsource__gitlab__tags\\\\\\":1,\\\\\\"mytestsource__gitlab__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 77 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":2,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":8,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"tms_Epic\\\\\\":3,\\\\\\"tms_Label\\\\\\":15,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Branch\\\\\\":7,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":8,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":6,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

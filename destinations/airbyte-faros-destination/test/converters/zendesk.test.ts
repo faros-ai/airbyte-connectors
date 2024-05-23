@@ -14,14 +14,11 @@ import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {zendeskAllStreamsLog} from './data';
 import {destinationWriteTest} from './utils';
 
 describe('zendesk', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/zendesk/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__zendesk__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -36,41 +33,10 @@ describe('zendesk', () => {
   });
 
   test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      groups: 2,
-      satisfaction_ratings: 2,
-      tags: 8,
-      ticket_fields: 9,
-      ticket_metrics: 14,
-      tickets: 14,
-      users: 15,
-    };
-    const expectedWrittenByModel = {
-      faros_MetricDefinition: 1,
-      faros_MetricValue: 2,
-      faros_TmsTaskBoardOptions: 1,
-      org_Team: 2,
-      org_TeamMetric: 2,
-      tms_Label: 8,
-      tms_Project: 1,
-      tms_Task: 14,
-      tms_TaskAssignment: 14,
-      tms_TaskBoard: 1,
-      tms_TaskBoardProjectRelationship: 1,
-      tms_TaskBoardRelationship: 14,
-      tms_TaskDependency: 1,
-      tms_TaskProjectRelationship: 14,
-      tms_TaskTag: 29,
-      tms_User: 15,
-    };
-
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      streamsLog: zendeskAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
+      catalogPath: 'test/resources/zendesk/catalog.json',
+      inputRecordsPath: 'zendesk/all-streams.log',
     });
   });
 });
