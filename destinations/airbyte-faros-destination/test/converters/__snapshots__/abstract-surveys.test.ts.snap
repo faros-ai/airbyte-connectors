@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`abstract-surveys abstract-surveys basic test process records from all streams 1`] = `
+Array [
+  "Processed 2 records",
+  "Processed records by stream: {\\\\\\"mytestsource__airtable__surveys\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 7 records",
+  "Would write records by model: {\\\\\\"survey_Question\\\\\\":1,\\\\\\"survey_QuestionResponse\\\\\\":1,\\\\\\"survey_Survey\\\\\\":1,\\\\\\"survey_SurveyQuestionAssociation\\\\\\":1,\\\\\\"survey_Survey__Update\\\\\\":2,\\\\\\"survey_Team\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
 exports[`abstract-surveys survey responses basic response 1`] = `
 Array [
   Object {

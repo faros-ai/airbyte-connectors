@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {DestinationRecord, StreamContext} from '../../src';
@@ -14,14 +13,11 @@ import {
   SurveysConfig,
 } from '../../src/converters/abstract-surveys/surveys';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {airtableSurveysAllStreamsLog} from './data';
-import {destinationWriteTest} from './utils';
+import {generateBasicTestSuite} from './utils';
 
 describe('abstract-surveys', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/abstract-surveys/surveys/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__airtable__';
   let converter: AbstractSurveys;
 
   beforeEach(async () => {
@@ -54,27 +50,10 @@ describe('abstract-surveys', () => {
     jest.restoreAllMocks();
   });
 
-  test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      surveys: 2,
-    };
-    const expectedWrittenByModel = {
-      survey_Question: 1,
-      survey_QuestionResponse: 1,
-      survey_Survey: 1,
-      survey_SurveyQuestionAssociation: 1,
-      survey_Survey__Update: 2,
-      survey_Team: 1,
-    };
-
-    await destinationWriteTest({
-      configPath,
-      catalogPath,
-      streamsLog: airtableSurveysAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
-    });
+  generateBasicTestSuite({
+    sourceName: 'abstract-surveys',
+    catalogPath: 'test/resources/abstract-surveys/surveys/catalog.json',
+    inputRecordsPath: 'abstract-surveys/surveys/all-streams.log',
   });
 
   describe('survey responses', () => {

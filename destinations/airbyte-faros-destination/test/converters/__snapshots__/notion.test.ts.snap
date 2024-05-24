@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`notion process records from all streams 1`] = `
+Array [
+  "Processed 10 records",
+  "Processed records by stream: {\\\\\\"mytestsource__notion__pages\\\\\\":8,\\\\\\"mytestsource__notion__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 20 records",
+  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":2,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

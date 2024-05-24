@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`vanta test entries 1`] = `
+Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 6 records",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":2,\\\\\\"sec_Vulnerability\\\\\\":3,\\\\\\"vcs_RepositoryVulnerability\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`vanta test entries with duplicate UIDs 1`] = `
+Array [
+  "Processed 5 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 5 records",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":2,\\\\\\"sec_Vulnerability\\\\\\":2,\\\\\\"vcs_RepositoryVulnerability\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`vanta test no entries 1`] = `
+Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 4 records",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
