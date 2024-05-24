@@ -1,5 +1,4 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';
@@ -9,14 +8,11 @@ import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {Users} from '../../src/converters/asana/users';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {asanaAllStreamsLog} from './data';
-import {destinationWriteTest} from './utils';
+import {generateBasicTestSuite} from './utils';
 
 describe('asana', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/asana/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__asana__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -27,32 +23,7 @@ describe('asana', () => {
     await mockttp.stop();
   });
 
-  test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      projects: 1,
-      tags: 2,
-      tasks: 3,
-      users: 1,
-    };
-    const expectedWrittenByModel = {
-      tms_Label: 2,
-      tms_Project: 1,
-      tms_Task: 3,
-      tms_TaskBoard: 1,
-      tms_TaskBoardProjectRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 1,
-    };
-
-    await destinationWriteTest({
-      configPath,
-      catalogPath,
-      streamsLog: asanaAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
-    });
-  });
+  generateBasicTestSuite({sourceName: 'asana'});
 
   describe('tasks', () => {
     const converter = new Tasks();

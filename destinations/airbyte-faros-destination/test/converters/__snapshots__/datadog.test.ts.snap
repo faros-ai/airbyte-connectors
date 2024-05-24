@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`datadog process records from all streams 1`] = `
+Array [
+  "Processed 184 records",
+  "Processed records by stream: {\\\\\\"mytestsource__datadog__incidents\\\\\\":2,\\\\\\"mytestsource__datadog__metrics\\\\\\":168,\\\\\\"mytestsource__datadog__users\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 192 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":168,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`datadog process records from all streams 2`] = `
+Object {
+  "messagesRead": 184,
+  "processedByStream": Object {
+    "mytestsource__datadog__incidents": 2,
+    "mytestsource__datadog__metrics": 168,
+    "mytestsource__datadog__users": 14,
+  },
+  "recordsErrored": 0,
+  "recordsProcessed": 184,
+  "recordsRead": 184,
+  "recordsSkipped": 0,
+  "recordsWritten": 192,
+  "writtenByModel": Object {
+    "compute_Application": 2,
+    "faros_MetricDefinition": 1,
+    "faros_MetricValue": 168,
+    "ims_Incident": 2,
+    "ims_IncidentApplicationImpact": 3,
+    "ims_IncidentAssignment": 2,
+    "ims_User": 14,
+  },
+}
+`;

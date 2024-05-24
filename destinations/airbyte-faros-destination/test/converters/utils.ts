@@ -1,22 +1,19 @@
 import {
-  AirbyteLog,
-  AirbyteLogLevel,
   AirbyteMessageType,
   AirbyteRecord,
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
-import _ from 'lodash';
+import {getLocal} from 'mockttp';
 import {Dictionary} from 'ts-essentials';
 
 import {CLI, read, readLines} from '../cli';
+import {initMockttp, tempConfig} from '../testing-tools';
+import {readTestResourceFile} from '../testing-tools';
 
 export interface DestinationWriteTestOptions {
   configPath: string;
   catalogPath: string;
-  streamsLog: string;
-  streamNamePrefix: string;
-  expectedProcessedByStream?: Dictionary<number>;
-  expectedWrittenByModel?: Dictionary<number>;
+  inputRecordsPath: string;
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
@@ -29,10 +26,7 @@ export const destinationWriteTest = async (
   const {
     configPath,
     catalogPath,
-    expectedProcessedByStream,
-    expectedWrittenByModel,
-    streamsLog,
-    streamNamePrefix,
+    inputRecordsPath,
     checkRecordsData = undefined,
   } = options;
   const cli = await CLI.runWith([
@@ -44,43 +38,28 @@ export const destinationWriteTest = async (
     '--dry-run',
   ]);
 
-  cli.stdin.end(streamsLog, 'utf8');
+  cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
   const stdoutLines = await readLines(cli.stdout);
+  const matches: string[] = [];
 
-  if (expectedProcessedByStream && expectedWrittenByModel) {
-    const stdout = stdoutLines.join('');
+  stdoutLines.forEach((line) => {
+    const regexes = [
+      /Processed (\d+) records/,
+      /Would write (\d+) records/,
+      /Errored (\d+) records/,
+      /Skipped (\d+) records/,
+      /Processed records by stream: {(.*)}/,
+      /Would write records by model: {(.*)}/,
+    ];
 
-    const processed = _(expectedProcessedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
+    const matchedLine = regexes.find((regex) => regex.test(line));
+    if (matchedLine) {
+      matches.push(matchedLine.exec(line)![0]);
+    }
+  });
 
-    const processedTotal = _(expectedProcessedByStream).values().sum();
-    const writtenTotal = _(expectedWrittenByModel).values().sum();
-    expect(stdout).toMatch(`Processed ${processedTotal} records`);
-    expect(stdout).toMatch(`Would write ${writtenTotal} records`);
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Processed records by stream: ${JSON.stringify(processed)}`
-        )
-      )
-    );
-    expect(stdout).toMatch(
-      JSON.stringify(
-        AirbyteLog.make(
-          AirbyteLogLevel.INFO,
-          `Would write records by model: ${JSON.stringify(expectedWrittenByModel)}`
-        )
-      )
-    );
-  }
+  expect(matches).toMatchSnapshot();
 
   if (checkRecordsData) {
     const records = await readRecordData(stdoutLines);
@@ -91,7 +70,7 @@ export const destinationWriteTest = async (
   expect(await cli.wait()).toBe(0);
 };
 
-export async function readRecordData(
+async function readRecordData(
   lines: ReadonlyArray<string>
 ): Promise<ReadonlyArray<Dictionary<any>>> {
   const records: Dictionary<any>[] = [];
@@ -107,4 +86,32 @@ export async function readRecordData(
     }
   }
   return records;
+}
+
+export function generateBasicTestSuite({
+  sourceName,
+  catalogPath = `test/resources/${sourceName}/catalog.json`,
+  inputRecordsPath = `${sourceName}/all-streams.log`,
+}) {
+  describe(`${sourceName} basic test`, () => {
+    const mockttp = getLocal({debug: false, recordTraffic: false});
+    let configPath;
+
+    beforeEach(async () => {
+      await initMockttp(mockttp);
+      configPath = await tempConfig({api_url: mockttp.url});
+    });
+
+    afterEach(async () => {
+      await mockttp.stop();
+    });
+
+    test('process records from all streams', async () => {
+      await destinationWriteTest({
+        configPath,
+        catalogPath,
+        inputRecordsPath,
+      });
+    });
+  });
 }

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gitlab-ci basic test process records from all streams 1`] = `
+Array [
+  "Processed 31 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab-ci__groups\\\\\\":5,\\\\\\"mytestsource__gitlab-ci__jobs\\\\\\":9,\\\\\\"mytestsource__gitlab-ci__pipelines\\\\\\":9,\\\\\\"mytestsource__gitlab-ci__projects\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 40 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":9,\\\\\\"cicd_BuildCommitAssociation\\\\\\":9,\\\\\\"cicd_BuildStep\\\\\\":9,\\\\\\"cicd_Organization\\\\\\":5,\\\\\\"cicd_Pipeline\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

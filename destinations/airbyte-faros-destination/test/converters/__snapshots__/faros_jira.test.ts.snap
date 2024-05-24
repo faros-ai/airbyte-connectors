@@ -2,17 +2,68 @@
 
 exports[`faros_jira process records from all streams 1`] = `
 Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 5 records",
+  "Would write records by model: {\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_jira process records from all streams 2`] = `
+Array [
   Object {
     "tms_TaskBoardRelationship": Object {
       "board": Object {
         "source": "Jira",
-        "uid": "1",
+        "uid": "48",
       },
       "source": "Jira",
       "task": Object {
         "source": "Jira",
-        "uid": "TEST-1",
+        "uid": "PLAYG-185",
       },
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Tasks without a board in project PLAYG",
+      "source": "Jira",
+      "uid": "faros-tasks-with-no-board-PLAYG",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "faros-tasks-with-no-board-PLAYG",
+      },
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "PLAYG board",
+      "source": "Jira",
+      "uid": "21",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "21",
+      },
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
     },
   },
 ]

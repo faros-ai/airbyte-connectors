@@ -44,24 +44,10 @@ describe('googlecalendar', () => {
   });
 
   test('process records from all streams', async () => {
-    const expectedProcessedByStream = {calendars: 1, events: 3};
-    const expectedWrittenByModel = {
-      cal_Calendar: 1,
-      cal_Event: 3,
-      cal_EventGuestAssociation: 2,
-      cal_User: 2,
-      geo_Address: 2,
-      geo_Coordinates: 2,
-      geo_Location: 2,
-    };
-
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      streamsLog: googlecalendarAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
+      catalogPath: 'test/resources/googlecalendar/catalog.json',
+      inputRecordsPath: 'googlecalendar/all-streams.log',
     });
   });
 });

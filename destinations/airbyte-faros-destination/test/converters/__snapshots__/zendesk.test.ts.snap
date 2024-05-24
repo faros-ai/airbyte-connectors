@@ -678,3 +678,14 @@ Array [
   },
 ]
 `;
+
+exports[`zendesk process records from all streams 1`] = `
+Array [
+  "Processed 64 records",
+  "Processed records by stream: {\\\\\\"mytestsource__zendesk__groups\\\\\\":2,\\\\\\"mytestsource__zendesk__satisfaction_ratings\\\\\\":2,\\\\\\"mytestsource__zendesk__tags\\\\\\":8,\\\\\\"mytestsource__zendesk__ticket_fields\\\\\\":9,\\\\\\"mytestsource__zendesk__ticket_metrics\\\\\\":14,\\\\\\"mytestsource__zendesk__tickets\\\\\\":14,\\\\\\"mytestsource__zendesk__users\\\\\\":15}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 120 records",
+  "Would write records by model: {\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":2,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"org_Team\\\\\\":2,\\\\\\"org_TeamMetric\\\\\\":2,\\\\\\"tms_Label\\\\\\":8,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":14,\\\\\\"tms_TaskAssignment\\\\\\":14,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":14,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":14,\\\\\\"tms_TaskTag\\\\\\":29,\\\\\\"tms_User\\\\\\":15}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
