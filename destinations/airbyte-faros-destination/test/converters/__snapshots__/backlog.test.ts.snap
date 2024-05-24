@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`backlog basic test process records from all streams 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__backlog__issues\\\\\\":3,\\\\\\"mytestsource__backlog__projects\\\\\\":1,\\\\\\"mytestsource__backlog__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 18 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

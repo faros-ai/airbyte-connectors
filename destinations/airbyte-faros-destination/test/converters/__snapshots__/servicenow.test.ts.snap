@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`servicenow basic test process records from all streams 1`] = `
+Array [
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__servicenow__incidents\\\\\\":2,\\\\\\"mytestsource__servicenow__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 9 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

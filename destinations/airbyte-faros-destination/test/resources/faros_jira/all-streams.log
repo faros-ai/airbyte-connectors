@@ -1,1 +1,3 @@
-{"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_board_issues", "emitted_at": 1712673836940,"data": {"key": "TEST-1","boardId": "1"}}}
+{"record":{"stream":"mytestsource__jira__faros_board_issues","emitted_at":1716403407414,"data":{"key":"PLAYG-185","boardId":"48"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_boards","emitted_at":1716402911645,"data":{"uid":"faros-tasks-with-no-board-PLAYG","name":"Tasks without a board in project PLAYG","projectKey":"PLAYG"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_boards","emitted_at":1716402912152,"data":{"id":21,"name":"PLAYG board","type":"scrum","uid":"21","projectKey":"PLAYG"}},"type":"RECORD"}

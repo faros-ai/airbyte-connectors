@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`azureactivedirectory basic test process records from all streams 1`] = `
+Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azureactivedirectory__groups\\\\\\":1,\\\\\\"mytestsource__azureactivedirectory__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 10 records",
+  "Would write records by model: {\\\\\\"geo_Address\\\\\\":1,\\\\\\"geo_Location\\\\\\":1,\\\\\\"identity_Identity\\\\\\":2,\\\\\\"org_Department\\\\\\":1,\\\\\\"org_Employee\\\\\\":2,\\\\\\"org_Team\\\\\\":1,\\\\\\"org_TeamMembership\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

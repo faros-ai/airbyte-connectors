@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`victorops basic test process records from all streams 1`] = `
+Array [
+  "Processed 5 records",
+  "Processed records by stream: {\\\\\\"mytestsource__victorops__incidents\\\\\\":2,\\\\\\"mytestsource__victorops__teams\\\\\\":2,\\\\\\"mytestsource__victorops__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 17 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_IncidentEvent\\\\\\":4,\\\\\\"ims_Team\\\\\\":2,\\\\\\"ims_TeamIncidentAssociation\\\\\\":2,\\\\\\"ims_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

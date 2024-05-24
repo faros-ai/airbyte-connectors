@@ -47,11 +47,6 @@ describe('vanta', () => {
   // 2. Check Github Commit Sha Regex
 
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/vanta/catalog.json';
-  const streamNamePrefix = 'mytestsource__vanta__';
-  const streamsLog1 = readTestResourceFile('vanta/streams.log');
-  const streamsLog2 = readTestResourceFile('vanta/streams2.log');
-  const streamsLog3 = readTestResourceFile('vanta/streams3.log');
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -79,60 +74,28 @@ describe('vanta', () => {
 
   test('test entries', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 2,
-      sec_Vulnerability: 3,
-      vcs_RepositoryVulnerability: 1,
-    };
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog2,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams2.log',
     });
   });
 
   test('test no entries', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 1,
-      sec_Vulnerability: 3,
-    };
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog1,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams.log',
     });
   });
 
   test('test entries with duplicate UIDs', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 5,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 2,
-      sec_Vulnerability: 2,
-      vcs_RepositoryVulnerability: 1,
-    };
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog3,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams3.log',
     });
   });
 

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`clickup process records from all streams 1`] = `
+Array [
+  "Processed 37 records",
+  "Processed records by stream: {\\\\\\"mytestsource__clickup__folders\\\\\\":2,\\\\\\"mytestsource__clickup__goals\\\\\\":2,\\\\\\"mytestsource__clickup__lists\\\\\\":5,\\\\\\"mytestsource__clickup__spaces\\\\\\":7,\\\\\\"mytestsource__clickup__status_histories\\\\\\":9,\\\\\\"mytestsource__clickup__tasks\\\\\\":9,\\\\\\"mytestsource__clickup__workspaces\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 62 records",
+  "Would write records by model: {\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":9,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":7,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":7,\\\\\\"tms_TaskBoardRelationship\\\\\\":9,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":9,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_Task__Update\\\\\\":9,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
