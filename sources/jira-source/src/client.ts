@@ -1,15 +1,24 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {RequestConfig} from 'jira.js';
-import jira, {AgileClient, Version2Client, Version2Models} from 'jira.js';
+import jira, {
+  AgileClient,
+  BaseClient,
+  Version2Client,
+  Version2Models,
+} from 'jira.js';
 
 import {
   AgileClientWithRetry,
+  BaseClientWithRetry,
   Version2ClientWithRetry,
   WithRetry,
 } from './retry';
 
+const GRAPHQL_PATH = '/gateway/api/directory/graphql';
+
 /** Client that extends the jira.js clients with retries and internal APIs */
 export class JiraClient {
+  private readonly internalApi: BaseClientWithRetry;
   readonly v2: Version2ClientWithRetry;
   readonly agile: AgileClientWithRetry;
 
@@ -32,9 +41,24 @@ export class JiraClient {
       maxAttempts,
       cfg.logger
     );
+    const BaseClientWithRetries = WithRetry(
+      BaseClient,
+      maxAttempts,
+      cfg.logger
+    );
 
     this.v2 = new Version2ClientWithRetries(cfg);
     this.agile = new AgileClientWithRetries(cfg);
+    this.internalApi = new BaseClientWithRetries(cfg);
+  }
+
+  async graphql(query: string, variables?: any): Promise<any> {
+    const config: RequestConfig = {
+      url: GRAPHQL_PATH,
+      method: 'POST',
+      data: {query, variables},
+    };
+    return await this.internalApi.sendRequest<any>(config, undefined);
   }
 
   async getDevStatusSummary(issueId: string): Promise<any> {

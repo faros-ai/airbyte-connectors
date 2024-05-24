@@ -12,6 +12,7 @@ import {
   SprintIssue,
   SprintReport,
   Status,
+  Team,
 } from 'faros-airbyte-common/jira';
 import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
@@ -108,6 +109,11 @@ const BOARD_QUERY = fs.readFileSync(
   'utf8'
 );
 
+const TEAMS_FOR_USER_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'get-teams-for-user.gql'),
+  'utf8'
+);
+
 const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
 const DEFAULT_REJECT_UNAUTHORIZED = true;
 const DEFAULT_CONCURRENCY_LIMIT = 5;
@@ -121,6 +127,7 @@ const DEFAULT_BUCKET_ID = 1;
 const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
+const TEAM_LIMIT = 100;
 
 export class Jira {
   private static jira: Jira;
@@ -1051,6 +1058,7 @@ export class Jira {
     }
   }
 
+  // TODO: Memoize this method (separating iterator from the actual method)
   getUsers(): AsyncIterableIterator<Version2Models.User> {
     if (this.isCloud) {
       return this.iterate(
@@ -1135,5 +1143,23 @@ export class Jira {
       ]);
     }
     return undefined;
+  }
+
+  async getTeamsForUser(accountId: string): Promise<ReadonlyArray<Team>> {
+    try {
+      const response = await this.api.graphql(TEAMS_FOR_USER_QUERY, {
+        accountId,
+        limit: TEAM_LIMIT,
+        orgId: '',
+      });
+
+      if (isNil(response.data.TeamsOfUser)) {
+        return [];
+      }
+
+      return response.data.TeamsOfUser.result;
+    } catch (err: any) {
+      throw new VError(err, 'Failed to sync teams for user %s', accountId);
+    }
   }
 }

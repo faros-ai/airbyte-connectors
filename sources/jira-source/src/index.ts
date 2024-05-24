@@ -20,6 +20,7 @@ import {FarosIssues} from './streams/faros_issues';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
 import {FarosSprints} from './streams/faros_sprints';
+import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
 
 /** The main entry point. */
@@ -69,6 +70,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosProjects(config, this.logger),
       new FarosIssues(config, this.logger),
       new FarosBoards(config, this.logger),
+      new FarosTeams(config, this.logger),
     ];
   }
 

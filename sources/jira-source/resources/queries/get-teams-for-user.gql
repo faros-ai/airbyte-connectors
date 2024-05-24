@@ -1,0 +1,8 @@
+query getTeamsForUser($accountId: String!, $limit: Int!) {
+  TeamsOfUser(accountId: $accountId, limit: $limit) {
+    result {
+      id
+      displayName
+    }
+  }
+}

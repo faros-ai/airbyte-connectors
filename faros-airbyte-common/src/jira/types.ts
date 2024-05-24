@@ -130,3 +130,9 @@ export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
 }
+
+export interface Team {
+  readonly id: string;
+  readonly displayName: string;
+  readonly userId: string;
+}

@@ -15,12 +15,7 @@ export class FarosProjects extends StreamBase {
     return 'key';
   }
 
-  async *readRecords(
-    syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
-  ): AsyncGenerator<Version2Models.Project> {
+  async *readRecords(): AsyncGenerator<Version2Models.Project> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKeys = this.config.projects?.length
       ? new Set(this.config.projects.map((key) => toUpper(key)))
