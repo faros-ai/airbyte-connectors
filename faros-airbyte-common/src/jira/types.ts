@@ -130,3 +130,12 @@ export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
 }
+
+export interface ProjectVersion extends Version2Models.Version {
+  projectKey: string;
+}
+
+export interface IssueProjectVersion {
+  readonly key: string;
+  readonly projectVersionId: string;
+}

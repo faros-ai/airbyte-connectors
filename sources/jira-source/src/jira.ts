@@ -133,6 +133,7 @@ export class Jira {
     string,
     IssueCompact[]
   >();
+  private readonly sprintReportFailuresByBoard = new Map<string, number>();
 
   constructor(
     // Pass base url to enable creating issue url that can navigated in browser
@@ -542,7 +543,6 @@ export class Jira {
     );
     for await (const project of projects) {
       // Bucket projects based on bucketId
-      this.logger?.debug(`Project ${project.key} found`);
       if (this.isProjectInBucket(project.key)) yield project;
     }
   }
@@ -1049,24 +1049,36 @@ export class Jira {
     boardId: string
   ): Promise<SprintReport> {
     // Counts the number of failed calls to fetch sprint history
-    let sprintHistoryFetchFailures = 0;
+    // let sprintHistoryFetchFailures = 0;
+    const boardFetchFailures =
+      this.sprintReportFailuresByBoard.get(boardId) || 0;
     let report;
 
     try {
       if (
-        sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+        boardFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
         toLower(sprint.state) != 'future'
       ) {
         report = await this.api.getSprintReport(boardId, sprint.id);
-        sprintHistoryFetchFailures = 0;
+        if (this.sprintReportFailuresByBoard.get(boardId)) {
+          this.sprintReportFailuresByBoard.delete(boardId);
+        }
       }
     } catch (err: any) {
       this.logger?.warn(
         `Failed to get sprint report for sprint ${sprint.id}: ${err.message}`
       );
-      if (sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES) {
+      if (!this.sprintReportFailuresByBoard.has(boardId)) {
+        this.sprintReportFailuresByBoard.set(boardId, 0);
+      }
+      this.sprintReportFailuresByBoard.set(boardId, boardFetchFailures + 1);
+      if (
+        this.sprintReportFailuresByBoard.get(boardId) >=
+        MAX_SPRINT_HISTORY_FETCH_FAILURES
+      ) {
         this.logger?.warn(
-          `Disabling fetching sprint history, since it has failed ${sprintHistoryFetchFailures} times in a row`
+          `Disabling fetching sprint history, since it has failed ` +
+            `${boardFetchFailures + 1} times in a row`
         );
       }
     }
@@ -1154,6 +1166,27 @@ export class Jira {
     for (const [id, name] of this.fieldNameById) {
       yield {id, name};
     }
+  }
+
+  @Memoize()
+  async getProjectVersions(
+    projectKey: string
+  ): Promise<ReadonlyArray<Version2Models.Version>> {
+    const versionsIterator = this.iterate(
+      (startAt) =>
+        this.api.v2.projectVersions.getProjectVersionsPaginated({
+          startAt,
+          projectIdOrKey: projectKey,
+          maxResults: this.maxPageSize,
+        }),
+      (item: Version2Models.Version) => item
+    );
+
+    const versions = [];
+    for await (const version of versionsIterator) {
+      versions.push(version);
+    }
+    return versions;
   }
 
   getUsers(): AsyncIterableIterator<Version2Models.User> {

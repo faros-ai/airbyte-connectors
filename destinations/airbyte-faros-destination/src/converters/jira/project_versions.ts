@@ -40,15 +40,21 @@ export class ProjectVersions extends JiraConverter {
         },
       },
     ];
-    const project = ctx.get(
-      ProjectVersions.projectsStream.asString,
-      String(projectVersion.projectId)
-    );
-    if (project) {
+    let projectKey;
+    if (projectVersion.projectKey) {
+      projectKey = projectVersion.projectKey;
+    } else {
+      const project = ctx.get(
+        ProjectVersions.projectsStream.asString,
+        String(projectVersion.projectId)
+      );
+      projectKey = project.record.data.key;
+    }
+    if (projectKey) {
       results.push({
         model: 'tms_ProjectReleaseRelationship',
         record: {
-          project: {uid: project.record.data.key, source},
+          project: {uid: projectKey, source},
           release: {uid: projectVersion.id, source},
         },
       });
