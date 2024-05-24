@@ -131,7 +131,7 @@ export interface Board extends AgileModels.Board {
   projectKey: string;
 }
 
-export interface FarosBoard {
-  id: number;
-  projectKeys: string[];
+export interface FarosProject {
+  key: string;
+  boardIds: string[];
 }

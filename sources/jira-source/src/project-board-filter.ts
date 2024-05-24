@@ -53,43 +53,42 @@ export class ProjectBoardFilter {
       await this.getProjects();
 
       if (this.supportsFarosClient()) {
-        const boards = jira.getBoardsFromGraph(
-          this.farosClient,
-          this.config.graph ?? DEFAULT_GRAPH
-        );
-        for await (const board of boards) {
-          // If boards are specified, only include those
-          if (
-            this.config.boards &&
-            !this.config.boards.includes(board.id.toString())
-          ) {
-            continue;
-          }
-          // Check if at least one board project key is in the projects list
-          if (
-            board.projectKeys.some((projectKey) =>
-              this.projects?.has(projectKey)
-            )
-          ) {
-            this.boards.add(board.id.toString());
-          }
-        }
+        await this.getBoardsFromFaros(jira);
       } else {
-        for (const project of this.projects) {
-          for await (const board of await jira.getBoards(project)) {
-            // If boards are specified, only include those
-            if (
-              this.config.boards &&
-              !this.config.boards.includes(board.id.toString())
-            ) {
-              continue;
-            }
-            this.boards.add(board.id.toString());
-          }
-        }
+        await this.getBoardsFromJira(jira);
       }
     }
     return Array.from(this.boards);
+  }
+
+  private async getBoardsFromJira(jira: Jira): Promise<void> {
+    for (const project of this.projects) {
+      for (const board of await jira.getBoards(project)) {
+        // If boards are specified, only include those
+        if (
+          !this.config.boards ||
+          this.config.boards.includes(board.id.toString())
+        ) {
+          this.boards.add(board.id.toString());
+        }
+      }
+    }
+  }
+
+  private async getBoardsFromFaros(jira: Jira): Promise<void> {
+    const projects = jira.getProjectBoardsFromGraph(
+      this.farosClient,
+      this.config.graph ?? DEFAULT_GRAPH,
+      Array.from(this.projects)
+    );
+    for await (const project of projects) {
+      for (const board of project.boardIds) {
+        // If boards are specified, only include those
+        if (!this.config.boards || this.config.boards.includes(board)) {
+          this.boards.add(board);
+        }
+      }
+    }
   }
 
   private supportsFarosClient(): boolean {

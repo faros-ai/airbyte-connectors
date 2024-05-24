@@ -3,7 +3,7 @@ import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
-  FarosBoard,
+  FarosProject,
   Issue,
   IssueCompact,
   IssueField,
@@ -19,8 +19,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {chunk, concat, isNil, pick, toInteger, toLower} from 'lodash';
-import {isEmpty} from 'lodash';
+import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
 import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
@@ -104,8 +103,8 @@ const PROJECT_QUERY = fs.readFileSync(
   'utf8'
 );
 
-const BOARD_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+const PROJECT_BOARDS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
   'utf8'
 );
 
@@ -580,7 +579,7 @@ export class Jira {
           continue;
         }
         yield {
-          id: project.id.toString(),
+          id: project.id,
           key: project.key,
           name: project.name,
           description: project.description,
@@ -832,10 +831,10 @@ export class Jira {
     return boards;
   }
 
-  async *getBoardsIterator(
+  private getBoardsIterator(
     projectKey?: string
   ): AsyncIterableIterator<AgileModels.Board> {
-    const boards = this.iterate(
+    return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
           startAt,
@@ -844,39 +843,35 @@ export class Jira {
         }),
       (item: AgileModels.Board) => item
     );
-    for await (const board of boards) {
-      yield board;
-    }
   }
 
-  async *getBoardsFromGraph(
+  // Fetch project with boards nested from Faros
+  async *getProjectBoardsFromGraph(
     farosClient: FarosClient,
-    graph: string
-  ): AsyncIterableIterator<FarosBoard> {
-    const boards = this.iterate(
+    graph: string,
+    projectIds: Array<string>
+  ): AsyncIterableIterator<FarosProject> {
+    const projects = this.iterate(
       async (startAt) => {
-        const data = await farosClient.gql(graph, BOARD_QUERY, {
+        const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
+          projects: projectIds,
         });
-        return data?.tms_TaskBoard;
+        return data?.tms_Project;
       },
-      async (item: any): Promise<FarosBoard> => {
+      async (item: any): Promise<FarosProject> => {
         return {
-          id: item.uid,
-          projectKeys:
-            item.projects?.map((project: any) => project.project.uid) ?? [],
+          key: item.uid,
+          boardIds: item.boards?.map((board: any) => board.board.uid) ?? [],
         };
       }
     );
-    for await (const board of boards) {
-      if (
-        board.projectKeys.some((projectKey: string) =>
-          this.isProjectInBucket(projectKey)
-        )
-      )
-        yield board;
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) {
+        yield project;
+      }
     }
   }
 
