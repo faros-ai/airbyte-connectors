@@ -82,7 +82,7 @@ export class ProjectBoardFilter {
       Array.from(this.projects)
     );
     for await (const project of projects) {
-      for (const board of project.boardIds) {
+      for (const board of project.boardUids) {
         // If boards are specified, only include those
         if (!this.config.boards || this.config.boards.includes(board)) {
           this.boards.add(board);

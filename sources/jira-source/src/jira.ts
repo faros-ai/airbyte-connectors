@@ -853,7 +853,7 @@ export class Jira {
   async *getProjectBoardsFromGraph(
     farosClient: FarosClient,
     graph: string,
-    projectIds: Array<string>
+    projectKeys: Array<string>
   ): AsyncIterableIterator<FarosProject> {
     const projects = this.iterate(
       async (startAt) => {
@@ -861,14 +861,14 @@ export class Jira {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
-          projects: projectIds,
+          projects: projectKeys,
         });
         return data?.tms_Project;
       },
-      async (item: any): Promise<FarosProject> => {
+      (item: any): FarosProject => {
         return {
           key: item.uid,
-          boardIds: item.boards?.map((board: any) => board.board.uid) ?? [],
+          boardUids: item.boards?.map((board: any) => board.board.uid) ?? [],
         };
       }
     );

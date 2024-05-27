@@ -142,5 +142,5 @@ export interface IssueProjectVersion {
 
 export interface FarosProject {
   key: string;
-  boardIds: string[];
+  boardUids: string[];
 }
