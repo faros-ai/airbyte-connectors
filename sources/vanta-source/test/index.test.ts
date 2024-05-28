@@ -45,8 +45,6 @@ function returnResourceByQuery(queryBody: any): any {
   const variables = queryBody.variables;
   if (query.includes('GithubDependabotVulnerabilityList')) {
     return readTestResourceFile('github_response_page.json');
-  } else if (query.includes('AwsContainerVulnerabilityList')) {
-    return readTestResourceFile('aws_response_page.json');
   } else if (query.includes('AwsContainerVulnerabilityV2List')) {
     const aws_v2_data = readTestResourceFile('aws_response_v2_page.json');
     return paginatedValues(aws_v2_data, variables);
@@ -131,7 +129,7 @@ describe('index', () => {
 
   test('test all query types single page', async () => {
     const vanta = getVantaInstance(logger, sampleConfig, 100);
-    const queryTypes = ['git', 'aws', 'awsv2'];
+    const queryTypes = ['git', 'awsv2'];
     const output = [];
     for (const queryType of queryTypes) {
       const res = await vanta.vulns(queryType);
@@ -146,19 +144,13 @@ describe('index', () => {
       preExpected
     );
     totalExpected.push(...expected);
-    const preExpected2 = readTestResourceFile('aws_response_page.json');
+    const preExpected2 = readTestResourceFile('aws_response_v2_page.json');
     const expected2 = unpackResourceDataByQueryName(
-      'AwsContainerVulnerabilityList',
+      'AwsContainerVulnerabilityV2List',
       preExpected2
     );
     totalExpected.push(...expected2);
-    const preExpected3 = readTestResourceFile('aws_response_v2_page.json');
-    const expected3 = unpackResourceDataByQueryName(
-      'AwsContainerVulnerabilityV2List',
-      preExpected3
-    );
-    totalExpected.push(...expected3);
-    console.log(expected3.length);
+    console.log(expected2.length);
     await expect(output).toStrictEqual(totalExpected);
   });
 });

@@ -1,4 +1,4 @@
-export type QueryType = 'git' | 'aws' | 'awsv2';
+export type QueryType = 'git' | 'awsv2';
 export interface QueryHolder {
   queryName: string;
 }
@@ -6,9 +6,6 @@ export interface QueryHolder {
 const queryTypeToQueryHolder: Record<QueryType, QueryHolder> = {
   git: {
     queryName: 'GithubDependabotVulnerabilityList',
-  },
-  aws: {
-    queryName: 'AwsContainerVulnerabilityList',
   },
   awsv2: {
     queryName: 'AwsContainerVulnerabilityV2List',
