@@ -2,10 +2,10 @@
 
 exports[`faros_jira process records from all streams 1`] = `
 Array [
-  "Processed 7 records",
-  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 21 records",
-  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 9 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_version_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_versions\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 25 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -154,6 +154,19 @@ Array [
       "uid": "PLAYG-1",
       "updatedAt": "2024-03-08T17:59:28.167Z",
       "url": "https://faros-ai.atlassian.net/browse/PLAYG-1",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-1",
+      },
     },
   },
   Object {
@@ -351,6 +364,42 @@ Array [
       "name": "John Doe",
       "source": "Jira",
       "uid": "61f99bc0acd4cb0069cfd675",
+    },
+  },
+  Object {
+    "tms_TaskReleaseRelationship": Object {
+      "release": Object {
+        "source": "Jira",
+        "uid": "10006",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-4",
+      },
+    },
+  },
+  Object {
+    "tms_Release": Object {
+      "description": null,
+      "name": "Test Release",
+      "releasedAt": "2021-11-19T00:00:00.000Z",
+      "source": "Jira",
+      "startedAt": "2021-11-15T00:00:00.000Z",
+      "uid": "10006",
+    },
+  },
+  Object {
+    "tms_ProjectReleaseRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "release": Object {
+        "source": "Jira",
+        "uid": "10006",
+      },
+      "source": "Jira",
     },
   },
 ]

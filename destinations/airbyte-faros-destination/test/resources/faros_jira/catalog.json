@@ -35,6 +35,18 @@
         "name": "mytestsource__jira__faros_users"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_project_version_issues"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_project_versions"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

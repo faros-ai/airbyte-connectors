@@ -223,13 +223,13 @@ exports[`index streams - projects - Jira Server - project list 1`] = `
 [
   {
     "description": "This is a test",
-    "id": 1234,
+    "id": "1234",
     "key": "TEST-1",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
-    "id": 1235,
+    "id": "1235",
     "key": "TEST-2",
     "name": "Test 2",
   },
@@ -240,19 +240,19 @@ exports[`index streams - projects - Jira Server 1`] = `
 [
   {
     "description": "This is a test",
-    "id": 1234,
+    "id": "1234",
     "key": "TEST-1",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
-    "id": 1235,
+    "id": "1235",
     "key": "TEST-2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
-    "id": 1236,
+    "id": "1236",
     "key": "TEST-3",
     "name": "Test 3",
   },
