@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bitbucket-server basic test process records from all streams 1`] = `
+Array [
+  "Processed 40 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket-server__commits\\\\\\":8,\\\\\\"mytestsource__bitbucket-server__project_users\\\\\\":3,\\\\\\"mytestsource__bitbucket-server__projects\\\\\\":1,\\\\\\"mytestsource__bitbucket-server__pull_request_activities\\\\\\":18,\\\\\\"mytestsource__bitbucket-server__pull_request_diffs\\\\\\":3,\\\\\\"mytestsource__bitbucket-server__pull_requests\\\\\\":3,\\\\\\"mytestsource__bitbucket-server__repositories\\\\\\":1,\\\\\\"mytestsource__bitbucket-server__tags\\\\\\":1,\\\\\\"mytestsource__bitbucket-server__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 44 records",
+  "Would write records by model: {\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":5,\\\\\\"vcs_PullRequest__Update\\\\\\":5,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

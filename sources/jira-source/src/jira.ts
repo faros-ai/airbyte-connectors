@@ -3,6 +3,7 @@ import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
+  FarosProject,
   Issue,
   IssueCompact,
   IssueField,
@@ -18,8 +19,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {chunk, concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
-import {isEmpty} from 'lodash';
+import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
 import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
@@ -55,6 +55,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
+  readonly use_sprints_reverse_search?: boolean;
   start_date?: Date;
   end_date?: Date;
 }
@@ -103,8 +104,8 @@ const PROJECT_QUERY = fs.readFileSync(
   'utf8'
 );
 
-const BOARD_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+const PROJECT_BOARDS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
   'utf8'
 );
 
@@ -121,16 +122,18 @@ const DEFAULT_BUCKET_ID = 1;
 const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
+const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
+// https://community.developer.atlassian.com/t/is-it-possible-to-pull-a-list-of-sprints-in-a-project-via-the-rest-api/53336/3
+const MAX_SPRINTS_RESULTS = 50;
 
 export class Jira {
   private static jira: Jira;
   private readonly fieldIdsByName: Map<string, string[]>;
-  // Counts the number of failed calls to fetch sprint history
-  private sprintHistoryFetchFailures = 0;
   private readonly seenIssues: Map<string, IssueCompact[]> = new Map<
     string,
     IssueCompact[]
   >();
+  private readonly sprintReportFailuresByBoard = new Map<string, number>();
 
   constructor(
     // Pass base url to enable creating issue url that can navigated in browser
@@ -148,7 +151,8 @@ export class Jira {
     private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
-    private readonly requestedStreams?: Set<string>
+    private readonly requestedStreams?: Set<string>,
+    private readonly useSprintsReverseSearch?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -261,7 +265,8 @@ export class Jira {
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
-      cfg.requestedStreams
+      cfg.requestedStreams,
+      cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH
     );
     return Jira.jira;
   }
@@ -499,7 +504,17 @@ export class Jira {
   }
 
   @Memoize()
-  async *getProjects(
+  async getProjects(
+    keys?: Set<string>
+  ): Promise<ReadonlyArray<Version2Models.Project>> {
+    const projects: Version2Models.Project[] = [];
+    for await (const project of this.getProjectsIterator(keys)) {
+      projects.push(project);
+    }
+    return projects;
+  }
+
+  async *getProjectsIterator(
     keys?: Set<string>
   ): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
@@ -538,7 +553,6 @@ export class Jira {
     );
     for await (const project of projects) {
       // Bucket projects based on bucketId
-      this.logger?.debug(`Project ${project.key} found`);
       if (this.isProjectInBucket(project.key)) yield project;
     }
   }
@@ -568,7 +582,12 @@ export class Jira {
           skippedProjects.push(project.key);
           continue;
         }
-        yield project;
+        yield {
+          id: project.id,
+          key: project.key,
+          name: project.name,
+          description: project.description,
+        };
       } catch (error: any) {
         if (error.response?.status === 404) {
           skippedProjects.push(project.key);
@@ -805,52 +824,58 @@ export class Jira {
     return this.requestedStreams?.has('faros_issues');
   }
 
-  async *getBoards(
-    projectId?: string
+  @Memoize()
+  async getBoards(
+    projectKey?: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const boards: AgileModels.Board[] = [];
+    for await (const board of this.getBoardsIterator(projectKey)) {
+      boards.push(board);
+    }
+    return boards;
+  }
+
+  private getBoardsIterator(
+    projectKey?: string
   ): AsyncIterableIterator<AgileModels.Board> {
-    const boards = this.iterate(
+    return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
           startAt,
           maxResults: this.maxPageSize,
-          ...(projectId && {projectKeyOrId: projectId}),
+          ...(projectKey && {projectKeyOrId: projectKey}),
         }),
       (item: AgileModels.Board) => item
     );
-    for await (const board of boards) {
-      const boardProject = board?.location?.projectKey;
-      if (boardProject && this.isProjectInBucket(boardProject)) yield board;
-    }
   }
 
-  async *getBoardsFromGraph(
+  // Fetch project with boards nested from Faros
+  async *getProjectBoardsFromGraph(
     farosClient: FarosClient,
-    graph: string
-  ): AsyncIterableIterator<AgileModels.Board> {
-    const boards = this.iterate(
+    graph: string,
+    projectKeys: Array<string>
+  ): AsyncIterableIterator<FarosProject> {
+    const projects = this.iterate(
       async (startAt) => {
-        const data = await farosClient.gql(graph, BOARD_QUERY, {
+        const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
+          projects: projectKeys,
         });
-        return data?.tms_TaskBoard;
+        return data?.tms_Project;
       },
-      async (item: any) => {
+      (item: any): FarosProject => {
         return {
-          id: item.uid,
-          projectsKeys:
-            item.projects?.map((project: any) => project.project.uid) ?? [],
+          key: item.uid,
+          boardUids: item.boards?.map((board: any) => board.board.uid) ?? [],
         };
       }
     );
-    for await (const board of boards) {
-      if (
-        board.projectsKeys.some((projectKey: string) =>
-          this.isProjectInBucket(projectKey)
-        )
-      )
-        yield board;
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) {
+        yield project;
+      }
     }
   }
 
@@ -860,7 +885,22 @@ export class Jira {
   }
 
   @Memoize()
-  getSprints(
+  async getSprints(
+    boardId: string,
+    range?: [Date, Date]
+  ): Promise<ReadonlyArray<AgileModels.Sprint>> {
+    const sprintsIter = this.useSprintsReverseSearch
+      ? this.getReverseSprintsIterator(boardId, range)
+      : this.getSprintsIterator(boardId, range);
+    const sprints: AgileModels.Sprint[] = [];
+    for await (const sprint of sprintsIter) {
+      sprints.push(sprint);
+    }
+    this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
+    return sprints;
+  }
+
+  private getSprintsIterator(
     boardId: string,
     range?: [Date, Date]
   ): AsyncIterableIterator<AgileModels.Sprint> {
@@ -882,7 +922,121 @@ export class Jira {
     );
   }
 
-  getSprintsFromFarosGraph(
+  private async *getReverseSprintsIterator(
+    boardId: string,
+    range?: [Date, Date]
+  ): AsyncIterableIterator<AgileModels.Sprint> {
+    const parsedBoardId = Utils.parseInteger(boardId);
+
+    // First fetch open and future sprints normally
+    yield* this.iterate(
+      (startAt) =>
+        this.api.agile.board.getAllSprints({
+          boardId: parsedBoardId,
+          startAt,
+          state: 'active,future',
+          maxResults: this.maxPageSize,
+        }),
+      async (item: any) => item
+    );
+
+    this.logger?.debug(
+      `Fetching closed sprints starting with most recent in the backlog ` +
+        `in board ${boardId}`
+    );
+
+    // Initial request to get the total number of closed sprints
+    const initialResult = await this.api.agile.board.getAllSprints({
+      boardId: parsedBoardId,
+      state: 'closed',
+      maxResults: MAX_SPRINTS_RESULTS,
+    });
+
+    const totalClosedSprints = initialResult.total;
+    this.logger?.debug(
+      `Initial total closed sprints in board ${boardId}: ${totalClosedSprints}`
+    );
+
+    if (!totalClosedSprints || totalClosedSprints < 1) {
+      return;
+    }
+
+    let closedSprintsFound = 0;
+    let pagesWithNoResults = 0;
+    let count = 0;
+    let startAt = totalClosedSprints - MAX_SPRINTS_RESULTS;
+    let maxResults = MAX_SPRINTS_RESULTS;
+
+    // Ensure startAt is not negative
+    startAt = Math.max(startAt, 0);
+    let isLast = false;
+
+    do {
+      let foundSprints = false;
+      this.logger?.debug(
+        `Fetching sprints in board ${boardId}: startAt ${startAt}, maxResults ` +
+          `${maxResults}, pagesWithNoResults ${pagesWithNoResults}`
+      );
+
+      const res = await this.api.agile.board.getAllSprints({
+        boardId: parsedBoardId,
+        startAt,
+        state: 'closed',
+        maxResults,
+      });
+
+      const closedSprints = res.values;
+      for (const sprint of closedSprints) {
+        count++;
+        const completeDate = Utils.toDate(sprint.completeDate);
+        // Ignore sprints completed before the input date range cutoff date
+        if (range && completeDate && completeDate < range[0]) {
+          continue;
+        }
+
+        yield sprint;
+        closedSprintsFound++;
+        foundSprints = true;
+      }
+      pagesWithNoResults = foundSprints ? 0 : pagesWithNoResults + 1;
+
+      if (pagesWithNoResults > 4) {
+        this.logger?.debug(
+          `No closed sprints found in ${pagesWithNoResults} pages in board ` +
+            `${boardId}, stopping fetching additional sprints.`
+        );
+        break;
+      }
+
+      maxResults = Math.min(startAt, MAX_SPRINTS_RESULTS);
+      startAt = Math.max(startAt - closedSprints.length, 0);
+      isLast = count === totalClosedSprints || closedSprints.length === 0;
+    } while (!isLast);
+
+    this.logger?.debug(
+      `Found ${closedSprintsFound} closed sprints in board ${boardId}.`
+    );
+  }
+
+  async getSprintsFromFarosGraph(
+    board: string,
+    farosClient: FarosClient,
+    graph: string,
+    closedAtAfter?: Date
+  ): Promise<ReadonlyArray<AgileModels.Sprint>> {
+    const sprints: AgileModels.Sprint[] = [];
+    for await (const sprint of this.getSprintsIteratorFromFarosGraph(
+      board,
+      farosClient,
+      graph,
+      closedAtAfter
+    )) {
+      sprints.push(sprint);
+    }
+    return sprints;
+  }
+
+  private getSprintsIteratorFromFarosGraph(
     board: string,
     farosClient: FarosClient,
     graph: string,
@@ -915,41 +1069,55 @@ export class Jira {
     sprint: AgileModels.Sprint,
     boardId: string
   ): Promise<SprintReport> {
+    // Counts the number of failed calls to fetch sprint history
+    // let sprintHistoryFetchFailures = 0;
+    const boardFetchFailures =
+      this.sprintReportFailuresByBoard.get(boardId) || 0;
     let report;
+
     try {
       if (
-        this.sprintHistoryFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
+        boardFetchFailures < MAX_SPRINT_HISTORY_FETCH_FAILURES &&
         toLower(sprint.state) != 'future'
       ) {
         report = await this.api.getSprintReport(boardId, sprint.id);
-        this.sprintHistoryFetchFailures = 0;
+        if (this.sprintReportFailuresByBoard.get(boardId)) {
+          this.sprintReportFailuresByBoard.delete(boardId);
+        }
       }
     } catch (err: any) {
       this.logger?.warn(
         `Failed to get sprint report for sprint ${sprint.id}: ${err.message}`
       );
+      if (!this.sprintReportFailuresByBoard.has(boardId)) {
+        this.sprintReportFailuresByBoard.set(boardId, 0);
+      }
+      this.sprintReportFailuresByBoard.set(boardId, boardFetchFailures + 1);
       if (
-        this.sprintHistoryFetchFailures++ >= MAX_SPRINT_HISTORY_FETCH_FAILURES
+        this.sprintReportFailuresByBoard.get(boardId) >=
+        MAX_SPRINT_HISTORY_FETCH_FAILURES
       ) {
         this.logger?.warn(
-          `Disabling fetching sprint history, since it has failed ${this.sprintHistoryFetchFailures} times in a row`
+          `Disabling fetching sprint history, since it has failed ` +
+            `${boardFetchFailures + 1} times in a row`
         );
       }
     }
-    return this.toSprintReportFields(report?.contents, sprint);
+    return this.toSprintReportFields(report?.contents, sprint, boardId);
   }
 
   private toSprintReportFields(
     report: any,
-    sprint: AgileModels.Sprint
+    sprint: AgileModels.Sprint,
+    boardId: string
   ): SprintReport {
     if (!report) {
       return;
     }
     return {
       sprintId: sprint.id,
-      boardId: toString(sprint.originBoardId),
-      closedAt: Utils.toDate(sprint.completeDate),
+      boardId,
+      completeDate: Utils.toDate(sprint.completeDate),
       issues: this.toSprintReportIssues(report),
     };
   }
@@ -1002,12 +1170,6 @@ export class Jira {
     return filterJQL.jql;
   }
 
-  async isBoardInBucket(boardId: string): Promise<boolean> {
-    const board = await this.getBoard(boardId);
-    const boardProject = board?.location?.projectKey;
-    return boardProject && this.isProjectInBucket(boardProject);
-  }
-
   isProjectInBucket(projectKey: string): boolean {
     return (
       bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
@@ -1019,6 +1181,27 @@ export class Jira {
     for (const [id, name] of this.fieldNameById) {
       yield {id, name};
     }
+  }
+
+  @Memoize()
+  async getProjectVersions(
+    projectKey: string
+  ): Promise<ReadonlyArray<Version2Models.Version>> {
+    const versionsIterator = this.iterate(
+      (startAt) =>
+        this.api.v2.projectVersions.getProjectVersionsPaginated({
+          startAt,
+          projectIdOrKey: projectKey,
+          maxResults: this.maxPageSize,
+        }),
+      (item: Version2Models.Version) => item
+    );
+
+    const versions = [];
+    for await (const version of versionsIterator) {
+      versions.push(version);
+    }
+    return versions;
   }
 
   getUsers(): AsyncIterableIterator<Version2Models.User> {

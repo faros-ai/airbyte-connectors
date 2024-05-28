@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buildkite basic test process records from all streams 1`] = `
+Array [
+  "Processed 5 records",
+  "Processed records by stream: {\\\\\\"mytestsource__buildkite__builds\\\\\\":2,\\\\\\"mytestsource__buildkite__organizations\\\\\\":2,\\\\\\"mytestsource__buildkite__pipelines\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 9 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":2,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":2,\\\\\\"cicd_Organization\\\\\\":2,\\\\\\"cicd_Pipeline\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

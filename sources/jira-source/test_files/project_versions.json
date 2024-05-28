@@ -1,0 +1,18 @@
+[
+  {
+    "id": "10000",
+    "description": "Initial release of the project",
+    "name": "Version 1.0",
+    "startDate": "2023-01-01",
+    "releaseDate": "2023-03-01",
+    "projectId": 1
+  },
+  {
+    "id": "10001",
+    "description": "Second release of the project",
+    "name": "Version 2.0",
+    "startDate": "2023-04-01",
+    "releaseDate": "2023-06-01",
+    "projectId": 1
+  }
+]

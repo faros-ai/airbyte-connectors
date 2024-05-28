@@ -53,7 +53,7 @@ describe('sheets', () => {
         row: {
           'How much do you like ice cream?': 5,
           'Team Name': 'X',
-          'Timestamp': '2023-10-09T14:09:37.000Z',
+          Timestamp: '2023-10-09T14:09:37.000Z',
         },
       });
       const ctx = new StreamContext(
@@ -70,7 +70,9 @@ describe('sheets', () => {
       expect(res).toMatchSnapshot();
 
       const id = converter.id(record);
-      expect(id).toEqual('10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1');
+      expect(id).toEqual(
+        '10hWFrCr5c0J7wUjoPODgd7jt6pRjPBGJTtD6y_z2He4_survey_responses_1'
+      );
 
       const submittedAt = converter.getSubmittedAt(record);
       expect(submittedAt).toEqual('2023-10-09T14:09:37.000Z');
@@ -80,8 +82,6 @@ describe('sheets', () => {
 
       const tableName = converter.getTableName(record);
       expect(tableName).toEqual('Survey Responses');
-
-
     });
   });
 });

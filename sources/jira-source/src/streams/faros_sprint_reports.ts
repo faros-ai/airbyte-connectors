@@ -19,7 +19,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
   }
 
   get cursorField(): string | string[] {
-    return ['closedAt'];
+    return ['completeDate'];
   }
 
   async *readRecords(
@@ -45,7 +45,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
           updateRange?.[0]
         )
       : jira.getSprints(boardId, updateRange);
-    for await (const sprint of sprints) {
+    for (const sprint of await sprints) {
       const report = await jira.getSprintReport(sprint, boardId);
       if (!report) continue;
       yield report;
@@ -57,7 +57,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
     latestRecord: SprintReport
   ): StreamState {
     const board = latestRecord.boardId;
-    const latestRecordCutoff = Utils.toDate(latestRecord.closedAt);
+    const latestRecordCutoff = Utils.toDate(latestRecord.completeDate);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

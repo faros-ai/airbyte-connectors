@@ -1,5 +1,4 @@
 import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
@@ -12,8 +11,8 @@ import {
   tempConfig,
   testLogger,
 } from '../testing-tools';
-import {githubAllStreamsLog, githubLog, githubPGRawLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {githubLog, githubPGRawLog} from './data';
+import {destinationWriteTest} from './utils';
 
 describe('github', () => {
   const logger = testLogger();
@@ -27,15 +26,18 @@ describe('github', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      undefined,
-      undefined,
-      undefined,
-      {vcs_Commit: ['message'], vcs_PullRequest: ['description', 'htmlUrl']}
-    );
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.CLOUD,
+      edition_configs: undefined,
+      source_specific_configs: undefined,
+      replace_origin_map: undefined,
+      exclude_fields_map: {
+        vcs_Commit: ['message'],
+        vcs_PullRequest: ['description', 'htmlUrl'],
+      },
+    });
   });
 
   afterEach(async () => {
@@ -178,7 +180,10 @@ describe('github', () => {
   });
 
   test('fail to process bad records when strategy is FAIL', async () => {
-    configPath = await tempConfig(mockttp.url, InvalidRecordStrategy.FAIL);
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.FAIL,
+    });
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -205,7 +210,7 @@ describe('github', () => {
   });
 
   test('skip non-incremental model reset if Source failure detected', async () => {
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
     const cli = await CLI.runWith([
       'write',
       '--config',
@@ -262,85 +267,10 @@ describe('github', () => {
   });
 
   test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
+    await destinationWriteTest({
       configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(githubAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
-      assignees: 12,
-      branches: 4,
-      collaborators: 12,
-      commits: 77,
-      issue_labels: 24,
-      issue_milestones: 1,
-      issues: 39,
-      organizations: 1,
-      projects: 1,
-      pull_request_stats: 38,
-      pull_requests: 38,
-      pull_request_commits: 3,
-      releases: 1,
-      repositories: 49,
-      review_comments: 87,
-      reviews: 121,
-      tags: 2,
-      users: 24,
-      workflows: 3,
-      workflow_runs: 1,
-    };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
-      cicd_Build: 1,
-      cicd_BuildCommitAssociation: 1,
-      cicd_Organization: 1,
-      cicd_Pipeline: 3,
-      cicd_Release: 1,
-      cicd_ReleaseTagAssociation: 1,
-      tms_Epic: 1,
-      tms_Label: 24,
-      tms_Project: 50,
-      tms_Task: 1,
-      tms_TaskBoard: 50,
-      tms_TaskBoardProjectRelationship: 50,
-      tms_TaskBoardRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 13,
-      vcs_Branch: 4,
-      vcs_BranchCommitAssociation: 1,
-      vcs_Commit: 77,
-      vcs_Membership: 12,
-      vcs_Organization: 1,
-      vcs_PullRequest: 38,
-      vcs_PullRequestComment: 87,
-      vcs_PullRequestCommit: 3,
-      vcs_PullRequestReview: 121,
-      vcs_PullRequest__Update: 38,
-      vcs_Repository: 49,
-      vcs_Tag: 2,
-      vcs_User: 195,
-    };
-
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+      catalogPath: 'test/resources/github/catalog.json',
+      inputRecordsPath: 'github/all-streams.log',
+    });
   });
 });

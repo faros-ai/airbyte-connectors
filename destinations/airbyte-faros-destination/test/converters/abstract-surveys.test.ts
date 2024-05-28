@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {DestinationRecord, StreamContext} from '../../src';
@@ -13,22 +12,17 @@ import {
   AbstractSurveys,
   SurveysConfig,
 } from '../../src/converters/abstract-surveys/surveys';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {airtableSurveysAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {initMockttp, tempConfig} from '../testing-tools';
+import {generateBasicTestSuite} from './utils';
 
 describe('abstract-surveys', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/abstract-surveys/surveys/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__airtable__';
   let converter: AbstractSurveys;
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
     jest.spyOn(Date, 'now').mockImplementation(() => 1697245567000);
     converter = new (class extends AbstractSurveys {
       source = 'Airtable';
@@ -56,46 +50,10 @@ describe('abstract-surveys', () => {
     jest.restoreAllMocks();
   });
 
-  test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(airtableSurveysAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
-      surveys: 2,
-    };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
-      survey_Question: 1,
-      survey_QuestionResponse: 1,
-      survey_Survey: 1,
-      survey_SurveyQuestionAssociation: 1,
-      survey_Survey__Update: 2,
-      survey_Team: 1,
-    };
-
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
+  generateBasicTestSuite({
+    sourceName: 'abstract-surveys',
+    catalogPath: 'test/resources/abstract-surveys/surveys/catalog.json',
+    inputRecordsPath: 'abstract-surveys/surveys/all-streams.log',
   });
 
   describe('survey responses', () => {
@@ -167,8 +125,8 @@ describe('abstract-surveys', () => {
             surveys: {
               ...DEFAULT_CONFIG,
               exclude_columns: ['Team Info'],
-            }
-          }
+            },
+          },
         },
         {}
       );

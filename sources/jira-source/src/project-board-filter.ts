@@ -28,7 +28,7 @@ export class ProjectBoardFilter {
               this.farosClient,
               this.config.graph ?? DEFAULT_GRAPH
             )
-          : jira.getProjects();
+          : await jira.getProjects();
         for await (const project of projects) {
           this.projects.add(project.key);
         }
@@ -48,42 +48,46 @@ export class ProjectBoardFilter {
       this.boards = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
-      if (!this.config.boards) {
-        const boards = this.supportsFarosClient()
-          ? jira.getBoardsFromGraph(
-              this.farosClient,
-              this.config.graph ?? DEFAULT_GRAPH
-            )
-          : jira.getBoards();
-        for await (const board of boards) {
-          await this.maybeIncludeBoard(board.id.toString());
-        }
+
+      // Ensure projects is populated
+      await this.getProjects();
+
+      if (this.supportsFarosClient()) {
+        await this.getBoardsFromFaros(jira);
       } else {
-        for (const board of this.config.boards) {
-          if (await jira.isBoardInBucket(board)) {
-            await this.maybeIncludeBoard(board);
-          }
-        }
+        await this.getBoardsFromJira(jira);
       }
     }
     return Array.from(this.boards);
   }
 
-  private async maybeIncludeBoard(boardId: string): Promise<void> {
-    const jira = await Jira.instance(this.config, this.logger);
-    const boardConfig = await jira.getBoardConfiguration(boardId);
-    // Jira Agile API GetConfiguration response type does not include key property
-    const projectKey = (boardConfig.location as any)?.key;
-    if (!projectKey) {
-      this.logger.warn(`No project key found for board ${boardId}`);
-      return;
+  private async getBoardsFromJira(jira: Jira): Promise<void> {
+    for (const project of this.projects) {
+      for (const board of await jira.getBoards(project)) {
+        // If boards are specified, only include those
+        if (
+          !this.config.boards ||
+          this.config.boards.includes(board.id.toString())
+        ) {
+          this.boards.add(board.id.toString());
+        }
+      }
     }
+  }
 
-    // Ensure projects is populated
-    await this.getProjects();
-
-    if (this.projects.has(projectKey)) {
-      this.boards.add(boardId);
+  private async getBoardsFromFaros(jira: Jira): Promise<void> {
+    const projects = jira.getProjectBoardsFromGraph(
+      this.farosClient,
+      this.config.graph ?? DEFAULT_GRAPH,
+      Array.from(this.projects)
+    );
+    for await (const project of projects) {
+      for (const board of project.boardUids) {
+        // If boards are specified, only include those
+        if (!this.config.boards || this.config.boards.includes(board)) {
+          this.boards.add(board);
+        }
+      }
     }
   }
 

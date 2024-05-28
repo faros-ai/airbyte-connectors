@@ -2,13 +2,14 @@ import {ChildProcess} from 'child_process';
 import spawn from 'cross-spawn';
 import path from 'path';
 import {Readable, Writable} from 'stream';
+import consumers from 'stream/consumers';
 
 export async function read(s: Readable): Promise<string> {
-  const lines: string[] = [];
-  for await (const line of s) {
-    lines.push(line);
-  }
-  return lines.join('');
+  return await consumers.text(s);
+}
+
+export async function readLines(s: Readable): Promise<ReadonlyArray<string>> {
+  return (await read(s)).split('\n');
 }
 
 export interface CLIOptions {

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`opsgenie basic test process records from all streams 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__opsgenie__incidents\\\\\\":3,\\\\\\"mytestsource__opsgenie__teams\\\\\\":1,\\\\\\"mytestsource__opsgenie__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 43 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":3,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":5,\\\\\\"ims_IncidentEvent\\\\\\":21,\\\\\\"ims_IncidentTag\\\\\\":3,\\\\\\"ims_Label\\\\\\":2,\\\\\\"ims_Team\\\\\\":1,\\\\\\"ims_TeamIncidentAssociation\\\\\\":2,\\\\\\"ims_User\\\\\\":2,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

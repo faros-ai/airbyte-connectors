@@ -1,18 +1,20 @@
-query Board(
+query ProjectBoards(
   $source: String!
   $pageSize: Int
-  $offset: Int
+  $offset: Int,
+  $projects: [String!]
 ) {
-  tms_TaskBoard(
+  tms_Project(
     where: {
       source: { _eq: $source }
+      uid: { _in: $projects }
     },
     limit: $pageSize,
     offset: $offset
   ) {
     uid
-    projects {
-      project {
+    boards {
+      board {
         uid
       }
     }

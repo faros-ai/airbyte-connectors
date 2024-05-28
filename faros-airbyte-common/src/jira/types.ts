@@ -97,12 +97,15 @@ export interface PullRequest {
 export interface Sprint extends AgileModels.Sprint {
   // The date the sprint is opened in Jira Server
   readonly activatedDate?: string;
+  // Board sprint is associated that can be not originBoardId
+  // https://support.atlassian.com/jira-software-cloud/docs/view-and-understand-the-sprint-report/
+  readonly boardId: number;
 }
 
 export interface SprintReport {
   readonly sprintId: number;
   readonly boardId: string;
-  readonly closedAt: Date;
+  readonly completeDate: Date;
   readonly issues: SprintIssue[];
 }
 
@@ -126,4 +129,18 @@ export interface User extends Version2Models.User {
 export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
+}
+
+export interface ProjectVersion extends Version2Models.Version {
+  projectKey: string;
+}
+
+export interface IssueProjectVersion {
+  readonly key: string;
+  readonly projectVersionId: string;
+}
+
+export interface FarosProject {
+  key: string;
+  boardUids: string[];
 }

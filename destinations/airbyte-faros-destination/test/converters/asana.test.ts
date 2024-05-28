@@ -1,5 +1,4 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';
@@ -8,72 +7,23 @@ import {Projects} from '../../src/converters/asana/projects';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {Users} from '../../src/converters/asana/users';
-import {CLI, read} from '../cli';
-import {initMockttp, tempConfig, testLogger} from '../testing-tools';
-import {asanaAllStreamsLog} from './data';
-import {assertProcessedAndWrittenModels} from './utils';
+import {initMockttp, tempConfig} from '../testing-tools';
+import {generateBasicTestSuite} from './utils';
 
 describe('asana', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/asana/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__asana__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await tempConfig(mockttp.url);
+    configPath = await tempConfig({api_url: mockttp.url});
   });
 
   afterEach(async () => {
     await mockttp.stop();
   });
 
-  test('process records from all streams', async () => {
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
-      configPath,
-      '--catalog',
-      catalogPath,
-      '--dry-run',
-    ]);
-    cli.stdin.end(asanaAllStreamsLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-
-    const processedByStream = {
-      projects: 1,
-      tags: 2,
-      tasks: 3,
-      users: 1,
-    };
-    const processed = _(processedByStream)
-      .toPairs()
-      .map((v) => [`${streamNamePrefix}${v[0]}`, v[1]])
-      .orderBy(0, 'asc')
-      .fromPairs()
-      .value();
-
-    const writtenByModel = {
-      tms_Label: 2,
-      tms_Project: 1,
-      tms_Task: 3,
-      tms_TaskBoard: 1,
-      tms_TaskBoardProjectRelationship: 1,
-      tms_TaskTag: 2,
-      tms_User: 1,
-    };
-
-    await assertProcessedAndWrittenModels(
-      processedByStream,
-      writtenByModel,
-      stdout,
-      processed,
-      cli
-    );
-  });
+  generateBasicTestSuite({sourceName: 'asana'});
 
   describe('tasks', () => {
     const converter = new Tasks();

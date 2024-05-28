@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`phabricator basic test process records from all streams 1`] = `
+Array [
+  "Processed 24 records",
+  "Processed records by stream: {\\\\\\"mytestsource__phabricator__commits\\\\\\":7,\\\\\\"mytestsource__phabricator__projects\\\\\\":4,\\\\\\"mytestsource__phabricator__repositories\\\\\\":2,\\\\\\"mytestsource__phabricator__revision_diffs\\\\\\":1,\\\\\\"mytestsource__phabricator__revisions\\\\\\":3,\\\\\\"mytestsource__phabricator__transactions\\\\\\":3,\\\\\\"mytestsource__phabricator__users\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 60 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_File\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":5,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequest__Update\\\\\\":5,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

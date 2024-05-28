@@ -160,6 +160,42 @@ exports[`index streams - issue_pull_requests 1`] = `
 ]
 `;
 
+exports[`index streams - project version issues 1`] = `
+[
+  {
+    "key": "TEST-1",
+    "projectVersionId": "10000",
+  },
+  {
+    "key": "TEST-2",
+    "projectVersionId": "10000",
+  },
+]
+`;
+
+exports[`index streams - project versions 1`] = `
+[
+  {
+    "description": "Initial release of the project",
+    "id": "10000",
+    "name": "Version 1.0",
+    "projectId": 1,
+    "projectKey": "TEST",
+    "releaseDate": "2023-03-01",
+    "startDate": "2023-01-01",
+  },
+  {
+    "description": "Second release of the project",
+    "id": "10001",
+    "name": "Version 2.0",
+    "projectId": 1,
+    "projectKey": "TEST",
+    "releaseDate": "2023-06-01",
+    "startDate": "2023-04-01",
+  },
+]
+`;
+
 exports[`index streams - projects - Cloud project list 1`] = `
 [
   {
@@ -187,13 +223,13 @@ exports[`index streams - projects - Jira Server - project list 1`] = `
 [
   {
     "description": "This is a test",
-    "id": 1234,
+    "id": "1234",
     "key": "TEST-1",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
-    "id": 1235,
+    "id": "1235",
     "key": "TEST-2",
     "name": "Test 2",
   },
@@ -204,19 +240,19 @@ exports[`index streams - projects - Jira Server 1`] = `
 [
   {
     "description": "This is a test",
-    "id": 1234,
+    "id": "1234",
     "key": "TEST-1",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
-    "id": 1235,
+    "id": "1235",
     "key": "TEST-2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
-    "id": 1236,
+    "id": "1236",
     "key": "TEST-3",
     "name": "Test 3",
   },
@@ -250,7 +286,7 @@ exports[`index streams - sprint_reports 1`] = `
 [
   {
     "boardId": "1",
-    "closedAt": 2024-03-14T12:00:00.000Z,
+    "completeDate": 2024-03-14T12:00:00.000Z,
     "issues": [
       {
         "addedDuringSprint": undefined,
@@ -298,7 +334,7 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
 [
   {
     "boardId": "1",
-    "closedAt": 2024-01-01T00:00:00.000Z,
+    "completeDate": 2024-01-01T00:00:00.000Z,
     "issues": [
       {
         "addedDuringSprint": undefined,
@@ -346,6 +382,7 @@ exports[`index streams - sprints 1`] = `
 [
   {
     "activatedDate": "2024-03-14T12:00:00Z",
+    "boardId": 1,
     "completeDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
     "id": 1,

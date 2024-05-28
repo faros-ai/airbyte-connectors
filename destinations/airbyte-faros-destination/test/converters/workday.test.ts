@@ -14,12 +14,7 @@ import {
   readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
-import {
-  workdayV1StreamsLog,
-  workdayV3StreamsLog,
-  workdayV4StreamsLog,
-} from './data';
-import {runTest} from './utils';
+import {destinationWriteTest} from './utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,
@@ -55,13 +50,15 @@ function getCustomReportandCtxGivenKey(
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
   const orgs_to_ignore = [];
-  const cfg = getConf(
-    mockttp.url,
-    InvalidRecordStrategy.SKIP,
-    Edition.CLOUD,
-    {},
-    {workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles}}
-  );
+  const cfg = getConf({
+    api_url: mockttp.url,
+    invalid_record_strategy: InvalidRecordStrategy.SKIP,
+    edition: Edition.CLOUD,
+    edition_configs: {},
+    source_specific_configs: {
+      workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles},
+    },
+  });
 
   const ctx: StreamContext = new StreamContext(
     new AirbyteLogger(AirbyteLogLevel.WARN),
@@ -85,35 +82,17 @@ function runCustomReportDestination(
 
 describe('workday', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/workday/catalog.json';
-  const streamNamePrefix = 'mytestsource__workday__';
   const getTempConfig = async (
     orgs_to_keep,
     orgs_to_ignore
   ): Promise<string> => {
-    return await tempConfig(
-      mockttp.url,
-      InvalidRecordStrategy.SKIP,
-      Edition.CLOUD,
-      {},
-      {workday: {orgs_to_keep, orgs_to_ignore}}
-    );
-  };
-
-  const runTestLocal = async (
-    configPath,
-    processedByStream,
-    writtenByModel,
-    workdayStreamsLog
-  ): Promise<void> => {
-    await runTest(
-      configPath,
-      catalogPath,
-      processedByStream,
-      writtenByModel,
-      workdayStreamsLog,
-      streamNamePrefix
-    );
+    return await tempConfig({
+      api_url: mockttp.url,
+      invalid_record_strategy: InvalidRecordStrategy.SKIP,
+      edition: Edition.CLOUD,
+      edition_configs: {},
+      source_specific_configs: {workday: {orgs_to_keep, orgs_to_ignore}},
+    });
   };
 
   beforeEach(async () => {
@@ -126,75 +105,37 @@ describe('workday', () => {
 
   test('process records from customreports v1 stream accept all', async () => {
     const configPath = await getTempConfig(['A', 'B'], []);
-    const processedByStream = {
-      customreports: 3,
-    };
-    const writtenByModel = {
-      geo_Location: 2,
-      identity_Identity: 3,
-      org_Employee: 3,
-      org_Team: 2,
-      org_TeamMembership: 3,
-    };
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV1StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v1.log',
+    });
   });
 
   test('process records from customreports v1 stream reject all', async () => {
     const configPath = await getTempConfig([], ['A', 'B']);
-    const processedByStream = {
-      customreports: 3,
-    };
-    const writtenByModel = {};
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV1StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v1.log',
+    });
   });
 
   test('process randomly generated records from customreports v3 stream', async () => {
     const configPath = await getTempConfig([], []);
-    const processedByStream = {
-      customreports: 100,
-    };
-    const writtenByModel = {
-      geo_Location: 4,
-      identity_Identity: 100,
-      org_Employee: 100,
-      org_Team: 4,
-      org_TeamMembership: 100,
-    };
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV3StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v3.log',
+    });
   });
   test('process structured generated records from customreports v4 stream', async () => {
     const configPath = await getTempConfig([], []);
-    const processedByStream = {
-      customreports: 100,
-    };
-    const writtenByModel = {
-      geo_Location: 4,
-      identity_Identity: 99,
-      org_Employee: 99,
-      org_Team: 12,
-      org_TeamMembership: 99,
-    };
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV4StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v4.log',
+    });
   });
   test('Saved and Ignored structured generated records v4 stream', async () => {
     // Teams are:
@@ -202,22 +143,11 @@ describe('workday', () => {
       ['TopDog', 'Engineering', 'Security'],
       ['ChiefExecs']
     );
-    const processedByStream = {
-      customreports: 100,
-    };
-    const writtenByModel = {
-      geo_Location: 4,
-      identity_Identity: 79,
-      org_Employee: 79,
-      org_Team: 9,
-      org_TeamMembership: 79,
-    };
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV4StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v4.log',
+    });
   });
 
   test('Saved and Ignored structured generated records v4 stream', async () => {
@@ -226,22 +156,11 @@ describe('workday', () => {
       ['TopDog', 'Engineering', 'Security'],
       ['ChiefExecs']
     );
-    const processedByStream = {
-      customreports: 100,
-    };
-    const writtenByModel = {
-      geo_Location: 4,
-      identity_Identity: 79,
-      org_Employee: 79,
-      org_Team: 9,
-      org_TeamMembership: 79,
-    };
-    await runTestLocal(
+    await destinationWriteTest({
       configPath,
-      processedByStream,
-      writtenByModel,
-      workdayV4StreamsLog
-    );
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v4.log',
+    });
   });
   test('check resulting org structure from "empty" input', () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(

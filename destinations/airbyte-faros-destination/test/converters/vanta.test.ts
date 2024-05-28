@@ -7,7 +7,7 @@ import {
   readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
-import {runTest} from './utils';
+import {destinationWriteTest} from './utils';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'vanta/mockQueryNamesToObjects.json'
@@ -47,11 +47,6 @@ describe('vanta', () => {
   // 2. Check Github Commit Sha Regex
 
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/vanta/catalog.json';
-  const streamNamePrefix = 'mytestsource__vanta__';
-  const streamsLog1 = readTestResourceFile('vanta/streams.log');
-  const streamsLog2 = readTestResourceFile('vanta/streams2.log');
-  const streamsLog3 = readTestResourceFile('vanta/streams3.log');
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -74,75 +69,34 @@ describe('vanta', () => {
   });
 
   const getTempConfig = async (mockttp: Mockttp): Promise<string> => {
-    return await tempConfig(mockttp.url);
+    return await tempConfig({api_url: mockttp.url});
   };
 
   test('test entries', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_Artifact: 1,
-      cicd_ArtifactVulnerability: 2,
-      cicd_Repository: 1,
-      sec_Vulnerability: 3,
-      vcs_RepositoryVulnerability: 1,
-    };
-
-    await runTest(
+    await destinationWriteTest({
       configPath,
-      catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog2,
-      streamNamePrefix
-    );
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams2.log',
+    });
   });
 
   test('test no entries', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_Artifact: 1,
-      cicd_ArtifactVulnerability: 1,
-      cicd_Repository: 1,
-      sec_Vulnerability: 3,
-      vcs_Repository: 1,
-      vcs_RepositoryVulnerability: 1,
-    };
-    await runTest(
+    await destinationWriteTest({
       configPath,
-      catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog1,
-      streamNamePrefix
-    );
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams.log',
+    });
   });
 
   test('test entries with duplicate UIDs', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 5,
-    };
-    const writtenByModel = {
-      cicd_Artifact: 1,
-      cicd_ArtifactVulnerability: 2,
-      cicd_Repository: 1,
-      sec_Vulnerability: 2,
-      vcs_RepositoryVulnerability: 1,
-    };
-    await runTest(
+    await destinationWriteTest({
       configPath,
-      catalogPath,
-      processedByStream,
-      writtenByModel,
-      streamsLog3,
-      streamNamePrefix
-    );
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams3.log',
+    });
   });
 
   test('github commit sha', async () => {

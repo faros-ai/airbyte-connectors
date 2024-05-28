@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros_graphdoctor basic test process records from all streams 1`] = `
+Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__faros_graphdoctor__data_quality_tests\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 3 records",
+  "Would write records by model: {\\\\\\"faros_DataQualityIssue\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

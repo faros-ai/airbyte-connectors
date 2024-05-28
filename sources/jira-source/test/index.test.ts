@@ -6,6 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
+import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
 import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
@@ -119,7 +120,9 @@ describe('index', () => {
     sourceConfig: JiraConfig,
     mockedImplementation?: any,
     streamSlice?: any,
-    isCloud = true
+    isCloud = true,
+    // only use if we do not want to write data snapshot
+    expectedResultLength?: number
   ) => {
     Jira.instance = jest.fn().mockImplementation(() => {
       return new Jira(
@@ -136,7 +139,8 @@ describe('index', () => {
         sourceConfig.bucket_total,
         logger,
         undefined,
-        sourceConfig?.requestedStreams
+        sourceConfig?.requestedStreams,
+        sourceConfig?.use_sprints_reverse_search
       );
     });
     const source = new sut.JiraSource(logger);
@@ -153,7 +157,11 @@ describe('index', () => {
     for await (const item of iter) {
       items.push(item);
     }
-    expect(items).toMatchSnapshot();
+    if (!expectedResultLength) {
+      expect(items).toMatchSnapshot();
+    } else {
+      expect(items).toHaveLength(expectedResultLength);
+    }
   };
 
   const getIssuePullRequestsMockedImplementation = () => ({
@@ -187,6 +195,46 @@ describe('index', () => {
       .mockResolvedValue(readTestResourceFile('sprint_report.json')),
   });
 
+  test('streams - json schema fields', async () => {
+    const source = new sut.JiraSource(logger);
+    const streams = source.streams(config);
+
+    const validateFieldInSchema = (
+      field: string | string[],
+      schema: Dictionary<any>
+    ) => {
+      if (Array.isArray(field)) {
+        let nestedField = schema;
+        for (const subField of field) {
+          expect(nestedField).toHaveProperty(subField);
+          nestedField = nestedField[subField].properties;
+        }
+      } else {
+        expect(schema).toHaveProperty(field);
+      }
+    };
+
+    for (const stream of streams) {
+      const jsonSchema = stream.getJsonSchema().properties;
+      const primaryKey = stream.primaryKey;
+      const cursorField = stream.cursorField;
+
+      // Validate primaryKey is in jsonSchema
+      if (primaryKey) {
+        if (Array.isArray(primaryKey)) {
+          for (const key of primaryKey) {
+            validateFieldInSchema(key, jsonSchema);
+          }
+        } else {
+          validateFieldInSchema(primaryKey, jsonSchema);
+        }
+      }
+
+      // Validate cursorField is in jsonSchema
+      validateFieldInSchema(cursorField, jsonSchema);
+    }
+  });
+
   test('streams - issue_pull_requests', async () => {
     await testStream(
       0,
@@ -197,9 +245,7 @@ describe('index', () => {
         end_date: new Date('2021-01-02'),
       },
       getIssuePullRequestsMockedImplementation(),
-      {
-        project: 'TEST',
-      }
+      {project: 'TEST'}
     );
   });
 
@@ -288,6 +334,68 @@ describe('index', () => {
       },
       {board: '1'}
     );
+  });
+
+  test('streams - sprints using most recent', async () => {
+    const sprint = readTestResourceFile('sprints.json')[0];
+    const getAllSprintsfn = jest
+      .fn()
+      .mockResolvedValueOnce({total: 1, values: [sprint]})
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(57).fill(sprint),
+      })
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(50).fill(sprint),
+      })
+      .mockResolvedValueOnce({
+        total: 57,
+        values: Array(7).fill(sprint),
+      });
+
+    await testStream(
+      3,
+      {...config, use_sprints_reverse_search: true},
+      {
+        agile: {
+          board: {
+            getBoard: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('board.json')),
+            getAllSprints: getAllSprintsfn,
+          },
+        },
+      },
+      {board: '1'},
+      true,
+      58
+    );
+
+    expect(getAllSprintsfn).toHaveBeenCalledTimes(4);
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(1, {
+      boardId: 1,
+      startAt: 0,
+      state: 'active,future',
+      maxResults: 100,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(2, {
+      boardId: 1,
+      state: 'closed',
+      maxResults: 50,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(3, {
+      boardId: 1,
+      startAt: 7,
+      state: 'closed',
+      maxResults: 50,
+    });
+    expect(getAllSprintsfn).toHaveBeenNthCalledWith(4, {
+      boardId: 1,
+      startAt: 0,
+      state: 'closed',
+      maxResults: 7,
+    });
   });
 
   test('streams - users', async () => {
@@ -449,5 +557,39 @@ describe('index', () => {
       },
       {project: 'TEST'}
     );
+  });
+
+  test('streams - project versions', async () => {
+    await testStream(
+      8,
+      config,
+      {
+        v2: {
+          projectVersions: {
+            getProjectVersionsPaginated: paginate(
+              readTestResourceFile('project_versions.json')
+            ),
+          },
+        },
+      },
+      {project: 'TEST'}
+    );
+  });
+
+  test('streams - project version issues', async () => {
+    const version = readTestResourceFile('project_versions.json')[0];
+    await testStream(9, config, {
+      v2: {
+        issueSearch: {
+          searchForIssuesUsingJql: paginate(
+            readTestResourceFile('project_version_issues.json'),
+            'issues'
+          ),
+        },
+        projectVersions: {
+          getProjectVersionsPaginated: paginate([version]),
+        },
+      },
+    });
   });
 });
