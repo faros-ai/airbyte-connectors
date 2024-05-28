@@ -43,7 +43,7 @@ export const runAllZScoreTests: GraphDoctorTestFunction = async function* (
     ['vcs_Commit'],
     ['vcs_PullRequest'],
   ];
-  const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
+  const base_model_query = `{MODEL_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}) {
     refreshedAt,
     id
   }`;
@@ -222,7 +222,7 @@ function substitute_strings_into_queries(
   modelName: string,
   amt: number
 ): string {
-  let op_str = query_str.replace('{QUERY_NAME}', modelName);
+  let op_str = query_str.replace('{MODEL_NAME}', modelName);
   op_str = op_str.replace('{AMOUNT}', amt.toString());
   return op_str;
 }
@@ -375,7 +375,7 @@ export const checkIfWithinLastXDays: GraphDoctorTestFunction = async function* (
     `Starting to compute if objects appeared within the last ${days} days for models: ${model_test_list}`
   );
 
-  const base_model_query = `{QUERY_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}, distinct_on: refreshedAt) {
+  const base_model_query = `{MODEL_NAME}(order_by: {refreshedAt: desc}, limit: {AMOUNT}) {
     refreshedAt,
     id
   }`;
