@@ -337,9 +337,7 @@ Array [
   },
   Object {
     "tms_Project": Object {
-      "description": "Playground project description
-
-Test",
+      "description": "Playground project description",
       "name": "Playground",
       "source": "Jira",
       "sourceSystemId": "10011",
