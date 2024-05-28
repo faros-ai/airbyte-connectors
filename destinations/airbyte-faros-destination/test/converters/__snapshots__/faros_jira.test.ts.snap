@@ -2,10 +2,10 @@
 
 exports[`faros_jira process records from all streams 1`] = `
 Array [
-  "Processed 9 records",
-  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 37 records",
-  "Would write records by model: {\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":25,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 39 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":25,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -635,6 +635,24 @@ Array [
         "source": "Jira",
         "uid": "55",
       },
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Playground project description",
+      "name": "Playground",
+      "source": "Jira",
+      "sourceSystemId": "10011",
+      "uid": "PLAYG",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "john.doe@example.com",
+      "inactive": false,
+      "name": "John Doe",
+      "source": "Jira",
+      "uid": "61f99bc0acd4cb0069cfd675",
     },
   },
 ]

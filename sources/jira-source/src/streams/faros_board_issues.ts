@@ -4,7 +4,6 @@ import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {JqlBuilder} from '../jql-builder';
 import {BoardStreamSlice, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
@@ -25,13 +24,8 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const boardId = streamSlice.board;
     const boardConfig = await jira.getBoardConfiguration(boardId);
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
-    // Jira Agile API GetConfiguration response type does not include key property
-    // but, in practice, it is actually present
-    const projectKey = boardConfig.location['key'];
     try {
-      for await (const issue of jira.getIssuesKeys(
-        new JqlBuilder(boardJql).withProject(projectKey).build()
-      )) {
+      for await (const issue of jira.getIssuesKeys(boardJql)) {
         yield {
           key: issue,
           boardId,
@@ -42,9 +36,9 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
       if (err?.status !== 400) {
         throw wrapApiError(err);
       }
-      // FAI-5497: Log an error instead of failing feed if 400
+      // FAI-5497: Log an error instead of failing stream if 400
       this.logger.warn(
-        `Failed to sync project ${projectKey} due to invalid filter. Skipping.`
+        `Failed to sync board ${boardConfig.name} with id ${boardId} due to invalid filter. Skipping.`
       );
     }
   }

@@ -3,6 +3,7 @@ import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
+  FarosProject,
   Issue,
   IssueCompact,
   IssueField,
@@ -18,8 +19,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {chunk, concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
-import {isEmpty} from 'lodash';
+import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
 import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
@@ -104,8 +104,8 @@ const PROJECT_QUERY = fs.readFileSync(
   'utf8'
 );
 
-const BOARD_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-board.gql'),
+const PROJECT_BOARDS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
   'utf8'
 );
 
@@ -504,7 +504,17 @@ export class Jira {
   }
 
   @Memoize()
-  async *getProjects(
+  async getProjects(
+    keys?: Set<string>
+  ): Promise<ReadonlyArray<Version2Models.Project>> {
+    const projects: Version2Models.Project[] = [];
+    for await (const project of this.getProjectsIterator(keys)) {
+      projects.push(project);
+    }
+    return projects;
+  }
+
+  async *getProjectsIterator(
     keys?: Set<string>
   ): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
@@ -572,7 +582,12 @@ export class Jira {
           skippedProjects.push(project.key);
           continue;
         }
-        yield project;
+        yield {
+          id: project.id,
+          key: project.key,
+          name: project.name,
+          description: project.description,
+        };
       } catch (error: any) {
         if (error.response?.status === 404) {
           skippedProjects.push(project.key);
@@ -809,52 +824,58 @@ export class Jira {
     return this.requestedStreams?.has('faros_issues');
   }
 
-  async *getBoards(
-    projectId?: string
+  @Memoize()
+  async getBoards(
+    projectKey?: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const boards: AgileModels.Board[] = [];
+    for await (const board of this.getBoardsIterator(projectKey)) {
+      boards.push(board);
+    }
+    return boards;
+  }
+
+  private getBoardsIterator(
+    projectKey?: string
   ): AsyncIterableIterator<AgileModels.Board> {
-    const boards = this.iterate(
+    return this.iterate(
       (startAt) =>
         this.api.agile.board.getAllBoards({
           startAt,
           maxResults: this.maxPageSize,
-          ...(projectId && {projectKeyOrId: projectId}),
+          ...(projectKey && {projectKeyOrId: projectKey}),
         }),
       (item: AgileModels.Board) => item
     );
-    for await (const board of boards) {
-      const boardProject = board?.location?.projectKey;
-      if (boardProject && this.isProjectInBucket(boardProject)) yield board;
-    }
   }
 
-  async *getBoardsFromGraph(
+  // Fetch project with boards nested from Faros
+  async *getProjectBoardsFromGraph(
     farosClient: FarosClient,
-    graph: string
-  ): AsyncIterableIterator<AgileModels.Board> {
-    const boards = this.iterate(
+    graph: string,
+    projectKeys: Array<string>
+  ): AsyncIterableIterator<FarosProject> {
+    const projects = this.iterate(
       async (startAt) => {
-        const data = await farosClient.gql(graph, BOARD_QUERY, {
+        const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
           source: 'Jira',
           offset: startAt,
           pageSize: this.maxPageSize,
+          projects: projectKeys,
         });
-        return data?.tms_TaskBoard;
+        return data?.tms_Project;
       },
-      async (item: any) => {
+      (item: any): FarosProject => {
         return {
-          id: item.uid,
-          projectsKeys:
-            item.projects?.map((project: any) => project.project.uid) ?? [],
+          key: item.uid,
+          boardUids: item.boards?.map((board: any) => board.board.uid) ?? [],
         };
       }
     );
-    for await (const board of boards) {
-      if (
-        board.projectsKeys.some((projectKey: string) =>
-          this.isProjectInBucket(projectKey)
-        )
-      )
-        yield board;
+    for await (const project of projects) {
+      if (this.isProjectInBucket(project.key)) {
+        yield project;
+      }
     }
   }
 
@@ -1147,12 +1168,6 @@ export class Jira {
       expand: 'jql',
     });
     return filterJQL.jql;
-  }
-
-  async isBoardInBucket(boardId: string): Promise<boolean> {
-    const board = await this.getBoard(boardId);
-    const boardProject = board?.location?.projectKey;
-    return boardProject && this.isProjectInBucket(boardProject);
   }
 
   isProjectInBucket(projectKey: string): boolean {
