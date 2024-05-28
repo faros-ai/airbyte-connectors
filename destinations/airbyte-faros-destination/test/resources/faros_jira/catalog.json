@@ -26,6 +26,18 @@
     },
     {
       "stream": {
+        "name": "mytestsource__jira__faros_sprint_reports"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_sprints"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__jira__faros_projects"
       },
       "destination_sync_mode": "overwrite"
