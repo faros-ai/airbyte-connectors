@@ -4,8 +4,8 @@ exports[`faros_jira process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 21 records",
-  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 22 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -154,6 +154,19 @@ Array [
       "uid": "PLAYG-1",
       "updatedAt": "2024-03-08T17:59:28.167Z",
       "url": "https://faros-ai.atlassian.net/browse/PLAYG-1",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-1",
+      },
     },
   },
   Object {
