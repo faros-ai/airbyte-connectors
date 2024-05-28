@@ -110,9 +110,9 @@ describe('index', () => {
     );
   });
 
-  test('git single page', async () => {
+  test('gitv2 single page', async () => {
     const vanta = getVantaInstance(logger, sampleConfig, 100);
-    const queryType = 'git';
+    const queryType = 'gitv2';
     const output = [];
     const res = await vanta.vulns(queryType);
     for await (const item of res) {
@@ -121,7 +121,7 @@ describe('index', () => {
 
     const preExpected = readTestResourceFile('github_response_page.json');
     const expected = unpackResourceDataByQueryName(
-      'GithubDependabotVulnerabilityList',
+      'GithubDependabotVulnerabilityV2List',
       preExpected
     );
     await expect(output).toStrictEqual(expected);
@@ -129,7 +129,7 @@ describe('index', () => {
 
   test('test all query types single page', async () => {
     const vanta = getVantaInstance(logger, sampleConfig, 100);
-    const queryTypes = ['git', 'awsv2'];
+    const queryTypes = ['gitv2', 'awsv2'];
     const output = [];
     for (const queryType of queryTypes) {
       const res = await vanta.vulns(queryType);
@@ -140,7 +140,7 @@ describe('index', () => {
     const totalExpected = [];
     const preExpected = readTestResourceFile('github_response_page.json');
     const expected = unpackResourceDataByQueryName(
-      'GithubDependabotVulnerabilityList',
+      'GithubDependabotVulnerabilityV2List',
       preExpected
     );
     totalExpected.push(...expected);
