@@ -2,10 +2,10 @@
 
 exports[`faros_jira process records from all streams 1`] = `
 Array [
-  "Processed 7 records",
-  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 22 records",
-  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 40 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":25,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -345,6 +345,308 @@ Array [
       "task": Object {
         "source": "Jira",
         "uid": "PLAYG-1",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "Completed",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-44",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "Completed",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-45",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "CompletedOutsideSprint",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-3",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "CompletedOutsideSprint",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-26",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-9",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-15",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-22",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-4",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-20",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": 9,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-24",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-29",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-38",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": true,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "NotCompleted",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-40",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedDuringSprint": null,
+      "points": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "51",
+      },
+      "status": Object {
+        "category": "Removed",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-11",
+      },
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2024-05-13T07:10:11.135Z",
+      "endedAt": "2024-05-19T22:39:39.000Z",
+      "name": "Another Sprint",
+      "openedAt": null,
+      "source": "Jira",
+      "startedAt": "2024-05-13T07:09:41.502Z",
+      "state": "Closed",
+      "uid": "75",
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "49",
+      },
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "75",
+      },
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": null,
+      "endedAt": null,
+      "name": "PLAYG Sprint 20",
+      "openedAt": null,
+      "source": "Jira",
+      "startedAt": null,
+      "state": "Future",
+      "uid": "55",
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "49",
+      },
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "55",
       },
     },
   },
