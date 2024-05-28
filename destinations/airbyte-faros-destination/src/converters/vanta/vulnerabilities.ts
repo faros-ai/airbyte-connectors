@@ -1,5 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+// import fs:
+import fs from 'fs-extra';
 
 import {
   Converter,
@@ -9,18 +11,16 @@ import {
 } from '../converter';
 import {
   AWSV2VulnerabilityData,
-  AWSVulnerabilityData,
-  BaseAWSVuln,
   CicdArtifactKey,
   CicdOrgKey,
   CicdRepoKey,
   ExtendedVulnerabilityType,
   FarosObjectKey,
-  GithubVulnerabilityData,
+  GitV2VulnerabilityData,
   VcsRepoKey,
   VulnerabilityInfo,
 } from './types';
-import {getQueryFromName, looksLikeGithubCommitSha} from './utils';
+import {getQueryFromName, looksLikeGitCommitSha} from './utils';
 
 /*
 Note: 
@@ -38,8 +38,7 @@ export abstract class Vulnerabilities extends Converter {
     'cicd_Artifact',
     'cicd_Repository',
   ];
-  git_vulns: GithubVulnerabilityData[] = [];
-  aws_vulns: AWSVulnerabilityData[] = [];
+  git_vulns: GitV2VulnerabilityData[] = [];
   awsv2_vulns: AWSV2VulnerabilityData[] = [];
   vulnsMissingIds: ExtendedVulnerabilityType[] = [];
   severityMap: {[key: string]: number} = {
@@ -50,8 +49,8 @@ export abstract class Vulnerabilities extends Converter {
   };
   vantaBasedGitRepositoryNamesToVantaUids: Record<string, string[]> = {};
   awsV2ContainerNamesToUids: Record<string, string[]> = {};
-  vantaVulnsFromGitUidsToRecords: Record<string, GithubVulnerabilityData> = {};
-  vantaVulnsFromAWSUidsToRecords: Record<string, AWSVulnerabilityData> = {};
+  vantaVulnsFromGitUidsToRecords: Record<string, GitV2VulnerabilityData> = {};
+  vantaVulnsFromAWSUidsToRecords: Record<string, AWSV2VulnerabilityData> = {};
   // It seems Vanta has duplicate UIDs for different vulns ???
   // We store these in a set along with vuln titles to keep track of them
   duplicateAwsV2UidsAndTitles: Set<[string, string]> = new Set();
@@ -109,13 +108,9 @@ export abstract class Vulnerabilities extends Converter {
         return [];
       }
     }
-    if (record?.record?.data?.vuln_type === 'git') {
+    if (record?.record?.data?.vuln_type === 'gitv2') {
       this.git_vulns.push(
-        record?.record?.data?.vuln_data as GithubVulnerabilityData
-      );
-    } else if (record?.record?.data?.vuln_type === 'aws') {
-      this.aws_vulns.push(
-        record?.record?.data?.vuln_data as AWSVulnerabilityData
+        record?.record?.data?.vuln_data as GitV2VulnerabilityData
       );
     } else if (record?.record?.data?.vuln_type === 'awsv2') {
       this.awsv2_vulns.push(
@@ -137,10 +132,32 @@ export abstract class Vulnerabilities extends Converter {
     }
   }
 
-  parseVantaVulnRecordsWithGitOrigin(
-    vantaVulnsFromGit: GithubVulnerabilityData[]
+  convertDateFormat(inputDate: string): string {
+    // Parse the input date
+    const date = new Date(inputDate);
+
+    // Get the components of the date
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+
+    // Format the microseconds (zeros for example purposes)
+    const microseconds = '00'; // You can adjust this if you need to generate actual microseconds
+
+    // Format the date string to the desired format
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${microseconds}+00:00`;
+
+    return formattedDate;
+  }
+
+  parseVantaVulnRecordsWithGitV2Origin(
+    vantaVulnsFromGit: GitV2VulnerabilityData[]
   ): DestinationRecord[] {
-    // Within this function, we parse the vanta vuln data from git origin.
+    // Within this function, we parse the vanta vuln data from git (v2) origin.
     // We also populate the object, vantaBasedGitRepositoryNamesToVantaUids, which maps
     // the repository Name from the vuln (which should be a git repo name),
     // to the uids of the vulns associated with that repository. (Adds it to a list)
@@ -151,21 +168,26 @@ export abstract class Vulnerabilities extends Converter {
         this.vulnsMissingIds.push(vuln);
         continue;
       }
-      vuln['description'] = vuln.securityAdvisory.description;
+      const repoName = vuln.asset.displayName ? vuln.asset.displayName : '';
       this.addUIDToMapping(
-        vuln.repositoryName,
+        repoName,
         vuln.uid,
         this.vantaBasedGitRepositoryNamesToVantaUids
       );
-      const cveId = vuln.securityAdvisory.cveId
-        ? vuln.securityAdvisory.cveId
+      const cveId = vuln.externalVulnerabilityId
+        ? vuln.externalVulnerabilityId
         : '';
-      const ghsaId = vuln.securityAdvisory.ghsaId
-        ? vuln.securityAdvisory.ghsaId
-        : '';
-      vuln['externalIds'] = [cveId, ghsaId];
-      vuln['vulnURL'] = '';
-
+      vuln['externalIds'] = [cveId];
+      const vulnURL = vuln.relatedUrls?.length > 0 ? vuln.relatedUrls[0] : '';
+      vuln['vulnURL'] = vulnURL;
+      const sev: number = this.severityMap[vuln.severity];
+      let sevString: string;
+      if (!sev) {
+        sevString = '0';
+      } else {
+        sevString = sev.toString();
+      }
+      vuln['severity'] = sevString;
       farosVulnRecords.push(
         this.getSecVulnerabilityRecordFromData(
           vuln as ExtendedVulnerabilityType
@@ -174,39 +196,6 @@ export abstract class Vulnerabilities extends Converter {
       this.vantaVulnsFromGitUidsToRecords[vuln.uid] = vuln;
     }
     return farosVulnRecords;
-  }
-
-  parseVantaVulnRecordsWithAwsOrigin(
-    data: AWSVulnerabilityData[]
-  ): DestinationRecord[] {
-    // Note - we modify the UID to include CVE string if it exists
-    const vuln_data = [];
-    for (const vuln of data) {
-      if (!vuln.uid) {
-        this.vulnsMissingIds.push(vuln);
-        continue;
-      }
-      for (const finding of vuln.findings) {
-        // We copy vuln data and add the finding data to it
-        const new_vuln = {...vuln};
-        // In the case of AWS vuln objects as provided by Vanta,
-        // the name field contains the CVE string at the beginning
-        const pre_cve_str = finding['name'] ? finding['name'] : '';
-        const cve_str = pre_cve_str.split(' ')[0];
-        new_vuln['externalIds'] = [cve_str];
-        new_vuln['description'] = finding['description']
-          ? finding['description']
-          : 'No description found';
-        new_vuln['vulnURL'] = finding['uri'] ? finding['uri'] : '';
-        vuln_data.push(
-          this.getSecVulnerabilityRecordFromData(
-            new_vuln as ExtendedVulnerabilityType
-          )
-        );
-        this.vantaVulnsFromAWSUidsToRecords[new_vuln.uid] = new_vuln;
-      }
-    }
-    return vuln_data;
   }
 
   async runFunctionInBatches(
@@ -431,7 +420,7 @@ export abstract class Vulnerabilities extends Converter {
             uid: vantaUid,
             source: this.source,
           };
-          const vuln: GithubVulnerabilityData =
+          const vuln: GitV2VulnerabilityData =
             this.vantaVulnsFromGitUidsToRecords[vantaUid];
           if (!vuln) {
             ctx.logger.debug(
@@ -445,8 +434,8 @@ export abstract class Vulnerabilities extends Converter {
               repository: repoKey,
               vulnerability: vulnKey,
               url: this.encodeURL(vuln.externalURL),
-              dueAt: vuln.slaDeadline,
-              createdAt: vuln.createdAt,
+              dueAt: this.convertDateFormat(vuln.remediateBy),
+              createdAt: this.convertDateFormat(vuln.createdAt),
             },
           });
         }
@@ -473,134 +462,19 @@ export abstract class Vulnerabilities extends Converter {
     }
   }
 
-  async getCICDMappingsFromAWSVulnsByCommitSha(
-    fc: FarosClient,
-    ctx: StreamContext
-  ): Promise<DestinationRecord[]> {
-    const aws_vulns = Object.values(this.vantaVulnsFromAWSUidsToRecords);
-    const [
-      commitShasToVulns,
-      commitShaToArtifact,
-      cicdArtifactDestinationRecords,
-    ] = await this.getCommitShaDataFromFarosUsingAWSVulns(
-      aws_vulns,
-      fc,
-      ctx,
-      'aws'
-    );
-    const res: DestinationRecord[] = cicdArtifactDestinationRecords;
-    for (const commitSha of Object.keys(commitShaToArtifact)) {
-      const CicdArtifactKey = commitShaToArtifact[commitSha];
-      if (CicdArtifactKey) {
-        const vuln = commitShasToVulns[commitSha] as AWSVulnerabilityData;
-        res.push({
-          model: 'cicd_ArtifactVulnerability',
-          record: {
-            artifact: CicdArtifactKey,
-            vulnerability: {
-              uid: this.getUidFromAWSVuln(vuln),
-              source: this.source,
-            },
-            url: this.encodeURL(vuln.externalURL),
-            dueAt: vuln.slaDeadline,
-            createdAt: vuln.createdAt,
-            acknowledgedAt: vuln.createdAt,
-            status: null,
-          },
-        });
-      }
-    }
-    // Now we get the list of vulns that we did not get cicd artifacts for
-    const missing_uids = new Set(
-      Object.keys(this.vantaVulnsFromAWSUidsToRecords)
-    );
-    for (const vuln of Object.values(commitShasToVulns)) {
-      missing_uids.delete(vuln.uid);
-    }
-    ctx.logger.info(
-      `Total count of missing uids: ${missing_uids.size} out of ` +
-        `${Object.keys(this.vantaVulnsFromAWSUidsToRecords).length} total AWS uids.`
-    );
-    return res;
-  }
-
-  async getCICDMappingsFromAWSByRepoName(
-    fc: FarosClient,
-    ctx: StreamContext,
-    vulnUidsToCheck: Set<string>
-  ): Promise<DestinationRecord[]> {
-    // We iterate through the key-value pairs of vantaVulnsFromAWSUidsToRecords
-    // We get the repository name from the vuln, and we take the most
-    // recent cicd_Artifact, rather than getting the cicd_Artifact by commit sha
-    // Faros Client is passed in as an argument in case we want to change it in the future
-    const res: DestinationRecord[] = [];
-    const repoNames: Set<string> = new Set();
-    const uidsToRepoNames: Record<string, string> = {};
-    for (const [uid, vuln] of Object.entries(
-      this.vantaVulnsFromAWSUidsToRecords
-    )) {
-      if (!vulnUidsToCheck.has(uid)) {
-        continue;
-      }
-      let repoName = vuln.repositoryName;
-      if (!repoName) {
-        ctx.logger.debug(
-          `Could not find repository name for vulnerability with uid "${uid}"`
-        );
-        this.vulnerabilitiesWithMissingRepositoryNames.add(uid);
-        continue;
-      }
-      // If repoName has '/' in it, we split by backslash and take the last piece:
-      if (repoName.includes('/')) {
-        const split = repoName.split('/');
-        repoName = split[split.length - 1];
-      }
-      repoNames.add(repoName);
-      uidsToRepoNames[uid] = repoName;
-    }
-    const repoKeys: CicdArtifactKey[] =
-      await this.getAWSCicdArtifactsFromRepoNamesByBatches(
-        Array.from(repoNames),
-        fc,
-        ctx
-      );
-    // Note - for cicd Repositories, the uid is the repository name
-    const repoUidsToKeys: Record<string, CicdArtifactKey> = {};
-    for (const repoKey of repoKeys) {
-      repoUidsToKeys[repoKey.repository.uid] = repoKey;
-    }
-    for (const [uid, vuln] of Object.entries(
-      this.vantaVulnsFromAWSUidsToRecords
-    )) {
-      const repoName = uidsToRepoNames[uid];
-      const repoKey = repoUidsToKeys[repoName];
-      res.push({
-        model: 'cicd_ArtifactVulnerability',
-        record: {
-          artifact: repoKey,
-          vulnerability: {
-            uid: uid,
-            source: this.source,
-          },
-          url: this.encodeURL(vuln.externalURL),
-          dueAt: vuln.slaDeadline,
-          createdAt: vuln.createdAt,
-          acknowledgedAt: vuln.createdAt,
-        },
-      });
-    }
-    return res;
-  }
-
   getCommitShasFromAWSVulns(
-    vulns: BaseAWSVuln[],
+    vulns: AWSV2VulnerabilityData[],
     ctx: StreamContext
-  ): [Set<string>, Record<string, BaseAWSVuln>, BaseAWSVuln[]] {
-    // Note: vulns argument represents both AWS v1 and AWS v2 vulns records (BaseAWSVuln)
+  ): [
+    Set<string>,
+    Record<string, AWSV2VulnerabilityData>,
+    AWSV2VulnerabilityData[],
+  ] {
+    // Note: vulns argument represents both AWS v1 and AWS v2 vulns records (AWSV2VulnerabilityData)
     const seenUids: Set<string> = new Set();
     const allCommitShas: Set<string> = new Set();
-    const commitShasToVulns: Record<string, BaseAWSVuln> = {};
-    const vulnsWithNoCommitShas: BaseAWSVuln[] = [];
+    const commitShasToVulns: Record<string, AWSV2VulnerabilityData> = {};
+    const vulnsWithNoCommitShas: AWSV2VulnerabilityData[] = [];
     let totalMissed = 0;
     for (const vuln of vulns) {
       // First we check for dup uids
@@ -616,7 +490,7 @@ export abstract class Vulnerabilities extends Converter {
       seenUids.add(uid);
 
       // We need to do the following for each vuln:
-      // Get the image tags. For each image tag, check if it is a github commit sha
+      // Get the image tags. For each image tag, check if it is a git commit sha
       // if it is, add it to the set of commit shas to use later to query for cicd artifacts
       const imageTags = vuln.imageTags;
       if (!imageTags || imageTags.length === 0) {
@@ -626,7 +500,7 @@ export abstract class Vulnerabilities extends Converter {
       }
       let commitSha = null;
       for (const tag of imageTags) {
-        if (looksLikeGithubCommitSha(tag)) {
+        if (looksLikeGitCommitSha(tag)) {
           commitSha = tag;
           break;
         }
@@ -646,7 +520,7 @@ export abstract class Vulnerabilities extends Converter {
   }
 
   getRepoNameAndArtifactUidFromAWSVuln(
-    awsVuln: BaseAWSVuln,
+    awsVuln: AWSV2VulnerabilityData,
     inpRepo: string,
     inpArtifactUid: string,
     vuln_type: string
@@ -657,26 +531,19 @@ export abstract class Vulnerabilities extends Converter {
       const repoName = v.asset.displayName ? v.asset.displayName : inpRepo;
       const artifactUid = v.imageDigest ? v.imageDigest : inpArtifactUid;
       return [repoName, artifactUid];
-    } else if (vuln_type === 'aws') {
-      const awsV1vuln = awsVuln as AWSVulnerabilityData;
-      const repoName = awsV1vuln.repositoryName
-        ? awsV1vuln.repositoryName
-        : inpRepo;
-      const imageTags = awsV1vuln.imageTags;
-      let artifactUid = inpArtifactUid;
-      if (imageTags && imageTags.length > 0) {
-        artifactUid = imageTags[0];
-      }
-      return [repoName, artifactUid];
     } else {
       throw new Error(`Invalid vuln type: ${vuln_type}`);
     }
   }
 
   createAssociatedCicdArtifacts(
-    aws_vulns_with_no_associated_commit_shas: BaseAWSVuln[],
+    aws_vulns_with_no_associated_commit_shas: AWSV2VulnerabilityData[],
     vuln_type: string
-  ): [CicdArtifactKey[], DestinationRecord[], Record<string, BaseAWSVuln>] {
+  ): [
+    CicdArtifactKey[],
+    DestinationRecord[],
+    Record<string, AWSV2VulnerabilityData>,
+  ] {
     // vuln_type 'awsv2' or 'aws'
     const cicdArtifactKeys: CicdArtifactKey[] = [];
     const destRecords: DestinationRecord[] = [];
@@ -684,7 +551,7 @@ export abstract class Vulnerabilities extends Converter {
       uid: 'farosai',
       source: 'Docker',
     };
-    const newCommitShasToVulns: Record<string, BaseAWSVuln> = {};
+    const newCommitShasToVulns: Record<string, AWSV2VulnerabilityData> = {};
     for (const vuln of aws_vulns_with_no_associated_commit_shas) {
       // For every vuln, we start by assuming we won't get a repo name or a cicd artifact uid
       let repoName: string = 'vanta-aws-repo';
@@ -721,13 +588,13 @@ export abstract class Vulnerabilities extends Converter {
   }
 
   async getCommitShaDataFromFarosUsingAWSVulns(
-    aws_vulns: BaseAWSVuln[],
+    aws_vulns: AWSV2VulnerabilityData[],
     fc: FarosClient,
     ctx: StreamContext,
     vuln_type: string
   ): Promise<
     [
-      Record<string, BaseAWSVuln>,
+      Record<string, AWSV2VulnerabilityData>,
       Record<string, CicdArtifactKey>,
       DestinationRecord[],
     ]
@@ -790,7 +657,7 @@ export abstract class Vulnerabilities extends Converter {
   ): Promise<DestinationRecord[]> {
     // Within this function, we first get all the potential commit shas from
     // the AWS V2 Container Vulnerability data. We create a mapping from
-    // commit Sha to Vuln Data in order to use it later.
+    // commit Sha to Vuln Data (in Airbyte Record form) in order to use it later.
     // We then get the cicd_Artifact keys from the commit shas we collected.
     // Within the cicdArtifactKeys, note that the "uid" is the commit sha for the artifact.
     // Finally, for each commit sha we have, we can now create an association between
@@ -820,7 +687,7 @@ export abstract class Vulnerabilities extends Converter {
               source: this.source,
             },
             url: this.encodeURL(vuln.externalURL),
-            dueAt: vuln.remediateBy,
+            dueAt: this.convertDateFormat(vuln.remediateBy),
             createdAt: vuln.createdAt,
             acknowledgedAt: vuln.createdAt,
             status: {
@@ -834,7 +701,7 @@ export abstract class Vulnerabilities extends Converter {
     return res;
   }
 
-  getUidFromAWSVuln(vuln: BaseAWSVuln): string {
+  getUidFromAWSVuln(vuln: AWSV2VulnerabilityData): string {
     // We keep the uid retreival in this function because if we choose to modify
     // the uid in the future, it will remain consistent in all cases.
     return vuln.uid;
@@ -852,7 +719,7 @@ export abstract class Vulnerabilities extends Converter {
       const sev: number = this.severityMap[vuln.severity];
       let sevString: string;
       if (!sev) {
-        sevString = 'UNKNOWN';
+        sevString = '0';
       } else {
         sevString = sev.toString();
       }
@@ -873,6 +740,7 @@ export abstract class Vulnerabilities extends Converter {
       };
 
       vuln_data.push(this.getSecVulnerabilityRecordFromData(vuln_copy));
+      this.vantaVulnsFromAWSUidsToRecords[vuln.uid] = vuln;
     }
     return vuln_data;
   }
@@ -931,12 +799,24 @@ export abstract class Vulnerabilities extends Converter {
     data: ExtendedVulnerabilityType
   ): DestinationRecord {
     // The required fields (ones which cannot be null) are uid and source
+    // Note that severity must be a string of a float
     if (!data.uid || !this.source) {
       throw new Error(
         'Vulnerability data must have a uid and source. Data: ' +
           JSON.stringify(data) +
           JSON.stringify(data.uid)
       );
+    }
+    if (data.description?.length > 200) {
+      data.description = data.description.slice(0, 200);
+    }
+    // Check if severity is a valid number in string format:
+    if (data.severity) {
+      if (isNaN(parseFloat(data.severity))) {
+        throw new Error(
+          `Severity must be a valid number in string format. Data: ${data}`
+        );
+      }
     }
     return {
       model: 'sec_Vulnerability',
@@ -947,7 +827,7 @@ export abstract class Vulnerabilities extends Converter {
         description: data.description,
         severity: data.severity,
         url: this.encodeURL(data.vulnURL),
-        discoveredAt: data.createdAt,
+        discoveredAt: this.convertDateFormat(data.createdAt),
         vulnerabilityIds: data.externalIds,
       },
     };
@@ -984,12 +864,10 @@ export abstract class Vulnerabilities extends Converter {
   }
 
   getTotalNumberOfRecords(): number {
-    return (
-      this.git_vulns.length + this.aws_vulns.length + this.awsv2_vulns.length
-    );
+    return this.git_vulns.length + this.awsv2_vulns.length;
   }
 
-  async getPaginatedQueryResults(
+  async getPaginatedQueryResponseFromFaros(
     ctx,
     query: string,
     key: string
@@ -1023,7 +901,11 @@ export abstract class Vulnerabilities extends Converter {
     query: string,
     key: string
   ): Promise<VulnerabilityInfo[]> {
-    const resp_list = await this.getPaginatedQueryResults(ctx, query, key);
+    const resp_list = await this.getPaginatedQueryResponseFromFaros(
+      ctx,
+      query,
+      key
+    );
     const res = [];
     for (const item of resp_list) {
       res.push({
@@ -1035,29 +917,9 @@ export abstract class Vulnerabilities extends Converter {
     return res;
   }
 
-  async updateVulnsInBatches(
-    ctx: StreamContext,
-    ids: string[],
-    resolvedAt: string,
-    mutationName: string,
-    updateName: string,
-    updatesPerRequest: number
-  ): Promise<void> {
-    // We iterate over the ids in batches of size updatesPerRequest and update them in the graph
-    for (let i = 0; i < ids.length; i += updatesPerRequest) {
-      let mutationString = `mutation ${mutationName}{`;
-      for (let j = i; j < Math.min(i + updatesPerRequest, ids.length); j++) {
-        mutationString += `  update${j}: ${updateName}(where: {id: {_eq: "${ids[j]}"}} _set: {resolvedAt: "${resolvedAt}"}) {affected_rows} `;
-      }
-      mutationString += '}';
-      ctx.logger.debug(`Mutation string: ${mutationString}`);
-      await ctx.farosClient.gql(ctx.graph, mutationString, {});
-      // Sleep for 1 second to avoid overloading
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-
-  async updateVCSVulnsToResolved(ctx: StreamContext): Promise<number> {
+  async getUpdateVCSVulnsRecords(
+    ctx: StreamContext
+  ): Promise<DestinationRecord[]> {
     const allUnresolvedVcsRepositoryVulnerabilities: VulnerabilityInfo[] =
       await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
@@ -1078,23 +940,33 @@ export abstract class Vulnerabilities extends Converter {
         idsToUpdateToResolved.push(unresolvedVuln.id);
       }
     }
-    ctx.logger.debug(
-      `Out of ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities.`
-    );
+    if (idsToUpdateToResolved.length === 0) {
+      ctx.logger.debug(
+        `All ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities are in the current set of vulnerabilities.`
+      );
+    } else {
+      ctx.logger.debug(
+        `Out of ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities and will be resolved.`
+      );
+    }
     // We update the vulnerabilities to be resolved
     const nowDate = new Date().toISOString();
-    await this.updateVulnsInBatches(
-      ctx,
-      idsToUpdateToResolved,
-      nowDate,
-      'UpdateVulnerabilities',
-      'update_vcs_RepositoryVulnerability',
-      10
-    );
-    return idsToUpdateToResolved.length;
+    const vcsVulnResolutionDestinationRecords: DestinationRecord[] = [];
+    for (const id of idsToUpdateToResolved) {
+      vcsVulnResolutionDestinationRecords.push({
+        model: 'vcs_RepositoryVulnerability',
+        record: {
+          id,
+          resolvedAt: nowDate,
+        },
+      });
+    }
+    return vcsVulnResolutionDestinationRecords;
   }
 
-  async updateCICDVulnsToResolved(ctx: StreamContext): Promise<number> {
+  async getUpdateCICDVulnsRecords(
+    ctx: StreamContext
+  ): Promise<DestinationRecord[]> {
     const allUnresolvedCicdArtifactVulnerabilities: VulnerabilityInfo[] =
       await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
@@ -1112,29 +984,47 @@ export abstract class Vulnerabilities extends Converter {
         idsToUpdateToResolved.push(unresolvedVuln.id);
       }
     }
-    ctx.logger.debug(
-      `Out of ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved artifact vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities.`
-    );
+    if (idsToUpdateToResolved.length === 0) {
+      ctx.logger.debug(
+        `All ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved repo vulnerabilities are in the current set of vulnerabilities.`
+      );
+    } else {
+      ctx.logger.debug(
+        `Out of ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities and will be resolved.`
+      );
+    }
     // We update the vulnerabilities to be resolved
     const nowDate = new Date().toISOString();
-    await this.updateVulnsInBatches(
-      ctx,
-      idsToUpdateToResolved,
-      nowDate,
-      'UpdateVulnerabilities',
-      'update_cicd_ArtifactVulnerability',
-      10
-    );
-    return idsToUpdateToResolved.length;
+    const cicdArtifactResolutionDestinationRecords: DestinationRecord[] = [];
+    for (const id of idsToUpdateToResolved) {
+      cicdArtifactResolutionDestinationRecords.push({
+        model: 'cicd_ArtifactVulnerability',
+        record: {
+          id,
+          resolvedAt: nowDate,
+        },
+      });
+    }
+    return cicdArtifactResolutionDestinationRecords;
   }
 
-  async updateExistingVulnerabilities(ctx: StreamContext): Promise<void> {
+  async updateExistingVulnerabilities(
+    ctx: StreamContext
+  ): Promise<DestinationRecord[]> {
     // We want to observe the current vulnerabilities from the faros graph and update them
     // in batches. This means we get all the unresolved vulnerabilities from the graph
     // and check if they exist in the current set of vulnerabilities coming from the source.
     // If they do not, we update the vulnerabilities 'resolvedAt' field to the current time.
-    this.nUpdatedVcsVulns = await this.updateVCSVulnsToResolved(ctx);
-    this.nUpdatedCicdVulns = await this.updateCICDVulnsToResolved(ctx);
+    const vcsVulnResolutionDestinationRecords =
+      await this.getUpdateVCSVulnsRecords(ctx);
+    this.nUpdatedVcsVulns = vcsVulnResolutionDestinationRecords.length;
+    const cicdArtifactResolutionDestinationRecords =
+      await this.getUpdateCICDVulnsRecords(ctx);
+    this.nUpdatedCicdVulns = cicdArtifactResolutionDestinationRecords.length;
+    return [
+      ...vcsVulnResolutionDestinationRecords,
+      ...cicdArtifactResolutionDestinationRecords,
+    ];
   }
 
   removeDuplicateRecords(records: DestinationRecord[]): DestinationRecord[] {
@@ -1172,19 +1062,11 @@ export abstract class Vulnerabilities extends Converter {
     // Getting sec_Vulnerability records (no association)
     // We combine the records from AWS and AWS V2 because there
     // is overlap between the two lists.
-    res.push(...this.parseVantaVulnRecordsWithGitOrigin(this.git_vulns));
-    const aws_v1_vulns = this.parseVantaVulnRecordsWithAwsOrigin(
-      this.aws_vulns
-    );
+    res.push(...this.parseVantaVulnRecordsWithGitV2Origin(this.git_vulns));
     const aws_v2_vulns = this.parseVantaVulnRecordsWithAwsV2Origin(
       this.awsv2_vulns
     );
-    const combined_aws_vulns = this.combineAwsVulns(
-      aws_v1_vulns,
-      aws_v2_vulns,
-      ctx
-    );
-    res.push(...combined_aws_vulns);
+    res.push(...aws_v2_vulns);
 
     // In the following functions we query Faros for the related VCS and CICD data.
     // Ideally, each vuln will be associated with either a VCS repository or a CICD artifact.
@@ -1208,18 +1090,16 @@ export abstract class Vulnerabilities extends Converter {
     );
     res.push(...cicdArtifactMappingsAWSV2);
 
-    // For AWS v1 vulns, we try to get the associations by commit sha first,
-    // and then by repository name if we cannot find the commit sha.
-    const cicdArtifactMappingsAWSV1 =
-      await this.getCICDMappingsFromAWSVulnsByCommitSha(ctx.farosClient, ctx);
-    res.push(...cicdArtifactMappingsAWSV1);
-
     // If a vuln record no longer appears in vanta (but appears in faros)
     // then we update it's resolvedDate to the current time
+
     if (
       ctx.config.source_specific_configs?.vanta?.updateExistingVulnerabilities
     ) {
-      await this.updateExistingVulnerabilities(ctx);
+      ctx.logger.info('Updating existing vulnerabilities');
+      const updateDestinationRecords =
+        await this.updateExistingVulnerabilities(ctx);
+      res.push(...updateDestinationRecords);
     } else {
       ctx.logger.info('Skipping updating existing vulnerabilities');
     }

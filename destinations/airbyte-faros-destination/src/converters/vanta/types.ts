@@ -1,13 +1,12 @@
 type OptString = string | null | undefined;
 type OptBool = boolean | null | undefined;
-type OptNumber = number | null | undefined;
 
 export interface BaseVulnerabilityType {
   uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
-  severity: OptString | OptNumber;
+  severity: OptString;
 }
 
 export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
@@ -17,44 +16,31 @@ export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
   [key: string]: any;
 };
 
-export interface GithubSecurityAdvisory {
-  cveId: OptString;
-  description: OptString;
-  ghsaId: OptString;
+export interface GitV2Asset {
+  displayName: OptString;
+  assetType: OptString;
+  imageScanTag: OptString;
 }
 
-export interface GithubVulnerabilityData {
+export interface GitV2VulnerabilityData {
   uid: string;
   displayName: OptString;
   createdAt: OptString;
   externalURL: OptString;
-  severity: OptNumber;
-  repositoryName: OptString;
-  slaDeadline: OptString;
-  vantaDescription: OptString;
-  securityAdvisory: GithubSecurityAdvisory;
-}
-
-export interface AWSFindings {
-  description: OptString;
-  providerSeverity: OptString;
-  name: OptString;
-  uri: OptString;
-}
-
-export interface AWSVulnerabilityData {
-  uid: string;
-  displayName: OptString;
-  createdAt: OptString;
-  externalURL: OptString;
-  severity: OptNumber;
+  severity: OptString;
+  relatedUrls: string[];
   packageName: OptString;
-  packageVersion: OptString;
-  slaDeadline: OptString;
-  repositoryName: OptString;
-  repositoryArn: OptString;
-  findings: AWSFindings[];
-  imageTags: string[];
+  orgName: OptString;
+  name: OptString;
+  isFixable: OptBool;
+  duplicateVulnerabilityId: OptString;
+  description: OptString;
+  relatedCves: string[];
+  remediateBy: OptString;
+  packageIdentifier: OptString;
+  // This is normally the "CVE-xxxx-xxxx" string
+  externalVulnerabilityId: OptString;
+  asset: GitV2Asset;
 }
 
 export interface AWSV2Ignored {
@@ -87,9 +73,7 @@ export interface AWSV2VulnerabilityData {
   relatedUrls: string[];
 }
 
-export type BaseAWSVuln = AWSVulnerabilityData | AWSV2VulnerabilityData;
-
-export const vulnTypeOptions: string[] = ['git', 'aws', 'awsv2'];
+export const vulnTypeOptions: string[] = ['gitv2', 'awsv2'];
 
 export interface VcsOrgKey {
   uid: string;
