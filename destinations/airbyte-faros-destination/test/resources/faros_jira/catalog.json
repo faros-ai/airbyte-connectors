@@ -23,6 +23,18 @@
         "name": "mytestsource__jira__faros_issues"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_projects"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_users"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }
