@@ -36,20 +36,17 @@ export class Tests extends CircleCIStreamBase {
         ? streamState?.[streamSlice.projectSlug]?.lastUpdatedAt
         : undefined;
 
-    // We store the logs of undefined job numbers to a variable and log it at the end of the stream
-    let undefinedJobNumberLogs: string =
-      'Undefined job numbers and related projects:\n';
-
     for await (const pipeline of this.circleCI.fetchPipelines(
       streamSlice.projectSlug,
       since
     )) {
+      const jobsWithUndefinedNumbers: string[] = [];
       const seenJobs = new Set<number>();
       for (const workflow of pipeline.workflows ?? []) {
         for (const job of workflow.jobs ?? []) {
           const jobNum = job.job_number;
           if (jobNum === undefined) {
-            undefinedJobNumberLogs += `${job.id} - ${pipeline.project_slug}\n`;
+            jobsWithUndefinedNumbers.push(job.id);
             continue;
           }
           if (seenJobs.has(jobNum)) {
@@ -80,8 +77,12 @@ export class Tests extends CircleCIStreamBase {
           }
         }
       }
+      if (jobsWithUndefinedNumbers.length) {
+        this.logger.debug(
+          `Jobs with undefined numbers for project ${pipeline.project_slug}: ${jobsWithUndefinedNumbers.join(',')}`
+        );
+      }
     }
-    this.logger.debug(undefinedJobNumberLogs);
   }
 
   getUpdatedState(
