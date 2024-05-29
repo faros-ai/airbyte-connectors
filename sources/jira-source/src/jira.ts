@@ -24,7 +24,6 @@ import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
-import * as util from 'util';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
