@@ -1,5 +1,342 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`faros_jira faros_issues 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 20 records",
+  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_jira faros_issues 2`] = `
+Array [
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [
+        Object {
+          "name": "Components",
+          "value": "[]",
+        },
+      ],
+      "createdAt": "2021-10-07T20:00:08.396Z",
+      "creator": Object {
+        "source": "Jira",
+        "uid": "6025c1954fb89e0070d00ae3",
+      },
+      "description": "PLAYG Epic 1 Description",
+      "epic": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "name": "PLAYG Epic 1 Summary",
+      "parent": null,
+      "points": null,
+      "priority": "Medium",
+      "resolutionStatus": null,
+      "resolvedAt": null,
+      "source": "Jira",
+      "sourceSystemId": "10596",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "55",
+      },
+      "status": Object {
+        "category": "Todo",
+        "detail": "To Do",
+      },
+      "statusChangedAt": "2021-10-07T20:00:08.396Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2021-10-07T20:00:08.396Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "To Do",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Custom",
+        "detail": "Epic",
+      },
+      "uid": "PLAYG-6",
+      "updatedAt": "2024-01-24T14:56:25.365Z",
+      "url": "https://faros-ai.atlassian.net/browse/PLAYG-6",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_Epic": Object {
+      "createdAt": "2021-10-07T20:00:08.396Z",
+      "description": "PLAYG Epic 1 Description",
+      "name": "PLAYG Epic 1 Summary",
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "status": Object {
+        "category": "Todo",
+        "detail": "To Do",
+      },
+      "uid": "PLAYG-6",
+      "updatedAt": "2024-01-24T14:56:25.365Z",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2021-10-07T18:04:10.236Z",
+      "assignee": Object {
+        "source": "Jira",
+        "uid": "6025c1954fb89e0070d00ae3",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_TaskDependency": Object {
+      "blocking": true,
+      "dependencyType": Object {
+        "category": "BlockedBy",
+        "detail": "is blocked by",
+      },
+      "dependentTask": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "fulfillingTask": Object {
+        "source": "Jira",
+        "uid": "PLAYG-1",
+      },
+      "fulfillingType": Object {
+        "category": "Blocks",
+        "detail": "blocks",
+      },
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "name": "l0",
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "l0",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "name": "l1",
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "l1",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-16T22:42:42.308Z",
+      "removedAt": "2021-09-16T22:45:30.905Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "15",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-16T22:47:11.885Z",
+      "removedAt": "2021-09-16T22:47:23.663Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "16",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-17T06:36:26.329Z",
+      "removedAt": "2021-09-17T06:37:15.206Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "17",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-17T07:12:32.830Z",
+      "removedAt": "2021-09-22T16:57:44.008Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "18",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-22T16:57:44.008Z",
+      "removedAt": "2021-09-22T20:38:03.327Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "19",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-17T07:10:10.556Z",
+      "removedAt": "2021-09-17T07:12:32.830Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "20",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-09-22T20:38:03.327Z",
+      "removedAt": "2021-10-01T22:16:08.307Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "21",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2021-10-01T22:16:08.673Z",
+      "removedAt": "2022-06-13T22:49:44.016Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "23",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2022-06-16T15:34:47.608Z",
+      "removedAt": "2022-06-16T20:50:28.697Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "27",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2024-03-08T17:59:28.180Z",
+      "removedAt": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "55",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2024-03-08T17:30:59.921Z",
+      "removedAt": "2024-03-08T17:59:28.180Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "66",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+]
+`;
+
 exports[`faros_jira process records from all streams 1`] = `
 Array [
   "Processed 13 records",

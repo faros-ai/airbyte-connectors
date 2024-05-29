@@ -27,4 +27,13 @@ describe('faros_jira', () => {
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
+
+  test('faros_issues', async () => {
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/faros_issues.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
 });
