@@ -38,6 +38,6 @@ export function getQueryFromName(name: string): string {
   return fs.readFileSync(`${gql_dir}/${fn}`, 'utf8');
 }
 
-export function looksLikeGithubCommitSha(sha: string): boolean {
+export function looksLikeGitCommitSha(sha: string): boolean {
   return /^[a-f0-9]{40}$/i.test(sha);
 }
