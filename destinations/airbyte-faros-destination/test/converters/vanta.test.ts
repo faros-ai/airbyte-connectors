@@ -83,6 +83,9 @@ describe('vanta', () => {
   };
 
   test('test entries', async () => {
+    // We need to ensure that if there are several vulns associated with a single
+    // artifact, we output all of them, and not just one vuln per artifact.
+    // This data is included in the streams_regular.log file.
     const configPath = await getTempConfig(mockttp);
     await destinationWriteTest({
       configPath,
