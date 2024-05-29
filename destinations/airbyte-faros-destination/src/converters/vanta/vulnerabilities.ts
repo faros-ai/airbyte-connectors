@@ -130,26 +130,17 @@ export abstract class Vulnerabilities extends Converter {
     }
   }
 
-  convertDateFormat(inputDate: string): string {
-    // Parse the input date
-    const date = new Date(inputDate);
-
-    // Get the components of the date
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-    const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
-
-    // Format the microseconds (zeros for example purposes)
-    const microseconds = '00'; // You can adjust this if you need to generate actual microseconds
-
-    // Format the date string to the desired format
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${microseconds}+00:00`;
-
-    return formattedDate;
+  convertDateFormat(inputDate: string): Date | null {
+    // Try to parse the input date
+    if (!inputDate) {
+      return null;
+    }
+    try {
+      const date = new Date(inputDate);
+      return date;
+    } catch (e) {
+      return null;
+    }
   }
 
   parseVantaVulnRecordsWithGitV2Origin(
@@ -686,8 +677,8 @@ export abstract class Vulnerabilities extends Converter {
             },
             url: this.encodeURL(vuln.externalURL),
             dueAt: this.convertDateFormat(vuln.remediateBy),
-            createdAt: vuln.createdAt,
-            acknowledgedAt: vuln.createdAt,
+            createdAt: this.convertDateFormat(vuln.createdAt),
+            acknowledgedAt: this.convertDateFormat(vuln.createdAt),
             status: {
               category: this.getAWSV2VulnStatusCategory(vuln),
               detail: this.getAWSV2VulnStatusDetail(vuln),
@@ -909,7 +900,7 @@ export abstract class Vulnerabilities extends Converter {
       res.push({
         id: item.id,
         vulnerabilityUid: item?.vulnerability?.uid,
-        resolvedAt: item.resolvedAt,
+        resolvedAt: this.convertDateFormat(item.resolvedAt),
       });
     }
     return res;

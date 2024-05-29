@@ -1,10 +1,9 @@
 import {getLocal, Mockttp} from 'mockttp';
 
-import {looksLikeGithubCommitSha} from '../../src/converters/vanta/utils';
+import {looksLikeGitCommitSha} from '../../src/converters/vanta/utils';
 import {
   initMockttp,
   readTestResourceAsJSON,
-  readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
 import {destinationWriteTest} from './utils';
@@ -115,7 +114,7 @@ describe('vanta', () => {
     const out = [true, false, false, true, false];
     const res = [];
     for (const s of inp) {
-      res.push(looksLikeGithubCommitSha(s));
+      res.push(looksLikeGitCommitSha(s));
     }
     expect(res).toEqual(out);
   });
