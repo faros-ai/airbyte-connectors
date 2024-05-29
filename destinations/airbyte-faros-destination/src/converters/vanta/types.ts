@@ -16,6 +16,13 @@ export type ExtendedVulnerabilityType = BaseVulnerabilityType & {
   [key: string]: any;
 };
 
+export interface GitV2Ignored {
+  ignoredAt: OptString;
+  ignoredUntil: OptString;
+  ignoreReason: OptString;
+  reactivateWhenFixable: OptBool;
+}
+
 export interface GitV2Asset {
   displayName: OptString;
   assetType: OptString;
@@ -40,6 +47,7 @@ export interface GitV2VulnerabilityData {
   packageIdentifier: OptString;
   // This is normally the "CVE-xxxx-xxxx" string
   externalVulnerabilityId: OptString;
+  ignored: GitV2Ignored;
   asset: GitV2Asset;
 }
 
@@ -100,10 +108,23 @@ export interface CicdArtifactKey {
   repository: CicdRepoKey;
 }
 
-export type VulnerabilityInfo = {
+export type VulnerabilityKey = {
+  uid: string;
+  source: string;
+};
+
+export type VcsRepositoryVulnerabilityResponse = {
   id: string;
   resolvedAt: OptString;
-  vulnerabilityUid: OptString;
+  vulnerability: VulnerabilityKey;
+  repository: VcsRepoKey;
+};
+
+export type CicdArtifactVulnerabilityResponse = {
+  id: string;
+  resolvedAt: OptString;
+  vulnerability: VulnerabilityKey;
+  artifact: CicdArtifactKey;
 };
 
 // All the keys have a single abstract type that can represent them:
@@ -112,4 +133,5 @@ export type FarosObjectKey =
   | VcsRepoKey
   | CicdOrgKey
   | CicdRepoKey
-  | CicdArtifactKey;
+  | CicdArtifactKey
+  | VulnerabilityKey;

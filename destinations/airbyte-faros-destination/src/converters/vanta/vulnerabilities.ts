@@ -1,5 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+// import fs
+import fs from 'fs-extra';
 
 import {
   Converter,
@@ -10,13 +12,14 @@ import {
 import {
   AWSV2VulnerabilityData,
   CicdArtifactKey,
+  CicdArtifactVulnerabilityResponse,
   CicdOrgKey,
   CicdRepoKey,
   ExtendedVulnerabilityType,
   FarosObjectKey,
   GitV2VulnerabilityData,
   VcsRepoKey,
-  VulnerabilityInfo,
+  VcsRepositoryVulnerabilityResponse,
 } from './types';
 import {getQueryFromName, looksLikeGitCommitSha} from './utils';
 
@@ -32,6 +35,8 @@ export abstract class Vulnerabilities extends Converter {
     'sec_Vulnerability',
     'vcs_RepositoryVulnerability',
     'cicd_ArtifactVulnerability',
+    'vcs_RepositoryVulnerability__Update',
+    'cicd_ArtifactVulnerability__Update',
     'vcs_Repository',
     'cicd_Artifact',
     'cicd_Repository',
@@ -425,6 +430,10 @@ export abstract class Vulnerabilities extends Converter {
               url: this.encodeURL(vuln.externalURL),
               dueAt: this.convertDateFormat(vuln.remediateBy),
               createdAt: this.convertDateFormat(vuln.createdAt),
+              status: {
+                category: this.getVulnStatusCategory(vuln),
+                detail: this.getVulnStatusDetail(vuln),
+              },
             },
           });
         }
@@ -433,7 +442,9 @@ export abstract class Vulnerabilities extends Converter {
     return vcs_RepoRecords;
   }
 
-  getAWSV2VulnStatusDetail(vuln: AWSV2VulnerabilityData): string {
+  getVulnStatusDetail(
+    vuln: AWSV2VulnerabilityData | GitV2VulnerabilityData
+  ): string {
     if (vuln.ignored?.ignoreReason) {
       return vuln.ignored.ignoreReason;
     } else {
@@ -441,7 +452,9 @@ export abstract class Vulnerabilities extends Converter {
     }
   }
 
-  getAWSV2VulnStatusCategory(vuln: AWSV2VulnerabilityData): string {
+  getVulnStatusCategory(
+    vuln: AWSV2VulnerabilityData | GitV2VulnerabilityData
+  ): string {
     if (vuln.ignored?.ignoreReason) {
       return 'Ignored';
     } else if (vuln.ignored?.ignoredUntil) {
@@ -680,8 +693,8 @@ export abstract class Vulnerabilities extends Converter {
             createdAt: this.convertDateFormat(vuln.createdAt),
             acknowledgedAt: this.convertDateFormat(vuln.createdAt),
             status: {
-              category: this.getAWSV2VulnStatusCategory(vuln),
-              detail: this.getAWSV2VulnStatusDetail(vuln),
+              category: this.getVulnStatusCategory(vuln),
+              detail: this.getVulnStatusDetail(vuln),
             },
           },
         });
@@ -889,64 +902,67 @@ export abstract class Vulnerabilities extends Converter {
     ctx: StreamContext,
     query: string,
     key: string
-  ): Promise<VulnerabilityInfo[]> {
+  ): Promise<
+    VcsRepositoryVulnerabilityResponse[] | CicdArtifactVulnerabilityResponse[]
+  > {
     const resp_list = await this.getPaginatedQueryResponseFromFaros(
       ctx,
       query,
       key
     );
-    const res = [];
-    for (const item of resp_list) {
-      res.push({
-        id: item.id,
-        vulnerabilityUid: item?.vulnerability?.uid,
-        resolvedAt: this.convertDateFormat(item.resolvedAt),
-      });
-    }
-    return res;
+    return resp_list;
   }
 
   async getUpdateVCSVulnsRecords(
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
-    const allUnresolvedVcsRepositoryVulnerabilities: VulnerabilityInfo[] =
-      await this.getAllUnresolvedObjectVulnerabilities(
+    const allUnresolvedVcsRepositoryVulnerabilities =
+      (await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
         this.vcsRepositoryVulnerabilityQuery,
         'vcs_RepositoryVulnerability'
-      );
+      )) as VcsRepositoryVulnerabilityResponse[];
+
     const allActiveVulnUids: Set<string> = new Set(
       Object.keys(this.vantaVulnsFromGitUidsToRecords)
     );
-    const idsToUpdateToResolved = [];
+    const idsToUpdateToResolved = new Set<string>();
+    const idsToKeys: Record<string, VcsRepositoryVulnerabilityResponse> = {};
     for (const unresolvedVuln of allUnresolvedVcsRepositoryVulnerabilities) {
-      const uid = unresolvedVuln.vulnerabilityUid;
+      const uid = unresolvedVuln.vulnerability?.uid;
       if (!allActiveVulnUids.has(uid)) {
         if (!unresolvedVuln.id) {
           throw new Error('Unresolved vulnerability does not have an id');
         }
         // We need to update the vulnerability to be resolved
-        idsToUpdateToResolved.push(unresolvedVuln.id);
+        idsToUpdateToResolved.add(unresolvedVuln.id);
+        idsToKeys[unresolvedVuln.id] = unresolvedVuln;
       }
     }
-    if (idsToUpdateToResolved.length === 0) {
+    if (idsToUpdateToResolved.size === 0) {
       ctx.logger.debug(
         `All ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities are in the current set of vulnerabilities.`
       );
     } else {
       ctx.logger.debug(
-        `Out of ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities and will be resolved.`
+        `Out of ${allUnresolvedVcsRepositoryVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.size} are not in the current set of vulnerabilities and will be resolved.`
       );
     }
     // We update the vulnerabilities to be resolved
     const nowDate = new Date().toISOString();
     const vcsVulnResolutionDestinationRecords: DestinationRecord[] = [];
-    for (const id of idsToUpdateToResolved) {
+    for (const id of Array.from(idsToUpdateToResolved)) {
+      const vulnerability = idsToKeys[id].vulnerability;
+      const repository = idsToKeys[id].repository;
       vcsVulnResolutionDestinationRecords.push({
-        model: 'vcs_RepositoryVulnerability',
+        model: 'vcs_RepositoryVulnerability__Update',
         record: {
-          id,
-          resolvedAt: nowDate,
+          at: nowDate,
+          where: {vulnerability, repository},
+          mask: ['resolvedAt'],
+          patch: {
+            resolvedAt: nowDate,
+          },
         },
       });
     }
@@ -956,44 +972,56 @@ export abstract class Vulnerabilities extends Converter {
   async getUpdateCICDVulnsRecords(
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
-    const allUnresolvedCicdArtifactVulnerabilities: VulnerabilityInfo[] =
-      await this.getAllUnresolvedObjectVulnerabilities(
+    const allUnresolvedCicdArtifactVulnerabilities =
+      (await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
         this.cicdArtifactVulnerabilityQuery,
         'cicd_ArtifactVulnerability'
-      );
+      )) as CicdArtifactVulnerabilityResponse[];
     const allActiveVulnUids: Set<string> = new Set(
       Object.keys(this.vantaVulnsFromAWSUidsToRecords)
     );
-    const idsToUpdateToResolved = [];
+    const idsToUpdateToResolved = new Set<string>();
+    const idsToKeys: Record<string, CicdArtifactVulnerabilityResponse> = {};
     for (const unresolvedVuln of allUnresolvedCicdArtifactVulnerabilities) {
-      const uid = unresolvedVuln.vulnerabilityUid;
+      const uid = unresolvedVuln.vulnerability?.uid;
       if (!allActiveVulnUids.has(uid)) {
         // We need to update the vulnerability to be resolved
-        idsToUpdateToResolved.push(unresolvedVuln.id);
+        idsToUpdateToResolved.add(unresolvedVuln.id);
+        idsToKeys[unresolvedVuln.id] = unresolvedVuln;
       }
     }
-    if (idsToUpdateToResolved.length === 0) {
+    if (idsToUpdateToResolved.size === 0) {
       ctx.logger.debug(
         `All ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved repo vulnerabilities are in the current set of vulnerabilities.`
       );
     } else {
       ctx.logger.debug(
-        `Out of ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved repo vulnerabilities, ${idsToUpdateToResolved.length} are not in the current set of vulnerabilities and will be resolved.`
+        `Out of ${allUnresolvedCicdArtifactVulnerabilities.length} unresolved cicd Artifacts, ${idsToUpdateToResolved.size} are not in the current set of vulnerabilities and will be resolved.`
       );
     }
     // We update the vulnerabilities to be resolved
     const nowDate = new Date().toISOString();
     const cicdArtifactResolutionDestinationRecords: DestinationRecord[] = [];
-    for (const id of idsToUpdateToResolved) {
+    for (const id of Array.from(idsToUpdateToResolved)) {
+      const vulnerability = idsToKeys[id].vulnerability;
+      const artifact = idsToKeys[id].artifact;
       cicdArtifactResolutionDestinationRecords.push({
-        model: 'cicd_ArtifactVulnerability',
+        model: 'cicd_ArtifactVulnerability__Update',
         record: {
-          id,
-          resolvedAt: nowDate,
+          at: nowDate,
+          where: {vulnerability, artifact},
+          mask: ['resolvedAt'],
+          patch: {
+            resolvedAt: nowDate,
+          },
         },
       });
     }
+    ctx.logger.debug(
+      `cicd Artifact resolution records: ${JSON.stringify(cicdArtifactResolutionDestinationRecords)}`
+    );
+    throw new Error('AWDADW');
     return cicdArtifactResolutionDestinationRecords;
   }
 
@@ -1085,7 +1113,7 @@ export abstract class Vulnerabilities extends Converter {
     if (
       ctx.config.source_specific_configs?.vanta?.updateExistingVulnerabilities
     ) {
-      ctx.logger.info('Updating existing vulnerabilities');
+      ctx.logger.info('Updating existing vulnerabilities resolvedAt');
       const updateDestinationRecords =
         await this.updateExistingVulnerabilities(ctx);
       res.push(...updateDestinationRecords);
@@ -1094,6 +1122,9 @@ export abstract class Vulnerabilities extends Converter {
     }
     // There are bound to be duplicate records because of cicd_Artifact creation
     const output_res: DestinationRecord[] = this.removeDuplicateRecords(res);
+    // Write output_res to file using fs:
+    fs.writeFileSync('output.json', JSON.stringify(output_res, null, 2));
+
     this.printReport(ctx);
     return output_res;
   }
