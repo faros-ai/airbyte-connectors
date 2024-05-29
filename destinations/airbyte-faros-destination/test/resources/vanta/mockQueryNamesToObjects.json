@@ -105,7 +105,7 @@
   "cicdArtifactVulnerabilityQuery": {
     "cicd_ArtifactVulnerability": [
       {
-        "id": "123444",
+        "id": "11111",
         "resolvedAt": null,
         "vulnerability": {
           "uid": "eyJkIjoiNjA",
@@ -123,7 +123,7 @@
         }
       },
       {
-        "id": "123444",
+        "id": "22222",
         "resolvedAt": null,
         "vulnerability": null,
         "artifact": {
@@ -138,7 +138,7 @@
         }
       },
       {
-        "id": "123444",
+        "id": "33333",
         "resolvedAt": null,
         "vulnerability": {
           "uid": "eyJkIjoiNjAB",
@@ -147,7 +147,7 @@
         "artifact": null
       },
       {
-        "id": "123444",
+        "id": "44444",
         "resolvedAt": null,
         "vulnerability": null,
         "artifact": null
