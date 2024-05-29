@@ -1,8 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 
-// import fs
-// import fs from 'fs-extra';
 import {
   Converter,
   DestinationModel,
@@ -1087,8 +1085,7 @@ export abstract class Vulnerabilities extends Converter {
     res.push(...cicdArtifactMappingsAWSV2);
 
     // If a vuln record no longer appears in vanta (but appears in faros)
-    // then we update it's resolvedDate to the current time
-
+    // then we update its resolvedDate to the current time
     if (
       ctx.config.source_specific_configs?.vanta?.updateExistingVulnerabilities
     ) {
