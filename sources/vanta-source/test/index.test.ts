@@ -43,7 +43,7 @@ function paginatedValues(data: any, variables: any): any {
 function returnResourceByQuery(queryBody: any): any {
   const query = queryBody.query;
   const variables = queryBody.variables;
-  if (query.includes('GithubDependabotVulnerabilityList')) {
+  if (query.includes('GithubDependabotVulnerabilityV2List')) {
     return readTestResourceFile('github_response_page.json');
   } else if (query.includes('AwsContainerVulnerabilityV2List')) {
     const aws_v2_data = readTestResourceFile('aws_response_v2_page.json');

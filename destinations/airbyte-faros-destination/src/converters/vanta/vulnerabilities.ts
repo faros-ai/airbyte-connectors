@@ -486,9 +486,12 @@ export abstract class Vulnerabilities extends Converter {
   ): [string, string] {
     // Depending on the vuln type, we pull out the correct repo name and artifact uid
     if (vuln_type === 'awsv2') {
-      const v = awsVuln as AWSV2VulnerabilityData;
-      const repoName = v.asset.displayName ? v.asset.displayName : inpRepo;
-      const artifactUid = v.imageDigest ? v.imageDigest : inpArtifactUid;
+      const repoName = awsVuln.asset.displayName
+        ? awsVuln.asset.displayName
+        : inpRepo;
+      const artifactUid = awsVuln.imageDigest
+        ? awsVuln.imageDigest
+        : inpArtifactUid;
       return [repoName, artifactUid];
     } else {
       throw new Error(`Invalid vuln type: ${vuln_type}`);
@@ -638,7 +641,7 @@ export abstract class Vulnerabilities extends Converter {
     for (const commitSha of Object.keys(commitShaToArtifactKey)) {
       const CicdArtifactKey = commitShaToArtifactKey[commitSha];
       if (CicdArtifactKey) {
-        const vuln = commitShasToVulns[commitSha] as AWSV2VulnerabilityData;
+        const vuln = commitShasToVulns[commitSha];
         res.push({
           model: 'cicd_ArtifactVulnerability',
           record: {
