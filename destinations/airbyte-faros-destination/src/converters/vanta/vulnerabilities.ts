@@ -1,7 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-// import fs:
-import fs from 'fs-extra';
 
 import {
   Converter,
