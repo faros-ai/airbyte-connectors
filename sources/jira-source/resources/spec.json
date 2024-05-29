@@ -194,6 +194,20 @@
         "type": "boolean",
         "title": "Fetch closed sprints starting with most recent in backlog. Use this for Jira instances with a lots closed sprints and syncing sprints is slow.",
         "default": false
+      },
+      "start_date": {
+        "airbyte_hidden": true,
+        "order": 25,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data. Only use for backfilling."
+      },
+      "end_date": {
+        "airbyte_hidden": true,
+        "order": 26,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data. Only use for backfilling."
       }
     }
   }

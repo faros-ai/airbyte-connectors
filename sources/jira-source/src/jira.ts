@@ -24,6 +24,7 @@ import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
+import * as util from 'util';
 import {VError} from 'verror';
 
 import {JiraClient} from './client';
@@ -244,11 +245,29 @@ export class Jira {
       }
     }
 
-    cfg.end_date = moment().utc().toDate();
-    cfg.start_date = moment()
-      .utc()
-      .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
-      .toDate();
+    if ((cfg.start_date || cfg.end_date) && cfg.cutoff_days) {
+      throw new VError(
+        'Cannot specify cutoff_days with start_date or end_date'
+      );
+    }
+
+    cfg.start_date = cfg.start_date
+      ? Utils.toDate(cfg.start_date)
+      : moment()
+          .utc()
+          .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
+          .toDate();
+
+    cfg.end_date = cfg.end_date
+      ? Utils.toDate(cfg.end_date)
+      : moment().utc().toDate();
+
+    if (cfg.end_date <= cfg.start_date) {
+      throw new VError(
+        `End date: ${cfg.end_date} should be greater ` +
+          `than startDate: ${cfg.start_date}`
+      );
+    }
 
     Jira.jira = new Jira(
       cfg.url,

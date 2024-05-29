@@ -90,10 +90,54 @@ describe('index', () => {
     ]);
   });
 
+  test('check connection - start_date and end_date - invalid range', async () => {
+    const source = new sut.JiraSource(logger);
+    const start_date = '2021-01-02';
+    const end_date = '2021-01-01';
+    await expect(
+      source.checkConnection({
+        ...config,
+        start_date,
+        end_date,
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError(
+        `End date: ${new Date(end_date)} should be greater than startDate: ${new Date(start_date)}`
+      ),
+    ]);
+  });
+
+  test('check connection - start_date and end_date - invalid with cutoff_days', async () => {
+    const source = new sut.JiraSource(logger);
+    await expect(
+      source.checkConnection({
+        ...config,
+        start_date: '2021-01-01',
+        end_date: '2021-01-02',
+        cutoff_days: 1,
+      })
+    ).resolves.toStrictEqual([
+      false,
+      new VError('Cannot specify cutoff_days with start_date or end_date'),
+    ]);
+  });
+
   test('check connection', async () => {
     const source = new sut.JiraSource(logger);
     await expect(
       source.checkConnection(readTestResourceFile('config.json'))
+    ).resolves.toStrictEqual([true, undefined]);
+  });
+
+  test('check connection - start_date and end_date - OK', async () => {
+    const source = new sut.JiraSource(logger);
+    await expect(
+      source.checkConnection({
+        ...config,
+        start_date: '2021-01-01',
+        end_date: '2021-01-02',
+      })
     ).resolves.toStrictEqual([true, undefined]);
   });
 
