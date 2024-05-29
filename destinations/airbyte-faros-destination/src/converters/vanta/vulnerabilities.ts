@@ -426,13 +426,13 @@ export abstract class Vulnerabilities extends Converter {
     ctx: StreamContext
   ): [
     Set<string>,
-    Record<string, AWSV2VulnerabilityData>,
+    Record<string, AWSV2VulnerabilityData[]>,
     AWSV2VulnerabilityData[],
   ] {
     // Note: vulns argument represents both AWS v1 and AWS v2 vulns records (AWSV2VulnerabilityData)
     const seenUids: Set<string> = new Set();
     const allCommitShas: Set<string> = new Set();
-    const commitShasToVulns: Record<string, AWSV2VulnerabilityData> = {};
+    const commitShasToVulns: Record<string, AWSV2VulnerabilityData[]> = {};
     const vulnsWithNoCommitShas: AWSV2VulnerabilityData[] = [];
     let totalMissed = 0;
     for (const vuln of vulns) {
@@ -470,7 +470,11 @@ export abstract class Vulnerabilities extends Converter {
         continue;
       }
       allCommitShas.add(commitSha);
-      commitShasToVulns[commitSha] = vuln;
+      if (commitSha in commitShasToVulns) {
+        commitShasToVulns[commitSha].push(vuln);
+      } else {
+        commitShasToVulns[commitSha] = [vuln];
+      }
     }
     ctx.logger.info(
       `For commit shas, total missed: ${totalMissed}, total vulns: ${vulns.length}`
@@ -504,7 +508,7 @@ export abstract class Vulnerabilities extends Converter {
   ): [
     CicdArtifactKey[],
     DestinationRecord[],
-    Record<string, AWSV2VulnerabilityData>,
+    Record<string, AWSV2VulnerabilityData[]>,
   ] {
     // vuln_type 'awsv2' or 'aws'
     const cicdArtifactKeys: CicdArtifactKey[] = [];
@@ -513,7 +517,7 @@ export abstract class Vulnerabilities extends Converter {
       uid: 'farosai',
       source: 'Docker',
     };
-    const newCommitShasToVulns: Record<string, AWSV2VulnerabilityData> = {};
+    const newCommitShasToVulns: Record<string, AWSV2VulnerabilityData[]> = {};
     for (const vuln of aws_vulns_with_no_associated_commit_shas) {
       // For every vuln, we start by assuming we won't get a repo name or a cicd artifact uid
       let repoName: string = 'vanta-aws-repo';
@@ -543,7 +547,11 @@ export abstract class Vulnerabilities extends Converter {
           record: cicdRepositoryKey,
         }
       );
-      newCommitShasToVulns[artifactUid] = vuln;
+      if (artifactUid in newCommitShasToVulns) {
+        newCommitShasToVulns[artifactUid].push(vuln);
+      } else {
+        newCommitShasToVulns[artifactUid] = [vuln];
+      }
     }
 
     return [cicdArtifactKeys, destRecords, newCommitShasToVulns];
@@ -556,7 +564,7 @@ export abstract class Vulnerabilities extends Converter {
     vuln_type: string
   ): Promise<
     [
-      Record<string, AWSV2VulnerabilityData>,
+      Record<string, AWSV2VulnerabilityData[]>,
       Record<string, CicdArtifactKey>,
       DestinationRecord[],
     ]
@@ -641,25 +649,27 @@ export abstract class Vulnerabilities extends Converter {
     for (const commitSha of Object.keys(commitShaToArtifactKey)) {
       const CicdArtifactKey = commitShaToArtifactKey[commitSha];
       if (CicdArtifactKey) {
-        const vuln = commitShasToVulns[commitSha];
-        res.push({
-          model: 'cicd_ArtifactVulnerability',
-          record: {
-            artifact: CicdArtifactKey,
-            vulnerability: {
-              uid: this.getUidFromAWSVuln(vuln),
-              source: this.source,
+        const vulns: AWSV2VulnerabilityData[] = commitShasToVulns[commitSha];
+        for (const vuln of vulns) {
+          res.push({
+            model: 'cicd_ArtifactVulnerability',
+            record: {
+              artifact: CicdArtifactKey,
+              vulnerability: {
+                uid: this.getUidFromAWSVuln(vuln),
+                source: this.source,
+              },
+              url: this.encodeURL(vuln.externalURL),
+              dueAt: this.convertDateFormat(vuln.remediateBy),
+              createdAt: this.convertDateFormat(vuln.createdAt),
+              acknowledgedAt: this.convertDateFormat(vuln.createdAt),
+              status: {
+                category: this.getVulnStatusCategory(vuln),
+                detail: this.getVulnStatusDetail(vuln),
+              },
             },
-            url: this.encodeURL(vuln.externalURL),
-            dueAt: this.convertDateFormat(vuln.remediateBy),
-            createdAt: this.convertDateFormat(vuln.createdAt),
-            acknowledgedAt: this.convertDateFormat(vuln.createdAt),
-            status: {
-              category: this.getVulnStatusCategory(vuln),
-              detail: this.getVulnStatusDetail(vuln),
-            },
-          },
-        });
+          });
+        }
       }
     }
     return res;
@@ -1071,24 +1081,25 @@ export abstract class Vulnerabilities extends Converter {
     }
 
     // Getting vcs_RepositoryVulnerability records
-    const vcsMappings = await this.getVCSMappingsFromGitVulns(
-      this.vantaBasedGitRepositoryNamesToVantaUids,
-      ctx.farosClient,
-      ctx
-    );
+    const vcsMappings: DestinationRecord[] =
+      await this.getVCSMappingsFromGitVulns(
+        this.vantaBasedGitRepositoryNamesToVantaUids,
+        ctx.farosClient,
+        ctx
+      );
     res.push(...vcsMappings);
 
     // Getting cicd_ArtifactVulnerability and cicd_Artifact destination records
-    const cicdArtifactMappingsAWSV2 = await this.getCICDMappingsFromAWSV2(
-      this.awsv2_vulns,
-      ctx.farosClient,
-      ctx
-    );
+    const cicdArtifactMappingsAWSV2: DestinationRecord[] =
+      await this.getCICDMappingsFromAWSV2(
+        this.awsv2_vulns,
+        ctx.farosClient,
+        ctx
+      );
     res.push(...cicdArtifactMappingsAWSV2);
 
     // If a vuln record no longer appears in vanta (but appears in faros)
-    // then we update it's resolvedDate to the current time
-
+    // then we update its resolvedDate to the current time
     if (
       ctx.config.source_specific_configs?.vanta?.updateExistingVulnerabilities
     ) {
