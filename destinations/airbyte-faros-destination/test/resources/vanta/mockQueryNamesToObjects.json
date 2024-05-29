@@ -4,13 +4,18 @@
       "vcs_Repository": []
     },
     "sample2": {
-      "vcs_Repository": [{
-       "organization" : {
-        "uid": "123",
-        "source": "github"
-       },
-       "name": "sample2"
-      }]
+      "vcs_Repository": [
+        {
+          "organization": {
+            "uid": "123",
+            "source": "github"
+          },
+          "name": "sample2"
+        }
+      ]
+    },
+    "random,myDisplay,bestRepo,abc": {
+      "vcs_Repository": []
     }
   },
   "cicdArtifactQueryByCommitSha": {
@@ -18,16 +23,18 @@
       "cicd_Artifact": []
     },
     "aaaaaaaaaaaaaaaaaaaadddddddddddddddddddd": {
-      "cicd_Artifact": [{
-        "uid": "aaaaaaaaaaaaaaaaaaaadddddddddddddddddddd",
-        "repository": {
-          "organization": {
-            "uid": "123",
-            "source": "github"
-          },
-          "uid": "123"
+      "cicd_Artifact": [
+        {
+          "uid": "aaaaaaaaaaaaaaaaaaaadddddddddddddddddddd",
+          "repository": {
+            "organization": {
+              "uid": "123",
+              "source": "github"
+            },
+            "uid": "123"
+          }
         }
-      }]
+      ]
     }
   },
   "cicdArtifactQueryByRepoName": {
@@ -35,22 +42,116 @@
       "cicd_Artifact": []
     },
     "SAMPLE2": {
-      "cicd_Artifact": [{
-        "uid": "123",
+      "cicd_Artifact": [
+        {
+          "uid": "123",
+          "repository": {
+            "organization": {
+              "uid": "123",
+              "source": "github"
+            },
+            "uid": "SAMPLE2"
+          }
+        }
+      ]
+    }
+  },
+  "vcsRepositoryVulnerabilityQuery": {
+    "vcs_RepositoryVulnerability": [
+      {
+        "id": "1234",
+        "resolvedAt": null,
+        "vulnerability": {
+          "uid": "eyJkIjoiNjA1M2Q2Z3",
+          "source": "vanta"
+        },
         "repository": {
           "organization": {
-            "uid": "123",
-            "source": "github"
+            "uid": "faros-ai",
+            "source": "GitHub"
           },
-          "uid": "SAMPLE2"
+          "name": "great"
         }
-      }]
-    }
-  }, 
-  "vcsRepositoryVulnerabilityQuery": {
-    "vcs_RepositoryVulnerability": []
+      },
+      {
+        "id": "12345",
+        "resolvedAt": null,
+        "vulnerability": null,
+        "repository": {
+          "organization": {
+            "uid": "faros-ai",
+            "source": "GitHub"
+          },
+          "name": "best"
+        }
+      },
+      {
+        "id": "12346",
+        "resolvedAt": null,
+        "vulnerability": {
+          "uid": "eyJkIjoiNjA1M2Q2Z",
+          "source": "vanta"
+        },
+        "repository": null
+      },
+      {
+        "id": "0ee691b866e24468b9d52050a8d7a1901cfdf22e",
+        "resolvedAt": null,
+        "vulnerability": null,
+        "repository": null
+      }
+    ]
   },
   "cicdArtifactVulnerabilityQuery": {
-    "cicd_ArtifactVulnerability": []
+    "cicd_ArtifactVulnerability": [
+      {
+        "id": "123444",
+        "resolvedAt": null,
+        "vulnerability": {
+          "uid": "eyJkIjoiNjA",
+          "source": "vanta"
+        },
+        "artifact": {
+          "uid": "eyJkIjoiN",
+          "repository": {
+            "organization": {
+              "uid": "farosai",
+              "source": "Docker"
+            },
+            "uid": "docker/airbyte/container-orchestrator"
+          }
+        }
+      },
+      {
+        "id": "123444",
+        "resolvedAt": null,
+        "vulnerability": null,
+        "artifact": {
+          "uid": "eyJkIjoiN",
+          "repository": {
+            "organization": {
+              "uid": "farosai",
+              "source": "Docker"
+            },
+            "uid": "docker/airbyte/container-orchestrator"
+          }
+        }
+      },
+      {
+        "id": "123444",
+        "resolvedAt": null,
+        "vulnerability": {
+          "uid": "eyJkIjoiNjAB",
+          "source": "vanta"
+        },
+        "artifact": null
+      },
+      {
+        "id": "123444",
+        "resolvedAt": null,
+        "vulnerability": null,
+        "artifact": null
+      }
+    ]
   }
 }

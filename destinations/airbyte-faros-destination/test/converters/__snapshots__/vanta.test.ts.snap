@@ -2,10 +2,10 @@
 
 exports[`vanta test entries 1`] = `
 Array [
-  "Processed 1 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 2 records",
-  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 7 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 18 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"vcs_Repository\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -22,12 +22,23 @@ Array [
 ]
 `;
 
-exports[`vanta test no entries 1`] = `
+exports[`vanta test getting update records 1`] = `
+Array [
+  "Processed 7 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 21 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability\\\\\\":2,\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"vcs_Repository\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`vanta test getting update records 2`] = `
 Array [
   "Processed 2 records",
   "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 0 records",
-  "Would write records by model: {}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 5 records",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]

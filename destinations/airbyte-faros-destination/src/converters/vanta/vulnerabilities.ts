@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-// import fs
-import fs from 'fs-extra';
 
+// import fs
+// import fs from 'fs-extra';
 import {
   Converter,
   DestinationModel,
@@ -286,53 +286,6 @@ export abstract class Vulnerabilities extends Converter {
     return results;
   }
 
-  async getVCSRepositoriesFromNamesBatches(
-    vcsRepoNames: string[],
-    fc: FarosClient,
-    ctx: StreamContext,
-    batchSize: number
-  ): Promise<VcsRepoKey[]> {
-    const result = await this.runFunctionInBatches(
-      vcsRepoNames,
-      fc,
-      ctx,
-      batchSize,
-      this.getVCSRepositoriesFromNames.bind(this)
-    );
-    return result as VcsRepoKey[];
-  }
-
-  async getCICDArtifactFromCommitShaBatches(
-    allCommitShas: Set<string>,
-    fc: FarosClient,
-    ctx: StreamContext
-  ): Promise<CicdArtifactKey[]> {
-    const commitShas = Array.from(allCommitShas);
-    const result = await this.runFunctionInBatches(
-      commitShas,
-      fc,
-      ctx,
-      100,
-      this.getCICDArtifactsFromCommitShas.bind(this)
-    );
-    return result as CicdArtifactKey[];
-  }
-
-  async getAWSCicdArtifactsFromRepoNamesByBatches(
-    allRepoNames: string[],
-    fc: FarosClient,
-    ctx: StreamContext
-  ): Promise<CicdArtifactKey[]> {
-    const result = await this.runFunctionInBatches(
-      allRepoNames,
-      fc,
-      ctx,
-      100,
-      this.getAWSCicdArtifactsFromNames.bind(this)
-    );
-    return result as CicdArtifactKey[];
-  }
-
   async getAWSCicdArtifactsFromNames(
     repoNames: string[],
     fc: FarosClient,
@@ -354,7 +307,7 @@ export abstract class Vulnerabilities extends Converter {
     return results;
   }
 
-  createMissingRepositoriesWithinFaros(
+  createMissingRepositoryDestinationRecords(
     missedRepositoryNames: Set<string>
   ): [VcsRepoKey[], DestinationRecord[]] {
     const vcsRepoKeys = [];
@@ -390,14 +343,18 @@ export abstract class Vulnerabilities extends Converter {
     // This object may contain both vcs_RepositoryVulnerability and vcs_Repository records
     const vcs_RepoRecords: DestinationRecord[] = [];
     const allVantaBasedGitRepoNames = Object.keys(vantaBasedGitRepoNamesToUids);
-    const allFarosRepoKeys = await this.getVCSRepositoriesFromNamesBatches(
+    const allFarosRepoKeys: VcsRepoKey[] = (await this.runFunctionInBatches(
       allVantaBasedGitRepoNames,
       fc,
       ctx,
-      100
-    );
+      100,
+      this.getVCSRepositoriesFromNames.bind(this)
+    )) as VcsRepoKey[];
+
     const [newlyCreatedFarosRepoKeys, newVcsRepoDestinationRecords] =
-      this.createMissingRepositoriesWithinFaros(this.missedRepositoryNames);
+      this.createMissingRepositoryDestinationRecords(
+        this.missedRepositoryNames
+      );
     vcs_RepoRecords.push(...newVcsRepoDestinationRecords);
     const farosRepoNameToKey: Record<string, VcsRepoKey> = {};
     allFarosRepoKeys.push(...newlyCreatedFarosRepoKeys);
@@ -608,11 +565,13 @@ export abstract class Vulnerabilities extends Converter {
       this.getCommitShasFromAWSVulns(aws_vulns, ctx);
     // within this function we query faros for the cicd artifacts
     const cicdArtifactKeys: CicdArtifactKey[] =
-      await this.getCICDArtifactFromCommitShaBatches(
-        allParsedCommitShas,
+      (await this.runFunctionInBatches(
+        Array.from(allParsedCommitShas),
         fc,
-        ctx
-      );
+        ctx,
+        100,
+        this.getCICDArtifactsFromCommitShas.bind(this)
+      )) as CicdArtifactKey[];
     // within this function we simply create the cicd artifacts for the vulns with no commit shas
     const [
       newlyCreatedCicdArtifactKeys,
@@ -916,6 +875,8 @@ export abstract class Vulnerabilities extends Converter {
   async getUpdateVCSVulnsRecords(
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
+    // This function and getUpdateCICDVulnsRecords are very similar - can be
+    // refactored to be more DRY
     const allUnresolvedVcsRepositoryVulnerabilities =
       (await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
@@ -929,11 +890,16 @@ export abstract class Vulnerabilities extends Converter {
     const idsToUpdateToResolved = new Set<string>();
     const idsToKeys: Record<string, VcsRepositoryVulnerabilityResponse> = {};
     for (const unresolvedVuln of allUnresolvedVcsRepositoryVulnerabilities) {
+      if (!unresolvedVuln.vulnerability) {
+        continue;
+      }
       const uid = unresolvedVuln.vulnerability?.uid;
+      if (!uid || !unresolvedVuln.id) {
+        throw new Error(
+          'Unresolved vulnerability does not have either a uid or an id.'
+        );
+      }
       if (!allActiveVulnUids.has(uid)) {
-        if (!unresolvedVuln.id) {
-          throw new Error('Unresolved vulnerability does not have an id');
-        }
         // We need to update the vulnerability to be resolved
         idsToUpdateToResolved.add(unresolvedVuln.id);
         idsToKeys[unresolvedVuln.id] = unresolvedVuln;
@@ -972,19 +938,33 @@ export abstract class Vulnerabilities extends Converter {
   async getUpdateCICDVulnsRecords(
     ctx: StreamContext
   ): Promise<DestinationRecord[]> {
-    const allUnresolvedCicdArtifactVulnerabilities =
+    // We first get a list of all unresolved cicd artifact vulnerabilities from Faros
+    const allUnresolvedCicdArtifactVulnerabilities: CicdArtifactVulnerabilityResponse[] =
       (await this.getAllUnresolvedObjectVulnerabilities(
         ctx,
         this.cicdArtifactVulnerabilityQuery,
         'cicd_ArtifactVulnerability'
       )) as CicdArtifactVulnerabilityResponse[];
+
+    // Then we get all the current active uids for vulns
     const allActiveVulnUids: Set<string> = new Set(
       Object.keys(this.vantaVulnsFromAWSUidsToRecords)
     );
+
+    // We create two objects within this function to keep track of the ids we need to update
     const idsToUpdateToResolved = new Set<string>();
     const idsToKeys: Record<string, CicdArtifactVulnerabilityResponse> = {};
     for (const unresolvedVuln of allUnresolvedCicdArtifactVulnerabilities) {
+      if (!unresolvedVuln.vulnerability) {
+        // Missing vulnerability from unresolved cicd Artifact vulnerability
+        continue;
+      }
       const uid = unresolvedVuln.vulnerability?.uid;
+      if (!uid || !unresolvedVuln.id) {
+        throw new Error(
+          'Unresolved vulnerability does not have either a uid or an id.'
+        );
+      }
       if (!allActiveVulnUids.has(uid)) {
         // We need to update the vulnerability to be resolved
         idsToUpdateToResolved.add(unresolvedVuln.id);
@@ -1018,10 +998,6 @@ export abstract class Vulnerabilities extends Converter {
         },
       });
     }
-    ctx.logger.debug(
-      `cicd Artifact resolution records: ${JSON.stringify(cicdArtifactResolutionDestinationRecords)}`
-    );
-    throw new Error('AWDADW');
     return cicdArtifactResolutionDestinationRecords;
   }
 
@@ -1122,8 +1098,6 @@ export abstract class Vulnerabilities extends Converter {
     }
     // There are bound to be duplicate records because of cicd_Artifact creation
     const output_res: DestinationRecord[] = this.removeDuplicateRecords(res);
-    // Write output_res to file using fs:
-    fs.writeFileSync('output.json', JSON.stringify(output_res, null, 2));
 
     this.printReport(ctx);
     return output_res;
