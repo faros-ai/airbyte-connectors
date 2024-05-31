@@ -1,8 +1,27 @@
-query getTeamsForUser($accountId: String!, $limit: Int!) {
-  TeamsOfUser(accountId: $accountId, limit: $limit) {
-    result {
-      id
-      displayName
+query teamSearchV2($after: String, $organizationId: ID!, $siteId: String!) {
+  team {
+    teamSearch: teamSearchV2(
+      after: $after
+      organizationId: $organizationId
+      siteId: $siteId
+    ) @optIn(to: "Team-search-v2") {
+      nodes {
+        team {
+          id
+          displayName
+          members {
+            nodes {
+              member {
+                accountId
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
 }

@@ -134,5 +134,5 @@ export interface Board extends AgileModels.Board {
 export interface Team {
   readonly id: string;
   readonly displayName: string;
-  readonly userId: string;
+  readonly members: User[];
 }

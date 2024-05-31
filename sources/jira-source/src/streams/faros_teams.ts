@@ -1,5 +1,5 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {Team, User} from 'faros-airbyte-common/jira';
+import {Team} from 'faros-airbyte-common/jira';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
@@ -16,17 +16,8 @@ export class FarosTeams extends StreamBase {
 
   async *readRecords(): AsyncGenerator<Team> {
     const jira = await Jira.instance(this.config, this.logger);
-    this.logger.info('Fetching users for writing teams');
-    for await (const user of jira.getUsers()) {
-      if (user.accountId) {
-        this.logger.info(`Fetching teams for user ${user.accountId}`);
-        for await (const team of await jira.getTeamsForUser(user.accountId)) {
-          yield {
-            ...team,
-            userId: user.accountId,
-          };
-        }
-      }
+    for await (const team of jira.getTeams(this.config.organization_id)) {
+      yield team;
     }
   }
 }

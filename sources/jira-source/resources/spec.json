@@ -188,6 +188,19 @@
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
+      },
+      "bootstrap_organization": {
+        "order": 25,
+        "type": "boolean",
+        "title": "Bootstrap Organization",
+        "description": "Bootstrap organization data",
+        "default": false
+      },
+      "organization_id": {
+        "order": 24,
+        "type": "string",
+        "title": "Organization ID",
+        "description": "Atlassian organization ID for querying teams. Required for bootstrapping organization data."
       }
     }
   }

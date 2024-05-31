@@ -92,6 +92,12 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     const requestedStreams = new Set(
       streams.map((stream) => stream.stream.name)
     );
+    // Remove the faros_teams stream if the bootstrap_organization flag is not set
+    if (!config.bootstrap_organization) {
+      streams = streams.filter(
+        (stream) => stream.stream.name !== 'faros_teams'
+      );
+    }
     return {config: {...config, requestedStreams}, catalog: {streams}, state};
   }
 }

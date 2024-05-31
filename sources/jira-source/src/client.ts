@@ -14,7 +14,7 @@ import {
   WithRetry,
 } from './retry';
 
-const GRAPHQL_PATH = '/gateway/api/directory/graphql';
+const GRAPHQL_PATH = '/gateway/api/graphql';
 
 /** Client that extends the jira.js clients with retries and internal APIs */
 export class JiraClient {

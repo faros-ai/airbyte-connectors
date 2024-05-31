@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {chunk, concat, isNil, pick, toInteger, toLower, toString} from 'lodash';
+import {chunk, concat, isNil, pick, toInteger, toLower} from 'lodash';
 import {isEmpty} from 'lodash';
 import moment from 'moment';
 import pLimit from 'p-limit';
@@ -58,6 +58,8 @@ export interface JiraConfig extends AirbyteConfig {
   readonly requestedStreams?: Set<string>;
   start_date?: Date;
   end_date?: Date;
+  readonly bootstrap_organization?: boolean;
+  readonly organization_id?: string;
 }
 
 export const toFloat = (value: any): number | undefined =>
@@ -1058,7 +1060,6 @@ export class Jira {
     }
   }
 
-  // TODO: Memoize this method (separating iterator from the actual method)
   getUsers(): AsyncIterableIterator<Version2Models.User> {
     if (this.isCloud) {
       return this.iterate(
@@ -1145,21 +1146,31 @@ export class Jira {
     return undefined;
   }
 
-  async getTeamsForUser(accountId: string): Promise<ReadonlyArray<Team>> {
-    try {
+  async *getTeams(organizationId: string): AsyncIterableIterator<Team> {
+    let cursor: string | undefined = undefined;
+    let hasNext = true;
+    do {
       const response = await this.api.graphql(TEAMS_FOR_USER_QUERY, {
-        accountId,
-        limit: TEAM_LIMIT,
-        orgId: '',
+        organizationId: `ari:cloud:platform::org/${organizationId}`,
+        siteId: 'None',
+        first: this.maxPageSize,
+        after: cursor,
       });
-
-      if (isNil(response.data.TeamsOfUser)) {
-        return [];
+      const result = response.data?.team?.teamSearch;
+      if (isNil(result)) {
+        break;
       }
-
-      return response.data.TeamsOfUser.result;
-    } catch (err: any) {
-      throw new VError(err, 'Failed to sync teams for user %s', accountId);
-    }
+      cursor = result.pageInfo?.endCursor;
+      hasNext = result.pageInfo?.hasNextPage;
+      for (const {team} of result.nodes) {
+        // Remove prefix from id
+        const id = team.id.split('/').pop();
+        yield {
+          id,
+          displayName: team.displayName,
+          members: team.members?.nodes.map((m) => m.member) ?? [],
+        };
+      }
+    } while (hasNext);
   }
 }
