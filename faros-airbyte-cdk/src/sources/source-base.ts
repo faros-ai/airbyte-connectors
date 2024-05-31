@@ -1,4 +1,4 @@
-import {keyBy} from 'lodash';
+import {keyBy, pick} from 'lodash';
 import toposort from 'toposort';
 import VError from 'verror';
 
@@ -25,6 +25,11 @@ import {
 import {AirbyteSource} from './source';
 import {State} from './state';
 import {AirbyteStreamBase} from './streams/stream-base';
+
+type PartialAirbyteConfig = Pick<
+  AirbyteConfig,
+  'backfill' | 'max_slice_failures'
+>;
 
 /**
  * Airbyte Source base class providing additional boilerplate around the Check
@@ -184,7 +189,7 @@ export abstract class AirbyteSourceBase<
           streamInstance,
           configuredStream,
           state,
-          config.max_slice_failures
+          pick(config, ['backfill', 'max_slice_failures'])
         );
 
         for await (const message of generator) {
@@ -259,18 +264,19 @@ export abstract class AirbyteSourceBase<
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
     connectorState: AirbyteState,
-    maxSliceFailures?: number
+    config: PartialAirbyteConfig
   ): AsyncGenerator<AirbyteMessage> {
     const useIncremental =
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
-      streamInstance.supportsIncremental;
+      streamInstance.supportsIncremental &&
+      !config.backfill;
 
     const recordGenerator = this.doReadStream(
       streamInstance,
       configuredStream,
       useIncremental ? SyncMode.INCREMENTAL : SyncMode.FULL_REFRESH,
       connectorState,
-      maxSliceFailures
+      config
     );
 
     let recordCounter = 0;
@@ -294,16 +300,22 @@ export abstract class AirbyteSourceBase<
     configuredStream: AirbyteConfiguredStream,
     syncMode: SyncMode,
     connectorState: AirbyteState,
-    maxSliceFailures?: number
+    config: PartialAirbyteConfig
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
     let streamState =
       syncMode === SyncMode.INCREMENTAL ? connectorState[streamName] ?? {} : {};
-    this.logger.info(
-      `Setting initial state of ${streamName} stream to ${JSON.stringify(
-        streamState
-      )}`
-    );
+    if (config.backfill) {
+      this.logger.info(
+        `Running a backfill for ${streamName} stream. Stream state will be ignored and left unmodified.`
+      );
+    } else {
+      this.logger.info(
+        `Setting initial state of ${streamName} stream to ${JSON.stringify(
+          streamState
+        )}`
+      );
+    }
 
     const checkpointInterval = streamInstance.stateCheckpointInterval;
     if (checkpointInterval < 0) {
@@ -336,12 +348,26 @@ export abstract class AirbyteSourceBase<
         for await (const recordData of records) {
           recordCounter++;
           yield AirbyteRecord.make(streamName, recordData);
-          streamState = streamInstance.getUpdatedState(streamState, recordData);
-          if (checkpointInterval && recordCounter % checkpointInterval === 0) {
-            yield this.checkpointState(streamName, streamState, connectorState);
+          if (!config.backfill) {
+            streamState = streamInstance.getUpdatedState(
+              streamState,
+              recordData
+            );
+            if (
+              checkpointInterval &&
+              recordCounter % checkpointInterval === 0
+            ) {
+              yield this.checkpointState(
+                streamName,
+                streamState,
+                connectorState
+              );
+            }
           }
         }
-        yield this.checkpointState(streamName, streamState, connectorState);
+        if (!config.backfill) {
+          yield this.checkpointState(streamName, streamState, connectorState);
+        }
         if (slice) {
           this.logger.info(
             `Finished processing ${streamName} stream slice ${JSON.stringify(
@@ -361,7 +387,7 @@ export abstract class AirbyteSourceBase<
           continue;
         }
 
-        if (!slice || maxSliceFailures == null) {
+        if (!slice || config.max_slice_failures == null) {
           throw e;
         }
         failedSlices.push(slice);
@@ -373,9 +399,12 @@ export abstract class AirbyteSourceBase<
         );
         yield this.errorState(streamName, streamState, connectorState, e);
         // -1 means unlimited allowed slice failures
-        if (maxSliceFailures !== -1 && failedSlices.length > maxSliceFailures) {
+        if (
+          config.max_slice_failures !== -1 &&
+          failedSlices.length > config.max_slice_failures
+        ) {
           this.logger.error(
-            `Exceeded maximum number of allowed slice failures: ${maxSliceFailures}`
+            `Exceeded maximum number of allowed slice failures: ${config.max_slice_failures}`
           );
           break;
         }
@@ -388,11 +417,13 @@ export abstract class AirbyteSourceBase<
         )}`
       );
     }
-    this.logger.info(
-      `Last recorded state of ${streamName} stream is ${JSON.stringify(
-        streamState
-      )}`
-    );
+    if (!config.backfill) {
+      this.logger.info(
+        `Last recorded state of ${streamName} stream is ${JSON.stringify(
+          streamState
+        )}`
+      );
+    }
   }
 
   private checkpointState(

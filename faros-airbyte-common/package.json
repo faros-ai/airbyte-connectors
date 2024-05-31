@@ -57,7 +57,8 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "jira.js": "^4.0.0"
+    "jira.js": "^4.0.0",
+    "luxon": "^3.4.4"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
