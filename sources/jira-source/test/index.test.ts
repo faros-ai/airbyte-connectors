@@ -594,8 +594,18 @@ describe('index', () => {
   });
 
   test('streams - teams', async () => {
-    await testStream(10, config, {
-      graphql: jest.fn().mockResolvedValue(readTestResourceFile('teams.json')),
-    });
+    await testStream(
+      10,
+      {
+        ...config,
+        bootstrap_organization: true,
+        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
+      },
+      {
+        graphql: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('teams.json')),
+      }
+    );
   });
 });

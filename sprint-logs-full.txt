@@ -1,0 +1,3522 @@
+{
+  "log": {
+    "level": "INFO",
+    "message": "Source version: unknown"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Config: {\"url\":\"https://faros-ai.atlassian.net\",\"username\":\"REDACTED\",\"password\":\"REDACTED\",\"run_mode\":\"Full\",\"api_url\":\"https://dev.api.faros.ai\",\"api_key\":\"REDACTED\",\"graph\":\"mati-jira\"}"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Catalog: {\"streams\":[{\"stream\":{\"name\":\"faros_sprint_reports\"},\"sync_mode\":\"incremental\"}]}"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Syncing JiraSource"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6uuBQBDv6ajAgAAAA=="
+    }
+  },
+  "type": "STATE",
+  "redactedConfig": {
+    "url": "https://faros-ai.atlassian.net",
+    "username": "REDACTED",
+    "password": "REDACTED",
+    "run_mode": "Full",
+    "api_url": "https://dev.api.faros.ai",
+    "api_key": "REDACTED",
+    "graph": "mati-jira"
+  },
+  "sourceType": "jira"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Syncing faros_sprint_reports stream in incremental mode"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Setting initial state of faros_sprint_reports stream to {}"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"24\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244327,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244328,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244328,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244328,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779244328,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779245113,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779245912,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779245912,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779245912,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779246675,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 6,
+      "puntedPoints": 3,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779246675,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779246675,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779247430,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779248257,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": null,
+      "puntedPoints": 10,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779248977,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779249752,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 1,
+      "puntedPoints": 8,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779250511,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": null,
+      "puntedPoints": 6,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779250511,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779250511,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "24"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"24\"}. Read 30 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"25\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"25\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"31\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"31\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"27\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"27\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"26\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"26\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"32\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"32\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"29\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"29\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"19\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257170,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779257171,
+    "data": {
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779258195,
+    "data": {
+      "id": 46,
+      "completedAt": null,
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "FAI",
+      "boardId": "19"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"19\"}. Read 22 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"18\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"18\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"33\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779260829,
+    "data": {
+      "id": 52,
+      "completedAt": null,
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "SD",
+      "boardId": "33"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"33\"}. Read 1 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"43\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"43\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"42\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"42\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"20\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"20\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"22\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"22\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"21\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779265258,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779266078,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779266891,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779266891,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779266891,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779267635,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 9,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779267635,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779267635,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779268434,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779269158,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": 10,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779269875,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779270686,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 6,
+      "puntedPoints": 3,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779271410,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 2,
+      "puntedPoints": 4,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779271410,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779271410,
+    "data": {
+      "projectKey": "TEST",
+      "boardId": "21"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"21\"}. Read 30 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"40\"}"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"40\"}. Read 0 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"45\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779273533,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779274270,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275088,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275088,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275088,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275865,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 9,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275865,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779275865,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779276530,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779277296,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": 10,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779278049,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779278820,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 7,
+      "notCompletedPoints": 6,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779279561,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 2,
+      "puntedPoints": 4,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779279561,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779279561,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "45"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"45\"}. Read 30 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"46\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280832,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779280833,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779281574,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779282461,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779282461,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779282461,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779283117,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 9,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779283117,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779283117,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779283699,
+    "data": {
+      "id": 64,
+      "completedAt": "2024-02-02T21:12:34.531Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779284387,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779285019,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": 10,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779285786,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779286492,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 7,
+      "notCompletedPoints": 6,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779287241,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 2,
+      "puntedPoints": 4,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779287241,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779287241,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "46"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"46\"}. Read 31 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"48\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779288503,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779289424,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290166,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290166,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290166,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290896,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 9,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290896,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779290896,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779291666,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779292390,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": 10,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779293258,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779294022,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 7,
+      "notCompletedPoints": 6,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779294709,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 2,
+      "puntedPoints": 4,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779294709,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779294709,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "48"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"48\"}. Read 30 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Started processing faros_sprint_reports stream slice {\"board\":\"47\"}"
+  },
+  "type": "LOG"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296010,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779296791,
+    "data": {
+      "id": 53,
+      "completedAt": "2024-01-31T17:08:41.776Z",
+      "completedPoints": null,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 11,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779297593,
+    "data": {
+      "id": 54,
+      "completedAt": "2024-02-02T17:47:27.461Z",
+      "completedPoints": null,
+      "notCompletedPoints": 30,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 30,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779297593,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779297593,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779298324,
+    "data": {
+      "id": 59,
+      "completedAt": "2024-04-12T10:23:34.456Z",
+      "completedPoints": 1,
+      "notCompletedPoints": 9,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779298324,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779298324,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779299064,
+    "data": {
+      "id": 66,
+      "completedAt": "2024-03-08T17:59:27.959Z",
+      "completedPoints": 5,
+      "notCompletedPoints": 11,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 16,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779299716,
+    "data": {
+      "id": 67,
+      "completedAt": "2024-03-21T16:12:36.330Z",
+      "completedPoints": 15,
+      "notCompletedPoints": 10,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 25,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779300453,
+    "data": {
+      "id": 68,
+      "completedAt": "2024-03-22T18:14:04.737Z",
+      "completedPoints": null,
+      "notCompletedPoints": null,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": null,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779301322,
+    "data": {
+      "id": 69,
+      "completedAt": "2024-04-11T08:19:22.121Z",
+      "completedPoints": 7,
+      "notCompletedPoints": 6,
+      "puntedPoints": null,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 13,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779302141,
+    "data": {
+      "id": 70,
+      "completedAt": "2024-04-12T15:31:06.115Z",
+      "completedPoints": 4,
+      "notCompletedPoints": 2,
+      "puntedPoints": 4,
+      "completedInAnotherSprintPoints": null,
+      "plannedPoints": 10,
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779302141,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779302141,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "record": {
+    "stream": "faros_sprint_reports",
+    "emitted_at": 1713779302141,
+    "data": {
+      "projectKey": "PLAYG",
+      "boardId": "47"
+    }
+  },
+  "type": "RECORD"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished processing faros_sprint_reports stream slice {\"board\":\"47\"}. Read 31 records"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Last recorded state of faros_sprint_reports stream is {}"
+  },
+  "type": "LOG"
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished syncing faros_sprint_reports stream. Read 205 records"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "format": "base64/gzip",
+      "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+    }
+  },
+  "type": "STATE",
+  "sourceStatus": {
+    "status": "SUCCESS"
+  }
+}
+{
+  "log": {
+    "level": "INFO",
+    "message": "Finished syncing JiraSource"
+  },
+  "type": "LOG"
+}
+{
+  "state": {
+    "data": {
+      "state": {
+        "format": "base64/gzip",
+        "data": "H4sIAAAAAAAAE6tWSkssyi+OLy4oyswriS9KLcgvKilWsqqurQUAAkFtHBsAAAA="
+      }
+    }
+  },
+  "type": "STATE",
+  "logs": [
+    {
+      "timestamp": 1713779242053,
+      "message": {
+        "level": 30,
+        "msg": "Source version: unknown"
+      }
+    },
+    {
+      "timestamp": 1713779242053,
+      "message": {
+        "level": 30,
+        "msg": "Config: {\"url\":\"https://faros-ai.atlassian.net\",\"username\":\"REDACTED\",\"password\":\"REDACTED\",\"run_mode\":\"Full\",\"api_url\":\"https://dev.api.faros.ai\",\"api_key\":\"REDACTED\",\"graph\":\"mati-jira\"}"
+      }
+    },
+    {
+      "timestamp": 1713779242053,
+      "message": {
+        "level": 30,
+        "msg": "Catalog: {\"streams\":[{\"stream\":{\"name\":\"faros_sprint_reports\"},\"sync_mode\":\"incremental\"}]}"
+      }
+    },
+    {
+      "timestamp": 1713779242053,
+      "message": {
+        "level": 30,
+        "msg": "Syncing JiraSource"
+      }
+    },
+    {
+      "timestamp": 1713779242055,
+      "message": {
+        "level": 30,
+        "msg": "Syncing faros_sprint_reports stream in incremental mode"
+      }
+    },
+    {
+      "timestamp": 1713779242055,
+      "message": {
+        "level": 30,
+        "msg": "Setting initial state of faros_sprint_reports stream to {}"
+      }
+    },
+    {
+      "timestamp": 1713779243074,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"24\"}"
+      }
+    },
+    {
+      "timestamp": 1713779250511,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"24\"}. Read 30 records"
+      }
+    },
+    {
+      "timestamp": 1713779250511,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"25\"}"
+      }
+    },
+    {
+      "timestamp": 1713779251345,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"25\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779251345,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"31\"}"
+      }
+    },
+    {
+      "timestamp": 1713779252104,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"31\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779252104,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"27\"}"
+      }
+    },
+    {
+      "timestamp": 1713779252834,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"27\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779252834,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"26\"}"
+      }
+    },
+    {
+      "timestamp": 1713779253635,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"26\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779253635,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"32\"}"
+      }
+    },
+    {
+      "timestamp": 1713779254493,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"32\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779254493,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"29\"}"
+      }
+    },
+    {
+      "timestamp": 1713779255704,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"29\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779255704,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"19\"}"
+      }
+    },
+    {
+      "timestamp": 1713779258195,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"19\"}. Read 22 records"
+      }
+    },
+    {
+      "timestamp": 1713779258195,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"18\"}"
+      }
+    },
+    {
+      "timestamp": 1713779258965,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"18\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779258965,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"33\"}"
+      }
+    },
+    {
+      "timestamp": 1713779260829,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"33\"}. Read 1 records"
+      }
+    },
+    {
+      "timestamp": 1713779260829,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"43\"}"
+      }
+    },
+    {
+      "timestamp": 1713779261632,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"43\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779261632,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"42\"}"
+      }
+    },
+    {
+      "timestamp": 1713779262406,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"42\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779262407,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"20\"}"
+      }
+    },
+    {
+      "timestamp": 1713779263210,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"20\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779263210,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"22\"}"
+      }
+    },
+    {
+      "timestamp": 1713779263979,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"22\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779263979,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"21\"}"
+      }
+    },
+    {
+      "timestamp": 1713779271410,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"21\"}. Read 30 records"
+      }
+    },
+    {
+      "timestamp": 1713779271410,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"40\"}"
+      }
+    },
+    {
+      "timestamp": 1713779272177,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"40\"}. Read 0 records"
+      }
+    },
+    {
+      "timestamp": 1713779272177,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"45\"}"
+      }
+    },
+    {
+      "timestamp": 1713779279561,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"45\"}. Read 30 records"
+      }
+    },
+    {
+      "timestamp": 1713779279561,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"46\"}"
+      }
+    },
+    {
+      "timestamp": 1713779287242,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"46\"}. Read 31 records"
+      }
+    },
+    {
+      "timestamp": 1713779287242,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"48\"}"
+      }
+    },
+    {
+      "timestamp": 1713779294709,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"48\"}. Read 30 records"
+      }
+    },
+    {
+      "timestamp": 1713779294709,
+      "message": {
+        "level": 30,
+        "msg": "Started processing faros_sprint_reports stream slice {\"board\":\"47\"}"
+      }
+    },
+    {
+      "timestamp": 1713779302141,
+      "message": {
+        "level": 30,
+        "msg": "Finished processing faros_sprint_reports stream slice {\"board\":\"47\"}. Read 31 records"
+      }
+    },
+    {
+      "timestamp": 1713779302141,
+      "message": {
+        "level": 30,
+        "msg": "Last recorded state of faros_sprint_reports stream is {}"
+      }
+    },
+    {
+      "timestamp": 1713779302141,
+      "message": {
+        "level": 30,
+        "msg": "Finished syncing faros_sprint_reports stream. Read 205 records"
+      }
+    },
+    {
+      "timestamp": 1713779302142,
+      "message": {
+        "level": 30,
+        "msg": "Finished syncing JiraSource"
+      }
+    }
+  ]
+}

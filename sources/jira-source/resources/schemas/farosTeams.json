@@ -8,8 +8,16 @@
     "displayName": {
       "type": "string"
     },
-    "userId": {
-      "type": "string"
+    "members": {
+      "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "accountId": {
+              "type": "string"
+            }
+          }
+        }
     }
   }
 }

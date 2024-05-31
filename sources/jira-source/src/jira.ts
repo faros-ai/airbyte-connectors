@@ -113,7 +113,7 @@ const PROJECT_BOARDS_QUERY = fs.readFileSync(
 );
 
 const TEAMS_FOR_USER_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'get-teams-for-user.gql'),
+  path.join(__dirname, '..', 'resources', 'queries', 'get-teams.gql'),
   'utf8'
 );
 
@@ -257,6 +257,10 @@ export class Jira {
       .utc()
       .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
       .toDate();
+
+    if (cfg.bootstrap_organization && !cfg.organization_id) {
+      throw new VError('Organization ID must be provided for bootstrap');
+    }
 
     Jira.jira = new Jira(
       cfg.url,
