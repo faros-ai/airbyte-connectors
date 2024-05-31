@@ -267,8 +267,9 @@
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_projects", "emitted_at": 1712678736940, "data": {"id": 1236, "key": "TEST-3", "TEST-3": "Test Project 3", "description": "This is a test"}}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_boards", "data": {"uid": "1", "id": 1, "name": "Test board", "type": "scrum", "projectKey": "TEST"}, "emitted_at": 1714744403608}}
 {"type": "RECORD", "record": {"stream": "mytestsource__jira__faros_boards", "data": {"uid": "faros-tasks-with-no-board-TEST", "name": "Tasks without a board in project TEST", "projectKey": "TEST"}, "emitted_at": 1714744403135}}
-{"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}
 {"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716484789893,"data":{"id":"10006","name":"Test Release","startDate":"2024-01-15","releaseDate":"2024-03-19","projectId":10011,"projectKey":"TEST"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716484789894,"data":{"id":"10007","name":"Test Overdue Release","startDate":"2024-02-16","releaseDate":"2024-04-16","projectId":10011,"projectKey":"TEST"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379121,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379569,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}
+{"record": {"stream": "mytestsource__jira__faros_teams","emitted_at": 1717162970229,"data": {"id": "123ad121-1122-45c5-8d0b-0681b9233ea9","displayName": "Test","members": [{"accountId": "12334c037692da10070001234"},{"accountId": "1234dfa413fc70069d12323"}]}}, "type": "RECORD"}
+{"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}

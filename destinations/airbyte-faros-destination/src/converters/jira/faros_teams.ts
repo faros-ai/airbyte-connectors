@@ -32,7 +32,7 @@ export class FarosTeams extends JiraConverter {
           model: 'tms_TeamMembership',
           record: {
             team: {uid: team.id, source: this.streamName.source},
-            user: {uid: member.accountId, source: this.streamName.source},
+            member: {uid: member.accountId, source: this.streamName.source},
           },
         });
       }

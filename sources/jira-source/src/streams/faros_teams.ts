@@ -11,7 +11,7 @@ export class FarosTeams extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['id', 'userId'];
+    return ['id'];
   }
 
   async *readRecords(): AsyncGenerator<Team> {

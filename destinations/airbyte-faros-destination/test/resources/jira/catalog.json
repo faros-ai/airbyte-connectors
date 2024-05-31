@@ -359,6 +359,12 @@
         "name": "mytestsource__jira__faros_project_version_issues"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_teams"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

@@ -592,4 +592,10 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - teams', async () => {
+    await testStream(10, config, {
+      graphql: jest.fn().mockResolvedValue(readTestResourceFile('teams.json')),
+    });
+  });
 });
