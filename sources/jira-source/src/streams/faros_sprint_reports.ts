@@ -7,6 +7,10 @@ import {DEFAULT_GRAPH, Jira} from '../jira';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprintReports extends StreamWithBoardSlices {
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_sprints'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosSprintReports.json');
   }

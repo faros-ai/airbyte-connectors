@@ -7,8 +7,6 @@ import {Jira} from '../jira';
 import {StreamWithProjectSlices} from './common';
 
 export class FarosBoards extends StreamWithProjectSlices {
-  projectKey: string;
-
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosBoards.json');
   }
@@ -24,20 +22,20 @@ export class FarosBoards extends StreamWithProjectSlices {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Board> {
     const jira = await Jira.instance(this.config, this.logger);
-    this.projectKey = streamSlice?.project;
+    const projectKey = streamSlice?.project;
 
     // Virtual board to represent all tasks in the project without a board
     yield {
-      uid: `faros-tasks-with-no-board-${this.projectKey}`,
-      name: `Tasks without a board in project ${this.projectKey}`,
-      projectKey: this.projectKey,
+      uid: `faros-tasks-with-no-board-${projectKey}`,
+      name: `Tasks without a board in project ${projectKey}`,
+      projectKey,
     };
 
-    for (const board of await jira.getBoards(this.projectKey)) {
+    for (const board of await jira.getBoards(projectKey)) {
       yield {
         ...pick(board, ['id', 'name', 'type']),
         uid: toString(board.id),
-        projectKey: this.projectKey,
+        projectKey,
       };
     }
   }
