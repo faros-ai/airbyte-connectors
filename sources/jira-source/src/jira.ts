@@ -66,6 +66,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly use_sprints_reverse_search?: boolean;
   readonly start_date?: string;
   readonly end_date?: string;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
 }
