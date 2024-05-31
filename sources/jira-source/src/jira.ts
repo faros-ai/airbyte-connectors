@@ -19,16 +19,7 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import _, {
-  chunk,
-  concat,
-  isEmpty,
-  isNil,
-  pick,
-  toInteger,
-  toLower,
-} from 'lodash';
-import moment from 'moment';
+import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
