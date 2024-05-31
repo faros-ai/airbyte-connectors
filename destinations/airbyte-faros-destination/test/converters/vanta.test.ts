@@ -1,10 +1,9 @@
 import {getLocal, Mockttp} from 'mockttp';
 
-import {looksLikeGithubCommitSha} from '../../src/converters/vanta/utils';
+import {looksLikeGitCommitSha} from '../../src/converters/vanta/utils';
 import {
   initMockttp,
   readTestResourceAsJSON,
-  readTestResourceFile,
   tempConfig,
 } from '../testing-tools';
 import {destinationWriteTest} from './utils';
@@ -45,13 +44,9 @@ describe('vanta', () => {
   // Logic to test:
   // 1. Check Duplicate UIDs across AWS vulns
   // 2. Check Github Commit Sha Regex
+  // 3. Check all faros endpoint requests
 
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/vanta/catalog.json';
-  const streamNamePrefix = 'mytestsource__vanta__';
-  const streamsLog1 = readTestResourceFile('vanta/streams.log');
-  const streamsLog2 = readTestResourceFile('vanta/streams2.log');
-  const streamsLog3 = readTestResourceFile('vanta/streams3.log');
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -73,66 +68,56 @@ describe('vanta', () => {
     await mockttp.stop();
   });
 
-  const getTempConfig = async (mockttp: Mockttp): Promise<string> => {
-    return await tempConfig({api_url: mockttp.url});
+  const getTempConfig = async (
+    mockttp: Mockttp,
+    updateExisting: boolean = false
+  ): Promise<string> => {
+    return await tempConfig({
+      api_url: mockttp.url,
+      source_specific_configs: {
+        vanta: {
+          updateExistingVulnerabilities: updateExisting,
+        },
+      },
+    });
   };
 
   test('test entries', async () => {
+    // We need to ensure that if there are several vulns associated with a single
+    // artifact, we output all of them, and not just one vuln per artifact.
+    // This data is included in the streams_regular.log file.
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 2,
-      sec_Vulnerability: 3,
-      vcs_RepositoryVulnerability: 1,
-    };
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog2,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams_regular.log',
     });
   });
 
-  test('test no entries', async () => {
-    const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 3,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 1,
-      sec_Vulnerability: 3,
-    };
+  test('test getting update records', async () => {
+    const configPath = await getTempConfig(mockttp, true);
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog1,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams_regular.log',
     });
   });
 
   test('test entries with duplicate UIDs', async () => {
     const configPath = await getTempConfig(mockttp);
-    const processedByStream = {
-      vulnerabilities: 5,
-    };
-    const writtenByModel = {
-      cicd_ArtifactVulnerability: 2,
-      sec_Vulnerability: 2,
-      vcs_RepositoryVulnerability: 1,
-    };
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      expectedProcessedByStream: processedByStream,
-      expectedWrittenByModel: writtenByModel,
-      streamsLog: streamsLog3,
-      streamNamePrefix,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams_duplicate_UIDs.log',
+    });
+  });
+
+  test('test getting update records', async () => {
+    const configPath = await getTempConfig(mockttp, true);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/vanta/catalog.json',
+      inputRecordsPath: 'vanta/streams_duplicate_UIDs.log',
     });
   });
 
@@ -152,7 +137,7 @@ describe('vanta', () => {
     const out = [true, false, false, true, false];
     const res = [];
     for (const s of inp) {
-      res.push(looksLikeGithubCommitSha(s));
+      res.push(looksLikeGitCommitSha(s));
     }
     expect(res).toEqual(out);
   });

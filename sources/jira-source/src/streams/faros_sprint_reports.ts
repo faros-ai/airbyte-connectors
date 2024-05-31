@@ -7,6 +7,10 @@ import {DEFAULT_GRAPH, Jira} from '../jira';
 import {BoardStreamSlice, StreamState, StreamWithBoardSlices} from './common';
 
 export class FarosSprintReports extends StreamWithBoardSlices {
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_sprints'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosSprintReports.json');
   }
@@ -45,7 +49,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
           updateRange?.[0]
         )
       : jira.getSprints(boardId, updateRange);
-    for await (const sprint of await sprints) {
+    for (const sprint of await sprints) {
       const report = await jira.getSprintReport(sprint, boardId);
       if (!report) continue;
       yield report;

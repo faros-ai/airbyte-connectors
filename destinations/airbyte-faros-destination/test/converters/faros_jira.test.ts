@@ -1,16 +1,11 @@
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
-import {Edition, InvalidRecordStrategy} from '../../src';
 import {initMockttp, tempConfig} from '../testing-tools';
-import {farosJiraAllStreamsLog} from './data';
 import {destinationWriteTest} from './utils';
 
 describe('faros_jira', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/faros_jira/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__jira__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -25,20 +20,19 @@ describe('faros_jira', () => {
   });
 
   test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      faros_board_issues: 1,
-    };
-    const expectedWrittenByModel = {
-      tms_TaskBoardRelationship: 1,
-    };
-
     await destinationWriteTest({
       configPath,
-      catalogPath,
-      streamsLog: farosJiraAllStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/all-streams.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
+
+  test('faros_issues', async () => {
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/faros_issues.log',
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });

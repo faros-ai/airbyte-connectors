@@ -131,6 +131,20 @@ export interface Board extends AgileModels.Board {
   projectKey: string;
 }
 
+export interface ProjectVersion extends Version2Models.Version {
+  projectKey: string;
+}
+
+export interface IssueProjectVersion {
+  readonly key: string;
+  readonly projectVersionId: string;
+}
+
+export interface FarosProject {
+  key: string;
+  boardUids: string[];
+}
+
 export interface Team {
   readonly id: string;
   readonly displayName: string;

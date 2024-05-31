@@ -189,6 +189,12 @@
         "description": "The Faros graph name.",
         "default": "default"
       },
+      "use_sprints_reverse_search": {
+        "order": 24,
+        "type": "boolean",
+        "title": "Fetch closed sprints starting with most recent in backlog. Use this for Jira instances with a lots closed sprints and syncing sprints is slow.",
+        "default": false
+      },
       "bootstrap_organization": {
         "order": 25,
         "type": "boolean",
@@ -197,7 +203,7 @@
         "default": false
       },
       "organization_id": {
-        "order": 24,
+        "order": 26,
         "type": "string",
         "title": "Organization ID",
         "description": "Atlassian organization ID for querying teams. Required for bootstrapping organization data."

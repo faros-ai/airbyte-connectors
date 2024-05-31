@@ -1,14 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import fs from 'fs';
-import path from 'path';
 
-import {
-  Converter,
-  ConverterTyped,
-  DestinationRecord,
-  DestinationRecordTyped,
-  StreamName,
-} from '../../src/converters/converter';
 import {JSONataConverter as sut} from '../../src/converters/jsonata';
 
 describe('jsonata', () => {

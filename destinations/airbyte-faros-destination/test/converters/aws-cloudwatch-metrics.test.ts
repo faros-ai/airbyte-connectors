@@ -1,5 +1,4 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {
@@ -7,23 +6,13 @@ import {
   MetricsConfig,
 } from '../../src/converters/aws-cloudwatch-metrics/metrics';
 import {DestinationRecord, StreamContext} from '../../src/converters/converter';
-import {
-  initMockttp,
-  sourceSpecificTempConfig,
-  testLogger,
-} from '../testing-tools';
-import {
-  awsCloudwatchMetricsStreamsInput,
-  awsCloudwatchMetricsStreamsLog,
-} from './data';
-import {destinationWriteTest} from './utils';
+import {initMockttp, sourceSpecificTempConfig} from '../testing-tools';
+import {awsCloudwatchMetricsStreamsInput} from './data';
+import {generateBasicTestSuite} from './utils';
 
 describe('AWS Cloudwatch Metrics', () => {
-  const logger = testLogger();
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/aws-cloudwatch-metrics/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'aws-cloudwatch-metrics__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -34,24 +23,7 @@ describe('AWS Cloudwatch Metrics', () => {
     await mockttp.stop();
   });
 
-  test('process records from all streams', async () => {
-    const expectedProcessedByStream = {
-      metrics: 4,
-    };
-    const expectedWrittenByModel = {
-      faros_MetricDefinition: 2,
-      faros_MetricValue: 4,
-    };
-
-    await destinationWriteTest({
-      configPath,
-      catalogPath,
-      streamsLog: awsCloudwatchMetricsStreamsLog,
-      streamNamePrefix,
-      expectedProcessedByStream,
-      expectedWrittenByModel,
-    });
-  });
+  generateBasicTestSuite({sourceName: 'aws-cloudwatch-metrics'});
 
   test('should correctly convert records', async () => {
     const converter = new Metrics();

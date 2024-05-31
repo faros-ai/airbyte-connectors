@@ -39,6 +39,7 @@ export class FarosIssues extends JiraConverter {
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskDependency',
+    'tms_TaskProjectRelationship',
     'tms_TaskTag',
   ];
 
@@ -112,6 +113,14 @@ export class FarosIssues extends JiraConverter {
     };
 
     results.push({model: 'tms_Task', record: task});
+
+    results.push({
+      model: 'tms_TaskProjectRelationship',
+      record: {
+        task: {uid: issue.key, source},
+        project: {uid: issue.project, source},
+      },
+    });
 
     if (JiraCommon.normalize(issue.type) === 'epic') {
       results.push({

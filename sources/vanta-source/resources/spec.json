@@ -17,9 +17,9 @@
         "title": "Query Types",
         "items": {
           "type": "string",
-          "enum": ["git", "aws", "awsv2"]
+          "enum": ["gitv2", "awsv2"]
         },
-        "default": ["git", "aws", "awsv2"]
+        "default": ["gitv2", "awsv2"]
       },
       "apiUrl": {
         "type": "string",

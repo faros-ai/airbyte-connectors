@@ -4,10 +4,9 @@ This is the repository for the Vanta source connector, written in Typescript.
 The source is currently primarily used to get vulnerabilities.
 Within the config, the option 'queryTypes' defines which queries will be used
 to fetch vulnerabilities from Vanta.
-* git maps to resources/GithubDependabotVulnerabilityList.gql
-* aws maps to resources/AwsContainerVulnerabilityList.gql
+* gitv2 maps to resources/GithubDependabotVulnerabilityV2List.gql
 * awsv2 maps to resources/AwsContainerVulnerabilityV2List.gql
-When queryTypes contains all three ("git", "aws", "awsv2"), then all
+When queryTypes contains all three ("gitv2", "awsv2"), then all
 three queries are called and sent to the destination.
 
 ## Local development

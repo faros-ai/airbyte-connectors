@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`statuspage basic test process records from all streams 1`] = `
+Array [
+  "Processed 24 records",
+  "Processed records by stream: {\\\\\\"mytestsource__statuspage__component_groups\\\\\\":3,\\\\\\"mytestsource__statuspage__component_uptimes\\\\\\":5,\\\\\\"mytestsource__statuspage__components\\\\\\":9,\\\\\\"mytestsource__statuspage__incidents\\\\\\":5,\\\\\\"mytestsource__statuspage__pages\\\\\\":1,\\\\\\"mytestsource__statuspage__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 38 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":6,\\\\\\"ims_ApplicationUptime\\\\\\":5,\\\\\\"ims_Incident\\\\\\":5,\\\\\\"ims_IncidentApplicationImpact\\\\\\":7,\\\\\\"ims_IncidentEvent\\\\\\":14,\\\\\\"ims_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

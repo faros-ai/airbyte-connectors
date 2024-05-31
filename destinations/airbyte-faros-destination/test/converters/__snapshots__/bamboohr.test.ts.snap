@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bamboohr process records from all streams 1`] = `
+Array [
+  "Processed 87 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bamboohr__users\\\\\\":87}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 493 records",
+  "Would write records by model: {\\\\\\"geo_Address\\\\\\":87,\\\\\\"geo_Location\\\\\\":87,\\\\\\"identity_Identity\\\\\\":87,\\\\\\"org_Department\\\\\\":9,\\\\\\"org_Employee\\\\\\":87,\\\\\\"org_Team\\\\\\":26,\\\\\\"org_TeamMembership\\\\\\":110}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

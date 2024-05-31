@@ -20,7 +20,7 @@ export class FarosProjects extends StreamBase {
     const projectKeys = this.config.projects?.length
       ? new Set(this.config.projects.map((key) => toUpper(key)))
       : undefined;
-    for await (const project of jira.getProjects(projectKeys)) {
+    for (const project of await jira.getProjects(projectKeys)) {
       yield project;
     }
   }
