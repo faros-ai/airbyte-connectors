@@ -5,8 +5,7 @@
     "title": "Octopus Spec",
     "type": "object",
     "required": [
-      "api_key",
-      "instance_url"
+      "jira_base_url"
     ],
     "additionalProperties": true,
     "properties": {
