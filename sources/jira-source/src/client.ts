@@ -1,8 +1,8 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {RequestConfig} from 'jira.js';
 import jira, {
   AgileClient,
   BaseClient,
+  RequestConfig,
   Version2Client,
   Version2Models,
 } from 'jira.js';

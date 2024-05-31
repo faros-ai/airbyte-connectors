@@ -1,4 +1,4 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
 import {Version2Models} from 'jira.js';
 import {toUpper} from 'lodash';
 import {Dictionary} from 'ts-essentials';
