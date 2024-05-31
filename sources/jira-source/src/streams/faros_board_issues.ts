@@ -7,6 +7,10 @@ import {Jira} from '../jira';
 import {BoardStreamSlice, StreamWithBoardSlices} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_boards'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosBoardIssues.json');
   }

@@ -7,7 +7,9 @@ import {JqlBuilder} from '../jql-builder';
 import {StreamWithProjectSlices} from './common';
 
 export class FarosProjectVersionIssues extends StreamWithProjectSlices {
-  projectKey: string;
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_project_versions'];
+  }
 
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosProjectVersionIssues.json');
@@ -24,9 +26,9 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
     streamState?: Dictionary<any>
   ): AsyncGenerator<IssueProjectVersion> {
     const jira = await Jira.instance(this.config, this.logger);
-    this.projectKey = streamSlice?.project;
+    const projectKey = streamSlice?.project;
 
-    for (const version of await jira.getProjectVersions(this.projectKey)) {
+    for (const version of await jira.getProjectVersions(projectKey)) {
       const releaseJQL = new JqlBuilder(`fixVersion = ${version.id}`).build();
       for await (const issue of jira.getIssuesKeys(releaseJQL)) {
         yield {key: issue, projectVersionId: version.id};
