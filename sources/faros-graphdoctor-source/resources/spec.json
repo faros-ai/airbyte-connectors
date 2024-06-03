@@ -28,8 +28,15 @@
         "title": "Graph name",
         "description": "The graph name."
       },
-      "day_delay_threshold": {
+      "compute_data_issues": {
         "order": 3,
+        "type": "boolean",
+        "title": "Compute Data Issues",
+        "description": "Whether to compute data issues or not.",
+        "default": false
+      },
+      "day_delay_threshold": {
+        "order": 4,
         "type": "integer",
         "title": "Day Threshold For Alert",
         "description": "How many days can pass before we raise an alert for data that has stopped being ingested.",
