@@ -13,7 +13,7 @@ import {PACKAGE_VERSION, redactConfig, withDefaults} from '../utils';
 import {AirbyteDestination} from './destination';
 
 export class AirbyteDestinationRunner<
-  Config extends AirbyteConfig
+  Config extends AirbyteConfig,
 > extends Runner {
   constructor(
     protected readonly logger: AirbyteLogger,

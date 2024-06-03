@@ -1,7 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket} from 'faros-airbyte-common/common';
+import {bucket, calculateDateRange} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -22,7 +22,6 @@ import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
 import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
-import moment from 'moment';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -60,8 +59,11 @@ export interface JiraConfig extends AirbyteConfig {
   readonly use_sprints_reverse_search?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
-  start_date?: Date;
-  end_date?: Date;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export const toFloat = (value: any): number | undefined =>
@@ -254,11 +256,14 @@ export class Jira {
       }
     }
 
-    cfg.end_date = moment().utc().toDate();
-    cfg.start_date = moment()
-      .utc()
-      .subtract(cfg.cutoff_days || DEFAULT_CUTOFF_DAYS, 'days')
-      .toDate();
+    const {startDate, endDate} = calculateDateRange({
+      start_date: cfg.start_date,
+      end_date: cfg.end_date,
+      cutoff_days: cfg.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+      logger: logger.info.bind(logger),
+    });
+    cfg.startDate = startDate;
+    cfg.endDate = endDate;
 
     if (cfg.fetch_teams && !cfg.organization_id) {
       throw new VError('Organization ID must be provided for fetching teams');
