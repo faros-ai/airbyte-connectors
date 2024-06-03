@@ -45,17 +45,18 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
       const farosIssue = farosIssues.find(
         (farosIssue) => farosIssue.key === issue.key
       );
-      if (farosIssue && farosIssue?.additionalFields?.length) {
-        // If the additional fields are different we want to yield the issue to update them
-        const farosFieldNames = farosIssue.additionalFields
-          .map((field) => field.name)
-          .sort();
-        const jiraFieldNames = issue.additionalFields
-          .map((field) => field[0])
-          .sort();
-        if (!isEqual(farosFieldNames, jiraFieldNames)) {
-          yield omit(issue, 'fields');
-        }
+      if (!farosIssue) {
+        continue;
+      }
+      // If the additional fields are different we want to yield the issue to update them
+      const farosFieldNames = farosIssue.additionalFields
+        ? farosIssue.additionalFields.map((field) => field.name).sort()
+        : [];
+      const jiraFieldNames = issue.additionalFields
+        .map((field) => field[0])
+        .sort();
+      if (!isEqual(farosFieldNames, jiraFieldNames)) {
+        yield omit(issue, 'fields');
       }
     }
   }
