@@ -41,7 +41,6 @@ export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
   }
 };
 
-// Ignore the function:
 const identityNulls: GraphDoctorTestFunction = async function* (
   cfg: any,
   fc: FarosClient,
