@@ -768,6 +768,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     });
 
     try {
+      let isBackfillSync = false;
       let sourceSucceeded = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
@@ -795,6 +796,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               }
               stateMessage = new AirbyteStateMessage(msg.state);
             } else if (isSourceConfigMessage(msg)) {
+              if (msg.redactedConfig?.backfill) {
+                isBackfillSync = true;
+              }
               await updateLocalAccount?.(msg);
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
@@ -878,7 +882,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           }
         });
 
-        if (stateMessage) {
+        if (stateMessage && !isBackfillSync) {
           yield stateMessage;
         }
       }
@@ -919,15 +923,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             ` Airbyte Source errors: ${errorSummary}`
         );
       } else if (
-        sourceSucceeded ||
-        config.skip_source_success_check ||
-        isResetSync
+        this.shouldResetData(
+          isResetSync,
+          isBackfillSync,
+          config.skip_source_success_check,
+          sourceSucceeded
+        )
       ) {
         await resetData?.();
-      } else {
-        this.logger.warn(
-          'No success status received from Airbyte Source. Skipping reset of non-incremental models.'
-        );
       }
 
       // Don't forget to close the writer
@@ -935,6 +938,40 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } finally {
       input.close();
     }
+  }
+
+  private shouldResetData(
+    isResetSync: boolean,
+    isBackfillSync: boolean,
+    skipSourceSuccessCheck: boolean,
+    sourceSucceeded: boolean
+  ): boolean {
+    if (isResetSync) {
+      this.logger.debug(
+        'Running a reset sync. Resetting non-incremental models.'
+      );
+      return true;
+    }
+    if (isBackfillSync) {
+      this.logger.debug(
+        'Running a backfill sync. Skipping reset of non-incremental models.'
+      );
+      return false;
+    }
+    if (skipSourceSuccessCheck) {
+      this.logger.debug(
+        'Skip source success check is enabled. Resetting non-incremental models.'
+      );
+      return true;
+    }
+    if (sourceSucceeded) {
+      this.logger.debug('Source succeeded. Resetting non-incremental models.');
+      return true;
+    }
+    this.logger.warn(
+      'No success status received from Airbyte Source. Skipping reset of non-incremental models.'
+    );
+    return false;
   }
 
   async handleRecordProcessingError(

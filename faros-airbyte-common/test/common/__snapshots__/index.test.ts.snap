@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`calculateDateRange should calculate date range with current date as end date if not provided 1`] = `2022-01-01T00:00:00.000Z`;
+
+exports[`calculateDateRange should calculate date range with end date and cutoff days 1`] = `
+Object {
+  "endDate": 2022-01-31T00:00:00.000Z,
+  "startDate": 2022-01-21T00:00:00.000Z,
+}
+`;
+
+exports[`calculateDateRange should calculate date range with start and end date 1`] = `
+Object {
+  "endDate": 2022-01-31T00:00:00.000Z,
+  "startDate": 2022-01-01T00:00:00.000Z,
+}
+`;

@@ -12,7 +12,7 @@ import {
  * https://docs.airbyte.io/understanding-airbyte/airbyte-specification#source
  */
 export abstract class AirbyteSource<
-  Config extends AirbyteConfig
+  Config extends AirbyteConfig,
 > extends AirbyteConnector {
   /**
    * @returns An AirbyteCatalog representing the available streams and fields in
