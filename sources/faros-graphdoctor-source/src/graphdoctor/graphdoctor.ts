@@ -2,9 +2,9 @@ import {FarosClient} from 'faros-js-client';
 import _ from 'lodash';
 
 import {getDataQualitySummary} from './dataSummary';
-// import {duplicateNames} from './duplicateNames';
+import {duplicateNames} from './duplicateNames';
 import {DataSummaryKey, GraphDoctorTestFunction} from './models';
-// import {checkIfWithinLastXDays, runAllZScoreTests} from './timeTests';
+import {checkIfWithinLastXDays, runAllZScoreTests} from './timeTests';
 import {getCurrentTimestamp, missingRelationsTest, simpleHash} from './utils';
 
 export const orgTeamParentNull: GraphDoctorTestFunction = async function* (
@@ -114,21 +114,23 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     uid: start_timestamp,
     source: 'faros-graphdoctor',
   };
-  // cfg.logger.info('Running Graph Doctor Tests');
+  if (cfg.compute_data_issues) {
+    cfg.logger.info('Running Graph Doctor Tests');
 
-  // const testFunctions: GraphDoctorTestFunction[] = [
-  //   orgTeamParentNull,
-  //   teamOwnershipNulls,
-  //   identityNulls,
-  //   duplicateNames,
-  //   runAllZScoreTests,
-  //   checkIfWithinLastXDays,
-  // ];
+    const testFunctions: GraphDoctorTestFunction[] = [
+      orgTeamParentNull,
+      teamOwnershipNulls,
+      identityNulls,
+      duplicateNames,
+      runAllZScoreTests,
+      checkIfWithinLastXDays,
+    ];
 
-  // for (const test_func of testFunctions) {
-  //   cfg.logger.info(`Running test function "${test_func.name}".`);
-  //   yield* test_func(cfg, fc, summaryKey);
-  // }
+    for (const test_func of testFunctions) {
+      cfg.logger.info(`Running test function "${test_func.name}".`);
+      yield* test_func(cfg, fc, summaryKey);
+    }
+  }
 
   cfg.logger.info('Running Graph Doctor Diagnostic Summary');
   const dataQualitySummary = await getDataQualitySummary(
