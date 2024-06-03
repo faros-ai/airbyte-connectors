@@ -1,6 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueCompact} from 'faros-airbyte-common/jira';
-import {omit} from 'lodash';
+import {isEqual, omit} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {DEFAULT_GRAPH, Jira} from '../jira';
@@ -53,7 +53,7 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
         const jiraFieldNames = issue.additionalFields
           .map((field) => field[0])
           .sort();
-        if (farosFieldNames.join() !== jiraFieldNames.join()) {
+        if (!isEqual(farosFieldNames, jiraFieldNames)) {
           yield omit(issue, 'fields');
         }
       }
