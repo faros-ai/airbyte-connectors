@@ -12,7 +12,11 @@ import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
-import {RunMode, WebhookSupplementStreamNames} from './streams/common';
+import {
+  AdditionalFieldsStreamName,
+  RunMode,
+  WebhookSupplementStreamNames,
+} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
 import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
@@ -95,11 +99,13 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     }
     if (config.run_mode === RunMode.AdditionalFields) {
       streams = streams.filter(
-        (stream) => stream.stream.name === 'faros_issue_additional_fields'
+        (stream) => stream.stream.name === AdditionalFieldsStreamName
       );
     }
     const requestedStreams = new Set(
-      streams.map((stream) => stream.stream.name)
+      streams
+        .map((stream) => stream.stream.name)
+        .filter((name) => name !== AdditionalFieldsStreamName)
     );
     return {config: {...config, requestedStreams}, catalog: {streams}, state};
   }

@@ -30,6 +30,8 @@ export const WebhookSupplementStreamNames = [
   'faros_issue_pull_requests',
 ];
 
+export const AdditionalFieldsStreamName = 'faros_issue_additional_fields';
+
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly projectBoardFilter: ProjectBoardFilter;
   constructor(
