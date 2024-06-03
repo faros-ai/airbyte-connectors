@@ -7,7 +7,7 @@ import {StreamBase} from './common';
 
 export class FarosTeams extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/farosUsers.json');
+    return require('../../resources/schemas/farosTeams.json');
   }
 
   get primaryKey(): StreamKey {
@@ -16,7 +16,7 @@ export class FarosTeams extends StreamBase {
 
   async *readRecords(): AsyncGenerator<Team> {
     const jira = await Jira.instance(this.config, this.logger);
-    for await (const team of jira.getTeams(this.config.organization_id)) {
+    for (const team of await jira.getTeams(this.config.organization_id)) {
       yield team;
     }
   }

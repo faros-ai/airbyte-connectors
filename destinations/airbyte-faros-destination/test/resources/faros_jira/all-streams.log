@@ -11,3 +11,6 @@
 {"record":{"stream":"mytestsource__jira__faros_users","emitted_at":1716910319312,"data":{"id":"61f99bc0acd4cb0069cfd675","accountId":"61f99bc0acd4cb0069cfd675","displayName":"John Doe","emailAddress":"john.doe@example.com","active":true}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716926230292,"data":{"key":"PLAYG-4","projectVersionId":"10006"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716926440396,"data":{"id":"10006","name":"Test Release","startDate":"2021-11-15","releaseDate":"2021-11-19","projectId":10011,"projectKey":"PLAYG"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_teams","emitted_at": 1717162970229,"data": {"id": "123ad121-1122-45c5-8d0b-0681b9233ea9","displayName": "Test"}}, "type": "RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "12334c037692da100700011"}}, "type": "RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "3214dfa413fc70069d12323"}}, "type": "RECORD"}

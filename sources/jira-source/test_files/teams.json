@@ -6,21 +6,7 @@
           {
             "team": {
               "id": "ari:cloud:identity::team/1234567890asas123132",
-              "displayName": "Test",
-              "members": {
-                "nodes": [
-                  {
-                    "member": {
-                      "accountId": "11223037692da10070013322"
-                    }
-                  },
-                  {
-                    "member": {
-                      "accountId": "12336dfa413fc70069d712312"
-                    }
-                  }
-                ]
-              }
+              "displayName": "Test"
             }
           }
         ],

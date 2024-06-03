@@ -148,5 +148,9 @@ export interface FarosProject {
 export interface Team {
   readonly id: string;
   readonly displayName: string;
-  readonly members: User[];
+}
+
+export interface TeamMembership {
+  readonly teamId: string;
+  readonly memberId: string;
 }

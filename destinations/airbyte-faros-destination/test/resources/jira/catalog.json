@@ -365,6 +365,12 @@
         "name": "mytestsource__jira__faros_teams"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_team_memberships"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

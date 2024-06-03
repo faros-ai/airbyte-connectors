@@ -9,13 +9,6 @@ query teamSearchV2($after: String, $organizationId: ID!, $siteId: String!) {
         team {
           id
           displayName
-          members {
-            nodes {
-              member {
-                accountId
-              }
-            }
-          }
         }
       }
       pageInfo {

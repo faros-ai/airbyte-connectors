@@ -598,13 +598,32 @@ describe('index', () => {
       10,
       {
         ...config,
-        bootstrap_organization: true,
+        fetch_teams: true,
         organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
       },
       {
         graphql: jest
           .fn()
           .mockResolvedValue(readTestResourceFile('teams.json')),
+      }
+    );
+  });
+
+  test('streams - team memberships', async () => {
+    await testStream(
+      11,
+      {
+        ...config,
+        fetch_team_memberships: true,
+        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
+      },
+      {
+        graphql: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('teams.json')),
+        getTeamMemberships: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('team_memberships.json')),
       }
     );
   });

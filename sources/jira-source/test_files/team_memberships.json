@@ -1,0 +1,14 @@
+{
+  "pageInfo": {
+    "hasNextPage": false,
+    "endCursor": "3214dfa413fc70069d12323"
+  },
+  "results": [
+    {
+      "accountId": "12334c037692da100700011"
+    },
+    {
+      "accountId": "3214dfa413fc70069d12323"
+    }
+  ]
+}

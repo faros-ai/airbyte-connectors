@@ -271,5 +271,7 @@
 {"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716484789894,"data":{"id":"10007","name":"Test Overdue Release","startDate":"2024-02-16","releaseDate":"2024-04-16","projectId":10011,"projectKey":"TEST"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379121,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716497379569,"data":{"key":"TEST-1","projectVersionId":"10006"}},"type":"RECORD"}
-{"record": {"stream": "mytestsource__jira__faros_teams","emitted_at": 1717162970229,"data": {"id": "123ad121-1122-45c5-8d0b-0681b9233ea9","displayName": "Test","members": [{"accountId": "12334c037692da10070001234"},{"accountId": "1234dfa413fc70069d12323"}]}}, "type": "RECORD"}
+{"record":{"stream": "mytestsource__jira__faros_teams","emitted_at": 1717162970229,"data": {"id": "123ad121-1122-45c5-8d0b-0681b9233ea9","displayName": "Test"}}, "type": "RECORD"}
+{"record":{"stream": "mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "12334c037692da100700011"}}, "type": "RECORD"}
+{"record":{"stream": "mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "3214dfa413fc70069d12323"}}, "type": "RECORD"}
 {"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceJira"}}
