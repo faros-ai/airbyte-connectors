@@ -12,6 +12,8 @@ COPY ./destinations ./destinations
 RUN npm run build -- --scope faros-airbyte-cdk
 RUN npm run build -- --scope faros-airbyte-common
 
+COPY ./docker ./docker
+
 ARG version
 ENV CONNECTOR_VERSION $version
 
@@ -22,5 +24,5 @@ RUN ln -sf "/home/node/airbyte/$path/bin/main" "/home/node/airbyte/main"
 
 USER node
 
-ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/main"
-ENTRYPOINT ["/home/node/airbyte/main"]
+ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/docker/entrypoint.sh"
+ENTRYPOINT ["/home/node/airbyte/docker/entrypoint.sh"]
