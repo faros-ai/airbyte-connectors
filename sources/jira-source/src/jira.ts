@@ -3,6 +3,7 @@ import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
+  FarosIssue,
   FarosProject,
   Issue,
   IssueCompact,
@@ -106,6 +107,11 @@ const PROJECT_QUERY = fs.readFileSync(
 
 const PROJECT_BOARDS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
+  'utf8'
+);
+
+const TASKS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'tms-task.gql'),
   'utf8'
 );
 
@@ -693,8 +699,11 @@ export class Jira {
       this.fieldIdsByName,
       this.statusByName,
       additionalFieldIds,
-      this.additionalFieldsArrayLimit
+      this.additionalFieldsArrayLimit,
+      this.logger
     );
+
+    this.logger.info(`ADDITIONAL FIELDS IN GET ISSUES: ${additionalFieldIds}`);
 
     return this.iterate(
       (startAt) =>
@@ -758,6 +767,27 @@ export class Jira {
     );
   }
 
+  async *getIssueCompactWithAdditionalFields(
+    jql: string
+  ): AsyncIterableIterator<IssueCompact> {
+    const issues = this.getIssuesCompact(jql);
+    const additionalFieldIds = this.getAdditionalFieldIds(new Set<string>());
+    const issueTransformer = new IssueTransformer(
+      this.baseURL,
+      this.fieldNameById,
+      this.fieldIdsByName,
+      this.statusByName,
+      additionalFieldIds,
+      this.additionalFieldsArrayLimit
+    );
+    for await (const issue of issues) {
+      yield {
+        ...issue,
+        additionalFields: issueTransformer.extractAdditionalFields(issue),
+      };
+    }
+  }
+
   async getIssuePullRequests(
     issue: IssueCompact
   ): Promise<ReadonlyArray<PullRequest>> {
@@ -810,14 +840,19 @@ export class Jira {
         'updated',
       ].forEach((field) => fieldIds.add(field));
     }
+    const additionalFieldIds: string[] = this.getAdditionalFieldIds(fieldIds);
+    return {fieldIds: Array.from(fieldIds), additionalFieldIds};
+  }
+
+  private getAdditionalFieldIds(fieldIds: Set<string>): string[] {
     const additionalFieldIds: string[] = [];
     for (const fieldId of this.fieldNameById.keys()) {
-      // Skip fields that are already included in the fields above
+      // Skip fields that are already included in the fieldIds set
       if (!fieldIds.has(fieldId)) {
         additionalFieldIds.push(fieldId);
       }
     }
-    return {fieldIds: Array.from(fieldIds), additionalFieldIds};
+    return additionalFieldIds;
   }
 
   private requestedFarosIssuesStream() {
@@ -1288,5 +1323,37 @@ export class Jira {
       ]);
     }
     return undefined;
+  }
+
+  async getIssuesFromFarosGraph(
+    farosClient: FarosClient,
+    graph: string,
+    updateRange: [Date, Date],
+    projectKey: string
+  ): Promise<ReadonlyArray<FarosIssue>> {
+    const issueIterator = this.iterate(
+      async (startAt) => {
+        const data = await farosClient.gql(graph, TASKS_QUERY, {
+          source: 'Jira',
+          offset: startAt,
+          pageSize: this.maxPageSize,
+          updatedAfter: updateRange[0],
+          updatedBefore: updateRange[1],
+          project: projectKey,
+        });
+        return data?.tms_Task;
+      },
+      async (item: any): Promise<FarosIssue> => {
+        return {
+          key: item.uid,
+          additionalFields: item.additionalFields,
+        };
+      }
+    );
+    const issues: FarosIssue[] = [];
+    for await (const issue of issueIterator) {
+      issues.push(issue);
+    }
+    return issues;
   }
 }

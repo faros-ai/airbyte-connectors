@@ -15,6 +15,7 @@ import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
 import {RunMode, WebhookSupplementStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
+import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosProjectVersionIssues} from './streams/faros_project_version_issues';
@@ -73,6 +74,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosBoards(config, this.logger),
       new FarosProjectVersions(config, this.logger),
       new FarosProjectVersionIssues(config, this.logger),
+      new FarosIssueAdditionalFields(config, this.logger, farosClient),
     ];
   }
 
@@ -89,6 +91,11 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     if (config.run_mode === RunMode.WebhookSupplement) {
       streams = streams.filter((stream) =>
         WebhookSupplementStreamNames.includes(stream.stream.name)
+      );
+    }
+    if (config.run_mode === RunMode.AdditionalFields) {
+      streams = streams.filter(
+        (stream) => stream.stream.name === 'faros_issue_additional_fields'
       );
     }
     const requestedStreams = new Set(

@@ -21,6 +21,7 @@ export type StreamState = {
 export enum RunMode {
   Full = 'Full',
   WebhookSupplement = 'WebhookSupplement',
+  AdditionalFields = 'AdditionalFields',
 }
 
 export const WebhookSupplementStreamNames = [

@@ -8,6 +8,7 @@ export interface IssueCompact {
   readonly created?: Date;
   readonly updated?: Date;
   readonly boardId?: string;
+  readonly additionalFields?: ReadonlyArray<[string, string]>;
 }
 
 export interface Issue extends IssueCompact {
@@ -34,6 +35,11 @@ export interface Issue extends IssueCompact {
   readonly url: string;
   readonly resolution: string;
   readonly resolutionDate: Date;
+}
+
+export interface FarosIssue {
+  key: string;
+  additionalFields: {name: string; value: string}[];
 }
 
 export interface Parent {
