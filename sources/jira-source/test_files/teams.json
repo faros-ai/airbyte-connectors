@@ -1,0 +1,20 @@
+{
+  "data": {
+    "team": {
+      "teamSearch": {
+        "nodes": [
+          {
+            "team": {
+              "id": "ari:cloud:identity::team/1234567890asas123132",
+              "displayName": "Test"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,8 @@ import {
   SprintIssue,
   SprintReport,
   Status,
+  Team,
+  User,
 } from 'faros-airbyte-common/jira';
 import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
@@ -55,6 +57,8 @@ export interface JiraConfig extends AirbyteConfig {
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
+  readonly fetch_teams?: boolean;
+  readonly organization_id?: string;
   readonly start_date?: string;
   readonly end_date?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
@@ -111,6 +115,11 @@ const PROJECT_BOARDS_QUERY = fs.readFileSync(
   'utf8'
 );
 
+const TEAMS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'get-teams.gql'),
+  'utf8'
+);
+
 const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
 const DEFAULT_REJECT_UNAUTHORIZED = true;
 const DEFAULT_CONCURRENCY_LIMIT = 5;
@@ -127,6 +136,8 @@ export const DEFAULT_GRAPH = 'default';
 const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
 // https://community.developer.atlassian.com/t/is-it-possible-to-pull-a-list-of-sprints-in-a-project-via-the-rest-api/53336/3
 const MAX_SPRINTS_RESULTS = 50;
+//https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
+const MAX_TEAMS_RESULTS = 50;
 
 export class Jira {
   private static jira: Jira;
@@ -254,6 +265,10 @@ export class Jira {
     });
     cfg.startDate = startDate;
     cfg.endDate = endDate;
+
+    if (cfg.fetch_teams && !cfg.organization_id) {
+      throw new VError('Organization ID must be provided for fetching teams');
+    }
 
     Jira.jira = new Jira(
       cfg.url,
@@ -1293,5 +1308,62 @@ export class Jira {
       ]);
     }
     return undefined;
+  }
+
+  @Memoize()
+  async getTeams(organizationId: string): Promise<ReadonlyArray<Team>> {
+    const teams: Team[] = [];
+    for await (const team of this.getTeamsIterator(organizationId)) {
+      teams.push(team);
+    }
+    return teams;
+  }
+
+  async *getTeamsIterator(organizationId: string): AsyncIterableIterator<Team> {
+    let cursor: string | undefined = undefined;
+    let hasNext = true;
+    do {
+      const response = await this.api.graphql(TEAMS_QUERY, {
+        organizationId: `ari:cloud:platform::org/${organizationId}`,
+        siteId: 'None',
+        first: MAX_TEAMS_RESULTS,
+        after: cursor,
+      });
+      const result = response.data?.team?.teamSearch;
+      if (isNil(result)) {
+        break;
+      }
+      cursor = result.pageInfo?.endCursor;
+      hasNext = result.pageInfo?.hasNextPage;
+      for (const {team} of result.nodes) {
+        // Remove prefix from id
+        const id = team.id.split('/').pop();
+        yield {
+          id,
+          displayName: team.displayName,
+        };
+      }
+    } while (hasNext);
+  }
+
+  async *getTeamMemberships(
+    organizationId: string,
+    teamId: string
+  ): AsyncIterableIterator<User> {
+    let cursor: string | undefined = undefined;
+    let hasNext = true;
+    do {
+      const response = await this.api.getTeamMemberships(
+        organizationId,
+        teamId,
+        MAX_TEAMS_RESULTS,
+        cursor
+      );
+      cursor = response.pageInfo.endCursor;
+      hasNext = response.pageInfo.hasNextPage;
+      for (const user of response.results) {
+        yield {id: user.accountId};
+      }
+    } while (hasNext);
   }
 }

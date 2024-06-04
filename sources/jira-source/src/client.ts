@@ -1,12 +1,18 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {RequestConfig} from 'jira.js';
-import jira, {AgileClient, Version2Client, Version2Models} from 'jira.js';
+import jira, {
+  AgileClient,
+  RequestConfig,
+  Version2Client,
+  Version2Models,
+} from 'jira.js';
 
 import {
   AgileClientWithRetry,
   Version2ClientWithRetry,
   WithRetry,
 } from './retry';
+
+const GRAPHQL_PATH = '/gateway/api/graphql';
 
 /** Client that extends the jira.js clients with retries and internal APIs */
 export class JiraClient {
@@ -35,6 +41,15 @@ export class JiraClient {
 
     this.v2 = new Version2ClientWithRetries(cfg);
     this.agile = new AgileClientWithRetries(cfg);
+  }
+
+  async graphql(query: string, variables?: any): Promise<any> {
+    const config: RequestConfig = {
+      url: GRAPHQL_PATH,
+      method: 'POST',
+      data: {query, variables},
+    };
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 
   async getDevStatusSummary(issueId: string): Promise<any> {
@@ -112,5 +127,22 @@ export class JiraClient {
       ...agileStats,
       totalCalls,
     };
+  }
+
+  async getTeamMemberships(
+    orgId: string,
+    teamId: string,
+    maxResults?: number,
+    cursor?: string
+  ): Promise<any> {
+    const config: RequestConfig = {
+      url: `/gateway/api/public/teams/v1/org/${orgId}/teams/${teamId}/members`,
+      method: 'POST',
+      data: {
+        first: maxResults,
+        after: cursor,
+      },
+    };
+    return await this.v2.sendRequest<any>(config, undefined);
   }
 }

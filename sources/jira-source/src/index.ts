@@ -22,6 +22,8 @@ import {FarosProjectVersions} from './streams/faros_project_versions';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosSprintReports} from './streams/faros_sprint_reports';
 import {FarosSprints} from './streams/faros_sprints';
+import {FarosTeamMemberships} from './streams/faros_team_memberships';
+import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
 
 /** The main entry point. */
@@ -73,6 +75,8 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosBoards(config, this.logger),
       new FarosProjectVersions(config, this.logger),
       new FarosProjectVersionIssues(config, this.logger),
+      new FarosTeams(config, this.logger),
+      new FarosTeamMemberships(config, this.logger),
     ];
   }
 
@@ -94,6 +98,14 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     const requestedStreams = new Set(
       streams.map((stream) => stream.stream.name)
     );
+    // Remove teams and team_memberships streams if the fetch_teams flag is not set
+    if (!config.fetch_teams) {
+      streams = streams.filter(
+        (stream) =>
+          stream.stream.name !== 'faros_teams' &&
+          stream.stream.name !== 'faros_team_memberships'
+      );
+    }
     return {config: {...config, requestedStreams}, catalog: {streams}, state};
   }
 }
