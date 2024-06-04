@@ -24,6 +24,7 @@ export class Customreports extends Converter {
   ];
   source = 'workday';
   FAROS_TEAM_ROOT = 'all_teams';
+  FAROS_UNASSIGNED_TEAM = 'unassigned';
   recordCount = {
     skippedRecords: 0,
     storedRecords: 0,
@@ -31,13 +32,15 @@ export class Customreports extends Converter {
   employeeIDtoRecord: Record<string, EmployeeRecord> = {};
   teamIDToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
   teamIDToTeamName: Record<string, string> = {
-    all_teams: 'all_teams',
-    unassigned: 'Unassigned',
+    all_teams: this.FAROS_TEAM_ROOT,
+    unassigned: this.FAROS_UNASSIGNED_TEAM,
   };
   cycleChains: ReadonlyArray<string>[] = [];
   replacedParentTeams: string[] = [];
   seenLocations: Set<string> = new Set<string>();
   generalLogCollection: string[] = [];
+  terminatedEmployees: EmployeeRecord[] = [];
+  currentDate: Date = new Date();
   // These are set in setOrgsToKeepAndIgnore
   org_ids_to_keep = null;
   org_ids_to_ignore = null;
@@ -48,21 +51,30 @@ export class Customreports extends Converter {
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const rec = record.record.data as EmployeeRecord;
-    if (!this.checkRecordValidity(rec)) {
+    if (!this.checkRecordValidity(rec, ctx)) {
       this.recordCount.skippedRecords += 1;
     } else {
       this.recordCount.storedRecords += 1;
-      this.extractRecordInfo(rec);
+      this.extractRecordInfo(rec, ctx);
     }
     return [];
   }
 
-  private extractRecordInfo(rec: EmployeeRecord): void {
+  private extractRecordInfo(rec: EmployeeRecord, ctx: StreamContext): void {
     // Extracts information from record to class structures
     // in order to be used once all records are processed
+    if (
+      ctx.config.source_specific_configs?.workday?.keep_terminated_employees
+    ) {
+      if (this.isTerminated(rec)) {
+        this.terminatedEmployees.push(rec);
+        return;
+      }
+    }
     this.employeeIDtoRecord[rec.Employee_ID] = rec;
     this.updateTeamToManagerRecord(rec);
     this.updateTeamIDToTeamNameMapping(rec);
@@ -119,7 +131,29 @@ export class Customreports extends Converter {
     return new_rec;
   }
 
-  private checkRecordValidity(rec: EmployeeRecord): boolean {
+  private dateOneIsBeforeDateTwo(dateOne: Date, dateTwo: Date): boolean {
+    return dateOne.getTime() < dateTwo.getTime();
+  }
+
+  private isTerminated(rec: EmployeeRecord): boolean {
+    if (!rec.Termination_Date || !rec.Start_Date) {
+      return false;
+    }
+    const terminationDate = Utils.toDate(rec.Termination_Date);
+    const startDate = Utils.toDate(rec.Start_Date);
+    if (
+      this.dateOneIsBeforeDateTwo(terminationDate, this.currentDate) &&
+      this.dateOneIsBeforeDateTwo(startDate, terminationDate)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  private checkRecordValidity(
+    rec: EmployeeRecord,
+    ctx: StreamContext
+  ): boolean {
     rec = this.convertRecordToStandardizedForm(rec);
     if (
       !rec.Employee_ID ||
@@ -132,8 +166,12 @@ export class Customreports extends Converter {
       return false;
     }
     // We're only keeping active records
-    if (rec.Termination_Date) {
-      return false;
+    if (this.isTerminated(rec)) {
+      if (
+        !ctx.config.source_specific_configs?.workday?.keep_terminated_employees
+      ) {
+        return false;
+      }
     }
     return true;
   }
@@ -360,14 +398,18 @@ export class Customreports extends Converter {
   }
 
   private createEmployeeRecordList(
-    employeeID: string,
-    acceptable_teams: Set<string>
+    employee_record: EmployeeRecord,
+    isTerminated: boolean = false
   ): DestinationRecord[] {
     // org_Employee, identity_Identity, geo_Location, org_TeamMembership
     const records = [];
-    const employee_record: EmployeeRecord = this.employeeIDtoRecord[employeeID];
-    if (!acceptable_teams.has(employee_record.Team_ID)) {
-      return records;
+    let inactive = false;
+    let teamUid = employee_record.Team_ID;
+    let managerKey = {uid: employee_record.Manager_ID};
+    if (isTerminated) {
+      inactive = true;
+      teamUid = this.FAROS_UNASSIGNED_TEAM;
+      managerKey = null;
     }
     records.push(
       {
@@ -375,8 +417,8 @@ export class Customreports extends Converter {
         record: {
           uid: employee_record.Employee_ID,
           joinedAt: employee_record.Start_Date,
-          inactive: false,
-          manager: {uid: employee_record.Manager_ID},
+          inactive,
+          manager: managerKey,
           identity: {uid: employee_record.Employee_ID},
           location: employee_record.Location
             ? {uid: employee_record.Location}
@@ -397,7 +439,7 @@ export class Customreports extends Converter {
       {
         model: 'org_TeamMembership',
         record: {
-          team: {uid: employee_record.Team_ID},
+          team: {uid: teamUid},
           member: {uid: employee_record.Employee_ID},
         },
       }
@@ -502,7 +544,14 @@ export class Customreports extends Converter {
       }
     }
     for (const employeeID of Object.keys(this.employeeIDtoRecord)) {
-      res.push(...this.createEmployeeRecordList(employeeID, acceptable_teams));
+      const employeeRecord = this.employeeIDtoRecord[employeeID];
+      if (!acceptable_teams.has(employeeRecord.Team_ID)) {
+        continue;
+      }
+      res.push(...this.createEmployeeRecordList(employeeRecord));
+    }
+    for (const terminatedEmployee of this.terminatedEmployees) {
+      res.push(...this.createEmployeeRecordList(terminatedEmployee, true));
     }
     this.printReport(ctx, acceptable_teams);
     return [res, newTeamToParent];
