@@ -4,8 +4,8 @@ exports[`workday Randomly generated records from customreports v4 stream with Te
 Array [
   "Processed 103 records",
   "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":103}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 322 records",
-  "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":102,\\\\\\"org_Employee\\\\\\":102,\\\\\\"org_Team\\\\\\":12,\\\\\\"org_TeamMembership\\\\\\":102}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 323 records",
+  "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":102,\\\\\\"org_Employee\\\\\\":102,\\\\\\"org_Team\\\\\\":13,\\\\\\"org_TeamMembership\\\\\\":102}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -76,8 +76,8 @@ exports[`workday process structured generated records from customreports v4 stre
 Array [
   "Processed 103 records",
   "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":103}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 319 records",
-  "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":101,\\\\\\"org_Employee\\\\\\":101,\\\\\\"org_Team\\\\\\":12,\\\\\\"org_TeamMembership\\\\\\":101}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 320 records",
+  "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":101,\\\\\\"org_Employee\\\\\\":101,\\\\\\"org_Team\\\\\\":13,\\\\\\"org_TeamMembership\\\\\\":101}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]

@@ -406,10 +406,12 @@ export class Customreports extends Converter {
     let inactive = false;
     let teamUid = employee_record.Team_ID;
     let managerKey = {uid: employee_record.Manager_ID};
+    let terminatedAt = null;
     if (isTerminated) {
       inactive = true;
       teamUid = this.FAROS_UNASSIGNED_TEAM;
       managerKey = null;
+      terminatedAt = new Date(employee_record.Termination_Date);
     }
     records.push(
       {
@@ -417,6 +419,7 @@ export class Customreports extends Converter {
         record: {
           uid: employee_record.Employee_ID,
           joinedAt: employee_record.Start_Date,
+          terminatedAt: terminatedAt,
           inactive,
           manager: managerKey,
           identity: {uid: employee_record.Employee_ID},
