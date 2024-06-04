@@ -132,12 +132,12 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v3.log',
     });
   });
-  test('Randomly generated records from customreports v3 stream with Terminated', async () => {
+  test('Randomly generated records from customreports v4 stream with Terminated', async () => {
     const configPath = await getTempConfig([], [], true);
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
-      inputRecordsPath: 'workday/stream_v3.log',
+      inputRecordsPath: 'workday/stream_v4.log',
     });
   });
   test('process structured generated records from customreports v4 stream', async () => {
@@ -225,7 +225,8 @@ describe('workday', () => {
     }).not.toThrow();
   });
   test('check date comparison', () => {
-    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [customReportDestination, _ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'failing cycle 1'
     );
