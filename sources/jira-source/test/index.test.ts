@@ -612,8 +612,8 @@ describe('index', () => {
       10,
       {
         ...config,
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-01-30'),
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-30'),
         additional_fields: ['customfield_10000', 'customfield_10001'],
       },
       {
