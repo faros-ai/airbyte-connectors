@@ -131,20 +131,13 @@ export class Customreports extends Converter {
     return new_rec;
   }
 
-  dateOneIsBeforeDateTwo(dateOne: Date, dateTwo: Date): boolean {
-    return dateOne.getTime() < dateTwo.getTime();
-  }
-
   private isTerminated(rec: EmployeeRecord): boolean {
     if (!rec.Termination_Date || !rec.Start_Date) {
       return false;
     }
     const terminationDate = Utils.toDate(rec.Termination_Date);
     const startDate = Utils.toDate(rec.Start_Date);
-    if (
-      this.dateOneIsBeforeDateTwo(terminationDate, this.currentDate) &&
-      this.dateOneIsBeforeDateTwo(startDate, terminationDate)
-    ) {
+    if (terminationDate < this.currentDate && startDate < terminationDate) {
       return true;
     }
     return false;

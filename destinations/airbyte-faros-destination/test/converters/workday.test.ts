@@ -224,19 +224,4 @@ describe('workday', () => {
       runCustomReportDestination(customReportDestination, ctx);
     }).not.toThrow();
   });
-  test('check date comparison', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [customReportDestination, _ctx] = getCustomReportandCtxGivenKey(
-      mockttp,
-      'failing cycle 1'
-    );
-    let d1 = new Date('2021-01-01');
-    let d2 = new Date('2021-01-02');
-    let res = customReportDestination.dateOneIsBeforeDateTwo(d1, d2);
-    expect(res).toEqual(true);
-    d1 = new Date('2011-05-06');
-    d2 = new Date('2010-12-02');
-    res = customReportDestination.dateOneIsBeforeDateTwo(d1, d2);
-    expect(res).toEqual(false);
-  });
 });
