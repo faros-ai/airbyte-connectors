@@ -113,20 +113,22 @@ export async function* runGraphDoctorTests(cfg: any, fc: FarosClient): any {
     uid: start_timestamp,
     source: 'faros-graphdoctor',
   };
-  cfg.logger.info('Running Graph Doctor Tests');
+  if (cfg.compute_data_issues) {
+    cfg.logger.info('Running Graph Doctor Tests');
 
-  const testFunctions: GraphDoctorTestFunction[] = [
-    orgTeamParentNull,
-    teamOwnershipNulls,
-    identityNulls,
-    duplicateNames,
-    runAllZScoreTests,
-    checkIfWithinLastXDays,
-  ];
+    const testFunctions: GraphDoctorTestFunction[] = [
+      orgTeamParentNull,
+      teamOwnershipNulls,
+      identityNulls,
+      duplicateNames,
+      runAllZScoreTests,
+      checkIfWithinLastXDays,
+    ];
 
-  for (const test_func of testFunctions) {
-    cfg.logger.info(`Running test function "${test_func.name}".`);
-    yield* test_func(cfg, fc, summaryKey);
+    for (const test_func of testFunctions) {
+      cfg.logger.info(`Running test function "${test_func.name}".`);
+      yield* test_func(cfg, fc, summaryKey);
+    }
   }
 
   cfg.logger.info('Running Graph Doctor Diagnostic Summary');

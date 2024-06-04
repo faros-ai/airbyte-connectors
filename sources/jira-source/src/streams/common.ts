@@ -68,8 +68,8 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {
     return [
-      cutoff ? Utils.toDate(cutoff) : this.config.start_date,
-      this.config.end_date,
+      cutoff ? Utils.toDate(cutoff) : this.config.startDate,
+      this.config.endDate,
     ];
   }
 
