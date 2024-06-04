@@ -14,6 +14,7 @@ import {
   SprintReport,
   Status,
   Team,
+  TeamMembership,
   User,
 } from 'faros-airbyte-common/jira';
 import {FarosClient, Utils, wrapApiError} from 'faros-js-client';
@@ -21,7 +22,16 @@ import * as fs from 'fs';
 import parseGitUrl from 'git-url-parse';
 import https from 'https';
 import jira, {AgileModels, Version2Models} from 'jira.js';
-import {chunk, concat, isEmpty, isNil, pick, toInteger, toLower} from 'lodash';
+import {
+  chunk,
+  concat,
+  isEmpty,
+  isNil,
+  pick,
+  toInteger,
+  toLower,
+  toString,
+} from 'lodash';
 import pLimit from 'p-limit';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
@@ -165,7 +175,8 @@ export class Jira {
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
     private readonly requestedStreams?: Set<string>,
-    private readonly useSprintsReverseSearch?: boolean
+    private readonly useSprintsReverseSearch?: boolean,
+    private readonly organizationId?: string
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -266,8 +277,10 @@ export class Jira {
     cfg.startDate = startDate;
     cfg.endDate = endDate;
 
-    if (cfg.fetch_teams && !cfg.organization_id) {
-      throw new VError('Organization ID must be provided for fetching teams');
+    if (cfg.fetch_teams && isCloud && !cfg.organization_id) {
+      throw new VError(
+        'Organization ID must be provided for fetching teams in Jira Cloud'
+      );
     }
 
     Jira.jira = new Jira(
@@ -286,7 +299,8 @@ export class Jira {
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
       cfg.requestedStreams,
-      cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH
+      cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH,
+      cfg.organization_id
     );
     return Jira.jira;
   }
@@ -1311,20 +1325,28 @@ export class Jira {
   }
 
   @Memoize()
-  async getTeams(organizationId: string): Promise<ReadonlyArray<Team>> {
+  async getTeams(): Promise<ReadonlyArray<Team>> {
     const teams: Team[] = [];
-    for await (const team of this.getTeamsIterator(organizationId)) {
+    for await (const team of this.getTeamsIterator()) {
       teams.push(team);
     }
     return teams;
   }
 
-  async *getTeamsIterator(organizationId: string): AsyncIterableIterator<Team> {
+  async *getTeamsIterator(): AsyncIterableIterator<Team> {
+    if (this.isCloud) {
+      yield* this.getTeamsFromCloud();
+      return;
+    }
+    yield* this.getTeamsFromServer();
+  }
+
+  async *getTeamsFromCloud(): AsyncIterableIterator<Team> {
     let cursor: string | undefined = undefined;
     let hasNext = true;
     do {
       const response = await this.api.graphql(TEAMS_QUERY, {
-        organizationId: `ari:cloud:platform::org/${organizationId}`,
+        organizationId: `ari:cloud:platform::org/${this.organizationId}`,
         siteId: 'None',
         first: MAX_TEAMS_RESULTS,
         after: cursor,
@@ -1346,15 +1368,36 @@ export class Jira {
     } while (hasNext);
   }
 
-  async *getTeamMemberships(
-    organizationId: string,
+  async *getTeamsFromServer(): AsyncIterableIterator<Team> {
+    yield* this.iterate(
+      (startAt) => this.api.getTeams(startAt + 1, MAX_TEAMS_RESULTS),
+      (item: any) => ({
+        id: toString(item.id),
+        displayName: item.title,
+      })
+    );
+  }
+
+  async *getTeamMemberships(): AsyncIterableIterator<TeamMembership> {
+    if (this.isCloud) {
+      for (const team of await this.getTeams()) {
+        for await (const member of this.getTeamMembershipsFromCloud(team.id)) {
+          yield {teamId: team.id, memberId: member.id};
+        }
+      }
+      return;
+    }
+    yield* this.getTeamMembershipsFromServer();
+  }
+
+  async *getTeamMembershipsFromCloud(
     teamId: string
   ): AsyncIterableIterator<User> {
     let cursor: string | undefined = undefined;
     let hasNext = true;
     do {
       const response = await this.api.getTeamMemberships(
-        organizationId,
+        this.organizationId,
         teamId,
         MAX_TEAMS_RESULTS,
         cursor
@@ -1365,5 +1408,24 @@ export class Jira {
         yield {id: user.accountId};
       }
     } while (hasNext);
+  }
+
+  async *getTeamMembershipsFromServer(): AsyncIterableIterator<TeamMembership> {
+    const resources = this.iterate(
+      (startAt) => this.api.getResources(MAX_TEAMS_RESULTS, startAt + 1),
+      (item: any) => {
+        return {
+          teamId: item.teamId,
+          personId: item.person.id,
+        };
+      }
+    );
+    for await (const resource of resources) {
+      const person = await this.api.getPerson(resource.personId);
+      yield {
+        teamId: toString(resource.teamId),
+        memberId: person.jiraUser.jiraUserId,
+      };
+    }
   }
 }

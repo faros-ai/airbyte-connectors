@@ -229,7 +229,7 @@
         "order": 29,
         "type": "string",
         "title": "Organization ID",
-        "description": "Atlassian organization ID for fetching teams. Required when using Fetch Teams. See https://confluence.atlassian.com/jirakb/what-it-is-the-organization-id-and-where-to-find-it-1207189876.html for information on how to find it."
+        "description": "Atlassian organization ID for fetching teams. Required only when using Fetch Teams with Jira Cloud. See https://confluence.atlassian.com/jirakb/what-it-is-the-organization-id-and-where-to-find-it-1207189876.html for information on how to find it."
       }
     }
   }
