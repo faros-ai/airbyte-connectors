@@ -131,7 +131,7 @@ export class Customreports extends Converter {
     return new_rec;
   }
 
-  private dateOneIsBeforeDateTwo(dateOne: Date, dateTwo: Date): boolean {
+  dateOneIsBeforeDateTwo(dateOne: Date, dateTwo: Date): boolean {
     return dateOne.getTime() < dateTwo.getTime();
   }
 

@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`workday Randomly generated records from customreports v3 stream with Terminated 1`] = `
+Array [
+  "Processed 103 records",
+  "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":103}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 311 records",
+  "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":101,\\\\\\"org_Employee\\\\\\":101,\\\\\\"org_Team\\\\\\":4,\\\\\\"org_TeamMembership\\\\\\":101}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
 exports[`workday Saved and Ignored structured generated records v4 stream 1`] = `
 Array [
   "Processed 100 records",
@@ -30,8 +41,8 @@ Object {
 
 exports[`workday process randomly generated records from customreports v3 stream 1`] = `
 Array [
-  "Processed 100 records",
-  "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":100}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 103 records",
+  "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":103}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 308 records",
   "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":100,\\\\\\"org_Employee\\\\\\":100,\\\\\\"org_Team\\\\\\":4,\\\\\\"org_TeamMembership\\\\\\":100}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",

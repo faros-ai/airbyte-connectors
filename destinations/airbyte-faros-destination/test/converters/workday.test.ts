@@ -84,14 +84,17 @@ describe('workday', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const getTempConfig = async (
     orgs_to_keep,
-    orgs_to_ignore
+    orgs_to_ignore,
+    keep_terminated_employees = false
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
       invalid_record_strategy: InvalidRecordStrategy.SKIP,
       edition: Edition.CLOUD,
       edition_configs: {},
-      source_specific_configs: {workday: {orgs_to_keep, orgs_to_ignore}},
+      source_specific_configs: {
+        workday: {orgs_to_keep, orgs_to_ignore, keep_terminated_employees},
+      },
     });
   };
 
@@ -123,6 +126,14 @@ describe('workday', () => {
 
   test('process randomly generated records from customreports v3 stream', async () => {
     const configPath = await getTempConfig([], []);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v3.log',
+    });
+  });
+  test('Randomly generated records from customreports v3 stream with Terminated', async () => {
+    const configPath = await getTempConfig([], [], true);
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
@@ -212,5 +223,19 @@ describe('workday', () => {
     expect(() => {
       runCustomReportDestination(customReportDestination, ctx);
     }).not.toThrow();
+  });
+  test('check date comparison', () => {
+    const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
+      mockttp,
+      'failing cycle 1'
+    );
+    let d1 = new Date('2021-01-01');
+    let d2 = new Date('2021-01-02');
+    let res = customReportDestination.dateOneIsBeforeDateTwo(d1, d2);
+    expect(res).toEqual(true);
+    d1 = new Date('2011-05-06');
+    d2 = new Date('2010-12-02');
+    res = customReportDestination.dateOneIsBeforeDateTwo(d1, d2);
+    expect(res).toEqual(false);
   });
 });
