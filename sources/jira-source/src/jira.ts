@@ -136,6 +136,7 @@ export const DEFAULT_GRAPH = 'default';
 const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
 // https://community.developer.atlassian.com/t/is-it-possible-to-pull-a-list-of-sprints-in-a-project-via-the-rest-api/53336/3
 const MAX_SPRINTS_RESULTS = 50;
+//https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
 const MAX_TEAMS_RESULTS = 50;
 
 export class Jira {
