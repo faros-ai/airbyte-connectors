@@ -19,10 +19,20 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const config = {client_id: 'client_id', client_secret: 'client_secret'};
+
   test('spec', async () => {
     const source = new sut.XraySource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
+  });
+
+  test('check connection', async () => {
+    const source = new sut.XraySource(logger);
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
   });
 });

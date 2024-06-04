@@ -1,0 +1,27 @@
+{
+  "getTestPlan": {
+    "issueId": "23082",
+    "jira": {
+      "key": "TEST-11692"
+    },
+    "tests": {
+      "start": 0,
+      "total": 2,
+      "limit": 100,
+      "results": [
+        {
+          "issueId": "23096",
+          "jira": {
+            "key": "TEST-187"
+          }
+        },
+        {
+          "issueId": "23097",
+          "jira": {
+            "key": "TEST-188"
+          }
+        }
+      ]
+    }
+  }
+}

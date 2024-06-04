@@ -1,0 +1,20 @@
+{
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "title": "TestPlan",
+   "type": "object",
+   "properties": {
+    "testPlanIssueId": {
+      "type": "string"
+    },
+    "testPlanKey": {
+      "type": "string"
+    },
+    "testIssueId": {
+      "type": "string"
+    },
+    "testKey": {
+      "type": "string"
+    }
+   },
+   "required": ["testPlanIssueId", "testPlanKey", "testIssueId", "testKey"]
+  }

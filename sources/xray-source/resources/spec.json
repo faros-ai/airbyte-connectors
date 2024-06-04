@@ -5,13 +5,20 @@
     "title": "Xray Spec",
     "type": "object",
     "required": [
-      "jira_base_url"
+      "client_id",
+      "client_secret"
     ],
     "additionalProperties": true,
     "properties": {
-      "jira_base_url": {
+      "client_id": {
         "type": "string",
-        "title": "Xray Jira Base Url"
+        "title": "Xray Cloud Client Id",
+        "airbyte_secret": true
+      },
+      "client_secret": {
+        "type": "string",
+        "title": "Xray Cloud Client Secret",
+        "airbyte_secret": true
       }
     }
   }
