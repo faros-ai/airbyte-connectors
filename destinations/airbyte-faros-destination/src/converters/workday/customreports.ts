@@ -137,6 +137,9 @@ export class Customreports extends Converter {
     }
     const terminationDate = Utils.toDate(rec.Termination_Date);
     const startDate = Utils.toDate(rec.Start_Date);
+    // We ensure start Date is before termination date because there are cases
+    // where the termination date is before the start date, for example if
+    // an employee leaves the company and rejoins later
     if (terminationDate < this.currentDate && startDate < terminationDate) {
       return true;
     }
@@ -412,7 +415,7 @@ export class Customreports extends Converter {
         record: {
           uid: employee_record.Employee_ID,
           joinedAt: employee_record.Start_Date,
-          terminatedAt: terminatedAt,
+          terminatedAt,
           inactive,
           manager: managerKey,
           identity: {uid: employee_record.Employee_ID},
