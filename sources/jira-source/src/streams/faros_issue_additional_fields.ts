@@ -29,35 +29,14 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
     const updateRange = this.getUpdateRange();
-    const farosIssues = await jira.getIssuesFromFarosGraph(
-      this.farosClient,
-      this.config.graph ?? DEFAULT_GRAPH,
-      updateRange,
-      projectKey
-    );
-    const jiraIssues = jira.getIssueCompactWithAdditionalFields(
+    const issues = jira.getIssueCompactWithAdditionalFields(
       new JqlBuilder()
         .withProject(projectKey)
         .withDateRange(updateRange)
         .build()
     );
-    for await (const issue of jiraIssues) {
-      const farosIssue = farosIssues.find(
-        (farosIssue) => farosIssue.key === issue.key
-      );
-      if (!farosIssue) {
-        continue;
-      }
-      // If the additional fields are different we want to yield the issue to update them
-      const farosFieldNames = farosIssue.additionalFields
-        ? farosIssue.additionalFields.map((field) => field.name).sort()
-        : [];
-      const jiraFieldNames = issue.additionalFields
-        .map((field) => field[0])
-        .sort();
-      if (!isEqual(farosFieldNames, jiraFieldNames)) {
-        yield omit(issue, 'fields');
-      }
+    for await (const issue of issues) {
+      yield omit(issue, 'fields');
     }
   }
 }

@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index onBeforeRead with run_mode AdditionalFields should filter streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_additional_fields",
+      },
+    },
+  ],
+}
+`;
+
 exports[`index onBeforeRead with run_mode Full should not filter streams 1`] = `
 {
   "streams": [
@@ -81,6 +94,37 @@ exports[`index stream with project slices using bucket 2 1`] = `
   },
   {
     "project": "TEST3",
+  },
+]
+`;
+
+exports[`index streams - additional fields 1`] = `
+[
+  {
+    "additionalFields": [
+      [
+        "Custom Number Filed",
+        "1",
+      ],
+      [
+        "Custom String Field",
+        "Test",
+      ],
+    ],
+    "key": "TEST-1",
+  },
+  {
+    "additionalFields": [
+      [
+        "Custom Number Filed",
+        "2",
+      ],
+      [
+        "Custom String Field",
+        "Test 2",
+      ],
+    ],
+    "key": "TEST-2",
   },
 ]
 `;

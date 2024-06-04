@@ -339,10 +339,10 @@ Array [
 
 exports[`faros_jira process records from all streams 1`] = `
 Array [
-  "Processed 13 records",
-  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_version_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_versions\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 43 records",
-  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":25,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 14 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_additional_fields\\\\\\":1,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_version_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_versions\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 44 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":25,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1039,6 +1039,30 @@ Array [
         "uid": "10006",
       },
       "source": "Jira",
+    },
+  },
+  Object {
+    "tms_Task__Update": Object {
+      "mask": Array [
+        "additionalFields",
+      ],
+      "patch": Object {
+        "additionalFields": Array [
+          Object {
+            "name": "Custom String Field",
+            "value": "Custom",
+          },
+          Object {
+            "name": "Custom Number Field",
+            "value": "1",
+          },
+        ],
+      },
+      "source": "Jira",
+      "where": Object {
+        "source": "Jira",
+        "uid": "PLAYG-1",
+      },
     },
   },
 ]

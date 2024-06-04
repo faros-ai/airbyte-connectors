@@ -129,7 +129,11 @@ describe('index', () => {
         'https://jira.com',
         mockedImplementation ?? ({} as any),
         {} as any,
-        new Map([['field_001', 'Development']]),
+        new Map([
+          ['field_001', 'Development'],
+          ['customfield_10000', 'Custom Number Filed'],
+          ['customfield_10001', 'Custom String Field'],
+        ]),
         50,
         new Map(),
         isCloud,
@@ -513,6 +517,16 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
+  test('onBeforeRead with run_mode AdditionalFields should filter streams', async () => {
+    const source = new sut.JiraSource(logger);
+    const catalog = readTestResourceFile('catalog.json');
+    const {catalog: newCatalog} = await source.onBeforeRead(
+      {...config, run_mode: RunMode.AdditionalFields},
+      catalog
+    );
+    expect(newCatalog).toMatchSnapshot();
+  });
+
   async function testStreamSlices(config: JiraConfig): Promise<void> {
     const stream = new FarosIssuePullRequests(config, logger);
     const slices = stream.streamSlices();
@@ -591,5 +605,28 @@ describe('index', () => {
         },
       },
     });
+  });
+
+  test('streams - additional fields', async () => {
+    await testStream(
+      10,
+      {
+        ...config,
+        start_date: new Date('2024-01-01'),
+        end_date: new Date('2024-01-30'),
+        additional_fields: ['customfield_10000', 'customfield_10001'],
+      },
+      {
+        v2: {
+          issueSearch: {
+            searchForIssuesUsingJql: paginate(
+              readTestResourceFile('issues_with_additional_fields.json'),
+              'issues'
+            ),
+          },
+        },
+      },
+      {project: 'TEST'}
+    );
   });
 });

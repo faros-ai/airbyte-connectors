@@ -37,11 +37,6 @@ export interface Issue extends IssueCompact {
   readonly resolutionDate: Date;
 }
 
-export interface FarosIssue {
-  key: string;
-  additionalFields: {name: string; value: string}[];
-}
-
 export interface Parent {
   key: string;
   type?: string;

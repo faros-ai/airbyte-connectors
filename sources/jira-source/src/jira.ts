@@ -3,7 +3,6 @@ import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 import {
-  FarosIssue,
   FarosProject,
   Issue,
   IssueCompact,
@@ -107,11 +106,6 @@ const PROJECT_QUERY = fs.readFileSync(
 
 const PROJECT_BOARDS_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
-  'utf8'
-);
-
-const TASKS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-task.gql'),
   'utf8'
 );
 
@@ -771,7 +765,7 @@ export class Jira {
     jql: string
   ): AsyncIterableIterator<IssueCompact> {
     const issues = this.getIssuesCompact(jql);
-    const additionalFieldIds = this.getAdditionalFieldIds(new Set<string>());
+    const {additionalFieldIds} = this.getIssueFields();
     const issueTransformer = new IssueTransformer(
       this.baseURL,
       this.fieldNameById,
@@ -782,7 +776,7 @@ export class Jira {
     );
     for await (const issue of issues) {
       yield {
-        ...issue,
+        key: issue.key,
         additionalFields: issueTransformer.extractAdditionalFields(issue),
       };
     }
@@ -1323,37 +1317,5 @@ export class Jira {
       ]);
     }
     return undefined;
-  }
-
-  async getIssuesFromFarosGraph(
-    farosClient: FarosClient,
-    graph: string,
-    updateRange: [Date, Date],
-    projectKey: string
-  ): Promise<ReadonlyArray<FarosIssue>> {
-    const issueIterator = this.iterate(
-      async (startAt) => {
-        const data = await farosClient.gql(graph, TASKS_QUERY, {
-          source: 'Jira',
-          offset: startAt,
-          pageSize: this.maxPageSize,
-          updatedAfter: updateRange[0],
-          updatedBefore: updateRange[1],
-          project: projectKey,
-        });
-        return data?.tms_Task;
-      },
-      async (item: any): Promise<FarosIssue> => {
-        return {
-          key: item.uid,
-          additionalFields: item.additionalFields,
-        };
-      }
-    );
-    const issues: FarosIssue[] = [];
-    for await (const issue of issueIterator) {
-      issues.push(issue);
-    }
-    return issues;
   }
 }

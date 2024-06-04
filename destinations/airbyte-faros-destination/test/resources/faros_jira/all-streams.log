@@ -11,3 +11,4 @@
 {"record":{"stream":"mytestsource__jira__faros_users","emitted_at":1716910319312,"data":{"id":"61f99bc0acd4cb0069cfd675","accountId":"61f99bc0acd4cb0069cfd675","displayName":"John Doe","emailAddress":"john.doe@example.com","active":true}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_version_issues","emitted_at":1716926230292,"data":{"key":"PLAYG-4","projectVersionId":"10006"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_project_versions","emitted_at":1716926440396,"data":{"id":"10006","name":"Test Release","startDate":"2021-11-15","releaseDate":"2021-11-19","projectId":10011,"projectKey":"PLAYG"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_issue_additional_fields","emitted_at":1717505758655,"data":{"key":"PLAYG-1","additionalFields":[["Custom String Field","Custom"],["Custom Number Field","1"]]}}, "type":"RECORD"}
