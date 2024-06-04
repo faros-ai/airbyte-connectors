@@ -14,6 +14,8 @@ RUN apk add --no-cache --virtual .gyp python3 make g++ \
     && npm install -g npm lerna @lerna/legacy-package-management tsc
 RUN lerna bootstrap --hoist
 
+COPY ./docker ./docker
+
 ARG version
 RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg version=x.y.z" && false)
 ENV CONNECTOR_VERSION $version
@@ -29,5 +31,5 @@ ENV CONNECTOR_PATH $path
 
 RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
-ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/main"
-ENTRYPOINT ["/home/node/airbyte/main"]
+ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/docker/entrypoint.sh"
+ENTRYPOINT ["/home/node/airbyte/docker/entrypoint.sh"]

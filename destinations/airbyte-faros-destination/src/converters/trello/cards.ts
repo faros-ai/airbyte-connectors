@@ -1,7 +1,6 @@
 import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
 import {paginatedQueryV2, Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
-import _ from 'lodash';
+import {get, isNil, sortBy} from 'lodash';
 
 import {
   DestinationModel,
@@ -340,6 +339,11 @@ export class Cards extends TrelloConverter {
       const statusChangelog: TmsTaskStatusChange[] = this.getStatusChangelog(
         task.uid,
         task.statusChangelog
+          .filter((item) => !isNil(item.changedAt))
+          .map((item) => ({
+            ...item,
+            changedAt: new Date(item.changedAt),
+          }))
       );
       res.push({
         model: 'tms_Task__Update',
@@ -470,15 +474,15 @@ export class Cards extends TrelloConverter {
         );
         changelog.push({status, changedAt});
       } else if (
-        _.get(action, 'data.card.closed', false) !==
-        _.get(action, 'old.closed', false)
+        get(action, 'data.card.closed', false) !==
+        get(action, 'old.closed', false)
       ) {
         const status: TmsTaskStatus = this.getStatus(action.data.card);
         changelog.push({status, changedAt});
       }
     }
 
-    return _.sortBy(changelog, (item) => -item.changedAt.getTime());
+    return sortBy(changelog, (item) => -item.changedAt.getTime());
   }
 
   private getStatusFromList(list: {id?: string; name?: string}): TmsTaskStatus {

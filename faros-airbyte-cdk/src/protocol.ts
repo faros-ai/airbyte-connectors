@@ -49,8 +49,8 @@ export enum AirbyteTraceFailureType {
   CONFIG_ERROR = 'config_error',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AirbyteConfig {
+  backfill?: boolean;
   compress_state?: boolean;
   max_stream_failures?: number; // -1 means unlimited
   max_slice_failures?: number; // -1 means unlimited
@@ -339,7 +339,10 @@ export interface AirbyteSourceLog {
 
 export class AirbyteSourceLogsMessage extends AirbyteStateMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
-  constructor(state: {data: AirbyteState}, readonly logs: AirbyteSourceLog[]) {
+  constructor(
+    state: {data: AirbyteState},
+    readonly logs: AirbyteSourceLog[]
+  ) {
     super(state);
   }
 }
