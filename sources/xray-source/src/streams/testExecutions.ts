@@ -18,7 +18,7 @@ export class TestExecutions extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/testExecution.json');
+    return require('../../resources/schemas/testExecutions.json');
   }
 
   get primaryKey(): StreamKey {

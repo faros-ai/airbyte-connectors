@@ -56,12 +56,6 @@
             },
             "action": {
               "type": "string"
-            },
-            "data": {
-              "type": "string"
-            },
-            "result": {
-              "type": "string"
             }
           }
         }
