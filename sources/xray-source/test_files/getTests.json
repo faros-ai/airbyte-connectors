@@ -1,0 +1,97 @@
+{
+  "getTests": {
+    "total": 3,
+    "start": 0,
+    "limit": 100,
+    "results": [
+      {
+        "issueId": "23098",
+        "gherkin": null,
+        "unstructured": null,
+        "testType": {
+          "name": "Manual",
+          "kind": "Steps"
+        },
+        "status": {
+          "name": "TO DO"
+        },
+        "jira": {
+          "key": "TEST-189",
+          "summary": "Example test 3",
+          "description": "Third test",
+          "labels": []
+        },
+        "preconditions": {
+          "total": 0,
+          "start": 0,
+          "limit": 100,
+          "results": []
+        }
+      },
+      {
+        "issueId": "23097",
+        "gherkin": null,
+        "unstructured": null,
+        "testType": {
+          "name": "Manual",
+          "kind": "Steps"
+        },
+        "status": {
+          "name": "TO DO"
+        },
+        "jira": {
+          "key": "TEST-188",
+          "summary": "Example test 2",
+          "description": "example test 2",
+          "labels": []
+        },
+        "preconditions": {
+          "total": 1,
+          "start": 0,
+          "limit": 100,
+          "results": [
+            {
+              "issueId": "23105",
+              "preconditionType": {
+                "kind": "Steps",
+                "name": "Manual"
+              },
+              "definition": null,
+              "jira": {
+                "key": "TEST-190",
+                "rank": 1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "issueId": "23096",
+        "gherkin": null,
+        "unstructured": null,
+        "testType": {
+          "name": "Manual",
+          "kind": "Steps"
+        },
+        "status": {
+          "name": "TO DO"
+        },
+        "jira": {
+          "key": "TEST-187",
+          "summary": "Example test 1",
+          "description": "First test example",
+          "labels": [
+            "label1",
+            "label2"
+          ]
+        },
+        "preconditions": {
+          "total": 0,
+          "start": 0,
+          "limit": 100,
+          "results": []
+        }
+      }
+    ]
+  }
+}

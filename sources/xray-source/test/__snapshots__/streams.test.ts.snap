@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`streams test plan tests 1`] = `
+[
+  {
+    "planIssueId": "23082",
+    "planKey": "TEST-11692",
+    "testIssueId": "23096",
+    "testKey": "TEST-187",
+  },
+  {
+    "planIssueId": "23082",
+    "planKey": "TEST-11692",
+    "testIssueId": "23097",
+    "testKey": "TEST-188",
+  },
+]
+`;
+
+exports[`streams test plans 1`] = `
+[
+  {
+    "description": "Example test plan",
+    "issueId": "23082",
+    "key": "TEST-11692",
+    "labels": [],
+    "summary": "Test Plan - Example1",
+  },
+]
+`;
+
+exports[`streams tests 1`] = `
+[
+  {
+    "description": "Third test",
+    "gherkin": null,
+    "issueId": "23098",
+    "key": "TEST-189",
+    "labels": [],
+    "preconditions": [],
+    "status": {
+      "name": "TO DO",
+    },
+    "summary": "Example test 3",
+    "testType": {
+      "kind": "Steps",
+      "name": "Manual",
+    },
+    "unstructured": null,
+  },
+  {
+    "description": "example test 2",
+    "gherkin": null,
+    "issueId": "23097",
+    "key": "TEST-188",
+    "labels": [],
+    "preconditions": [
+      {
+        "definition": null,
+        "issueId": "23105",
+        "key": "TEST-190",
+        "preconditionType": {
+          "kind": "Steps",
+          "name": "Manual",
+        },
+        "rank": 1,
+      },
+    ],
+    "status": {
+      "name": "TO DO",
+    },
+    "summary": "Example test 2",
+    "testType": {
+      "kind": "Steps",
+      "name": "Manual",
+    },
+    "unstructured": null,
+  },
+  {
+    "description": "First test example",
+    "gherkin": null,
+    "issueId": "23096",
+    "key": "TEST-187",
+    "labels": [
+      "label1",
+      "label2",
+    ],
+    "preconditions": [],
+    "status": {
+      "name": "TO DO",
+    },
+    "summary": "Example test 1",
+    "testType": {
+      "kind": "Steps",
+      "name": "Manual",
+    },
+    "unstructured": null,
+  },
+]
+`;

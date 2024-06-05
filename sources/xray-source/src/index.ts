@@ -8,9 +8,11 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-interface XrayConfig {
-  readonly jiraBaseUrl: string;
-}
+import {TestPlans} from './streams/testPlans';
+import {TestPlanTests} from './streams/testPlanTests';
+import {Tests} from './streams/tests';
+import {XrayConfig} from './types';
+import {Xray} from './xray';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -27,10 +29,22 @@ export class XraySource extends AirbyteSourceBase<XrayConfig> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
+
   async checkConnection(config: XrayConfig): Promise<[boolean, VError]> {
+    try {
+      const xray = await Xray.instance(config, this.logger);
+      await xray.checkConnection();
+    } catch (err: any) {
+      return [false, err];
+    }
     return [true, undefined];
   }
+
   streams(config: XrayConfig): AirbyteStreamBase[] {
-    return [];
+    return [
+      new TestPlans(config, this.logger),
+      new Tests(config, this.logger),
+      new TestPlanTests(config, this.logger),
+    ];
   }
 }

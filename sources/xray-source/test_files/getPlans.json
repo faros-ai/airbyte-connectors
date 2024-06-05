@@ -1,0 +1,28 @@
+{
+  "getTestPlans": {
+    "total": 1,
+    "start": 0,
+    "limit": 100,
+    "results": [
+      {
+        "issueId": "23082",
+        "jira": {
+          "key": "TEST-11692",
+          "summary": "Test Plan - Example1",
+          "description": "Example test plan",
+          "labels": []
+        },
+        "tests": {
+          "results": [
+            {
+              "issueId": "23096"
+            },
+            {
+              "issueId": "23097"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
