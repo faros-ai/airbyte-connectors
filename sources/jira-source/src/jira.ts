@@ -713,7 +713,8 @@ export class Jira {
       this.fieldIdsByName,
       this.statusByName,
       additionalFieldIds,
-      this.additionalFieldsArrayLimit
+      this.additionalFieldsArrayLimit,
+      this.logger
     );
 
     return this.iterate(
@@ -776,6 +777,27 @@ export class Jira {
       }),
       'issues'
     );
+  }
+
+  async *getIssueCompactWithAdditionalFields(
+    jql: string
+  ): AsyncIterableIterator<IssueCompact> {
+    const issues = this.getIssuesCompact(jql);
+    const {additionalFieldIds} = this.getIssueFields();
+    const issueTransformer = new IssueTransformer(
+      this.baseURL,
+      this.fieldNameById,
+      this.fieldIdsByName,
+      this.statusByName,
+      additionalFieldIds,
+      this.additionalFieldsArrayLimit
+    );
+    for await (const issue of issues) {
+      yield {
+        key: issue.key,
+        additionalFields: issueTransformer.extractAdditionalFields(issue),
+      };
+    }
   }
 
   async getIssuePullRequests(

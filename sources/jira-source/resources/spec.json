@@ -151,7 +151,8 @@
         "default": "Full",
         "enum": [
           "Full",
-          "WebhookSupplement"
+          "WebhookSupplement",
+          "AdditionalFields"
         ]
       },
       "bucket_id": {

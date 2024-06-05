@@ -386,33 +386,8 @@ export class IssueTransformer {
       }
     }
 
-    const fieldsToIgnore = [
-      ...POINTS_FIELD_NAMES,
-      DEV_FIELD_NAME,
-      EPIC_LINK_FIELD_NAME,
-      SPRINT_FIELD_NAME,
-    ];
-    // Rewrite keys of additional fields to use names instead of ids
-    const additionalFields: [string, string][] = [];
-    for (const fieldId of this.additionalFieldIds) {
-      const name = this.fieldNameById.get(fieldId);
-      const value = item.fields[fieldId];
-      if (name && fieldsToIgnore.includes(name)) {
-        // Skip these custom fields. They're promoted to standard fields
-        continue;
-      } else if (name && value != null) {
-        try {
-          const fields = this.retrieveAdditionalFieldValue(name, value);
-          for (const [fieldName, fieldValue] of Object.entries(fields)) {
-            additionalFields.push([fieldName, fieldValue]);
-          }
-        } catch (err: any) {
-          this.logger?.warn(
-            `Failed to extract custom field ${name} on issue ${item.id}. Skipping.`
-          );
-        }
-      }
-    }
+    const additionalFields: [string, string][] =
+      this.extractAdditionalFields(item);
 
     const created = Utils.toDate(item.fields.created);
     const assignee =
@@ -563,6 +538,43 @@ export class IssueTransformer {
       val = jsonValue.displayName;
     }
     return val;
+  }
+
+  /**
+   * Extracts additional fields from the issue object that are not standard fields.
+   *
+   * @param item The issue object to extract additional fields from
+   * @returns    An array of key-value pairs representing the additional fields
+   */
+  extractAdditionalFields(item: any): [string, string][] {
+    const fieldsToIgnore = [
+      ...POINTS_FIELD_NAMES,
+      DEV_FIELD_NAME,
+      EPIC_LINK_FIELD_NAME,
+      SPRINT_FIELD_NAME,
+    ];
+    // Rewrite keys of additional fields to use names instead of ids
+    const additionalFields: [string, string][] = [];
+    for (const fieldId of this.additionalFieldIds) {
+      const name = this.fieldNameById.get(fieldId);
+      const value = item.fields[fieldId];
+      if (name && fieldsToIgnore.includes(name)) {
+        // Skip these custom fields. They're promoted to standard fields
+        continue;
+      } else if (name && value != null) {
+        try {
+          const fields = this.retrieveAdditionalFieldValue(name, value);
+          for (const [fieldName, fieldValue] of Object.entries(fields)) {
+            additionalFields.push([fieldName, fieldValue]);
+          }
+        } catch (err: any) {
+          this.logger?.warn(
+            `Failed to extract custom field ${name} on issue ${item.id}. Skipping.`
+          );
+        }
+      }
+    }
+    return additionalFields;
   }
 }
 

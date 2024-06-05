@@ -21,6 +21,7 @@ export type StreamState = {
 export enum RunMode {
   Full = 'Full',
   WebhookSupplement = 'WebhookSupplement',
+  AdditionalFields = 'AdditionalFields',
 }
 
 export const WebhookSupplementStreamNames = [
@@ -28,6 +29,29 @@ export const WebhookSupplementStreamNames = [
   'faros_sprint_reports',
   'faros_issue_pull_requests',
 ];
+
+export const AdditionalFieldsStreamNames = ['faros_issue_additional_fields'];
+
+export const FullStreamNames = [
+  'faros_issue_pull_requests',
+  'faros_sprint_reports',
+  'faros_board_issues',
+  'faros_sprints',
+  'faros_users',
+  'faros_projects',
+  'faros_issues',
+  'faros_boards',
+  'faros_project_versions',
+  'faros_project_version_issues',
+];
+
+export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
+
+export const RunModeStreams = {
+  [RunMode.WebhookSupplement]: WebhookSupplementStreamNames,
+  [RunMode.AdditionalFields]: AdditionalFieldsStreamNames,
+  [RunMode.Full]: FullStreamNames,
+};
 
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly projectBoardFilter: ProjectBoardFilter;
