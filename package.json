@@ -37,7 +37,7 @@
     "lerna": "^6.6.2",
     "lint-staged": "^15.2.0",
     "mockttp": "^3.9.2",
-    "pino-pretty": "^10.2.0",
+    "pino-pretty": "^11.1.0",
     "prettier": "^3.2.5",
     "tmp-promise": "^3.0.3",
     "ts-essentials": "^9.1.2",
