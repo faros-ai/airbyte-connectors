@@ -5,6 +5,7 @@ import jira, {
   Version2Client,
   Version2Models,
 } from 'jira.js';
+import {Memoize} from 'typescript-memoize';
 
 import {
   AgileClientWithRetry,
@@ -156,7 +157,7 @@ export class JiraClient {
   }
 
   /** This method is for getting resources from Jira Server, which represent
-   * a team membership (resource contains a person but does not include user data) */
+   * team memberships (resource contains a person but does not include user data) */
   async getResources(page?: number, size?: number): Promise<any> {
     const config: RequestConfig = {
       url: `/rest/teams-api/1.0/resource?page=${page}&size=${size}`,
@@ -166,6 +167,7 @@ export class JiraClient {
   }
 
   /** This method gets person from Jira Server containing Jira User data */
+  @Memoize()
   async getPerson(id: string): Promise<any> {
     const config: RequestConfig = {
       url: `/rest/teams-api/1.0/person/${id}`,

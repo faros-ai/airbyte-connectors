@@ -1411,21 +1411,21 @@ export class Jira {
   }
 
   async *getTeamMembershipsFromServer(): AsyncIterableIterator<TeamMembership> {
-    const resources = this.iterate(
-      (startAt) => this.api.getResources(MAX_TEAMS_RESULTS, startAt + 1),
-      (item: any) => {
+    const teamMemberships = this.iterate(
+      (startAt) => this.api.getResources(startAt + 1, MAX_TEAMS_RESULTS),
+      async (item: any) => {
+        const teamId = toString(item.teamId);
+        const person = await this.api.getPerson(item.person.id);
+        const memberId = person.jiraUser.jiraUserId;
         return {
-          teamId: item.teamId,
-          personId: item.person.id,
+          teamId,
+          memberId,
         };
       }
     );
-    for await (const resource of resources) {
-      const person = await this.api.getPerson(resource.personId);
-      yield {
-        teamId: toString(resource.teamId),
-        memberId: person.jiraUser.jiraUserId,
-      };
+
+    for await (const teamMembership of teamMemberships) {
+      yield teamMembership;
     }
   }
 }
