@@ -45,6 +45,8 @@ export const FullStreamNames = [
   'faros_project_version_issues',
 ];
 
+export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
+
 export const RunModeStreams = {
   [RunMode.WebhookSupplement]: WebhookSupplementStreamNames,
   [RunMode.AdditionalFields]: AdditionalFieldsStreamNames,
