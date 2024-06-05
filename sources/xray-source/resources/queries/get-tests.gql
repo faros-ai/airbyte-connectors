@@ -1,6 +1,6 @@
 query getTests(
   $modifiedSince: String
-	$start: Int,
+  $start: Int,
   $limit: Int!,
 ) {
   getTests(
@@ -13,15 +13,15 @@ query getTests(
     limit
     results {
       issueId
-			gherkin
+      gherkin
       unstructured
       testType {
         name
         kind
       }
-			status {
-				name
-			}
+      status {
+        name
+      }
       jira(fields: ["key", "description", "summary", "labels"])
       preconditions(limit: $limit) {
         total
@@ -29,10 +29,10 @@ query getTests(
         limit
         results {
           issueId
-					preconditionType {
-						kind
-						name
-					}
+          preconditionType {
+            kind
+            name
+          }
           definition
           jira(fields: ["key", "rank"])
         }

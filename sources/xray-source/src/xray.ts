@@ -5,10 +5,9 @@ import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import {get} from 'lodash';
 import path from 'path';
-import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {Test, TestKey, TestPlan, TestPlanTest, XrayConfig} from './types';
+import {Test, TestKey, TestPlan, XrayConfig} from './types';
 
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
 const XRAY_DEFAULT_TIMEOUT = 5000;
@@ -29,7 +28,8 @@ export class Xray {
 
     if (!config.client_id || !config.client_secret) {
       throw new VError(
-        'Please provide Xray authentication details i.e. Client Id and a Client Secret.'
+        'Please provide Xray Cloud authentication details, ' +
+          'Client Id and a Client Secret'
       );
     }
 
@@ -52,7 +52,6 @@ export class Xray {
       );
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     };
-    // TODO - verify statusCodes
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
 
     return new Xray(api, logger);
@@ -114,6 +113,20 @@ export class Xray {
       hasNextPage = data.total != count && data.results.length === data.limit;
       start = results.length;
     }
+  }
+
+  async checkConnection(): Promise<void> {
+    // Basic query to check if the connection is working
+    const query = `
+      query getType {
+        __type(name: "Test") {
+          name
+          kind
+          description
+        }
+      }
+    `;
+    await this.api.post('/graphql', {query});
   }
 
   // TODO - Memoize

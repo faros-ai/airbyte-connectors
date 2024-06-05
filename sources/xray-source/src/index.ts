@@ -32,7 +32,8 @@ export class XraySource extends AirbyteSourceBase<XrayConfig> {
 
   async checkConnection(config: XrayConfig): Promise<[boolean, VError]> {
     try {
-      const xray = Xray.instance(config, this.logger);
+      const xray = await Xray.instance(config, this.logger);
+      await xray.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
