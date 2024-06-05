@@ -1,6 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueCompact} from 'faros-airbyte-common/jira';
-import {omit} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
