@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`streams test executions 1`] = `
+[
+  {
+    "description": "Test Execution Desc",
+    "issueId": "23133",
+    "key": "TEST-191",
+    "labels": [],
+    "summary": "Test Execution",
+    "testEnvironments": [
+      "Dev",
+    ],
+  },
+]
+`;
+
 exports[`streams test plan tests 1`] = `
 [
   {
@@ -25,6 +40,94 @@ exports[`streams test plans 1`] = `
     "key": "TEST-11692",
     "labels": [],
     "summary": "Test Plan - Example1",
+  },
+]
+`;
+
+exports[`streams test runs 1`] = `
+[
+  {
+    "defects": [],
+    "finishedOn": "2024-06-05T14:14:51.071Z",
+    "id": "6660728b897a8ced80c26f0a",
+    "lastModified": "2024-06-05T14:14:51.075Z",
+    "startedOn": "2024-06-05T14:14:51.071Z",
+    "status": {
+      "name": "PASSED",
+    },
+    "steps": [],
+    "test": {
+      "issueId": "23097",
+      "key": "TEST-188",
+    },
+    "testExecution": {
+      "issueId": "23133",
+      "key": "TEST-191",
+    },
+    "testVersion": {
+      "name": "v1",
+    },
+  },
+  {
+    "defects": [
+      "23135",
+    ],
+    "finishedOn": "2024-06-05T14:59:49.234Z",
+    "id": "6660738d897a8ced80c5db6f",
+    "lastModified": "2024-06-05T14:59:49.241Z",
+    "startedOn": "2024-06-05T14:59:49.234Z",
+    "status": {
+      "name": "FAILED",
+    },
+    "steps": [],
+    "test": {
+      "issueId": "23096",
+      "key": "TEST-187",
+    },
+    "testExecution": {
+      "issueId": "23133",
+      "key": "TEST-191",
+    },
+    "testVersion": {
+      "name": "v1",
+    },
+  },
+  {
+    "defects": [],
+    "finishedOn": "2024-06-05T14:40:23.960Z",
+    "id": "6660743e897a8ced80c933e3",
+    "lastModified": "2024-06-05T14:41:33.995Z",
+    "startedOn": "2024-06-05T14:37:01.124Z",
+    "status": {
+      "name": "PASSED",
+    },
+    "steps": [
+      {
+        "id": "8865a132-8b37-4eb3-bb46-f03cd32adf82",
+        "result": null,
+        "status": {
+          "name": "PASSED",
+        },
+      },
+      {
+        "id": "c114757d-7c5b-4983-87c0-a88f2a1d8281",
+        "result": null,
+        "status": {
+          "name": "PASSED",
+        },
+      },
+    ],
+    "test": {
+      "issueId": "23134",
+      "key": "TEST-192",
+    },
+    "testExecution": {
+      "issueId": "23133",
+      "key": "TEST-191",
+    },
+    "testVersion": {
+      "name": "v1",
+    },
   },
 ]
 `;

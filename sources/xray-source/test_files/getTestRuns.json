@@ -1,0 +1,104 @@
+{
+  "getTestRuns": {
+    "total": 3,
+    "start": 0,
+    "limit": 100,
+    "results": [
+      {
+        "id": "6660728b897a8ced80c26f0a",
+        "startedOn": "2024-06-05T14:14:51.071Z",
+        "finishedOn": "2024-06-05T14:14:51.071Z",
+        "defects": [],
+        "status": {
+          "name": "PASSED"
+        },
+        "steps": [],
+        "lastModified": "2024-06-05T14:14:51.075Z",
+        "testVersion": {
+          "name": "v1"
+        },
+        "testExecution": {
+          "issueId": "23133",
+          "jira": {
+            "key": "TEST-191"
+          }
+        },
+        "test": {
+          "issueId": "23097",
+          "jira": {
+            "key": "TEST-188"
+          }
+        }
+      },
+      {
+        "id": "6660738d897a8ced80c5db6f",
+        "startedOn": "2024-06-05T14:59:49.234Z",
+        "finishedOn": "2024-06-05T14:59:49.234Z",
+        "defects": [
+          "23135"
+        ],
+        "status": {
+          "name": "FAILED"
+        },
+        "steps": [],
+        "lastModified": "2024-06-05T14:59:49.241Z",
+        "testVersion": {
+          "name": "v1"
+        },
+        "testExecution": {
+          "issueId": "23133",
+          "jira": {
+            "key": "TEST-191"
+          }
+        },
+        "test": {
+          "issueId": "23096",
+          "jira": {
+            "key": "TEST-187"
+          }
+        }
+      },
+      {
+        "id": "6660743e897a8ced80c933e3",
+        "startedOn": "2024-06-05T14:37:01.124Z",
+        "finishedOn": "2024-06-05T14:40:23.960Z",
+        "defects": [],
+        "status": {
+          "name": "PASSED"
+        },
+        "steps": [
+          {
+            "id": "8865a132-8b37-4eb3-bb46-f03cd32adf82",
+            "status": {
+              "name": "PASSED"
+            },
+            "result": null
+          },
+          {
+            "id": "c114757d-7c5b-4983-87c0-a88f2a1d8281",
+            "status": {
+              "name": "PASSED"
+            },
+            "result": null
+          }
+        ],
+        "lastModified": "2024-06-05T14:41:33.995Z",
+        "testVersion": {
+          "name": "v1"
+        },
+        "testExecution": {
+          "issueId": "23133",
+          "jira": {
+            "key": "TEST-191"
+          }
+        },
+        "test": {
+          "issueId": "23134",
+          "jira": {
+            "key": "TEST-192"
+          }
+        }
+      }
+    ]
+  }
+}

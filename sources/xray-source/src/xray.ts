@@ -7,7 +7,14 @@ import {get} from 'lodash';
 import path from 'path';
 import VError from 'verror';
 
-import {Test, TestKey, TestPlan, XrayConfig} from './types';
+import {
+  Test,
+  TestExecution,
+  TestKey,
+  TestPlan,
+  TestRun,
+  XrayConfig,
+} from './types';
 
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
 const XRAY_DEFAULT_TIMEOUT = 5000;
@@ -186,6 +193,46 @@ export class Xray {
       yield {
         issueId: test.issueId,
         key: test.jira.key,
+      };
+    }
+  }
+
+  async *getTestRuns(): AsyncGenerator<TestRun> {
+    for await (const run of this.paginate('get-test-runs.gql', 'getTestRuns')) {
+      yield {
+        id: run.id,
+        startedOn: run.startedOn,
+        finishedOn: run.finishedOn,
+        defects: run.defects,
+        status: run.status,
+        steps: run.steps,
+        lastModified: run.lastModified,
+        test: {
+          issueId: run.test.issueId,
+          key: run.test.jira.key,
+        },
+        testVersion: run.testVersion,
+        testExecution: {
+          issueId: run.testExecution.issueId,
+          key: run.testExecution.jira.key,
+        },
+      };
+    }
+  }
+
+  async *getTestExecutions(): AsyncGenerator<TestExecution> {
+    for await (const execution of this.paginate(
+      'get-test-executions.gql',
+      'getTestExecutions'
+    )) {
+      const {key, summary, description, labels} = execution.jira;
+      yield {
+        issueId: execution.issueId,
+        key,
+        summary,
+        description,
+        labels,
+        testEnvironments: execution.testEnvironments,
       };
     }
   }

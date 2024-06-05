@@ -1,0 +1,42 @@
+query getTestRuns(
+  $limit: Int!,
+  $start: Int,
+  $modifiedSince: String
+) {
+  getTestRuns(
+    limit: $limit,
+    start: $start,
+    modifiedSince: $modifiedSince
+  ) {
+    total
+    start
+    limit
+    results {
+      id
+      startedOn
+      finishedOn
+      defects
+      status {
+        name
+      }
+      steps {
+        id
+        status {
+          name
+        }
+      }
+      lastModified
+      testVersion {
+        name
+      }
+      testExecution {
+        issueId
+        jira(fields: ["key"])
+      }
+      test {
+        issueId
+        jira(fields: ["key"])
+      }
+    }
+  }
+}

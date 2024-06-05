@@ -4,20 +4,25 @@ export interface XrayConfig {
   timeout?: number;
 }
 
-export interface TestPlan {
+export interface TestKey {
   readonly issueId: string;
   readonly key: string;
+}
+
+interface BaseTestDetail extends TestKey {
   readonly summary: string;
   readonly description: string;
   readonly labels: ReadonlyArray<string>;
 }
+
+export type TestPlan = BaseTestDetail;
 
 interface TestType {
   readonly name: string;
   readonly kind: string;
 }
 
-interface TestStatus {
+interface Status {
   readonly name: string;
 }
 
@@ -34,19 +39,11 @@ interface Precondition {
   readonly preconditionType: PreconditionType;
 }
 
-export interface TestKey {
-  readonly issueId: string;
-  readonly key: string;
-}
-
-export interface Test extends TestKey {
-  readonly summary: string;
-  readonly description: string;
+export interface Test extends BaseTestDetail {
   readonly gherkin: string;
   readonly unstructured: string;
-  readonly labels: ReadonlyArray<string>;
   readonly testType: TestType;
-  readonly status: TestStatus;
+  readonly status: Status;
   readonly preconditions: ReadonlyArray<Precondition>;
 }
 
@@ -55,4 +52,31 @@ export interface TestPlanTest {
   planKey: string;
   testIssueId: string;
   testKey: string;
+}
+
+export interface TestRun {
+  id: string;
+  startedOn: string;
+  finishedOn: string;
+  defects: ReadonlyArray<string>;
+  status: Status;
+  steps: ReadonlyArray<Step>;
+  lastModified: string;
+  test: TestKey;
+  testVersion: TestVersion;
+  testExecution: TestKey;
+}
+
+export interface Step {
+  id: string;
+  status: Status;
+  defects: ReadonlyArray<string>;
+}
+
+export interface TestVersion {
+  name: string;
+}
+
+export interface TestExecution extends BaseTestDetail {
+  readonly testEnvironments: ReadonlyArray<string>;
 }

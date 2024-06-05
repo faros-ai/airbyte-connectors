@@ -68,4 +68,12 @@ describe('streams', () => {
       });
     await testStream(2, mockFn);
   });
+
+  test('test executions', async () => {
+    await testStream(3, 'getTestExecutions.json');
+  });
+
+  test('test runs', async () => {
+    await testStream(4, 'getTestRuns.json');
+  });
 });

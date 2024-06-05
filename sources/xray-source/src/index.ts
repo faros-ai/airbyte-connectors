@@ -8,8 +8,10 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
+import {TestExecutions} from './streams/testExecutions';
 import {TestPlans} from './streams/testPlans';
 import {TestPlanTests} from './streams/testPlanTests';
+import {TestRuns} from './streams/testRuns';
 import {Tests} from './streams/tests';
 import {XrayConfig} from './types';
 import {Xray} from './xray';
@@ -45,6 +47,8 @@ export class XraySource extends AirbyteSourceBase<XrayConfig> {
       new TestPlans(config, this.logger),
       new Tests(config, this.logger),
       new TestPlanTests(config, this.logger),
+      new TestExecutions(config, this.logger),
+      new TestRuns(config, this.logger),
     ];
   }
 }
