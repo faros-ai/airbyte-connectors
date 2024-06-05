@@ -36,7 +36,7 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
         .build()
     );
     for await (const issue of issues) {
-      yield omit(issue, 'fields');
+      yield issue;
     }
   }
 }

@@ -4,9 +4,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
 
 export class FarosIssueAdditionalFields extends JiraConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'tms_Task__Update',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(
     record: AirbyteRecord,

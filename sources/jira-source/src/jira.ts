@@ -702,8 +702,6 @@ export class Jira {
       this.logger
     );
 
-    this.logger.info(`ADDITIONAL FIELDS IN GET ISSUES: ${additionalFieldIds}`);
-
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
@@ -839,11 +837,6 @@ export class Jira {
         'updated',
       ].forEach((field) => fieldIds.add(field));
     }
-    const additionalFieldIds: string[] = this.getAdditionalFieldIds(fieldIds);
-    return {fieldIds: Array.from(fieldIds), additionalFieldIds};
-  }
-
-  private getAdditionalFieldIds(fieldIds: Set<string>): string[] {
     const additionalFieldIds: string[] = [];
     for (const fieldId of this.fieldNameById.keys()) {
       // Skip fields that are already included in the fieldIds set
@@ -851,7 +844,7 @@ export class Jira {
         additionalFieldIds.push(fieldId);
       }
     }
-    return additionalFieldIds;
+    return {fieldIds: Array.from(fieldIds), additionalFieldIds};
   }
 
   private requestedFarosIssuesStream() {
