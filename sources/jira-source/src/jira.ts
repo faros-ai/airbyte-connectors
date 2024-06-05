@@ -854,7 +854,7 @@ export class Jira {
     }
     const additionalFieldIds: string[] = [];
     for (const fieldId of this.fieldNameById.keys()) {
-      // Skip fields that are already included in the fieldIds set
+      // Skip fields that are already included in the fields above
       if (!fieldIds.has(fieldId)) {
         additionalFieldIds.push(fieldId);
       }
