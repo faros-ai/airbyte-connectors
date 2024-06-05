@@ -1,0 +1,20 @@
+query teamSearchV2($after: String, $organizationId: ID!, $siteId: String!) {
+  team {
+    teamSearch: teamSearchV2(
+      after: $after
+      organizationId: $organizationId
+      siteId: $siteId
+    ) @optIn(to: "Team-search-v2") {
+      nodes {
+        team {
+          id
+          displayName
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

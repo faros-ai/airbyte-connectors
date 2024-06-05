@@ -62,7 +62,7 @@ export const destinationWriteTest = async (
   expect(matches).toMatchSnapshot();
 
   if (checkRecordsData) {
-    const records = await readRecordData(stdoutLines);
+    const records = readRecordData(stdoutLines);
     checkRecordsData(records);
   }
 
@@ -70,9 +70,9 @@ export const destinationWriteTest = async (
   expect(await cli.wait()).toBe(0);
 };
 
-async function readRecordData(
+function readRecordData(
   lines: ReadonlyArray<string>
-): Promise<ReadonlyArray<Dictionary<any>>> {
+): ReadonlyArray<Dictionary<any>> {
   const records: Dictionary<any>[] = [];
   for (const line of lines) {
     try {

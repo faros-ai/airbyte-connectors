@@ -192,7 +192,8 @@
       "use_sprints_reverse_search": {
         "order": 24,
         "type": "boolean",
-        "title": "Fetch closed sprints starting with most recent in backlog. Use this for Jira instances with a lots closed sprints and syncing sprints is slow.",
+        "title": "Use Sprints Reverse Search",
+        "description": "Fetch closed sprints starting with most recent in backlog. Use this for Jira instances with a lots closed sprints and syncing sprints is slow.",
         "default": false
       },
       "backfill": {
@@ -216,6 +217,19 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data. Only use for backfilling."
+      },
+      "fetch_teams": {
+        "order": 28,
+        "type": "boolean",
+        "title": "Fetch Teams",
+        "description": "Fetch teams from organization to populate teams and team memberships.",
+        "default": false
+      },
+      "organization_id": {
+        "order": 29,
+        "type": "string",
+        "title": "Organization ID",
+        "description": "Atlassian organization ID for fetching teams. Required when using Fetch Teams. See https://confluence.atlassian.com/jirakb/what-it-is-the-organization-id-and-where-to-find-it-1207189876.html for information on how to find it."
       }
     }
   }

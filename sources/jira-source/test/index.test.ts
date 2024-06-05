@@ -592,4 +592,39 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - teams', async () => {
+    await testStream(
+      10,
+      {
+        ...config,
+        fetch_teams: true,
+        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
+      },
+      {
+        graphql: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('teams.json')),
+      }
+    );
+  });
+
+  test('streams - team memberships', async () => {
+    await testStream(
+      11,
+      {
+        ...config,
+        fetch_team_memberships: true,
+        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
+      },
+      {
+        graphql: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('teams.json')),
+        getTeamMemberships: jest
+          .fn()
+          .mockResolvedValue(readTestResourceFile('team_memberships.json')),
+      }
+    );
+  });
 });

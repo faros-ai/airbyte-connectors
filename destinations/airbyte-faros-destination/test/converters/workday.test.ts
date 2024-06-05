@@ -84,14 +84,17 @@ describe('workday', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   const getTempConfig = async (
     orgs_to_keep,
-    orgs_to_ignore
+    orgs_to_ignore,
+    keep_terminated_employees = false
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
       invalid_record_strategy: InvalidRecordStrategy.SKIP,
       edition: Edition.CLOUD,
       edition_configs: {},
-      source_specific_configs: {workday: {orgs_to_keep, orgs_to_ignore}},
+      source_specific_configs: {
+        workday: {orgs_to_keep, orgs_to_ignore, keep_terminated_employees},
+      },
     });
   };
 
@@ -127,6 +130,14 @@ describe('workday', () => {
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
       inputRecordsPath: 'workday/stream_v3.log',
+    });
+  });
+  test('Randomly generated records from customreports v4 stream with Terminated', async () => {
+    const configPath = await getTempConfig([], [], true);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v4.log',
     });
   });
   test('process structured generated records from customreports v4 stream', async () => {
