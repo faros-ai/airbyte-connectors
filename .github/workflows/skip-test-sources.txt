@@ -31,3 +31,4 @@ trello-source
 vanta-source
 victorops-source
 workday-source
+xray-source
