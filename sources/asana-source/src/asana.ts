@@ -286,14 +286,16 @@ export class Asana {
 
   async *getUsers(workspace: string): AsyncGenerator<User> {
     const opt_fields = ['email', 'name'];
-    yield* this.fetchData<User>(`workspaces/${workspace}/users`, opt_fields);
+    yield* this.fetchData<User>(`/users`, opt_fields, {workspace});
   }
 
   async *fetchData<T>(
     endpoint: string,
-    optFields: string[]
+    optFields: string[],
+    queryParams?: Record<string, string>
   ): AsyncGenerator<T> {
-    const params = {limit: this.pageSize, opt_fields: optFields.join(',')};
+    const baseParams = {limit: this.pageSize, opt_fields: optFields.join(',')};
+    const params = queryParams ? {...baseParams, ...queryParams} : baseParams;
     let hasNext = true;
     let offset = undefined;
 
