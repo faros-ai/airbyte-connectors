@@ -286,7 +286,7 @@ export class Asana {
 
   async *getUsers(workspace: string): AsyncGenerator<User> {
     const opt_fields = ['email', 'name'];
-    yield* this.fetchData<User>(`/users`, opt_fields, {workspace});
+    yield* this.fetchData<User>('users', opt_fields, {workspace});
   }
 
   async *fetchData<T>(
