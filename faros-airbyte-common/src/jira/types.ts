@@ -145,3 +145,13 @@ export interface FarosProject {
   key: string;
   boardUids: string[];
 }
+
+export interface Team {
+  readonly id: string;
+  readonly displayName: string;
+}
+
+export interface TeamMembership {
+  readonly teamId: string;
+  readonly memberId: string;
+}

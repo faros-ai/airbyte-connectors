@@ -438,6 +438,28 @@ exports[`index streams - sprints 1`] = `
 ]
 `;
 
+exports[`index streams - team memberships 1`] = `
+[
+  {
+    "memberId": "12334c037692da100700011",
+    "teamId": "1234567890asas123132",
+  },
+  {
+    "memberId": "3214dfa413fc70069d12323",
+    "teamId": "1234567890asas123132",
+  },
+]
+`;
+
+exports[`index streams - teams 1`] = `
+[
+  {
+    "displayName": "Test",
+    "id": "1234567890asas123132",
+  },
+]
+`;
+
 exports[`index streams - users 1`] = `
 [
   {

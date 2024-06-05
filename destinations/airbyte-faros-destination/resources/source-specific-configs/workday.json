@@ -40,6 +40,12 @@
           "title": "Ignore Cycle Teams",
           "description": "As default (false), they are saved with their parent team as root. If true they are ignored.",
           "default": false
+        },
+        "keep_terminated_employees": {
+          "type": "boolean",
+          "title": "Keep Terminated Employees",
+          "description": "If true, terminated employees will be kept in the org chart under unassigned team.",
+          "default": false
         }
       }
     }

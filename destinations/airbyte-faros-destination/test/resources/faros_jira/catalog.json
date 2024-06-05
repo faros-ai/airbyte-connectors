@@ -62,6 +62,18 @@
     },
     {
       "stream": {
+        "name": "mytestsource__jira__faros_teams"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__jira__faros_team_memberships"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__jira__faros_issue_additional_fields"
       },
       "destination_sync_mode": "overwrite"
