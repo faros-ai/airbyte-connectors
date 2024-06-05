@@ -644,7 +644,7 @@ describe('index', () => {
 
   test('streams - additional fields', async () => {
     await testStream(
-      10,
+      12,
       {
         ...config,
         startDate: new Date('2024-01-01'),
