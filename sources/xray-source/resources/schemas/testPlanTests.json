@@ -3,10 +3,10 @@
    "title": "TestPlan",
    "type": "object",
    "properties": {
-    "testPlanIssueId": {
+    "planIssueId": {
       "type": "string"
     },
-    "testPlanKey": {
+    "planKey": {
       "type": "string"
     },
     "testIssueId": {
@@ -15,6 +15,5 @@
     "testKey": {
       "type": "string"
     }
-   },
-   "required": ["testPlanIssueId", "testPlanKey", "testIssueId", "testKey"]
+   }
   }

@@ -6,7 +6,7 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {TestPlanTest,XrayConfig} from '../types';
+import {TestPlanTest, XrayConfig} from '../types';
 import {Xray} from '../xray';
 
 export class TestPlanTests extends AirbyteStreamBase {
@@ -26,7 +26,7 @@ export class TestPlanTests extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['testPlanIssueId', 'testIssueId'];
+    return ['planIssueId', 'testIssueId'];
   }
 
   async *readRecords(
