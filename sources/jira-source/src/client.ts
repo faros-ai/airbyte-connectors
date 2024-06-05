@@ -5,6 +5,7 @@ import jira, {
   Version2Client,
   Version2Models,
 } from 'jira.js';
+import {Memoize} from 'typescript-memoize';
 
 import {
   AgileClientWithRetry,
@@ -142,6 +143,35 @@ export class JiraClient {
         first: maxResults,
         after: cursor,
       },
+    };
+    return await this.v2.sendRequest<any>(config, undefined);
+  }
+
+  /** This method is for getting teams from Jira Server */
+  async getTeams(page?: number, size?: number): Promise<any> {
+    const config: RequestConfig = {
+      url: `/rest/teams-api/1.0/team?page=${page}&size=${size}`,
+      method: 'GET',
+    };
+    return await this.v2.sendRequest<any>(config, undefined);
+  }
+
+  /** This method is for getting resources from Jira Server, which represent
+   * team memberships (resource contains a person but does not include user data) */
+  async getResources(page?: number, size?: number): Promise<any> {
+    const config: RequestConfig = {
+      url: `/rest/teams-api/1.0/resource?page=${page}&size=${size}`,
+      method: 'GET',
+    };
+    return await this.v2.sendRequest<any>(config, undefined);
+  }
+
+  /** This method gets person from Jira Server containing Jira User data */
+  @Memoize()
+  async getPerson(id: string): Promise<any> {
+    const config: RequestConfig = {
+      url: `/rest/teams-api/1.0/person/${id}`,
+      method: 'GET',
     };
     return await this.v2.sendRequest<any>(config, undefined);
   }

@@ -20,13 +20,8 @@ export class FarosTeamMemberships extends StreamBase {
 
   async *readRecords(): AsyncGenerator<TeamMembership> {
     const jira = await Jira.instance(this.config, this.logger);
-    for (const team of await jira.getTeams(this.config.organization_id)) {
-      for await (const member of jira.getTeamMemberships(
-        this.config.organization_id,
-        team.id
-      )) {
-        yield {teamId: team.id, memberId: member.id};
-      }
+    for await (const membership of jira.getTeamMemberships()) {
+      yield membership;
     }
   }
 }
