@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`xray basic test process records from all streams 1`] = `
+Array [
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__xray__test_executions\\\\\\":1,\\\\\\"mytestsource__xray__test_plan_tests\\\\\\":2,\\\\\\"mytestsource__xray__test_plans\\\\\\":1,\\\\\\"mytestsource__xray__test_runs\\\\\\":3,\\\\\\"mytestsource__xray__tests\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 16 records",
+  "Would write records by model: {\\\\\\"qa_TestCase\\\\\\":4,\\\\\\"qa_TestCaseResult\\\\\\":3,\\\\\\"qa_TestCaseStep\\\\\\":2,\\\\\\"qa_TestCaseStepResult\\\\\\":2,\\\\\\"qa_TestExecution\\\\\\":1,\\\\\\"qa_TestSuite\\\\\\":1,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":2,\\\\\\"tms_TaskTestCaseResultAssociation\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
