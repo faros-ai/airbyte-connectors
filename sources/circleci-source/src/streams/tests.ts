@@ -57,11 +57,11 @@ export class Tests extends CircleCIStreamBase {
           }
           seenJobs.add(jobNum);
 
-          const tests = await this.circleCI.fetchTests(
+          const tests = this.circleCI.fetchTests(
             pipeline.project_slug,
             job.job_number
           );
-          for (const test of tests) {
+          for await (const test of tests) {
             yield {
               ...test,
               pipeline_id: pipeline.id,

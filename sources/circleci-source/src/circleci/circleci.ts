@@ -194,18 +194,17 @@ export class CircleCI {
     }
   }
 
-  private async iterate<V>(
+  private async *iterate<V>(
     requester: (params: any | undefined) => Promise<AxiosResponse<any>>,
     deserializer?: (item: any) => V,
     stopper?: (item: V) => boolean
-  ): Promise<V[]> {
-    const list = [];
+  ): AsyncGenerator<V> {
     let pageToken = undefined;
     let getNextPage = true;
     do {
       const res = await requester({'page-token': pageToken});
       if (res.status === 404) {
-        return list;
+        return;
       }
 
       const items = Array.isArray(res) ? res : res.data?.items;
@@ -215,11 +214,10 @@ export class CircleCI {
           getNextPage = false;
           break;
         }
-        list.push(data);
+        yield data;
       }
       pageToken = res.data.next_page_token;
     } while (getNextPage && pageToken);
-    return list;
   }
 
   private async maybeSleepOnResponse<T = any>(
@@ -303,7 +301,7 @@ export class CircleCI {
     gracePeriod.setDate(gracePeriod.getDate() - this.cutoffDays);
 
     const url = `/project/${projectName}/pipeline`;
-    const pipelines = await this.iterate<Pipeline>(
+    const pipelines = this.iterate<Pipeline>(
       (params) => this.get({path: url, config: {params}}),
       (item: any) => ({
         ...item,
@@ -311,7 +309,7 @@ export class CircleCI {
       }),
       (item: Pipeline) => new Date(item.updated_at) <= gracePeriod
     );
-    for (const pipeline of pipelines) {
+    for await (const pipeline of pipelines) {
       const workflows = await this.fetchWorkflows(pipeline.id, lastUpdatedAt);
       const updatedAt =
         maxBy(
@@ -333,7 +331,8 @@ export class CircleCI {
   @Memoize()
   async fetchWorkflows(pipelineId: string, since: Date): Promise<Workflow[]> {
     const url = `/pipeline/${pipelineId}/workflow`;
-    return this.iterate<Workflow>(
+    const results: Workflow[] = [];
+    const iterator = this.iterate<Workflow>(
       (params) =>
         this.get({
           path: url,
@@ -345,11 +344,16 @@ export class CircleCI {
       }),
       (item: Workflow) => item.stopped_at && new Date(item.stopped_at) <= since
     );
+    for await (const workflow of iterator) {
+      results.push(workflow);
+    }
+    return results;
   }
 
   @Memoize()
   async fetchJobs(workflowId: string): Promise<Job[]> {
-    return this.iterate<Job>(
+    const results: Job[] = [];
+    const iterator = this.iterate<Job>(
       (params) =>
         this.get({
           path: `/workflow/${workflowId}/job`,
@@ -360,13 +364,17 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+    for await (const job of iterator) {
+      results.push(job);
+    }
+    return results;
   }
 
-  async fetchTests(
+  async *fetchTests(
     projectSlug: string,
     jobNumber: number
-  ): Promise<TestMetadata[]> {
-    return this.iterate<TestMetadata>(
+  ): AsyncGenerator<TestMetadata> {
+    yield* this.iterate<TestMetadata>(
       (params) =>
         this.get({
           path: `/project/${projectSlug}/${jobNumber}/tests`,
