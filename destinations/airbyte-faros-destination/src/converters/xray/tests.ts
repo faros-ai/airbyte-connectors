@@ -2,11 +2,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Test, TestType} from 'faros-airbyte-common/xray';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {XrayConverter} from './common';
+import {ModelEnumType, XrayConverter} from './common';
 
 export class Tests extends XrayConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'qa_TestCase',
     'qa_TestCase',
     'qa_TestCaseStep',
   ];
@@ -51,7 +50,7 @@ export class Tests extends XrayConverter {
   }
 
   // TODO - Figure out more type names
-  private static getType(type: TestType) {
+  private static getType(type: TestType): ModelEnumType {
     if (type.name.toLowerCase() === 'manual') {
       return {category: 'Manual', detail: type.kind};
     }

@@ -5,7 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ModelEnumType, XrayConverter} from './common';
 
 export class TestRuns extends XrayConverter {
-  id(record: AirbyteRecord): any {
+  id(record: AirbyteRecord): string {
     return record.record?.data?.id;
   }
 
