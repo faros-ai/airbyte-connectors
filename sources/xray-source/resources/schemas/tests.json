@@ -46,6 +46,20 @@
           }
         }
       },
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "preconditions": {
         "type": "object",
         "properties": {

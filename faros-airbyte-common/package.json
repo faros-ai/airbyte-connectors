@@ -28,7 +28,8 @@
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
-    "./jira": "./lib/jira/index.js"
+    "./jira": "./lib/jira/index.js",
+    "./xray": "./lib/xray/index.js"
   },
   "typesVersions": {
     "*": {
@@ -43,6 +44,9 @@
       ],
       "jira": [
         "./lib/jira/index.d.ts"
+      ],
+      "xray": [
+        "./lib/xray/index.d.ts"
       ]
     }
   },

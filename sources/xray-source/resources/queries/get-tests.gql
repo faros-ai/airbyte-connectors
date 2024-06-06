@@ -22,6 +22,12 @@ query getTests(
       status {
         name
       }
+      steps {
+        id
+        action
+        data
+        result
+      }
       jira(fields: ["key", "description", "summary", "labels"])
       preconditions(limit: $limit) {
         total

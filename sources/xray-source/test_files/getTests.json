@@ -15,6 +15,20 @@
         "status": {
           "name": "TO DO"
         },
+        "steps": [
+          {
+            "id": "8865a132-8b37-4eb3-bb46-f03cd32adf82",
+            "action": "Do something test 4",
+            "data": "",
+            "result": ""
+          },
+          {
+            "id": "c114757d-7c5b-4983-87c0-a88f2a1d8281",
+            "action": "Something else to do",
+            "data": "",
+            "result": ""
+          }
+        ],
         "jira": {
           "key": "TEST-189",
           "summary": "Example test 3",
@@ -39,6 +53,7 @@
         "status": {
           "name": "TO DO"
         },
+        "steps": [],
         "jira": {
           "key": "TEST-188",
           "summary": "Example test 2",
@@ -76,6 +91,7 @@
         "status": {
           "name": "TO DO"
         },
+        "steps": [],
         "jira": {
           "key": "TEST-187",
           "summary": "Example test 1",

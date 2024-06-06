@@ -4,26 +4,25 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {TestPlan} from 'faros-airbyte-common/xray';
+import {TestRun} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
 import {XrayConfig} from '../types';
 import {Xray} from '../xray';
 
-export class TestPlans extends AirbyteStreamBase {
+export class TestRuns extends AirbyteStreamBase {
   constructor(
     private readonly config: XrayConfig,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
   }
-
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/testPlans.json');
+    return require('../../resources/schemas/testRuns.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['issueId'];
+    return ['id'];
   }
 
   async *readRecords(
@@ -31,10 +30,8 @@ export class TestPlans extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
-  ): AsyncGenerator<TestPlan> {
+  ): AsyncGenerator<TestRun> {
     const xrayClient = await Xray.instance(this.config, this.logger);
-    for (const plan of await xrayClient.getTestPlans()) {
-      yield plan;
-    }
+    yield* xrayClient.getTestRuns();
   }
 }
