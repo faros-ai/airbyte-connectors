@@ -14,3 +14,4 @@
 {"record":{"stream":"mytestsource__jira__faros_teams","emitted_at": 1717162970229,"data": {"id": "123ad121-1122-45c5-8d0b-0681b9233ea9","displayName": "Test"}}, "type": "RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "12334c037692da100700011"}}, "type": "RECORD"}
 {"record":{"stream":"mytestsource__jira__faros_team_memberships","emitted_at": 1717162970230, "data": {"teamId": "123ad121-1122-45c5-8d0b-0681b9233ea9", "memberId": "3214dfa413fc70069d12323"}}, "type": "RECORD"}
+{"record":{"stream":"mytestsource__jira__faros_issue_additional_fields","emitted_at":1717505758655,"data":{"key":"PLAYG-1","additionalFields":[["Custom String Field","Custom"],["Custom Number Field","1"]]}}, "type":"RECORD"}

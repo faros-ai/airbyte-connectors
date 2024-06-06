@@ -8,6 +8,7 @@ export interface IssueCompact {
   readonly created?: Date;
   readonly updated?: Date;
   readonly boardId?: string;
+  readonly additionalFields?: ReadonlyArray<[string, string]>;
 }
 
 export interface Issue extends IssueCompact {

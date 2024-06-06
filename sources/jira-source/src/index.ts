@@ -12,9 +12,10 @@ import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
-import {RunMode, WebhookSupplementStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
+import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
 import {FarosIssuePullRequests} from './streams/faros_issue_pull_requests';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosProjectVersionIssues} from './streams/faros_project_version_issues';
@@ -77,6 +78,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosProjectVersionIssues(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
+      new FarosIssueAdditionalFields(config, this.logger, farosClient),
     ];
   }
 
@@ -89,23 +91,16 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let streams = catalog.streams;
-    if (config.run_mode === RunMode.WebhookSupplement) {
-      streams = streams.filter((stream) =>
-        WebhookSupplementStreamNames.includes(stream.stream.name)
-      );
+    const streamNames = RunModeStreams[config.run_mode ?? RunMode.Full];
+    if (config.fetch_teams) {
+      streamNames.push(...TeamStreamNames);
     }
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
     const requestedStreams = new Set(
       streams.map((stream) => stream.stream.name)
     );
-    // Remove teams and team_memberships streams if the fetch_teams flag is not set
-    if (!config.fetch_teams) {
-      streams = streams.filter(
-        (stream) =>
-          stream.stream.name !== 'faros_teams' &&
-          stream.stream.name !== 'faros_team_memberships'
-      );
-    }
     return {config: {...config, requestedStreams}, catalog: {streams}, state};
   }
 }

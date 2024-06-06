@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "key": "TEST-1",
+    "fields": {
+      "created": "2024-03-14T12:00:00Z",
+      "updated": "2024-03-14T12:00:00Z",
+      "customfield_10000": 1,
+      "customfield_10001": "Test"
+    }
+  },
+  {
+    "id": "2",
+    "key": "TEST-2",
+    "fields": {
+      "created": "2024-03-14T12:00:00Z",
+      "updated": "2024-03-14T12:00:00Z",
+      "customfield_10000": 2,
+      "customfield_10001": "Test 2"
+    }
+  }
+]
