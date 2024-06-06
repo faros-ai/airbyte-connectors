@@ -28,7 +28,7 @@ import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, keyBy, pickBy, sortBy, uniq} from 'lodash';
+import {difference, isEmpty, keyBy, pickBy, sortBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -769,7 +769,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     try {
       let isBackfillSync = false;
+      let sourceConfigReceived = false;
       let sourceSucceeded = false;
+      let stateReset = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
@@ -799,12 +801,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               if (msg.redactedConfig?.backfill) {
                 isBackfillSync = true;
               }
+              sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
               logFiles?.writeSourceLogs(...msg.logs);
             } else {
               stateMessage = msg;
+              stateReset = isEmpty(msg.state?.data);
             }
           } else if (msg.type === AirbyteMessageType.RECORD) {
             stats.recordsRead++;
@@ -910,7 +914,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       const isResetSync =
         process.env.WORKER_JOB_ID &&
+        stats.messagesRead === 1 &&
         stats.recordsProcessed === 0 &&
+        stateReset &&
+        !sourceConfigReceived &&
         Object.values(streams)
           .map((s) => s.destination_sync_mode)
           .every((m) => m === DestinationSyncMode.OVERWRITE);
@@ -947,9 +954,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     sourceSucceeded: boolean
   ): boolean {
     if (isResetSync) {
-      this.logger.debug(
-        'Running a reset sync. Resetting non-incremental models.'
-      );
+      this.logger.debug('Running a reset sync. Resetting all models.');
       return true;
     }
     if (isBackfillSync) {
