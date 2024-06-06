@@ -4,9 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {TestExecution} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
-import {TestPlan, XrayConfig} from '../types';
+import {XrayConfig} from '../types';
 import {Xray} from '../xray';
 
 export class TestExecutions extends AirbyteStreamBase {
@@ -30,7 +31,7 @@ export class TestExecutions extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: Dictionary<any>
-  ): AsyncGenerator<TestPlan> {
+  ): AsyncGenerator<TestExecution> {
     const xrayClient = await Xray.instance(this.config, this.logger);
     yield* xrayClient.getTestExecutions();
   }

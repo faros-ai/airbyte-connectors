@@ -144,6 +144,20 @@ exports[`streams tests 1`] = `
     "status": {
       "name": "TO DO",
     },
+    "steps": [
+      {
+        "action": "Do something test 4",
+        "data": "",
+        "id": "8865a132-8b37-4eb3-bb46-f03cd32adf82",
+        "result": "",
+      },
+      {
+        "action": "Something else to do",
+        "data": "",
+        "id": "c114757d-7c5b-4983-87c0-a88f2a1d8281",
+        "result": "",
+      },
+    ],
     "summary": "Example test 3",
     "testType": {
       "kind": "Steps",
@@ -172,6 +186,7 @@ exports[`streams tests 1`] = `
     "status": {
       "name": "TO DO",
     },
+    "steps": [],
     "summary": "Example test 2",
     "testType": {
       "kind": "Steps",
@@ -192,6 +207,7 @@ exports[`streams tests 1`] = `
     "status": {
       "name": "TO DO",
     },
+    "steps": [],
     "summary": "Example test 1",
     "testType": {
       "kind": "Steps",

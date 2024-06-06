@@ -1,20 +1,20 @@
 import axios, {AxiosInstance} from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
-import * as fs from 'fs';
-import {get} from 'lodash';
-import path from 'path';
-import VError from 'verror';
-
 import {
   Test,
   TestExecution,
   TestKey,
   TestPlan,
   TestRun,
-  XrayConfig,
-} from './types';
+} from 'faros-airbyte-common/xray';
+import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
+import * as fs from 'fs';
+import {get} from 'lodash';
+import path from 'path';
+import VError from 'verror';
+
+import {XrayConfig} from './types';
 
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
 const XRAY_DEFAULT_TIMEOUT = 5000;
@@ -170,6 +170,7 @@ export class Xray {
         unstructured: test.unstructured,
         testType: test.testType,
         status: test.status,
+        steps: test.steps,
         preconditions: test.preconditions?.results?.map((p: any) => {
           const {key, rank} = p.jira;
           return {

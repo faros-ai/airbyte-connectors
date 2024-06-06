@@ -4,9 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {TestRun} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
-import {TestRun, XrayConfig} from '../types';
+import {XrayConfig} from '../types';
 import {Xray} from '../xray';
 
 export class TestRuns extends AirbyteStreamBase {
