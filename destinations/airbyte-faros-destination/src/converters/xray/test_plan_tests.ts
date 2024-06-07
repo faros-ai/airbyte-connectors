@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {TestPlanTest} from 'faros-airbyte-common/xray';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {XrayConverter} from './common';
 
 export class TestPlanTests extends XrayConverter {

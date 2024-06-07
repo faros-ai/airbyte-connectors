@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {TestExecution} from 'faros-airbyte-common/xray';
+import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {XrayConverter} from './common';
 
 export class TestExecutions extends XrayConverter {
@@ -20,7 +21,7 @@ export class TestExecutions extends XrayConverter {
           uid: execution.key,
           source: this.source,
           name: execution.summary,
-          description: execution.description,
+          description: Utils.cleanAndTruncate(execution.description),
           tags: execution.labels,
           environments: execution.testEnvironments,
           task: {uid: execution.key, source: this.taskSource},

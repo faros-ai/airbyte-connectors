@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {TestRun} from 'faros-airbyte-common/xray';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {ModelEnumType, XrayConverter} from './common';
 
 export class TestRuns extends XrayConverter {
@@ -28,7 +28,7 @@ export class TestRuns extends XrayConverter {
         ...testCaseResult,
         startedAt: run.startedOn,
         endedAt: run.finishedOn,
-        status: TestRuns.getStatus(run.status.name), // TODO - Fix status
+        status: TestRuns.getStatus(run.status.name),
         testExecution: {uid: run.testExecution.key, source: this.source},
       },
     });

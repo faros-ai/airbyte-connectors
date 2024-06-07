@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {TestPlan} from 'faros-airbyte-common/xray';
+import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {XrayConverter} from './common';
 
 export class TestPlans extends XrayConverter {
@@ -20,7 +21,7 @@ export class TestPlans extends XrayConverter {
           uid: plan.key,
           source: this.source,
           name: plan.summary,
-          description: plan.description,
+          description: Utils.cleanAndTruncate(plan.description),
           tags: plan.labels,
           task: {uid: plan.key, source: this.taskSource},
         },

@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Test, TestType} from 'faros-airbyte-common/xray';
+import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {ModelEnumType, XrayConverter} from './common';
 
 export class Tests extends XrayConverter {
@@ -26,7 +27,7 @@ export class Tests extends XrayConverter {
       record: {
         uid: test.key,
         name: test.summary,
-        description: test.description,
+        description: Utils.cleanAndTruncate(test.description),
         before: preconditions,
         type: Tests.getType(test.testType),
         tags: test.labels,
@@ -49,7 +50,6 @@ export class Tests extends XrayConverter {
     return results;
   }
 
-  // TODO - Figure out more type names
   private static getType(type: TestType): ModelEnumType {
     if (type.name.toLowerCase() === 'manual') {
       return {category: 'Manual', detail: type.kind};
