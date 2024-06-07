@@ -199,7 +199,6 @@
         "default": false
       },
       "backfill": {
-        "airbyte_hidden": true,
         "order": 25,
         "type": "boolean",
         "title": "Backfill",
@@ -207,14 +206,12 @@
         "default": false
       },
       "start_date": {
-        "airbyte_hidden": true,
         "order": 26,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data. Only use for backfilling."
       },
       "end_date": {
-        "airbyte_hidden": true,
         "order": 27,
         "type": "string",
         "title": "End Date",
