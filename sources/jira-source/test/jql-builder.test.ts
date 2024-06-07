@@ -2,8 +2,8 @@ import {JqlBuilder} from '../src/jql-builder';
 
 describe('JqlBuilder', () => {
   test('builds JQL with project', () => {
-    const jql = new JqlBuilder().withProject('PROJECT-123').build();
-    expect(jql).toBe('project = "PROJECT-123"');
+    const jql = new JqlBuilder().withProject('PROJECT-1').build();
+    expect(jql).toBe('project = "PROJECT-1"');
   });
 
   test('builds JQL with date range', () => {
