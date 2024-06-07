@@ -1,0 +1,17 @@
+{
+  "title": "Xray",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Xray",
+          "order": 0
+        }
+      }
+    }
+  ]
+}

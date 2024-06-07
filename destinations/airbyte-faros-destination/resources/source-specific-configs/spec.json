@@ -90,6 +90,9 @@
         "workday": {
           "$ref": "workday.json"
         },
+        "xray": {
+          "$ref": "xray.json"
+        },
         "zendesk": {
           "$ref": "zendesk.json"
         }
