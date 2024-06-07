@@ -10,7 +10,7 @@ COPY ./sources ./sources
 COPY ./destinations ./destinations
 
 RUN apk -U upgrade
-RUN apk add --no-cache --virtual .gyp python3 make g++ \
+RUN apk add --no-cache --virtual .gyp python3 py3-setuptools make g++ \
     && npm install -g npm lerna @lerna/legacy-package-management tsc
 RUN lerna bootstrap --hoist
 
