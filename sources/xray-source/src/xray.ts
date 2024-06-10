@@ -43,7 +43,8 @@ export class Xray {
         },
         maxContentLength: Infinity, //default is 2000 bytes
       },
-      logger?.asPino()
+      logger?.asPino(),
+      config.api_max_retries
     );
 
     const auth = config.authentication;
