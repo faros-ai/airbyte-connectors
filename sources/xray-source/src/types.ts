@@ -7,5 +7,5 @@ export interface XrayConfig {
   authentication: Authentication;
   projects: ReadonlyArray<string>;
   cutoff_days?: number;
-  timeout?: number;
+  api_timeout?: number;
 }
