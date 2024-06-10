@@ -4,21 +4,26 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Xray Spec",
     "type": "object",
-    "required": [
-      "client_id",
-      "client_secret"
-    ],
-    "additionalProperties": true,
     "properties": {
-      "client_id": {
-        "type": "string",
-        "title": "Xray Cloud Client Id",
-        "airbyte_secret": true
+      "authentication": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string"
+          }
+        }
       },
-      "client_secret": {
-        "type": "string",
-        "title": "Xray Cloud Client Secret",
-        "airbyte_secret": true
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "type": "number"
       }
     }
   }

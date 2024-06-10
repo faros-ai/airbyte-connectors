@@ -12,16 +12,17 @@ import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import {get} from 'lodash';
 import path from 'path';
-import VError from 'verror';
+import VError, {MultiError} from 'verror';
 
 import {XrayConfig} from './types';
 
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
-const XRAY_DEFAULT_TIMEOUT = 5000;
+const XRAY_DEFAULT_TIMEOUT = 60000;
+const XRAY_PAGE_LIMIT = 100;
 
 export class Xray {
   private static xray: Xray;
-  private readonly limit = 100;
+  private readonly limit = XRAY_PAGE_LIMIT;
   constructor(
     private readonly api: AxiosInstance,
     private readonly logger?: AirbyteLogger
@@ -32,18 +33,13 @@ export class Xray {
     logger?: AirbyteLogger
   ): Promise<Xray> {
     if (Xray.xray) return Xray.xray;
-
-    if (!config.client_id || !config.client_secret) {
-      throw new VError(
-        'Please provide Xray Cloud authentication details, ' +
-          'Client Id and a Client Secret'
-      );
-    }
-
+    const timeout = config.timeout
+      ? Math.min(config.timeout, XRAY_DEFAULT_TIMEOUT)
+      : XRAY_DEFAULT_TIMEOUT;
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
-        timeout: config.timeout ?? XRAY_DEFAULT_TIMEOUT,
+        timeout,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -52,11 +48,16 @@ export class Xray {
       logger?.asPino()
     );
 
-    const refreshToken = async (): Promise<void> => {
-      const token = await Xray.sessionToken(
-        config.client_id,
-        config.client_secret
+    const auth = config.authentication;
+    if (!auth?.client_id || !auth?.client_secret) {
+      throw new VError(
+        'Please provide Xray Cloud authentication details, ' +
+          'Client Id and a Client Secret'
       );
+    }
+
+    const refreshToken = async (): Promise<void> => {
+      const token = await Xray.sessionToken(auth.client_id, auth.client_secret);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
@@ -109,6 +110,12 @@ export class Xray {
         });
       } catch (err: any) {
         throw wrapApiError(err, 'failed to fetch data');
+      }
+
+      if (response.data?.errors) {
+        throw new MultiError(
+          response.data.errors.map((e: any) => new VError(e.message))
+        );
       }
 
       const data = get(response.data?.data, resultKey);
