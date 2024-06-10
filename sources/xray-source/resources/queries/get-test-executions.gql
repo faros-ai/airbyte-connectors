@@ -1,9 +1,11 @@
 query getTestExecutions(
+  $jql: String,
   $modifiedSince: String
   $start: Int,
   $limit: Int!,
 ) {
   getTestExecutions(
+    jql: $jql,
     start: $start,
     limit: $limit,
     modifiedSince: $modifiedSince

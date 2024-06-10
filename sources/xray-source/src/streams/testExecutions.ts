@@ -1,38 +1,45 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {TestExecution} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
-import {XrayConfig} from '../types';
 import {Xray} from '../xray';
+import {ProjectState, StreamSlice, XrayProjectStream} from './common';
 
-export class TestExecutions extends AirbyteStreamBase {
-  constructor(
-    private readonly config: XrayConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class TestExecutions extends XrayProjectStream {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/testExecutions.json');
   }
 
-  get primaryKey(): StreamKey {
-    return ['issueId'];
+  get cursorField(): string[] {
+    return ['lastModified'];
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
+    streamSlice?: StreamSlice,
+    streamState?: ProjectState
   ): AsyncGenerator<TestExecution> {
     const xrayClient = await Xray.instance(this.config, this.logger);
-    yield* xrayClient.getTestExecutions();
+    const project = streamSlice?.project;
+
+    const modifiedSince = this.getModifiedSince(
+      syncMode,
+      streamState?.[project]
+    );
+    this.logger.debug(
+      `Fetching test executions for project ${project} modified since ${modifiedSince}`
+    );
+    yield* xrayClient.getTestExecutions(project, modifiedSince);
+  }
+
+  getUpdatedState(
+    currentStreamState: ProjectState,
+    latestRecord: TestExecution
+  ): ProjectState {
+    return {
+      ...currentStreamState,
+      [latestRecord.project]: latestRecord.lastModified,
+    };
   }
 }

@@ -77,4 +77,6 @@ export interface TestVersion {
 
 export interface TestExecution extends BaseTestDetail {
   readonly testEnvironments: ReadonlyArray<string>;
+  readonly project: string;
+  readonly lastModified: string;
 }

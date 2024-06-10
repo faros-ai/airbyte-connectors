@@ -1,22 +1,13 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {TestRun} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
-import {XrayConfig} from '../types';
 import {Xray} from '../xray';
+import {XrayStreamBase} from './common';
 
-export class TestRuns extends AirbyteStreamBase {
-  constructor(
-    private readonly config: XrayConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
+const stateKey = 'lastModified';
+type TestRunState = Dictionary<string>;
+export class TestRuns extends XrayStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/testRuns.json');
   }
@@ -29,9 +20,20 @@ export class TestRuns extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
+    streamState?: TestRunState
   ): AsyncGenerator<TestRun> {
     const xrayClient = await Xray.instance(this.config, this.logger);
-    yield* xrayClient.getTestRuns();
+    const modifiedSince = this.getModifiedSince(
+      syncMode,
+      streamState?.[stateKey]
+    );
+    yield* xrayClient.getTestRuns(modifiedSince);
+  }
+
+  getUpdatedState(
+    currentStreamState: TestRunState,
+    latestRecord: TestRun
+  ): TestRunState {
+    return {[stateKey]: latestRecord.lastModified};
   }
 }

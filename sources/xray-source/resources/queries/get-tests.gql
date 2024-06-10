@@ -1,9 +1,11 @@
 query getTests(
+  $jql: String,
   $modifiedSince: String
   $start: Int,
   $limit: Int!,
 ) {
   getTests(
+    jql: $jql,
     start: $start,
     limit: $limit,
     modifiedSince: $modifiedSince

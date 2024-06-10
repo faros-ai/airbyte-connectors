@@ -1,8 +1,10 @@
 query getTestPlans(
+  $jql: String,
   $limit: Int!,
   $start: Int
 ) {
   getTestPlans(
+    jql: $jql,
     limit: $limit,
     start: $start
   ) {

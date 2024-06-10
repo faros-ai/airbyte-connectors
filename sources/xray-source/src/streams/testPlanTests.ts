@@ -1,23 +1,11 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {TestPlanTest} from 'faros-airbyte-common/xray';
 import {Dictionary} from 'ts-essentials';
 
-import {XrayConfig} from '../types';
 import {Xray} from '../xray';
+import {StreamSlice, XrayProjectStream} from './common';
 
-export class TestPlanTests extends AirbyteStreamBase {
-  constructor(
-    private readonly config: XrayConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class TestPlanTests extends XrayProjectStream {
   get dependencies(): readonly string[] {
     return ['testPlans'];
   }
@@ -33,11 +21,11 @@ export class TestPlanTests extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: Dictionary<any>
+    streamSlice?: StreamSlice
   ): AsyncGenerator<TestPlanTest> {
     const xrayClient = await Xray.instance(this.config, this.logger);
-    for (const plan of await xrayClient.getTestPlans()) {
+    const project = streamSlice?.project;
+    for (const plan of await xrayClient.getTestPlans(project)) {
       for await (const test of xrayClient.getTestPlanTests(plan.issueId)) {
         yield {
           planIssueId: plan.issueId,
