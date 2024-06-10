@@ -5,13 +5,10 @@
   "projects": ["TEST"],
   "bucket_id": 1,
   "bucket_total": 1,
-  "additional_fields": [],
   "additional_fields_array_limit": 100,
   "concurrency_limit": 5,
   "page_size": 100,
   "max_retries": 5,
   "reject_unauthorized": true,
-  "sync_additional_fields": true,
-  "timeout": 120000,
-  "run_mode": "Full"
+  "timeout": 120000
 }

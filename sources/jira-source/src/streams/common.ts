@@ -18,6 +18,10 @@ export type StreamState = {
   readonly [projectOrBoard: string]: {cutoff: number};
 };
 
+export type AdditionalFieldsStreamState = {
+  readonly additionalFields: ReadonlyArray<string>;
+};
+
 export enum RunMode {
   Full = 'Full',
   Minimum = 'Minimum',

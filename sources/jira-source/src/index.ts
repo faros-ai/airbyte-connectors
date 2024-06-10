@@ -9,10 +9,16 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+import {isEqual} from 'lodash';
 import VError from 'verror';
 
 import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
-import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+import {
+  AdditionalFieldsStreamNames,
+  RunMode,
+  RunModeStreams,
+  TeamStreamNames,
+} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
 import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
@@ -94,6 +100,17 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     const streamNames = RunModeStreams[config.run_mode ?? RunMode.Full];
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
+    }
+    // Check if the additional fields changed from last sync. If so, add the additional fields stream to update tasks
+    if (config.additional_fields && config.sync_additional_fields) {
+      const additionalFieldsFromState =
+        state?.['faros_issue_additional_fields']?.additionalFields;
+      if (
+        !additionalFieldsFromState ||
+        !isEqual(additionalFieldsFromState, config.additional_fields)
+      ) {
+        streamNames.push(...AdditionalFieldsStreamNames);
+      }
     }
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)

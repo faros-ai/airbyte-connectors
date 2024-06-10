@@ -19,7 +19,28 @@
         "name": "faros_board_issues",
         "json_schema": {}
       },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_sprints",
+        "json_schema": {}
+      },
       "sync_mode": "incremental"
+    },
+    {
+      "stream": {
+        "name": "faros_users",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_projects",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
     },
     {
       "stream": {
@@ -30,9 +51,45 @@
     },
     {
       "stream": {
+        "name": "faros_boards",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_project_versions",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_project_version_issues",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_teams",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_team_memberships",
+        "json_schema": {}
+      },
+      "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
         "name": "faros_issue_additional_fields",
         "json_schema": {}
-      }
+      },
+      "sync_mode": "full_refresh"
     }
   ]
 }

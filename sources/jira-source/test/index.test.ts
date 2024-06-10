@@ -507,22 +507,29 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with run_mode Full should not filter streams', async () => {
+  test('onBeforeRead without run_mode defaults to full mode streams', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
-    const {catalog: newCatalog} = await source.onBeforeRead(
-      {...config, run_mode: RunMode.Full},
-      catalog
-    );
+    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with run_mode AdditionalFields should filter streams', async () => {
+  test('onBeforeRead with additional fields config different from state should add additional fields stream', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
+    const state = {
+      faros_issue_additional_fields: {
+        additionalFields: ['Custom String Field'],
+      },
+    };
     const {catalog: newCatalog} = await source.onBeforeRead(
-      {...config, run_mode: RunMode.AdditionalFields},
-      catalog
+      {
+        ...config,
+        additional_fields: ['Custom String Field', 'Custom Number Field'],
+        sync_additional_fields: true,
+      },
+      catalog,
+      state
     );
     expect(newCatalog).toMatchSnapshot();
   });
