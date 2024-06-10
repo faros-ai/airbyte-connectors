@@ -20,7 +20,10 @@ describe('streams', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const config = {client_id: 'client_id', client_secret: 'client_secret'};
+  const config = {
+    authentication: {client_id: 'client_id', client_secret: 'client_secret'},
+    projects: ['TEST'],
+  };
 
   async function testStream(
     streamIndex: number,

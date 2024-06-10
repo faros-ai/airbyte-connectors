@@ -2,23 +2,49 @@
   "documentationUrl": "https://docs.faros.ai",
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Xray Spec",
+    "title": "Xray Configuration Spec",
     "type": "object",
-    "required": [
-      "client_id",
-      "client_secret"
-    ],
     "additionalProperties": true,
     "properties": {
-      "client_id": {
-        "type": "string",
-        "title": "Xray Cloud Client Id",
-        "airbyte_secret": true
+      "authentication": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "order": 1,
+            "type": "string",
+            "title": "Xray Cloud Client Id",
+            "description": "Xray API Key Client ID: See the docs for instructions on how to generate API Key: https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys",
+            "airbyte_secret": true
+          },
+          "client_secret": {
+            "order": 2,
+            "type": "string",
+            "title": "Xray Cloud Client Secret",
+            "description": "Xray API Key Client Secret: See the docs for instructions on how to generate API Key: https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys",
+            "airbyte_secret": true
+          }
+        }
       },
-      "client_secret": {
-        "type": "string",
-        "title": "Xray Cloud Client Secret",
-        "airbyte_secret": true
+      "projects": {
+        "order": 3,
+        "type": "array",
+        "title": "Project Keys or IDs",
+        "description": "List of Jira project Keys or IDs to sync.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch data updated after cutoff.",
+        "default": 90
+      },
+      "api_timeout": {
+        "type": "integer",
+        "title": "API Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Xray API. 0 means no timeout.",
+        "default": 0
       }
     }
   }
