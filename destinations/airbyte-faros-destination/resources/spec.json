@@ -97,6 +97,13 @@
         "description": "Process all input records but avoid writing into Faros API",
         "default": false
       },
+      "log_records": {
+        "order": 9,
+        "type": "boolean",
+        "title": "Log Records",
+        "description": "Whether to log the converted records. Only applies when 'Dry run' is enabled.",
+        "default": true
+      },
       "invalid_record_strategy": {
         "order": 9,
         "type": "string",
