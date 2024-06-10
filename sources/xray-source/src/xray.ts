@@ -36,7 +36,7 @@ export class Xray {
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
-        timeout: config.timeout ?? XRAY_API_DEFAULT_TIMEOUT,
+        timeout: config.api_timeout ?? XRAY_API_DEFAULT_TIMEOUT,
         headers: {
           'Content-Type': 'application/json',
         },
