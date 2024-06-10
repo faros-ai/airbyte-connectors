@@ -45,6 +45,7 @@ query getTests(
           jira(fields: ["key", "rank"])
         }
       }
+      lastModified
     }
   }
 }

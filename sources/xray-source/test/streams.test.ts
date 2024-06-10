@@ -43,7 +43,9 @@ describe('streams', () => {
     const source = new sut.XraySource(logger);
     const streams = source.streams(config);
     const stream = streams[streamIndex];
-    const iter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      project: 'TEST',
+    });
 
     const items = [];
     for await (const item of iter) {

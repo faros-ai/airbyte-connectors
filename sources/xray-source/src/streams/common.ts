@@ -4,7 +4,6 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 
 import {XrayConfig} from '../types';
@@ -34,15 +33,22 @@ export abstract class XrayStreamBase extends AirbyteStreamBase {
     return ['issueId'];
   }
 
-  protected getModifiedSince(syncMode: SyncMode, cutoff?: string): string {
-    if (cutoff && syncMode === SyncMode.INCREMENTAL) {
-      return cutoff;
+  protected getModifiedSince(syncMode: SyncMode, since?: string): string {
+    if (since && syncMode === SyncMode.INCREMENTAL) {
+      return XrayStreamBase.formatModifiedSince(since);
     }
-    return DateTime.now()
-      .toUTC()
-      .minus({days: this.config.cutoff_days ?? DEFAULT_CUTOFF_DAYS})
-      .startOf('day')
-      .toISO({suppressMilliseconds: true});
+
+    return XrayStreamBase.formatModifiedSince(
+      DateTime.now()
+        .toUTC()
+        .minus({days: this.config.cutoff_days ?? DEFAULT_CUTOFF_DAYS})
+    );
+  }
+
+  // modifiedSince date format should be YYYY-MM-DDTHH:mm:ssZ
+  protected static formatModifiedSince(date: string | DateTime): string {
+    const dateTime = typeof date === 'string' ? DateTime.fromISO(date) : date;
+    return dateTime.startOf('second').toISO({suppressMilliseconds: true});
   }
 }
 

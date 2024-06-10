@@ -140,7 +140,7 @@ export class Xray {
     await this.api.post('/graphql', {query});
   }
 
-  // @Memoize() - Why is this not working
+  @Memoize()
   async getTestPlans(project: string): Promise<ReadonlyArray<TestPlan>> {
     const varibles = {jql: `project = ${project}`};
     const plans = [];
@@ -161,9 +161,11 @@ export class Xray {
     return plans;
   }
 
-  // TODO - Make incremental
-  async *getTests(project: string): AsyncGenerator<Test> {
-    const variables = {jql: `project = ${project}`};
+  async *getTests(
+    project: string,
+    modifiedSince: string
+  ): AsyncGenerator<Test> {
+    const variables = {jql: `project = ${project}`, modifiedSince};
     for await (const test of this.paginate(
       'get-tests.gql',
       'getTests',
@@ -191,6 +193,8 @@ export class Xray {
             preconditionType: p.preconditionType,
           };
         }),
+        project,
+        lastModified: test.lastModified,
       };
     }
   }

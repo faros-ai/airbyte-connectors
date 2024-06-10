@@ -10,8 +10,8 @@ export class TestExecutions extends XrayProjectStream {
     return require('../../resources/schemas/testExecutions.json');
   }
 
-  get cursorField(): string[] {
-    return ['lastModified'];
+  get cursorField(): string {
+    return 'lastModified';
   }
 
   async *readRecords(
@@ -27,9 +27,6 @@ export class TestExecutions extends XrayProjectStream {
       syncMode,
       streamState?.[project]
     );
-    this.logger.debug(
-      `Fetching test executions for project ${project} modified since ${modifiedSince}`
-    );
     yield* xrayClient.getTestExecutions(project, modifiedSince);
   }
 
@@ -39,7 +36,9 @@ export class TestExecutions extends XrayProjectStream {
   ): ProjectState {
     return {
       ...currentStreamState,
-      [latestRecord.project]: latestRecord.lastModified,
+      [latestRecord.project]: TestExecutions.formatModifiedSince(
+        latestRecord.lastModified
+      ),
     };
   }
 }

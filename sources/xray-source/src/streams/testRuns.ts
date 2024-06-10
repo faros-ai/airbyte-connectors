@@ -16,6 +16,10 @@ export class TestRuns extends XrayStreamBase {
     return ['id'];
   }
 
+  get cursorField(): string {
+    return 'lastModified';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
@@ -34,6 +38,8 @@ export class TestRuns extends XrayStreamBase {
     currentStreamState: TestRunState,
     latestRecord: TestRun
   ): TestRunState {
-    return {[stateKey]: latestRecord.lastModified};
+    return {
+      [stateKey]: TestRuns.formatModifiedSince(latestRecord.lastModified),
+    };
   }
 }
