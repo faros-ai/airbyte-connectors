@@ -17,7 +17,7 @@ import VError, {MultiError} from 'verror';
 import {XrayConfig} from './types';
 
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
-const XRAY_DEFAULT_TIMEOUT = 60000;
+const XRAY_API_DEFAULT_TIMEOUT = 0;
 const XRAY_PAGE_LIMIT = 100;
 
 export class Xray {
@@ -33,13 +33,10 @@ export class Xray {
     logger?: AirbyteLogger
   ): Promise<Xray> {
     if (Xray.xray) return Xray.xray;
-    const timeout = config.timeout
-      ? Math.min(config.timeout, XRAY_DEFAULT_TIMEOUT)
-      : XRAY_DEFAULT_TIMEOUT;
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
-        timeout,
+        timeout: config.timeout ?? XRAY_API_DEFAULT_TIMEOUT,
         headers: {
           'Content-Type': 'application/json',
         },

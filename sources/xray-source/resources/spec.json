@@ -34,18 +34,11 @@
           "type": "string"
         }
       },
-      "cutoff_days": {
-        "order": 4,
+      "api_timeout": {
         "type": "integer",
-        "title": "Cutoff Days",
-        "default": 90,
-        "description": "Only fetch data updated after cutoff."
-      },
-      "timeout": {
-        "type": "integer",
-        "title": "Request Timeout",
-        "description": "Timeout in milliseconds for each request to the Xray API.",
-        "default": 60000
+        "title": "API Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Xray API. 0 means no timeout.",
+        "default": 0
       }
     }
   }
