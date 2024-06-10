@@ -34,6 +34,12 @@
           "type": "string"
         }
       },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch data updated after cutoff.",
+        "default": 90
+      },
       "api_timeout": {
         "type": "integer",
         "title": "API Request Timeout",
