@@ -12,6 +12,7 @@ import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import {get} from 'lodash';
 import path from 'path';
+import {Memoize} from 'typescript-memoize';
 import VError, {MultiError} from 'verror';
 
 import {XrayConfig} from './types';
@@ -22,9 +23,9 @@ const XRAY_PAGE_LIMIT = 100;
 
 export class Xray {
   private static xray: Xray;
-  private readonly limit = XRAY_PAGE_LIMIT;
   constructor(
     private readonly api: AxiosInstance,
+    private readonly limit,
     private readonly logger?: AirbyteLogger
   ) {}
 
@@ -42,7 +43,8 @@ export class Xray {
         },
         maxContentLength: Infinity, //default is 2000 bytes
       },
-      logger?.asPino()
+      logger?.asPino(),
+      config.api_max_retries
     );
 
     const auth = config.authentication;
@@ -59,7 +61,12 @@ export class Xray {
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
 
-    return new Xray(api, logger);
+    // Limit should be a max of 100
+    // https://docs.getxray.app/display/XRAYCLOUD/GraphQL+API
+    const limit = config.api_page_limit
+      ? Math.min(config.api_page_limit, XRAY_PAGE_LIMIT)
+      : XRAY_PAGE_LIMIT;
+    return new Xray(api, limit, logger);
   }
 
   private static async sessionToken(
@@ -108,7 +115,6 @@ export class Xray {
       } catch (err: any) {
         throw wrapApiError(err, 'failed to fetch data');
       }
-
       if (response.data?.errors) {
         throw new MultiError(
           response.data.errors.map((e: any) => new VError(e.message))
@@ -140,12 +146,14 @@ export class Xray {
     await this.api.post('/graphql', {query});
   }
 
-  // TODO - Memoize
-  async getTestPlans(): Promise<ReadonlyArray<TestPlan>> {
+  @Memoize()
+  async getTestPlans(project: string): Promise<ReadonlyArray<TestPlan>> {
+    const varibles = {jql: `project = ${project}`};
     const plans = [];
     for await (const plan of this.paginate(
       'get-test-plans.gql',
-      'getTestPlans'
+      'getTestPlans',
+      varibles
     )) {
       const {key, summary, description, labels} = plan.jira;
       plans.push({
@@ -159,10 +167,16 @@ export class Xray {
     return plans;
   }
 
-  // TODO - Make incremental
-  // TODO - Investigate total is more than actual returned results
-  async *getTests(): AsyncGenerator<Test> {
-    for await (const test of this.paginate('get-tests.gql', 'getTests')) {
+  async *getTests(
+    project: string,
+    modifiedSince: string
+  ): AsyncGenerator<Test> {
+    const variables = {jql: `project = ${project}`, modifiedSince};
+    for await (const test of this.paginate(
+      'get-tests.gql',
+      'getTests',
+      variables
+    )) {
       const {key, summary, description, labels} = test.jira;
       yield {
         issueId: test.issueId,
@@ -185,6 +199,8 @@ export class Xray {
             preconditionType: p.preconditionType,
           };
         }),
+        project,
+        lastModified: test.lastModified,
       };
     }
   }
@@ -202,8 +218,13 @@ export class Xray {
     }
   }
 
-  async *getTestRuns(): AsyncGenerator<TestRun> {
-    for await (const run of this.paginate('get-test-runs.gql', 'getTestRuns')) {
+  async *getTestRuns(modifiedSince: string): AsyncGenerator<TestRun> {
+    const variables = {modifiedSince};
+    for await (const run of this.paginate(
+      'get-test-runs.gql',
+      'getTestRuns',
+      variables
+    )) {
       yield {
         id: run.id,
         startedOn: run.startedOn,
@@ -225,10 +246,15 @@ export class Xray {
     }
   }
 
-  async *getTestExecutions(): AsyncGenerator<TestExecution> {
+  async *getTestExecutions(
+    project: string,
+    modifiedSince: string
+  ): AsyncGenerator<TestExecution> {
+    const variables = {jql: `project = ${project}`, modifiedSince};
     for await (const execution of this.paginate(
       'get-test-executions.gql',
-      'getTestExecutions'
+      'getTestExecutions',
+      variables
     )) {
       const {key, summary, description, labels} = execution.jira;
       yield {
@@ -238,6 +264,8 @@ export class Xray {
         description,
         labels,
         testEnvironments: execution.testEnvironments,
+        lastModified: execution.lastModified,
+        project,
       };
     }
   }
