@@ -142,7 +142,9 @@ exports[`streams tests 1`] = `
     "issueId": "23098",
     "key": "TEST-189",
     "labels": [],
+    "lastModified": "2024-06-04T02:10:00.825Z",
     "preconditions": [],
+    "project": "TEST",
     "status": {
       "name": "TO DO",
     },
@@ -173,6 +175,7 @@ exports[`streams tests 1`] = `
     "issueId": "23097",
     "key": "TEST-188",
     "labels": [],
+    "lastModified": "2024-06-04T18:40:36.017Z",
     "preconditions": [
       {
         "definition": null,
@@ -185,6 +188,7 @@ exports[`streams tests 1`] = `
         "rank": 1,
       },
     ],
+    "project": "TEST",
     "status": {
       "name": "TO DO",
     },
@@ -205,7 +209,9 @@ exports[`streams tests 1`] = `
       "label1",
       "label2",
     ],
+    "lastModified": "2024-06-05T14:20:07.166Z",
     "preconditions": [],
+    "project": "TEST",
     "status": {
       "name": "TO DO",
     },

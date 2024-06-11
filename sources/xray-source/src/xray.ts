@@ -23,9 +23,9 @@ const XRAY_PAGE_LIMIT = 100;
 
 export class Xray {
   private static xray: Xray;
-  private readonly limit = XRAY_PAGE_LIMIT;
   constructor(
     private readonly api: AxiosInstance,
+    private readonly limit,
     private readonly logger?: AirbyteLogger
   ) {}
 
@@ -61,7 +61,12 @@ export class Xray {
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
 
-    return new Xray(api, logger);
+    // Limit should be a max of 100
+    // https://docs.getxray.app/display/XRAYCLOUD/GraphQL+API
+    const limit = config.api_page_limit
+      ? Math.min(config.api_page_limit, XRAY_PAGE_LIMIT)
+      : XRAY_PAGE_LIMIT;
+    return new Xray(api, limit, logger);
   }
 
   private static async sessionToken(

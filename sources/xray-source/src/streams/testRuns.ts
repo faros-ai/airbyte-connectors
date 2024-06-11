@@ -7,6 +7,7 @@ import {XrayStreamBase} from './common';
 
 const stateKey = 'lastModified';
 type TestRunState = Dictionary<string>;
+
 export class TestRuns extends XrayStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/testRuns.json');
