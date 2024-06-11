@@ -1,5 +1,4 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {State} from 'faros-airbyte-cdk/lib/sources/state';
 import {Issue, IssueCompact} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {isEqual, omit} from 'lodash';
