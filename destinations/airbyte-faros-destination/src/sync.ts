@@ -200,7 +200,7 @@ class FarosSyncClient extends FarosClient {
       }),
       'Failed to upload sync logs'
     );
-    if (!uploadResp) {
+    if (!uploadResp && !skipVerify) {
       await this.uploadLogs(accountId, syncId, logs, true);
     }
     this.airbyteLogger?.debug('Finished uploading sync logs');
