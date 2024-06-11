@@ -1,5 +1,5 @@
 describe('index', () => {
   test('ok?', async () => {
-    expect('OK').toEqual('OK');
+    expect('Ok').toEqual('Ok');
   });
 });
