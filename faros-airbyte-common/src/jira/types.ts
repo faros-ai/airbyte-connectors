@@ -9,6 +9,7 @@ export interface IssueCompact {
   readonly updated?: Date;
   readonly boardId?: string;
   readonly additionalFields?: ReadonlyArray<[string, string]>;
+  readonly updateAdditionalFields?: boolean;
 }
 
 export interface Issue extends IssueCompact {
@@ -31,7 +32,6 @@ export interface Issue extends IssueCompact {
   readonly points?: number;
   readonly epic?: string;
   readonly sprintInfo?: SprintInfo;
-  readonly additionalFields: ReadonlyArray<[string, string]>;
   readonly url: string;
   readonly resolution: string;
   readonly resolutionDate: Date;

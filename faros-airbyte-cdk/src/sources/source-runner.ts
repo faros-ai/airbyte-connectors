@@ -104,12 +104,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           try {
             this.logger.getState = () => maybeCompressState(config, state);
-            const res = await this.source.onBeforeRead(
-              config,
-              catalog,
-              State.decompress(state)
-            );
-            const clonedState = cloneDeep(res.state ?? {});
+            const res = await this.source.onBeforeRead(config, catalog, state);
+            const clonedState = State.decompress(cloneDeep(res.state ?? {}));
             this.logger.getState = () =>
               maybeCompressState(config, clonedState);
             const iter = this.source.read(

@@ -53,6 +53,10 @@ export class FarosIssues extends JiraConverter {
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
 
+    if (issue.updateAdditionalFields) {
+      return [this.convertAdditionalFieldsIssue(issue)];
+    }
+
     // For next-gen projects, epic should be parent of issue with issue
     // type Epic otherwise use the epic key from custom field in the issue
     const epicKey =

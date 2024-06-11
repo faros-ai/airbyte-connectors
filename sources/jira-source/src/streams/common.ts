@@ -15,7 +15,11 @@ export type BoardStreamSlice = {
 };
 
 export type StreamState = {
-  readonly [projectOrBoard: string]: {cutoff: number};
+  readonly [projectOrBoard: string]: {
+    cutoff: number;
+    additionalFields?: ReadonlyArray<string>;
+    oldestIssueTimestamp?: number;
+  };
 };
 
 export type AdditionalFieldsStreamState = {

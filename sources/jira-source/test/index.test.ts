@@ -514,26 +514,6 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with additional fields config different from state should add additional fields stream', async () => {
-    const source = new sut.JiraSource(logger);
-    const catalog = readTestResourceFile('catalog.json');
-    const state = {
-      faros_issue_additional_fields: {
-        additionalFields: ['Custom String Field'],
-      },
-    };
-    const {catalog: newCatalog} = await source.onBeforeRead(
-      {
-        ...config,
-        additional_fields: ['Custom String Field', 'Custom Number Field'],
-        sync_additional_fields: true,
-      },
-      catalog,
-      state
-    );
-    expect(newCatalog).toMatchSnapshot();
-  });
-
   async function testStreamSlices(config: JiraConfig): Promise<void> {
     const stream = new FarosIssuePullRequests(config, logger);
     const slices = stream.streamSlices();
