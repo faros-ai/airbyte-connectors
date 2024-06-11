@@ -728,15 +728,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (logFiles) {
         const logs = await logFiles.sortedLogs(this.logger);
         if (account?.local && sync?.syncId && logs) {
-          const client = this.getFarosClient();
-          const url = await client.getAccountSyncLogFileUrl(
-            accountId,
-            sync.syncId,
-            logs.hash
-          );
-          if (url) {
-            await client.uploadLogs(url, logs.content, logs.hash);
-          }
+          await this.getFarosClient().uploadLogs(accountId, sync.syncId, logs);
         }
       }
     }
