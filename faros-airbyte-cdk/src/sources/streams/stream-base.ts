@@ -176,11 +176,13 @@ export abstract class AirbyteStreamBase {
    *
    * @param currentStreamState The stream's current state object
    * @param latestRecord The latest record extracted from the stream
+   * @param streamSlice The current stream slice being processed
    * @returns An updated state object
    */
   getUpdatedState(
     currentStreamState: Dictionary<any>,
-    latestRecord: Dictionary<any>
+    latestRecord: Dictionary<any>,
+    streamSlice?: Dictionary<any>
   ): Dictionary<any> {
     return {};
   }
