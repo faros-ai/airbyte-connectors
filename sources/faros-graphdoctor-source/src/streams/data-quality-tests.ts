@@ -15,7 +15,7 @@ export class DataQualityTests extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/GraphDoctorSchema.json');
+    return require('../../resources/schemas/data-quality-tests.json');
   }
 
   get primaryKey(): StreamKey {
