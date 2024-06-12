@@ -1,6 +1,6 @@
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Schema, SchemaLoader} from 'faros-js-client';
+import {paginatedQueryV2, Schema, SchemaLoader} from 'faros-js-client';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {
   clone,
@@ -21,6 +21,7 @@ import {
   pick,
   reverse,
   set,
+  unset,
   unzip,
 } from 'lodash';
 import traverse from 'traverse';
@@ -45,7 +46,7 @@ interface ConflictClause {
 export interface GraphQLBackend {
   healthCheck(): Promise<void>;
 
-  postQuery(query: any): Promise<any>;
+  postQuery(query: any, variables?: any): Promise<any>;
 }
 
 interface WriteOp {
@@ -145,8 +146,8 @@ export function strictPick(
       rawValue = isDate(rawValue)
         ? rawValue.getTime()
         : isString(rawValue)
-        ? Date.parse(rawValue)
-        : rawValue;
+          ? Date.parse(rawValue)
+          : rawValue;
     }
     return rawValue ?? nullValue;
   }
@@ -282,6 +283,7 @@ export class GraphQLClient {
   private readonly upsertBuffer = new UpsertBuffer();
   private readonly selfReferentModels = new Set();
   private readonly updateResetLimit: boolean;
+  private readonly resetPageSize: number;
   private resetLimitMillis: number;
 
   constructor(
@@ -290,13 +292,15 @@ export class GraphQLClient {
     backend: GraphQLBackend,
     upsertBatchSize,
     mutationBatchSize,
-    updateResetLimit = true
+    updateResetLimit = true,
+    resetPageSize = 500
   ) {
     this.logger = logger;
     this.schemaLoader = schemaLoader;
     this.backend = backend;
     this.upsertBatchSize = upsertBatchSize ?? 10000;
     this.mutationBatchSize = mutationBatchSize ?? 100;
+    this.resetPageSize = resetPageSize;
     assert(
       this.upsertBatchSize >= 0,
       `negative upsert batch size: ${this.upsertBatchSize}`
@@ -304,6 +308,10 @@ export class GraphQLClient {
     assert(
       this.mutationBatchSize > 0,
       `non-positive mutation batch size: ${this.mutationBatchSize}`
+    );
+    assert(
+      this.resetPageSize > 0,
+      `non-positive reset page size: ${this.resetPageSize}`
     );
     this.updateResetLimit = updateResetLimit;
     this.resetLimitMillis = updateResetLimit
@@ -377,21 +385,47 @@ export class GraphQLClient {
           }),
         };
       }
-      const mutation = {
-        [`delete_${model}`]: {
+      const query = {
+        [model]: {
           __args: {
             where: {
               _and: {...deleteConditions},
             },
           },
-          affected_rows: true,
+          id: true,
         },
       };
-      await this.postQuery(
-        {mutation},
-        `Failed to reset ${model} data for origin ${origin}`
+      const records = paginateQuery(
+        jsonToGraphQLQuery({query}),
+        (query, args) =>
+          this.backend.postQuery(query, args).then((res) => res?.data),
+        this.resetPageSize
       );
+      let ids = [];
+      for await (const record of records) {
+        ids.push(record.id);
+        // delete in batches
+        if (ids.length >= this.resetPageSize) {
+          await this.deleteById(model, ids);
+          ids = [];
+        }
+      }
+      // clean up any remaining records
+      if (ids.length > 0) {
+        await this.deleteById(model, ids);
+      }
     }
+  }
+
+  async deleteById(model: string, ids: string[]): Promise<void> {
+    const query = `mutation {
+      delete_${model}(where:{id: {_in:[
+        ${ids.map((id) => `"${id}"`).join(',')}
+      ]}}) {
+        affected_rows
+      }
+    }`;
+    await this.backend.postQuery(query);
   }
 
   async writeRecord(
@@ -969,4 +1003,38 @@ export class GraphQLClient {
 
 function timestamptz(date: Date): string {
   return dateformat.asString(dateformat.ISO8601_WITH_TZ_OFFSET_FORMAT, date);
+}
+
+function paginateQuery(
+  rawQuery: string,
+  client: (query: string, args: any) => Promise<any>,
+  pageSize = 1000,
+  args: Map<string, any> = new Map<string, any>()
+): AsyncIterable<any> {
+  const {query, edgesPath, edgeIdPath} = paginatedQueryV2(rawQuery);
+  assert(edgesPath && edgeIdPath);
+  return {
+    async *[Symbol.asyncIterator](): AsyncIterator<any> {
+      let id = '';
+      let hasNextPage = true;
+      while (hasNextPage) {
+        const data = await client(query, {
+          limit: pageSize,
+          id,
+          ...Object.fromEntries(args.entries()),
+        });
+        const edges = get(data, edgesPath) || [];
+        for (const edge of edges) {
+          id = get(edge, edgeIdPath);
+          unset(edge, edgeIdPath);
+          if (!id) {
+            return;
+          }
+          yield edge;
+        }
+        // break on partial page
+        hasNextPage = edges.length === pageSize;
+      }
+    },
+  };
 }

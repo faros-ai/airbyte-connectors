@@ -905,6 +905,85 @@ describe('graphql-client write batch upsert', () => {
     await client.flush();
     expect(queries).toEqual(1);
   });
+  test('resetData', async () => {
+    const responses = [
+      JSON.parse(`
+        {
+          "data": {
+            "vcs_Organization": [
+              {
+                "_id": "00042ddb78c1a5956320e7fbc7ca488517a9caa8",
+                "id": "00042ddb78c1a5956320e7fbc7ca488517a9caa8"
+              },
+              {
+                "_id": "0008d73ec6b79910fcbadb7410c4d191e92ce44d",
+                "id": "0008d73ec6b79910fcbadb7410c4d191e92ce44d"
+              },
+              {
+                "_id": "0011f5f8600d14dae163a37286aa1cd5e6bf6a71",
+                "id": "0011f5f8600d14dae163a37286aa1cd5e6bf6a71"
+              }
+            ]
+          }
+        }
+      `),
+      JSON.parse(`
+      {
+        "data": {
+          "delete_vcs_Organization": {
+            "affected_rows": 3
+          }
+        }
+      }`),
+      JSON.parse(`
+        {
+          "data": {
+            "vcs_Organization": [
+              {
+                "_id": "0017bcda1dfcf5b5c2db430849a4bf90f8c51be4",
+                "id": "0017bcda1dfcf5b5c2db430849a4bf90f8c51be4"
+              },
+              {
+                "_id": "001d319806cb4e608aec2f47f3a2028c41b64321",
+                "id": "001d319806cb4e608aec2f47f3a2028c41b64321"
+              }
+            ]
+          }
+        }        
+      `),
+      JSON.parse(`
+      {
+        "data": {
+          "delete_vcs_Organization": {
+            "affected_rows": 2
+          }
+        }
+      }`),
+    ];
+    let queries = 0;
+    const backend: GraphQLBackend = {
+      healthCheck() {
+        return Promise.resolve();
+      },
+      postQuery(query: any, variables?: any) {
+        expect(query).toMatchSnapshot();
+        expect(variables).toMatchSnapshot();
+        return Promise.resolve(responses[queries++]);
+      },
+    };
+    const client = new GraphQLClient(
+      new AirbyteLogger(AirbyteLogLevel.INFO),
+      schemaLoader,
+      backend,
+      10,
+      1,
+      true,
+      3
+    );
+    await client.loadSchema();
+    await client.resetData('foo', ['vcs_Organization'], false);
+    expect(queries).toEqual(responses.length);
+  });
 });
 
 describe('graphql-client write batch updates', () => {

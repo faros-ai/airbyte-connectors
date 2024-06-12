@@ -21,10 +21,11 @@ export class HasuraBackend implements GraphQLBackend {
     await this.api.get('/healthz');
   }
 
-  async postQuery(query: any): Promise<any> {
+  async postQuery(query: any, variables?: any): Promise<any> {
     // extract and return the data field of axios response
     const {data} = await this.api.post('/v1/graphql', {
-      query: query,
+      query,
+      variables,
     });
     return data;
   }

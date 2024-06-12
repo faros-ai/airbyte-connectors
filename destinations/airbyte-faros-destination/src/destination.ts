@@ -269,8 +269,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         async healthCheck(): Promise<void> {
           await client.graphExists(graph);
         },
-        async postQuery(query: any): Promise<any> {
-          return await client.rawGql(graph, query);
+        async postQuery(query: any, variables?: any): Promise<any> {
+          return await client.rawGql(graph, query, variables);
         },
       };
       const schemaLoader = {
