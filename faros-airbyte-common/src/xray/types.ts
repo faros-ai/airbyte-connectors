@@ -49,6 +49,8 @@ export interface Test extends BaseTestDetail {
   readonly status: Status;
   readonly preconditions: ReadonlyArray<Precondition>;
   readonly steps: ReadonlyArray<Step>;
+  readonly project: string;
+  readonly lastModified: string;
 }
 
 export interface TestPlanTest {
@@ -77,4 +79,6 @@ export interface TestVersion {
 
 export interface TestExecution extends BaseTestDetail {
   readonly testEnvironments: ReadonlyArray<string>;
+  readonly project: string;
+  readonly lastModified: string;
 }

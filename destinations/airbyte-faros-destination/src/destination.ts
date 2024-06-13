@@ -106,12 +106,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   getFarosClient(): FarosSyncClient {
     if (this.farosClient) return this.farosClient;
-    throw new VError('Faros Client is not initialized');
+    if (this.edition === Edition.CLOUD) {
+      throw new VError('Faros Client is not initialized');
+    }
   }
 
   getGraphQLClient(): GraphQLClient {
     if (this.graphQLClient) return this.graphQLClient;
-    throw new VError('GraphQL Client is not initialized');
+    if (this.edition === Edition.COMMUNITY) {
+      throw new VError('GraphQL Client is not initialized');
+    }
   }
 
   async spec(minimize: boolean = true): Promise<AirbyteSpec> {
@@ -399,10 +403,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private async init(config: DestinationConfig): Promise<void> {
-    const edition = config.edition_configs?.edition ?? Edition.CLOUD;
+    let edition = config.edition_configs?.edition;
 
-    if (!config.edition_configs?.edition) {
+    if (!edition && !config.dry_run) {
       this.logger.info('Edition is not set. Assuming Faros Cloud edition');
+      edition = Edition.CLOUD;
     }
 
     this.edition = edition;
@@ -414,11 +419,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       case Edition.CLOUD:
         await this.initCloud(config);
         break;
-      default:
-        throw new VError(
-          `Invalid edition ${edition}. ` +
-            `Possible values are ${Object.values(Edition).join(',')}`
-        );
     }
 
     this.initGlobal(config);
@@ -460,7 +460,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     const origin = this.getOrigin(config, catalog);
     const accountId = config.faros_source_id || origin;
     const dryRunEnabled = config.dry_run === true || dryRun;
-    await this.init(config);
+    await this.init({...config, dry_run: dryRunEnabled});
 
     let account: Account;
     let sync: AccountSync;
@@ -512,7 +512,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         streamsSyncMode,
         this.farosGraph,
         origin,
-        this.edition === Edition.COMMUNITY ? undefined : this.getFarosClient()
+        this.edition === Edition.CLOUD ? this.getFarosClient() : undefined
       );
 
       if (dryRunEnabled) {
@@ -728,15 +728,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (logFiles) {
         const logs = await logFiles.sortedLogs(this.logger);
         if (account?.local && sync?.syncId && logs) {
-          const client = this.getFarosClient();
-          const url = await client.getAccountSyncLogFileUrl(
-            accountId,
-            sync.syncId,
-            logs.hash
-          );
-          if (url) {
-            await client.uploadLogs(url, logs.content, logs.hash);
-          }
+          await this.getFarosClient().uploadLogs(accountId, sync.syncId, logs);
         }
       }
     }

@@ -83,7 +83,7 @@ export class FarosFeed extends Converter {
         const [key, value] = Object.entries(rec).pop();
         if (key === 'where' && typeof value == 'string') {
           const [baseModel] = model.split('__', 1);
-          ctx.resetModels.add(baseModel);
+          ctx.resetModels?.add(baseModel);
           return [];
         }
       }

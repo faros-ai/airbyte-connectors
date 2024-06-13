@@ -351,7 +351,8 @@ export abstract class AirbyteSourceBase<
           if (!config.backfill) {
             streamState = streamInstance.getUpdatedState(
               streamState,
-              recordData
+              recordData,
+              slice
             );
             if (
               checkpointInterval &&

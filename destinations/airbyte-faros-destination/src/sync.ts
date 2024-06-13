@@ -9,6 +9,8 @@ import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {LogContent} from './destination-logger';
+
 export interface Account {
   accountId: string;
   params: Dictionary<any>;
@@ -78,7 +80,7 @@ class FarosSyncClient extends FarosClient {
     type?: string,
     mode?: string
   ): Promise<Account | undefined> {
-    this.logger?.debug(`Creating local account ${accountId}`);
+    this.airbyteLogger?.debug(`Creating local account ${accountId}`);
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('POST', '/accounts', {
@@ -100,7 +102,7 @@ class FarosSyncClient extends FarosClient {
     type?: string,
     mode?: string
   ): Promise<Account | undefined> {
-    this.logger?.debug(`Updating local account ${accountId}`);
+    this.airbyteLogger?.debug(`Updating local account ${accountId}`);
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('PUT', `/accounts/${accountId}`, {
@@ -165,23 +167,43 @@ class FarosSyncClient extends FarosClient {
     return result?.uploadUrl;
   }
 
-  async uploadLogs(url: string, content: string, hash: string): Promise<void> {
-    this.logger.debug('Uploading sync logs');
+  async uploadLogs(
+    accountId: string,
+    syncId: string,
+    logs: LogContent,
+    skipVerify?: boolean
+  ): Promise<void> {
+    this.airbyteLogger?.debug(
+      'Uploading sync logs' +
+        (skipVerify ? ' (skipping hash verification)' : '')
+    );
+    const urlResp: {uploadUrl: string} = await this.attemptRequest(
+      this.request('POST', `/accounts/${accountId}/syncs/${syncId}/logs`, {
+        hash: skipVerify ? undefined : logs.hash,
+      }),
+      `Failed to generate log file url for sync ${syncId} for account ${accountId}`
+    );
+    if (!urlResp?.uploadUrl) {
+      return;
+    }
     const api = makeAxiosInstanceWithRetry(
       this._axiosConfig ?? DEFAULT_AXIOS_CONFIG,
       this.logger
     );
-    await this.attemptRequest(
-      api.put(url, content, {
+    const uploadResp = await this.attemptRequest(
+      api.put(urlResp.uploadUrl, logs.content, {
         headers: {
-          'content-length': content.length,
-          'content-md5': hash,
+          'content-length': logs.content.length,
+          'content-md5': skipVerify ? undefined : logs.hash,
           'content-type': 'text/plain; charset=UTF-8',
         },
       }),
       'Failed to upload sync logs'
     );
-    this.logger.debug('Finished uploading sync logs');
+    if (!uploadResp && !skipVerify) {
+      await this.uploadLogs(accountId, syncId, logs, true);
+    }
+    this.airbyteLogger?.debug('Finished uploading sync logs');
   }
 
   private attemptRequest<T>(
@@ -198,7 +220,7 @@ class FarosSyncClient extends FarosClient {
         this.airbyteLogger?.warn(`${failureMessage}. ${message}`);
         if (isAxiosResponse(error.response)) {
           const response = error.response as AxiosResponse;
-          this.logger.warn(
+          this.airbyteLogger?.warn(
             `Error response code: ${response.status}. Body: ${response.data}`
           );
         }

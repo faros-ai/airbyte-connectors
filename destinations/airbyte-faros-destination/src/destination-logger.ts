@@ -14,6 +14,11 @@ import fs from 'fs';
 import os from 'os';
 import readline from 'readline';
 
+export interface LogContent {
+  content: string;
+  hash: string;
+}
+
 export class LogFiles {
   private readonly srcPath: string;
   private readonly dstPath: string;
@@ -78,9 +83,7 @@ export class LogFiles {
     }
   }
 
-  async sortedLogs(
-    logger?: AirbyteLogger
-  ): Promise<{content: string; hash: string} | undefined> {
+  async sortedLogs(logger?: AirbyteLogger): Promise<LogContent | undefined> {
     try {
       await Promise.all([
         this.srcWriteQueue.onIdle(),

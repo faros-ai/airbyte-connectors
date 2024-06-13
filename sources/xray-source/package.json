@@ -32,7 +32,9 @@
   "dependencies": {
     "axios-auth-refresh": "^3.3.6",
     "faros-airbyte-cdk": "0.0.1",
-    "faros-airbyte-common": "0.0.1"
+    "faros-airbyte-common": "0.0.1",
+    "luxon": "^3.4.4",
+    "typescript-memoize": "^1.1.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
@@ -43,9 +45,12 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "transform": {
-      "\\.[jt]sx?$": [ "ts-jest", {
-        "tsconfig": "test/tsconfig.json"
-      }]
+      "\\.[jt]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     }
   }
 }

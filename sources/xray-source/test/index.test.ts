@@ -21,7 +21,10 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const config = {client_id: 'client_id', client_secret: 'client_secret'};
+  const config = {
+    authentication: {client_id: 'client_id', client_secret: 'client_secret'},
+    projects: ['TEST'],
+  };
 
   test('spec', async () => {
     const source = new sut.XraySource(logger);

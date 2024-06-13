@@ -20,7 +20,10 @@ describe('streams', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const config = {client_id: 'client_id', client_secret: 'client_secret'};
+  const config = {
+    authentication: {client_id: 'client_id', client_secret: 'client_secret'},
+    projects: ['TEST'],
+  };
 
   async function testStream(
     streamIndex: number,
@@ -40,7 +43,9 @@ describe('streams', () => {
     const source = new sut.XraySource(logger);
     const streams = source.streams(config);
     const stream = streams[streamIndex];
-    const iter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
+      project: 'TEST',
+    });
 
     const items = [];
     for await (const item of iter) {

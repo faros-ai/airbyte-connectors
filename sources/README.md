@@ -4,7 +4,7 @@
 
 - NodeJS >= 16.x
 - Docker
-- [Lerna](https://lerna.js.org/) -- Install with `npm i -g lerna`
+- [Lerna](https://lerna.js.org/) -- Install with `npm install -g lerna @lerna/legacy-package-management`
 
 ## Helpful Documentation
 
