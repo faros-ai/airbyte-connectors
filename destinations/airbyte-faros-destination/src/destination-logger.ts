@@ -16,7 +16,7 @@ import readline from 'readline';
 
 export interface LogContent {
   content: string;
-  hash: string;
+  hash?: string;
 }
 
 export class LogFiles {
@@ -113,7 +113,12 @@ export class LogFiles {
       const allLogs = srcLogs.concat(dstLogs);
       allLogs.sort((a, b) => a.timestamp - b.timestamp);
       const content = allLogs.map((log) => JSON.stringify(log)).join('\n');
-      const hash = crypto.createHash('md5').update(content).digest('base64');
+      let hash: string;
+      try {
+        hash = crypto.createHash('md5').update(content).digest('base64');
+      } catch (error) {
+        this.logError('Failed to hash logs', error);
+      }
       logger?.debug('Finished gathering sync logs');
       return {content, hash};
     } catch (error) {
