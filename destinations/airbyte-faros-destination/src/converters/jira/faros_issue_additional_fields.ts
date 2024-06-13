@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {IssueCompact} from 'faros-airbyte-common/lib/jira';
+import {IssueCompact} from 'faros-airbyte-common/jira';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraConverter} from './common';
