@@ -177,6 +177,7 @@
         "default": false
       },
       "reset_page_size": {
+        "order": 17,
         "type": "integer",
         "title": "GraphQL page size for reset queries",
         "description": "Maximum number of record ids to query/delete in single GraphQL statement.",
