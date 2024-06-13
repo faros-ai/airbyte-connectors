@@ -24,7 +24,9 @@ export type IssueStreamState = {
   readonly [projectOrBoard: string]: {
     cutoff: number;
     additionalFields?: ReadonlyArray<string>;
-    oldestIssueTimestamp?: number;
+    // The timestamp of the earliest issue update we've seen so far
+    // This is how far back we need to go to update the additional fields for the issues we've already fetched
+    earliestIssueUpdateTimestamp?: number;
   };
 };
 

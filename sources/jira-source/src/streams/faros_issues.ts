@@ -64,7 +64,7 @@ export class FarosIssues extends StreamWithProjectSlices {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
     const projectState = streamState?.[projectKey];
-    const from = new Date(projectState.oldestIssueTimestamp);
+    const from = new Date(projectState.earliestIssueUpdateTimestamp);
     const to = new Date(projectState.cutoff);
 
     this.logger.info(
@@ -89,18 +89,19 @@ export class FarosIssues extends StreamWithProjectSlices {
       currentStreamState,
       slice.project
     );
-    const currentOldestTimestamp =
-      currentStreamState?.[slice.project]?.oldestIssueTimestamp;
-    const oldestIssueTimestamp = Math.min(
-      currentOldestTimestamp || Infinity,
+
+    const earliestIssueUpdateTimestamp = Math.min(
+      currentStreamState?.[slice.project]?.earliestIssueUpdateTimestamp ??
+        Infinity,
       latestRecordCutoff.getTime()
     );
+
     return {
       ...updatedState,
       [slice.project]: {
         ...updatedState[slice.project],
         additionalFields: this.config.additional_fields ?? [],
-        oldestIssueTimestamp,
+        earliestIssueUpdateTimestamp,
       },
     };
   }
