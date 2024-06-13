@@ -94,6 +94,70 @@ exports[`graphql-client write batch upsert record with timestamptz primary key f
 
 exports[`graphql-client write batch upsert record with timestamptz primary key field 4`] = `"mutation { insert_vcs_UserToolUsage (objects: [{usedAt: \\"2021-10-14T00:53:33-06:00\\", origin: \\"mytestsource\\", userToolId: \\"f1e4d99accb71ba8ac1b8a1204f84b8211909212\\"}], on_conflict: {constraint: vcs_UserToolUsage_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt usedAt userToolId } } }"`;
 
+exports[`graphql-client write batch upsert resetData 1`] = `
+"query paginatedQuery($id: String, $limit: Int) {
+  vcs_Organization(
+    where: {_and: [{_and: {origin: {_eq: \\"foo\\"}, refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}}}, {id: {_gt: $id}}]}
+    order_by: {id: asc}
+    limit: $limit
+  ) {
+    _id: id
+    id
+  }
+}"
+`;
+
+exports[`graphql-client write batch upsert resetData 2`] = `
+Object {
+  "id": "",
+  "limit": 3,
+}
+`;
+
+exports[`graphql-client write batch upsert resetData 3`] = `
+"mutation {
+      delete_vcs_Organization(where:{id: {_in:[
+        \\"00042ddb78c1a5956320e7fbc7ca488517a9caa8\\",\\"0008d73ec6b79910fcbadb7410c4d191e92ce44d\\",\\"0011f5f8600d14dae163a37286aa1cd5e6bf6a71\\"
+      ]}}) {
+        affected_rows
+      }
+    }"
+`;
+
+exports[`graphql-client write batch upsert resetData 4`] = `undefined`;
+
+exports[`graphql-client write batch upsert resetData 5`] = `
+"query paginatedQuery($id: String, $limit: Int) {
+  vcs_Organization(
+    where: {_and: [{_and: {origin: {_eq: \\"foo\\"}, refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}}}, {id: {_gt: $id}}]}
+    order_by: {id: asc}
+    limit: $limit
+  ) {
+    _id: id
+    id
+  }
+}"
+`;
+
+exports[`graphql-client write batch upsert resetData 6`] = `
+Object {
+  "id": "0011f5f8600d14dae163a37286aa1cd5e6bf6a71",
+  "limit": 3,
+}
+`;
+
+exports[`graphql-client write batch upsert resetData 7`] = `
+"mutation {
+      delete_vcs_Organization(where:{id: {_in:[
+        \\"0017bcda1dfcf5b5c2db430849a4bf90f8c51be4\\",\\"001d319806cb4e608aec2f47f3a2028c41b64321\\"
+      ]}}) {
+        affected_rows
+      }
+    }"
+`;
+
+exports[`graphql-client write batch upsert resetData 8`] = `undefined`;
+
 exports[`graphql-client write batch upsert self-referent model 1`] = `"mutation { insert_org_Employee (objects: [{uid: \\"7\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [uid]}) { returning { id refreshedAt uid } } }"`;
 
 exports[`graphql-client write batch upsert self-referent model 2`] = `"mutation { insert_org_Employee (objects: [{uid: \\"9\\", origin: \\"mytestsource\\"}], on_conflict: {constraint: org_Employee_pkey, update_columns: [origin, refreshedAt]}) { returning { id refreshedAt uid } } }"`;
