@@ -117,7 +117,10 @@ export class LogFiles {
       try {
         hash = crypto.createHash('md5').update(content).digest('base64');
       } catch (error) {
-        this.logError('Failed to hash logs', error);
+        this.logError(
+          'Failed to compute a hash value for logs. Skipping it.',
+          error
+        );
       }
       logger?.debug('Finished gathering sync logs');
       return {content, hash};
