@@ -39,13 +39,6 @@
         "description": "Personal access token. See https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html for more information.",
         "airbyte_secret": true
       },
-      "sync_additional_fields": {
-        "order": 5,
-        "type": "boolean",
-        "title": "Sync Additional Fields",
-        "description": "Include additional fields on tasks.",
-        "default": false
-      },
       "additional_fields": {
         "order": 6,
         "type": "array",

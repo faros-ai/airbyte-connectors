@@ -5,8 +5,8 @@ import {Dictionary} from 'ts-essentials';
 import {Jira} from '../jira';
 import {JqlBuilder} from '../jql-builder';
 import {
-  AdditionalFieldsStreamState,
   ProjectStreamSlice,
+  StreamState,
   StreamWithProjectSlices,
 } from './common';
 
@@ -23,7 +23,7 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: AdditionalFieldsStreamState
+    streamState?: StreamState
   ): AsyncGenerator<IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
@@ -37,14 +37,5 @@ export class FarosIssueAdditionalFields extends StreamWithProjectSlices {
     for await (const issue of issues) {
       yield issue;
     }
-  }
-
-  getUpdatedState(
-    currentStreamState: AdditionalFieldsStreamState,
-    latestRecord: IssueCompact
-  ): AdditionalFieldsStreamState {
-    return {
-      additionalFields: this.config.additional_fields,
-    };
   }
 }

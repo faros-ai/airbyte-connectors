@@ -1,21 +1,18 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Issue, IssueCompact} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
-import {isEqual, omit} from 'lodash';
+import {omit, xor} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
 import {JqlBuilder} from '../jql-builder';
 import {
+  IssueStreamState,
   ProjectStreamSlice,
-  StreamState,
   StreamWithProjectSlices,
 } from './common';
 
 export class FarosIssues extends StreamWithProjectSlices {
-  projectKey: string;
-  oldestIssueTimestamp: number;
-
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosIssues.json');
   }
@@ -32,39 +29,26 @@ export class FarosIssues extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
+    streamState?: IssueStreamState
   ): AsyncGenerator<Issue | IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
-    this.projectKey = streamSlice?.project;
-    const projectState = streamState?.[this.projectKey];
+    const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(projectState?.cutoff)
         : this.getUpdateRange();
 
-    this.oldestIssueTimestamp = Math.min(
-      projectState?.oldestIssueTimestamp || Infinity,
-      updateRange[0].getTime()
-    );
-
-    // If additional fields have been updated, fetch additional fields for all issues before current update range
     if (
-      projectState?.additionalFields?.length &&
-      this.oldestIssueTimestamp &&
-      this.config.sync_additional_fields &&
-      this.config.additional_fields.length &&
-      !isEqual(projectState?.additionalFields, this.config.additional_fields)
+      projectState &&
+      xor(projectState.additionalFields, this.config.additional_fields).length
     ) {
-      yield* this.getPreviousIssuesAdditionalFields(
-        new Date(this.oldestIssueTimestamp),
-        updateRange[0],
-        jira
-      );
+      yield* this.getPreviousIssuesAdditionalFields(streamSlice, streamState);
     }
 
     for await (const issue of jira.getIssues(
       new JqlBuilder()
-        .withProject(this.projectKey)
+        .withProject(projectKey)
         .withDateRange(updateRange)
         .build()
     )) {
@@ -73,17 +57,22 @@ export class FarosIssues extends StreamWithProjectSlices {
   }
 
   private async *getPreviousIssuesAdditionalFields(
-    startDate: Date,
-    endDate: Date,
-    jira: Jira
+    streamSlice?: ProjectStreamSlice,
+    streamState?: IssueStreamState
   ): AsyncGenerator<IssueCompact> {
+    const jira = await Jira.instance(this.config, this.logger);
+    const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
     this.logger.info(
-      `Additional fields have been updated for project ${this.projectKey}. Fetching additional fields for older issues.`
+      `Additional fields have been updated for project ${projectKey}. Fetching additional fields for older issues.`
     );
     for await (const issue of jira.getIssueCompactWithAdditionalFields(
       new JqlBuilder()
-        .withProject(this.projectKey)
-        .withDateRange([startDate, endDate])
+        .withProject(projectKey)
+        .withDateRange([
+          new Date(projectState.oldestIssueTimestamp),
+          new Date(projectState.cutoff),
+        ])
         .build()
     )) {
       yield {...issue, updateAdditionalFields: true};
@@ -91,21 +80,28 @@ export class FarosIssues extends StreamWithProjectSlices {
   }
 
   getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: Issue
-  ): StreamState {
+    currentStreamState: IssueStreamState,
+    latestRecord: Issue,
+    slice: ProjectStreamSlice
+  ): IssueStreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.updated ?? 0);
     const updatedState = this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      this.projectKey
+      slice.project
+    );
+    const currentOldestTimestamp =
+      currentStreamState?.[slice.project]?.oldestIssueTimestamp;
+    const oldestIssueTimestamp = Math.min(
+      currentOldestTimestamp || Infinity,
+      latestRecordCutoff.getTime()
     );
     return {
       ...updatedState,
-      [this.projectKey]: {
-        ...updatedState[this.projectKey],
+      [slice.project]: {
+        ...updatedState[slice.project],
         additionalFields: this.config.additional_fields,
-        oldestIssueTimestamp: this.oldestIssueTimestamp,
+        oldestIssueTimestamp,
       },
     };
   }

@@ -17,13 +17,15 @@ export type BoardStreamSlice = {
 export type StreamState = {
   readonly [projectOrBoard: string]: {
     cutoff: number;
-    additionalFields?: ReadonlyArray<string>;
-    oldestIssueTimestamp?: number;
   };
 };
 
-export type AdditionalFieldsStreamState = {
-  readonly additionalFields: ReadonlyArray<string>;
+export type IssueStreamState = StreamState & {
+  readonly [projectOrBoard: string]: {
+    cutoff: number;
+    additionalFields?: ReadonlyArray<string>;
+    oldestIssueTimestamp?: number;
+  };
 };
 
 export enum RunMode {
