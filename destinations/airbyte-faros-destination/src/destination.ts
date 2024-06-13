@@ -173,7 +173,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         backend,
         0,
         config.edition_configs.community_graphql_batch_size,
-        false
+        false,
+        config.reset_page_size
       );
     } catch (e) {
       throw new VError(`Failed to initialize Hasura Client. Error: ${e}`);
@@ -288,7 +289,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         schemaLoader,
         backend,
         config.edition_configs.cloud_graphql_upsert_batch_size,
-        config.edition_configs.cloud_graphql_batch_size
+        config.edition_configs.cloud_graphql_batch_size,
+        true,
+        config.reset_page_size
       );
     } catch (e) {
       throw new VError(`Failed to initialize GraphQLClient. Error: ${e}`);
