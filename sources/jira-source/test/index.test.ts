@@ -2,6 +2,8 @@ import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
+  sourceCheckTest,
+  sourceReadTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
@@ -81,20 +83,17 @@ describe('index', () => {
   });
 
   test('check connection - invalid bucketing config - non positive integer', async () => {
-    const source = new sut.JiraSource(logger);
-    await expect(
-      source.checkConnection({...config, bucket_id: 1, bucket_total: -1})
-    ).resolves.toStrictEqual([
-      false,
-      new VError(`bucket_total must be a positive integer`),
-    ]);
+    await sourceCheckTest({
+      source,
+      configOrPath: {...config, bucket_id: 1, bucket_total: -1},
+    });
   });
 
   test('check connection', async () => {
-    const source = new sut.JiraSource(logger);
-    await expect(
-      source.checkConnection(readTestResourceFile('config.json'))
-    ).resolves.toStrictEqual([true, undefined]);
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/valid.json',
+    });
   });
 
   function paginate<V>(
@@ -124,29 +123,8 @@ describe('index', () => {
     // only use if we do not want to write data snapshot
     expectedResultLength?: number
   ) => {
-    Jira.instance = jest.fn().mockImplementation(() => {
-      return new Jira(
-        'https://jira.com',
-        mockedImplementation ?? ({} as any),
-        {} as any,
-        new Map([
-          ['field_001', 'Development'],
-          ['customfield_10000', 'Custom Number Filed'],
-          ['customfield_10001', 'Custom String Field'],
-        ]),
-        50,
-        new Map(),
-        isCloud,
-        5,
-        100,
-        sourceConfig.bucket_id,
-        sourceConfig.bucket_total,
-        logger,
-        undefined,
-        sourceConfig?.requestedStreams,
-        sourceConfig?.use_sprints_reverse_search
-      );
-    });
+    setupJiraInstance(mockedImplementation, isCloud, sourceConfig, logger);
+
     const source = new sut.JiraSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[streamIndex];
@@ -240,17 +218,22 @@ describe('index', () => {
   });
 
   test('streams - issue_pull_requests', async () => {
-    await testStream(
-      0,
-      {
-        ...config,
-        requestedStreams: new Set(['faros_issue_pull_requests']),
-        startDate: new Date('2021-01-01'),
-        endDate: new Date('2021-01-02'),
+    await sourceReadTest({
+      source,
+      configOrPath: 'issue_pull_requests/config.json',
+      catalogOrPath: 'issue_pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          getIssuePullRequestsMockedImplementation(),
+          true,
+          res.config as JiraConfig,
+          logger
+        );
       },
-      getIssuePullRequestsMockedImplementation(),
-      {project: 'TEST'}
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('streams - sprint_reports', async () => {
@@ -652,3 +635,33 @@ describe('index', () => {
     );
   });
 });
+function setupJiraInstance(
+  mockedImplementation: any,
+  isCloud: boolean,
+  sourceConfig: JiraConfig,
+  logger: AirbyteLogger
+) {
+  Jira.instance = jest.fn().mockImplementation(() => {
+    return new Jira(
+      'https://jira.com',
+      mockedImplementation ?? ({} as any),
+      {} as any,
+      new Map([
+        ['field_001', 'Development'],
+        ['customfield_10000', 'Custom Number Filed'],
+        ['customfield_10001', 'Custom String Field'],
+      ]),
+      50,
+      new Map(),
+      isCloud,
+      5,
+      100,
+      sourceConfig.bucket_id,
+      sourceConfig.bucket_total,
+      logger,
+      undefined,
+      sourceConfig?.requestedStreams,
+      sourceConfig?.use_sprints_reverse_search
+    );
+  });
+}

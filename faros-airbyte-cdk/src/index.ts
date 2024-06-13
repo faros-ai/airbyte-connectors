@@ -10,4 +10,5 @@ export * from './sources/source-logger';
 export * from './sources/source-runner';
 export * from './sources/streams/stream-base';
 export * from './spec-loader';
+export * from './testing-tools';
 export * from './utils';

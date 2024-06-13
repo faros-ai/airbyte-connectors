@@ -264,15 +264,6 @@ export class Jira {
       }
     }
 
-    const {startDate, endDate} = calculateDateRange({
-      start_date: cfg.start_date,
-      end_date: cfg.end_date,
-      cutoff_days: cfg.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
-      logger: logger.info.bind(logger),
-    });
-    cfg.startDate = startDate;
-    cfg.endDate = endDate;
-
     if (cfg.fetch_teams && isCloud && !cfg.organization_id) {
       throw new VError(
         'Organization ID must be provided for fetching teams in Jira Cloud'

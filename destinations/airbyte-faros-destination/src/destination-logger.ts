@@ -16,7 +16,7 @@ import readline from 'readline';
 
 export interface LogContent {
   content: string;
-  hash: string;
+  hash?: string;
 }
 
 export class LogFiles {
@@ -51,7 +51,7 @@ export class LogFiles {
     this.dstWriteQueue.add(() => this.writeLogs(this.dstStream, logs));
   }
 
-  private logError(msg: string, error: any): void {
+  private logWarningForError(msg: string, error: any): void {
     this.logger.localWrite(
       AirbyteLog.make(AirbyteLogLevel.WARN, `${msg}: ${JSON.stringify(error)}`)
     );
@@ -79,7 +79,7 @@ export class LogFiles {
         });
       }
     } catch (error) {
-      this.logError('Failed to save logs to disk', error);
+      this.logWarningForError('Failed to save logs to disk', error);
     }
   }
 
@@ -113,11 +113,22 @@ export class LogFiles {
       const allLogs = srcLogs.concat(dstLogs);
       allLogs.sort((a, b) => a.timestamp - b.timestamp);
       const content = allLogs.map((log) => JSON.stringify(log)).join('\n');
-      const hash = crypto.createHash('md5').update(content).digest('base64');
+      let hash: string;
+      try {
+        hash = crypto.createHash('md5').update(content).digest('base64');
+      } catch (error) {
+        this.logWarningForError(
+          'Failed to compute a hash value for logs. Skipping it.',
+          error
+        );
+      }
       logger?.debug('Finished gathering sync logs');
       return {content, hash};
     } catch (error) {
-      this.logError('Failed to gather logs for uploading to Faros', error);
+      this.logWarningForError(
+        'Failed to gather logs for uploading to Faros',
+        error
+      );
       return undefined;
     }
   }

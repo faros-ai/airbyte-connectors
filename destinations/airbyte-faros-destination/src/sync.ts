@@ -170,16 +170,16 @@ class FarosSyncClient extends FarosClient {
   async uploadLogs(
     accountId: string,
     syncId: string,
-    logs: LogContent,
-    skipVerify?: boolean
+    {content, hash}: LogContent
   ): Promise<void> {
+    const skipVerify = !hash;
     this.airbyteLogger?.debug(
       'Uploading sync logs' +
         (skipVerify ? ' (skipping hash verification)' : '')
     );
     const urlResp: {uploadUrl: string} = await this.attemptRequest(
       this.request('POST', `/accounts/${accountId}/syncs/${syncId}/logs`, {
-        hash: skipVerify ? undefined : logs.hash,
+        hash,
       }),
       `Failed to generate log file url for sync ${syncId} for account ${accountId}`
     );
@@ -191,17 +191,17 @@ class FarosSyncClient extends FarosClient {
       this.logger
     );
     const uploadResp = await this.attemptRequest(
-      api.put(urlResp.uploadUrl, logs.content, {
+      api.put(urlResp.uploadUrl, content, {
         headers: {
-          'content-length': logs.content.length,
-          'content-md5': skipVerify ? undefined : logs.hash,
+          'content-length': content.length,
+          'content-md5': hash,
           'content-type': 'text/plain; charset=UTF-8',
         },
       }),
       'Failed to upload sync logs'
     );
     if (!uploadResp && !skipVerify) {
-      await this.uploadLogs(accountId, syncId, logs, true);
+      await this.uploadLogs(accountId, syncId, {content});
     }
     this.airbyteLogger?.debug('Finished uploading sync logs');
   }

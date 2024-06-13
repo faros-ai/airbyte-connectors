@@ -8,10 +8,11 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {DEFAULT_API_URL, Jira, JiraConfig} from './jira';
+import {DEFAULT_API_URL, DEFAULT_CUTOFF_DAYS, Jira, JiraConfig} from './jira';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
@@ -101,6 +102,18 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     const requestedStreams = new Set(
       streams.map((stream) => stream.stream.name)
     );
-    return {config: {...config, requestedStreams}, catalog: {streams}, state};
+
+    const {startDate, endDate} = calculateDateRange({
+      start_date: config.start_date,
+      end_date: config.end_date,
+      cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+      logger: this.logger.info.bind(this.logger),
+    });
+
+    return {
+      config: {...config, requestedStreams, startDate, endDate},
+      catalog: {streams},
+      state,
+    };
   }
 }
