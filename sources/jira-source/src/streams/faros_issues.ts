@@ -41,7 +41,8 @@ export class FarosIssues extends StreamWithProjectSlices {
 
     if (
       projectState &&
-      xor(projectState.additionalFields, this.config.additional_fields).length
+      xor(projectState.additionalFields, this.config.additional_fields ?? [])
+        .length > 0
     ) {
       yield* this.getPreviousIssuesAdditionalFields(streamSlice, streamState);
     }
@@ -63,17 +64,15 @@ export class FarosIssues extends StreamWithProjectSlices {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
     const projectState = streamState?.[projectKey];
+    const from = new Date(projectState.oldestIssueTimestamp);
+    const to = new Date(projectState.cutoff);
+
     this.logger.info(
-      `Additional fields have been updated for project ${projectKey}. Fetching additional fields for older issues.`
+      `Refetching additional fields for issues in project ${projectKey} from ${from} to ${to}, since additional fields have changed.`
     );
+
     for await (const issue of jira.getIssueCompactWithAdditionalFields(
-      new JqlBuilder()
-        .withProject(projectKey)
-        .withDateRange([
-          new Date(projectState.oldestIssueTimestamp),
-          new Date(projectState.cutoff),
-        ])
-        .build()
+      new JqlBuilder().withProject(projectKey).withDateRange([from, to]).build()
     )) {
       yield {...issue, updateAdditionalFields: true};
     }
@@ -100,7 +99,7 @@ export class FarosIssues extends StreamWithProjectSlices {
       ...updatedState,
       [slice.project]: {
         ...updatedState[slice.project],
-        additionalFields: this.config.additional_fields,
+        additionalFields: this.config.additional_fields ?? [],
         oldestIssueTimestamp,
       },
     };

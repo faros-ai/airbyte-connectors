@@ -20,7 +20,7 @@ export type StreamState = {
   };
 };
 
-export type IssueStreamState = StreamState & {
+export type IssueStreamState = {
   readonly [projectOrBoard: string]: {
     cutoff: number;
     additionalFields?: ReadonlyArray<string>;

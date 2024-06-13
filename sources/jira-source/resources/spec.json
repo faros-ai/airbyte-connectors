@@ -40,14 +40,15 @@
         "airbyte_secret": true
       },
       "additional_fields": {
-        "order": 6,
+        "order": 5,
         "type": "array",
         "title": "Additional Fields",
         "items": {
           "type": "string"
         },
-        "description": "Fields to include on tasks when sync of additional fields is enabled (defaults to all fields).",
+        "description": "Fields to include on tasks. Use '*' to include all fields.",
         "examples": [
+          "*",
           "Last Viewed",
           "Priority"
         ]
