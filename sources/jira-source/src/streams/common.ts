@@ -15,7 +15,19 @@ export type BoardStreamSlice = {
 };
 
 export type StreamState = {
-  readonly [projectOrBoard: string]: {cutoff: number};
+  readonly [projectOrBoard: string]: {
+    cutoff: number;
+  };
+};
+
+export type IssueStreamState = {
+  readonly [projectOrBoard: string]: {
+    cutoff: number;
+    additionalFields?: ReadonlyArray<string>;
+    // The timestamp of the earliest issue update we've seen so far
+    // This is how far back we need to go to update the additional fields for the issues we've already fetched
+    earliestIssueUpdateTimestamp?: number;
+  };
 };
 
 export enum RunMode {

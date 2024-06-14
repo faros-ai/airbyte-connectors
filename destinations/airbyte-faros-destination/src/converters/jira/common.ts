@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {IssueCompact} from 'faros-airbyte-common/lib/jira';
 import {isString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {Converter, StreamContext} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface SprintIssue {
   id: number;
@@ -75,5 +76,22 @@ export abstract class JiraConverter extends Converter {
 
   protected useBoardOwnership(ctx: StreamContext): boolean {
     return this.jiraConfig(ctx).use_board_ownership ?? false;
+  }
+
+  protected convertAdditionalFieldsIssue(
+    issue: IssueCompact
+  ): DestinationRecord {
+    const additionalFields: any[] = [];
+    for (const [name, value] of issue.additionalFields) {
+      additionalFields.push({name, value});
+    }
+    return {
+      model: 'tms_Task__Update',
+      record: {
+        where: {uid: issue.key, source: this.source},
+        mask: ['additionalFields'],
+        patch: {additionalFields},
+      },
+    };
   }
 }

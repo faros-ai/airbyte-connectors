@@ -19,54 +19,6 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index onBeforeRead with run_mode AdditionalFields should filter streams 1`] = `
-{
-  "streams": [
-    {
-      "stream": {
-        "json_schema": {},
-        "name": "faros_issue_additional_fields",
-      },
-    },
-  ],
-}
-`;
-
-exports[`index onBeforeRead with run_mode Full should not filter streams 1`] = `
-{
-  "streams": [
-    {
-      "stream": {
-        "json_schema": {},
-        "name": "faros_issue_pull_requests",
-      },
-      "sync_mode": "incremental",
-    },
-    {
-      "stream": {
-        "json_schema": {},
-        "name": "faros_sprint_reports",
-      },
-      "sync_mode": "incremental",
-    },
-    {
-      "stream": {
-        "json_schema": {},
-        "name": "faros_board_issues",
-      },
-      "sync_mode": "incremental",
-    },
-    {
-      "stream": {
-        "json_schema": {},
-        "name": "faros_issues",
-      },
-      "sync_mode": "incremental",
-    },
-  ],
-}
-`;
-
 exports[`index onBeforeRead with run_mode WebhookSupplement should filter streams 1`] = `
 {
   "streams": [
@@ -89,7 +41,84 @@ exports[`index onBeforeRead with run_mode WebhookSupplement should filter stream
         "json_schema": {},
         "name": "faros_board_issues",
       },
+      "sync_mode": "full_refresh",
+    },
+  ],
+}
+`;
+
+exports[`index onBeforeRead without run_mode defaults to full mode streams 1`] = `
+{
+  "streams": [
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issue_pull_requests",
+      },
       "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprint_reports",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_board_issues",
+      },
+      "sync_mode": "full_refresh",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_sprints",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_users",
+      },
+      "sync_mode": "full_refresh",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_projects",
+      },
+      "sync_mode": "full_refresh",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_issues",
+      },
+      "sync_mode": "incremental",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_boards",
+      },
+      "sync_mode": "full_refresh",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_project_versions",
+      },
+      "sync_mode": "full_refresh",
+    },
+    {
+      "stream": {
+        "json_schema": {},
+        "name": "faros_project_version_issues",
+      },
+      "sync_mode": "full_refresh",
     },
   ],
 }
@@ -131,6 +160,7 @@ exports[`index streams - additional fields 1`] = `
       ],
     ],
     "key": "TEST-1",
+    "updated": 2024-03-14T12:00:00.000Z,
   },
   {
     "additionalFields": [
@@ -144,6 +174,7 @@ exports[`index streams - additional fields 1`] = `
       ],
     ],
     "key": "TEST-2",
+    "updated": 2024-03-14T12:00:00.000Z,
   },
 ]
 `;

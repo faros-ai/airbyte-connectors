@@ -46,7 +46,6 @@ export interface JiraConfig extends AirbyteConfig {
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
-  readonly sync_additional_fields?: boolean;
   readonly additional_fields?: ReadonlyArray<string>;
   readonly additional_fields_array_limit?: number;
   readonly reject_unauthorized?: boolean;
@@ -229,11 +228,8 @@ export class Jira {
       logger: logger,
     });
 
-    const addAllFields =
-      cfg.sync_additional_fields && (cfg.additional_fields ?? []).length === 0;
-    const additionalFields = new Set(
-      cfg.sync_additional_fields ? cfg.additional_fields ?? [] : []
-    );
+    const addAllFields = cfg.additional_fields?.includes('*');
+    const additionalFields = new Set(cfg.additional_fields ?? []);
     // We always add the following custom fields since they
     // are promoted to standard fields
     additionalFields.add(DEV_FIELD_NAME);
@@ -800,6 +796,7 @@ export class Jira {
     for await (const issue of issues) {
       yield {
         key: issue.key,
+        updated: issue.updated,
         additionalFields: issueTransformer.extractAdditionalFields(issue),
       };
     }

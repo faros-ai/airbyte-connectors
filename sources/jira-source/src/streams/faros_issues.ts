@@ -1,20 +1,18 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Issue} from 'faros-airbyte-common/jira';
+import {Issue, IssueCompact} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
-import {omit} from 'lodash';
+import {omit, xor} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
 import {JqlBuilder} from '../jql-builder';
 import {
+  IssueStreamState,
   ProjectStreamSlice,
-  StreamState,
   StreamWithProjectSlices,
 } from './common';
 
 export class FarosIssues extends StreamWithProjectSlices {
-  projectKey: string;
-
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosIssues.json');
   }
@@ -31,18 +29,27 @@ export class FarosIssues extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
-  ): AsyncGenerator<Issue> {
+    streamState?: IssueStreamState
+  ): AsyncGenerator<Issue | IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
-    this.projectKey = streamSlice?.project;
+    const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
-        ? this.getUpdateRange(streamState?.[this.projectKey]?.cutoff)
+        ? this.getUpdateRange(projectState?.cutoff)
         : this.getUpdateRange();
+
+    if (
+      projectState &&
+      xor(projectState.additionalFields, this.config.additional_fields ?? [])
+        .length > 0
+    ) {
+      yield* this.getPreviousIssuesAdditionalFields(streamSlice, streamState);
+    }
 
     for await (const issue of jira.getIssues(
       new JqlBuilder()
-        .withProject(this.projectKey)
+        .withProject(projectKey)
         .withDateRange(updateRange)
         .build()
     )) {
@@ -50,15 +57,52 @@ export class FarosIssues extends StreamWithProjectSlices {
     }
   }
 
+  private async *getPreviousIssuesAdditionalFields(
+    streamSlice?: ProjectStreamSlice,
+    streamState?: IssueStreamState
+  ): AsyncGenerator<IssueCompact> {
+    const jira = await Jira.instance(this.config, this.logger);
+    const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
+    const from = new Date(projectState.earliestIssueUpdateTimestamp);
+    const to = new Date(projectState.cutoff);
+
+    this.logger.info(
+      `Refetching additional fields for issues in project ${projectKey} from ${from} to ${to}, since additional fields have changed.`
+    );
+
+    for await (const issue of jira.getIssueCompactWithAdditionalFields(
+      new JqlBuilder().withProject(projectKey).withDateRange([from, to]).build()
+    )) {
+      yield {...issue, updateAdditionalFields: true};
+    }
+  }
+
   getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: Issue
-  ): StreamState {
+    currentStreamState: IssueStreamState,
+    latestRecord: Issue,
+    slice: ProjectStreamSlice
+  ): IssueStreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.updated ?? 0);
-    return this.getUpdatedStreamState(
+    const updatedState = this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      this.projectKey
+      slice.project
     );
+
+    const earliestIssueUpdateTimestamp = Math.min(
+      currentStreamState?.[slice.project]?.earliestIssueUpdateTimestamp ??
+        Infinity,
+      latestRecordCutoff.getTime()
+    );
+
+    return {
+      ...updatedState,
+      [slice.project]: {
+        ...updatedState[slice.project],
+        additionalFields: this.config.additional_fields ?? [],
+        earliestIssueUpdateTimestamp,
+      },
+    };
   }
 }
