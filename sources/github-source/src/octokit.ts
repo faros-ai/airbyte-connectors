@@ -42,27 +42,27 @@ export function makeOctokitClient(
   if (cfg.authentication.auth === 'token') {
     auth = cfg.authentication.personal_access_token;
   } else {
-    if (cfg.authentication.app_auth.auth === 'client') {
+    if (cfg.authentication.app_cfg.auth === 'client') {
       auth = {
         type: cfg.authentication.auth,
         appId: cfg.authentication.app_id,
         privateKey: cfg.authentication.private_key,
-        clientId: cfg.authentication.app_auth.client_id,
-        clientSecret: cfg.authentication.app_auth.client_secret,
+        clientId: cfg.authentication.app_cfg.client_id,
+        clientSecret: cfg.authentication.app_cfg.client_secret,
       };
     } else {
       auth = {
         type: cfg.authentication.auth,
         appId: cfg.authentication.app_id,
         privateKey: cfg.authentication.private_key,
-        installationId: cfg.authentication.app_auth.installation_id,
+        installationId: cfg.authentication.app_cfg.installation_id,
       };
     }
   }
 
   const kit = new FeedOctokit({
     auth,
-    authStrategy: 'appId' in cfg.authentication ? createAppAuth : undefined,
+    authStrategy: cfg.authentication.auth === 'app' ? createAppAuth : undefined,
     baseUrl,
     request,
     throttle,

@@ -18,14 +18,14 @@ type PartialGitHubApp = {
 };
 
 type GitHubAppInstallation = PartialGitHubApp & {
-  app_auth: {
+  app_cfg: {
     auth: 'installation';
     installation_id: number;
   };
 };
 
 type GitHubAppClient = PartialGitHubApp & {
-  app_auth: {
+  app_cfg: {
     auth: 'client';
     client_id: string;
     client_secret: string;
