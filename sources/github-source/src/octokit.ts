@@ -41,23 +41,21 @@ export function makeOctokitClient(
   let auth: string | Dictionary<any>;
   if (cfg.authentication.auth === 'token') {
     auth = cfg.authentication.personal_access_token;
+  } else if (cfg.authentication.app_cfg.auth === 'client') {
+    auth = {
+      type: cfg.authentication.auth,
+      appId: cfg.authentication.app_id,
+      privateKey: cfg.authentication.private_key,
+      clientId: cfg.authentication.app_cfg.client_id,
+      clientSecret: cfg.authentication.app_cfg.client_secret,
+    };
   } else {
-    if (cfg.authentication.app_cfg.auth === 'client') {
-      auth = {
-        type: cfg.authentication.auth,
-        appId: cfg.authentication.app_id,
-        privateKey: cfg.authentication.private_key,
-        clientId: cfg.authentication.app_cfg.client_id,
-        clientSecret: cfg.authentication.app_cfg.client_secret,
-      };
-    } else {
-      auth = {
-        type: cfg.authentication.auth,
-        appId: cfg.authentication.app_id,
-        privateKey: cfg.authentication.private_key,
-        installationId: cfg.authentication.app_cfg.installation_id,
-      };
-    }
+    auth = {
+      type: cfg.authentication.auth,
+      appId: cfg.authentication.app_id,
+      privateKey: cfg.authentication.private_key,
+      installationId: cfg.authentication.app_cfg.installation_id,
+    };
   }
 
   const kit = new FeedOctokit({
@@ -127,7 +125,7 @@ function beforeRequestHook(
     let url = request.url;
     if (url.includes('{')) {
       const urlTemplate = template.parse(url);
-      url = urlTemplate.expand(request as any);
+      url = urlTemplate.expand(request);
     }
     if (url.startsWith('/')) {
       url = request.baseUrl + url;
