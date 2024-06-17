@@ -1,6 +1,6 @@
 import {createAppAuth} from '@octokit/auth-app';
 import {retry} from '@octokit/plugin-retry';
-import {throttling} from '@octokit/plugin-throttling';
+import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
 import {Octokit} from '@octokit/rest';
 import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
@@ -84,7 +84,7 @@ function getThrottle(
   logger: AirbyteLogger,
   onRateLimit: (reason?: Error) => boolean,
   maxRetries: number
-): Dictionary<any> {
+): ThrottlingOptions & {global: Bottleneck.Group} {
   return {
     global: new Bottleneck.Group({
       minTime: 100,

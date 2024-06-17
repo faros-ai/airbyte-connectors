@@ -31,11 +31,11 @@
   },
   "dependencies": {
     "faros-airbyte-cdk": "0.0.1",
-    "@octokit/auth-app": "^4.0.4",
-    "@octokit/plugin-retry": "^3.0.9",
-    "@octokit/plugin-throttling": "^4.2.0",
-    "@octokit/rest": "^18.11.3",
-    "@octokit/types": "^8.0.0"
+    "@octokit/auth-app": "^7.1.0",
+    "@octokit/plugin-retry": "^6.0.1",
+    "@octokit/plugin-throttling": "^8.2.0",
+    "@octokit/rest": "^20.1.1",
+    "@octokit/types": "^13.5.0"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
