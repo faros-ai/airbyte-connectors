@@ -59,7 +59,7 @@
                 "multiline": true,
                 "order": 2
               },
-              "app_auth": {
+              "app_cfg": {
                 "title": "App Config",
                 "description": "Choose your GitHub App authentication method",
                 "type": "object",

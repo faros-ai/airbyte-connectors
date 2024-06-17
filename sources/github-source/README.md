@@ -1,4 +1,4 @@
-# Xray Source
+# GitHub Source
 
 This is the repository for the Github source connector, written in Typescript.
 
