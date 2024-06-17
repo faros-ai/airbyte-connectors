@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "faros-airbyte-cdk": "0.0.1",
-    "@octokit/auth-app": "^7.1.0",
+    "@octokit/auth-app": "^6.1.1",
     "@octokit/plugin-retry": "^6.0.1",
     "@octokit/plugin-throttling": "^8.2.0",
     "@octokit/rest": "^20.1.1",
