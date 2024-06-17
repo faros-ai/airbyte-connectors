@@ -10,12 +10,13 @@ import {uniq} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import url from 'url';
 import template from 'url-template';
+import VError from 'verror';
 
 import {GithubConfig} from './types';
 
 export type RateLimitHandler = (reason?: Error) => boolean;
 
-const FeedOctokit = Octokit.plugin(retry, throttling);
+const ExtendedOctokit = Octokit.plugin(retry, throttling);
 
 export const GITHUB_API_URL = 'https://api.github.com';
 
@@ -38,27 +39,9 @@ export function makeOctokitClient(
       }
     : {timeout: 90_000};
 
-  let auth: string | Dictionary<any>;
-  if (cfg.authentication.auth === 'token') {
-    auth = cfg.authentication.personal_access_token;
-  } else if (cfg.authentication.app_cfg.auth === 'client') {
-    auth = {
-      type: cfg.authentication.auth,
-      appId: cfg.authentication.app_id,
-      privateKey: cfg.authentication.private_key,
-      clientId: cfg.authentication.app_cfg.client_id,
-      clientSecret: cfg.authentication.app_cfg.client_secret,
-    };
-  } else {
-    auth = {
-      type: cfg.authentication.auth,
-      appId: cfg.authentication.app_id,
-      privateKey: cfg.authentication.private_key,
-      installationId: cfg.authentication.app_cfg.installation_id,
-    };
-  }
+  const auth = getOctokitAuth(cfg);
 
-  const kit = new FeedOctokit({
+  const kit = new ExtendedOctokit({
     auth,
     authStrategy: cfg.authentication.auth === 'app' ? createAppAuth : undefined,
     baseUrl,
@@ -77,6 +60,59 @@ export function makeOctokitClient(
   });
 
   return kit;
+}
+
+function getOctokitAuth(cfg: GithubConfig): string | Dictionary<any> {
+  if (cfg.authentication.auth === 'token') {
+    if (!cfg.authentication.personal_access_token) {
+      throw new VError('Personal access token is required');
+    }
+    return cfg.authentication.personal_access_token;
+  }
+
+  if (cfg.authentication.auth === 'app') {
+    if (!cfg.authentication.app_id) {
+      throw new VError('App id is required');
+    }
+    if (!cfg.authentication.private_key) {
+      throw new VError('App private key is required');
+    }
+    if (!cfg.authentication.app_cfg) {
+      throw new VError('App configuration is required');
+    }
+
+    if (cfg.authentication.app_cfg.auth === 'client') {
+      if (!cfg.authentication.app_cfg.client_id) {
+        throw new VError('App client id is required');
+      }
+      if (!cfg.authentication.app_cfg.client_secret) {
+        throw new VError('App client secret is required');
+      }
+      return {
+        type: cfg.authentication.auth,
+        appId: cfg.authentication.app_id,
+        privateKey: cfg.authentication.private_key,
+        clientId: cfg.authentication.app_cfg.client_id,
+        clientSecret: cfg.authentication.app_cfg.client_secret,
+      };
+    }
+
+    if (cfg.authentication.app_cfg.auth === 'installation') {
+      if (!cfg.authentication.app_cfg.installation_id) {
+        throw new VError('App installation id is required');
+      }
+      return {
+        type: cfg.authentication.auth,
+        appId: cfg.authentication.app_id,
+        privateKey: cfg.authentication.private_key,
+        installationId: cfg.authentication.app_cfg.installation_id,
+      };
+    }
+
+    throw new VError('Invalid value for authentication.app_cfg.auth');
+  }
+
+  throw new VError('Invalid value for authentication.auth');
 }
 
 function getThrottle(
