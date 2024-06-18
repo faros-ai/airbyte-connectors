@@ -1,13 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {CopilotSeat} from 'faros-airbyte-common/github';
+import {CopilotSeat, GitHubTool} from 'faros-airbyte-common/github';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
-
-enum GitHubTool {
-  Copilot = 'GitHubCopilot',
-}
 
 interface UserToolKey {
   user: {uid: string; source: string};
@@ -16,7 +12,10 @@ interface UserToolKey {
 }
 
 export class FarosCopilotSeats extends GitHubConverter {
+  private readonly orgs = new Set<string>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_OrganizationTool',
     'vcs_UserTool',
     'vcs_UserToolUsage',
   ];
@@ -27,17 +26,30 @@ export class FarosCopilotSeats extends GitHubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const seat = record.record.data as CopilotSeat;
     const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
-    const res: DestinationRecord[] = [
-      {
-        model: 'vcs_UserTool',
+    const res: DestinationRecord[] = [];
+    if (!this.orgs.has(seat.org)) {
+      this.orgs.add(seat.org);
+      res.push({
+        model: 'vcs_OrganizationTool',
         record: {
-          ...userTool,
-          inactive: false,
-          startedAt: seat.created_at,
-          endedAt: seat.pending_cancellation_date,
+          organization: {
+            uid: toLower(seat.org),
+            source: this.streamName.source,
+          },
+          tool: {category: GitHubTool.Copilot},
+          inactive: seat.inactive,
         },
+      });
+    }
+    res.push({
+      model: 'vcs_UserTool',
+      record: {
+        ...userTool,
+        inactive: false,
+        startedAt: seat.created_at,
+        endedAt: seat.pending_cancellation_date,
       },
-    ];
+    });
     if (seat.last_activity_at) {
       res.push({
         model: 'vcs_UserToolUsage',

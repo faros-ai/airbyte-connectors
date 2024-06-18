@@ -1,11 +1,11 @@
-import {StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {CopilotSeat} from 'faros-airbyte-common/github';
 import {Dictionary} from 'ts-essentials';
 
 import {GitHub} from '../github';
-import {StreamBase} from './common';
+import {OrgStreamSlice, StreamWithOrgSlices} from './common';
 
-export class FarosCopilotSeats extends StreamBase {
+export class FarosCopilotSeats extends StreamWithOrgSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosCopilotSeats.json');
   }
@@ -14,9 +14,13 @@ export class FarosCopilotSeats extends StreamBase {
     return ['org', 'user'];
   }
 
-  async *readRecords(): AsyncGenerator<CopilotSeat> {
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: OrgStreamSlice
+  ): AsyncGenerator<CopilotSeat> {
     const github = await GitHub.instance(this.config, this.logger);
-    const org = ''; // todo: get from slice or github instance should fetch from all orgs based on cfg?
-    yield* github.getCopilotSeats(org);
+    const org = streamSlice?.org;
+    yield* github.getCopilotSeats(org, this.farosClient, this.config.graph);
   }
 }

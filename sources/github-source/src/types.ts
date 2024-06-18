@@ -1,9 +1,15 @@
-export interface GitHubConfig {
-  authentication: GitHubAuth;
-  api_url?: string;
-  concurrency_limit?: number;
-  reject_unauthorized?: boolean;
-  previews?: ReadonlyArray<string>;
+import {AirbyteConfig} from 'faros-airbyte-cdk';
+
+export interface GitHubConfig extends AirbyteConfig {
+  readonly authentication: GitHubAuth;
+  readonly url?: string;
+  readonly orgs?: ReadonlyArray<string>;
+  readonly concurrency_limit?: number;
+  readonly reject_unauthorized?: boolean;
+  readonly previews?: ReadonlyArray<string>;
+  readonly api_url?: string;
+  readonly api_key?: string;
+  readonly graph?: string;
 }
 
 type GitHubToken = {

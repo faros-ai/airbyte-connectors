@@ -29,7 +29,7 @@ export function makeOctokitClient(
   maxRetries = 3
 ): Octokit {
   const throttle = getThrottle(cfg, logger, onRateLimit, maxRetries);
-  const baseUrl = cfg.api_url ?? GITHUB_API_URL;
+  const baseUrl = cfg.url ?? GITHUB_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
   const request = isHttps

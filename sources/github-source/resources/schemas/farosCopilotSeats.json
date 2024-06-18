@@ -8,6 +8,9 @@
     "user": {
       "type": "string"
     },
+    "inactive": {
+      "type": "boolean"
+    },
     "created_at": {
       "type": "string",
       "format": "date-time"
