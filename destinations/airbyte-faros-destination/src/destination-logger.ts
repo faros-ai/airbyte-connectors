@@ -114,13 +114,16 @@ export class LogFiles {
       allLogs.sort((a, b) => a.timestamp - b.timestamp);
       const content = allLogs.map((log) => JSON.stringify(log)).join('\n');
       let hash: string;
-      try {
-        hash = crypto.createHash('md5').update(content).digest('base64');
-      } catch (error) {
-        this.logWarningForError(
-          'Failed to compute a hash value for logs. Skipping it.',
-          error
-        );
+      // FIPS-compliant systems do not support MD5 hashing
+      if (!crypto.getFips()) {
+        try {
+          hash = crypto.createHash('md5').update(content).digest('base64');
+        } catch (error) {
+          this.logWarningForError(
+            'Failed to compute a hash value for logs. Skipping it.',
+            error
+          );
+        }
       }
       logger?.debug('Finished gathering sync logs');
       return {content, hash};
