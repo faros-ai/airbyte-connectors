@@ -73,6 +73,7 @@ describe('index', () => {
               getProjects: fnProjectsFunc.mockResolvedValue({
                 data: {values: [testProject]},
               }),
+              getProject: jest.fn().mockResolvedValue({data: testProject}),
             },
           },
           hasNextPage: jest.fn(),

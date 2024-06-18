@@ -22,6 +22,9 @@ export class Projects extends StreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Project> {
-    yield* this.projects();
+    for await (const project of this.projects()) {
+      const projectKey = await this.fetchProjectKey(project.key);
+      yield {key: projectKey, ...project};
+    }
   }
 }
