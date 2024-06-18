@@ -119,10 +119,13 @@ export class LogFiles {
         try {
           hash = crypto.createHash('md5').update(content).digest('base64');
         } catch (error) {
-          this.logWarningForError(
-            'Failed to compute a hash value for logs. Skipping it.',
-            error
-          );
+          const errorStr = JSON.stringify(error);
+          if (!errorStr.includes('FIPS')) {
+            this.logWarningForError(
+              'Failed to compute a hash value for logs. Skipping it.',
+              error
+            );
+          }
         }
       }
       logger?.debug('Finished gathering sync logs');
