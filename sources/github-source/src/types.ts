@@ -1,4 +1,4 @@
-export interface GithubConfig {
+export interface GitHubConfig {
   authentication: GitHubAuth;
   api_url?: string;
   concurrency_limit?: number;

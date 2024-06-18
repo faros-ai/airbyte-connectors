@@ -12,7 +12,7 @@ import url from 'url';
 import template from 'url-template';
 import VError from 'verror';
 
-import {GithubConfig} from './types';
+import {GitHubConfig} from './types';
 
 export type RateLimitHandler = (reason?: Error) => boolean;
 
@@ -20,8 +20,10 @@ const ExtendedOctokit = Octokit.plugin(retry, throttling);
 
 export const GITHUB_API_URL = 'https://api.github.com';
 
+const DEFAULT_CONCURRENCY = 4;
+
 export function makeOctokitClient(
-  cfg: GithubConfig,
+  cfg: GitHubConfig,
   logger?: AirbyteLogger,
   onRateLimit?: RateLimitHandler,
   maxRetries = 3
@@ -62,7 +64,7 @@ export function makeOctokitClient(
   return kit;
 }
 
-function getOctokitAuth(cfg: GithubConfig): string | Dictionary<any> {
+function getOctokitAuth(cfg: GitHubConfig): string | Dictionary<any> {
   if (cfg.authentication?.auth === 'token') {
     if (!cfg.authentication.personal_access_token) {
       throw new VError(
@@ -122,7 +124,7 @@ function getOctokitAuth(cfg: GithubConfig): string | Dictionary<any> {
 }
 
 function getThrottle(
-  cfg: GithubConfig,
+  cfg: GitHubConfig,
   logger: AirbyteLogger,
   onRateLimit: (reason?: Error) => boolean,
   maxRetries: number
@@ -130,7 +132,7 @@ function getThrottle(
   return {
     global: new Bottleneck.Group({
       minTime: 100,
-      maxConcurrent: cfg.concurrency_limit,
+      maxConcurrent: cfg.concurrency_limit ?? DEFAULT_CONCURRENCY,
     }),
     onRateLimit: (after: number, opts: any): boolean | undefined => {
       const msg = `Quota exhausted for ${opts.method} ${opts.url}`;
@@ -150,7 +152,7 @@ function getThrottle(
 }
 
 function beforeRequestHook(
-  cfg: GithubConfig,
+  cfg: GitHubConfig,
   request: any,
   logger: AirbyteLogger
 ): void {

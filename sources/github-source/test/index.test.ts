@@ -20,7 +20,7 @@ describe('index', () => {
   );
 
   test('spec', async () => {
-    const source = new sut.GithubSource(logger);
+    const source = new sut.GitHubSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );

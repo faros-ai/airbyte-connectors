@@ -28,6 +28,7 @@
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
+    "./github": "./lib/github/index.js",
     "./jira": "./lib/jira/index.js",
     "./xray": "./lib/xray/index.js"
   },
@@ -41,6 +42,9 @@
       ],
       "common": [
         "./lib/common/index.d.ts"
+      ],
+      "github": [
+        "./lib/github/index.d.ts"
       ],
       "jira": [
         "./lib/jira/index.d.ts"
