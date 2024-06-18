@@ -25,7 +25,8 @@ export class ProjectUsers extends StreamBase {
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     for await (const project of this.projects()) {
-      yield {projectKey: project.key};
+      const projectKey = await this.fetchProjectKey(project.key);
+      yield {projectKey};
     }
   }
 
