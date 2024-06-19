@@ -15,77 +15,49 @@ describe('index', () => {
   );
   const source = new sut.GithubSource(logger);
 
+  async function runSourceCheckTest(configOrPath: string): Promise<void> {
+    return sourceCheckTest({
+      source,
+      configOrPath,
+    });
+  }
+
   test('check connection - token valid', async () => {
     // TODO: mock API call
-    const source = new sut.GithubSource(logger);
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/token_valid.json',
-    });
+    await runSourceCheckTest('check_connection/token_valid.json');
   });
 
   test('check connection - token missing', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/token_invalid.json',
-    });
+    await runSourceCheckTest('check_connection/token_invalid.json');
   });
 
   test('check connection - app invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_invalid.json',
-    });
-  });
-
-  test('check connection - app invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_invalid.json',
-    });
+    await runSourceCheckTest('check_connection/app_invalid.json');
   });
 
   test('check connection - app auth missing', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_auth_missing.json',
-    });
+    await runSourceCheckTest('check_connection/app_auth_missing.json');
   });
 
   test('check connection - app client invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_client_invalid.json',
-    });
+    await runSourceCheckTest('check_connection/app_client_invalid.json');
   });
 
   test('check connection - app client valid', async () => {
     // TODO: mock API call
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_client_valid.json',
-    });
+    await runSourceCheckTest('check_connection/app_client_valid.json');
   });
 
   test('check connection - app installation invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_installation_invalid.json',
-    });
+    await runSourceCheckTest('check_connection/app_installation_invalid.json');
   });
 
   test('check connection - app installation valid', async () => {
     // TODO: mock API call
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_installation_valid.json',
-    });
+    await runSourceCheckTest('check_connection/app_installation_valid.json');
   });
 
   test('check connection - authentication missing', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/authentication_missing.json',
-    });
+    await runSourceCheckTest('check_connection/authentication_missing.json');
   });
 });

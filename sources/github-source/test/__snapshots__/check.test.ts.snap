@@ -60,16 +60,6 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index check connection - app invalid 2`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "message": "Invalid app configuration: app_id, private_key and app_cfg are required",
-    "status": "FAILED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
 exports[`index check connection - authentication missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
