@@ -3,7 +3,6 @@ import {
   AirbyteSourceLogger,
   sourceCheckTest,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 
