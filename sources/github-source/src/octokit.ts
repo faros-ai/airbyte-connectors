@@ -63,30 +63,34 @@ export function makeOctokitClient(
 }
 
 function getOctokitAuth(cfg: GithubConfig): string | Dictionary<any> {
-  if (cfg.authentication.auth === 'token') {
+  if (cfg.authentication?.auth === 'token') {
     if (!cfg.authentication.personal_access_token) {
-      throw new VError('Personal access token is required');
+      throw new VError(
+        'Invalid token configuration: Personal access token is required'
+      );
     }
     return cfg.authentication.personal_access_token;
   }
 
-  if (cfg.authentication.auth === 'app') {
-    if (!cfg.authentication.app_id) {
-      throw new VError('App id is required');
-    }
-    if (!cfg.authentication.private_key) {
-      throw new VError('App private key is required');
-    }
-    if (!cfg.authentication.app_cfg) {
-      throw new VError('App configuration is required');
+  if (cfg.authentication?.auth === 'app') {
+    if (
+      !cfg.authentication.app_id ||
+      !cfg.authentication.private_key ||
+      !cfg.authentication.app_cfg
+    ) {
+      throw new VError(
+        'Invalid app configuration: app_id, private_key and app_cfg are required'
+      );
     }
 
     if (cfg.authentication.app_cfg.auth === 'client') {
-      if (!cfg.authentication.app_cfg.client_id) {
-        throw new VError('App client id is required');
-      }
-      if (!cfg.authentication.app_cfg.client_secret) {
-        throw new VError('App client secret is required');
+      if (
+        !cfg.authentication.app_cfg.client_id ||
+        !cfg.authentication.app_cfg.client_secret
+      ) {
+        throw new VError(
+          'Invalid app client configuration: client_id and client_secret are required'
+        );
       }
       return {
         type: cfg.authentication.auth,
@@ -99,7 +103,9 @@ function getOctokitAuth(cfg: GithubConfig): string | Dictionary<any> {
 
     if (cfg.authentication.app_cfg.auth === 'installation') {
       if (!cfg.authentication.app_cfg.installation_id) {
-        throw new VError('App installation id is required');
+        throw new VError(
+          'Invalid app installation configuration: installation_id is required'
+        );
       }
       return {
         type: cfg.authentication.auth,

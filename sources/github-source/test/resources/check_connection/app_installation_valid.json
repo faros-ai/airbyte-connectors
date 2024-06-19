@@ -1,0 +1,11 @@
+{
+  "authentication": {
+    "auth": "app",
+    "app_id": "1234",
+    "private_key": "test-private-key",
+    "app_cfg": {
+      "auth": "installation",
+      "installation_id": "test-installation-id"
+    }
+  }
+}
