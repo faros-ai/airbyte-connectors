@@ -13,6 +13,7 @@ docker-source
 faros-graphdoctor-source
 faros-graphql-source
 files-source
+github-source
 gitlab-ci-source
 googlecalendar-source
 harness-source
