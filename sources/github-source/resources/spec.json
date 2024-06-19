@@ -1,0 +1,169 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Github Spec",
+    "type": "object",
+    "required": [
+      "authentication"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "authentication": {
+        "title": "Authentication",
+        "description": "Choose your GitHub authentication method",
+        "type": "object",
+        "order": 0,
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Personal Access Token",
+            "properties": {
+              "auth": {
+                "type": "string",
+                "const": "token",
+                "order": 0
+              },
+              "personal_access_token": {
+                "type": "string",
+                "title": "Personal Access Token",
+                "airbyte_secret": true,
+                "order": 1
+              }
+            },
+            "required": [
+              "auth",
+              "personal_access_token"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "GitHub App",
+            "properties": {
+              "auth": {
+                "type": "string",
+                "const": "app",
+                "order": 0
+              },
+              "app_id": {
+                "type": "integer",
+                "title": "App ID",
+                "description": "GitHub App ID",
+                "order": 1
+              },
+              "private_key": {
+                "type": "string",
+                "title": "Private Key",
+                "description": "GitHub App Private Key",
+                "airbyte_secret": true,
+                "multiline": true,
+                "order": 2
+              },
+              "app_cfg": {
+                "title": "App Config",
+                "description": "Choose your GitHub App authentication method",
+                "type": "object",
+                "order": 3,
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "App Installation",
+                    "properties": {
+                      "auth": {
+                        "type": "string",
+                        "const": "installation",
+                        "order": 0
+                      },
+                      "installation_id": {
+                        "type": "integer",
+                        "title": "Installation ID",
+                        "description": "GitHub App Installation ID",
+                        "order": 1
+                      }
+                    },
+                    "required": [
+                      "auth",
+                      "installation_id"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "title": "Client Auth",
+                    "properties": {
+                      "auth": {
+                        "type": "string",
+                        "const": "client",
+                        "order": 0
+                      },
+                      "client_id": {
+                        "type": "string",
+                        "title": "Client ID",
+                        "description": "GitHub App Client ID",
+                        "order:": 1
+                      },
+                      "client_secret": {
+                        "type": "string",
+                        "title": "Client Secret",
+                        "description": "GitHub App Client Secret",
+                        "airbyte_secret": true,
+                        "order": 2
+                      }
+                    },
+                    "required": [
+                      "auth",
+                      "client_id",
+                      "client_secret"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "auth",
+              "app_id",
+              "private_key",
+              "app_cfg"
+            ]
+          }
+        ]
+      },
+      "api_url": {
+        "type": "string",
+        "title": "GitHub API URL",
+        "description": "GitHub API URL, e.g for GitHub Enterprise: https://my-ghe-host.com/api/v3",
+        "default": "https://api.github.com",
+        "order": 1
+      },
+      "concurrency_limit": {
+        "type": "integer",
+        "title": "Concurrency limit",
+        "description": "Maximum concurrency to run with",
+        "default": 4,
+        "order": 2
+      },
+      "reject_unauthorized": {
+        "type": "boolean",
+        "title": "Enable certificate validation",
+        "description": "Enable certificate validation for the GitHub server",
+        "default": true,
+        "order": 3
+      },
+      "previews": {
+        "type": "array",
+        "examples": [
+          "dorian",
+          "inertia",
+          "london",
+          "lydian",
+          "wyandotte"
+        ],
+        "title": "GitHub API previews",
+        "description": "GitHub API previews. See https://docs.github.com/en/enterprise-server@3.1/rest/overview/api-previews",
+        "items": {
+          "type": "string"
+        },
+        "order": 4
+      }
+    }
+  }
+}

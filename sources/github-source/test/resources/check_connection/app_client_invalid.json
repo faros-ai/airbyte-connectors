@@ -1,0 +1,10 @@
+{
+  "authentication": {
+    "auth": "app",
+    "app_id": "test-app-id",
+    "private_key": "test-private-key",
+    "app_cfg": {
+      "auth": "client"
+    }
+  }
+}
