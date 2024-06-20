@@ -85,6 +85,7 @@ export class GitHub {
       );
       for await (const res of iter) {
         for (const installation of res.data) {
+          if (installation.target_type !== 'Organization') continue;
           if (installation.suspended_at) continue;
           yield {
             login: installation.account.login,
