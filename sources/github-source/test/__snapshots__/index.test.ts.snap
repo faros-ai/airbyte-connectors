@@ -23,8 +23,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - app client valid 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "[@octokit/auth-app] installationId option is required for installation authentication.",
-    "status": "FAILED",
+    "status": "SUCCEEDED",
   },
   "type": "CONNECTION_STATUS",
 }
@@ -43,8 +42,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - app installation valid 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "[@octokit/auth-app] installationId option is required for installation authentication.",
-    "status": "FAILED",
+    "status": "SUCCEEDED",
   },
   "type": "CONNECTION_STATUS",
 }
@@ -83,8 +81,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token valid 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "Bad credentials - https://docs.github.com/rest",
-    "status": "FAILED",
+    "status": "SUCCEEDED",
   },
   "type": "CONNECTION_STATUS",
 }

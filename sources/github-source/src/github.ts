@@ -41,6 +41,8 @@ export class GitHub {
     const octokit = makeOctokitClient(cfg, logger);
 
     GitHub.github = new GitHub(octokit, logger);
+    // check connection
+    await GitHub.github.checkConnection();
     return GitHub.github;
   }
 

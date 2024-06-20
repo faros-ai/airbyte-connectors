@@ -31,8 +31,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   async checkConnection(config: GitHubConfig): Promise<[boolean, VError]> {
     try {
-      const github = await GitHub.instance(config, this.logger);
-      await github.checkConnection();
+      await GitHub.instance(config, this.logger);
     } catch (err: any) {
       return [false, err];
     }
