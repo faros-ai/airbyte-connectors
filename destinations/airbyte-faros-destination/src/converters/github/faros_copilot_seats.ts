@@ -37,7 +37,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             source: this.streamName.source,
           },
           tool: {category: GitHubTool.Copilot},
-          inactive: seat.inactive,
+          inactive: false,
         },
       });
     }
@@ -45,9 +45,17 @@ export class FarosCopilotSeats extends GitHubConverter {
       model: 'vcs_UserTool',
       record: {
         ...userTool,
-        inactive: false,
-        startedAt: seat.created_at,
-        endedAt: seat.pending_cancellation_date,
+        inactive: seat.inactive,
+        ...(seat.created_at !== undefined && {
+          startedAt: seat.created_at
+            ? new Date(seat.created_at).toISOString()
+            : null,
+        }),
+        ...(seat.pending_cancellation_date !== undefined && {
+          endedAt: seat.pending_cancellation_date
+            ? new Date(seat.pending_cancellation_date).toISOString()
+            : null,
+        }),
       },
     });
     if (seat.last_activity_at) {
@@ -55,7 +63,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         model: 'vcs_UserToolUsage',
         record: {
           ...userTool,
-          usedAt: seat.last_activity_at,
+          usedAt: new Date(seat.last_activity_at).toISOString(),
         },
       });
     }
@@ -69,8 +77,8 @@ function userToolKey(
   source: string
 ): UserToolKey {
   return {
-    user: {uid: toLower(userLogin), source: source},
-    organization: {uid: toLower(orgLogin), source: source},
+    user: {uid: toLower(userLogin), source},
+    organization: {uid: toLower(orgLogin), source},
     tool: {category: GitHubTool.Copilot},
   };
 }

@@ -129,20 +129,15 @@ export class GitHub {
       // https://docs.github.com/en/rest/copilot/copilot-business?apiVersion=2022-11-28#get-copilot-business-seat-information-and-settings-for-an-organization
       if (err.status === 404) {
         this.logger.warn(
-          'Failed to sync GitHub Copilot seats for org %s. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has manage_billing:copilot permissions',
-          org
+          `Failed to sync GitHub Copilot seats for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
         );
         return;
       }
-      this.logger.error(
-        `Failed to sync GitHub Copilot seats for org ${org}.`,
-        err.stack
-      );
+      throw err;
     }
     if (!farosClient) {
       this.logger.warn(
-        'Skipping inactive Copilot seats inference for org %s. Faros client not configured.',
-        org
+        `Skipping inactive GitHub Copilot seats inference for org ${org}. Faros client not configured.`
       );
       return;
     }

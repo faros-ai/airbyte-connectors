@@ -1,0 +1,23 @@
+{
+  "total_seats": 2,
+  "seats": [
+    {
+      "created_at": "2021-08-03T18:00:00-06:00",
+      "updated_at": "2021-09-23T15:00:00-06:00",
+      "pending_cancellation_date": null,
+      "last_activity_at": "2021-10-14T00:53:32-06:00",
+      "assignee": {
+        "login": "octocat"
+      }
+    },
+    {
+      "created_at": "2021-09-23T18:00:00-06:00",
+      "updated_at": "2021-09-23T15:00:00-06:00",
+      "pending_cancellation_date": "2021-11-01",
+      "last_activity_at": "2021-10-13T00:53:32-06:00",
+      "assignee": {
+        "login": "octokitten"
+      }
+    }
+  ]
+}
