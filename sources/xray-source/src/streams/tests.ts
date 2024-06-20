@@ -1,5 +1,6 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Test} from 'faros-airbyte-common/xray';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Xray} from '../xray';
@@ -33,6 +34,14 @@ export class Tests extends XrayProjectStream {
     currentStreamState: ProjectState,
     latestRecord: Test
   ): ProjectState {
+    const currentState = currentStreamState?.[latestRecord.project];
+    if (
+      currentState &&
+      DateTime.fromISO(currentState) <
+        DateTime.fromISO(latestRecord.lastModified)
+    ) {
+      return currentStreamState;
+    }
     return {
       ...currentStreamState,
       [latestRecord.project]: Tests.formatModifiedSince(

@@ -34,6 +34,7 @@ export class Xray {
     logger?: AirbyteLogger
   ): Promise<Xray> {
     if (Xray.xray) return Xray.xray;
+    // TODO - Bottleneck requests to Xray Cloud
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
@@ -44,7 +45,8 @@ export class Xray {
         maxContentLength: Infinity, //default is 2000 bytes
       },
       logger?.asPino(),
-      config.api_max_retries
+      config.api_max_retries,
+      30_000
     );
 
     const auth = config.authentication;
@@ -98,9 +100,17 @@ export class Xray {
   ): AsyncGenerator<any> {
     const query = Xray.readQueryFile(queryFile);
     let hasNextPage = true;
-    let start = null;
+    let start = 0;
     let count = 0;
 
+    const queryVariables = {
+      limit: this.limit,
+      start,
+      ...variables,
+    };
+    this.logger?.debug(
+      `Fetching data with queryFile: ${queryFile} and variables: ${JSON.stringify(queryVariables)}`
+    );
     while (hasNextPage) {
       let response;
       try {
@@ -127,8 +137,13 @@ export class Xray {
         yield result;
         count++;
       }
-      hasNextPage = data.total != count && data.results.length === data.limit;
+      this.logger?.debug(
+        `Fetched ${results.length} records of ${data.total} with limit ${data.limit} from start ${data.start}. Current count: ${count}`
+      );
+      hasNextPage = data.total != count && results.length === data.limit;
+      this.logger?.debug(`Has next page: ${hasNextPage}`);
       start = results.length;
+      this.logger?.debug(`Start of next page: ${start}`);
     }
   }
 
