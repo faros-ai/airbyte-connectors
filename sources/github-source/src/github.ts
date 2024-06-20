@@ -12,7 +12,7 @@ import path from 'path';
 import {Memoize} from 'typescript-memoize';
 
 import {makeOctokitClient} from './octokit';
-import {GitHubConfig} from './types';
+import {GitHubAuth, GitHubConfig} from './types';
 
 const USER_TOOL_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'vcs-user-tool.gql'),
@@ -29,6 +29,7 @@ export class GitHub {
 
   constructor(
     private readonly octokit: Octokit,
+    private readonly authType: GitHubAuth['auth'],
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -40,14 +41,17 @@ export class GitHub {
 
     const octokit = makeOctokitClient(cfg, logger);
 
-    GitHub.github = new GitHub(octokit, logger);
-    // check connection
+    GitHub.github = new GitHub(octokit, cfg.authentication.auth, logger);
     await GitHub.github.checkConnection();
     return GitHub.github;
   }
 
   async checkConnection(): Promise<void> {
-    await this.octokit.users.getAuthenticated();
+    if (this.authType === 'token') {
+      await this.octokit.users.getAuthenticated();
+    } else if (this.authType === 'app') {
+      await this.octokit.apps.getAuthenticated();
+    }
   }
 
   @Memoize()
@@ -60,12 +64,32 @@ export class GitHub {
   }
 
   async *getOrganizationsIterator(): AsyncGenerator<Organization> {
-    const iter = this.octokit.paginate.iterator(this.octokit.orgs.list, {
-      per_page: PAGE_SIZE,
-    });
-    for await (const res of iter) {
-      for (const org of res.data) {
-        yield pick(org, ['login']);
+    if (this.authType === 'token') {
+      const iter = this.octokit.paginate.iterator(
+        this.octokit.orgs.listForAuthenticatedUser,
+        {
+          per_page: PAGE_SIZE,
+        }
+      );
+      for await (const res of iter) {
+        for (const org of res.data) {
+          yield pick(org, ['login']);
+        }
+      }
+    } else if (this.authType === 'app') {
+      const iter = this.octokit.paginate.iterator(
+        this.octokit.apps.listInstallations,
+        {
+          per_page: PAGE_SIZE,
+        }
+      );
+      for await (const res of iter) {
+        for (const installation of res.data) {
+          if (installation.suspended_at) continue;
+          yield {
+            login: installation.account.login,
+          };
+        }
       }
     }
   }

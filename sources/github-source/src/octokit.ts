@@ -64,6 +64,7 @@ export function makeOctokitClient(
   return kit;
 }
 
+//todo: revisit auth params for source
 function getOctokitAuth(cfg: GitHubConfig): string | Dictionary<any> {
   if (cfg.authentication?.auth === 'token') {
     if (!cfg.authentication.personal_access_token) {
@@ -95,11 +96,8 @@ function getOctokitAuth(cfg: GitHubConfig): string | Dictionary<any> {
         );
       }
       return {
-        type: cfg.authentication.auth,
         appId: cfg.authentication.app_id,
         privateKey: cfg.authentication.private_key,
-        clientId: cfg.authentication.app_cfg.client_id,
-        clientSecret: cfg.authentication.app_cfg.client_secret,
       };
     }
 
@@ -110,7 +108,6 @@ function getOctokitAuth(cfg: GitHubConfig): string | Dictionary<any> {
         );
       }
       return {
-        type: cfg.authentication.auth,
         appId: cfg.authentication.app_id,
         privateKey: cfg.authentication.private_key,
         installationId: cfg.authentication.app_cfg.installation_id,
