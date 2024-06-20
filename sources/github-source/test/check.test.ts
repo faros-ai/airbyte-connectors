@@ -13,7 +13,7 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
-  const source = new sut.GithubSource(logger);
+  const source = new sut.GitHubSource(logger);
 
   async function runSourceCheckTest(configOrPath: string): Promise<void> {
     return sourceCheckTest({
