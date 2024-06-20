@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {
   Converter,
@@ -132,10 +133,10 @@ export class Customreports extends Converter {
   }
 
   private isTerminated(rec: EmployeeRecord): boolean {
-    if (!rec.Termination_Date || !rec.Start_Date) {
+    const terminationDate = this.getTerminationDate(rec);
+    if (!terminationDate || !rec.Start_Date) {
       return false;
     }
-    const terminationDate = Utils.toDate(rec.Termination_Date);
     const startDate = Utils.toDate(rec.Start_Date);
     // We ensure start Date is before termination date because there are cases
     // where the termination date is before the start date, for example if
@@ -144,6 +145,16 @@ export class Customreports extends Converter {
       return true;
     }
     return false;
+  }
+
+  private getTerminationDate(rec: EmployeeRecord): Date | undefined {
+    if (!isNil(rec.Termination_Date)) {
+      return Utils.toDate(rec.Termination_Date);
+    }
+    if (!isNil(rec.Termination_date)) {
+      return Utils.toDate(rec.Termination_date);
+    }
+    return undefined;
   }
 
   private checkRecordValidity(
