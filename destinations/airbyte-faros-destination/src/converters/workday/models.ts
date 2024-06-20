@@ -7,6 +7,7 @@ export declare type EmployeeRecord = {
   Team_ID: string;
   Team_Name: string;
   Termination_Date?: Date;
+  Termination_date?: Date;
   Location?: string;
   Email?: string;
   Employee_Type?: string;
