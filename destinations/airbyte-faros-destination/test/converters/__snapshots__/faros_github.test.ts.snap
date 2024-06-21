@@ -35,7 +35,7 @@ Array [
         "uid": "princode-ar",
       },
       "source": "GitHub",
-      "startedAt": "2021-08-03T18:00:00-06:00",
+      "startedAt": "2021-08-04T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -55,7 +55,7 @@ Array [
       "tool": Object {
         "category": "GitHubCopilot",
       },
-      "usedAt": "2021-10-14T00:53:32-06:00",
+      "usedAt": "2021-10-14T06:53:32.000Z",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -64,14 +64,14 @@ Array [
   },
   Object {
     "vcs_UserTool": Object {
-      "endedAt": "2021-11-01",
+      "endedAt": "2021-11-01T00:00:00.000Z",
       "inactive": false,
       "organization": Object {
         "source": "GitHub",
         "uid": "princode-ar",
       },
       "source": "GitHub",
-      "startedAt": "2021-09-23T18:00:00-06:00",
+      "startedAt": "2021-09-24T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -91,7 +91,7 @@ Array [
       "tool": Object {
         "category": "GitHubCopilot",
       },
-      "usedAt": "2021-10-13T00:53:32-06:00",
+      "usedAt": "2021-10-13T06:53:32.000Z",
       "user": Object {
         "source": "GitHub",
         "uid": "octokitten",
@@ -100,14 +100,12 @@ Array [
   },
   Object {
     "vcs_UserTool": Object {
-      "endedAt": null,
-      "inactive": false,
+      "inactive": true,
       "organization": Object {
         "source": "GitHub",
         "uid": "princode-ar",
       },
       "source": "GitHub",
-      "startedAt": null,
       "tool": Object {
         "category": "GitHubCopilot",
       },
