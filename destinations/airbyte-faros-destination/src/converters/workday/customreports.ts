@@ -418,7 +418,7 @@ export class Customreports extends Converter {
       inactive = true;
       teamUid = this.FAROS_UNASSIGNED_TEAM;
       managerKey = null;
-      terminatedAt = new Date(employee_record.Termination_Date);
+      terminatedAt = this.getTerminationDate(employee_record);
     }
     records.push(
       {
