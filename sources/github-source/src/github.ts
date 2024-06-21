@@ -10,6 +10,7 @@ import fs from 'fs';
 import {pick, toLower} from 'lodash';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {makeOctokitClient} from './octokit';
 import {GitHubAuth, GitHubConfig} from './types';
@@ -25,25 +26,62 @@ export const DEFAULT_GRAPH = 'default';
 export const PAGE_SIZE = 100;
 
 export class GitHub {
-  private static github: GitHub;
+  private static _authInstance: GitHub;
+  private static _installationInstanceByOrg: Map<string, GitHub>;
 
   constructor(
     private readonly octokit: Octokit,
-    private readonly authType: GitHubAuth['auth'],
+    private readonly authType: GitHubAuth['type'],
     private readonly logger: AirbyteLogger
   ) {}
 
   static async instance(
     cfg: GitHubConfig,
+    logger: AirbyteLogger,
+    org?: string
+  ): Promise<GitHub> {
+    if (cfg.authentication.type !== 'app' || !org) {
+      return this.authInstance(cfg, logger);
+    } else {
+      return this.installationInstance(cfg, logger, org);
+    }
+  }
+
+  private static async authInstance(
+    cfg: GitHubConfig,
     logger: AirbyteLogger
   ): Promise<GitHub> {
-    if (GitHub.github) return GitHub.github;
+    if (GitHub._authInstance) return GitHub._authInstance;
 
-    const octokit = makeOctokitClient(cfg, logger);
+    const octokit = makeOctokitClient(cfg, undefined, logger);
+    const authInstance = new GitHub(octokit, cfg.authentication.type, logger);
+    GitHub._authInstance = authInstance;
+    await authInstance.checkConnection();
+    return authInstance;
+  }
 
-    GitHub.github = new GitHub(octokit, cfg.authentication.auth, logger);
-    await GitHub.github.checkConnection();
-    return GitHub.github;
+  private static async installationInstance(
+    cfg: GitHubConfig,
+    logger: AirbyteLogger,
+    org: string
+  ): Promise<GitHub> {
+    if (GitHub._installationInstanceByOrg.has(org))
+      return GitHub._installationInstanceByOrg.get(org);
+
+    const appInstance = await GitHub.authInstance(cfg, logger);
+    const {data: installation} =
+      await appInstance.octokit.apps.getOrgInstallation({org});
+    if (installation.suspended_at) {
+      throw new VError(`App installation for organization ${org} is suspended`);
+    }
+    const octokit = makeOctokitClient(cfg, installation.id, logger);
+    const installationInstance = new GitHub(
+      octokit,
+      cfg.authentication.type,
+      logger
+    );
+    GitHub._installationInstanceByOrg.set(org, installationInstance);
+    return installationInstance;
   }
 
   async checkConnection(): Promise<void> {
@@ -51,6 +89,8 @@ export class GitHub {
       await this.octokit.users.getAuthenticated();
     } else if (this.authType === 'app') {
       await this.octokit.apps.getAuthenticated();
+    } else {
+      throw new VError('Invalid authentication');
     }
   }
 

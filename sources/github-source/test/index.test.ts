@@ -29,7 +29,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    (GitHub as any).github = undefined;
+    (GitHub as any)._authInstance = undefined;
   });
 
   test('spec', async () => {
@@ -50,6 +50,14 @@ describe('index', () => {
     });
   });
 
+  test('check connection - app valid', async () => {
+    checkConnectionMock();
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
   test('check connection - token missing', async () => {
     await sourceCheckTest({
       source,
@@ -61,43 +69,6 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_invalid.json',
-    });
-  });
-
-  test('check connection - app auth missing', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_auth_missing.json',
-    });
-  });
-
-  test('check connection - app client invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_client_invalid.json',
-    });
-  });
-
-  test('check connection - app client valid', async () => {
-    checkConnectionMock();
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_client_valid.json',
-    });
-  });
-
-  test('check connection - app installation invalid', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_installation_invalid.json',
-    });
-  });
-
-  test('check connection - app installation valid', async () => {
-    checkConnectionMock();
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/app_installation_valid.json',
     });
   });
 
@@ -173,7 +144,7 @@ function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
         },
         ...octokitMock,
       },
-      sourceConfig.authentication.auth,
+      sourceConfig.authentication.type,
       new AirbyteLogger()
     );
   });

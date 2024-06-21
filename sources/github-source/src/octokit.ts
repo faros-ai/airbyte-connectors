@@ -24,6 +24,7 @@ const DEFAULT_CONCURRENCY = 4;
 
 export function makeOctokitClient(
   cfg: GitHubConfig,
+  installationId?: number,
   logger?: AirbyteLogger,
   onRateLimit?: RateLimitHandler,
   maxRetries = 3
@@ -41,11 +42,11 @@ export function makeOctokitClient(
       }
     : {timeout: 90_000};
 
-  const auth = getOctokitAuth(cfg);
+  const auth = getOctokitAuth(cfg, installationId);
 
   const kit = new ExtendedOctokit({
     auth,
-    authStrategy: cfg.authentication.auth === 'app' ? createAppAuth : undefined,
+    authStrategy: cfg.authentication.type === 'app' ? createAppAuth : undefined,
     baseUrl,
     request,
     throttle,
@@ -64,60 +65,36 @@ export function makeOctokitClient(
   return kit;
 }
 
-//todo: revisit auth params for source
-function getOctokitAuth(cfg: GitHubConfig): string | Dictionary<any> {
-  if (cfg.authentication?.auth === 'token') {
+function getOctokitAuth(
+  cfg: GitHubConfig,
+  installationId?: number
+): string | Dictionary<any> {
+  if (cfg.authentication?.type === 'token') {
     if (!cfg.authentication.personal_access_token) {
       throw new VError(
-        'Invalid token configuration: Personal access token is required'
+        'Invalid token configuration: personal_access_token is required'
       );
     }
     return cfg.authentication.personal_access_token;
   }
 
-  if (cfg.authentication?.auth === 'app') {
-    if (
-      !cfg.authentication.app_id ||
-      !cfg.authentication.private_key ||
-      !cfg.authentication.app_cfg
-    ) {
+  if (cfg.authentication?.type === 'app') {
+    if (!cfg.authentication.app_id || !cfg.authentication.private_key) {
       throw new VError(
-        'Invalid app configuration: app_id, private_key and app_cfg are required'
+        'Invalid app configuration: app_id and private_key are required'
       );
     }
 
-    if (cfg.authentication.app_cfg.auth === 'client') {
-      if (
-        !cfg.authentication.app_cfg.client_id ||
-        !cfg.authentication.app_cfg.client_secret
-      ) {
-        throw new VError(
-          'Invalid app client configuration: client_id and client_secret are required'
-        );
-      }
-      return {
-        appId: cfg.authentication.app_id,
-        privateKey: cfg.authentication.private_key,
-      };
-    }
-
-    if (cfg.authentication.app_cfg.auth === 'installation') {
-      if (!cfg.authentication.app_cfg.installation_id) {
-        throw new VError(
-          'Invalid app installation configuration: installation_id is required'
-        );
-      }
-      return {
-        appId: cfg.authentication.app_id,
-        privateKey: cfg.authentication.private_key,
-        installationId: cfg.authentication.app_cfg.installation_id,
-      };
-    }
-
-    throw new VError('Invalid value for authentication.app_cfg.auth');
+    return {
+      appId: cfg.authentication.app_id,
+      privateKey: cfg.authentication.private_key,
+      ...(installationId && {installationId}),
+    };
   }
 
-  throw new VError('Invalid value for authentication.auth');
+  throw new VError(
+    'Invalid authentication configuration: type should be "token" or "app"'
+  );
 }
 
 function getThrottle(
