@@ -127,12 +127,25 @@
           }
         ]
       },
-      "api_url": {
+      "url": {
         "type": "string",
         "title": "GitHub API URL",
         "description": "GitHub API URL, e.g for GitHub Enterprise: https://my-ghe-host.com/api/v3",
         "default": "https://api.github.com",
         "order": 1
+      },
+      "orgs": {
+        "order": 2,
+        "title": "Organizations list",
+        "description": "List of GitHub organization from which to fetch data. If none passed, all visible organizations for the authenticated user/app will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
       },
       "concurrency_limit": {
         "type": "integer",
@@ -163,6 +176,27 @@
           "type": "string"
         },
         "order": 4
+      },
+      "api_url": {
+        "order": 5,
+        "type": "string",
+        "title": "Faros API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai"
+      },
+      "api_key": {
+        "order": 6,
+        "title": "Faros API Key",
+        "type": "string",
+        "description": "The Faros API key to use to access the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "order": 7,
+        "type": "string",
+        "title": "Graph name",
+        "description": "The Faros graph name.",
+        "default": "default"
       }
     }
   }

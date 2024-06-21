@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_copilot_seats"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

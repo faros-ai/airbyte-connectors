@@ -1,0 +1,6 @@
+{
+  "authentication": {
+    "auth": "token",
+    "personal_access_token": "ghp_1234567890"
+  }
+}
