@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros_github process records from all streams 1`] = `
+Array [
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 6 records",
+  "Would write records by model: {\\\\\\"vcs_OrganizationTool\\\\\\":1,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_github process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_OrganizationTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": null,
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "startedAt": "2021-08-03T18:00:00-06:00",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "usedAt": "2021-10-14T00:53:32-06:00",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": "2021-11-01",
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "startedAt": "2021-09-23T18:00:00-06:00",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "usedAt": "2021-10-13T00:53:32-06:00",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": null,
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "princode-ar",
+      },
+      "source": "GitHub",
+      "startedAt": null,
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "user": Object {
+        "source": "GitHub",
+        "uid": "oldkit",
+      },
+    },
+  },
+]
+`;
