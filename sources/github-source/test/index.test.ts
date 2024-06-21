@@ -3,8 +3,9 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readTestResourceAsJSON,
   sourceCheckTest,
-  SyncMode,
+  sourceReadTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
@@ -16,10 +17,6 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
-
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -29,7 +26,6 @@ describe('index', () => {
   );
 
   const source = new sut.GitHubSource(logger);
-  const config = readTestResourceFile('config.json');
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -112,100 +108,92 @@ describe('index', () => {
     });
   });
 
-  const testStream = async (
-    streamName: string,
-    sourceConfig: GitHubConfig,
-    octokitMock?: any,
-    streamSlice?: any,
-    farosClientMock?: any,
-    // only use if we do not want to write data snapshot
-    expectedResultLength?: number
-  ) => {
-    setupGitHubInstance(octokitMock, sourceConfig, logger);
-
-    const source = new sut.GitHubSource(logger);
-    if (farosClientMock) {
-      jest
-        .spyOn(source, 'makeFarosClient')
-        .mockImplementation(() => farosClientMock);
-    }
-    const streams = source.streams({
-      ...sourceConfig,
-      ...(farosClientMock && {api_key: 'faros-api-key'}),
-    });
-    const stream = streams.find((s) => s.name === streamName);
-    const iter = stream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      streamSlice,
-      {}
-    );
-
-    const items = [];
-    for await (const item of iter) {
-      items.push(item);
-    }
-    if (!expectedResultLength) {
-      expect(items).toMatchSnapshot();
-    } else {
-      expect(items).toHaveLength(expectedResultLength);
-    }
-  };
-
   test('streams - copilot seats', async () => {
-    await testStream(
-      'faros_copilot_seats',
-      config,
-      {
-        copilot: {
-          listCopilotSeats: jest
-            .fn()
-            .mockReturnValue(readTestResourceFile('copilot_seats.json')),
-        },
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getCopilotSeatsMockedImplementation(
+            readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+          ),
+          res.config as GitHubConfig
+        );
       },
-      {org: 'faros-ai'}
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('streams - copilot seats with inactive seats inference using faros graph', async () => {
-    await testStream(
-      'faros_copilot_seats',
-      config,
-      {
-        copilot: {
-          listCopilotSeats: jest
-            .fn()
-            .mockReturnValue(readTestResourceFile('copilot_seats_empty.json')),
-        },
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getCopilotSeatsMockedImplementation(
+            readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
+          ),
+          res.config as GitHubConfig
+        );
+        setupFarosClientMock(
+          {
+            nodeIterable: jest
+              .fn()
+              .mockReturnValue(
+                iterate(
+                  readTestResourceAsJSON('copilot_seats/vcs_user_tool.json')
+                )
+              ),
+          },
+          res.config as GitHubConfig
+        );
       },
-      {org: 'faros-ai'},
-      {
-        nodeIterable: jest
-          .fn()
-          .mockReturnValue(iterate(readTestResourceFile('vcs_user_tool.json'))),
-      }
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 });
 
-function setupGitHubInstance(
-  octokitMock: any,
-  sourceConfig: GitHubConfig,
-  logger: AirbyteLogger
-) {
+function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHub(
       {
         paginate: {
           iterator: (fn: () => any) => iterate([{data: fn()}]),
         },
+        orgs: {
+          listForAuthenticatedUser: jest
+            .fn()
+            .mockReturnValue([{login: 'faros-ai'}]),
+        },
         ...octokitMock,
       },
       sourceConfig.authentication.auth,
-      logger
+      new AirbyteLogger()
     );
   });
 }
+
+function setupFarosClientMock(
+  farosClientMock: any,
+  sourceConfig: GitHubConfig
+) {
+  (sourceConfig as any).api_key = 'faros-api-key';
+  jest
+    .spyOn(sut.GitHubSource.prototype, 'makeFarosClient')
+    .mockImplementation(() => farosClientMock);
+}
+
+const getCopilotSeatsMockedImplementation = (res: any) => ({
+  copilot: {
+    listCopilotSeats: jest.fn().mockReturnValue(res),
+  },
+});
 
 async function* iterate<T>(arr: ReadonlyArray<T>): AsyncIterableIterator<T> {
   for (const x of arr) {
