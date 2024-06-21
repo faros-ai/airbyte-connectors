@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {CopilotSeat, GitHubTool} from 'faros-airbyte-common/github';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -47,13 +48,11 @@ export class FarosCopilotSeats extends GitHubConverter {
         ...userTool,
         inactive: seat.inactive,
         ...(seat.created_at !== undefined && {
-          startedAt: seat.created_at
-            ? new Date(seat.created_at).toISOString()
-            : null,
+          startedAt: seat.created_at ? Utils.toDate(seat.created_at) : null,
         }),
         ...(seat.pending_cancellation_date !== undefined && {
           endedAt: seat.pending_cancellation_date
-            ? new Date(seat.pending_cancellation_date).toISOString()
+            ? Utils.toDate(seat.pending_cancellation_date)
             : null,
         }),
       },
@@ -63,7 +62,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         model: 'vcs_UserToolUsage',
         record: {
           ...userTool,
-          usedAt: new Date(seat.last_activity_at).toISOString(),
+          usedAt: Utils.toDate(seat.last_activity_at),
         },
       });
     }
