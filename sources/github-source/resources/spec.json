@@ -137,14 +137,14 @@
       "orgs": {
         "order": 2,
         "title": "Organizations list",
-        "description": "List of GitHub organization from which to fetch data.",
+        "description": "List of GitHub organization from which to fetch data. If none passed, all visible organizations for the authenticated user/app will be used.",
         "type": "array",
         "items": {
           "type": "string"
         },
         "examples": [
-          "PROJ1",
-          "PROJ2"
+          "apache",
+          "airbytehq"
         ]
       },
       "concurrency_limit": {
