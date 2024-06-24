@@ -109,7 +109,7 @@ export class ProjectBoardFilter {
   private async getBoardsFromFaros(
     farosBoardsByProject: BoardsByProject
   ): Promise<void> {
-    for (const [projectKey, boards] of Object.entries(farosBoardsByProject)) {
+    for (const [, boards] of Object.entries(farosBoardsByProject)) {
       for (const board of boards) {
         if (
           this.boardIsIncludedInFaros(board) &&
