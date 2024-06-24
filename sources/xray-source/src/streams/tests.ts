@@ -27,7 +27,10 @@ export class Tests extends XrayProjectStream {
       syncMode,
       streamState?.[project]
     );
-    yield* xrayClient.getTests(project, modifiedSince);
+    for await (const test of xrayClient.getTests(project, modifiedSince)) {
+      this.updateLatestModified(project, test.lastModified);
+      yield test;
+    }
   }
 
   getUpdatedState(
@@ -35,18 +38,13 @@ export class Tests extends XrayProjectStream {
     latestRecord: Test
   ): ProjectState {
     const currentState = currentStreamState?.[latestRecord.project];
-    if (
-      currentState &&
-      DateTime.fromISO(currentState) <
-        DateTime.fromISO(latestRecord.lastModified)
-    ) {
+    const recordDate = this.lastModifiedByProject.get(latestRecord.project);
+    if (currentState && DateTime.fromISO(currentState) > recordDate) {
       return currentStreamState;
     }
     return {
       ...currentStreamState,
-      [latestRecord.project]: Tests.formatModifiedSince(
-        latestRecord.lastModified
-      ),
+      [latestRecord.project]: Tests.formatModifiedSince(recordDate),
     };
   }
 }

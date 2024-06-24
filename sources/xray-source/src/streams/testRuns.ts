@@ -10,6 +10,8 @@ const stateKey = 'lastModified';
 type TestRunState = Dictionary<string>;
 
 export class TestRuns extends XrayStreamBase {
+  private latestModified: DateTime;
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/testRuns.json');
   }
@@ -33,21 +35,26 @@ export class TestRuns extends XrayStreamBase {
       syncMode,
       streamState?.[stateKey]
     );
-    yield* xrayClient.getTestRuns(modifiedSince);
+    for await (const run of xrayClient.getTestRuns(modifiedSince)) {
+      const runModifiedDate = DateTime.fromISO(run.lastModified);
+      if (!this.latestModified) {
+        this.latestModified = runModifiedDate;
+      } else if (runModifiedDate > this.latestModified) {
+        this.latestModified = runModifiedDate;
+      }
+      yield run;
+    }
   }
 
   getUpdatedState(
     currentStreamState: TestRunState,
     latestRecord: TestRun
   ): TestRunState {
-    if (
-      DateTime.fromISO(latestRecord.lastModified) <
-      DateTime.fromISO(currentStreamState[stateKey])
-    ) {
+    if (this.latestModified < DateTime.fromISO(currentStreamState[stateKey])) {
       return currentStreamState;
     }
     return {
-      [stateKey]: TestRuns.formatModifiedSince(latestRecord.lastModified),
+      [stateKey]: TestRuns.formatModifiedSince(this.latestModified),
     };
   }
 }

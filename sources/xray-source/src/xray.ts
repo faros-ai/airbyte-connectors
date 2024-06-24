@@ -1,4 +1,4 @@
-import axios, {AxiosError,AxiosInstance} from 'axios';
+import axios, {AxiosError, AxiosInstance} from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
@@ -46,15 +46,21 @@ export class Xray {
         const resetTime = DateTime.fromJSDate(new Date(resetHeader));
         if (!resetTime.isValid) {
           logger?.warn(
-            `Failed to process rate limit reset time header: ${resetHeader}`
+            `Failed to process rate limit reset time value: ${resetHeader}`
           );
         }
-        const delay = resetTime.diff(DateTime.utc()).as('milliseconds');
-        if (delay > 0) {
-          return delay + jitter;
+        const diff = resetTime.diff(DateTime.utc()).as('milliseconds');
+        if (diff > 0) {
+          const wait = diff + jitter;
+          logger?.warn(
+            `Retrying in ${wait} milliseconds using at ${resetHeader}`
+          );
+          return wait;
         }
       }
-      return XRAY_DEFAULT_RETRY_DELAY + jitter;
+      const wait = XRAY_DEFAULT_RETRY_DELAY + jitter;
+      logger?.warn(`Retrying in ${wait} milliseconds using default delay`);
+      return wait;
     };
     const api = makeAxiosInstanceWithRetry(
       {
@@ -93,7 +99,9 @@ export class Xray {
     const limit = config.api_page_limit
       ? Math.min(config.api_page_limit, XRAY_PAGE_LIMIT)
       : XRAY_PAGE_LIMIT;
-    return new Xray(api, limit, logger);
+
+    Xray.xray = new Xray(api, limit, logger);
+    return Xray.xray;
   }
 
   private static async sessionToken(
@@ -109,7 +117,7 @@ export class Xray {
       });
       return data;
     } catch (err: any) {
-      throw wrapApiError(err, 'failed to get authentication token');
+      throw wrapApiError(err, 'Failed to get authentication token');
     }
   }
 
@@ -135,9 +143,6 @@ export class Xray {
       start,
       ...variables,
     };
-    this.logger?.debug(
-      `Fetching data with queryFile: ${queryFile} and variables: ${JSON.stringify(queryVariables)}`
-    );
     while (hasNextPage) {
       let response;
       try {
@@ -164,13 +169,10 @@ export class Xray {
         yield result;
         count++;
       }
-      this.logger?.debug(
-        `Fetched ${results.length} records of ${data.total} with limit ${data.limit} from start ${data.start}. Current count: ${count}`
-      );
+      this.logger?.debug(`Fetched ${count} records of ${data.total}`);
       hasNextPage = data.total != count && results.length === data.limit;
-      this.logger?.debug(`Has next page: ${hasNextPage}`);
+      // Next start is the current count if hasNextPage is true
       start = count;
-      this.logger?.debug(`Start of next page: ${start}`);
     }
   }
 

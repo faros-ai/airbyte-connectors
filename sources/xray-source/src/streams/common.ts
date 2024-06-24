@@ -53,9 +53,24 @@ export abstract class XrayStreamBase extends AirbyteStreamBase {
 }
 
 export abstract class XrayProjectStream extends XrayStreamBase {
+  protected lastModifiedByProject: Map<string, DateTime> = new Map<
+    string,
+    DateTime
+  >();
+
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const project of this.projects ?? []) {
       yield {project};
+    }
+  }
+
+  updateLatestModified(project: string, lastModified: string): void {
+    const current = this.lastModifiedByProject.get(project);
+    const lastModifiedDate = DateTime.fromISO(lastModified);
+    if (!current) {
+      this.lastModifiedByProject.set(project, lastModifiedDate);
+    } else if (lastModifiedDate > current) {
+      this.lastModifiedByProject.set(project, lastModifiedDate);
     }
   }
 }
