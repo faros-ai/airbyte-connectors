@@ -2,7 +2,7 @@
   "url": "https://jira.com",
   "username": "user",
   "password": "pass",
-  "projects": ["TEST"],
+  "projects_included": ["TEST"],
   "bucket_id": 1,
   "bucket_total": 1,
   "additional_fields_array_limit": 100,

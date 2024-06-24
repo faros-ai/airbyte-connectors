@@ -13,8 +13,9 @@ import VError from 'verror';
 
 import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
-import {Jira, JiraConfig} from '../src/jira';
+import {JiraConfig} from '../src/jira';
 import {RunMode} from '../src/streams/common';
+import {paginate, setupJiraInstance} from './resources/common';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -95,24 +96,6 @@ describe('index', () => {
       configOrPath: 'check_connection/valid.json',
     });
   });
-
-  function paginate<V>(
-    items: V[],
-    itemsField = 'values',
-    pageSize = 1
-  ): jest.Mock {
-    const fn = jest.fn();
-    let count = 0;
-    do {
-      const slice = items.slice(count, count + pageSize);
-      count += slice.length;
-      fn.mockResolvedValueOnce({
-        isLast: count === items.length,
-        [itemsField]: slice,
-      });
-    } while (count < items.length);
-    return fn;
-  }
 
   const testStream = async (
     streamIndex: any,
@@ -403,7 +386,7 @@ describe('index', () => {
     );
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects: undefined},
+      {...readTestResourceFile('config.json'), projects_included: undefined},
       {v2: {projects: {searchProjects}}}
     );
     expect(searchProjects).toHaveBeenCalledWith({
@@ -423,7 +406,7 @@ describe('index', () => {
     );
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects: keys},
+      {...readTestResourceFile('config.json'), projects_included: keys},
       {v2: {projects: {searchProjects}}}
     );
     expect(searchProjects).toHaveBeenCalledWith({
@@ -438,7 +421,11 @@ describe('index', () => {
   test('streams - projects - Jira Server', async () => {
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects: undefined},
+      {
+        ...readTestResourceFile('config.json'),
+        projects_included: undefined,
+        url: 'https://jira-server.com',
+      },
       {
         v2: {
           permissions: {
@@ -458,7 +445,8 @@ describe('index', () => {
 
   test('streams - projects - Jira Server - project list', async () => {
     const serverConfig = readTestResourceFile('config.json');
-    serverConfig.projects = ['TEST-1', 'TEST-2'];
+    serverConfig.projects_included = ['TEST-1', 'TEST-2'];
+    serverConfig.url = 'https://jira-server.com';
 
     await testStream(
       5,
@@ -514,7 +502,7 @@ describe('index', () => {
       ...config,
       bucket_total: 2,
       bucket_id: 1,
-      projects: ['TEST', 'TEST2', 'TEST3'],
+      projects_included: ['TEST', 'TEST2', 'TEST3'],
     });
   });
 
@@ -524,7 +512,7 @@ describe('index', () => {
       ...config,
       bucket_total: 2,
       bucket_id: 2,
-      projects: ['TEST', 'TEST2', 'TEST3'],
+      projects_included: ['TEST', 'TEST2', 'TEST3'],
     });
   });
 
@@ -635,33 +623,3 @@ describe('index', () => {
     );
   });
 });
-function setupJiraInstance(
-  mockedImplementation: any,
-  isCloud: boolean,
-  sourceConfig: JiraConfig,
-  logger: AirbyteLogger
-) {
-  Jira.instance = jest.fn().mockImplementation(() => {
-    return new Jira(
-      'https://jira.com',
-      mockedImplementation ?? ({} as any),
-      {} as any,
-      new Map([
-        ['field_001', 'Development'],
-        ['customfield_10000', 'Custom Number Filed'],
-        ['customfield_10001', 'Custom String Field'],
-      ]),
-      50,
-      new Map(),
-      isCloud,
-      5,
-      100,
-      sourceConfig.bucket_id,
-      sourceConfig.bucket_total,
-      logger,
-      undefined,
-      sourceConfig?.requestedStreams,
-      sourceConfig?.use_sprints_reverse_search
-    );
-  });
-}

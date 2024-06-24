@@ -17,11 +17,18 @@ export class FarosProjects extends StreamBase {
 
   async *readRecords(): AsyncGenerator<Version2Models.Project> {
     const jira = await Jira.instance(this.config, this.logger);
-    const projectKeys = this.config.projects?.length
-      ? new Set(this.config.projects.map((key) => toUpper(key)))
+    const projectKeys = this.config.projects_included?.length
+      ? new Set(this.config.projects_included.map((key) => toUpper(key)))
       : undefined;
     for (const project of await jira.getProjects(projectKeys)) {
-      yield project;
+      // Include queried project if projectKeys are specified or
+      // if either there is no exclusion list or the project is not in the exclusion list
+      if (
+        projectKeys ||
+        !this.config.projects_excluded?.includes(project.key)
+      ) {
+        yield project;
+      }
     }
   }
 }
