@@ -1,9 +1,8 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket, calculateDateRange} from 'faros-airbyte-common/common';
+import {bucket} from 'faros-airbyte-common/common';
 import {
-  FarosProject,
   Issue,
   IssueCompact,
   IssueField,
@@ -58,6 +57,8 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly boards?: ReadonlyArray<string>;
+  readonly skip_board_discovery?: boolean;
+  readonly pull_unknown_boards?: boolean;
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -116,11 +117,6 @@ const SPRINT_BOARD_QUERY = fs.readFileSync(
 
 const PROJECT_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'tms-project.gql'),
-  'utf8'
-);
-
-const PROJECT_BOARDS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'tms-project-boards.gql'),
   'utf8'
 );
 
@@ -891,36 +887,6 @@ export class Jira {
         }),
       (item: AgileModels.Board) => item
     );
-  }
-
-  // Fetch project with boards nested from Faros
-  async *getProjectBoardsFromGraph(
-    farosClient: FarosClient,
-    graph: string,
-    projectKeys: Array<string>
-  ): AsyncIterableIterator<FarosProject> {
-    const projects = this.iterate(
-      async (startAt) => {
-        const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
-          source: 'Jira',
-          offset: startAt,
-          pageSize: this.maxPageSize,
-          projects: projectKeys,
-        });
-        return data?.tms_Project;
-      },
-      (item: any): FarosProject => {
-        return {
-          key: item.uid,
-          boardUids: item.boards?.map((board: any) => board.board.uid) ?? [],
-        };
-      }
-    );
-    for await (const project of projects) {
-      if (this.isProjectInBucket(project.key)) {
-        yield project;
-      }
-    }
   }
 
   getBoard(id: string): Promise<AgileModels.Board> {

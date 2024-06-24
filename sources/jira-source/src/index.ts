@@ -55,6 +55,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
 
   makeFarosClient(config: JiraConfig): FarosClient {
+    if (!config.api_key) {
+      throw new VError('Faros API key was not provided');
+    }
     return new FarosClient({
       url: config.api_url ?? DEFAULT_API_URL,
       apiKey: config.api_key,
@@ -62,21 +65,18 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
 
   streams(config: JiraConfig): AirbyteStreamBase[] {
-    let farosClient;
-    if (config.api_key) {
-      farosClient = this.makeFarosClient(config);
-    }
+    const farosClient = this.makeFarosClient(config);
     return [
       new FarosIssuePullRequests(config, this.logger, farosClient),
       new FarosSprintReports(config, this.logger, farosClient),
       new FarosBoardIssues(config, this.logger, farosClient),
-      new FarosSprints(config, this.logger),
+      new FarosSprints(config, this.logger, farosClient),
       new FarosUsers(config, this.logger),
       new FarosProjects(config, this.logger),
-      new FarosIssues(config, this.logger),
-      new FarosBoards(config, this.logger),
-      new FarosProjectVersions(config, this.logger),
-      new FarosProjectVersionIssues(config, this.logger),
+      new FarosIssues(config, this.logger, farosClient),
+      new FarosBoards(config, this.logger, farosClient),
+      new FarosProjectVersions(config, this.logger, farosClient),
+      new FarosProjectVersionIssues(config, this.logger, farosClient),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
       new FarosIssueAdditionalFields(config, this.logger, farosClient),

@@ -15,5 +15,6 @@
   "reject_unauthorized": true,
   "sync_additional_fields": true,
   "timeout": 120000,
-  "run_mode": "Full"
+  "run_mode": "Full",
+  "api_key": "test-key"
 }

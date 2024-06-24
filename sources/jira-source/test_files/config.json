@@ -10,5 +10,6 @@
   "page_size": 100,
   "max_retries": 5,
   "reject_unauthorized": true,
-  "timeout": 120000
+  "timeout": 120000,
+  "api_key": "test-key"
 }

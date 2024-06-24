@@ -141,11 +141,6 @@ export interface IssueProjectVersion {
   readonly projectVersionId: string;
 }
 
-export interface FarosProject {
-  key: string;
-  boardUids: string[];
-}
-
 export interface Team {
   readonly id: string;
   readonly displayName: string;
