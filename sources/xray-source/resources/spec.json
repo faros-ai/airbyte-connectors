@@ -52,7 +52,7 @@
         "order": 6,
         "type": "integer",
         "title": "API Page Size",
-        "description": "The number of records to request from the API per call. Maximum is 100. https://docs.getxray.app/display/XRAYCLOUD/GraphQL+API",
+        "description": "The number of records to request from the API per call. Maximum is 100. https://docs.getxray.app/display/XRAYCLOUD/GraphQL+API#GraphQLAPI-NodeLimit",
         "default": 100
       },
       "api_max_retries": {

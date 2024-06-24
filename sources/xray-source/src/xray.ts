@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosError,AxiosInstance} from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
@@ -11,6 +11,7 @@ import {
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import {get} from 'lodash';
+import {DateTime} from 'luxon';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError, {MultiError} from 'verror';
@@ -20,6 +21,8 @@ import {XrayConfig} from './types';
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
 const XRAY_API_DEFAULT_TIMEOUT = 0;
 const XRAY_PAGE_LIMIT = 100;
+// Limit is 60 calls per minute: https://docs.getxray.app/display/ProductKB/%5BXray+Cloud%5D+Rest+API+Limit
+const XRAY_DEFAULT_RETRY_DELAY = 30_000;
 
 export class Xray {
   private static xray: Xray;
@@ -34,7 +37,25 @@ export class Xray {
     logger?: AirbyteLogger
   ): Promise<Xray> {
     if (Xray.xray) return Xray.xray;
-    // TODO - Bottleneck requests to Xray Cloud
+
+    const delayLogic = (error: AxiosError<unknown, any>): number => {
+      const jitter = 500;
+      const resetHeader = error?.response?.headers['x-ratelimit-reset'];
+      if (resetHeader) {
+        // Value is a date string in like Thu Jun 20 2024 21:15:15 GMT+0000 (Coordinated Universal Time)
+        const resetTime = DateTime.fromJSDate(new Date(resetHeader));
+        if (!resetTime.isValid) {
+          logger?.warn(
+            `Failed to process rate limit reset time header: ${resetHeader}`
+          );
+        }
+        const delay = resetTime.diff(DateTime.utc()).as('milliseconds');
+        if (delay > 0) {
+          return delay + jitter;
+        }
+      }
+      return XRAY_DEFAULT_RETRY_DELAY + jitter;
+    };
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
@@ -46,7 +67,7 @@ export class Xray {
       },
       logger?.asPino(),
       config.api_max_retries,
-      30_000
+      delayLogic
     );
 
     const auth = config.authentication;
@@ -58,7 +79,11 @@ export class Xray {
     }
 
     const refreshToken = async (): Promise<void> => {
-      const token = await Xray.sessionToken(auth.client_id, auth.client_secret);
+      const token = await Xray.sessionToken(
+        auth.client_id,
+        auth.client_secret,
+        logger
+      );
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
@@ -73,8 +98,10 @@ export class Xray {
 
   private static async sessionToken(
     clientId: string,
-    clientSecret: string
+    clientSecret: string,
+    logger: AirbyteLogger
   ): Promise<string> {
+    logger.info('Generating new session token');
     try {
       const {data} = await axios.post(`${XRAY_CLOUD_BASE_URL}/authenticate`, {
         client_id: clientId,
@@ -142,7 +169,7 @@ export class Xray {
       );
       hasNextPage = data.total != count && results.length === data.limit;
       this.logger?.debug(`Has next page: ${hasNextPage}`);
-      start = results.length;
+      start = count;
       this.logger?.debug(`Start of next page: ${start}`);
     }
   }
