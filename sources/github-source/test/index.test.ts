@@ -29,7 +29,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    (GitHub as any)._authInstance = undefined;
+    (GitHub as any)._instance = undefined;
   });
 
   test('spec', async () => {
@@ -133,6 +133,7 @@ describe('index', () => {
 function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHub(
+      readTestResourceAsJSON('config.json'),
       {
         paginate: {
           iterator: (fn: () => any) => iterate([{data: fn()}]),
@@ -144,7 +145,6 @@ function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
         },
         ...octokitMock,
       },
-      sourceConfig.authentication.type,
       new AirbyteLogger()
     );
   });

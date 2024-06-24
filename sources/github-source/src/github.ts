@@ -13,7 +13,7 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {makeOctokitClient} from './octokit';
-import {GitHubAuth, GitHubConfig} from './types';
+import {GitHubConfig} from './types';
 
 const USER_TOOL_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'vcs-user-tool.gql'),
@@ -26,69 +26,55 @@ export const DEFAULT_GRAPH = 'default';
 export const PAGE_SIZE = 100;
 
 export class GitHub {
-  private static _authInstance: GitHub;
-  private static _installationInstanceByOrg: Map<string, GitHub>;
+  private static _instance: GitHub;
+  private readonly octokitByInstallationOrg: Map<string, Octokit> = new Map();
 
   constructor(
-    private readonly octokit: Octokit,
-    private readonly authType: GitHubAuth['type'],
+    private readonly config: GitHubConfig,
+    private readonly authOctokit: Octokit,
     private readonly logger: AirbyteLogger
   ) {}
 
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger,
-    org?: string
-  ): Promise<GitHub> {
-    if (cfg.authentication.type !== 'app' || !org) {
-      return this.authInstance(cfg, logger);
-    } else {
-      return this.installationInstance(cfg, logger, org);
-    }
-  }
-
-  private static async authInstance(
-    cfg: GitHubConfig,
     logger: AirbyteLogger
   ): Promise<GitHub> {
-    if (GitHub._authInstance) return GitHub._authInstance;
-
-    const octokit = makeOctokitClient(cfg, undefined, logger);
-    const authInstance = new GitHub(octokit, cfg.authentication.type, logger);
-    GitHub._authInstance = authInstance;
-    await authInstance.checkConnection();
-    return authInstance;
+    let instance: GitHub = GitHub._instance;
+    if (!instance) {
+      const octokit = makeOctokitClient(cfg, undefined, logger);
+      instance = new GitHub(cfg, octokit, logger);
+      await instance.checkConnection();
+      GitHub._instance = instance;
+    }
+    return instance;
   }
 
-  private static async installationInstance(
-    cfg: GitHubConfig,
-    logger: AirbyteLogger,
-    org: string
-  ): Promise<GitHub> {
-    if (GitHub._installationInstanceByOrg.has(org))
-      return GitHub._installationInstanceByOrg.get(org);
-
-    const appInstance = await GitHub.authInstance(cfg, logger);
-    const {data: installation} =
-      await appInstance.octokit.apps.getOrgInstallation({org});
-    if (installation.suspended_at) {
-      throw new VError(`App installation for organization ${org} is suspended`);
+  private async octokit(org?: string): Promise<Octokit> {
+    if (this.config.authentication.type !== 'app' || !org)
+      return this.authOctokit;
+    if (!this.octokitByInstallationOrg.has(org)) {
+      const {data: installation} =
+        await this.authOctokit.apps.getOrgInstallation({org});
+      if (installation.suspended_at) {
+        throw new VError(
+          `App installation for organization ${org} is suspended`
+        );
+      }
+      const octokit = makeOctokitClient(
+        this.config,
+        installation.id,
+        this.logger
+      );
+      this.octokitByInstallationOrg.set(org, octokit);
     }
-    const octokit = makeOctokitClient(cfg, installation.id, logger);
-    const installationInstance = new GitHub(
-      octokit,
-      cfg.authentication.type,
-      logger
-    );
-    GitHub._installationInstanceByOrg.set(org, installationInstance);
-    return installationInstance;
+    return this.octokitByInstallationOrg.get(org);
   }
 
   async checkConnection(): Promise<void> {
-    if (this.authType === 'token') {
-      await this.octokit.users.getAuthenticated();
-    } else if (this.authType === 'app') {
-      await this.octokit.apps.getAuthenticated();
+    if (this.config.authentication.type === 'token') {
+      await this.authOctokit.users.getAuthenticated();
+    } else if (this.config.authentication.type === 'app') {
+      await this.authOctokit.apps.getAuthenticated();
     } else {
       throw new VError('Invalid authentication');
     }
@@ -104,9 +90,9 @@ export class GitHub {
   }
 
   async *getOrganizationsIterator(): AsyncGenerator<Organization> {
-    if (this.authType === 'token') {
-      const iter = this.octokit.paginate.iterator(
-        this.octokit.orgs.listForAuthenticatedUser,
+    if (this.config.authentication.type === 'token') {
+      const iter = this.authOctokit.paginate.iterator(
+        this.authOctokit.orgs.listForAuthenticatedUser,
         {
           per_page: PAGE_SIZE,
         }
@@ -116,9 +102,9 @@ export class GitHub {
           yield pick(org, ['login']);
         }
       }
-    } else if (this.authType === 'app') {
-      const iter = this.octokit.paginate.iterator(
-        this.octokit.apps.listInstallations,
+    } else if (this.config.authentication.type === 'app') {
+      const iter = this.authOctokit.paginate.iterator(
+        this.authOctokit.apps.listInstallations,
         {
           per_page: PAGE_SIZE,
         }
@@ -140,14 +126,12 @@ export class GitHub {
     farosClient?: FarosClient,
     graph?: string
   ): AsyncGenerator<CopilotSeat> {
+    const octokit = await this.octokit(org);
     const currentAssignees = new Set<string>();
-    const iter = this.octokit.paginate.iterator(
-      this.octokit.copilot.listCopilotSeats,
-      {
-        org,
-        per_page: PAGE_SIZE,
-      }
-    );
+    const iter = octokit.paginate.iterator(octokit.copilot.listCopilotSeats, {
+      org,
+      per_page: PAGE_SIZE,
+    });
     try {
       for await (const res of iter) {
         for (const seat of res.data.seats) {

@@ -20,7 +20,7 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     streamSlice?: OrgStreamSlice
   ): AsyncGenerator<CopilotSeat> {
     const org = streamSlice?.org;
-    const github = await GitHub.instance(this.config, this.logger, org);
+    const github = await GitHub.instance(this.config, this.logger);
     yield* github.getCopilotSeats(org, this.farosClient, this.config.graph);
   }
 }
