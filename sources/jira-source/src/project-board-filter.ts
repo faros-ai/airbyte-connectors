@@ -106,10 +106,7 @@ export class ProjectBoardFilter {
     if (!this.config.boards_included && !this.config.boards_excluded) {
       return true;
     }
-    if (
-      this.config.boards_included &&
-      this.config.boards_included.includes(board)
-    ) {
+    if (this.config.boards_included?.includes(board)) {
       return true;
     }
     return (
