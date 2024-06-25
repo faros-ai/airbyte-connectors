@@ -1,5 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {TestRun} from 'faros-airbyte-common/xray';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Xray} from '../xray';
@@ -9,6 +10,8 @@ const stateKey = 'lastModified';
 type TestRunState = Dictionary<string>;
 
 export class TestRuns extends XrayStreamBase {
+  private latestModified: DateTime;
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/testRuns.json');
   }
@@ -32,15 +35,25 @@ export class TestRuns extends XrayStreamBase {
       syncMode,
       streamState?.[stateKey]
     );
-    yield* xrayClient.getTestRuns(modifiedSince);
+    for await (const run of xrayClient.getTestRuns(modifiedSince)) {
+      // Test runs are not sorted by lastModified, so we need to track the latest
+      const runModifiedDate = DateTime.fromISO(run.lastModified);
+      if (!this.latestModified || runModifiedDate > this.latestModified) {
+        this.latestModified = runModifiedDate;
+      }
+      yield run;
+    }
   }
 
   getUpdatedState(
     currentStreamState: TestRunState,
     latestRecord: TestRun
   ): TestRunState {
+    if (this.latestModified < DateTime.fromISO(currentStreamState[stateKey])) {
+      return currentStreamState;
+    }
     return {
-      [stateKey]: TestRuns.formatModifiedSince(latestRecord.lastModified),
+      [stateKey]: TestRuns.formatModifiedSince(this.latestModified),
     };
   }
 }

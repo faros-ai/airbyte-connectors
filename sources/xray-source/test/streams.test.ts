@@ -37,7 +37,7 @@ describe('streams', () => {
         : responseFileOrFn;
 
     Xray.instance = jest.fn().mockImplementation(() => {
-      return new Xray({post: postFn} as any, logger);
+      return new Xray({post: postFn} as any, 100, logger);
     });
 
     const source = new sut.XraySource(logger);

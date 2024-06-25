@@ -46,13 +46,13 @@
         "type": "integer",
         "title": "API Request Timeout",
         "description": "Timeout in milliseconds for each request to the Xray API. 0 means no timeout.",
-        "default": 0
+        "default": 60000
       },
       "api_page_limit": {
         "order": 6,
         "type": "integer",
         "title": "API Page Size",
-        "description": "The number of records to request from the API per call. Maximum is 100. https://xray.cloud.getxray.app/doc/graphql/#node-limit",
+        "description": "The number of records to request from the API per call. Maximum is 100. https://docs.getxray.app/display/XRAYCLOUD/GraphQL+API#GraphQLAPI-NodeLimit",
         "default": 100
       },
       "api_max_retries": {

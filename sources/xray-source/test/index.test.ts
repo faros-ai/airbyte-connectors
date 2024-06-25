@@ -47,6 +47,7 @@ describe('index', () => {
     Xray.instance = jest.fn().mockImplementation(() => {
       return new Xray(
         {post: jest.fn().mockResolvedValue('token')} as any,
+        100,
         logger
       );
     });

@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosError, AxiosInstance} from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
@@ -11,6 +11,7 @@ import {
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import * as fs from 'fs';
 import {get} from 'lodash';
+import {DateTime} from 'luxon';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError, {MultiError} from 'verror';
@@ -20,12 +21,14 @@ import {XrayConfig} from './types';
 const XRAY_CLOUD_BASE_URL = 'https://xray.cloud.getxray.app/api/v2';
 const XRAY_API_DEFAULT_TIMEOUT = 0;
 const XRAY_PAGE_LIMIT = 100;
+// Limit is 60 calls per minute: https://docs.getxray.app/display/ProductKB/%5BXray+Cloud%5D+Rest+API+Limit
+const XRAY_DEFAULT_RETRY_DELAY = 30_000;
 
 export class Xray {
   private static xray: Xray;
   constructor(
     private readonly api: AxiosInstance,
-    private readonly limit,
+    private readonly limit: number,
     private readonly logger?: AirbyteLogger
   ) {}
 
@@ -34,6 +37,32 @@ export class Xray {
     logger?: AirbyteLogger
   ): Promise<Xray> {
     if (Xray.xray) return Xray.xray;
+
+    const delayLogic = (error: AxiosError<unknown, any>): number => {
+      const jitter = 500;
+      const resetHeader = error?.response?.headers['x-ratelimit-reset'];
+      if (resetHeader) {
+        // Value is a date string in like Thu Jun 20 2024 21:15:15 GMT+0000 (Coordinated Universal Time)
+        const resetTime = DateTime.fromJSDate(new Date(resetHeader));
+        if (resetTime.isValid) {
+          const diff = resetTime.diff(DateTime.utc()).as('milliseconds');
+          if (diff > 0) {
+            const wait = diff + jitter;
+            logger?.warn(
+              `Retrying in ${wait} milliseconds using at ${resetHeader}`
+            );
+            return wait;
+          }
+        } else {
+          logger?.warn(
+            `Failed to process rate limit reset time value: ${resetHeader}`
+          );
+        }
+      }
+      const wait = XRAY_DEFAULT_RETRY_DELAY + jitter;
+      logger?.warn(`Retrying in ${wait} milliseconds using default delay`);
+      return wait;
+    };
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL: XRAY_CLOUD_BASE_URL,
@@ -44,7 +73,8 @@ export class Xray {
         maxContentLength: Infinity, //default is 2000 bytes
       },
       logger?.asPino(),
-      config.api_max_retries
+      config.api_max_retries,
+      delayLogic
     );
 
     const auth = config.authentication;
@@ -56,7 +86,11 @@ export class Xray {
     }
 
     const refreshToken = async (): Promise<void> => {
-      const token = await Xray.sessionToken(auth.client_id, auth.client_secret);
+      const token = await Xray.sessionToken(
+        auth.client_id,
+        auth.client_secret,
+        logger
+      );
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
@@ -66,13 +100,17 @@ export class Xray {
     const limit = config.api_page_limit
       ? Math.min(config.api_page_limit, XRAY_PAGE_LIMIT)
       : XRAY_PAGE_LIMIT;
-    return new Xray(api, limit, logger);
+
+    Xray.xray = new Xray(api, limit, logger);
+    return Xray.xray;
   }
 
   private static async sessionToken(
     clientId: string,
-    clientSecret: string
+    clientSecret: string,
+    logger: AirbyteLogger
   ): Promise<string> {
+    logger.info('Generating new session token');
     try {
       const {data} = await axios.post(`${XRAY_CLOUD_BASE_URL}/authenticate`, {
         client_id: clientId,
@@ -80,7 +118,7 @@ export class Xray {
       });
       return data;
     } catch (err: any) {
-      throw wrapApiError(err, 'failed to get authentication token');
+      throw wrapApiError(err, 'Failed to get authentication token');
     }
   }
 
@@ -98,7 +136,7 @@ export class Xray {
   ): AsyncGenerator<any> {
     const query = Xray.readQueryFile(queryFile);
     let hasNextPage = true;
-    let start = null;
+    let start = 0;
     let count = 0;
 
     while (hasNextPage) {
@@ -127,8 +165,10 @@ export class Xray {
         yield result;
         count++;
       }
-      hasNextPage = data.total != count && data.results.length === data.limit;
-      start = results.length;
+      this.logger?.debug(`Fetched ${count} records of ${data.total}`);
+      hasNextPage = data.total != count && results.length === data.limit;
+      // Next start is the current count if hasNextPage is true
+      start = count;
     }
   }
 

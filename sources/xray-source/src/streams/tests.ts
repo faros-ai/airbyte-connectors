@@ -1,5 +1,6 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Test} from 'faros-airbyte-common/xray';
+import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Xray} from '../xray';
@@ -26,18 +27,25 @@ export class Tests extends XrayProjectStream {
       syncMode,
       streamState?.[project]
     );
-    yield* xrayClient.getTests(project, modifiedSince);
+    for await (const test of xrayClient.getTests(project, modifiedSince)) {
+      // Tests are not sorted by lastModified, so we need to track the latest
+      this.updateLatestModified(project, test.lastModified);
+      yield test;
+    }
   }
 
   getUpdatedState(
     currentStreamState: ProjectState,
     latestRecord: Test
   ): ProjectState {
+    const currentState = currentStreamState?.[latestRecord.project];
+    const recordDate = this.lastModifiedByProject.get(latestRecord.project);
+    if (currentState && DateTime.fromISO(currentState) > recordDate) {
+      return currentStreamState;
+    }
     return {
       ...currentStreamState,
-      [latestRecord.project]: Tests.formatModifiedSince(
-        latestRecord.lastModified
-      ),
+      [latestRecord.project]: Tests.formatModifiedSince(recordDate),
     };
   }
 }
