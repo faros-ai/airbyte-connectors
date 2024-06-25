@@ -67,9 +67,7 @@ export abstract class XrayProjectStream extends XrayStreamBase {
   updateLatestModified(project: string, lastModified: string): void {
     const current = this.lastModifiedByProject.get(project);
     const lastModifiedDate = DateTime.fromISO(lastModified);
-    if (!current) {
-      this.lastModifiedByProject.set(project, lastModifiedDate);
-    } else if (lastModifiedDate > current) {
+    if (!current || lastModifiedDate > current) {
       this.lastModifiedByProject.set(project, lastModifiedDate);
     }
   }

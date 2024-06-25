@@ -37,9 +37,7 @@ export class TestRuns extends XrayStreamBase {
     );
     for await (const run of xrayClient.getTestRuns(modifiedSince)) {
       const runModifiedDate = DateTime.fromISO(run.lastModified);
-      if (!this.latestModified) {
-        this.latestModified = runModifiedDate;
-      } else if (runModifiedDate > this.latestModified) {
+      if (!this.latestModified || runModifiedDate > this.latestModified) {
         this.latestModified = runModifiedDate;
       }
       yield run;

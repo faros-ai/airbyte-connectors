@@ -28,7 +28,7 @@ export class Xray {
   private static xray: Xray;
   constructor(
     private readonly api: AxiosInstance,
-    private readonly limit,
+    private readonly limit: number,
     private readonly logger?: AirbyteLogger
   ) {}
 
@@ -138,11 +138,6 @@ export class Xray {
     let start = 0;
     let count = 0;
 
-    const queryVariables = {
-      limit: this.limit,
-      start,
-      ...variables,
-    };
     while (hasNextPage) {
       let response;
       try {
