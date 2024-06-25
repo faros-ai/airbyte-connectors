@@ -1,0 +1,21 @@
+query vcs_UserTool(
+  $source: String!
+  $organizationUid: String!
+  $toolCategory: String!
+  $inactive: Boolean!
+) {
+  vcs_UserTool(
+    where: {
+      user: {source: {_eq: $source}}
+      organization: {uid: {_eq: $organizationUid}, source: {_eq: $source}}
+      toolCategory: {_eq: $toolCategory}
+      inactive: {_eq: $inactive}
+    }
+  ) {
+    user {
+      uid
+    }
+    toolCategory
+    inactive
+  }
+}
