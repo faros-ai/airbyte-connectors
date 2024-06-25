@@ -2,12 +2,13 @@ import {Octokit} from '@octokit/rest';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
+  CopilotUsageSummary,
   GitHubTool,
   Organization,
 } from 'faros-airbyte-common/github';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
-import {pick, toLower} from 'lodash';
+import {isEmpty, isNil, pick, toLower} from 'lodash';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -186,6 +187,34 @@ export class GitHub {
           inactive: true,
         };
       }
+    }
+  }
+
+  async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
+    try {
+      const res = await this.octokit.copilot.usageMetricsForOrg({
+        org,
+      });
+      if (isNil(res.data) || isEmpty(res.data)) {
+        this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
+        return;
+      }
+      for (const usage of res.data) {
+        yield {
+          org,
+          ...usage,
+        };
+      }
+    } catch (err: any) {
+      // returns 404 if the organization does not have GitHub Copilot usage metrics enabled or if auth doesn't have required permissions
+      // https://docs.github.com/en/enterprise-cloud@latest/early-access/copilot/copilot-usage-api
+      if (err.status === 404) {
+        this.logger.warn(
+          `Failed to sync GitHub Copilot usage for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
+        );
+        return;
+      }
+      throw err;
     }
   }
 }

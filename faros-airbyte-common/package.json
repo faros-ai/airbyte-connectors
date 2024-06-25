@@ -65,6 +65,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "@octokit/rest": "^20.1.1",
     "jira.js": "^4.0.0",
     "luxon": "^3.4.4"
   },

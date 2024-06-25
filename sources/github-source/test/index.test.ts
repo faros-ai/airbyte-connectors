@@ -128,6 +128,25 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - copilot usage', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getCopilotUsageMockedImplementation(
+            readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+          ),
+          res.config as GitHubConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
@@ -163,6 +182,12 @@ function setupFarosClientMock(
 const getCopilotSeatsMockedImplementation = (res: any) => ({
   copilot: {
     listCopilotSeats: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getCopilotUsageMockedImplementation = (res: any) => ({
+  copilot: {
+    usageMetricsForOrg: jest.fn().mockReturnValue({data: res}),
   },
 });
 

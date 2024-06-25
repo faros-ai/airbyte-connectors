@@ -1,3 +1,8 @@
+import {Octokit} from '@octokit/rest';
+import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
+
+const octokit: Octokit = new Octokit();
+
 export interface Organization {
   login: string;
 }
@@ -15,3 +20,11 @@ export interface CopilotSeat {
 export enum GitHubTool {
   Copilot = 'GitHubCopilot',
 }
+
+export type CopilotUsageSummary = {
+  org: string;
+} & GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.copilot.usageMetricsForOrg
+>[0];
+
+export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
