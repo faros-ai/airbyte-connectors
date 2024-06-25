@@ -14,6 +14,10 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     return ['org', 'user'];
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],

@@ -14,6 +14,10 @@ export class FarosCopilotUsage extends StreamWithOrgSlices {
     return ['org', 'day'];
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
