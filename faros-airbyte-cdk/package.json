@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
-    "commander": "^9.3.0",
+    "commander": "^12.1.0",
     "enquirer": "^2.3.6",
     "fast-redact": "^3.0.2",
     "json-schema-traverse": "^1.0.0",
