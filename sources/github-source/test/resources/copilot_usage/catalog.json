@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_copilot_usage"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

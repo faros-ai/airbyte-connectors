@@ -5,6 +5,12 @@
         "name": "mytestsource__github__faros_copilot_seats"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_copilot_usage"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }
