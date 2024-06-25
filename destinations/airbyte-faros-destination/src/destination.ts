@@ -922,20 +922,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           .map((s) => s.destination_sync_mode)
           .every((m) => m === DestinationSyncMode.OVERWRITE);
 
-      const allSourceErrors = syncErrors.fatal.concat(syncErrors.nonFatal);
-      if (allSourceErrors.length) {
-        const errorSummary = allSourceErrors.map((e) => e.summary).join('; ');
-        this.logger.error(
-          'Skipping reset of non-incremental models due to' +
-            ` Airbyte Source errors: ${errorSummary}`
-        );
-      } else if (
-        this.shouldResetData(
+      if (
+        this.shouldResetData({
+          sourceErrors: syncErrors.fatal.concat(syncErrors.nonFatal),
+          skipSourceSuccessCheck: config.skip_source_success_check,
           isResetSync,
           isBackfillSync,
-          config.skip_source_success_check,
-          sourceSucceeded
-        )
+          isFarosSource: sourceConfigReceived,
+          sourceSucceeded,
+        })
       ) {
         await resetData?.();
       }
@@ -947,31 +942,55 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     }
   }
 
-  private shouldResetData(
-    isResetSync: boolean,
-    isBackfillSync: boolean,
-    skipSourceSuccessCheck: boolean,
-    sourceSucceeded: boolean
-  ): boolean {
+  private shouldResetData(syncInfo: {
+    sourceErrors: SyncMessage[];
+    skipSourceSuccessCheck: boolean;
+    isResetSync: boolean;
+    isBackfillSync: boolean;
+    isFarosSource: boolean;
+    sourceSucceeded: boolean;
+  }): boolean {
+    const {
+      sourceErrors,
+      skipSourceSuccessCheck,
+      isResetSync,
+      isBackfillSync,
+      isFarosSource,
+      sourceSucceeded,
+    } = syncInfo;
+    if (sourceErrors.length) {
+      const errorSummary = sourceErrors.map((e) => e.summary).join('; ');
+      this.logger.error(
+        'Skipping reset of non-incremental models due to' +
+          ` Airbyte Source errors: ${errorSummary}`
+      );
+      return false;
+    }
     if (isResetSync) {
-      this.logger.debug('Running a reset sync. Resetting all models.');
+      this.logger.info('Running a reset sync. Resetting all models.');
       return true;
     }
     if (isBackfillSync) {
-      this.logger.debug(
+      this.logger.info(
         'Running a backfill sync. Skipping reset of non-incremental models.'
       );
       return false;
     }
-    if (skipSourceSuccessCheck) {
-      this.logger.debug(
-        'Skip source success check is enabled. Resetting non-incremental models.'
-      );
+    if (sourceSucceeded) {
+      this.logger.info('Source succeeded. Resetting non-incremental models.');
       return true;
     }
-    if (sourceSucceeded) {
-      this.logger.debug('Source succeeded. Resetting non-incremental models.');
-      return true;
+    if (skipSourceSuccessCheck) {
+      if (isFarosSource) {
+        this.logger.warn(
+          'Skip source success check is not supported for Faros Airbyte Source.'
+        );
+      } else {
+        this.logger.warn(
+          'Skip source success check is enabled for non-Faros Airbyte Source. Resetting non-incremental models.'
+        );
+        return true;
+      }
     }
     this.logger.warn(
       'No success status received from Airbyte Source. Skipping reset of non-incremental models.'
