@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "day": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_suggestions_count": {
+      "type": "number"
+    },
+    "total_acceptances_count": {
+      "type": "number"
+    },
+    "total_discards_count": {
+      "type": "number"
+    },
+    "total_lines_suggested": {
+      "type": "number"
+    },
+    "total_lines_accepted": {
+      "type": "number"
+    },
+    "total_lines_discarded": {
+      "type": "number"
+    },
+    "total_active_users": {
+      "type": "number"
+    },
+    "total_chat_acceptances": {
+      "type": "number"
+    },
+    "total_chat_turns": {
+      "type": "number"
+    },
+    "total_active_chat_users": {
+      "type": "number"
+    },
+    "breakdown": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "editor": {
+          "type": "string"
+        },
+        "suggestions_count": {
+          "type": "number"
+        },
+        "acceptances_count": {
+          "type": "number"
+        },
+        "discards_count": {
+          "type": "number"
+        },
+        "lines_suggested": {
+          "type": "number"
+        },
+        "lines_accepted": {
+          "type": "number"
+        },
+        "lines_discarded": {
+          "type": "number"
+        },
+        "active_users": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
