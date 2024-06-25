@@ -36,6 +36,7 @@ export class TestRuns extends XrayStreamBase {
       streamState?.[stateKey]
     );
     for await (const run of xrayClient.getTestRuns(modifiedSince)) {
+      // Test runs are not sorted by lastModified, so we need to track the latest
       const runModifiedDate = DateTime.fromISO(run.lastModified);
       if (!this.latestModified || runModifiedDate > this.latestModified) {
         this.latestModified = runModifiedDate;

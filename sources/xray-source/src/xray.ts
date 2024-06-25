@@ -44,18 +44,19 @@ export class Xray {
       if (resetHeader) {
         // Value is a date string in like Thu Jun 20 2024 21:15:15 GMT+0000 (Coordinated Universal Time)
         const resetTime = DateTime.fromJSDate(new Date(resetHeader));
-        if (!resetTime.isValid) {
+        if (resetTime.isValid) {
+          const diff = resetTime.diff(DateTime.utc()).as('milliseconds');
+          if (diff > 0) {
+            const wait = diff + jitter;
+            logger?.warn(
+              `Retrying in ${wait} milliseconds using at ${resetHeader}`
+            );
+            return wait;
+          }
+        } else {
           logger?.warn(
             `Failed to process rate limit reset time value: ${resetHeader}`
           );
-        }
-        const diff = resetTime.diff(DateTime.utc()).as('milliseconds');
-        if (diff > 0) {
-          const wait = diff + jitter;
-          logger?.warn(
-            `Retrying in ${wait} milliseconds using at ${resetHeader}`
-          );
-          return wait;
         }
       }
       const wait = XRAY_DEFAULT_RETRY_DELAY + jitter;

@@ -32,6 +32,7 @@ export class TestExecutions extends XrayProjectStream {
       project,
       modifiedSince
     )) {
+      // Test executions are not sorted by lastModified, so we need to track the latest
       this.updateLatestModified(project, testExecution.lastModified);
       yield testExecution;
     }

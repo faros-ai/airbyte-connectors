@@ -28,6 +28,7 @@ export class Tests extends XrayProjectStream {
       streamState?.[project]
     );
     for await (const test of xrayClient.getTests(project, modifiedSince)) {
+      // Tests are not sorted by lastModified, so we need to track the latest
       this.updateLatestModified(project, test.lastModified);
       yield test;
     }
