@@ -26,3 +26,5 @@ export type CopilotUsageSummary = {
 } & GetResponseDataTypeFromEndpointMethod<
   typeof octokit.copilot.usageMetricsForOrg
 >[0];
+
+export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];

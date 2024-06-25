@@ -1,5 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {CopilotUsageSummary} from 'faros-airbyte-common/github';
+import {
+  CopilotUsageSummary,
+  LanguageEditorBreakdown,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
 
@@ -106,7 +109,7 @@ export class FarosCopilotUsage extends GitHubConverter {
     res: DestinationRecord[],
     orgTagUid: string,
     farosMetric: string,
-    breakdown: CopilotUsageSummary['breakdown'][0],
+    breakdown: LanguageEditorBreakdown,
     summary: CopilotUsageSummary,
     breakdownMetric: string
   ): void {
@@ -227,7 +230,7 @@ export class FarosCopilotUsage extends GitHubConverter {
 
   private calculateDiscards(summary: CopilotUsageSummary): void {
     const calculateDifference = (
-      object: CopilotUsageSummary | CopilotUsageSummary['breakdown'][0],
+      object: CopilotUsageSummary | LanguageEditorBreakdown,
       field1: string,
       field2: string,
       resultField: string
