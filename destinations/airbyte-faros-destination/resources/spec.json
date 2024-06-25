@@ -160,7 +160,7 @@
         "order": 14,
         "type": "boolean",
         "title": "Skip source success check",
-        "description": "Skip checking if source ran successfully before resetting non-incremental models",
+        "description": "Skip checking if source ran successfully before resetting non-incremental models. Only applies to non-Faros sources.",
         "default": false
       },
       "faros_source_id": {
