@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
-import {GitHub} from '../src/github';
+import {AppGitHub, GitHub, TokenGitHub} from '../src/github';
 import * as sut from '../src/index';
 import {GitHubConfig} from '../src/types';
 
@@ -29,7 +29,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    (GitHub as any)._instance = undefined;
+    (GitHub as any).github = undefined;
   });
 
   test('spec', async () => {
@@ -39,7 +39,11 @@ describe('index', () => {
   });
 
   function checkConnectionMock() {
-    jest.spyOn(GitHub.prototype, 'checkConnection').mockResolvedValue();
+    jest.spyOn(TokenGitHub.prototype, 'checkConnection').mockResolvedValue();
+    jest.spyOn(AppGitHub.prototype, 'checkConnection').mockResolvedValue();
+    jest
+      .spyOn(AppGitHub.prototype as any, 'getAppInstallations')
+      .mockResolvedValue([]);
   }
 
   test('check connection - token valid', async () => {
@@ -151,7 +155,7 @@ describe('index', () => {
 
 function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
   GitHub.instance = jest.fn().mockImplementation(() => {
-    return new GitHub(
+    return new TokenGitHub(
       readTestResourceAsJSON('config.json'),
       {
         paginate: {

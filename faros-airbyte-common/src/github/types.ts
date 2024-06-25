@@ -7,6 +7,10 @@ export interface Organization {
   login: string;
 }
 
+export type AppInstallation = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.apps.listInstallations
+>[0];
+
 export interface CopilotSeat {
   org: string;
   user: string;
