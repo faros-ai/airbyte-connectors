@@ -30,7 +30,7 @@ export class ProjectBoardFilter {
             )
           : await jira.getProjects();
         for await (const project of projects) {
-          if (!this.config.exclude_projects?.includes(project.key)) {
+          if (!this.config.excluded_projects?.includes(project.key)) {
             this.projects.add(project.key);
           }
         }
@@ -64,12 +64,12 @@ export class ProjectBoardFilter {
   }
 
   boardIsIncluded(board: string): boolean {
-    const {boards, exclude_boards} = this.config;
+    const {boards, excluded_boards} = this.config;
     if (boards?.length) {
       return boards.includes(board);
     }
-    if (exclude_boards?.length) {
-      return !exclude_boards.includes(board);
+    if (excluded_boards?.length) {
+      return !excluded_boards.includes(board);
     }
     return true;
   }

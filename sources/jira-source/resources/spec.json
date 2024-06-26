@@ -114,9 +114,9 @@
           "DEV"
         ]
       },
-      "exclude_projects": {
+      "excluded_projects": {
         "order": 15,
-        "title": "Exclude Project Keys",
+        "title": "Excluded Project Keys",
         "description": "List of Jira project keys from which data won't be fetched. By default, no projects are excluded. If projects list is specified, this list will be ignored.",
         "type": "array",
         "items": {

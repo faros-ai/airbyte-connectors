@@ -485,24 +485,24 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with projects and exclude_projects defined should remove exclude_projects from config', async () => {
+  test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
-      {...config, projects: ['TEST'], exclude_projects: ['TEST2']},
+      {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
       catalog
     );
-    expect(processedConfig.exclude_projects).toBeUndefined();
+    expect(processedConfig.excluded_projects).toBeUndefined();
   });
 
-  test('onBeforeRead with boards and exclude_boards defined should remove exclude_boards from config', async () => {
+  test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
     const source = new sut.JiraSource(logger);
     const catalog = readTestResourceFile('catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
-      {...config, boards: ['1'], exclude_boards: ['2']},
+      {...config, boards: ['1'], excluded_boards: ['2']},
       catalog
     );
-    expect(processedConfig.exclude_boards).toBeUndefined();
+    expect(processedConfig.excluded_boards).toBeUndefined();
   });
 
   async function testStreamSlices(config: JiraConfig): Promise<void> {

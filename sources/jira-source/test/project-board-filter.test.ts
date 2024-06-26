@@ -54,7 +54,7 @@ describe('ProjectBoardFilter', () => {
 
   test('getProjectsFromFaros - specific projects excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
-      {...config, exclude_projects: ['TEST-1']},
+      {...config, excluded_projects: ['TEST-1']},
       logger
     );
     const projects = await projectBoardFilter.getProjects();
@@ -78,7 +78,7 @@ describe('ProjectBoardFilter', () => {
 
   test('getBoardsFromFaros - specific boards excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
-      {...config, exclude_boards: ['2']},
+      {...config, excluded_boards: ['2']},
       logger
     );
     const boards = await projectBoardFilter.getBoards();

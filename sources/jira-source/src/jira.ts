@@ -55,9 +55,9 @@ export interface JiraConfig extends AirbyteConfig {
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
   readonly projects?: ReadonlyArray<string>;
-  readonly exclude_projects?: ReadonlyArray<string>;
+  readonly excluded_projects?: ReadonlyArray<string>;
   readonly boards?: ReadonlyArray<string>;
-  readonly exclude_boards?: ReadonlyArray<string>;
+  readonly excluded_boards?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly run_mode?: RunMode;

@@ -110,19 +110,19 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    let {exclude_projects, exclude_boards} = config;
-    if (config.projects?.length && exclude_projects?.length) {
+    let {excluded_projects, excluded_boards} = config;
+    if (config.projects?.length && excluded_projects?.length) {
       this.logger.warn(
-        'Both projects and exclude_projects are specified, exclude_projects will be ignored.'
+        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
       );
-      exclude_projects = undefined;
+      excluded_projects = undefined;
     }
 
-    if (config.boards?.length && exclude_boards?.length) {
+    if (config.boards?.length && excluded_boards?.length) {
       this.logger.warn(
-        'Both boards and exclude_boards are specified, exclude_boards will be ignored.'
+        'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
       );
-      exclude_boards = undefined;
+      excluded_boards = undefined;
     }
 
     return {
@@ -131,8 +131,8 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
         requestedStreams,
         startDate,
         endDate,
-        exclude_projects,
-        exclude_boards,
+        excluded_projects,
+        excluded_boards,
       },
       catalog: {streams},
       state,
