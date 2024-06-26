@@ -7,15 +7,20 @@ export interface Organization {
   login: string;
 }
 
-export interface CopilotSeat {
+export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
+
+export type CopilotSeat = {
+  empty?: never;
   org: string;
   user: string;
-  inactive: boolean;
-  created_at?: string | null;
-  updated_at?: string | null;
-  pending_cancellation_date?: string | null;
-  last_activity_at?: string | null;
-}
+} & GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.copilot.listCopilotSeats
+>['seats'][0];
+
+export type CopilotSeatsEmpty = {
+  empty: true;
+  org: string;
+};
 
 export enum GitHubTool {
   Copilot = 'GitHubCopilot',

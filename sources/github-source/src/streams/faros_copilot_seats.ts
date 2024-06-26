@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {CopilotSeat} from 'faros-airbyte-common/github';
+import {CopilotSeatsStreamRecord} from 'faros-airbyte-common/github';
 import {Dictionary} from 'ts-essentials';
 
 import {GitHub} from '../github';
@@ -22,9 +22,9 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: OrgStreamSlice
-  ): AsyncGenerator<CopilotSeat> {
+  ): AsyncGenerator<CopilotSeatsStreamRecord> {
     const github = await GitHub.instance(this.config, this.logger);
     const org = streamSlice?.org;
-    yield* github.getCopilotSeats(org, this.farosClient, this.config.graph);
+    yield* github.getCopilotSeats(org);
   }
 }

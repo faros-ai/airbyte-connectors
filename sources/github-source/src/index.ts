@@ -6,10 +6,9 @@ import {
   AirbyteSpec,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {DEFAULT_API_URL, GitHub} from './github';
+import {GitHub} from './github';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {GitHubConfig} from './types';
@@ -39,20 +38,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return [true, undefined];
   }
 
-  makeFarosClient(config: GitHubConfig): FarosClient {
-    return new FarosClient({
-      url: config.api_url ?? DEFAULT_API_URL,
-      apiKey: config.api_key,
-    });
-  }
-
   streams(config: GitHubConfig): AirbyteStreamBase[] {
-    let farosClient;
-    if (config.api_key) {
-      farosClient = this.makeFarosClient(config);
-    }
     return [
-      new FarosCopilotSeats(config, this.logger, farosClient),
+      new FarosCopilotSeats(config, this.logger),
       new FarosCopilotUsage(config, this.logger),
     ];
   }
