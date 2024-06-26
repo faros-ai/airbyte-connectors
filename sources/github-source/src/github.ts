@@ -102,7 +102,12 @@ export class GitHub {
           yield {
             org,
             user: seat.assignee.login as string,
-            ...seat,
+            ...pick(seat, [
+              'created_at',
+              'updated_at',
+              'pending_cancellation_date',
+              'last_activity_at',
+            ]),
           };
         }
       }

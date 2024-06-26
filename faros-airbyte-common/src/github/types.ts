@@ -13,9 +13,12 @@ export type CopilotSeat = {
   empty?: never;
   org: string;
   user: string;
-} & GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.copilot.listCopilotSeats
->['seats'][0];
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.copilot.listCopilotSeats
+  >['seats'][0],
+  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
+>;
 
 export type CopilotSeatsEmpty = {
   empty: true;
