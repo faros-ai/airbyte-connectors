@@ -44,8 +44,8 @@ export abstract class GitHub {
     }
     const github =
       cfg.authentication.type === 'token'
-        ? await TokenGitHub.instance(cfg, logger)
-        : await AppGitHub.instance(cfg, logger);
+        ? await GitHubToken.instance(cfg, logger)
+        : await GitHubApp.instance(cfg, logger);
     GitHub.github = github;
     return github;
   }
@@ -164,18 +164,18 @@ export abstract class GitHub {
   }
 }
 
-export class TokenGitHub extends GitHub {
+export class GitHubToken extends GitHub {
   static async instance(
     cfg: GitHubConfig,
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new TokenGitHub(cfg, baseOctokit, logger);
+    const github = new GitHubToken(cfg, baseOctokit, logger);
     await github.checkConnection();
     return github;
   }
 
-  octokit(org: string): Octokit {
+  octokit(): Octokit {
     return this.baseOctokit;
   }
 
@@ -198,7 +198,7 @@ export class TokenGitHub extends GitHub {
   }
 }
 
-export class AppGitHub extends GitHub {
+export class GitHubApp extends GitHub {
   private readonly octokitByInstallationOrg: Map<string, Octokit> = new Map();
 
   static async instance(
@@ -206,7 +206,7 @@ export class AppGitHub extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new AppGitHub(cfg, baseOctokit, logger);
+    const github = new GitHubApp(cfg, baseOctokit, logger);
     await github.checkConnection();
     const installations = await github.getAppInstallations();
     for (const installation of installations) {
