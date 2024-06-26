@@ -4,6 +4,7 @@ import {
   AppInstallation,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  Organization,
 } from 'faros-airbyte-common/github';
 import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -51,6 +52,18 @@ export abstract class GitHub {
       orgs.push(org);
     }
     return orgs;
+  }
+
+  async getOrganization(orgLogin: string): Promise<Organization> {
+    const org = await this.octokit(orgLogin).orgs.get({org: orgLogin});
+    return pick(org.data, [
+      'login',
+      'name',
+      'type',
+      'html_url',
+      'created_at',
+      'updated_at',
+    ]);
   }
 
   async *getCopilotSeats(
